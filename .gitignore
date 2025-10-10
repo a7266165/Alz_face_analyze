@@ -1,0 +1,13 @@
+/_legacy/*
+
+/data/*
+!/data/demographics/
+/data/demographics/*
+!/data/demographics/_details.txt
+
+!/data/images/ 
+/data/images/*                        
+!/data/images/raw/                    
+/data/images/raw/*                    
+!/data/images/raw/data_tree.txt
+!/data/images/raw/path.txt

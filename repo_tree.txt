@@ -1,0 +1,23 @@
+Alz_face_analyze/
+├── _legacy/
+├── data/
+│   ├── demographics/
+│   │   ├── details.txt
+│   │   ├── ACS.csv
+│   │   ├── NAD.csv
+│   │   └── P.csv
+│   ├── images/
+│   │   ├── raw
+│   │   │   ├── path.txt
+│   │   │   └── data_tree.txt
+│   │   └── processed
+│   └── features/
+├── results/
+├── config/
+├── src/
+├── scripts/
+├── .gitignore
+├── README.md
+├── poetry.lock
+├── pyproject.toml           
+└── repo_tree.txt
