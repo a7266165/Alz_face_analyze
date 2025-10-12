@@ -1,4 +1,5 @@
 /_legacy/*
+/workspace/*
 
 /data/*
 !/data/demographics/
