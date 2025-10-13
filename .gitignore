@@ -3,6 +3,15 @@ __pycache__*
 /_legacy/*
 /workspace/*
 
+external/*
+!external/TopoFR/
+external/TopoFR/*
+!/external/TopoFR/link.txt
+
+!external/dlib/
+external/dlib/*
+!/external/dlib/download_dlib.py
+
 /data/*
 !/data/demographics/
 /data/demographics/*
@@ -14,3 +23,5 @@ __pycache__*
 /data/images/raw/*                    
 !/data/images/raw/data_tree.txt
 !/data/images/raw/path.txt
+
+test_results/*
