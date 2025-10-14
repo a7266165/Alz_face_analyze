@@ -27,10 +27,8 @@ Alz_face_analyze/
 │   │   └── README.md            # 同步說明文件
 │   └── analysis/                # 分析專屬模組
 │       ├── __init__.py
-│       ├── loader.py            # 資料載入與篩選
-│       ├── trainer.py           # 模型訓練
-│       ├── evaluator.py         # 模型評估
-│       └── reporter.py          # 報告生成
+│       ├── loader.py            # 資料載入 & 篩選器
+│       └── analyzer.py          # 分析器
 ├── results/
 ├── scripts/
 ├── .gitignore
