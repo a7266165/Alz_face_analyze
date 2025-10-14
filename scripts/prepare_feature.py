@@ -282,7 +282,7 @@ class FeaturePipeline:
                 logger.warning(f"找不到目錄: {group_path}")
         
         # 掃描 patient 目錄
-        patient_path = self.raw_images_dir / "patient"
+        patient_path = self.raw_images_dir / "patient" / "good"
         if patient_path.exists():
             for subject_dir in sorted(patient_path.iterdir()):
                 if subject_dir.is_dir() and self._has_images(subject_dir):
