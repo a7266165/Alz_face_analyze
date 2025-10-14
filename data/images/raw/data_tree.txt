@@ -13,8 +13,19 @@ parent_folder
 │       │   ├── nad001_color_image2.jpg
 .......
 └── patient
-    ├── P1-2
-    │   ├── p1-2_color_image0.jpg
-    │   ├── p1-2_color_image1.jpg
-    │   ├── p1-2_color_image2.jpg
+    ├── good
+    │   ├── P1-1
+    │   │   ├── p1-1_color_image0.jpg
+    │   │   ├── p1-1_color_image1.jpg
+    │   │   ├── p1-1_color_image2.jpg
+    │   │   └── ...
+    │   ├── P1-2
+    │   │   ├── p1-2_color_image0.jpg
+    │   │   ├── p1-2_color_image1.jpg
+    │   │   ├── p1-2_color_image2.jpg
+    │   │   └── ...
+    │   └── ...
+    │
+    └── bad
+        └── ...
 .......
