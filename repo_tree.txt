@@ -1,22 +1,42 @@
 Alz_face_analyze/
 ├── _legacy/
-├── workspace/
+│   ├── cache/                      # 快取目錄
+│   │   ├── demographics.pkl        # 人口學資料快取
+│   │   └── features_*.pkl          # 特徵快取
+│   ├── preprocessing/              # 預處理中間結果
+│   │   ├── selected/               # 選中的相片
+│   │   │   └── {subject_id}/
+│   │   ├── aligned/                # 對齊後的相片
+│   │   │   └── {subject_id}/
+│   │   ├── mirrors/                # 鏡射相片
+│   │   │   └── {subject_id}/
+│   │   └── debug/                  # 除錯用
+│   │       └── {subject_id}/
+│   ├── features/                   # 提取的特徵
+│   │   ├── {model}/                # 模型名稱 (arcface, dlib, topofr)
+│   │   │   └── {feature_type}/     # 特徵類型 (difference, average, relative)
+│   │   │       └── {subject_id}.npy
+│   │   └── feature_extraction_stats.json
+│   └── analysis/                   # 分析結果
+│       ├── models/                 # 訓練好的模型
+│       │   ├── {dataset_key}.json
+│       │   └── {dataset_key}_features.json
+│       ├── reports/                # 分析報告
+│       │   └── {dataset_key}_report.txt
+│       └── training_summary.json
 ├── data/
 │   ├── demographics/
 │   │   ├── details.txt
 │   │   ├── ACS.csv
 │   │   ├── NAD.csv
 │   │   └── P.csv
-│   ├── images/
-│   │   ├── raw
-│   │   │   ├── path.txt
-│   │   │   └── data_tree.txt
-│   │   └── processed
-│   └── features/
+│   └── images/
+│       └── raw
+│           ├── path.txt
+│           └── data_tree.txt
 ├── external/
 │   ├── dlib
 │   └── TopoFR
-├── config/
 ├── src/
 │   ├── __init__.py
 │   ├── core/                    # 🔄 需要與API同步的核心模組
@@ -31,6 +51,8 @@ Alz_face_analyze/
 │       └── analyzer.py          # 分析器
 ├── results/
 ├── scripts/
+│   ├── prepare_feature.py
+│   └── run_analyze.py
 ├── .gitignore
 ├── README.md
 ├── poetry.lock
