@@ -9,7 +9,7 @@ from typing import Dict, List, Optional, Tuple
 from datetime import datetime
 import numpy as np
 import xgboost as xgb
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, GroupShuffleSplit
 from sklearn.metrics import (
     accuracy_score,
     precision_score,
@@ -115,20 +115,22 @@ class XGBoostAnalyzer:
             
             try:
                 X, y = dataset.X, dataset.y
-                
+                subject_ids = dataset.subject_ids
+
                 logger.info(f"資料集: {len(X)} 樣本, {X.shape[1]} 特徵")
                 logger.info(f"類別分佈: 0={np.sum(y==0)}, 1={np.sum(y==1)}")
                 
                 # Step 1: 分割資料集
-                X_train, X_test, y_train, y_test = train_test_split(
-                    X, y,
+                gss = GroupShuffleSplit(
+                    n_splits=1,
                     test_size=self.test_size,
-                    random_state=self.random_seed,
-                    stratify=y
+                    random_state=self.random_seed
                 )
+                train_idx, test_idx = next(gss.split(X, y, groups=subject_ids))
+                X_train, X_test = X[train_idx], X[test_idx]
+                y_train, y_test = y[train_idx], y[test_idx]
                 
                 logger.info(f"訓練集: {len(X_train)} 樣本, 測試集: {len(X_test)} 樣本")
-                
                 # Step 2: 特徵選擇（如果啟用）
                 selected_features = None
                 original_n_features = X_train.shape[1]
