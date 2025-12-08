@@ -1,29 +1,4 @@
 Alz_face_analyze/
-├── _legacy/
-│   ├── cache/                      # 快取目錄
-│   │   ├── demographics.pkl        # 人口學資料快取
-│   │   └── features_*.pkl          # 特徵快取
-│   ├── preprocessing/              # 預處理中間結果
-│   │   ├── selected/               # 選中的相片
-│   │   │   └── {subject_id}/
-│   │   ├── aligned/                # 對齊後的相片
-│   │   │   └── {subject_id}/
-│   │   ├── mirrors/                # 鏡射相片
-│   │   │   └── {subject_id}/
-│   │   └── debug/                  # 除錯用
-│   │       └── {subject_id}/
-│   ├── features/                   # 提取的特徵
-│   │   ├── {model}/                # 模型名稱 (arcface, dlib, topofr)
-│   │   │   └── {feature_type}/     # 特徵類型 (difference, average, relative)
-│   │   │       └── {subject_id}.npy
-│   │   └── feature_extraction_stats.json
-│   └── analysis/                   # 分析結果
-│       ├── models/                 # 訓練好的模型
-│       │   ├── {dataset_key}.json
-│       │   └── {dataset_key}_features.json
-│       ├── reports/                # 分析報告
-│       │   └── {dataset_key}_report.txt
-│       └── training_summary.json
 ├── data/
 │   ├── demographics/
 │   │   ├── details.txt
@@ -37,22 +12,21 @@ Alz_face_analyze/
 ├── external/
 │   ├── dlib
 │   └── TopoFR
-├── src/
-│   ├── __init__.py
-│   ├── core/                    # 🔄 需要與API同步的核心模組
-│   │   ├── __init__.py
-│   │   ├── config.py            # 統一配置參數
-│   │   ├── preprocess.py        # 影像預處理（鏡射、CLAHE、對齊）
-│   │   ├── feature_extract.py   # 特徵提取（VGGFace、ArcFace等）
-│   │   └── README.md            # 同步說明文件
-│   └── analysis/                # 分析專屬模組
-│       ├── __init__.py
-│       ├── loader.py            # 資料載入 & 篩選器
-│       └── analyzer.py          # 分析器
-├── results/
 ├── scripts/
 │   ├── prepare_feature.py
 │   └── run_analyze.py
+├── src/
+│   ├── analysis/                # 分析專屬模組
+│   │   ├── __init__.py
+│   │   ├── loader.py            # 資料載入 & 篩選器
+│   │   └── analyzer.py          # 分析器
+│   └── core/                    # 🔄 需要與API同步的核心模組
+│       ├── __init__.py
+│       ├── config.py            # 統一配置參數
+│       ├── preprocess.py        # 影像預處理（鏡射、CLAHE、對齊）
+│       ├── feature_extract.py   # 特徵提取（VGGFace、ArcFace等）
+│       └── README.md            # 同步說明文件
+├── workspace/
 ├── .gitignore
 ├── README.md
 ├── poetry.lock
