@@ -332,35 +332,24 @@ class XGBoostAnalyzer:
         """儲存文字報告"""
         report_path = self.reports_dir / f"{dataset_key}_report.txt"
         
+        # 指標順序
+        metric_order = ['accuracy', 'mcc', 'sensitivity', 'specificity', 
+                        'precision', 'recall', 'f1', 'auc']
+        
         with open(report_path, 'w', encoding='utf-8') as f:
             f.write("XGBoost 分析報告\n")
-            f.write("=" * 60 + "\n\n")
+            f.write("=" * 60 + "\n")
             f.write(f"資料集: {dataset_key}\n")
             f.write(f"分析時間: {result['timestamp']}\n")
             f.write(f"訓練集: {result['n_train']} 樣本\n")
-            f.write(f"測試集: {result['n_test']} 樣本\n\n")
-            
-            # 特徵選擇
-            if result['selected_features'] is not None:
-                f.write("特徵選擇:\n")
-                f.write("-" * 30 + "\n")
-                f.write(f"  原始維度: {result['original_n_features']}\n")
-                f.write(f"  選擇維度: {result['selected_n_features']}\n")
-                compression_ratio = result['selected_n_features'] / result['original_n_features']
-                f.write(f"  壓縮比例: {compression_ratio:.1%}\n\n")
-            
-            # 訓練集效能
-            f.write("訓練集效能:\n")
-            f.write("-" * 30 + "\n")
-            for metric, value in result['train_metrics'].items():
-                if metric != 'confusion_matrix':
-                    f.write(f"  {metric}: {value:.4f}\n")
+            f.write(f"測試集: {result['n_test']} 樣本\n")
             
             # 測試集效能
             f.write("\n測試集效能:\n")
             f.write("-" * 30 + "\n")
-            for metric, value in result['test_metrics'].items():
-                if metric != 'confusion_matrix':
+            for metric in metric_order:
+                if metric in result['test_metrics'] and metric != 'confusion_matrix':
+                    value = result['test_metrics'][metric]
                     if value is not None:
                         f.write(f"  {metric}: {value:.4f}\n")
                     else:
@@ -373,6 +362,24 @@ class XGBoostAnalyzer:
             f.write("         預測0  預測1\n")
             f.write(f"實際0   {int(cm[0][0]):5d}  {int(cm[0][1]):5d}\n")
             f.write(f"實際1   {int(cm[1][0]):5d}  {int(cm[1][1]):5d}\n")
+            
+            # 訓練集效能
+            f.write("\n訓練集效能:\n")
+            f.write("-" * 30 + "\n")
+            for metric in metric_order:
+                if metric in result['train_metrics'] and metric != 'confusion_matrix':
+                    value = result['train_metrics'].get(metric)
+                    if value is not None:
+                        f.write(f"  {metric}: {value:.4f}\n")
+            
+            # 特徵選擇
+            if result['selected_features'] is not None:
+                f.write("\n特徵選擇:\n")
+                f.write("-" * 30 + "\n")
+                f.write(f"  原始維度: {result['original_n_features']}\n")
+                f.write(f"  選擇維度: {result['selected_n_features']}\n")
+                compression_ratio = result['selected_n_features'] / result['original_n_features']
+                f.write(f"  壓縮比例: {compression_ratio:.1%}\n")
         
         logger.debug(f"報告已儲存: {report_path}")
     
