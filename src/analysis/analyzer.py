@@ -359,9 +359,9 @@ class XGBoostAnalyzer:
             f.write("\n測試集混淆矩陣:\n")
             f.write("-" * 30 + "\n")
             cm = result['test_metrics']['confusion_matrix']
-            f.write("         預測0  預測1\n")
-            f.write(f"實際0   {int(cm[0][0]):5d}  {int(cm[0][1]):5d}\n")
-            f.write(f"實際1   {int(cm[1][0]):5d}  {int(cm[1][1]):5d}\n")
+            f.write("         真實0  真實1\n")
+            f.write(f"預測0   {int(cm[0][0]):5d}  {int(cm[1][0]):5d}\n")
+            f.write(f"預測1   {int(cm[0][1]):5d}  {int(cm[1][1]):5d}\n")
             
             # 訓練集效能
             f.write("\n訓練集效能:\n")
