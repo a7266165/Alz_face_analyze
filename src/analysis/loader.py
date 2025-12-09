@@ -41,6 +41,8 @@ class DataLoader:
         use_all_visits: bool = True,
         n_bins: int = 5,
         random_seed: int = 42,
+        predicted_ages_file: Optional[Path] = None,
+        min_predicted_age: float = 65.0,
         use_cache: bool = True,
         cache_dir: Optional[Path] = None
     ):
@@ -71,6 +73,9 @@ class DataLoader:
         self.use_all_visits = use_all_visits
         self.n_bins = n_bins
         self.random_seed = random_seed
+        self.predicted_ages_file = predicted_ages_file
+        self.min_predicted_age = min_predicted_age
+        self._predicted_ages = None
         
         # 快取設定
         self.use_cache = use_cache
@@ -257,9 +262,11 @@ class DataLoader:
         # 載入特徵
         features = self._load_features(model, feature_type)
         
+        filtered_demo = self._filter_by_predicted_age(demographics)
+
         # 篩選人口學資料
         filtered_demo = self._filter_demographics(
-            demographics=demographics,
+            demographics=filtered_demo,
             cdr_threshold=cdr_threshold
         )
         
@@ -294,6 +301,37 @@ class DataLoader:
     
     # ========== 資料篩選與平衡 ==========
     
+    def _load_predicted_ages(self) -> dict:
+        """載入預測年齡"""
+        if self._predicted_ages is not None:
+            return self._predicted_ages
+        
+        if self.predicted_ages_file and self.predicted_ages_file.exists():
+            import json
+            with open(self.predicted_ages_file, 'r') as f:
+                self._predicted_ages = json.load(f)
+            logger.info(f"載入預測年齡: {len(self._predicted_ages)} 筆")
+        else:
+            self._predicted_ages = {}
+        
+        return self._predicted_ages
+
+    def _filter_by_predicted_age(self, df: pd.DataFrame) -> pd.DataFrame:
+        """依預測年齡篩選（< min_predicted_age 則排除）"""
+        ages = self._load_predicted_ages()
+        
+        if not ages:
+            return df
+        
+        before = len(df)
+        mask = df['ID'].apply(
+            lambda x: ages.get(x, self.min_predicted_age) >= self.min_predicted_age
+        )
+        df = df[mask].copy()
+        
+        logger.info(f"預測年齡篩選: {before} → {len(df)} 筆 (>= {self.min_predicted_age} 歲)")
+        return df
+
     def _filter_demographics(
         self,
         demographics: pd.DataFrame,
@@ -347,7 +385,7 @@ class DataLoader:
             logger.debug(f"應用 CDR 篩選（閾值 = {cdr_threshold}）")
             
             # 為每個 group 建立篩選條件
-            mask = pd.Series([True] * len(df), index=df.index)
+            mask = pd.Series(True, index=df.index, dtype=bool)
             
             for group in df['group'].unique():
                 group_mask = df['group'] == group
@@ -359,13 +397,13 @@ class DataLoader:
                 elif group == 'NAD':
                     # NAD: 保留 CDR <= threshold 的健康個案
                     if 'Global_CDR' in df.columns:
-                        mask[group_mask] = df.loc[group_mask, 'Global_CDR'] <= cdr_threshold
+                        mask.loc[group_mask] = (df.loc[group_mask, 'Global_CDR'] <= cdr_threshold).values
                     # 如果沒有 CDR 欄位，保留所有 NAD
                 
                 elif group == 'P':
                     # P: 保留 CDR >= threshold 的病患個案
                     if 'Global_CDR' in df.columns:
-                        mask[group_mask] = df.loc[group_mask, 'Global_CDR'] >= cdr_threshold
+                        mask.loc[group_mask] = (df.loc[group_mask, 'Global_CDR'] >= cdr_threshold).values
                     # 如果沒有 CDR 欄位，保留所有 P
             
             df = df[mask].copy()

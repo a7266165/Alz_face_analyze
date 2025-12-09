@@ -172,12 +172,14 @@ class AnalysisPipeline:
                 use_all_visits=self.use_all_visits,
                 n_bins=5,
                 random_seed=self.random_seed,
-                use_cache=self.use_cache
+                use_cache=self.use_cache,
+                predicted_ages_file=Path("workspace/predicted_ages.json"),
+                min_predicted_age=65.0,
             )
             
             datasets = loader.load_datasets()
             return datasets
-            
+        
         except Exception as e:
             logger.error(f"載入資料集失敗: {e}")
             import traceback
@@ -265,8 +267,8 @@ def main():
     EMBEDDING_MODELS = ["arcface", "dlib", "topofr"]
     FEATURE_TYPES = ["difference", "average", "relative"]
     CDR_THRESHOLDS = [0.5, 1.0, 2.0]
-    DATA_BALANCING = True
-    USE_ALL_VISITS = True
+    DATA_BALANCING = False
+    USE_ALL_VISITS = False
     USE_CACHE = False
     
     # 模型訓練配置
