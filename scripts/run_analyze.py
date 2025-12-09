@@ -31,8 +31,10 @@ class AnalysisPipeline:
         features_dir: Path,
         demographics_dir: Path,
         output_dir: Path,
+        predicted_ages_file: Path = None,
         embedding_models: list = None,
         feature_types: list = None,
+        min_predicted_age: float = 65.0,
         cdr_thresholds: list = None,
         data_balancing: bool = True,
         use_all_visits: bool = False,
@@ -63,11 +65,13 @@ class AnalysisPipeline:
         self.features_dir = Path(features_dir)
         self.demographics_dir = Path(demographics_dir)
         self.output_dir = Path(output_dir)
-        
+        self.predicted_ages_file = Path(predicted_ages_file) if predicted_ages_file else None
+
         # DataLoader 參數
         self.embedding_models = embedding_models or ["arcface", "dlib", "topofr"]
         self.feature_types = feature_types or ["difference", "average", "relative"]
         self.cdr_thresholds = cdr_thresholds if cdr_thresholds is not None else [0.5, 1.0, 2.0]
+        self.min_predicted_age = min_predicted_age
         self.data_balancing = data_balancing
         self.use_all_visits = use_all_visits
         self.use_cache = use_cache
@@ -165,16 +169,17 @@ class AnalysisPipeline:
             loader = DataLoader(
                 features_dir=self.features_dir,
                 demographics_dir=self.demographics_dir,
+                predicted_ages_file=self.predicted_ages_file,
                 embedding_models=self.embedding_models,
                 feature_types=self.feature_types,
                 cdr_thresholds=self.cdr_thresholds,
+                min_predicted_age=self.min_predicted_age, 
                 data_balancing=self.data_balancing,
                 use_all_visits=self.use_all_visits,
                 n_bins=5,
                 random_seed=self.random_seed,
                 use_cache=self.use_cache,
-                predicted_ages_file=Path("workspace/predicted_ages.json"),
-                min_predicted_age=65.0,
+
             )
             
             datasets = loader.load_datasets()
@@ -259,13 +264,15 @@ def main():
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
     # 路徑設定
-    FEATURES_DIR = Path("workspace/features")
-    DEMOGRAPHICS_DIR = Path("data/demographics")
-    OUTPUT_DIR = Path(f"workspace/analysis_{timestamp}")
+    FEATURES_DIR = "workspace/features"
+    DEMOGRAPHICS_DIR = "data/demographics"
+    OUTPUT_DIR = f"workspace/analysis_{timestamp}"
+    PREDICTED_AGES_FILE = "workspace/predicted_ages.json"
     
     # 資料載入配置
     EMBEDDING_MODELS = ["arcface", "dlib", "topofr"]
     FEATURE_TYPES = ["difference", "average", "relative"]
+    MIN_PREDICTED_AGE = 65.0
     CDR_THRESHOLDS = [0.5, 1.0, 2.0]
     DATA_BALANCING = False
     USE_ALL_VISITS = False
@@ -283,8 +290,10 @@ def main():
         features_dir=FEATURES_DIR,
         demographics_dir=DEMOGRAPHICS_DIR,
         output_dir=OUTPUT_DIR,
+        predicted_ages_file=PREDICTED_AGES_FILE,
         embedding_models=EMBEDDING_MODELS,
         feature_types=FEATURE_TYPES,
+        min_predicted_age=MIN_PREDICTED_AGE,
         cdr_thresholds=CDR_THRESHOLDS,
         data_balancing=DATA_BALANCING,
         use_all_visits=USE_ALL_VISITS,
