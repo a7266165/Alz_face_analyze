@@ -39,6 +39,8 @@ class XGBoostAnalyzer:
     def __init__(
         self,
         output_dir: Path,
+        models_dir: Path = None,
+        reports_dir: Path = None,
         test_size: float = 0.2,
         random_seed: int = 42,
         xgb_params: Optional[Dict] = None,
@@ -56,7 +58,9 @@ class XGBoostAnalyzer:
             feature_selection: 是否進行特徵選擇
             importance_ratio: 特徵選擇保留比例
         """
-        self.output_dir = Path(output_dir)
+        self.output_dir = Path(output_dir) if output_dir else None
+        self.models_dir = Path(models_dir) if models_dir else None
+        self.reports_dir = Path(reports_dir) if reports_dir else None
         self.test_size = test_size
         self.random_seed = random_seed
         self.feature_selection = feature_selection
@@ -82,16 +86,22 @@ class XGBoostAnalyzer:
         logger.info(f"特徵選擇: {'啟用' if self.feature_selection else '停用'}")
     
     def _setup_dirs(self):
-        """建立輸出目錄結構"""
-        self.output_dir.mkdir(parents=True, exist_ok=True)
-        self.models_dir = self.output_dir / "models"
-        self.reports_dir = self.output_dir / "reports"
-        self.models_dir.mkdir(exist_ok=True)
-        self.reports_dir.mkdir(exist_ok=True)
+        # 如果有外部指定 models_dir/reports_dir，就不從 output_dir 建立
+        if self.models_dir:
+            self.models_dir.mkdir(parents=True, exist_ok=True)
+        elif self.output_dir:
+            self.models_dir = self.output_dir / "models"
+            self.models_dir.mkdir(parents=True, exist_ok=True)
+        
+        if self.reports_dir:
+            self.reports_dir.mkdir(parents=True, exist_ok=True)
+        elif self.output_dir:
+            self.reports_dir = self.output_dir / "reports"
+            self.reports_dir.mkdir(parents=True, exist_ok=True)
     
     # ========== 主要分析方法 ==========
     
-    def analyze(self, datasets: List[Dataset]) -> Dict:
+    def analyze(self, datasets: List[Dataset], filter_stats: Dict = None) -> Dict:
         """
         分析資料集
         
@@ -155,7 +165,11 @@ class XGBoostAnalyzer:
                 # Step 5: 計算指標
                 train_metrics = self._calculate_metrics(y_train, y_pred_train)
                 test_metrics = self._calculate_metrics(y_test, y_pred_test, y_prob_test)
-                
+                corrected_metrics = None
+                if filter_stats:
+                    corrected_metrics = self._calculate_corrected_metrics(
+                        y_test, y_pred_test, filter_stats
+                    )
                 # Step 6: 整理結果
                 result = {
                     'model': model,
@@ -163,6 +177,7 @@ class XGBoostAnalyzer:
                     'metadata': dataset.metadata,
                     'train_metrics': train_metrics,
                     'test_metrics': test_metrics,
+                    'corrected_metrics': corrected_metrics,
                     'selected_features': selected_features,
                     'feature_importance': model.feature_importances_.tolist() if hasattr(model, 'feature_importances_') else None,
                     'n_train': len(X_train),
@@ -174,7 +189,7 @@ class XGBoostAnalyzer:
                 
                 # Step 7: 儲存
                 self._save_model(dataset_key, result)
-                self._save_report(dataset_key, result)
+                self._save_report(dataset_key, result, filter_stats)
                 
                 results[dataset_key] = result
                 
@@ -301,6 +316,52 @@ class XGBoostAnalyzer:
         
         return metrics
     
+    def _calculate_corrected_metrics(self, y_test, y_pred_test, filter_stats: Dict) -> Dict:
+        """計算校正後指標（加入被篩掉的人全判陰性）"""
+        cm = confusion_matrix(y_test, y_pred_test)
+        tn, fp, fn, tp = cm.ravel() if cm.shape == (2, 2) else (0, 0, 0, 0)
+        
+        # 被篩掉的人
+        health_filtered_out = filter_stats.get('health_filtered_out', 0)
+        patient_filtered_out = filter_stats.get('patient_filtered_out', 0)
+        
+        # 校正後：被篩掉的健康組 → TN，被篩掉的病患組 → FN
+        corrected_tn = tn + health_filtered_out
+        corrected_fp = fp
+        corrected_fn = fn + patient_filtered_out
+        corrected_tp = tp
+        
+        corrected_cm = [[corrected_tn, corrected_fp], 
+                        [corrected_fn, corrected_tp]]
+        
+        # 計算指標
+        total = corrected_tn + corrected_fp + corrected_fn + corrected_tp
+        accuracy = (corrected_tn + corrected_tp) / total if total > 0 else 0
+        sensitivity = corrected_tp / (corrected_tp + corrected_fn) if (corrected_tp + corrected_fn) > 0 else 0
+        specificity = corrected_tn / (corrected_tn + corrected_fp) if (corrected_tn + corrected_fp) > 0 else 0
+        precision = corrected_tp / (corrected_tp + corrected_fp) if (corrected_tp + corrected_fp) > 0 else 0
+        recall = sensitivity
+        f1 = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0
+        
+        # MCC
+        numerator = (corrected_tp * corrected_tn) - (corrected_fp * corrected_fn)
+        denominator = np.sqrt(
+            (corrected_tp + corrected_fp) * (corrected_tp + corrected_fn) *
+            (corrected_tn + corrected_fp) * (corrected_tn + corrected_fn)
+        )
+        mcc = numerator / denominator if denominator > 0 else 0
+        
+        return {
+            'confusion_matrix': corrected_cm,
+            'accuracy': float(accuracy),
+            'mcc': float(mcc),
+            'sensitivity': float(sensitivity),
+            'specificity': float(specificity),
+            'precision': float(precision),
+            'recall': float(recall),
+            'f1': float(f1),
+        }
+
     # ========== 儲存 ==========
     
     def _save_model(self, dataset_key: str, result: Dict):
@@ -328,7 +389,7 @@ class XGBoostAnalyzer:
                 json.dump(feature_info, f, indent=2)
             logger.debug(f"特徵資訊已儲存: {feature_path}")
     
-    def _save_report(self, dataset_key: str, result: Dict):
+    def _save_report(self, dataset_key: str, result: Dict, filter_stats: Dict = None):
         """儲存文字報告"""
         report_path = self.reports_dir / f"{dataset_key}_report.txt"
         
@@ -344,7 +405,34 @@ class XGBoostAnalyzer:
             f.write(f"訓練集: {result['n_train']} 樣本\n")
             f.write(f"測試集: {result['n_test']} 樣本\n")
             
-            # 混淆矩陣
+            # 年齡篩選統計（新增）
+            if filter_stats:
+                f.write("\n年齡篩選統計:\n")
+                f.write("-" * 30 + "\n")
+                f.write(f"  最低年齡閾值: {filter_stats.get('min_predicted_age', 'N/A')}\n")
+                f.write(f"  整體篩除比例: {filter_stats.get('filtered_out_ratio', 0):.1%}\n")
+                f.write(f"  健康組篩除: {filter_stats.get('health_filtered_out', 0)} / {filter_stats.get('health_original', 0)} ({filter_stats.get('health_filtered_out_ratio', 0):.1%})\n")
+                f.write(f"  病患組篩除: {filter_stats.get('patient_filtered_out', 0)} / {filter_stats.get('patient_original', 0)} ({filter_stats.get('patient_filtered_out_ratio', 0):.1%})\n")
+
+            # 校正後混淆矩陣（新增）
+            if result.get('corrected_metrics'):
+                corrected = result['corrected_metrics']
+                f.write("\n校正後混淆矩陣（含被篩掉個案）:\n")
+                f.write("-" * 30 + "\n")
+                ccm = corrected['confusion_matrix']
+                f.write("         真實0  真實1\n")
+                f.write(f"預測0   {int(ccm[0][0]):5d}  {int(ccm[1][0]):5d}\n")
+                f.write(f"預測1   {int(ccm[0][1]):5d}  {int(ccm[1][1]):5d}\n")
+                
+                f.write("\n校正後效能:\n")
+                f.write("-" * 30 + "\n")
+                for metric in metric_order:
+                    if metric in corrected and metric != 'confusion_matrix':
+                        value = corrected[metric]
+                        if value is not None:
+                            f.write(f"  {metric}: {value:.4f}\n")
+
+            # 測試集混淆矩陣
             f.write("\n測試集混淆矩陣:\n")
             f.write("-" * 30 + "\n")
             cm = result['test_metrics']['confusion_matrix']

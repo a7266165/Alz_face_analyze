@@ -68,7 +68,7 @@ class DataLoader:
         # 預設值
         self.embedding_models = embedding_models or ["arcface", "dlib", "topofr"]
         self.feature_types = feature_types or ["difference", "average", "relative"]
-        self.cdr_thresholds = cdr_thresholds if cdr_thresholds is not None else [0.5, 1.0, 2.0]
+        self.cdr_thresholds = cdr_thresholds or [0, 0.5, 1.0, 2.0]
         self.data_balancing = data_balancing
         self.use_all_visits = use_all_visits
         self.n_bins = n_bins
@@ -86,6 +86,7 @@ class DataLoader:
         # 載入的資料
         self._features_cache = {}
         self._demographics_cache = None
+        self.predicted_ages = self._load_predicted_ages()
     
     # ========== 主要載入方法 ==========
     
@@ -612,3 +613,102 @@ class DataLoader:
             raise ValueError("沒有任何樣本的特徵與標籤對齊")
         
         return np.array(X_list), np.array(y_list), subject_ids
+    
+    # ========== 年齡篩選統計 ==========
+    def load_datasets_with_stats(self) -> tuple:
+        """
+        載入所有配置的資料集，並返回篩選統計
+        
+        Returns:
+            (datasets, filter_stats)
+        """
+        logger.info("開始載入資料集...")
+        
+        datasets = []
+        
+        # 計算篩選統計
+        filter_stats = self._calculate_filter_stats()
+        
+        # 載入人口學資料
+        demographics = self._load_demographics()
+        
+        # 為每種配置創建資料集
+        for model in self.embedding_models:
+            for feature_type in self.feature_types:
+                for cdr_threshold in self.cdr_thresholds:
+                    try:
+                        dataset = self._create_dataset(
+                            model=model,
+                            feature_type=feature_type,
+                            cdr_threshold=cdr_threshold,
+                            demographics=demographics
+                        )
+                        datasets.append(dataset)
+                        
+                        logger.info(
+                            f"✓ 載入資料集: {model}-{feature_type}-CDR{cdr_threshold} "
+                            f"({len(dataset.X)} 樣本)"
+                        )
+                    except Exception as e:
+                        logger.warning(
+                            f"✗ 跳過資料集 {model}-{feature_type}-CDR{cdr_threshold}: {e}"
+                        )
+        
+        logger.info(f"成功載入 {len(datasets)} 個資料集")
+        return datasets, filter_stats
+
+    def _calculate_filter_stats(self) -> Dict:
+        """
+        計算年齡篩選統計
+        
+        Returns:
+            {
+                'total_original': 原始總人數,
+                'total_filtered': 篩選後人數,
+                'filtered_out_total': 被篩掉總人數,
+                'filtered_out_ratio': 被篩掉比例,
+                'health_original': 健康組原始人數,
+                'health_filtered_out': 健康組被篩掉人數,
+                'health_filtered_out_ratio': 健康組被篩掉比例,
+                'patient_original': 病患組原始人數,
+                'patient_filtered_out': 病患組被篩掉人數,
+                'patient_filtered_out_ratio': 病患組被篩掉比例,
+            }
+        """
+        if self.predicted_ages is None or self.min_predicted_age is None:
+            return {}
+        
+        # 載入人口學資料
+        demographics = self._load_demographics()
+        
+        # 原始人數
+        total_original = len(demographics)
+        health_mask = demographics['group'].isin(['ACS', 'NAD'])
+        patient_mask = demographics['group'] == 'P'
+        health_original = health_mask.sum()
+        patient_original = patient_mask.sum()
+        
+        # 篩選後人數
+        filtered = self._filter_by_predicted_age(demographics)
+        total_filtered = len(filtered)
+        health_filtered = filtered['group'].isin(['ACS', 'NAD']).sum()
+        patient_filtered = (filtered['group'] == 'P').sum()
+        
+        # 被篩掉人數
+        health_filtered_out = health_original - health_filtered
+        patient_filtered_out = patient_original - patient_filtered
+        filtered_out_total = total_original - total_filtered
+        
+        return {
+            'min_predicted_age': self.min_predicted_age,
+            'total_original': int(total_original),
+            'total_filtered': int(total_filtered),
+            'filtered_out_total': int(filtered_out_total),
+            'filtered_out_ratio': filtered_out_total / total_original if total_original > 0 else 0,
+            'health_original': int(health_original),
+            'health_filtered_out': int(health_filtered_out),
+            'health_filtered_out_ratio': health_filtered_out / health_original if health_original > 0 else 0,
+            'patient_original': int(patient_original),
+            'patient_filtered_out': int(patient_filtered_out),
+            'patient_filtered_out_ratio': patient_filtered_out / patient_original if patient_original > 0 else 0,
+        }

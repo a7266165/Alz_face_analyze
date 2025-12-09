@@ -7,6 +7,7 @@ import sys
 import logging
 from pathlib import Path
 from datetime import datetime
+from typing import Dict
 
 # 加入專案路徑
 project_root = Path(__file__).parent.parent
@@ -14,6 +15,7 @@ sys.path.insert(0, str(project_root))
 
 from src.analysis.loader import DataLoader
 from src.analysis.analyzer import XGBoostAnalyzer
+from src.analysis.plotter import ResultPlotter
 
 # 設定日誌
 logging.basicConfig(
@@ -34,7 +36,7 @@ class AnalysisPipeline:
         predicted_ages_file: Path = None,
         embedding_models: list = None,
         feature_types: list = None,
-        min_predicted_age: float = 65.0,
+        min_age_range: tuple = (50, 70),
         cdr_thresholds: list = None,
         data_balancing: bool = True,
         use_all_visits: bool = False,
@@ -68,10 +70,11 @@ class AnalysisPipeline:
         self.predicted_ages_file = Path(predicted_ages_file) if predicted_ages_file else None
 
         # DataLoader 參數
-        self.embedding_models = embedding_models or ["arcface", "dlib", "topofr"]
-        self.feature_types = feature_types or ["difference", "average", "relative"]
-        self.cdr_thresholds = cdr_thresholds if cdr_thresholds is not None else [0.5, 1.0, 2.0]
-        self.min_predicted_age = min_predicted_age
+        self.embedding_models = embedding_models
+        self.feature_types = feature_types
+        self.cdr_thresholds = cdr_thresholds
+        self.min_age_start, self.min_age_end = min_age_range
+        self.min_ages = list(range(self.min_age_start, self.min_age_end + 1))
         self.data_balancing = data_balancing
         self.use_all_visits = use_all_visits
         self.use_cache = use_cache
@@ -85,6 +88,8 @@ class AnalysisPipeline:
         # 建立輸出目錄
         self.output_dir.mkdir(parents=True, exist_ok=True)
         
+        self.all_results: Dict[int, Dict] = {}  # {min_age: {dataset_key: result}}
+
         # 記錄配置
         self._log_configuration()
     
@@ -101,6 +106,7 @@ class AnalysisPipeline:
         logger.info(f"  嵌入模型: {self.embedding_models}")
         logger.info(f"  特徵類型: {self.feature_types}")
         logger.info(f"  CDR 閾值: {self.cdr_thresholds}")
+        logger.info(f"年齡篩選範圍: {self.min_age_start} ~ {self.min_age_end}")
         logger.info(f"  資料平衡: {self.data_balancing}")
         logger.info(f"  使用所有訪視: {self.use_all_visits}")
         logger.info(f"  使用快取: {self.use_cache}")
@@ -116,54 +122,92 @@ class AnalysisPipeline:
         """執行完整 Pipeline"""
         start_time = datetime.now()
         
-        try:
-            # Step 1: 載入資料
+        total_ages = len(self.min_ages)
+        
+        for i, min_age in enumerate(self.min_ages, 1):
             logger.info("\n" + "=" * 70)
-            logger.info("[Step 1] 載入資料集")
+            logger.info(f"[年齡閾值 {i}/{total_ages}] MIN_PREDICTED_AGE = {min_age}")
             logger.info("=" * 70)
-            
-            datasets = self._load_datasets()
-            
-            if not datasets:
-                logger.error("沒有載入任何資料集，中止執行")
-                return
-            
-            logger.info(f"成功載入 {len(datasets)} 個資料集")
-            
-            # Step 2: 訓練模型
-            logger.info("\n" + "=" * 70)
-            logger.info("[Step 2] 訓練模型")
-            logger.info("=" * 70)
-            
-            results = self._train_models(datasets)
-            
-            if not results:
-                logger.error("沒有成功訓練任何模型")
-                return
-            
-            logger.info(f"成功訓練 {len(results)}/{len(datasets)} 個模型")
-            
-            # Step 3: 顯示總結
-            logger.info("\n" + "=" * 70)
-            logger.info("[Step 3] 分析總結")
-            logger.info("=" * 70)
-            
-            self._print_summary(results)
-            
-            # 完成
-            elapsed = datetime.now() - start_time
-            logger.info("\n" + "=" * 70)
-            logger.info("分析完成！")
-            logger.info(f"總耗時: {elapsed}")
-            logger.info(f"結果已儲存至: {self.output_dir}")
-            logger.info("=" * 70)
-            
-        except Exception as e:
-            logger.error(f"Pipeline 執行失敗: {e}")
-            import traceback
-            traceback.print_exc()
+
+            # 建立子目錄
+            age_suffix = f"MIN_PREDICTED_AGE_{min_age}"
+            models_dir = self.output_dir / "models" / age_suffix
+            reports_dir = self.output_dir / "reports" / age_suffix
+            models_dir.mkdir(parents=True, exist_ok=True)
+            reports_dir.mkdir(parents=True, exist_ok=True)
+
+            try:
+                # Step 1: 載入資料
+                logger.info("\n" + "=" * 70)
+                logger.info("[Step 1] 載入資料集")
+                logger.info("=" * 70)
+                
+                datasets, filter_stats = self._load_datasets(min_age)
+                
+                if not datasets:
+                    logger.error("沒有載入任何資料集，中止執行")
+                    return
+                
+                logger.info(f"成功載入 {len(datasets)} 個資料集")
+                
+                # Step 2: 訓練模型
+                logger.info("\n" + "=" * 70)
+                logger.info("[Step 2] 訓練模型")
+                logger.info("=" * 70)
+                
+                results = self._train_models(
+                    datasets, 
+                    filter_stats,
+                    models_dir, 
+                    reports_dir
+                )
+                
+                # 儲存結果
+                self.all_results[min_age] = results
+
+                if not results:
+                    logger.error("沒有成功訓練任何模型")
+                    return
+                
+                logger.info(f"成功訓練 {len(results)}/{len(datasets)} 個模型")
+                
+                # Step 3: 顯示總結
+                logger.info("\n" + "=" * 70)
+                logger.info("[Step 3] 分析總結")
+                logger.info("=" * 70)
+                
+                self._print_summary(results)
+                
+                # 完成
+                elapsed = datetime.now() - start_time
+                logger.info("\n" + "=" * 70)
+                logger.info("分析完成！")
+                logger.info(f"總耗時: {elapsed}")
+                logger.info(f"結果已儲存至: {self.output_dir}")
+                logger.info("=" * 70)
+                
+            except Exception as e:
+                logger.error(f"Pipeline 執行失敗: {e}")
+                import traceback
+                traceback.print_exc()
+
+        # 繪製圖表
+        logger.info("\n" + "=" * 70)
+        logger.info("繪製圖表")
+        logger.info("=" * 70)
+        self._plot_results()
+        
+        # 儲存總結
+        self._save_summary()
+        
+        elapsed = datetime.now() - start_time
+        logger.info("\n" + "=" * 70)
+        logger.info("分析完成！")
+        logger.info(f"總耗時: {elapsed}")
+        logger.info(f"結果已儲存至: {self.output_dir}")
+        logger.info("=" * 70)
     
-    def _load_datasets(self):
+    def _load_datasets(self, min_age: float):
         """載入資料集"""
         try:
             loader = DataLoader(
@@ -173,7 +217,7 @@ class AnalysisPipeline:
                 embedding_models=self.embedding_models,
                 feature_types=self.feature_types,
                 cdr_thresholds=self.cdr_thresholds,
-                min_predicted_age=self.min_predicted_age, 
+                min_predicted_age=min_age, 
                 data_balancing=self.data_balancing,
                 use_all_visits=self.use_all_visits,
                 n_bins=5,
@@ -182,8 +226,8 @@ class AnalysisPipeline:
 
             )
             
-            datasets = loader.load_datasets()
-            return datasets
+            datasets, filter_stats = loader.load_datasets_with_stats()
+            return datasets, filter_stats
         
         except Exception as e:
             logger.error(f"載入資料集失敗: {e}")
@@ -191,18 +235,20 @@ class AnalysisPipeline:
             traceback.print_exc()
             return []
     
-    def _train_models(self, datasets):
+    def _train_models(self, datasets, filter_stats, models_dir, reports_dir):
         """訓練模型"""
         try:
             analyzer = XGBoostAnalyzer(
                 output_dir=self.output_dir,
+                models_dir=models_dir,
+                reports_dir=reports_dir,
                 test_size=self.test_size,
                 random_seed=self.random_seed,
                 feature_selection=self.feature_selection,
                 importance_ratio=self.importance_ratio
             )
             
-            results = analyzer.analyze(datasets)
+            results = analyzer.analyze(datasets, filter_stats)
             return results
             
         except Exception as e:
@@ -211,6 +257,40 @@ class AnalysisPipeline:
             traceback.print_exc()
             return {}
     
+    def _save_summary(self):
+        """儲存總結報告"""
+        import json
+        
+        summary = {
+            'timestamp': datetime.now().isoformat(),
+            'config': {
+                'min_age_range': [self.min_age_start, self.min_age_end],
+                'embedding_models': self.embedding_models,
+                'feature_types': self.feature_types,
+                'cdr_thresholds': self.cdr_thresholds,
+                'data_balancing': self.data_balancing,
+                'use_all_visits': self.use_all_visits,
+            },
+            'results_by_age': {}
+        }
+        
+        for min_age, results in self.all_results.items():
+            summary['results_by_age'][min_age] = {
+                key: {
+                    'test_accuracy': r['test_metrics']['accuracy'],
+                    'test_mcc': r['test_metrics']['mcc'],
+                    'corrected_accuracy': r.get('corrected_metrics', {}).get('accuracy'),
+                    'corrected_mcc': r.get('corrected_metrics', {}).get('mcc'),
+                }
+                for key, r in results.items()
+            }
+        
+        summary_path = self.output_dir / "training_summary.json"
+        with open(summary_path, 'w', encoding='utf-8') as f:
+            json.dump(summary, f, indent=2, ensure_ascii=False)
+        
+        logger.info(f"總結報告已儲存: {summary_path}")
+
     def _print_summary(self, results):
         """顯示分析總結"""
         if not results:
@@ -256,6 +336,23 @@ class AnalysisPipeline:
             avg_acc = sum(stats['accuracy']) / len(stats['accuracy'])
             logger.info(f"  {model}: MCC={avg_mcc:.4f}, Accuracy={avg_acc:.4f}")
 
+    def _plot_results(self):
+        """繪製結果圖表"""
+        plots_dir = self.output_dir / "plots"
+        plots_dir.mkdir(parents=True, exist_ok=True)
+        
+        plotter = ResultPlotter(self.all_results, plots_dir)
+        
+        # 1. 每個 dataset_key 各畫四張圖
+        plotter.plot_individual()
+        
+        # 2. 所有組合在同一張圖
+        plotter.plot_combined()
+        
+        # 3. 按模型分組
+        plotter.plot_by_model()
+        
+        logger.info(f"圖表已儲存至: {plots_dir}")
 
 def main():
     """主程式"""
@@ -266,14 +363,13 @@ def main():
     # 路徑設定
     FEATURES_DIR = "workspace/features"
     DEMOGRAPHICS_DIR = "data/demographics"
-    OUTPUT_DIR = f"workspace/analysis_{timestamp}"
     PREDICTED_AGES_FILE = "workspace/predicted_ages.json"
     
     # 資料載入配置
     EMBEDDING_MODELS = ["arcface", "dlib", "topofr"]
     FEATURE_TYPES = ["difference", "average", "relative"]
-    MIN_PREDICTED_AGE = 65.0
-    CDR_THRESHOLDS = [0.5, 1.0, 2.0]
+    MIN_AGE_RANGE = (50, 70)
+    CDR_THRESHOLDS = [0, 0.5, 1.0, 2.0]
     DATA_BALANCING = False
     USE_ALL_VISITS = False
     USE_CACHE = False
@@ -284,6 +380,7 @@ def main():
     FEATURE_SELECTION = True
     IMPORTANCE_RATIO = 0.8
     
+    OUTPUT_DIR = f"workspace/analysis_{timestamp}_minage_balancing_{DATA_BALANCING}_allvisits_{USE_ALL_VISITS}"
     # ==================== 執行 Pipeline ====================
     
     pipeline = AnalysisPipeline(
@@ -293,7 +390,7 @@ def main():
         predicted_ages_file=PREDICTED_AGES_FILE,
         embedding_models=EMBEDDING_MODELS,
         feature_types=FEATURE_TYPES,
-        min_predicted_age=MIN_PREDICTED_AGE,
+        min_age_range=MIN_AGE_RANGE,
         cdr_thresholds=CDR_THRESHOLDS,
         data_balancing=DATA_BALANCING,
         use_all_visits=USE_ALL_VISITS,
