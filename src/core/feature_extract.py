@@ -8,6 +8,7 @@ import logging
 from pathlib import Path
 from typing import Dict, List, Optional, Union
 import numpy as np
+import dlib
 
 logger = logging.getLogger(__name__)
 
@@ -251,8 +252,9 @@ class FeatureExtractor:
         faces = self.dlib_detector(gray, 1)
         
         if not faces:
-            logger.debug("Dlib 未檢測到人臉")
-            return None
+            h, w = gray.shape[:2]
+            faces = [dlib.rectangle(0, 0, w, h)]
+            logger.debug("Dlib 未檢測到人臉，使用整張圖")
         
         shape = self.dlib_predictor(gray, faces[0])
         descriptor = self.dlib_face_rec.compute_face_descriptor(image, shape)
@@ -267,8 +269,16 @@ class FeatureExtractor:
         faces = self.arcface_app.get(image_rgb)
         
         if not faces:
-            logger.debug("ArcFace 未檢測到人臉")
-            return None
+            # 偵測失敗時，直接用 recognition model 處理整張圖
+            logger.debug("ArcFace 未檢測到人臉，使用整張圖")
+            
+            # 縮放到模型輸入尺寸並提取特徵
+            img_resized = cv2.resize(image_rgb, (112, 112))
+            img_input = np.transpose(img_resized, (2, 0, 1))[np.newaxis, ...]
+            img_input = (img_input - 127.5) / 127.5
+            img_input = img_input.astype(np.float32)
+            embedding = self.arcface_app.models['recognition'].forward(img_input)
+            return embedding.flatten().astype(np.float32)
         
         return faces[0].embedding.astype(np.float32)
 
