@@ -344,6 +344,14 @@ class XGBoostAnalyzer:
             f.write(f"訓練集: {result['n_train']} 樣本\n")
             f.write(f"測試集: {result['n_test']} 樣本\n")
             
+            # 混淆矩陣
+            f.write("\n測試集混淆矩陣:\n")
+            f.write("-" * 30 + "\n")
+            cm = result['test_metrics']['confusion_matrix']
+            f.write("         真實0  真實1\n")
+            f.write(f"預測0   {int(cm[0][0]):5d}  {int(cm[1][0]):5d}\n")
+            f.write(f"預測1   {int(cm[0][1]):5d}  {int(cm[1][1]):5d}\n")
+
             # 測試集效能
             f.write("\n測試集效能:\n")
             f.write("-" * 30 + "\n")
@@ -354,14 +362,6 @@ class XGBoostAnalyzer:
                         f.write(f"  {metric}: {value:.4f}\n")
                     else:
                         f.write(f"  {metric}: N/A\n")
-            
-            # 混淆矩陣
-            f.write("\n測試集混淆矩陣:\n")
-            f.write("-" * 30 + "\n")
-            cm = result['test_metrics']['confusion_matrix']
-            f.write("         真實0  真實1\n")
-            f.write(f"預測0   {int(cm[0][0]):5d}  {int(cm[1][0]):5d}\n")
-            f.write(f"預測1   {int(cm[0][1]):5d}  {int(cm[1][1]):5d}\n")
             
             # 訓練集效能
             f.write("\n訓練集效能:\n")
