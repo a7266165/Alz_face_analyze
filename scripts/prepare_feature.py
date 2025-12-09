@@ -161,22 +161,32 @@ class FeaturePipeline:
     
     def _get_processed_subjects(self) -> Set[str]:
         """
-        掃描輸出目錄，找出已處理的受試者
+        掃描輸出目錄，找出已完整處理的受試者
+        （所有模型 + 所有特徵類型都有 .npy 才算完成）
         
         Returns:
             已處理的受試者 ID 集合
         """
-        processed = set()
+        # 收集每個模型/特徵類型的受試者
+        subject_sets = []
         
-        # 檢查每個模型和特徵類型的目錄
         for model in self.embedding_models:
             for ftype in self.feature_types:
                 feature_dir = self.output_dir / model / ftype
                 if feature_dir.exists():
-                    # 查找所有 .npy 檔案
-                    for npy_file in feature_dir.glob("*.npy"):
-                        subject_id = npy_file.stem  # 去掉 .npy
-                        processed.add(subject_id)
+                    subjects = {f.stem for f in feature_dir.glob("*.npy")}
+                    subject_sets.append(subjects)
+                else:
+                    # 目錄不存在，沒有任何人完成
+                    subject_sets.append(set())
+        
+        if not subject_sets:
+            return set()
+        
+        # 取交集：只有所有組合都有的才算完成
+        processed = subject_sets[0]
+        for s in subject_sets[1:]:
+            processed = processed & s
         
         return processed
     
