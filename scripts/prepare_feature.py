@@ -48,6 +48,7 @@ class FeaturePipeline:
         n_select: int = 10,
         save_intermediate: bool = True,
         max_cpu_cores: Optional[int] = None,
+        histogram_mapping_path: Optional[Path] = None
     ):
         """
         初始化 Pipeline
@@ -77,9 +78,12 @@ class FeaturePipeline:
         self.preprocess_config = AnalyzeConfig(
             n_select=n_select,
             save_intermediate=save_intermediate,
-            workspace_dir=Path("workspace/preprocessing")
+            workspace_dir=Path("workspace/preprocessing_V3")
         )
         
+        self.histogram_mapping_path = Path(histogram_mapping_path) if histogram_mapping_path else None
+        self.histogram_mapping = None
+
         # 建立輸出目錄結構
         self._setup_output_dirs()
         
@@ -213,6 +217,10 @@ class FeaturePipeline:
             logger.error("沒有找到任何受試者目錄")
             return
         
+        # Step 2: 計算或載入直方圖映射表
+        logger.info("\n[Step 2] 處理直方圖映射表...")
+        self.histogram_mapping = self._prepare_histogram_mapping(subject_dirs)
+
         # Step 2: 檢查斷點
         logger.info("\n[Step 2] 檢查處理進度...")
         processed_subjects = self._get_processed_subjects()
@@ -277,6 +285,45 @@ class FeaturePipeline:
         logger.info("特徵準備完成！")
         logger.info("=" * 70)
     
+    def _prepare_histogram_mapping(self, subject_dirs: List[Path]) -> np.ndarray:
+        """準備直方圖映射表"""
+        mapping_path = self.output_dir / "histogram_mapping.npy"
+        
+        # 如果有指定外部映射表，直接載入
+        if self.histogram_mapping_path and self.histogram_mapping_path.exists():
+            return FacePreprocessor.load_histogram_mapping(self.histogram_mapping_path)
+        
+        # 如果已經計算過，直接載入
+        if mapping_path.exists():
+            return FacePreprocessor.load_histogram_mapping(mapping_path)
+        
+        # 否則計算新的映射表
+        logger.info("計算全域直方圖映射表...")
+        
+        all_selected_images = []
+        
+        # 收集所有 selected 影像
+        for subject_dir in tqdm(subject_dirs, desc="收集影像"):
+            images, paths = self._load_images_from_subject(subject_dir)
+            if not images:
+                continue
+            
+            with FacePreprocessor(self.preprocess_config) as preprocessor:
+                face_infos = preprocessor._analyze_all_faces(images, paths)
+                if face_infos:
+                    selected = preprocessor._select_best_faces(face_infos)
+                    all_selected_images.extend([f.image for f in selected])
+        
+        logger.info(f"收集到 {len(all_selected_images)} 張 selected 影像")
+        
+        # 計算映射表
+        with FacePreprocessor(self.preprocess_config) as preprocessor:
+            mapping_table = preprocessor.compute_histogram_mapping(all_selected_images)
+            FacePreprocessor.save_histogram_mapping(mapping_table, mapping_path)
+        
+        return mapping_table
+
+
     def _scan_subjects(self) -> List[Path]:
         """掃描受試者目錄"""
         subject_dirs = []
@@ -347,7 +394,11 @@ class FeaturePipeline:
         # 預處理
         with FacePreprocessor(subject_config) as preprocessor:
             try:
-                processed_faces = preprocessor.process(images, paths)
+                processed_faces = preprocessor.process(
+                    images,
+                    paths,
+                    histogram_mapping=self.histogram_mapping
+                )
             except Exception as e:
                 logger.warning(f"{subject_id}: 預處理失敗 - {e}")
                 return None
@@ -405,6 +456,16 @@ class FeaturePipeline:
                         )
                         avg_diff = np.mean(diffs['embedding_differences'], axis=0)
                         model_features[ftype] = avg_diff
+
+                    elif ftype == "absolute_difference":
+                        # 絕對差異特徵
+                        abs_diffs = extractor.calculate_differences(
+                            left_array,
+                            right_array,
+                            methods=["absolute_differences"]
+                        )
+                        avg_abs_diff = np.mean(abs_diffs['embedding_absolute_differences'], axis=0)
+                        model_features[ftype] = avg_abs_diff
                     
                     elif ftype == "average":
                         # 平均特徵
@@ -416,16 +477,26 @@ class FeaturePipeline:
                         avg_avg = np.mean(avgs['embedding_averages'], axis=0)
                         model_features[ftype] = avg_avg
                     
-                    elif ftype == "relative":
+                    elif ftype == "relative_differences":
                         # 相對差異
                         rels = extractor.calculate_differences(
                             left_array,
                             right_array,
-                            methods=["relative"]
+                            methods=["relative_differences"]
                         )
-                        avg_relative = np.mean(rels['relative_differences'], axis=0)
+                        avg_relative = np.mean(rels['embedding_relative_differences'], axis=0)
                         model_features[ftype] = avg_relative
-                
+
+                    elif ftype == "absolute_relative_differences":
+                        # 絕對相對差異
+                        abs_rels = extractor.calculate_differences(
+                            left_array,
+                            right_array,
+                            methods=["absolute_relative_differences"]
+                        )
+                        avg_abs_relative = np.mean(abs_rels['embedding_absolute_relative_differences'], axis=0)
+                        model_features[ftype] = avg_abs_relative
+
                 subject_features[model] = model_features
                 
                 # 更新統計
@@ -522,7 +593,8 @@ def main():
     
     # 設定路徑
     path_file = Path("data/images/raw/path.txt")
-    output_dir = Path("workspace/features")
+    output_dir = Path("workspace/features_V4")
+    histogram_mapping_path = Path(r"C:\Users\4080\Desktop\Alz_face_analyze\workspace\histogram_preparation_3\histogram_mapping.npy")
     
     # 檢查 path.txt
     if not path_file.exists():
@@ -535,11 +607,12 @@ def main():
         pipeline = FeaturePipeline(
             path_file=path_file,
             output_dir=output_dir,
-            embedding_models=["arcface", "dlib", "topofr"],
-            feature_types=["difference", "average", "relative"],
+            embedding_models=["arcface"],
+            feature_types=["difference", "absolute_difference", "average", "relative_differences", "absolute_relative_differences"],
             n_select=10,
             save_intermediate=True,
-            max_cpu_cores=2
+            max_cpu_cores=2,
+            histogram_mapping_path=histogram_mapping_path
         )
         
         # 執行

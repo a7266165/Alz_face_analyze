@@ -24,7 +24,7 @@ class PreprocessConfig:
     margin: float = 0.08  # 畫布邊緣留白比例
 
     # ========== CLAHE 參數 ==========
-    apply_clahe: bool = True  # 是否應用 CLAHE
+    apply_clahe: bool = False  # 是否應用 CLAHE
     clahe_clip_limit: float = 2.0  # CLAHE 限制參數
     clahe_tile_size: int = 8  # CLAHE 區塊大小
 
@@ -36,10 +36,11 @@ class PreprocessConfig:
     # ========== 處理流程控制 ==========
     steps: List[str] = field(
         default_factory=lambda: [
-            "select",  # 選擇最正面的 n 張
-            "align",  # 角度校正
-            "mirror",  # 生成鏡射
-            "clahe",  # CLAHE 增強
+            "select",     # 選擇最正面的 n 張
+            "histogram",  # 全域直方圖校正（新增）
+            "align",      # 角度校正
+            "mirror",     # 生成鏡射
+            # "clahe",    # CLAHE 增強（移除）
         ]
     )
 
