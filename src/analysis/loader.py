@@ -5,7 +5,7 @@
 import logging
 from pathlib import Path
 from typing import List, Dict, Optional, Tuple
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import numpy as np
 import pandas as pd
 import pickle
@@ -19,12 +19,17 @@ class Dataset:
     X: np.ndarray  # 特徵矩陣
     y: np.ndarray  # 標籤
     metadata: Dict  # 元資料（模型名稱、CDR閾值等）
-    subject_ids: Optional[List[str]] = None  # 受試者ID
+    subject_ids: Optional[List[str]] = None  # 受試者ID（如 P1-1, P1-2）
+    base_ids: Optional[List[str]] = None  # 個案基底ID（如 P1），用於 K-fold 分組
+    sample_groups: Optional[np.ndarray] = None  # 每筆樣本對應的群組索引（格式二用）
+    data_format: str = "averaged"  # "averaged" 或 "per_image"
     
     def __post_init__(self):
         """驗證資料"""
         if len(self.X) != len(self.y):
             raise ValueError(f"X 和 y 長度不一致: {len(self.X)} vs {len(self.y)}")
+        if self.sample_groups is not None and len(self.sample_groups) != len(self.X):
+            raise ValueError(f"sample_groups 長度不一致: {len(self.sample_groups)} vs {len(self.X)}")
 
 
 class DataLoader:
@@ -124,7 +129,7 @@ class DataLoader:
                         
                         logger.info(
                             f"✓ 載入資料集: {model}-{feature_type}-CDR{cdr_threshold} "
-                            f"({len(dataset.X)} 樣本)"
+                            f"({len(dataset.X)} 樣本, 格式: {dataset.data_format})"
                         )
                     except Exception as e:
                         logger.warning(
@@ -187,7 +192,7 @@ class DataLoader:
         logger.info(f"載入人口學資料完成: {len(demographics)} 筆")
         return demographics
     
-    def _load_features(self, model: str, feature_type: str) -> Dict[str, np.ndarray]:
+    def _load_features(self, model: str, feature_type: str) -> Tuple[Dict[str, np.ndarray], str]:
         """
         載入特徵（從逐個受試者的檔案）
         
@@ -196,7 +201,8 @@ class DataLoader:
             feature_type: 特徵類型
         
         Returns:
-            {subject_id: feature_vector}
+            ({subject_id: feature_array}, data_format)
+            - data_format: "averaged" (shape=(dim,)) 或 "per_image" (shape=(N, dim))
         """
         cache_key = f"{model}_{feature_type}"
         
@@ -210,9 +216,9 @@ class DataLoader:
             if cache_path.exists():
                 logger.debug(f"從快取載入特徵: {cache_key}")
                 with open(cache_path, 'rb') as f:
-                    features = pickle.load(f)
-                self._features_cache[cache_key] = features
-                return features
+                    cached_data = pickle.load(f)
+                self._features_cache[cache_key] = cached_data
+                return cached_data
         
         # 從目錄載入逐個受試者的特徵
         feature_dir = self.features_dir / model / feature_type
@@ -223,6 +229,7 @@ class DataLoader:
         logger.debug(f"載入特徵: {cache_key}")
         
         features = {}
+        data_format = None
         npy_files = list(feature_dir.glob("*.npy"))
         
         if len(npy_files) == 0:
@@ -231,8 +238,28 @@ class DataLoader:
         for npy_file in npy_files:
             subject_id = npy_file.stem  # 檔名即為 subject_id
             try:
-                feature_vector = np.load(npy_file)
-                features[subject_id] = feature_vector
+                loaded = np.load(npy_file, allow_pickle=True)
+                
+                # 偵測資料格式
+                if loaded.dtype == object:
+                    # 格式二：dict 包裝的多張相片特徵
+                    data_dict = loaded.item()  # 取出 dict
+                    # 取第一個 key 的值
+                    feature_key = list(data_dict.keys())[0]
+                    feature_array = data_dict[feature_key]  # shape=(N, dim)
+                    features[subject_id] = feature_array
+                    
+                    if data_format is None:
+                        data_format = "per_image"
+                        logger.debug(f"偵測到格式二 (per_image)，key={feature_key}")
+                else:
+                    # 格式一：已平均的單一向量
+                    features[subject_id] = loaded  # shape=(dim,)
+                    
+                    if data_format is None:
+                        data_format = "averaged"
+                        logger.debug("偵測到格式一 (averaged)")
+                        
             except Exception as e:
                 logger.warning(f"載入 {npy_file.name} 失敗: {e}")
                 continue
@@ -240,16 +267,18 @@ class DataLoader:
         if len(features) == 0:
             raise ValueError(f"沒有成功載入任何特徵: {feature_dir}")
         
-        logger.debug(f"成功載入 {len(features)} 個受試者的特徵")
+        logger.debug(f"成功載入 {len(features)} 個受試者的特徵 (格式: {data_format})")
+        
+        result = (features, data_format)
         
         # 儲存快取
         if self.use_cache:
             with open(cache_path, 'wb') as f:
-                pickle.dump(features, f)
+                pickle.dump(result, f)
             logger.debug(f"特徵已快取: {cache_path}")
         
-        self._features_cache[cache_key] = features
-        return features
+        self._features_cache[cache_key] = result
+        return result
     
     def _create_dataset(
         self,
@@ -261,7 +290,7 @@ class DataLoader:
         """創建單一資料集"""
         
         # 載入特徵
-        features = self._load_features(model, feature_type)
+        features, data_format = self._load_features(model, feature_type)
         
         filtered_demo = self._filter_by_predicted_age(demographics)
 
@@ -276,7 +305,9 @@ class DataLoader:
             filtered_demo = self._apply_data_balancing(filtered_demo)
         
         # 對齊特徵與標籤
-        X, y, subject_ids = self._align_features_labels(features, filtered_demo)
+        X, y, subject_ids, base_ids, sample_groups = self._align_features_labels(
+            features, filtered_demo, data_format
+        )
         
         # 建立元資料
         metadata = {
@@ -287,17 +318,28 @@ class DataLoader:
             'use_all_visits': self.use_all_visits,
             'n_samples': len(X),
             'n_features': X.shape[1],
+            'data_format': data_format,
             'class_distribution': {
                 'negative': int(np.sum(y == 0)),
                 'positive': int(np.sum(y == 1))
             }
         }
         
+        if data_format == "per_image":
+            metadata['n_subjects'] = len(set(subject_ids))
+            metadata['images_per_subject'] = X.shape[0] // len(set(subject_ids))
+        
+        # 記錄 base_id 統計
+        metadata['n_unique_persons'] = len(set(base_ids))
+        
         return Dataset(
             X=X,
             y=y,
             metadata=metadata,
-            subject_ids=subject_ids
+            subject_ids=subject_ids,
+            base_ids=base_ids,
+            sample_groups=sample_groups,
+            data_format=data_format
         )
     
     # ========== 資料篩選與平衡 ==========
@@ -352,27 +394,20 @@ class DataLoader:
            - P：保留 Global_CDR >= threshold 的個案
            - Global_CDR 為空值時默認為 0
            - ACS 不做 CDR 篩選
-        
-        Args:
-            demographics: 原始人口學資料（包含 group 欄位）
-            cdr_threshold: CDR 閾值（None 表示不做 CDR 篩選）
-        
-        Returns:
-            篩選後的資料（包含 label 欄位）
         """
         df = demographics.copy()
         
         # 確保 Global_CDR 欄位為數值型態，空值填充為 0
         if 'Global_CDR' in df.columns:
             df['Global_CDR'] = pd.to_numeric(df['Global_CDR'], errors='coerce')
-            df['Global_CDR'] = df['Global_CDR'].fillna(0)  # 空值默認為 0
+            df['Global_CDR'] = df['Global_CDR'].fillna(0)
         
         # Step 1: 設定基本標籤
         def assign_label(group):
             if group in ['ACS', 'NAD']:
-                return 0  # 健康
+                return 0
             elif group == 'P':
-                return 1  # 病患
+                return 1
             else:
                 logger.warning(f"未知的 group: {group}")
                 return 0
@@ -381,31 +416,23 @@ class DataLoader:
         
         original_count = len(df)
         
-        # Step 2: CDR 二次篩選（如果需要）
+        # Step 2: CDR 二次篩選
         if cdr_threshold is not None:
             logger.debug(f"應用 CDR 篩選（閾值 = {cdr_threshold}）")
             
-            # 為每個 group 建立篩選條件
             mask = pd.Series(True, index=df.index, dtype=bool)
             
             for group in df['group'].unique():
                 group_mask = df['group'] == group
                 
                 if group == 'ACS':
-                    # ACS 不做 CDR 篩選，全部保留
                     continue
-                
                 elif group == 'NAD':
-                    # NAD: 保留 CDR <= threshold 的健康個案
                     if 'Global_CDR' in df.columns:
                         mask.loc[group_mask] = (df.loc[group_mask, 'Global_CDR'] <= cdr_threshold).values
-                    # 如果沒有 CDR 欄位，保留所有 NAD
-                
                 elif group == 'P':
-                    # P: 保留 CDR >= threshold 的病患個案
                     if 'Global_CDR' in df.columns:
                         mask.loc[group_mask] = (df.loc[group_mask, 'Global_CDR'] >= cdr_threshold).values
-                    # 如果沒有 CDR 欄位，保留所有 P
             
             df = df[mask].copy()
             
@@ -428,35 +455,17 @@ class DataLoader:
     
     def _keep_latest_visit(self, df: pd.DataFrame) -> pd.DataFrame:
         """保留每個受試者的最新訪視"""
-        # 假設 ID 格式為 "ACS1-1", "NAD10-2", "P1-3" 等
         df = df.copy()
         df['base_id'] = df['ID'].str.extract(r'^([A-Z]+\d+)', expand=False)
         df['visit'] = df['ID'].str.extract(r'-(\d+)$', expand=False).astype(float)
         
-        # 保留每個 base_id 的最大訪視號
         df = df.sort_values('visit', ascending=False).groupby('base_id').first().reset_index(drop=True)
-        
-        # 清理臨時欄位
         df = df.drop(columns=['base_id', 'visit'], errors='ignore')
         
         return df
     
     def _apply_data_balancing(self, demographics: pd.DataFrame) -> pd.DataFrame:
-        """
-        執行資料平衡（基於年齡）
-        
-        策略：
-        1. 計算健康組和病患組的整體比例 R
-        2. 將年齡分成 n_bins 個箱
-        3. 在每個箱內，按比例 R 抽樣（而非取 min）
-        4. 保留盡可能多的樣本，同時維持整體年齡分佈平衡
-        
-        Args:
-            demographics: 篩選後的人口學資料
-        
-        Returns:
-            平衡後的資料
-        """
+        """執行資料平衡（基於年齡）"""
         logger.info("執行資料平衡...")
         
         df = demographics.copy()
@@ -465,7 +474,6 @@ class DataLoader:
             logger.warning("沒有資料可供平衡")
             return df
         
-        # 分離健康組和病患組
         health_group = df[df['label'] == 0].copy()
         patient_group = df[df['label'] == 1].copy()
         
@@ -476,7 +484,6 @@ class DataLoader:
             logger.warning("健康組或病患組為空，跳過平衡")
             return df
         
-        # 計算整體目標比例
         target_ratio = min(n_health, n_patient) / max(n_health, n_patient)
         majority_is_health = n_health > n_patient
         
@@ -485,10 +492,8 @@ class DataLoader:
             f"目標比例 {target_ratio:.2f}"
         )
         
-        # 將所有資料合併以建立統一的年齡分箱
         all_ages = pd.concat([health_group['Age'], patient_group['Age']])
         
-        # 建立年齡分箱
         try:
             age_bins = pd.qcut(
                 all_ages, 
@@ -497,7 +502,6 @@ class DataLoader:
                 retbins=True
             )[1]
         except ValueError:
-            # 如果無法分成指定箱數，自動調整
             n_bins_effective = min(self.n_bins, all_ages.nunique())
             age_bins = pd.qcut(
                 all_ages, 
@@ -507,11 +511,9 @@ class DataLoader:
             )[1]
             logger.debug(f"年齡箱數自動調整為 {n_bins_effective}")
         
-        # 將分箱應用到兩個組別
         health_group['age_bin'] = pd.cut(health_group['Age'], bins=age_bins, include_lowest=True)
         patient_group['age_bin'] = pd.cut(patient_group['Age'], bins=age_bins, include_lowest=True)
         
-        # 在每個年齡箱中進行平衡
         balanced_dfs = []
         rng = np.random.RandomState(self.random_seed)
         
@@ -523,18 +525,15 @@ class DataLoader:
             n_patient_bin = len(patient_in_bin)
             
             if n_health_bin == 0 or n_patient_bin == 0:
-                # 如果某個箱內只有一組，全部保留
                 if n_health_bin > 0:
                     balanced_dfs.append(health_in_bin)
                 if n_patient_bin > 0:
                     balanced_dfs.append(patient_in_bin)
                 continue
             
-            # 根據整體比例決定抽樣策略
             if majority_is_health:
-                # 健康組較多，從健康組抽樣
                 target_health = int(n_patient_bin / target_ratio)
-                target_health = min(target_health, n_health_bin)  # 不超過實際數量
+                target_health = min(target_health, n_health_bin)
                 
                 if n_health_bin > target_health:
                     health_sample = health_in_bin.sample(n=target_health, random_state=rng)
@@ -542,34 +541,24 @@ class DataLoader:
                     health_sample = health_in_bin
                 
                 balanced_dfs.append(health_sample)
-                balanced_dfs.append(patient_in_bin)  # 病患組全保留
-                
+                balanced_dfs.append(patient_in_bin)
             else:
-                # 病患組較多，從病患組抽樣
                 target_patient = int(n_health_bin / target_ratio)
-                target_patient = min(target_patient, n_patient_bin)  # 不超過實際數量
+                target_patient = min(target_patient, n_patient_bin)
                 
                 if n_patient_bin > target_patient:
                     patient_sample = patient_in_bin.sample(n=target_patient, random_state=rng)
                 else:
                     patient_sample = patient_in_bin
                 
-                balanced_dfs.append(health_in_bin)  # 健康組全保留
+                balanced_dfs.append(health_in_bin)
                 balanced_dfs.append(patient_sample)
-            
-            logger.debug(
-                f"箱 {bin_val}: "
-                f"健康組 {n_health_bin}→{len(balanced_dfs[-2]) if majority_is_health else len(balanced_dfs[-2])}, "
-                f"病患組 {n_patient_bin}→{len(balanced_dfs[-1]) if majority_is_health else len(balanced_dfs[-1])}"
-            )
         
         if not balanced_dfs:
             logger.warning("沒有任何箱可以配對")
             return pd.DataFrame()
         
         result = pd.concat(balanced_dfs, ignore_index=True)
-        
-        # 清理臨時欄位
         result = result.drop(columns=['age_bin'], errors='ignore')
         
         final_health = len(result[result['label'] == 0])
@@ -585,34 +574,79 @@ class DataLoader:
     def _align_features_labels(
         self,
         features: Dict[str, np.ndarray],
-        demographics: pd.DataFrame
-    ) -> Tuple[np.ndarray, np.ndarray, List[str]]:
+        demographics: pd.DataFrame,
+        data_format: str
+    ) -> Tuple[np.ndarray, np.ndarray, List[str], List[str], Optional[np.ndarray]]:
         """
         對齊特徵與標籤
         
         Args:
-            features: {subject_id: feature_vector}
+            features: {subject_id: feature_array}
             demographics: 人口學資料（包含 label）
+            data_format: "averaged" 或 "per_image"
         
         Returns:
-            X, y, subject_ids
+            (X, y, subject_ids, base_ids, sample_groups)
+            - base_ids: 個案基底ID（如 P1），用於 K-fold 分組
+            - sample_groups: 格式二時，每筆樣本對應的群組索引
         """
         X_list = []
         y_list = []
         subject_ids = []
+        base_ids = []
+        sample_groups = [] if data_format == "per_image" else None
+        group_idx = 0
         
         for _, row in demographics.iterrows():
             subject_id = str(row['ID'])
             
-            if subject_id in features:
-                X_list.append(features[subject_id])
-                y_list.append(row['label'])
+            if subject_id not in features:
+                continue
+            
+            feature_array = features[subject_id]
+            label = row['label']
+            
+            # 提取 base_id（如 P1-2 → P1, ACS1-1 → ACS1）
+            base_id = self._extract_base_id(subject_id)
+            
+            if data_format == "averaged":
+                # 格式一：單一向量
+                X_list.append(feature_array)
+                y_list.append(label)
                 subject_ids.append(subject_id)
+                base_ids.append(base_id)
+            else:
+                # 格式二：展開多張相片
+                n_images = feature_array.shape[0]
+                for i in range(n_images):
+                    X_list.append(feature_array[i])
+                    y_list.append(label)
+                    subject_ids.append(subject_id)
+                    base_ids.append(base_id)
+                    sample_groups.append(group_idx)
+                group_idx += 1
         
         if not X_list:
             raise ValueError("沒有任何樣本的特徵與標籤對齊")
         
-        return np.array(X_list), np.array(y_list), subject_ids
+        X = np.array(X_list)
+        y = np.array(y_list)
+        sample_groups = np.array(sample_groups) if sample_groups else None
+        
+        return X, y, subject_ids, base_ids, sample_groups
+    
+    def _extract_base_id(self, subject_id: str) -> str:
+        """
+        從 subject_id 提取 base_id
+        
+        例如：
+            P1-2 → P1
+            ACS1-1 → ACS1
+            NAD10-3 → NAD10
+        """
+        import re
+        match = re.match(r'^([A-Z]+\d+)', subject_id)
+        return match.group(1) if match else subject_id
     
     # ========== 年齡篩選統計 ==========
     def load_datasets_with_stats(self) -> tuple:
@@ -647,7 +681,7 @@ class DataLoader:
                         
                         logger.info(
                             f"✓ 載入資料集: {model}-{feature_type}-CDR{cdr_threshold} "
-                            f"({len(dataset.X)} 樣本)"
+                            f"({len(dataset.X)} 樣本, 格式: {dataset.data_format})"
                         )
                     except Exception as e:
                         logger.warning(
@@ -658,43 +692,23 @@ class DataLoader:
         return datasets, filter_stats
 
     def _calculate_filter_stats(self) -> Dict:
-        """
-        計算年齡篩選統計
-        
-        Returns:
-            {
-                'total_original': 原始總人數,
-                'total_filtered': 篩選後人數,
-                'filtered_out_total': 被篩掉總人數,
-                'filtered_out_ratio': 被篩掉比例,
-                'health_original': 健康組原始人數,
-                'health_filtered_out': 健康組被篩掉人數,
-                'health_filtered_out_ratio': 健康組被篩掉比例,
-                'patient_original': 病患組原始人數,
-                'patient_filtered_out': 病患組被篩掉人數,
-                'patient_filtered_out_ratio': 病患組被篩掉比例,
-            }
-        """
+        """計算年齡篩選統計"""
         if self.predicted_ages is None or self.min_predicted_age is None:
             return {}
         
-        # 載入人口學資料
         demographics = self._load_demographics()
         
-        # 原始人數
         total_original = len(demographics)
         health_mask = demographics['group'].isin(['ACS', 'NAD'])
         patient_mask = demographics['group'] == 'P'
         health_original = health_mask.sum()
         patient_original = patient_mask.sum()
         
-        # 篩選後人數
         filtered = self._filter_by_predicted_age(demographics)
         total_filtered = len(filtered)
         health_filtered = filtered['group'].isin(['ACS', 'NAD']).sum()
         patient_filtered = (filtered['group'] == 'P').sum()
         
-        # 被篩掉人數
         health_filtered_out = health_original - health_filtered
         patient_filtered_out = patient_original - patient_filtered
         filtered_out_total = total_original - total_filtered
