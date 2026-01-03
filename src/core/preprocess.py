@@ -33,10 +33,10 @@ class FaceInfo:
 class ProcessedFace:
     """處理後的臉部資料"""
 
-    left_mirror: np.ndarray  # 左臉鏡射
-    right_mirror: np.ndarray  # 右臉鏡射
-    original: Optional[np.ndarray] = None  # 原始影像
-    aligned: Optional[np.ndarray] = None  # 對齊後影像
+    aligned: np.ndarray  # 對齊後影像（必要）
+    left_mirror: Optional[np.ndarray] = None  # 左臉鏡射（可選）
+    right_mirror: Optional[np.ndarray] = None  # 右臉鏡射（可選）
+    original: Optional[np.ndarray] = None  # 原始影像（除錯用）
     metadata: Dict[str, Any] = None  # 元資料
 
 

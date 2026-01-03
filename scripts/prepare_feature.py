@@ -48,7 +48,6 @@ class FeaturePipeline:
         n_select: int = 10,
         save_intermediate: bool = True,
         max_cpu_cores: Optional[int] = None,
-        histogram_mapping_path: Optional[Path] = None
     ):
         """
         初始化 Pipeline
@@ -78,11 +77,9 @@ class FeaturePipeline:
         self.preprocess_config = AnalyzeConfig(
             n_select=n_select,
             save_intermediate=save_intermediate,
-            workspace_dir=Path("workspace/preprocessing_V3")
+            workspace_dir=Path("workspace/preprocessing_only_topofr_no_avg_no_mirror")
         )
         
-        self.histogram_mapping_path = Path(histogram_mapping_path) if histogram_mapping_path else None
-        self.histogram_mapping = None
 
         # 建立輸出目錄結構
         self._setup_output_dirs()
@@ -217,9 +214,6 @@ class FeaturePipeline:
             logger.error("沒有找到任何受試者目錄")
             return
         
-        # Step 2: 計算或載入直方圖映射表
-        logger.info("\n[Step 2] 處理直方圖映射表...")
-        self.histogram_mapping = self._prepare_histogram_mapping(subject_dirs)
 
         # Step 2: 檢查斷點
         logger.info("\n[Step 2] 檢查處理進度...")
@@ -285,45 +279,6 @@ class FeaturePipeline:
         logger.info("特徵準備完成！")
         logger.info("=" * 70)
     
-    def _prepare_histogram_mapping(self, subject_dirs: List[Path]) -> np.ndarray:
-        """準備直方圖映射表"""
-        mapping_path = self.output_dir / "histogram_mapping.npy"
-        
-        # 如果有指定外部映射表，直接載入
-        if self.histogram_mapping_path and self.histogram_mapping_path.exists():
-            return FacePreprocessor.load_histogram_mapping(self.histogram_mapping_path)
-        
-        # 如果已經計算過，直接載入
-        if mapping_path.exists():
-            return FacePreprocessor.load_histogram_mapping(mapping_path)
-        
-        # 否則計算新的映射表
-        logger.info("計算全域直方圖映射表...")
-        
-        all_selected_images = []
-        
-        # 收集所有 selected 影像
-        for subject_dir in tqdm(subject_dirs, desc="收集影像"):
-            images, paths = self._load_images_from_subject(subject_dir)
-            if not images:
-                continue
-            
-            with FacePreprocessor(self.preprocess_config) as preprocessor:
-                face_infos = preprocessor._analyze_all_faces(images, paths)
-                if face_infos:
-                    selected = preprocessor._select_best_faces(face_infos)
-                    all_selected_images.extend([f.image for f in selected])
-        
-        logger.info(f"收集到 {len(all_selected_images)} 張 selected 影像")
-        
-        # 計算映射表
-        with FacePreprocessor(self.preprocess_config) as preprocessor:
-            mapping_table = preprocessor.compute_histogram_mapping(all_selected_images)
-            FacePreprocessor.save_histogram_mapping(mapping_table, mapping_path)
-        
-        return mapping_table
-
-
     def _scan_subjects(self) -> List[Path]:
         """掃描受試者目錄"""
         subject_dirs = []
@@ -356,56 +311,58 @@ class FeaturePipeline:
             if file_path.is_file() and file_path.suffix.lower() in valid_extensions:
                 return True
         return False
-    
+        
     def _process_subject(
         self, 
         subject_dir: Path, 
         extractor: FeatureExtractor
     ) -> Optional[Dict]:
-        """
-        處理單個受試者
-        
-        Args:
-            subject_dir: 受試者目錄
-            extractor: 特徵提取器
-        
-        Returns:
-            特徵字典 {model: {feature_type: feature_vector}}
-        """
+        """處理單個受試者"""
         subject_id = subject_dir.name
         
-        # 載入影像
         images, paths = self._load_images_from_subject(subject_dir)
-        
-        if len(images) == 0:
+        if not images:
             logger.warning(f"{subject_id}: 沒有找到影像")
             return None
         
         self.stats['total_images'] += len(images)
         
-        # 預處理配置（加入 subject_id）
+        # 判斷是否需要鏡射
+        need_mirror = any(ft != "origin" for ft in self.feature_types)
+        
+        # 動態設定處理步驟
+        steps = ["select", "align"]
+        if need_mirror:
+            steps.append("mirror")
+        
         subject_config = AnalyzeConfig(
             n_select=self.preprocess_config.n_select,
             save_intermediate=self.preprocess_config.save_intermediate,
             workspace_dir=self.preprocess_config.workspace_dir,
-            subject_id=subject_id
+            subject_id=subject_id,
+            steps=steps,
         )
         
         # 預處理
         with FacePreprocessor(subject_config) as preprocessor:
             try:
-                processed_faces = preprocessor.process(
-                    images,
-                    paths,
-                    histogram_mapping=self.histogram_mapping
-                )
+                processed_faces: List[ProcessedFace] = preprocessor.process(images, paths)
             except Exception as e:
                 logger.warning(f"{subject_id}: 預處理失敗 - {e}")
                 return None
         
-        if len(processed_faces) == 0:
+        if not processed_faces:
             logger.warning(f"{subject_id}: 預處理後沒有有效臉部")
             return None
+        
+        # feature_type 到 methods 參數的對應
+        FTYPE_TO_METHOD = {
+            "difference": "differences",
+            "absolute_difference": "absolute_differences",
+            "average": "averages",
+            "relative_differences": "relative_differences",
+            "absolute_relative_differences": "absolute_relative_differences",
+        }
         
         # 提取特徵
         subject_features = {}
@@ -417,92 +374,64 @@ class FeaturePipeline:
             model_features = {}
             
             try:
-                # 收集所有左右臉影像
-                all_left_images = [face.left_mirror for face in processed_faces]
-                all_right_images = [face.right_mirror for face in processed_faces]
-                
-                # 批次提取特徵
-                left_dict = extractor.extract_features(all_left_images, model)
-                right_dict = extractor.extract_features(all_right_images, model)
-                
-                # 從 dict 中取出特徵列表
-                if model not in left_dict or model not in right_dict:
-                    logger.warning(f"{subject_id}: {model} 特徵提取失敗")
-                    continue
-                
-                left_features_list = left_dict[model]
-                right_features_list = right_dict[model]
-                
-                # 過濾掉 None
-                valid_left = [f for f in left_features_list if f is not None]
-                valid_right = [f for f in right_features_list if f is not None]
-                
-                if len(valid_left) == 0 or len(valid_right) == 0:
-                    logger.warning(f"{subject_id}: {model} 沒有有效特徵")
-                    continue
-                
-                # 轉成 numpy array
-                left_array = np.array(valid_left)
-                right_array = np.array(valid_right)
-                
-                # 計算不同類型的特徵
-                for ftype in self.feature_types:
-                    if ftype == "difference":
-                        # 差異特徵
-                        diffs = extractor.calculate_differences(
-                            left_array,
-                            right_array,
-                            methods=["differences"]
-                        )
-                        avg_diff = np.mean(diffs['embedding_differences'], axis=0)
-                        model_features[ftype] = avg_diff
-
-                    elif ftype == "absolute_difference":
-                        # 絕對差異特徵
-                        abs_diffs = extractor.calculate_differences(
-                            left_array,
-                            right_array,
-                            methods=["absolute_differences"]
-                        )
-                        avg_abs_diff = np.mean(abs_diffs['embedding_absolute_differences'], axis=0)
-                        model_features[ftype] = avg_abs_diff
+                # origin: 直接提取對齊後的圖
+                if "origin" in self.feature_types:
+                    aligned_images = [face.aligned for face in processed_faces]
+                    features_dict = extractor.extract_features(aligned_images, model)
                     
-                    elif ftype == "average":
-                        # 平均特徵
-                        avgs = extractor.calculate_differences(
-                            left_array,
-                            right_array,
-                            methods=["averages"]
-                        )
-                        avg_avg = np.mean(avgs['embedding_averages'], axis=0)
-                        model_features[ftype] = avg_avg
-                    
-                    elif ftype == "relative_differences":
-                        # 相對差異
-                        rels = extractor.calculate_differences(
-                            left_array,
-                            right_array,
-                            methods=["relative_differences"]
-                        )
-                        avg_relative = np.mean(rels['embedding_relative_differences'], axis=0)
-                        model_features[ftype] = avg_relative
-
-                    elif ftype == "absolute_relative_differences":
-                        # 絕對相對差異
-                        abs_rels = extractor.calculate_differences(
-                            left_array,
-                            right_array,
-                            methods=["absolute_relative_differences"]
-                        )
-                        avg_abs_relative = np.mean(abs_rels['embedding_absolute_relative_differences'], axis=0)
-                        model_features[ftype] = avg_abs_relative
-
-                subject_features[model] = model_features
+                    if model in features_dict:
+                        valid = [f for f in features_dict[model] if f is not None]
+                        if valid:
+                            model_features["origin"] = np.array(valid, dtype=np.float32)
                 
-                # 更新統計
-                if model not in self.stats['models_extracted']:
-                    self.stats['models_extracted'][model] = 0
-                self.stats['models_extracted'][model] += 1
+                # 需要鏡射的特徵類型
+                mirror_types = [ft for ft in self.feature_types if ft != "origin"]
+                
+                if mirror_types and need_mirror:
+                    # 收集所有左右臉影像
+                    left_images = [face.left_mirror for face in processed_faces]
+                    right_images = [face.right_mirror for face in processed_faces]
+                    
+                    # 批次提取特徵
+                    left_dict = extractor.extract_features(left_images, model)
+                    right_dict = extractor.extract_features(right_images, model)
+                    
+                    if model not in left_dict or model not in right_dict:
+                        logger.warning(f"{subject_id}: {model} 特徵提取失敗")
+                        continue
+                    
+                    # 過濾掉 None（成對過濾）
+                    valid_pairs = [
+                        (l, r) for l, r in zip(left_dict[model], right_dict[model])
+                        if l is not None and r is not None
+                    ]
+                    
+                    if not valid_pairs:
+                        logger.warning(f"{subject_id}: {model} 沒有有效特徵")
+                        continue
+                    
+                    left_array = np.array([p[0] for p in valid_pairs])
+                    right_array = np.array([p[1] for p in valid_pairs])
+                    
+                    # 計算不同類型的特徵
+                    for ftype in mirror_types:
+                        if ftype not in FTYPE_TO_METHOD:
+                            logger.warning(f"未知的特徵類型: {ftype}")
+                            continue
+                        
+                        method = FTYPE_TO_METHOD[ftype]
+                        result = extractor.calculate_differences(
+                            left_array,
+                            right_array,
+                            methods=[method]
+                        )
+                        model_features[ftype] = result
+                
+                if model_features:
+                    subject_features[model] = model_features
+                    if model not in self.stats['models_extracted']:
+                        self.stats['models_extracted'][model] = 0
+                    self.stats['models_extracted'][model] += 1
             
             except Exception as e:
                 logger.warning(f"{subject_id}: {model} 特徵提取失敗 - {e}")
@@ -593,8 +522,7 @@ def main():
     
     # 設定路徑
     path_file = Path("data/images/raw/path.txt")
-    output_dir = Path("workspace/features_V4")
-    histogram_mapping_path = Path(r"C:\Users\4080\Desktop\Alz_face_analyze\workspace\histogram_preparation_3\histogram_mapping.npy")
+    output_dir = Path("workspace/features_no_his_only_topofr_no_avg_no_mirror")
     
     # 檢查 path.txt
     if not path_file.exists():
@@ -607,12 +535,11 @@ def main():
         pipeline = FeaturePipeline(
             path_file=path_file,
             output_dir=output_dir,
-            embedding_models=["arcface"],
-            feature_types=["difference", "absolute_difference", "average", "relative_differences", "absolute_relative_differences"],
+            embedding_models=["topofr"],
+            feature_types=["difference", "absolute_difference", "average", "relative_differences", "absolute_relative_differences", "origin"],
             n_select=10,
             save_intermediate=True,
             max_cpu_cores=2,
-            histogram_mapping_path=histogram_mapping_path
         )
         
         # 執行
