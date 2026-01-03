@@ -22,7 +22,7 @@ class FaceInfo:
     """單張臉部資訊"""
 
     image: np.ndarray
-    angle: float  # 中軸角度（度）
+    vertex_angle_sum: float  # 中軸角度（度）
     confidence: float  # 偵測信心度
     landmarks: np.ndarray  # 468個特徵點座標
     path: Optional[Path] = None  # 原始檔案路徑
@@ -42,23 +42,6 @@ class ProcessedFace:
 
 class FacePreprocessor:
     """統一的臉部預處理器"""
-
-    # MediaPipe 臉部中軸線定義（從 legacy 移植）
-    FACEMESH_MID_LINE = [
-        (10, 151),
-        (151, 9),
-        (9, 8),
-        (8, 168),
-        (168, 6),
-        (6, 197),
-        (197, 195),
-        (195, 5),
-        (5, 4),
-        (4, 1),
-        (1, 19),
-        (19, 94),
-        (94, 2),
-    ]
 
     def __init__(self, config: PreprocessConfig):
         """
@@ -91,13 +74,19 @@ class FacePreprocessor:
             self.face_mesh.close()
 
     def _setup_workspace(self):
-        """設定工作區目錄結構"""
+        """設定工作區目錄結構（根據啟用的處理步驟動態建立）"""
         if self.config.save_intermediate and self.config.workspace_dir:
-            # 建立必要的子目錄
-            subdirs = ["selected", "histogrammed", "aligned", "mirrors", "debug"]
-            for subdir in subdirs:
-                path = self.config.workspace_dir / subdir
-                path.mkdir(parents=True, exist_ok=True)
+            # 步驟與子目錄的對應
+            step_to_subdir = {
+                "select": "selected",
+                "align": "aligned",
+                "mirror": "mirrors",
+            }
+            
+            for step in self.config.steps:
+                if step in step_to_subdir:
+                    path = self.config.workspace_dir / step_to_subdir[step]
+                    path.mkdir(parents=True, exist_ok=True)
 
             logger.info(f"工作區設定完成: {self.config.workspace_dir}")
 
@@ -179,18 +168,11 @@ class FacePreprocessor:
 
         # Step 1: 角度校正
         if "align" in self.config.steps and self.config.align_face:
-            aligned_image = self._align_face(current_image, face_info.angle, face_info.landmarks)
+            aligned_image = self._align_face(current_image, face_info.landmarks)
             current_image = aligned_image
 
             if self.config.save_intermediate:
                 self._save_aligned(aligned_image, face_info, index)
-
-        # Step 2: 全域直方圖校正
-        if "histogram" in self.config.steps and histogram_mapping is not None:
-            current_image = self.apply_histogram_mapping(current_image, histogram_mapping)
-            
-            if self.config.save_intermediate:
-                self._save_histogrammed(current_image, face_info, index)
 
         # Step 2: 生成鏡射
         if "mirror" in self.config.steps:
@@ -227,7 +209,7 @@ class FacePreprocessor:
             original=face_info.image if self.config.save_intermediate else None,
             aligned=aligned_image,
             metadata={
-                "angle": float(face_info.angle),
+                "vertex_angle_sum": float(face_info.vertex_angle_sum),
                 "confidence": float(face_info.confidence),
                 "path": str(face_info.path) if face_info.path else None,
                 "index": index,
@@ -265,12 +247,12 @@ class FacePreprocessor:
             landmarks_array = self._landmarks_to_array(landmarks, image.shape)
 
             # 計算中軸角度
-            angle = self._calculate_midline_angle(landmarks, image.shape)
+            vertex_angle_sum = self._calculate_vertex_angle_sum(landmarks, image.shape)
 
             face_infos.append(
                 FaceInfo(
                     image=image,
-                    angle=angle,
+                    vertex_angle_sum=vertex_angle_sum,
                     confidence=1.0,  # MediaPipe 不直接提供信心度
                     landmarks=landmarks_array,
                     path=paths[i] if paths else None,
@@ -291,7 +273,7 @@ class FacePreprocessor:
             選中的臉部資訊
         """
         # 按角度絕對值排序
-        sorted_faces = sorted(face_infos, key=lambda x: abs(x.angle))
+        sorted_faces = sorted(face_infos, key=lambda x: abs(x.vertex_angle_sum))
 
         # 選擇前 n 張
         n_select = min(self.config.n_select, len(sorted_faces))
@@ -299,143 +281,47 @@ class FacePreprocessor:
 
         # 記錄選擇結果
         for face in selected:
-            logger.debug(f"選擇: 索引={face.index}, 角度={face.angle:.2f}°")
+            logger.debug(f"選擇: 索引={face.index}, 角度={face.vertex_angle_sum:.2f}°")
 
         return selected
 
-    def _calculate_midline_angle(
-        self, landmarks, image_shape: Tuple[int, int]
-    ) -> float:
+    def _calculate_vertex_angle_sum(self, landmarks, image_shape: Tuple[int, int]) -> float:
+
         """
-        計算臉部中軸線角度
-
-        Args:
-            landmarks: MediaPipe 特徵點
-            image_shape: 影像尺寸
-
+        計算臉部中軸線彎曲角度（用於選擇最正面的相片）
+        
         Returns:
-            角度（度）
+            角度（度）- 中軸線各轉折點的夾角總和，越小越正面
         """
         h, w = image_shape[:2]
-        angles = []
-
-        for pair in self.FACEMESH_MID_LINE:
-            point1 = landmarks.landmark[pair[0]]
-            point2 = landmarks.landmark[pair[1]]
-
-            # 轉換為像素座標
-            x1, y1 = point1.x * w, point1.y * h
-            x2, y2 = point2.x * w, point2.y * h
-
-            # 計算向量角度
-            dx = x2 - x1
-            dy = y2 - y1
-
-            if dy != 0:
-                angle = np.arctan(dx / dy)
-                angles.append(np.degrees(angle))
-            else:
-                # 垂直線段
-                angles.append(90.0 if dx > 0 else -90.0)
-
-        # 返回平均角度
-        return np.mean(angles) if angles else 0.0
-
+        
+        points = [10, 168, 4, 2]
+        dots = []
+        for idx in points:
+            point = landmarks.landmark[idx]
+            dots.append(np.array([point.x * w, point.y * h]))
+        
+        vector1 = dots[1] - dots[0]
+        vector2 = dots[2] - dots[1]
+        vector3 = dots[3] - dots[2]
+        
+        def angle_between(v1, v2):
+            dot = np.dot(v1, v2)
+            norm = np.linalg.norm(v1) * np.linalg.norm(v2)
+            return np.arccos(np.clip(dot / (norm + 1e-8), -1.0, 1.0))
+        
+        angle1 = angle_between(vector1, vector2)
+        angle2 = angle_between(vector2, vector3)
+        
+        return np.degrees(angle1) + np.degrees(angle2)
+    
     # ========== 影像處理函數 ==========
 
-        # ========== 全域直方圖校正 ==========
-
-    # def compute_histogram_mapping(self, images: List[np.ndarray]) -> np.ndarray:
-    #     """
-    #     計算全域直方圖映射表
-        
-    #     Args:
-    #         images: selected 後的影像列表
-            
-    #     Returns:
-    #         映射表 (256,)
-    #     """
-    #     global_hist = np.zeros(256, dtype=np.float64)
-        
-    #     for img in images:
-    #         lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
-    #         l_channel = lab[:, :, 0]
-    #         hist, _ = np.histogram(l_channel.ravel(), bins=256, range=(0, 256))
-    #         global_hist += hist
-        
-    #     cdf = global_hist.cumsum()
-    #     cdf_normalized = cdf / cdf[-1]
-    #     mapping_table = (cdf_normalized * 255).astype(np.uint8)
-        
-    #     logger.info(f"直方圖映射表計算完成（基於 {len(images)} 張影像）")
-    #     return mapping_table
-
-    def compute_histogram_mapping(
-        self, 
-        images: List[np.ndarray],
-        masks: List[np.ndarray] = None
-    ) -> np.ndarray:
-        """
-        計算全域直方圖映射表（只統計遮罩內的像素）
-
-        Args:
-            images: 影像列表
-            masks: 對應的遮罩列表（None 則統計全部像素）
-
-        Returns:
-            映射表 (256,)
-        """
-        global_hist = np.zeros(256, dtype=np.float64)
-
-        for i, img in enumerate(images):
-            lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
-            l_channel = lab[:, :, 0]
-
-            if masks is not None and masks[i] is not None:
-                # 只統計遮罩內的像素
-                valid_pixels = l_channel[masks[i] > 0]
-            else:
-                valid_pixels = l_channel.ravel()
-
-            hist, _ = np.histogram(valid_pixels, bins=256, range=(0, 256))
-            global_hist += hist
-
-        cdf = global_hist.cumsum()
-        cdf_normalized = cdf / cdf[-1]
-        mapping_table = (cdf_normalized * 255).astype(np.uint8)
-
-        logger.info(f"直方圖映射表計算完成（基於 {len(images)} 張影像）")
-        return mapping_table
-
-    def apply_histogram_mapping(
-        self, 
-        image: np.ndarray, 
-        mapping_table: np.ndarray
-    ) -> np.ndarray:
-        """套用直方圖映射"""
-        lab = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
-        lab[:, :, 0] = mapping_table[lab[:, :, 0]]
-        return cv2.cvtColor(lab, cv2.COLOR_LAB2BGR)
-
-    @staticmethod
-    def save_histogram_mapping(mapping_table: np.ndarray, path: Path):
-        """儲存映射表"""
-        path = Path(path)
-        path.parent.mkdir(parents=True, exist_ok=True)
-        np.save(path, mapping_table)
-        logger.info(f"映射表已儲存: {path}")
-
-    @staticmethod
-    def load_histogram_mapping(path: Path) -> np.ndarray:
-        """載入映射表"""
-        mapping_table = np.load(path)
-        logger.info(f"映射表已載入: {path}")
-        return mapping_table
+    ## ====== 旋轉影像 ======
 
     def _align_face(
         self, 
         image: np.ndarray, 
-        angle: float,
         landmarks: np.ndarray
     ) -> np.ndarray:
         """
@@ -457,10 +343,68 @@ class FacePreprocessor:
         masked_image = cv2.bitwise_and(image, image, mask=mask)
 
         # Step 2: 旋轉影像
-        M = cv2.getRotationMatrix2D(center, -angle, 1.0)
+        tilt = self._calculate_midline_tilt(landmarks)
+        M = cv2.getRotationMatrix2D(center, -tilt, 1.0)
         rotated_image = cv2.warpAffine(masked_image, M, (w, h))
 
         return rotated_image
+
+    def _build_face_mask(
+        self, img_shape: Tuple[int, int], face_points: np.ndarray
+    ) -> np.ndarray:
+        """
+        建立臉部遮罩
+
+        Args:
+            img_shape: 影像尺寸
+            face_points: 臉部特徵點
+
+        Returns:
+            遮罩影像
+        """
+        mask = np.zeros(img_shape[:2], dtype=np.uint8)
+
+        if face_points.shape[0] == 0:
+            return mask
+
+        # 計算凸包
+        hull = cv2.convexHull(face_points.astype(np.int32))
+
+        # 填充凸包區域
+        cv2.fillConvexPoly(mask, hull, 255)
+
+        return mask
+
+    def _calculate_midline_tilt(
+        self, landmarks: np.ndarray) -> float:
+        """
+        計算臉部中軸線相對於垂直線的傾斜角度（用於旋轉校正）
+        
+        Args:
+            landmarks: 468個特徵點座標 (numpy array)
+        
+        Returns:
+            角度（度）- 正值表示向右傾斜，負值表示向左傾斜
+        """
+        points = [10, 168, 4, 2]
+        angles = []
+        
+        for i in range(len(points) - 1):
+            x1, y1 = landmarks[points[i]]
+            x2, y2 = landmarks[points[i + 1]]
+            
+            dx = x2 - x1
+            dy = y2 - y1
+            
+            if abs(dy) < 1e-8:
+                angles.append(90.0 if dx > 0 else -90.0)
+            else:
+                angles.append(np.degrees(np.arctan(dx / dy)))
+        
+        return np.mean(angles) if angles else 0.0
+
+
+    ## ====== 鏡射相片 ======
 
     def _create_mirror_images(
         self, 
@@ -494,32 +438,6 @@ class FacePreprocessor:
         )
 
         return left_mirror, right_mirror
-
-    def _build_face_mask(
-        self, img_shape: Tuple[int, int], face_points: np.ndarray
-    ) -> np.ndarray:
-        """
-        建立臉部遮罩
-
-        Args:
-            img_shape: 影像尺寸
-            face_points: 臉部特徵點
-
-        Returns:
-            遮罩影像
-        """
-        mask = np.zeros(img_shape[:2], dtype=np.uint8)
-
-        if face_points.shape[0] == 0:
-            return mask
-
-        # 計算凸包
-        hull = cv2.convexHull(face_points.astype(np.int32))
-
-        # 填充凸包區域
-        cv2.fillConvexPoly(mask, hull, 255)
-
-        return mask
 
     def _estimate_midline(
         self, face_points: np.ndarray, midline_indices: Optional[Tuple[int, ...]] = None
@@ -682,6 +600,8 @@ class FacePreprocessor:
 
         return canvas
 
+    ## ====== 輔助函數 ======
+
     def _landmarks_to_array(
         self, landmarks, image_shape: Tuple[int, int]
     ) -> np.ndarray:
@@ -706,7 +626,6 @@ class FacePreprocessor:
         return np.array(points, dtype=np.float64)
 
     # ========== 儲存函數 ==========
-
     def _save_selected(self, faces: List[FaceInfo]):
         """儲存選中的影像"""
         if not self.config.save_intermediate:
@@ -717,24 +636,10 @@ class FacePreprocessor:
             return
 
         for i, face in enumerate(faces):
-            filename = f"selected_{i:03d}_angle_{face.angle:.1f}.png"
+            filename = f"selected_{i:03d}_vas_{face.vertex_angle_sum:.1f}.png"
             path = save_dir / filename
             cv2.imwrite(str(path), face.image)
             logger.debug(f"儲存選中影像: {path}")
-
-    def _save_histogrammed(self, image: np.ndarray, face_info: FaceInfo, index: int):
-        """儲存直方圖校正後的影像"""
-        if not self.config.save_intermediate:
-            return
-
-        save_dir = self.config.get_workspace_subdir("histogrammed")
-        if not save_dir:
-            return
-
-        filename = f"histogrammed_{index:03d}_angle_{face_info.angle:.1f}.png"
-        path = save_dir / filename
-        cv2.imwrite(str(path), image)
-        logger.debug(f"儲存直方圖校正影像: {path}")
 
     def _save_aligned(self, image: np.ndarray, face_info: FaceInfo, index: int):
         """儲存對齊後的影像"""

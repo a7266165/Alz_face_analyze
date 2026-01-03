@@ -37,10 +37,8 @@ class PreprocessConfig:
     steps: List[str] = field(
         default_factory=lambda: [
             "select",     # 選擇最正面的 n 張
-            "histogram",  # 全域直方圖校正（新增）
             "align",      # 角度校正
-            "mirror",     # 生成鏡射
-            # "clahe",    # CLAHE 增強（移除）
+            # "mirror",     # 生成鏡射
         ]
     )
 

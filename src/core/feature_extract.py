@@ -323,19 +323,6 @@ class FeatureExtractor:
         if "averages" in methods:
             results["embedding_averages"] = ((left_features + right_features) / 2).astype(np.float32)
         
-        # if "relative" in methods:
-        #     if diff is None:
-        #         diff = left_features - right_features
-            
-        #     abs_diff = np.abs(diff)
-        #     abs_sum = np.abs(left_features + right_features)
-            
-        #     relative = np.zeros_like(abs_diff)
-        #     mask = abs_sum > 1e-8 
-        #     relative[mask] = abs_diff[mask] / abs_sum[mask]
-            
-        #     results["relative_differences"] = relative.astype(np.float32)
-
         if "relative_differences" in methods:
             diff = left_features - right_features
             norm = np.sqrt(left_features**2 + right_features**2)
