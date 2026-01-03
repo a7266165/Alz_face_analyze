@@ -236,29 +236,37 @@ class DataLoader:
             raise FileNotFoundError(f"目錄中沒有 .npy 檔案: {feature_dir}")
         
         for npy_file in npy_files:
-            subject_id = npy_file.stem  # 檔名即為 subject_id
+            subject_id = npy_file.stem
             try:
                 loaded = np.load(npy_file, allow_pickle=True)
                 
                 # 偵測資料格式
                 if loaded.dtype == object:
-                    # 格式二：dict 包裝的多張相片特徵
-                    data_dict = loaded.item()  # 取出 dict
-                    # 取第一個 key 的值
+                    # dict 包裝的多張相片特徵
+                    data_dict = loaded.item()
                     feature_key = list(data_dict.keys())[0]
                     feature_array = data_dict[feature_key]  # shape=(N, dim)
                     features[subject_id] = feature_array
                     
                     if data_format is None:
                         data_format = "per_image"
-                        logger.debug(f"偵測到格式二 (per_image)，key={feature_key}")
+                        logger.debug(f"偵測到 dict 格式 (per_image)，key={feature_key}")
+                
+                elif loaded.ndim == 2:
+                    # 純 array，shape=(N, dim)，如 origin
+                    features[subject_id] = loaded
+                    
+                    if data_format is None:
+                        data_format = "per_image"
+                        logger.debug("偵測到 array 格式 (per_image)")
+                
                 else:
-                    # 格式一：已平均的單一向量
-                    features[subject_id] = loaded  # shape=(dim,)
+                    # 已平均的單一向量，shape=(dim,)
+                    features[subject_id] = loaded
                     
                     if data_format is None:
                         data_format = "averaged"
-                        logger.debug("偵測到格式一 (averaged)")
+                        logger.debug("偵測到 averaged 格式")
                         
             except Exception as e:
                 logger.warning(f"載入 {npy_file.name} 失敗: {e}")
