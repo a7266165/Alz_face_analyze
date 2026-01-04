@@ -242,7 +242,9 @@ class AnalysisPipeline:
                 output_dir=self.output_dir,
                 models_dir=models_dir,
                 reports_dir=reports_dir,
-                test_size=self.test_size,
+                pred_prob_dir=Path(f"{self.output_dir}/pred_probability"),
+                n_folds=self.n_folds,
+                n_drop_features=self.n_drop_features,
                 random_seed=self.random_seed,
                 feature_selection=self.feature_selection,
                 importance_ratio=self.importance_ratio
@@ -361,15 +363,16 @@ def main():
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
     # 路徑設定
-    FEATURES_DIR = "workspace/features"
+    FEATURES_DIR = "workspace/features_no_his_only_topofr_no_avg_no_mirror"
     DEMOGRAPHICS_DIR = "data/demographics"
     PREDICTED_AGES_FILE = "workspace/predicted_ages.json"
     
     # 資料載入配置
-    EMBEDDING_MODELS = ["arcface", "dlib", "topofr"]
-    FEATURE_TYPES = ["difference", "average", "relative"]
-    MIN_AGE_RANGE = (50, 70)
-    CDR_THRESHOLDS = [0, 0.5, 1.0, 2.0]
+    # EMBEDDING_MODELS = ["arcface", "dlib", "topofr"]
+    EMBEDDING_MODELS = ["topofr"]
+    FEATURE_TYPES = ["origin"]
+    MIN_AGE_RANGE = (65, 66)
+    CDR_THRESHOLDS = [0]
     DATA_BALANCING = False
     USE_ALL_VISITS = False
     USE_CACHE = False

@@ -77,7 +77,7 @@ class FeaturePipeline:
         self.preprocess_config = AnalyzeConfig(
             n_select=n_select,
             save_intermediate=save_intermediate,
-            workspace_dir=Path("workspace/preprocessing")
+            workspace_dir=Path("workspace/preprocessing_only_topofr_no_avg_flip")
         )
         
         # 建立輸出目錄結構
@@ -522,7 +522,7 @@ def main():
     
     # 設定路徑
     path_file = Path("data/images/raw/path.txt")
-    output_dir = Path("workspace/features")
+    output_dir = Path("workspace/features_no_his_only_topofr_no_avg_flip")
     
     # 檢查 path.txt
     if not path_file.exists():
@@ -535,8 +535,8 @@ def main():
         pipeline = FeaturePipeline(
             path_file=path_file,
             output_dir=output_dir,
-            embedding_models=["arcface", "dlib", "topofr"],
-            feature_types=["difference", "average", "relative"],
+            embedding_models=["topofr"],
+            feature_types=["difference", "absolute_difference", "average", "relative_differences", "absolute_relative_differences"],
             n_select=10,
             save_intermediate=True,
             max_cpu_cores=2
