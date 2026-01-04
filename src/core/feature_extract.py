@@ -305,34 +305,43 @@ class FeatureExtractor:
         if methods is None:
             raise ValueError("必須明確指定 methods 參數")
         
-        valid_methods = {"differences", "averages", "relative"}
-        if invalid := set(methods) - valid_methods:  # ← 使用海象運算子
+        valid_methods = {"differences", "absolute_differences", "averages", "relative_differences", "absolute_relative_differences"}
+        if invalid := set(methods) - valid_methods:
             raise ValueError(f"未知的方法: {invalid}")
         
         results = {}
-        diff = None  # ← 統一管理差異計算
+        diff = None
         
         if "differences" in methods:
             diff = left_features - right_features
             results["embedding_differences"] = diff.astype(np.float32)
-        
+
+        if "absolute_differences" in methods:
+            abs_diff = np.abs(left_features - right_features)
+            results["embedding_absolute_differences"] = abs_diff.astype(np.float32)
+
         if "averages" in methods:
-            # ← 內聯計算，更簡潔
             results["embedding_averages"] = ((left_features + right_features) / 2).astype(np.float32)
         
-        if "relative" in methods:
-            if diff is None:  # ← 邏輯更清楚
-                diff = left_features - right_features
+        if "relative_differences" in methods:
+            diff = left_features - right_features
+            norm = np.sqrt(left_features**2 + right_features**2)
+
+            rel_diff = np.zeros_like(diff)
+            mask = norm > 1e-8
+            rel_diff[mask] = diff[mask] / norm[mask]
             
-            abs_diff = np.abs(diff)
-            abs_sum = np.abs(left_features + right_features)
+            results["embedding_relative_differences"] = rel_diff.astype(np.float32)
+
+        if "absolute_relative_differences" in methods:
+            abs_diff = np.abs(left_features - right_features)
+            norm = np.sqrt(left_features**2 + right_features**2)
+
+            rel_abs_diff = np.zeros_like(abs_diff)
+            mask = norm > 1e-8
+            rel_abs_diff[mask] = abs_diff[mask] / norm[mask]
             
-            relative = np.zeros_like(abs_diff)
-            mask = abs_sum > 1e-8  # ← 變數命名更清楚
-            relative[mask] = abs_diff[mask] / abs_sum[mask]
-            
-            results["relative_differences"] = relative.astype(np.float32)
-        
+            results["embedding_absolute_relative_differences"] = rel_abs_diff.astype(np.float32)
         return results
     # ========== 人口學特徵 ==========
     

@@ -1,6 +1,10 @@
 """
 src/analysis/analyzer.py
 XGBoost 分析器（訓練 + 評估 + 報告）
+
+支援兩種資料格式：
+- averaged: 每個個案一個平均特徵向量
+- per_image: 每個個案多張相片，訓練時展開，測試時聚合
 """
 
 import logging
@@ -8,8 +12,9 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 from datetime import datetime
 import numpy as np
+import pandas as pd
 import xgboost as xgb
-from sklearn.model_selection import train_test_split, GroupShuffleSplit
+from sklearn.model_selection import GroupKFold
 from sklearn.metrics import (
     accuracy_score,
     precision_score,
@@ -26,241 +31,444 @@ logger = logging.getLogger(__name__)
 
 
 class XGBoostAnalyzer:
-    """
-    XGBoost 分析器
-    
-    完整的分析流程：
-    1. 資料分割與特徵選擇
-    2. 模型訓練
-    3. 模型評估（訓練集 + 測試集）
-    4. 結果儲存（模型 + 報告）
-    """
+    """XGBoost 分析器"""
     
     def __init__(
         self,
-        output_dir: Path,
         models_dir: Path = None,
         reports_dir: Path = None,
-        test_size: float = 0.2,
+        pred_prob_dir: Path = None,  # 新增：預測分數輸出目錄
+        n_folds: int = 5,
+        n_drop_features: int = 5,
         random_seed: int = 42,
         xgb_params: Optional[Dict] = None,
-        feature_selection: bool = True,
         importance_ratio: float = 0.8
     ):
-        """
-        初始化分析器
-        
-        Args:
-            output_dir: 輸出目錄
-            test_size: 測試集比例
-            random_seed: 隨機種子
-            xgb_params: XGBoost 參數（None 使用預設）
-            feature_selection: 是否進行特徵選擇
-            importance_ratio: 特徵選擇保留比例
-        """
-        self.output_dir = Path(output_dir) if output_dir else None
         self.models_dir = Path(models_dir) if models_dir else None
         self.reports_dir = Path(reports_dir) if reports_dir else None
-        self.test_size = test_size
+        self.pred_prob_dir = Path(pred_prob_dir) if pred_prob_dir else None
+        self.n_folds = n_folds
+        self.n_drop_features = n_drop_features
         self.random_seed = random_seed
-        self.feature_selection = feature_selection
         self.importance_ratio = importance_ratio
         
-        # XGBoost 預設參數
         self.xgb_params = xgb_params or {
             'n_estimators': 100,
             'max_depth': 6,
             'learning_rate': 0.1,
             'random_state': random_seed,
             'n_jobs': -1,
-            'eval_metric': 'logloss'
+            'eval_metric': 'logloss',
         }
         
-        # 建立輸出目錄
-        self._setup_dirs()
-        
         logger.info("XGBoost 分析器初始化完成")
-        logger.info(f"輸出目錄: {self.output_dir}")
-        logger.info(f"測試集比例: {self.test_size}")
-        logger.info(f"隨機種子: {self.random_seed}")
-        logger.info(f"特徵選擇: {'啟用' if self.feature_selection else '停用'}")
-    
-    def _setup_dirs(self):
-        # 如果有外部指定 models_dir/reports_dir，就不從 output_dir 建立
-        if self.models_dir:
-            self.models_dir.mkdir(parents=True, exist_ok=True)
-        elif self.output_dir:
-            self.models_dir = self.output_dir / "models"
-            self.models_dir.mkdir(parents=True, exist_ok=True)
-        
-        if self.reports_dir:
-            self.reports_dir.mkdir(parents=True, exist_ok=True)
-        elif self.output_dir:
-            self.reports_dir = self.output_dir / "reports"
-            self.reports_dir.mkdir(parents=True, exist_ok=True)
+        logger.info(f"CV 折數: {self.n_folds}, 每次捨棄特徵數: {self.n_drop_features}")
     
     # ========== 主要分析方法 ==========
     
     def analyze(self, datasets: List[Dataset], filter_stats: Dict = None) -> Dict:
-        """
-        分析資料集
-        
-        Args:
-            datasets: 資料集列表
-        
-        Returns:
-            訓練結果字典 {dataset_key: result}
-        """
+        """分析所有資料集"""
         logger.info(f"開始分析 {len(datasets)} 個資料集")
         
-        results = {}
+        all_results = {}
         
         for i, dataset in enumerate(datasets, 1):
-            # 建立資料集鍵值
             meta = dataset.metadata
             dataset_key = f"{meta['model']}_{meta['feature_type']}_cdr{meta['cdr_threshold']}"
             
             logger.info(f"\n[{i}/{len(datasets)}] 分析: {dataset_key}")
+            logger.info(f"資料格式: {dataset.data_format}")
             logger.info("-" * 50)
             
             try:
-                X, y = dataset.X, dataset.y
-                subject_ids = dataset.subject_ids
-
-                logger.info(f"資料集: {len(X)} 樣本, {X.shape[1]} 特徵")
-                logger.info(f"類別分佈: 0={np.sum(y==0)}, 1={np.sum(y==1)}")
-                
-                # Step 1: 分割資料集
-                gss = GroupShuffleSplit(
-                    n_splits=1,
-                    test_size=self.test_size,
-                    random_state=self.random_seed
+                results_by_n_features = self._analyze_with_feature_reduction(
+                    dataset, filter_stats
                 )
-                train_idx, test_idx = next(gss.split(X, y, groups=subject_ids))
-                X_train, X_test = X[train_idx], X[test_idx]
-                y_train, y_test = y[train_idx], y[test_idx]
-                
-                logger.info(f"訓練集: {len(X_train)} 樣本, 測試集: {len(X_test)} 樣本")
-                # Step 2: 特徵選擇（如果啟用）
-                selected_features = None
-                original_n_features = X_train.shape[1]
-                
-                if self.feature_selection:
-                    logger.info("執行特徵選擇...")
-                    X_train, X_test, selected_features = self._select_features(
-                        X_train, y_train, X_test
-                    )
-                    logger.info(f"特徵選擇: {original_n_features} → {X_train.shape[1]} 維")
-                
-                # Step 3: 訓練模型
-                logger.info("訓練 XGBoost 模型...")
-                model = xgb.XGBClassifier(**self.xgb_params)
-                model.fit(X_train, y_train)
-                
-                # Step 4: 預測
-                y_pred_train = model.predict(X_train)
-                y_pred_test = model.predict(X_test)
-                y_prob_test = model.predict_proba(X_test)[:, 1]
-                
-                # Step 5: 計算指標
-                train_metrics = self._calculate_metrics(y_train, y_pred_train)
-                test_metrics = self._calculate_metrics(y_test, y_pred_test, y_prob_test)
-                corrected_metrics = None
-                if filter_stats:
-                    corrected_metrics = self._calculate_corrected_metrics(
-                        y_test, y_pred_test, filter_stats
-                    )
-                # Step 6: 整理結果
-                result = {
-                    'model': model,
-                    'dataset_key': dataset_key,
-                    'metadata': dataset.metadata,
-                    'train_metrics': train_metrics,
-                    'test_metrics': test_metrics,
-                    'corrected_metrics': corrected_metrics,
-                    'selected_features': selected_features,
-                    'feature_importance': model.feature_importances_.tolist() if hasattr(model, 'feature_importances_') else None,
-                    'n_train': len(X_train),
-                    'n_test': len(X_test),
-                    'original_n_features': original_n_features,
-                    'selected_n_features': X_train.shape[1],
-                    'timestamp': datetime.now().isoformat()
-                }
-                
-                # Step 7: 儲存
-                self._save_model(dataset_key, result)
-                self._save_report(dataset_key, result, filter_stats)
-                
-                results[dataset_key] = result
-                
-                logger.info(
-                    f"✓ {dataset_key}: "
-                    f"測試準確率 {result['test_metrics']['accuracy']:.3f}, "
-                    f"測試 MCC {result['test_metrics']['mcc']:.3f}"
-                )
+                all_results[dataset_key] = results_by_n_features
                 
             except Exception as e:
                 logger.error(f"✗ {dataset_key}: {e}")
                 import traceback
                 traceback.print_exc()
-                continue
         
-        # 儲存總結
-        self._save_summary(results)
+        return all_results
+
+    def _analyze_with_feature_reduction(
+        self, 
+        dataset: Dataset, 
+        filter_stats: Dict = None
+    ) -> Dict[int, Dict]:
+        """遞減特徵選擇分析"""
+        X, y = dataset.X, dataset.y
+        subject_ids = np.array(dataset.subject_ids)
+        base_ids = np.array(dataset.base_ids)  # 用於 K-fold 分組
+        sample_groups = dataset.sample_groups
+        data_format = dataset.data_format
+        meta = dataset.metadata
+        dataset_key = f"{meta['model']}_{meta['feature_type']}_cdr{meta['cdr_threshold']}"
         
-        logger.info(f"\n分析完成: {len(results)}/{len(datasets)} 成功")
+        n_features = X.shape[1]
+        selected_indices = list(range(n_features))
+        
+        results = {}
+        
+        while len(selected_indices) >= 5:
+            current_n_features = len(selected_indices)
+            X_selected = X[:, selected_indices]
+            
+            logger.info(f"特徵數: {current_n_features}")
+            
+            # K-fold CV
+            if data_format == "per_image":
+                fold_results = self._run_kfold_cv_per_image(
+                    X_selected, y, subject_ids, base_ids, sample_groups, filter_stats,
+                    dataset_key, current_n_features
+                )
+            else:
+                fold_results = self._run_kfold_cv(
+                    X_selected, y, subject_ids, base_ids, filter_stats,
+                    dataset_key, current_n_features
+                )
+            
+            # 彙整結果
+            result = self._aggregate_fold_results(fold_results, filter_stats)
+            result['metadata'] = meta
+            result['selected_indices'] = selected_indices.copy()
+            result['original_n_features'] = n_features
+            result['current_n_features'] = current_n_features
+            result['filter_stats'] = filter_stats
+            result['data_format'] = data_format
+            result['timestamp'] = datetime.now().isoformat()
+            
+            self._save_result(dataset_key, current_n_features, result)
+            results[current_n_features] = result
+            
+            logger.info(
+                f"  → Acc: {result['test_metrics']['accuracy']:.3f}, "
+                f"MCC: {result['test_metrics']['mcc']:.3f}"
+            )
+            
+            # 捨棄最低重要性的特徵
+            avg_importance = result['feature_importance']
+            if avg_importance is None or len(selected_indices) <= self.n_drop_features:
+                break
+            
+            sorted_idx = np.argsort(avg_importance)
+            drop_positions = sorted_idx[:self.n_drop_features]
+            selected_indices = [
+                idx for i, idx in enumerate(selected_indices) 
+                if i not in drop_positions
+            ]
+        
         return results
-    # ========== 特徵選擇 ==========
+
+    # ========== K-fold CV（格式一：averaged）==========
     
-    def _select_features(
+    def _run_kfold_cv(
         self,
-        X_train: np.ndarray,
-        y_train: np.ndarray,
-        X_test: np.ndarray
-    ) -> Tuple[np.ndarray, np.ndarray, List[int]]:
-        """
-        使用 XGBoost 特徵重要性選擇特徵
+        X: np.ndarray,
+        y: np.ndarray,
+        subject_ids: np.ndarray,
+        base_ids: np.ndarray,
+        filter_stats: Dict = None,
+        dataset_key: str = None,
+        n_features: int = None,
+    ) -> List[Dict]:
+        """執行 K-fold CV（格式一）"""
+        gkf = GroupKFold(n_splits=self.n_folds)
+        fold_results = []
         
-        Args:
-            X_train: 訓練特徵
-            y_train: 訓練標籤
-            X_test: 測試特徵
+        # 使用 base_ids 分組，確保同一人的不同訪視在同一 fold
+        for fold_idx, (train_idx, test_idx) in enumerate(gkf.split(X, y, groups=base_ids)):
+            X_train, X_test = X[train_idx], X[test_idx]
+            y_train, y_test = y[train_idx], y[test_idx]
+            train_subject_ids = subject_ids[train_idx]
+            test_subject_ids = subject_ids[test_idx]
+            
+            neg_count = np.sum(y_train == 0)
+            pos_count = np.sum(y_train == 1)
+            scale_pos_weight = neg_count / pos_count if pos_count > 0 else 1.0
+            
+            fold_xgb_params = self.xgb_params.copy()
+            fold_xgb_params['scale_pos_weight'] = scale_pos_weight
+            
+            model = xgb.XGBClassifier(**fold_xgb_params)
+            model.fit(X_train, y_train)
+            
+            # 訓練集預測
+            y_pred_train = model.predict(X_train)
+            y_prob_train = model.predict_proba(X_train)[:, 1]
+            
+            # 測試集預測
+            y_pred = model.predict(X_test)
+            y_prob = model.predict_proba(X_test)[:, 1]
+            
+            test_metrics = self._calculate_metrics(y_test, y_pred, y_prob)
+            train_metrics = self._calculate_metrics(y_train, y_pred_train)
+            
+            corrected_metrics = None
+            if filter_stats:
+                corrected_metrics = self._calculate_corrected_metrics_fold(
+                    y_test, y_pred, filter_stats
+                )
+            
+            # 儲存預測分數
+            self._save_predictions(
+                dataset_key, n_features, fold_idx + 1,
+                train_subject_ids, y_prob_train, "train"
+            )
+            self._save_predictions(
+                dataset_key, n_features, fold_idx + 1,
+                test_subject_ids, y_prob, "test"
+            )
+            
+            fold_results.append({
+                'model': model,
+                'train_metrics': train_metrics,
+                'test_metrics': test_metrics,
+                'corrected_metrics': corrected_metrics,
+                'feature_importance': model.feature_importances_,
+                'n_train': len(X_train),
+                'n_test': len(X_test),
+                'avg_scale_pos_weight': scale_pos_weight
+            })
         
-        Returns:
-            (X_train_selected, X_test_selected, selected_indices)
-        """
-        # 訓練臨時模型
-        temp_model = xgb.XGBClassifier(
-            n_estimators=100,
-            max_depth=5,
-            random_state=self.random_seed,
-            n_jobs=-1
-        )
-        temp_model.fit(X_train, y_train)
+        return fold_results
+
+    # ========== K-fold CV（格式二：per_image）==========
+    
+    def _run_kfold_cv_per_image(
+        self,
+        X: np.ndarray,
+        y: np.ndarray,
+        subject_ids: np.ndarray,
+        base_ids: np.ndarray,
+        sample_groups: np.ndarray,
+        filter_stats: Dict = None,
+        dataset_key: str = None,
+        n_features: int = None,
+    ) -> List[Dict]:
+        """執行 K-fold CV（格式二）- 測試時聚合"""
+        gkf = GroupKFold(n_splits=self.n_folds)
+        fold_results = []
         
-        # 獲取特徵重要性
-        importance = temp_model.feature_importances_
+        # 使用 base_ids 分組，確保同一人的不同訪視和相片都在同一 fold
+        for fold_idx, (train_idx, test_idx) in enumerate(gkf.split(X, y, groups=base_ids)):
+            X_train, X_test = X[train_idx], X[test_idx]
+            y_train, y_test = y[train_idx], y[test_idx]
+            subject_ids_train = subject_ids[train_idx]
+            subject_ids_test = subject_ids[test_idx]
+            
+            neg_count = np.sum(y_train == 0)
+            pos_count = np.sum(y_train == 1)
+            scale_pos_weight = neg_count / pos_count if pos_count > 0 else 1.0
+            
+            n_train_subjects = len(set(subject_ids_train))
+            n_test_subjects = len(set(subject_ids_test))
+            
+            fold_xgb_params = self.xgb_params.copy()
+            fold_xgb_params['scale_pos_weight'] = scale_pos_weight
+            
+            model = xgb.XGBClassifier(**fold_xgb_params)
+            model.fit(X_train, y_train)
+            
+            # 訓練集預測
+            y_pred_train = model.predict(X_train)
+            train_metrics = self._calculate_metrics(y_train, y_pred_train)
+            
+            # 訓練集聚合預測分數（每個個案的平均機率）
+            y_prob_train_all = model.predict_proba(X_train)[:, 1]
+            train_unique_ids, train_prob_agg = self._aggregate_predictions_with_ids(
+                subject_ids_train, y_prob_train_all
+            )
+            
+            # 測試集預測（聚合）
+            y_prob_all = model.predict_proba(X_test)[:, 1]
+            y_test_agg, y_pred_agg, y_prob_agg = self._aggregate_predictions(
+                subject_ids_test, y_test, y_prob_all
+            )
+            
+            # 取得測試集的唯一個案 ID
+            test_unique_ids, _ = self._aggregate_predictions_with_ids(
+                subject_ids_test, y_prob_all
+            )
+            
+            test_metrics = self._calculate_metrics(y_test_agg, y_pred_agg, y_prob_agg)
+            
+            corrected_metrics = None
+            if filter_stats:
+                corrected_metrics = self._calculate_corrected_metrics_fold(
+                    y_test_agg, y_pred_agg, filter_stats
+                )
+            
+            # 儲存預測分數（聚合後的）
+            self._save_predictions(
+                dataset_key, n_features, fold_idx + 1,
+                train_unique_ids, train_prob_agg, "train"
+            )
+            self._save_predictions(
+                dataset_key, n_features, fold_idx + 1,
+                test_unique_ids, y_prob_agg, "test"
+            )
+            
+            fold_results.append({
+                'model': model,
+                'train_metrics': train_metrics,
+                'test_metrics': test_metrics,
+                'corrected_metrics': corrected_metrics,
+                'feature_importance': model.feature_importances_,
+                'n_train': len(X_train),
+                'n_test': len(X_test),
+                'n_train_subjects': n_train_subjects,
+                'n_test_subjects': n_test_subjects,
+                'avg_scale_pos_weight': scale_pos_weight
+            })
         
-        # 排序並計算累積重要性
-        indices = np.argsort(importance)[::-1]
-        cumsum = np.cumsum(importance[indices])
+        return fold_results
+
+    def _aggregate_predictions(
+        self,
+        subject_ids: np.ndarray,
+        y_true: np.ndarray,
+        y_prob: np.ndarray
+    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+        """按個案聚合預測結果"""
+        unique_subjects = []
+        seen = set()
+        for sid in subject_ids:
+            if sid not in seen:
+                unique_subjects.append(sid)
+                seen.add(sid)
         
-        # 找出達到閾值的特徵數量
-        if cumsum[-1] > 0:
-            n_features = np.searchsorted(cumsum, self.importance_ratio * cumsum[-1]) + 1
-        else:
-            n_features = len(indices)
+        y_true_agg = []
+        y_prob_agg = []
         
-        n_features = max(1, min(n_features, len(indices)))
+        for sid in unique_subjects:
+            mask = subject_ids == sid
+            y_true_agg.append(y_true[mask][0])
+            y_prob_agg.append(np.mean(y_prob[mask]))
         
-        # 選擇最重要的特徵
-        selected_indices = sorted(indices[:n_features].tolist())
+        y_true_agg = np.array(y_true_agg)
+        y_prob_agg = np.array(y_prob_agg)
+        y_pred_agg = (y_prob_agg >= 0.5).astype(int)
         
-        return (
-            X_train[:, selected_indices],
-            X_test[:, selected_indices],
-            selected_indices
-        )
+        return y_true_agg, y_pred_agg, y_prob_agg
+
+    def _aggregate_predictions_with_ids(
+        self,
+        subject_ids: np.ndarray,
+        y_prob: np.ndarray
+    ) -> Tuple[np.ndarray, np.ndarray]:
+        """按個案聚合預測分數，回傳唯一 ID 和聚合後的分數"""
+        unique_subjects = []
+        seen = set()
+        for sid in subject_ids:
+            if sid not in seen:
+                unique_subjects.append(sid)
+                seen.add(sid)
+        
+        y_prob_agg = []
+        for sid in unique_subjects:
+            mask = subject_ids == sid
+            y_prob_agg.append(np.mean(y_prob[mask]))
+        
+        return np.array(unique_subjects), np.array(y_prob_agg)
+
+    # ========== 預測分數儲存 ==========
+    
+    def _save_predictions(
+        self,
+        dataset_key: str,
+        n_features: int,
+        fold_idx: int,
+        subject_ids: np.ndarray,
+        y_prob: np.ndarray,
+        split: str  # "train" or "test"
+    ):
+        """儲存預測分數到 CSV"""
+        if self.pred_prob_dir is None or dataset_key is None:
+            return
+        
+        # 建立子目錄
+        feature_suffix = f"n_features_{n_features}"
+        output_dir = self.pred_prob_dir / feature_suffix
+        output_dir.mkdir(parents=True, exist_ok=True)
+        
+        # 檔名格式: {dataset_key}_fold_{fold_idx}_{split}.csv
+        filename = f"{dataset_key}_fold_{fold_idx}_{split}.csv"
+        output_path = output_dir / filename
+        
+        # 建立 DataFrame 並儲存
+        df = pd.DataFrame({
+            '個案編號': subject_ids,
+            '預測分數': y_prob
+        })
+        df.to_csv(output_path, index=False, encoding='utf-8-sig')
+        
+        logger.debug(f"預測分數已儲存: {output_path}")
+
+    # ========== 結果彙整 ==========
+    
+    def _aggregate_fold_results(
+        self, 
+        fold_results: List[Dict],
+        filter_stats: Dict = None
+    ) -> Dict:
+        """彙整各 fold 結果"""
+        metric_keys = ['accuracy', 'mcc', 'sensitivity', 'specificity', 
+                       'precision', 'recall', 'f1', 'auc']
+        
+        # train_metrics
+        train_metrics = {}
+        for key in metric_keys:
+            values = [f['train_metrics'].get(key) for f in fold_results 
+                      if f['train_metrics'].get(key) is not None]
+            train_metrics[key] = float(np.mean(values)) if values else None
+        train_cms = [np.array(f['train_metrics']['confusion_matrix']) for f in fold_results]
+        train_metrics['confusion_matrix'] = np.mean(train_cms, axis=0).tolist()
+
+        # test_metrics
+        test_metrics = {}
+        for key in metric_keys:
+            values = [f['test_metrics'].get(key) for f in fold_results 
+                      if f['test_metrics'].get(key) is not None]
+            test_metrics[key] = float(np.mean(values)) if values else None
+        cms = [np.array(f['test_metrics']['confusion_matrix']) for f in fold_results]
+        test_metrics['confusion_matrix'] = np.mean(cms, axis=0).tolist()
+        
+        # corrected_metrics
+        corrected_metrics = None
+        if filter_stats and fold_results[0].get('corrected_metrics'):
+            corrected_metrics = {}
+            for key in metric_keys:
+                values = [f['corrected_metrics'].get(key) for f in fold_results 
+                          if f['corrected_metrics'] and f['corrected_metrics'].get(key) is not None]
+                corrected_metrics[key] = float(np.mean(values)) if values else None
+            ccms = [np.array(f['corrected_metrics']['confusion_matrix']) for f in fold_results 
+                    if f['corrected_metrics']]
+            corrected_metrics['confusion_matrix'] = np.mean(ccms, axis=0).tolist()
+        
+        # feature_importance
+        importances = [f['feature_importance'] for f in fold_results]
+        avg_importance = np.mean(importances, axis=0).tolist()
+        
+        result = {
+            'train_metrics': train_metrics,
+            'test_metrics': test_metrics,
+            'corrected_metrics': corrected_metrics,
+            'feature_importance': avg_importance,
+            'n_train': int(np.mean([f['n_train'] for f in fold_results])),
+            'n_test': int(np.mean([f['n_test'] for f in fold_results])),
+            'n_folds': len(fold_results),
+            'fold_models': [f['model'] for f in fold_results],
+            'avg_scale_pos_weight': float(np.mean([f['avg_scale_pos_weight'] for f in fold_results]))
+        }
+        
+        if 'n_train_subjects' in fold_results[0]:
+            result['n_train_subjects'] = int(np.mean([f['n_train_subjects'] for f in fold_results]))
+            result['n_test_subjects'] = int(np.mean([f['n_test_subjects'] for f in fold_results]))
+        
+        return result
     
     # ========== 評估指標 ==========
     
@@ -270,30 +478,16 @@ class XGBoostAnalyzer:
         y_pred: np.ndarray,
         y_prob: Optional[np.ndarray] = None
     ) -> Dict:
-        """
-        計算評估指標
-        
-        Args:
-            y_true: 真實標籤
-            y_pred: 預測標籤
-            y_prob: 預測機率（可選）
-        
-        Returns:
-            指標字典
-        """
-        # 基本指標
+        """計算評估指標"""
         cm = confusion_matrix(y_true, y_pred)
         
-        # 處理混淆矩陣
         if cm.shape == (2, 2):
             tn, fp, fn, tp = cm.ravel()
         else:
             tn = fp = fn = tp = 0
             if cm.shape == (1, 1):
-                if y_true[0] == 0:
-                    tn = cm[0, 0]
-                else:
-                    tp = cm[0, 0]
+                tn = cm[0, 0] if y_true[0] == 0 else 0
+                tp = cm[0, 0] if y_true[0] == 1 else 0
         
         metrics = {
             'accuracy': float(accuracy_score(y_true, y_pred)),
@@ -306,35 +500,36 @@ class XGBoostAnalyzer:
             'confusion_matrix': cm.tolist()
         }
         
-        # AUC（如果有機率）
         if y_prob is not None:
             try:
                 metrics['auc'] = float(roc_auc_score(y_true, y_prob))
-            except Exception as e:
-                logger.warning(f"無法計算 AUC: {e}")
+            except:
                 metrics['auc'] = None
         
         return metrics
-    
-    def _calculate_corrected_metrics(self, y_test, y_pred_test, filter_stats: Dict) -> Dict:
-        """計算校正後指標（加入被篩掉的人全判陰性）"""
-        cm = confusion_matrix(y_test, y_pred_test)
+
+    def _calculate_corrected_metrics_fold(
+        self, 
+        y_test: np.ndarray, 
+        y_pred: np.ndarray, 
+        filter_stats: Dict
+    ) -> Dict:
+        """計算單一 fold 的校正後指標"""
+        cm = confusion_matrix(y_test, y_pred)
         tn, fp, fn, tp = cm.ravel() if cm.shape == (2, 2) else (0, 0, 0, 0)
         
-        # 被篩掉的人
         health_filtered_out = filter_stats.get('health_filtered_out', 0)
         patient_filtered_out = filter_stats.get('patient_filtered_out', 0)
+        scale = 1.0 / self.n_folds
         
-        # 校正後：被篩掉的健康組 → TN，被篩掉的病患組 → FN
-        corrected_tn = tn + health_filtered_out
+        corrected_tn = tn + int(health_filtered_out * scale)
+        corrected_fn = fn + int(patient_filtered_out * scale)
         corrected_fp = fp
-        corrected_fn = fn + patient_filtered_out
         corrected_tp = tp
         
         corrected_cm = [[corrected_tn, corrected_fp], 
                         [corrected_fn, corrected_tp]]
         
-        # 計算指標
         total = corrected_tn + corrected_fp + corrected_fn + corrected_tp
         accuracy = (corrected_tn + corrected_tp) / total if total > 0 else 0
         sensitivity = corrected_tp / (corrected_tp + corrected_fn) if (corrected_tp + corrected_fn) > 0 else 0
@@ -343,7 +538,6 @@ class XGBoostAnalyzer:
         recall = sensitivity
         f1 = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0
         
-        # MCC
         numerator = (corrected_tp * corrected_tn) - (corrected_fp * corrected_fn)
         denominator = np.sqrt(
             (corrected_tp + corrected_fp) * (corrected_tp + corrected_fn) *
@@ -363,174 +557,110 @@ class XGBoostAnalyzer:
         }
 
     # ========== 儲存 ==========
-    
-    def _save_model(self, dataset_key: str, result: Dict):
-        """儲存模型"""
-        model = result['model']
+
+    def _save_result(self, dataset_key: str, n_features: int, result: Dict):
+        """儲存結果"""
+        feature_suffix = f"n_features_{n_features}"
         
-        # XGBoost 模型（JSON 格式）
-        model_path = self.models_dir / f"{dataset_key}.json"
-        model.save_model(str(model_path))
-        logger.debug(f"模型已儲存: {model_path}")
-        
-        # 特徵選擇資訊（如果有）
-        if result['selected_features'] is not None:
+        if self.models_dir:
+            model_subdir = self.models_dir / feature_suffix
+            model_subdir.mkdir(parents=True, exist_ok=True)
+            
+            model_path = model_subdir / f"{dataset_key}.json"
+            result['fold_models'][0].save_model(str(model_path))
+            
             import json
-            
             feature_info = {
-                'selected_indices': result['selected_features'],
+                'selected_indices': result['selected_indices'],
                 'original_dim': result['original_n_features'],
-                'selected_dim': result['selected_n_features'],
-                'importance_ratio': self.importance_ratio
+                'selected_dim': result['current_n_features'],
             }
-            
-            feature_path = self.models_dir / f"{dataset_key}_features.json"
+            feature_path = model_subdir / f"{dataset_key}_features.json"
             with open(feature_path, 'w', encoding='utf-8') as f:
                 json.dump(feature_info, f, indent=2)
-            logger.debug(f"特徵資訊已儲存: {feature_path}")
-    
-    def _save_report(self, dataset_key: str, result: Dict, filter_stats: Dict = None):
-        """儲存文字報告"""
-        report_path = self.reports_dir / f"{dataset_key}_report.txt"
         
-        # 指標順序
+        if self.reports_dir:
+            report_subdir = self.reports_dir / feature_suffix
+            report_subdir.mkdir(parents=True, exist_ok=True)
+            self._save_report(report_subdir, dataset_key, result)
+
+    def _save_report(self, report_dir: Path, dataset_key: str, result: Dict):
+        """儲存文字報告"""
+        report_path = report_dir / f"{dataset_key}_report.txt"
+        
         metric_order = ['accuracy', 'mcc', 'sensitivity', 'specificity', 
                         'precision', 'recall', 'f1', 'auc']
         
+        data_format = result.get('data_format', 'averaged')
+        
         with open(report_path, 'w', encoding='utf-8') as f:
-            f.write("XGBoost 分析報告\n")
+            f.write(f"XGBoost 分析報告 ({self.n_folds}-Fold CV)\n")
             f.write("=" * 60 + "\n")
             f.write(f"資料集: {dataset_key}\n")
+            f.write(f"資料格式: {data_format}\n")
             f.write(f"分析時間: {result['timestamp']}\n")
-            f.write(f"訓練集: {result['n_train']} 樣本\n")
-            f.write(f"測試集: {result['n_test']} 樣本\n")
+            f.write(f"特徵數: {result['current_n_features']} / {result['original_n_features']}\n")
+            f.write(f"CV 折數: {result['n_folds']}\n")
             
-            # 年齡篩選統計（新增）
+            if 'n_train_subjects' in result:
+                f.write(f"平均訓練集: {result['n_train_subjects']} 個案, {result['n_train']} 樣本\n")
+                f.write(f"平均測試集: {result['n_test_subjects']} 個案, {result['n_test']} 樣本\n")
+            else:
+                f.write(f"平均訓練集: {result['n_train']} 樣本\n")
+                f.write(f"平均測試集: {result['n_test']} 樣本\n")
+            
+            filter_stats = result.get('filter_stats')
             if filter_stats:
                 f.write("\n年齡篩選統計:\n")
                 f.write("-" * 30 + "\n")
                 f.write(f"  最低年齡閾值: {filter_stats.get('min_predicted_age', 'N/A')}\n")
                 f.write(f"  整體篩除比例: {filter_stats.get('filtered_out_ratio', 0):.1%}\n")
-                f.write(f"  健康組篩除: {filter_stats.get('health_filtered_out', 0)} / {filter_stats.get('health_original', 0)} ({filter_stats.get('health_filtered_out_ratio', 0):.1%})\n")
-                f.write(f"  病患組篩除: {filter_stats.get('patient_filtered_out', 0)} / {filter_stats.get('patient_original', 0)} ({filter_stats.get('patient_filtered_out_ratio', 0):.1%})\n")
-
-            # 校正後混淆矩陣（新增）
-            if result.get('corrected_metrics'):
-                corrected = result['corrected_metrics']
-                f.write("\n校正後混淆矩陣（含被篩掉個案）:\n")
-                f.write("-" * 30 + "\n")
-                ccm = corrected['confusion_matrix']
-                f.write("         真實0  真實1\n")
-                f.write(f"預測0   {int(ccm[0][0]):5d}  {int(ccm[1][0]):5d}\n")
-                f.write(f"預測1   {int(ccm[0][1]):5d}  {int(ccm[1][1]):5d}\n")
-                
-                f.write("\n校正後效能:\n")
-                f.write("-" * 30 + "\n")
-                for metric in metric_order:
-                    if metric in corrected and metric != 'confusion_matrix':
-                        value = corrected[metric]
-                        if value is not None:
-                            f.write(f"  {metric}: {value:.4f}\n")
-
-            # 測試集混淆矩陣
-            f.write("\n測試集混淆矩陣:\n")
+                f.write(f"  健康組篩除: {filter_stats.get('health_filtered_out', 0)} / {filter_stats.get('health_original', 0)}\n")
+                f.write(f"  病患組篩除: {filter_stats.get('patient_filtered_out', 0)} / {filter_stats.get('patient_original', 0)}\n")
+            
+            # 測試集
+            f.write(f"\n測試集混淆矩陣 ({self.n_folds}-Fold 平均):\n")
             f.write("-" * 30 + "\n")
             cm = result['test_metrics']['confusion_matrix']
             f.write("         真實0  真實1\n")
-            f.write(f"預測0   {int(cm[0][0]):5d}  {int(cm[1][0]):5d}\n")
-            f.write(f"預測1   {int(cm[0][1]):5d}  {int(cm[1][1]):5d}\n")
-
-            # 測試集效能
-            f.write("\n測試集效能:\n")
+            f.write(f"預測0   {cm[0][0]:5.1f}  {cm[1][0]:5.1f}\n")
+            f.write(f"預測1   {cm[0][1]:5.1f}  {cm[1][1]:5.1f}\n")
+            
+            f.write(f"\n測試集效能 ({self.n_folds}-Fold 平均):\n")
             f.write("-" * 30 + "\n")
             for metric in metric_order:
-                if metric in result['test_metrics'] and metric != 'confusion_matrix':
-                    value = result['test_metrics'][metric]
+                value = result['test_metrics'].get(metric)
+                if value is not None:
+                    f.write(f"  {metric}: {value:.4f}\n")
+            
+            # 校正後
+            if result.get('corrected_metrics'):
+                f.write(f"\n校正後混淆矩陣 ({self.n_folds}-Fold 平均):\n")
+                f.write("-" * 30 + "\n")
+                cm = result['corrected_metrics']['confusion_matrix']
+                f.write("         真實0  真實1\n")
+                f.write(f"預測0   {cm[0][0]:5.1f}  {cm[1][0]:5.1f}\n")
+                f.write(f"預測1   {cm[0][1]:5.1f}  {cm[1][1]:5.1f}\n")
+                
+                f.write(f"\n校正後效能 ({self.n_folds}-Fold 平均):\n")
+                f.write("-" * 30 + "\n")
+                for metric in metric_order:
+                    value = result['corrected_metrics'].get(metric)
                     if value is not None:
                         f.write(f"  {metric}: {value:.4f}\n")
-                    else:
-                        f.write(f"  {metric}: N/A\n")
-            
-            # 訓練集效能
-            f.write("\n訓練集效能:\n")
-            f.write("-" * 30 + "\n")
-            for metric in metric_order:
-                if metric in result['train_metrics'] and metric != 'confusion_matrix':
+
+            # 訓練集
+            if result.get('train_metrics'):
+                f.write(f"\n訓練集混淆矩陣 ({self.n_folds}-Fold 平均):\n")
+                f.write("-" * 30 + "\n")
+                cm = result['train_metrics']['confusion_matrix']
+                f.write("         真實0  真實1\n")
+                f.write(f"預測0   {cm[0][0]:5.1f}  {cm[1][0]:5.1f}\n")
+                f.write(f"預測1   {cm[0][1]:5.1f}  {cm[1][1]:5.1f}\n")
+                
+                f.write(f"\n訓練集效能 ({self.n_folds}-Fold 平均):\n")
+                f.write("-" * 30 + "\n")
+                for metric in metric_order:
                     value = result['train_metrics'].get(metric)
                     if value is not None:
                         f.write(f"  {metric}: {value:.4f}\n")
-            
-            # 特徵選擇
-            if result['selected_features'] is not None:
-                f.write("\n特徵選擇:\n")
-                f.write("-" * 30 + "\n")
-                f.write(f"  原始維度: {result['original_n_features']}\n")
-                f.write(f"  選擇維度: {result['selected_n_features']}\n")
-                compression_ratio = result['selected_n_features'] / result['original_n_features']
-                f.write(f"  壓縮比例: {compression_ratio:.1%}\n")
-        
-        logger.debug(f"報告已儲存: {report_path}")
-    
-    def _save_summary(self, results: Dict):
-        """儲存總結報告"""
-        import json
-        
-        summary_path = self.output_dir / "training_summary.json"
-        
-        summary = {
-            'timestamp': datetime.now().isoformat(),
-            'n_datasets': len(results),
-            'xgb_params': self.xgb_params,
-            'test_size': self.test_size,
-            'random_seed': self.random_seed,
-            'feature_selection': self.feature_selection,
-            'results': {}
-        }
-        
-        # 整理關鍵指標
-        for key, result in results.items():
-            summary['results'][key] = {
-                'train_accuracy': result['train_metrics']['accuracy'],
-                'test_accuracy': result['test_metrics']['accuracy'],
-                'test_mcc': result['test_metrics']['mcc'],
-                'test_f1': result['test_metrics']['f1'],
-                'test_auc': result['test_metrics'].get('auc')
-            }
-        
-        with open(summary_path, 'w', encoding='utf-8') as f:
-            json.dump(summary, f, indent=2, ensure_ascii=False)
-        
-        logger.info(f"總結報告已儲存: {summary_path}")
-        
-        # 找出最佳模型
-        self._print_best_models(summary['results'])
-    
-    def _print_best_models(self, results: Dict):
-        """顯示最佳模型"""
-        if not results:
-            return
-        
-        print("\n" + "=" * 60)
-        print("最佳模型")
-        print("=" * 60)
-        
-        # 最佳 MCC
-        best_mcc_key = max(results.keys(), key=lambda k: results[k]['test_mcc'])
-        best_mcc = results[best_mcc_key]
-        
-        print(f"\n最佳 MCC: {best_mcc_key}")
-        print(f"  MCC: {best_mcc['test_mcc']:.4f}")
-        print(f"  準確率: {best_mcc['test_accuracy']:.4f}")
-        print(f"  F1: {best_mcc['test_f1']:.4f}")
-        if best_mcc['test_auc']:
-            print(f"  AUC: {best_mcc['test_auc']:.4f}")
-        
-        # 最佳準確率
-        best_acc_key = max(results.keys(), key=lambda k: results[k]['test_accuracy'])
-        if best_acc_key != best_mcc_key:
-            best_acc = results[best_acc_key]
-            print(f"\n最佳準確率: {best_acc_key}")
-            print(f"  準確率: {best_acc['test_accuracy']:.4f}")
-            print(f"  MCC: {best_acc['test_mcc']:.4f}")
-        
-        print("=" * 60)

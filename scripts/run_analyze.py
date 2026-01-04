@@ -40,10 +40,12 @@ class AnalysisPipeline:
         cdr_thresholds: list = None,
         data_balancing: bool = True,
         use_all_visits: bool = False,
-        test_size: float = 0.2,
+        n_folds: int = 5,                 # 新增
+        n_drop_features: int = 5,         # 新增
+        # test_size: float = 0.2,
         random_seed: int = 42,
-        feature_selection: bool = True,
-        importance_ratio: float = 0.8,
+        # feature_selection: bool = True,
+        # importance_ratio: float = 0.8,
         use_cache: bool = True
     ):
         """
@@ -80,15 +82,21 @@ class AnalysisPipeline:
         self.use_cache = use_cache
         
         # Analyzer 參數
-        self.test_size = test_size
+        # self.test_size = test_size
         self.random_seed = random_seed
-        self.feature_selection = feature_selection
-        self.importance_ratio = importance_ratio
+        # self.feature_selection = feature_selection
+        # self.importance_ratio = importance_ratio
+
+        self.n_folds = n_folds
+        self.n_drop_features = n_drop_features
         
         # 建立輸出目錄
         self.output_dir.mkdir(parents=True, exist_ok=True)
         
-        self.all_results: Dict[int, Dict] = {}  # {min_age: {dataset_key: result}}
+        # self.all_results: Dict[int, Dict] = {}  # {min_age: {dataset_key: result}}
+
+        self.all_results: Dict[int, Dict[str, Dict[int, Dict]]] = {}  
+        # {min_age: {dataset_key: {n_features: result}}}
 
         # 記錄配置
         self._log_configuration()
@@ -112,10 +120,9 @@ class AnalysisPipeline:
         logger.info(f"  使用快取: {self.use_cache}")
         logger.info("")
         logger.info("模型訓練配置:")
-        logger.info(f"  測試集比例: {self.test_size}")
+        logger.info(f"  CV 折數: {self.n_folds}")
+        logger.info(f"  每次捨棄特徵數: {self.n_drop_features}")
         logger.info(f"  隨機種子: {self.random_seed}")
-        logger.info(f"  特徵選擇: {self.feature_selection}")
-        logger.info(f"  特徵保留比例: {self.importance_ratio}")
         logger.info("=" * 70)
     
     def run(self):
@@ -239,15 +246,12 @@ class AnalysisPipeline:
         """訓練模型"""
         try:
             analyzer = XGBoostAnalyzer(
-                output_dir=self.output_dir,
                 models_dir=models_dir,
                 reports_dir=reports_dir,
                 pred_prob_dir=Path(f"{self.output_dir}/pred_probability"),
                 n_folds=self.n_folds,
                 n_drop_features=self.n_drop_features,
                 random_seed=self.random_seed,
-                feature_selection=self.feature_selection,
-                importance_ratio=self.importance_ratio
             )
             
             results = analyzer.analyze(datasets, filter_stats)
@@ -258,7 +262,7 @@ class AnalysisPipeline:
             import traceback
             traceback.print_exc()
             return {}
-    
+        
     def _save_summary(self):
         """儲存總結報告"""
         import json
@@ -272,20 +276,24 @@ class AnalysisPipeline:
                 'cdr_thresholds': self.cdr_thresholds,
                 'data_balancing': self.data_balancing,
                 'use_all_visits': self.use_all_visits,
+                'n_folds': self.n_folds,
+                'n_drop_features': self.n_drop_features,
             },
             'results_by_age': {}
         }
         
-        for min_age, results in self.all_results.items():
-            summary['results_by_age'][min_age] = {
-                key: {
-                    'test_accuracy': r['test_metrics']['accuracy'],
-                    'test_mcc': r['test_metrics']['mcc'],
-                    'corrected_accuracy': r.get('corrected_metrics', {}).get('accuracy'),
-                    'corrected_mcc': r.get('corrected_metrics', {}).get('mcc'),
+        for min_age, results_by_dataset in self.all_results.items():
+            summary['results_by_age'][min_age] = {}
+            for dataset_key, results_by_n_features in results_by_dataset.items():
+                summary['results_by_age'][min_age][dataset_key] = {
+                    n_feat: {
+                        'test_accuracy': r['test_metrics']['accuracy'],
+                        'test_mcc': r['test_metrics']['mcc'],
+                        'corrected_accuracy': r.get('corrected_metrics', {}).get('accuracy') if r.get('corrected_metrics') else None,
+                        'corrected_mcc': r.get('corrected_metrics', {}).get('mcc') if r.get('corrected_metrics') else None,
+                    }
+                    for n_feat, r in results_by_n_features.items()
                 }
-                for key, r in results.items()
-            }
         
         summary_path = self.output_dir / "training_summary.json"
         with open(summary_path, 'w', encoding='utf-8') as f:
@@ -299,44 +307,21 @@ class AnalysisPipeline:
             logger.warning("沒有結果可以顯示")
             return
         
-        # 統計資訊
-        logger.info(f"成功訓練的模型數: {len(results)}")
+        logger.info(f"成功訓練的資料集數: {len(results)}")
         
-        # 找出最佳模型（按 MCC）
-        best_mcc_key = max(results.keys(), key=lambda k: results[k]['test_metrics']['mcc'])
-        best_mcc = results[best_mcc_key]
-        
-        logger.info("\n最佳模型（按 MCC）:")
-        logger.info(f"  資料集: {best_mcc_key}")
-        logger.info(f"  測試 MCC: {best_mcc['test_metrics']['mcc']:.4f}")
-        logger.info(f"  測試準確率: {best_mcc['test_metrics']['accuracy']:.4f}")
-        logger.info(f"  測試 F1: {best_mcc['test_metrics']['f1']:.4f}")
-        if best_mcc['test_metrics'].get('auc'):
-            logger.info(f"  測試 AUC: {best_mcc['test_metrics']['auc']:.4f}")
-        
-        # 找出最佳模型（按準確率）
-        best_acc_key = max(results.keys(), key=lambda k: results[k]['test_metrics']['accuracy'])
-        if best_acc_key != best_mcc_key:
-            best_acc = results[best_acc_key]
-            logger.info("\n最佳模型（按準確率）:")
-            logger.info(f"  資料集: {best_acc_key}")
-            logger.info(f"  測試準確率: {best_acc['test_metrics']['accuracy']:.4f}")
-            logger.info(f"  測試 MCC: {best_acc['test_metrics']['mcc']:.4f}")
-        
-        # 各模型效能統計
-        logger.info("\n各嵌入模型平均效能:")
-        model_stats = {}
-        for key, result in results.items():
-            model = result['metadata']['model']
-            if model not in model_stats:
-                model_stats[model] = {'mcc': [], 'accuracy': []}
-            model_stats[model]['mcc'].append(result['test_metrics']['mcc'])
-            model_stats[model]['accuracy'].append(result['test_metrics']['accuracy'])
-        
-        for model, stats in model_stats.items():
-            avg_mcc = sum(stats['mcc']) / len(stats['mcc'])
-            avg_acc = sum(stats['accuracy']) / len(stats['accuracy'])
-            logger.info(f"  {model}: MCC={avg_mcc:.4f}, Accuracy={avg_acc:.4f}")
+        # 找出每個 dataset 的最佳特徵數（按 MCC）
+        for dataset_key, results_by_n_features in results.items():
+            best_n_feat = max(
+                results_by_n_features.keys(),
+                key=lambda k: results_by_n_features[k]['test_metrics']['mcc']
+            )
+            best_result = results_by_n_features[best_n_feat]
+            
+            logger.info(
+                f"  {dataset_key}: 最佳特徵數={best_n_feat}, "
+                f"MCC={best_result['test_metrics']['mcc']:.4f}, "
+                f"Acc={best_result['test_metrics']['accuracy']:.4f}"
+            )
 
     def _plot_results(self):
         """繪製結果圖表"""
@@ -345,14 +330,20 @@ class AnalysisPipeline:
         
         plotter = ResultPlotter(self.all_results, plots_dir)
         
-        # 1. 每個 dataset_key 各畫四張圖
+        # 1. 每個 dataset_key 各畫四張圖（按年齡）
         plotter.plot_individual()
         
-        # 2. 所有組合在同一張圖
+        # 2. 所有組合在同一張圖（按年齡）
         plotter.plot_combined()
         
-        # 3. 按模型分組
+        # 3. 按模型分組（按年齡）
         plotter.plot_by_model()
+        
+        # 4. 按特徵數量（新增）
+        plotter.plot_by_n_features()
+        
+        # 5. 篩選統計
+        plotter.plot_filter_stats()
         
         logger.info(f"圖表已儲存至: {plots_dir}")
 
@@ -369,21 +360,23 @@ def main():
     
     # 資料載入配置
     # EMBEDDING_MODELS = ["arcface", "dlib", "topofr"]
-    EMBEDDING_MODELS = ["topofr"]
-    FEATURE_TYPES = ["origin"]
-    MIN_AGE_RANGE = (65, 66)
+    EMBEDDING_MODELS = ["arcface"]
+    FEATURE_TYPES = ["difference", "absolute_difference", "average", "relative_differences", "absolute_relative_differences"]
+    MIN_AGE_RANGE = (60, 61)
     CDR_THRESHOLDS = [0]
     DATA_BALANCING = False
-    USE_ALL_VISITS = False
+    USE_ALL_VISITS = True
     USE_CACHE = False
     
     # 模型訓練配置
-    TEST_SIZE = 0.2
+    N_FOLDS = 5
+    N_DROP_FEATURES = 5
+    # TEST_SIZE = 0.2
     RANDOM_SEED = 42
-    FEATURE_SELECTION = True
-    IMPORTANCE_RATIO = 0.8
+    # FEATURE_SELECTION = True
+    # IMPORTANCE_RATIO = 0.8
     
-    OUTPUT_DIR = f"workspace/analysis_{timestamp}_minage_balancing_{DATA_BALANCING}_allvisits_{USE_ALL_VISITS}"
+    OUTPUT_DIR = f"workspace/analysis_{timestamp}_balancing_{DATA_BALANCING}_allvisits_{USE_ALL_VISITS}"
     # ==================== 執行 Pipeline ====================
     
     pipeline = AnalysisPipeline(
@@ -397,10 +390,12 @@ def main():
         cdr_thresholds=CDR_THRESHOLDS,
         data_balancing=DATA_BALANCING,
         use_all_visits=USE_ALL_VISITS,
-        test_size=TEST_SIZE,
+        n_folds=N_FOLDS,                    
+        n_drop_features=N_DROP_FEATURES,
+        # test_size=TEST_SIZE,
         random_seed=RANDOM_SEED,
-        feature_selection=FEATURE_SELECTION,
-        importance_ratio=IMPORTANCE_RATIO,
+        # feature_selection=FEATURE_SELECTION,
+        # importance_ratio=IMPORTANCE_RATIO,
         use_cache=USE_CACHE
     )
     

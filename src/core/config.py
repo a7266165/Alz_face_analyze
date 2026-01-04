@@ -25,7 +25,7 @@ class PreprocessConfig:
     mirror_method: str = "flip"  # "midline" 或 "flip"
 
     # ========== CLAHE 參數 ==========
-    apply_clahe: bool = True  # 是否應用 CLAHE
+    apply_clahe: bool = False  # 是否應用 CLAHE
     clahe_clip_limit: float = 2.0  # CLAHE 限制參數
     clahe_tile_size: int = 8  # CLAHE 區塊大小
 
