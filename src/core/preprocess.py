@@ -422,27 +422,62 @@ class FacePreprocessor:
             (左臉鏡射, 右臉鏡射)
         """
         if self.config.mirror_method == "flip":
-            return self._create_flip_mirrors(image)
+            return self._create_flip_mirrors(image, landmarks)
         else:
             return self._create_midline_mirrors(image, landmarks)
 
     def _create_flip_mirrors(
         self, 
-        image: np.ndarray
+        image: np.ndarray,
+        landmarks: np.ndarray
     ) -> Tuple[np.ndarray, np.ndarray]:
         """
-        簡單水平翻轉鏡射
+        水平翻轉（保持長寬比，置中）
         
         Returns:
             (原圖, 水平翻轉圖)
         """
         H, W = self.config.mirror_size
         
-        # 縮放到目標大小
-        resized = cv2.resize(image, (W, H), interpolation=cv2.INTER_LINEAR)
-        flipped = cv2.flip(resized, 1)  # 1 = 水平翻轉
+        # 用 landmarks 找臉部邊界
+        x_coords = landmarks[:, 0]
+        y_coords = landmarks[:, 1]
         
-        return resized, flipped
+        x0, x1 = int(x_coords.min()), int(x_coords.max())
+        y0, y1 = int(y_coords.min()), int(y_coords.max())
+        
+        # 加 padding
+        pad = int(0.1 * max(x1 - x0, y1 - y0))
+        x0 = max(0, x0 - pad)
+        y0 = max(0, y0 - pad)
+        x1 = min(image.shape[1], x1 + pad)
+        y1 = min(image.shape[0], y1 + pad)
+        
+        # 裁切
+        cropped = image[y0:y1, x0:x1]
+        
+        # 計算縮放比例
+        face_w = x1 - x0
+        face_h = y1 - y0
+        
+        available_w = W * (1 - 2 * self.config.margin)
+        available_h = H * (1 - 2 * self.config.margin)
+        scale = min(available_w / face_w, available_h / face_h, 1.0)
+        
+        new_w = int(face_w * scale)
+        new_h = int(face_h * scale)
+        resized = cv2.resize(cropped, (new_w, new_h), interpolation=cv2.INTER_LINEAR)
+        
+        # 置中到畫布
+        canvas = np.zeros((H, W, 3), dtype=np.uint8)
+        start_x = (W - new_w) // 2
+        start_y = (H - new_h) // 2
+        canvas[start_y:start_y + new_h, start_x:start_x + new_w] = resized
+        
+        # 翻轉
+        flipped = cv2.flip(canvas, 1)
+        
+        return canvas, flipped
 
     def _create_midline_mirrors(
         self, 
