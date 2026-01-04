@@ -421,6 +421,37 @@ class FacePreprocessor:
         Returns:
             (左臉鏡射, 右臉鏡射)
         """
+        if self.config.mirror_method == "flip":
+            return self._create_flip_mirrors(image)
+        else:
+            return self._create_midline_mirrors(image, landmarks)
+
+    def _create_flip_mirrors(
+        self, 
+        image: np.ndarray
+    ) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        簡單水平翻轉鏡射
+        
+        Returns:
+            (原圖, 水平翻轉圖)
+        """
+        H, W = self.config.mirror_size
+        
+        # 縮放到目標大小
+        resized = cv2.resize(image, (W, H), interpolation=cv2.INTER_LINEAR)
+        flipped = cv2.flip(resized, 1)  # 1 = 水平翻轉
+        
+        return resized, flipped
+
+    def _create_midline_mirrors(
+        self, 
+        image: np.ndarray, 
+        landmarks: np.ndarray
+    ) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        以臉部中線鏡射半臉
+        """
         p0, n = self._estimate_midline(landmarks)
 
         left_mirror = self._align_to_canvas_premul(
@@ -438,12 +469,12 @@ class FacePreprocessor:
         )
 
         return left_mirror, right_mirror
-
+    
     def _estimate_midline(
         self, face_points: np.ndarray, midline_indices: Optional[Tuple[int, ...]] = None
     ) -> Tuple[np.ndarray, np.ndarray]:
         """
-        估計臉部中線（使用 PCA）
+        使用 PCA估計臉部中線
 
         Args:
             face_points: 臉部特徵點

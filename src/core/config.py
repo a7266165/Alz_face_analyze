@@ -22,6 +22,7 @@ class PreprocessConfig:
     mirror_size: Tuple[int, int] = (512, 512)  # 輸出鏡射影像大小
     feather_px: int = 2  # 邊緣羽化像素
     margin: float = 0.08  # 畫布邊緣留白比例
+    mirror_method: str = "midline"  # "midline" 或 "flip"
 
     # ========== CLAHE 參數 ==========
     apply_clahe: bool = False  # 是否應用 CLAHE
