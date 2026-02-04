@@ -7,27 +7,57 @@
 ```
 Alz_face_analyze/
 ├── src/
-│   ├── core/                   # 核心處理模組
-│   │   ├── config.py           # 配置 dataclass
-│   │   ├── preprocess.py       # 臉部預處理
-│   │   ├── feature_extract.py  # 特徵萃取
-│   │   └── age_predictor.py    # 年齡預測
+│   ├── core/                       # 核心處理模組
+│   │   ├── config.py               # 配置 dataclass
+│   │   ├── age_predictor.py        # 年齡預測 (MiVOLO)
+│   │   │
+│   │   ├── preprocess/             # 臉部預處理子模組
+│   │   │   ├── detector.py         # FaceDetector (MediaPipe)
+│   │   │   ├── selector.py         # FaceSelector (選擇最正面)
+│   │   │   ├── aligner.py          # FaceAligner (角度校正)
+│   │   │   ├── mirror.py           # MirrorGenerator (鏡射影像)
+│   │   │   └── base.py             # PreprocessPipeline (Facade)
+│   │   │
+│   │   └── extractor/              # 特徵萃取子模組
+│   │       ├── base.py             # BaseExtractor (ABC)
+│   │       ├── registry.py         # ExtractorRegistry (Singleton)
+│   │       ├── dlib_extractor.py   # DlibExtractor (128維)
+│   │       ├── arcface_extractor.py    # ArcFaceExtractor (512維)
+│   │       ├── topofr_extractor.py     # TopoFRExtractor (512維)
+│   │       └── vggface_extractor.py    # VGGFaceExtractor (4096維)
 │   │
-│   └── analysis/               # 分析模組
-│       ├── loader.py           # 資料載入
-│       ├── analyzer.py         # XGBoost 分析
-│       └── plotter.py          # 結果視覺化
+│   ├── analysis/                   # 分析模組
+│   │   ├── loader/                 # 資料載入子模組
+│   │   │   ├── base.py             # Dataset, DataLoaderProtocol
+│   │   │   ├── demographics.py     # DemographicsLoader
+│   │   │   ├── balancer.py         # DataBalancer (年齡分層平衡)
+│   │   │   └── data_loader.py      # DataLoader (主類別)
+│   │   │
+│   │   ├── analyzer/               # 分析器子模組
+│   │   │   ├── base.py             # BaseAnalyzer (ABC)
+│   │   │   └── xgboost_analyzer.py # XGBoostAnalyzer
+│   │   │
+│   │   └── plotter.py              # ResultPlotter (結果視覺化)
+│   │
+│   └── common/                     # 共用模組
+│       ├── types.py                # Protocol 定義、資料型別
+│       └── metrics.py              # MetricsCalculator
 │
-├── scripts/                    # 執行腳本
-│   ├── predict_ages.py         # 階段零：年齡預測
-│   ├── prepare_feature.py      # 階段一：特徵準備
-│   └── run_analyze.py          # 階段二：分析訓練
+├── scripts/                        # 執行腳本
+│   ├── predict_ages.py             # 階段零：年齡預測
+│   ├── prepare_feature.py          # 階段一：特徵準備
+│   ├── run_analyze.py              # 階段二：分析訓練
+│   ├── plot_predicted_ages.py      # 年齡預測統計與視覺化
+│   ├── calibrate_age_prediction.py # 年齡預測校正
+│   └── demographics_statistics.py  # 人口學統計
 │
 ├── data/
-│   ├── images/raw/path.txt     # 原始圖片路徑指向
-│   └── demographics/           # 人口學資料 (ACS.csv, NAD.csv, P.csv)
+│   ├── images/raw/path.txt         # 原始圖片路徑指向
+│   └── demographics/               # 人口學資料 (ACS.csv, NAD.csv, P.csv)
 │
-└── workspace/                  # 工作區（輸出）
+├── legacy/                         # 舊版程式碼 (備份參考用)
+│
+└── workspace/                      # 工作區（輸出）
     ├── predicted_ages.json
     ├── features/
     └── analysis/
@@ -79,91 +109,93 @@ scripts/prepare_feature.py
         │
         ├── _get_processed_subjects()       ← 斷點續傳：檢查已處理的受試者
         │
-        ├── src/core/feature_extract.py
-        │       └── FeatureExtractor.__init__()
-        │           ├── _init_dlib()        ← 載入 Dlib 模型 (128維)
-        │           ├── _init_arcface()     ← 載入 ArcFace/InsightFace (512維)
-        │           ├── _init_topofr()      ← 載入 TopoFR (512維)
+        ├── src/core/extractor/             ← 特徵萃取子模組
+        │       ├── registry.py
+        │       │   └── ExtractorRegistry   ← Singleton 註冊中心
+        │       │       ├── register()      ← @register 裝飾器
+        │       │       └── get()           ← 依名稱取得 extractor (lazy load)
+        │       │
+        │       └── FeatureExtractor        ← Facade 包裝類別
+        │           ├── __init__()          ← 透過 Registry 載入各 extractor
         │           └── _report_status()    ← 報告載入狀態
+        │
+        │       底層 extractors (繼承 BaseExtractor):
+        │       ├── dlib_extractor.py       → DlibExtractor (128維)
+        │       ├── arcface_extractor.py    → ArcFaceExtractor (512維)
+        │       ├── topofr_extractor.py     → TopoFRExtractor (512維)
+        │       └── vggface_extractor.py    → VGGFaceExtractor (4096維)
         │
         └── 對每個受試者：_process_subject()
                 │
                 ├── _load_images_from_subject()     ← 載入 jpg/png 圖片
                 │
                 ├── src/core/config.py
-                │       └── AnalyzeConfig           ← 預處理配置 dataclass
+                │       └── PreprocessConfig        ← 預處理配置 dataclass
                 │           ├── n_select = 10
                 │           ├── align_face = True
                 │           ├── mirror_size = (512, 512)
+                │           ├── mirror_method = "midline"
                 │           └── steps = ["select", "align", "mirror"]
                 │
-                ├── src/core/preprocess.py
-                │       └── FacePreprocessor
-                │           │
-                │           ├── __init__()
-                │           │   ├── mp.solutions.face_mesh.FaceMesh()  ← 初始化 MediaPipe
-                │           │   └── _setup_workspace()                  ← 建立子目錄
-                │           │
-                │           └── process()                               ← 主流程
+                ├── src/core/preprocess/            ← 臉部預處理子模組
+                │       │
+                │       ├── detector.py
+                │       │   └── FaceDetector        ← MediaPipe 人臉偵測
+                │       │       ├── detect()        ← 偵測 468 點 landmarks
+                │       │       └── _calculate_vertex_angle_sum()
+                │       │               │
+                │       │               ↓
+                │       │           FaceInfo(landmarks, angle_sum, ...)
+                │       │
+                │       ├── selector.py
+                │       │   └── FaceSelector        ← 選擇最正面的臉
+                │       │       └── select()        ← sorted(key=vertex_angle_sum)
+                │       │               │
+                │       │               ↓
+                │       │           List[FaceInfo] (top n)
+                │       │
+                │       ├── aligner.py
+                │       │   └── FaceAligner         ← 角度校正
+                │       │       └── align()
+                │       │           ├── _build_face_mask()      ← 建立凸包遮罩
+                │       │           ├── _calculate_midline_tilt() ← 計算傾斜角度
+                │       │           └── cv2.warpAffine()        ← 旋轉影像
+                │       │
+                │       ├── mirror.py
+                │       │   └── MirrorGenerator     ← 生成左右鏡射
+                │       │       └── generate()
+                │       │           ├── _estimate_midline()     ← PCA 估計中線
+                │       │           └── _create_mirror()        ← 鏡射+合成
+                │       │               ├── cv2.remap()         ← 映射像素
+                │       │               └── alpha 混合 + 裁切置中
+                │       │
+                │       └── base.py
+                │           └── PreprocessPipeline  ← Facade 統一介面
+                │               │   (別名: FacePreprocessor)
                 │               │
-                │               ├── _analyze_all_faces()                ← 分析所有圖片
-                │               │   ├── face_mesh.process()             ← MediaPipe 偵測 468 點
-                │               │   ├── _landmarks_to_array()           ← 轉換座標格式
-                │               │   └── _calculate_vertex_angle_sum()   ← 計算中軸彎曲角度
-                │               │           │
-                │               │           ↓
-                │               │       List[FaceInfo]
-                │               │
-                │               ├── _select_best_faces()                ← 選擇最正面的 n 張
-                │               │   └── sorted(key=vertex_angle_sum)
-                │               │           │
-                │               │           ↓
-                │               │       selected faces
-                │               │
-                │               └── _process_single_face()              ← 處理單張臉
-                │                       │
-                │                       ├── _align_face()               ← 角度校正
-                │                       │   ├── _build_face_mask()      ← 建立凸包遮罩
-                │                       │   ├── _calculate_midline_tilt() ← 計算傾斜角度
-                │                       │   └── cv2.warpAffine()        ← 旋轉影像
-                │                       │
-                │                       ├── _create_mirror_images()     ← 生成左右鏡射
-                │                       │   └── _create_midline_mirrors()
-                │                       │       ├── _estimate_midline()  ← PCA 估計中線
-                │                       │       └── _align_to_canvas_premul() ← 鏡射+合成
-                │                       │           ├── 計算反射座標
-                │                       │           ├── cv2.remap()      ← 映射像素
-                │                       │           └── alpha 混合 + 裁切置中
-                │                       │
-                │                       ├── _save_selected()            ← 儲存選中影像
-                │                       ├── _save_aligned()             ← 儲存對齊影像
-                │                       └── _save_mirrors()             ← 儲存鏡射影像
-                │                               │
-                │                               ↓
-                │                       ProcessedFace(aligned, left_mirror, right_mirror)
+                │               └── process()       ← 主流程
+                │                   ├── detector.detect()
+                │                   ├── selector.select()
+                │                   ├── aligner.align()
+                │                   ├── mirror.generate()
+                │                   └── _save_results()
+                │                           │
+                │                           ↓
+                │                   ProcessedFace(aligned, left_mirror, right_mirror)
                 │
-                ├── src/core/feature_extract.py
+                ├── src/core/extractor/
                 │       └── FeatureExtractor
                 │           │
                 │           ├── extract_features()                      ← 批次提取特徵
-                │           │   ├── _extract_dlib()                     ← Dlib 128維
-                │           │   │   ├── dlib_detector()                 ← 人臉偵測
-                │           │   │   ├── dlib_predictor()                ← 68 特徵點
-                │           │   │   └── dlib_face_rec.compute_face_descriptor()
-                │           │   │
-                │           │   ├── _extract_arcface()                  ← ArcFace 512維
-                │           │   │   └── arcface_app.get()               ← InsightFace API
-                │           │   │
-                │           │   └── _extract_topofr()                   ← TopoFR 512維
-                │           │       ├── cv2.resize(112, 112)
-                │           │       └── topofr_model()                  ← PyTorch 推論
+                │           │   └── 對每個 extractor:
+                │           │       └── extractor.extract()             ← 透過 Registry
                 │           │
                 │           └── calculate_differences()                 ← 計算左右臉差異
-                │               ├── "differences"      → left - right
-                │               ├── "absolute_differences" → |left - right|
-                │               ├── "averages"         → (left + right) / 2
-                │               ├── "relative_differences" → diff / norm
-                │               └── "absolute_relative_differences"
+                │               ├── "difference"              → left - right
+                │               ├── "absolute_difference"     → |left - right|
+                │               ├── "average"                 → (left + right) / 2
+                │               ├── "relative_difference"     → diff / norm
+                │               └── "absolute_relative_difference"
                 │                       │
                 │                       ↓
                 │               {method: feature_array}
@@ -189,133 +221,104 @@ scripts/run_analyze.py
                 │
                 ├── _load_datasets()
                 │       │
-                │       └── src/analysis/loader.py
-                │               └── DataLoader
-                │                   │
-                │                   ├── __init__()
-                │                   │   └── _load_predicted_ages()      ← 載入 predicted_ages.json
-                │                   │
-                │                   └── load_datasets_with_stats()
+                │       └── src/analysis/loader/            ← 資料載入子模組
+                │               │
+                │               ├── base.py
+                │               │   └── Dataset             ← 資料集封裝 dataclass
+                │               │       (X, y, subject_ids, base_ids, metadata)
+                │               │
+                │               ├── demographics.py
+                │               │   └── DemographicsLoader  ← 人口學資料載入
+                │               │       └── load()
+                │               │           ├── pd.read_csv("ACS.csv")
+                │               │           ├── pd.read_csv("NAD.csv")
+                │               │           └── pd.read_csv("P.csv")
+                │               │
+                │               ├── balancer.py
+                │               │   └── DataBalancer        ← 年齡分層平衡
+                │               │       └── balance()
+                │               │           ├── pd.qcut() 分箱
+                │               │           └── 多數類別降採樣
+                │               │
+                │               └── data_loader.py
+                │                   └── DataLoader          ← 主類別
                 │                       │
-                │                       ├── _calculate_filter_stats()   ← 計算篩選統計
+                │                       ├── __init__()
+                │                       │   └── _load_predicted_ages()
                 │                       │
-                │                       ├── _load_demographics()        ← 載入人口學資料
-                │                       │   ├── pd.read_csv("ACS.csv")
-                │                       │   ├── pd.read_csv("NAD.csv")
-                │                       │   └── pd.read_csv("P.csv")
-                │                       │           │
-                │                       │           ↓
-                │                       │       pd.DataFrame (合併)
-                │                       │
-                │                       └── 對每個 model × feature_type × cdr_threshold：
+                │                       └── load_datasets_with_stats()
                 │                           │
-                │                           └── _create_dataset()
+                │                           ├── _calculate_filter_stats()
+                │                           │
+                │                           └── 對每個 model × feature_type × cdr_threshold：
                 │                               │
-                │                               ├── _load_features()        ← 載入 .npy 檔案
-                │                               │   └── 偵測格式：averaged / per_image
-                │                               │
-                │                               ├── _filter_by_predicted_age()  ← 年齡篩選
-                │                               │   └── ages[id] >= min_predicted_age
-                │                               │
-                │                               ├── _filter_demographics()      ← CDR 篩選
-                │                               │   ├── assign_label()          ← ACS/NAD→0, P→1
-                │                               │   ├── NAD: Global_CDR <= threshold
-                │                               │   ├── P: Global_CDR >= threshold
-                │                               │   └── _keep_latest_visit()    ← 只保留最新訪視
-                │                               │
-                │                               ├── _apply_data_balancing()     ← 年齡分層平衡
-                │                               │   ├── pd.qcut() 分箱
-                │                               │   └── 多數類別降採樣
-                │                               │
-                │                               └── _align_features_labels()    ← 對齊特徵與標籤
-                │                                   └── _extract_base_id()      ← P1-2 → P1
+                │                               └── _create_dataset()
+                │                                   ├── _load_features()
+                │                                   ├── _filter_by_predicted_age()
+                │                                   ├── _filter_demographics()
+                │                                   ├── DataBalancer.balance()
+                │                                   └── _align_features_labels()
                 │                                           │
                 │                                           ↓
                 │                                       Dataset(X, y, subject_ids, base_ids)
                 │
                 ├── _train_models()
                 │       │
-                │       └── src/analysis/analyzer.py
-                │               └── XGBoostAnalyzer
-                │                   │
-                │                   ├── __init__()
-                │                   │   └── xgb_params 設定
-                │                   │
-                │                   └── analyze()                       ← 分析所有 dataset
+                │       └── src/analysis/analyzer/          ← 分析器子模組
+                │               │
+                │               ├── base.py
+                │               │   └── BaseAnalyzer        ← ABC 基底類別
+                │               │
+                │               └── xgboost_analyzer.py
+                │                   └── XGBoostAnalyzer     ← XGBoost 分析器
                 │                       │
-                │                       └── _analyze_with_feature_reduction()
-                │                               │
-                │                               └── while 特徵數 >= 5:
-                │                                       │
-                │                                       ├── if per_image:
-                │                                       │   └── _run_kfold_cv_per_image()
-                │                                       │       ├── GroupKFold(base_ids)
-                │                                       │       ├── XGBClassifier.fit()
-                │                                       │       ├── _aggregate_predictions()     ← 個案聚合
-                │                                       │       │   └── np.mean(y_prob per subject)
-                │                                       │       ├── _aggregate_predictions_with_ids()
-                │                                       │       ├── _calculate_metrics()
-                │                                       │       ├── _calculate_corrected_metrics_fold()
-                │                                       │       └── _save_predictions()
-                │                                       │
-                │                                       ├── else (averaged):
-                │                                       │   └── _run_kfold_cv()
-                │                                       │       ├── GroupKFold(base_ids)
-                │                                       │       ├── XGBClassifier.fit()
-                │                                       │       ├── _calculate_metrics()
-                │                                       │       │   ├── confusion_matrix()
-                │                                       │       │   ├── accuracy_score()
-                │                                       │       │   ├── precision_score()
-                │                                       │       │   ├── recall_score()
-                │                                       │       │   ├── f1_score()
-                │                                       │       │   ├── roc_auc_score()
-                │                                       │       │   └── matthews_corrcoef()
-                │                                       │       ├── _calculate_corrected_metrics_fold()
-                │                                       │       └── _save_predictions()
-                │                                       │
-                │                                       ├── _aggregate_fold_results()   ← 彙整各 fold
-                │                                       │
-                │                                       ├── _save_result()
-                │                                       │   ├── model.save_model()      → models/
-                │                                       │   └── _save_report()          → reports/
-                │                                       │
-                │                                       └── 捨棄最低重要性的 n_drop_features 個特徵
-                │                                               │
-                │                                               ↓
-                │                                       workspace/analysis/models/
-                │                                       workspace/analysis/reports/
-                │                                       workspace/analysis/pred_probability/
+                │                       ├── __init__()
+                │                       │   └── xgb_params 設定
+                │                       │
+                │                       └── analyze()       ← 分析所有 dataset
+                │                           │
+                │                           └── _analyze_with_feature_reduction()
+                │                                   │
+                │                                   └── while 特徵數 >= 5:
+                │                                           │
+                │                                           ├── if per_image:
+                │                                           │   └── _run_kfold_cv_per_image()
+                │                                           │       ├── GroupKFold(base_ids)
+                │                                           │       ├── XGBClassifier.fit()
+                │                                           │       ├── _aggregate_predictions()
+                │                                           │       ├── _calculate_metrics()
+                │                                           │       └── _save_predictions()
+                │                                           │
+                │                                           ├── else (averaged):
+                │                                           │   └── _run_kfold_cv()
+                │                                           │       ├── GroupKFold(base_ids)
+                │                                           │       ├── XGBClassifier.fit()
+                │                                           │       ├── _calculate_metrics()
+                │                                           │       └── _save_predictions()
+                │                                           │
+                │                                           ├── _aggregate_fold_results()
+                │                                           ├── _save_result()
+                │                                           │
+                │                                           └── 捨棄最低重要性的 n_drop_features 個特徵
+                │                                                   │
+                │                                                   ↓
+                │                                           workspace/analysis/models/
+                │                                           workspace/analysis/reports/
+                │                                           workspace/analysis/pred_probability/
                 │
                 ├── _plot_results()
                 │       │
                 │       └── src/analysis/plotter.py
                 │               └── ResultPlotter
                 │                   │
-                │                   ├── __init__()
-                │                   │   └── 提取 dataset_keys, ages, n_features_list
-                │                   │
-                │                   ├── plot_individual()               ← 每個 dataset 四張圖
-                │                   │   └── _plot_single_figure()
-                │                   │       └── 4 metrics × n_features 條線
-                │                   │
-                │                   ├── plot_combined()                 ← 所有組合合併
-                │                   │   └── _plot_combined_figure()
-                │                   │
-                │                   ├── plot_by_model()                 ← 按模型分組
-                │                   │   └── _plot_by_model_figure()
-                │                   │
-                │                   ├── plot_by_n_features()            ← 按特徵數趨勢
-                │                   │   └── X軸=特徵數, 訓練/測試曲線
-                │                   │
-                │                   └── plot_filter_stats()             ← 篩選統計圖
+                │                   ├── plot_individual()       ← 每個 dataset 四張圖
+                │                   ├── plot_combined()         ← 所有組合合併
+                │                   ├── plot_by_model()         ← 按模型分組
+                │                   ├── plot_by_n_features()    ← 按特徵數趨勢
+                │                   └── plot_filter_stats()     ← 篩選統計圖
                 │                           │
                 │                           ↓
                 │                   workspace/analysis/plots/
-                │                       ├── individual/
-                │                       ├── combined_all.png
-                │                       ├── by_model_{model}.png
-                │                       ├── by_n_features/
-                │                       └── filter_stats.png
                 │
                 └── _save_summary()
                         │
@@ -329,25 +332,69 @@ scripts/run_analyze.py
 
 ### src/core/
 
-| 檔案 | 類別/函式 | 功能 |
-|------|-----------|------|
-| `config.py` | `PreprocessConfig` | 基礎預處理配置 (468點、對齊、鏡像參數) |
+| 檔案/子模組 | 類別 | 功能 |
+|-------------|------|------|
+| `config.py` | `PreprocessConfig` | 預處理配置 (468點、對齊、鏡像參數) |
 | | `APIConfig` | API 用配置 (暫存、清理) |
 | | `AnalyzeConfig` | 分析用配置 (儲存中間結果) |
-| `preprocess.py` | `FaceInfo` | 單張臉部資訊 dataclass |
-| | `ProcessedFace` | 處理後臉部資料 dataclass |
-| | `FacePreprocessor` | 臉部預處理器 (偵測→選擇→對齊→鏡像) |
-| `feature_extract.py` | `FeatureExtractor` | 多模型特徵萃取 (Dlib/ArcFace/TopoFR) |
 | `age_predictor.py` | `MiVOLOPredictor` | MiVOLO v2 年齡預測 |
+
+#### src/core/preprocess/ (臉部預處理子模組)
+
+| 檔案 | 類別 | 功能 |
+|------|------|------|
+| `detector.py` | `FaceDetector` | MediaPipe 人臉偵測、landmarks 萃取 |
+| `selector.py` | `FaceSelector` | 選擇最正面的 n 張臉 |
+| `aligner.py` | `FaceAligner` | 臉部角度校正 (旋轉對齊) |
+| `mirror.py` | `MirrorGenerator` | 生成左右鏡射影像 |
+| `base.py` | `PreprocessPipeline` | Facade 統一介面 (別名: `FacePreprocessor`) |
+| | `FaceInfo` | 單張臉部資訊 dataclass |
+| | `ProcessedFace` | 處理後臉部資料 dataclass |
+
+#### src/core/extractor/ (特徵萃取子模組)
+
+| 檔案 | 類別 | 功能 |
+|------|------|------|
+| `base.py` | `BaseExtractor` | ABC 基底類別 |
+| `registry.py` | `ExtractorRegistry` | Singleton 註冊中心、lazy loading |
+| `dlib_extractor.py` | `DlibExtractor` | Dlib 128維特徵 |
+| `arcface_extractor.py` | `ArcFaceExtractor` | ArcFace/InsightFace 512維特徵 |
+| `topofr_extractor.py` | `TopoFRExtractor` | TopoFR 512維特徵 |
+| `vggface_extractor.py` | `VGGFaceExtractor` | VGGFace 4096維特徵 |
+| `__init__.py` | `FeatureExtractor` | Facade 包裝類別 (向後兼容) |
 
 ### src/analysis/
 
+#### src/analysis/loader/ (資料載入子模組)
+
+| 檔案 | 類別 | 功能 |
+|------|------|------|
+| `base.py` | `Dataset` | 資料集封裝 dataclass |
+| | `DataLoaderProtocol` | Protocol 定義 |
+| `demographics.py` | `DemographicsLoader` | 人口學資料載入 |
+| `balancer.py` | `DataBalancer` | 年齡分層平衡 |
+| `data_loader.py` | `DataLoader` | 主類別：載入、篩選、平衡 |
+
+#### src/analysis/analyzer/ (分析器子模組)
+
+| 檔案 | 類別 | 功能 |
+|------|------|------|
+| `base.py` | `BaseAnalyzer` | ABC 基底類別 |
+| `xgboost_analyzer.py` | `XGBoostAnalyzer` | K-fold CV、特徵選擇、指標計算 |
+
+#### src/analysis/plotter.py
+
+| 類別 | 功能 |
+|------|------|
+| `ResultPlotter` | 結果視覺化 |
+
+### src/common/ (共用模組)
+
 | 檔案 | 類別/函式 | 功能 |
 |------|-----------|------|
-| `loader.py` | `Dataset` | 資料集封裝 dataclass |
-| | `DataLoader` | 資料載入、篩選、平衡 |
-| `analyzer.py` | `XGBoostAnalyzer` | K-fold CV、特徵選擇、指標計算 |
-| `plotter.py` | `ResultPlotter` | 結果視覺化 |
+| `types.py` | Protocol 定義 | `Extractor`, `Analyzer`, `DataLoader` |
+| | 資料型別 | `FoldResult`, `TrainingResult`, `DatasetInfo` |
+| `metrics.py` | `MetricsCalculator` | 評估指標計算 |
 
 ---
 
