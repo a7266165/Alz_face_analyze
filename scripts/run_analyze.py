@@ -1,6 +1,6 @@
 """
 scripts/run_analyze.py
-執行完整的分析流程：載入資料 → 訓練模型 → 生成報告
+載入資料 → 訓練模型 → 生成報告
 """
 
 import sys
@@ -9,10 +9,16 @@ from pathlib import Path
 from datetime import datetime
 from typing import Dict
 
-# 加入專案路徑
+# 專案路徑
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
+from src.config import (
+    FEATURES_DIR,
+    DEMOGRAPHICS_DIR,
+    WORKSPACE_DIR,
+    PREDICTED_AGES_FILE,
+)
 from src.analysis.loader import DataLoader
 from src.analysis.analyzer import XGBoostAnalyzer
 from src.analysis.plotter import ResultPlotter
@@ -26,7 +32,7 @@ logger = logging.getLogger(__name__)
 
 
 class AnalysisPipeline:
-    """完整分析 Pipeline"""
+    """分析 Pipeline"""
     
     def __init__(
         self,
@@ -40,31 +46,27 @@ class AnalysisPipeline:
         cdr_thresholds: list = None,
         data_balancing: bool = True,
         use_all_visits: bool = False,
-        n_folds: int = 5,                 # 新增
-        n_drop_features: int = 5,         # 新增
-        # test_size: float = 0.2,
+        n_folds: int = 5,
+        n_drop_features: int = 5,
         random_seed: int = 42,
-        # feature_selection: bool = True,
-        # importance_ratio: float = 0.8,
-        use_cache: bool = True
     ):
         """
         初始化分析 Pipeline
-        
+
         Args:
             features_dir: 特徵目錄
             demographics_dir: 人口學資料目錄
             output_dir: 輸出目錄
+            predicted_ages_file: 預測年齡檔案路徑（可選）
             embedding_models: 嵌入模型列表
             feature_types: 特徵類型列表
             cdr_thresholds: CDR 閾值列表
+            min_age_range: 最小年齡範圍，格式為 (起始, 結束)
             data_balancing: 是否進行資料平衡
             use_all_visits: 是否使用所有訪視
-            test_size: 測試集比例
             random_seed: 隨機種子
-            feature_selection: 是否進行特徵選擇
-            importance_ratio: 特徵選擇保留比例
-            use_cache: 是否使用快取
+            n_folds: 交叉驗證折數
+            n_drop_features: 每次迭代丟棄的特徵數量
         """
         self.features_dir = Path(features_dir)
         self.demographics_dir = Path(demographics_dir)
@@ -79,24 +81,16 @@ class AnalysisPipeline:
         self.min_ages = list(range(self.min_age_start, self.min_age_end + 1))
         self.data_balancing = data_balancing
         self.use_all_visits = use_all_visits
-        self.use_cache = use_cache
         
         # Analyzer 參數
-        # self.test_size = test_size
         self.random_seed = random_seed
-        # self.feature_selection = feature_selection
-        # self.importance_ratio = importance_ratio
-
         self.n_folds = n_folds
         self.n_drop_features = n_drop_features
         
         # 建立輸出目錄
         self.output_dir.mkdir(parents=True, exist_ok=True)
-        
-        # self.all_results: Dict[int, Dict] = {}  # {min_age: {dataset_key: result}}
 
         self.all_results: Dict[int, Dict[str, Dict[int, Dict]]] = {}  
-        # {min_age: {dataset_key: {n_features: result}}}
 
         # 記錄配置
         self._log_configuration()
@@ -117,7 +111,6 @@ class AnalysisPipeline:
         logger.info(f"年齡篩選範圍: {self.min_age_start} ~ {self.min_age_end}")
         logger.info(f"  資料平衡: {self.data_balancing}")
         logger.info(f"  使用所有訪視: {self.use_all_visits}")
-        logger.info(f"  使用快取: {self.use_cache}")
         logger.info("")
         logger.info("模型訓練配置:")
         logger.info(f"  CV 折數: {self.n_folds}")
@@ -224,13 +217,11 @@ class AnalysisPipeline:
                 embedding_models=self.embedding_models,
                 feature_types=self.feature_types,
                 cdr_thresholds=self.cdr_thresholds,
-                min_predicted_age=min_age, 
+                min_predicted_age=min_age,
                 data_balancing=self.data_balancing,
                 use_all_visits=self.use_all_visits,
                 n_bins=5,
                 random_seed=self.random_seed,
-                use_cache=self.use_cache,
-
             )
             
             datasets, filter_stats = loader.load_datasets_with_stats()
@@ -349,36 +340,29 @@ class AnalysisPipeline:
 
 def main():
     """主程式"""
-    
+
     # ==================== 配置參數 ====================
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
-    # 路徑設定
-    FEATURES_DIR = "workspace/features_no_his_only_topofr_no_avg_no_mirror"
-    DEMOGRAPHICS_DIR = "data/demographics"
-    PREDICTED_AGES_FILE = "workspace/predicted_ages.json"
-    
     # 資料載入配置
-    # EMBEDDING_MODELS = ["arcface", "dlib", "topofr"]
-    EMBEDDING_MODELS = ["arcface"]
+    EMBEDDING_MODELS = ["arcface", "dlib", "topofr"]
+    # EMBEDDING_MODELS = ["topofr"]
     FEATURE_TYPES = ["difference", "absolute_difference", "average", "relative_differences", "absolute_relative_differences"]
-    MIN_AGE_RANGE = (60, 61)
+    MIN_AGE_RANGE = (65, 66)
     CDR_THRESHOLDS = [0]
     DATA_BALANCING = False
     USE_ALL_VISITS = True
-    USE_CACHE = False
-    
+
     # 模型訓練配置
     N_FOLDS = 5
     N_DROP_FEATURES = 5
-    # TEST_SIZE = 0.2
     RANDOM_SEED = 42
-    # FEATURE_SELECTION = True
-    # IMPORTANCE_RATIO = 0.8
-    
-    OUTPUT_DIR = f"workspace/analysis_{timestamp}_balancing_{DATA_BALANCING}_allvisits_{USE_ALL_VISITS}"
+
+    # 輸出目錄（使用 config 的 WORKSPACE_DIR）
+    OUTPUT_DIR = WORKSPACE_DIR / f"analysis_{timestamp}_balancing_{DATA_BALANCING}_allvisits_{USE_ALL_VISITS}"
+
     # ==================== 執行 Pipeline ====================
-    
+
     pipeline = AnalysisPipeline(
         features_dir=FEATURES_DIR,
         demographics_dir=DEMOGRAPHICS_DIR,
@@ -390,15 +374,11 @@ def main():
         cdr_thresholds=CDR_THRESHOLDS,
         data_balancing=DATA_BALANCING,
         use_all_visits=USE_ALL_VISITS,
-        n_folds=N_FOLDS,                    
+        n_folds=N_FOLDS,
         n_drop_features=N_DROP_FEATURES,
-        # test_size=TEST_SIZE,
         random_seed=RANDOM_SEED,
-        # feature_selection=FEATURE_SELECTION,
-        # importance_ratio=IMPORTANCE_RATIO,
-        use_cache=USE_CACHE
     )
-    
+
     pipeline.run()
 
 

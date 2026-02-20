@@ -13,8 +13,8 @@ import cv2
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-sys.path.insert(0, str(project_root / "src" / "core"))
-from age_predictor import MiVOLOPredictor
+from src.config import ALIGNED_DIR, WORKSPACE_DIR
+from src.core.age_predictor import MiVOLOPredictor
 
 logging.basicConfig(
     level=logging.INFO,
@@ -23,31 +23,11 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def read_raw_path(path_file: Path) -> Path:
-    """讀取 path.txt"""
-    with open(path_file, 'r', encoding='utf-8') as f:
-        return Path(f.read().strip().strip('"').strip("'"))
-
-
-def scan_subjects(raw_dir: Path) -> list:
+def scan_subjects(aligned_dir: Path) -> list:
     """掃描所有受試者目錄"""
-    subjects = []
-    
-    # ACS, NAD
-    for group in ["ACS", "NAD"]:
-        group_path = raw_dir / "health" / group
-        if group_path.exists():
-            for d in sorted(group_path.iterdir()):
-                if d.is_dir():
-                    subjects.append(d)
-    
-    # Patient
-    patient_path = raw_dir / "patient" / "good"
-    if patient_path.exists():
-        for d in sorted(patient_path.iterdir()):
-            if d.is_dir():
-                subjects.append(d)
-    
+    subjects = sorted(
+        d for d in aligned_dir.iterdir() if d.is_dir()
+    )
     return subjects
 
 
@@ -71,21 +51,20 @@ def main():
     logger.info("=" * 60)
     logger.info("MiVOLO 年齡預測")
     logger.info("=" * 60)
-    
-    # 路徑設定
-    path_file = project_root / "data/images/raw/path.txt"
-    output_file = project_root / "workspace/predicted_ages.json"
-    
-    raw_dir = read_raw_path(path_file)
-    logger.info(f"影像目錄: {raw_dir}")
-    
+
+    # 路徑設定（使用 config 常數）
+    aligned_dir = ALIGNED_DIR
+    output_file = WORKSPACE_DIR / "predicted_ages_2.json"
+
+    logger.info(f"影像目錄: {aligned_dir}")
+
     # 初始化模型
     logger.info("初始化 MiVOLO...")
     predictor = MiVOLOPredictor()
     predictor.initialize()
-    
+
     # 掃描受試者
-    subjects = scan_subjects(raw_dir)
+    subjects = scan_subjects(aligned_dir)
     logger.info(f"找到 {len(subjects)} 個受試者")
     
     # 預測
@@ -99,10 +78,11 @@ def main():
             logger.warning(f"{subject_id}: 無影像")
             continue
         
-        age = predictor.predict(images)
+        ages = predictor.predict(images)
         
-        if age is not None:
-            results[subject_id] = round(age, 1)
+        if ages:
+            avg_age = sum(ages) / len(ages)
+            results[subject_id] = round(avg_age, 2)
         else:
             logger.warning(f"{subject_id}: 預測失敗")
     

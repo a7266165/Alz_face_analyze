@@ -3,9 +3,9 @@ scripts/prepare_features.py
 完整的特徵準備 pipeline：預處理 → 特徵提取 → 儲存
 
 功能：
-1. 從 path.txt 讀取實際影像路徑
+1. 使用 config 中的 RAW_IMAGES_DIR 讀取影像
 2. 使用 core.preprocess 進行預處理
-3. 使用 core.feature_extract 提取特徵
+3. 使用 core.extractor 提取特徵
 4. 逐個受試者儲存特徵（支援斷點續傳）
 """
 
@@ -20,13 +20,13 @@ from tqdm import tqdm
 import json
 from datetime import datetime
 
-# 加入專案路徑
+# 專案路徑
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from src.core.preprocess import FacePreprocessor, ProcessedFace
-from src.core.feature_extract import FeatureExtractor
-from src.core.config import AnalyzeConfig
+from src.config import RAW_IMAGES_DIR, FEATURES_DIR, AnalyzeConfig
+from src.core.preprocess import PreprocessPipeline, ProcessedFace
+from src.core.extractor import FeatureExtractor
 
 # 設定日誌
 logging.basicConfig(
@@ -37,11 +37,11 @@ logger = logging.getLogger(__name__)
 
 
 class FeaturePipeline:
-    """特徵準備 Pipeline（支援斷點續傳）"""
-    
+    """特徵準備 Pipeline"""
+
     def __init__(
         self,
-        path_file: Path,
+        raw_images_dir: Path,
         output_dir: Path,
         embedding_models: List[str] = None,
         feature_types: List[str] = None,
@@ -51,33 +51,33 @@ class FeaturePipeline:
     ):
         """
         初始化 Pipeline
-        
+
         Args:
-            path_file: path.txt 檔案路徑
+            raw_images_dir: 原始影像目錄
             output_dir: 輸出目錄
             embedding_models: 嵌入模型列表
             feature_types: 特徵類型列表
             n_select: 選擇多少張最正面的相片
             save_intermediate: 是否儲存中間結果
         """
-        self.path_file = Path(path_file)
+        self.raw_images_dir = Path(raw_images_dir)
         self.output_dir = Path(output_dir)
-        
+
         # 預設模型和特徵類型
         self.embedding_models = embedding_models or ["arcface", "dlib", "topofr"]
         self.feature_types = feature_types or ["difference", "average", "relative"]
 
         # CPU 核心數限制（避免過度使用）
         self._setup_cpu_limit(max_cpu_cores)
-        
-        # 讀取實際影像路徑
-        self.raw_images_dir = self._read_path_file()
+
+        # 確認原始影像目錄存在
+        if not self.raw_images_dir.exists():
+            raise FileNotFoundError(f"原始影像目錄不存在: {self.raw_images_dir}")
         
         # 預處理配置
         self.preprocess_config = AnalyzeConfig(
             n_select=n_select,
             save_intermediate=save_intermediate,
-            workspace_dir=Path("workspace/preprocessing_only_topofr_no_avg_flip")
         )
         
 
@@ -140,26 +140,6 @@ class FeaturePipeline:
                 feature_dir = self.output_dir / model / ftype
                 feature_dir.mkdir(parents=True, exist_ok=True)
     
-    def _read_path_file(self) -> Path:
-        """讀取 path.txt 檔案"""
-        if not self.path_file.exists():
-            raise FileNotFoundError(f"找不到 {self.path_file}")
-        
-        with open(self.path_file, 'r', encoding='utf-8') as f:
-            path_str = f.read().strip()
-        
-        # 移除可能的引號
-        path_str = path_str.strip('"').strip("'")
-        
-        raw_dir = Path(path_str)
-        
-        if not raw_dir.exists():
-            logger.error(f"無法找到路徑: {raw_dir}")
-            raise FileNotFoundError(f"path.txt 中的路徑不存在: {raw_dir}")
-        
-        logger.info(f"從 path.txt 讀取影像路徑: {raw_dir}")
-        return raw_dir
-    
     def _get_processed_subjects(self) -> Set[str]:
         """
         掃描輸出目錄，找出已完整處理的受試者
@@ -192,9 +172,9 @@ class FeaturePipeline:
         return processed
     
     def run(self):
-        """執行完整 Pipeline（支援斷點續傳）"""
+        """執行完整 Pipeline"""
         logger.info("=" * 70)
-        logger.info("開始特徵準備 Pipeline（支援斷點續傳）")
+        logger.info("開始特徵準備 Pipeline")
         logger.info("=" * 70)
         logger.info(f"原始影像目錄: {self.raw_images_dir}")
         logger.info(f"輸出目錄: {self.output_dir}")
@@ -327,24 +307,14 @@ class FeaturePipeline:
         
         self.stats['total_images'] += len(images)
         
-        # 判斷是否需要鏡射
-        need_mirror = any(ft != "origin" for ft in self.feature_types)
-        
-        # 動態設定處理步驟
-        steps = ["select", "align"]
-        if need_mirror:
-            steps.append("mirror")
-        
         subject_config = AnalyzeConfig(
             n_select=self.preprocess_config.n_select,
             save_intermediate=self.preprocess_config.save_intermediate,
-            workspace_dir=self.preprocess_config.workspace_dir,
             subject_id=subject_id,
-            steps=steps,
         )
         
         # 預處理
-        with FacePreprocessor(subject_config) as preprocessor:
+        with PreprocessPipeline(subject_config) as preprocessor:
             try:
                 processed_faces: List[ProcessedFace] = preprocessor.process(images, paths)
             except Exception as e:
@@ -374,58 +344,45 @@ class FeaturePipeline:
             model_features = {}
             
             try:
-                # origin: 直接提取對齊後的圖
-                if "origin" in self.feature_types:
-                    aligned_images = [face.aligned for face in processed_faces]
-                    features_dict = extractor.extract_features(aligned_images, model)
-                    
-                    if model in features_dict:
-                        valid = [f for f in features_dict[model] if f is not None]
-                        if valid:
-                            model_features["origin"] = np.array(valid, dtype=np.float32)
+
+                # 收集所有左右臉影像
+                left_images = [face.left_mirror for face in processed_faces]
+                right_images = [face.right_mirror for face in processed_faces]
                 
-                # 需要鏡射的特徵類型
-                mirror_types = [ft for ft in self.feature_types if ft != "origin"]
+                # 批次提取特徵
+                left_dict = extractor.extract_features(left_images, model)
+                right_dict = extractor.extract_features(right_images, model)
                 
-                if mirror_types and need_mirror:
-                    # 收集所有左右臉影像
-                    left_images = [face.left_mirror for face in processed_faces]
-                    right_images = [face.right_mirror for face in processed_faces]
+                if model not in left_dict or model not in right_dict:
+                    logger.warning(f"{subject_id}: {model} 特徵提取失敗")
+                    continue
+                
+                # 過濾掉 None（成對過濾）
+                valid_pairs = [
+                    (l, r) for l, r in zip(left_dict[model], right_dict[model])
+                    if l is not None and r is not None
+                ]
+                
+                if not valid_pairs:
+                    logger.warning(f"{subject_id}: {model} 沒有有效特徵")
+                    continue
+                
+                left_array = np.array([p[0] for p in valid_pairs])
+                right_array = np.array([p[1] for p in valid_pairs])
                     
-                    # 批次提取特徵
-                    left_dict = extractor.extract_features(left_images, model)
-                    right_dict = extractor.extract_features(right_images, model)
-                    
-                    if model not in left_dict or model not in right_dict:
-                        logger.warning(f"{subject_id}: {model} 特徵提取失敗")
+                # 計算不同類型的特徵
+                for ftype in self.feature_types:
+                    if ftype not in FTYPE_TO_METHOD:
+                        logger.warning(f"未知的特徵類型: {ftype}")
                         continue
                     
-                    # 過濾掉 None（成對過濾）
-                    valid_pairs = [
-                        (l, r) for l, r in zip(left_dict[model], right_dict[model])
-                        if l is not None and r is not None
-                    ]
-                    
-                    if not valid_pairs:
-                        logger.warning(f"{subject_id}: {model} 沒有有效特徵")
-                        continue
-                    
-                    left_array = np.array([p[0] for p in valid_pairs])
-                    right_array = np.array([p[1] for p in valid_pairs])
-                    
-                    # 計算不同類型的特徵
-                    for ftype in mirror_types:
-                        if ftype not in FTYPE_TO_METHOD:
-                            logger.warning(f"未知的特徵類型: {ftype}")
-                            continue
-                        
-                        method = FTYPE_TO_METHOD[ftype]
-                        result = extractor.calculate_differences(
-                            left_array,
-                            right_array,
-                            methods=[method]
-                        )
-                        model_features[ftype] = result
+                    method = FTYPE_TO_METHOD[ftype]
+                    result = extractor.calculate_differences(
+                        left_array,
+                        right_array,
+                        methods=[method]
+                    )
+                    model_features[ftype] = result
                 
                 if model_features:
                     subject_features[model] = model_features
@@ -519,32 +476,22 @@ class FeaturePipeline:
 
 def main():
     """主程式"""
-    
-    # 設定路徑
-    path_file = Path("data/images/raw/path.txt")
-    output_dir = Path("workspace/features_no_his_only_topofr_no_avg_flip")
-    
-    # 檢查 path.txt
-    if not path_file.exists():
-        logger.error(f"找不到 {path_file}")
-        logger.info("請在 data/images/raw/path.txt 中指定實際影像目錄路徑")
-        return
-    
-    # 建立 Pipeline
+
+    # 建立 Pipeline（使用 config 中的路徑常數）
     try:
         pipeline = FeaturePipeline(
-            path_file=path_file,
-            output_dir=output_dir,
-            embedding_models=["topofr"],
-            feature_types=["difference", "absolute_difference", "average", "relative_differences", "absolute_relative_differences", "origin"],
+            raw_images_dir=RAW_IMAGES_DIR,
+            output_dir=FEATURES_DIR,
+            embedding_models=["arcface", "dlib", "topofr"],
+            feature_types=["difference", "absolute_difference", "average", "relative_differences", "absolute_relative_differences"],
             n_select=10,
             save_intermediate=True,
             max_cpu_cores=2,
         )
-        
+
         # 執行
         pipeline.run()
-    
+
     except Exception as e:
         logger.error(f"Pipeline 執行失敗: {e}")
         import traceback

@@ -105,27 +105,6 @@ class ResultPlotter:
         plt.savefig(output_path, dpi=150)
         plt.close()
     
-    # def plot_individual(self):
-    #     """每個 dataset_key 各畫四張圖（校正前 + 校正後）"""
-    #     individual_dir = self.plots_dir / "individual"
-    #     individual_dir.mkdir(exist_ok=True)
-        
-    #     for dataset_key in self.dataset_keys:
-    #         # 校正前
-    #         self._plot_single_figure(
-    #             dataset_key, 
-    #             corrected=False, 
-    #             output_path=individual_dir / f"{dataset_key}.png"
-    #         )
-    #         # 校正後
-    #         self._plot_single_figure(
-    #             dataset_key, 
-    #             corrected=True, 
-    #             output_path=individual_dir / f"{dataset_key}_corrected.png"
-    #         )
-        
-    #     logger.info(f"個別圖表已儲存: {individual_dir}")
-    
     def plot_individual(self):
         """每個 dataset_key 各畫四張圖（每條線代表不同特徵數）"""
         individual_dir = self.plots_dir / "individual"
@@ -241,21 +220,6 @@ class ResultPlotter:
         plt.tight_layout()
         plt.savefig(output_path, dpi=150, bbox_inches='tight')
         plt.close()
-    
-    # def plot_combined(self):
-    #     """所有組合在同一張圖（校正前 + 校正後）"""
-    #     # 校正前
-    #     self._plot_combined_figure(
-    #         corrected=False,
-    #         output_path=self.plots_dir / "combined_all.png"
-    #     )
-    #     # 校正後
-    #     self._plot_combined_figure(
-    #         corrected=True,
-    #         output_path=self.plots_dir / "combined_all_corrected.png"
-    #     )
-        
-    #     logger.info(f"合併圖表已儲存: {self.plots_dir}")
     
     def plot_combined(self):
         """所有組合在同一張圖（每條線代表 dataset_key + n_features）"""
@@ -374,26 +338,6 @@ class ResultPlotter:
         plt.tight_layout()
         plt.savefig(output_path, dpi=150)
         plt.close()
-    
-    # def plot_by_model(self):
-    #     """按向量模型分組（校正前 + 校正後）"""
-    #     models = ['arcface', 'dlib', 'topofr']
-        
-    #     for model_name in models:
-    #         # 校正前
-    #         self._plot_by_model_figure(
-    #             model_name,
-    #             corrected=False,
-    #             output_path=self.plots_dir / f"by_model_{model_name}.png"
-    #         )
-    #         # 校正後
-    #         self._plot_by_model_figure(
-    #             model_name,
-    #             corrected=True,
-    #             output_path=self.plots_dir / f"by_model_{model_name}_corrected.png"
-    #         )
-        
-    #     logger.info(f"模型分組圖表已儲存: {self.plots_dir}")
 
     def plot_by_model(self):
         """按向量模型分組（每條線代表 feature_type + cdr + n_features）"""

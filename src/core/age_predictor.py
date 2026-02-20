@@ -37,7 +37,7 @@ class MiVOLOPredictor:
             self.model = AutoModelForImageClassification.from_pretrained(
                 "iitolstykh/mivolo_v2",
                 trust_remote_code=True,
-                torch_dtype=dtype
+                dtype=dtype
             )
             self.processor = AutoImageProcessor.from_pretrained(
                 "iitolstykh/mivolo_v2",
@@ -89,16 +89,16 @@ class MiVOLOPredictor:
             logger.debug(f"預測失敗: {e}")
         
         return None
-    
-    def predict(self, images: List[np.ndarray]) -> Optional[float]:
+
+    def predict(self, images: List[np.ndarray]) -> List[float]:
         """
-        預測多張影像的年齡（取中位數）
+        預測多張影像的年齡
         
         Args:
             images: BGR 影像列表
             
         Returns:
-            預測年齡（中位數），全部失敗則回傳 None
+            預測年齡列表（僅包含成功預測的結果）
         """
         ages = []
         for img in images:
@@ -106,6 +106,4 @@ class MiVOLOPredictor:
             if age is not None:
                 ages.append(age)
         
-        if ages:
-            return float(np.median(ages))
-        return None
+        return ages
