@@ -6,6 +6,7 @@ XGBoost 分析器
 - per_image: 每個個案多張相片，訓練時展開，測試時聚合
 """
 
+import json
 import logging
 from datetime import datetime
 from pathlib import Path
@@ -121,6 +122,9 @@ class XGBoostAnalyzer:
 
             logger.info(f"特徵數: {current_n_features}")
 
+            # 收集所有 fold 的預測
+            all_predictions = []
+
             if data_format == "per_image":
                 fold_results = self._run_kfold_cv_per_image(
                     X_selected,
@@ -129,8 +133,7 @@ class XGBoostAnalyzer:
                     base_ids,
                     sample_groups,
                     filter_stats,
-                    dataset_key,
-                    current_n_features,
+                    all_predictions,
                 )
             else:
                 fold_results = self._run_kfold_cv(
@@ -139,9 +142,13 @@ class XGBoostAnalyzer:
                     subject_ids,
                     base_ids,
                     filter_stats,
-                    dataset_key,
-                    current_n_features,
+                    all_predictions,
                 )
+
+            # 統一儲存所有 fold 的預測
+            self._save_all_predictions(
+                dataset_key, current_n_features, all_predictions
+            )
 
             result = self._aggregate_fold_results(fold_results, filter_stats)
             result["metadata"] = meta
@@ -183,8 +190,7 @@ class XGBoostAnalyzer:
         subject_ids: np.ndarray,
         base_ids: np.ndarray,
         filter_stats: Dict = None,
-        dataset_key: str = None,
-        n_features: int = None,
+        all_predictions: List[Dict] = None,
     ) -> List[Dict]:
         """執行 K-fold CV（格式一）"""
         gkf = GroupKFold(n_splits=self.n_folds)
@@ -222,14 +228,16 @@ class XGBoostAnalyzer:
                     y_test, y_pred, filter_stats, test_subject_ids
                 )
 
-            self._save_predictions(
-                dataset_key, n_features, fold_idx + 1,
-                train_subject_ids, y_prob_train, "train",
-            )
-            self._save_predictions(
-                dataset_key, n_features, fold_idx + 1,
-                test_subject_ids, y_prob, "test",
-            )
+            # 收集預測（不立即儲存）
+            if all_predictions is not None:
+                self._collect_predictions(
+                    all_predictions, fold_idx + 1,
+                    train_subject_ids, y_prob_train, "train"
+                )
+                self._collect_predictions(
+                    all_predictions, fold_idx + 1,
+                    test_subject_ids, y_prob, "test"
+                )
 
             fold_results.append(
                 {
@@ -256,8 +264,7 @@ class XGBoostAnalyzer:
         base_ids: np.ndarray,
         sample_groups: np.ndarray,
         filter_stats: Dict = None,
-        dataset_key: str = None,
-        n_features: int = None,
+        all_predictions: List[Dict] = None,
     ) -> List[Dict]:
         """執行 K-fold CV（格式二）- 測試時聚合"""
         gkf = GroupKFold(n_splits=self.n_folds)
@@ -309,14 +316,16 @@ class XGBoostAnalyzer:
                     y_test_agg, y_pred_agg, filter_stats, np.array(test_unique_ids)
                 )
 
-            self._save_predictions(
-                dataset_key, n_features, fold_idx + 1,
-                train_unique_ids, train_prob_agg, "train",
-            )
-            self._save_predictions(
-                dataset_key, n_features, fold_idx + 1,
-                test_unique_ids, y_prob_agg, "test",
-            )
+            # 收集預測（不立即儲存）
+            if all_predictions is not None:
+                self._collect_predictions(
+                    all_predictions, fold_idx + 1,
+                    train_unique_ids, train_prob_agg, "train"
+                )
+                self._collect_predictions(
+                    all_predictions, fold_idx + 1,
+                    test_unique_ids, y_prob_agg, "test"
+                )
 
             fold_results.append(
                 {
@@ -381,32 +390,60 @@ class XGBoostAnalyzer:
 
         return np.array(unique_subjects), np.array(y_prob_agg)
 
-    # ========== 預測分數儲存 ==========
+    # ========== 預測分數收集與儲存 ==========
 
-    def _save_predictions(
+    def _collect_predictions(
         self,
-        dataset_key: str,
-        n_features: int,
+        all_predictions: List[Dict],
         fold_idx: int,
         subject_ids: np.ndarray,
         y_prob: np.ndarray,
         split: str,
     ):
-        """儲存預測分數到 CSV"""
-        if self.pred_prob_dir is None or dataset_key is None:
+        """收集預測到列表"""
+        for sid, prob in zip(subject_ids, y_prob):
+            all_predictions.append({
+                "個案編號": sid,
+                "預測分數": float(prob),
+                "fold": fold_idx,
+                "split": split,
+            })
+
+    def _save_all_predictions(
+        self,
+        dataset_key: str,
+        n_features: int,
+        all_predictions: List[Dict],
+    ):
+        """儲存所有 fold 的預測分數"""
+        if self.pred_prob_dir is None or not all_predictions:
             return
 
         feature_suffix = f"n_features_{n_features}"
         output_dir = self.pred_prob_dir / feature_suffix
         output_dir.mkdir(parents=True, exist_ok=True)
 
-        filename = f"{dataset_key}_fold_{fold_idx}_{split}.csv"
-        output_path = output_dir / filename
+        df = pd.DataFrame(all_predictions)
 
-        df = pd.DataFrame({"個案編號": subject_ids, "預測分數": y_prob})
-        df.to_csv(output_path, index=False, encoding="utf-8-sig")
+        # 分離 train 和 test
+        train_df = df[df["split"] == "train"].copy()
+        test_df = df[df["split"] == "test"].copy()
 
-        logger.debug(f"預測分數已儲存: {output_path}")
+        # 儲存 test.csv（保留 fold 欄位）
+        if not test_df.empty:
+            test_output = test_df[["個案編號", "預測分數", "fold"]]
+            test_output = test_output.sort_values(["fold", "個案編號"])
+            test_path = output_dir / f"{dataset_key}_test.csv"
+            test_output.to_csv(test_path, index=False, encoding="utf-8-sig")
+            logger.debug(f"測試集預測已儲存: {test_path}")
+
+        # 儲存 train.csv（取平均，不保留 fold）
+        if not train_df.empty:
+            train_avg = train_df.groupby("個案編號")["預測分數"].mean().reset_index()
+            train_avg = train_avg.sort_values("個案編號")
+            train_path = output_dir / f"{dataset_key}_train.csv"
+            train_avg.to_csv(train_path, index=False, encoding="utf-8-sig")
+            logger.debug(f"訓練集預測已儲存: {train_path}")
 
     # ========== 結果彙整 ==========
 
@@ -582,8 +619,6 @@ class XGBoostAnalyzer:
 
     def _save_result(self, dataset_key: str, n_features: int, result: Dict):
         """儲存結果"""
-        import json
-
         feature_suffix = f"n_features_{n_features}"
 
         if self.models_dir:

@@ -20,7 +20,7 @@ from src.config import (
     PREDICTED_AGES_FILE,
 )
 from src.analysis.loader import DataLoader
-from src.analysis.analyzer import XGBoostAnalyzer
+from src.analysis.analyzer import create_analyzer, AnalyzerType
 from src.analysis.plotter import ResultPlotter
 
 # 設定日誌
@@ -49,6 +49,8 @@ class AnalysisPipeline:
         n_folds: int = 5,
         n_drop_features: int = 5,
         random_seed: int = 42,
+        analyzer_type: AnalyzerType = "logistic",
+        analyzer_params: dict = None,
     ):
         """
         初始化分析 Pipeline
@@ -67,6 +69,8 @@ class AnalysisPipeline:
             random_seed: 隨機種子
             n_folds: 交叉驗證折數
             n_drop_features: 每次迭代丟棄的特徵數量
+            analyzer_type: 分析器類型 ("xgboost" 或 "logistic")
+            analyzer_params: 傳遞給分析器的額外參數
         """
         self.features_dir = Path(features_dir)
         self.demographics_dir = Path(demographics_dir)
@@ -81,16 +85,18 @@ class AnalysisPipeline:
         self.min_ages = list(range(self.min_age_start, self.min_age_end + 1))
         self.data_balancing = data_balancing
         self.use_all_visits = use_all_visits
-        
+
         # Analyzer 參數
         self.random_seed = random_seed
         self.n_folds = n_folds
         self.n_drop_features = n_drop_features
-        
+        self.analyzer_type = analyzer_type
+        self.analyzer_params = analyzer_params or {}
+
         # 建立輸出目錄
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
-        self.all_results: Dict[int, Dict[str, Dict[int, Dict]]] = {}  
+        self.all_results: Dict[int, Dict[str, Dict[int, Dict]]] = {}
 
         # 記錄配置
         self._log_configuration()
@@ -113,6 +119,7 @@ class AnalysisPipeline:
         logger.info(f"  使用所有訪視: {self.use_all_visits}")
         logger.info("")
         logger.info("模型訓練配置:")
+        logger.info(f"  分析器類型: {self.analyzer_type}")
         logger.info(f"  CV 折數: {self.n_folds}")
         logger.info(f"  每次捨棄特徵數: {self.n_drop_features}")
         logger.info(f"  隨機種子: {self.random_seed}")
@@ -236,18 +243,20 @@ class AnalysisPipeline:
     def _train_models(self, datasets, filter_stats, models_dir, reports_dir):
         """訓練模型"""
         try:
-            analyzer = XGBoostAnalyzer(
+            analyzer = create_analyzer(
+                analyzer_type=self.analyzer_type,
                 models_dir=models_dir,
                 reports_dir=reports_dir,
                 pred_prob_dir=Path(f"{self.output_dir}/pred_probability"),
                 n_folds=self.n_folds,
                 n_drop_features=self.n_drop_features,
                 random_seed=self.random_seed,
+                **self.analyzer_params,
             )
-            
+
             results = analyzer.analyze(datasets, filter_stats)
             return results
-            
+
         except Exception as e:
             logger.error(f"訓練模型失敗: {e}")
             import traceback
@@ -318,24 +327,12 @@ class AnalysisPipeline:
         """繪製結果圖表"""
         plots_dir = self.output_dir / "plots"
         plots_dir.mkdir(parents=True, exist_ok=True)
-        
+
         plotter = ResultPlotter(self.all_results, plots_dir)
-        
-        # 1. 每個 dataset_key 各畫四張圖（按年齡）
-        plotter.plot_individual()
-        
-        # 2. 所有組合在同一張圖（按年齡）
-        plotter.plot_combined()
-        
-        # 3. 按模型分組（按年齡）
-        plotter.plot_by_model()
-        
-        # 4. 按特徵數量（新增）
+
+        # 按特徵數量
         plotter.plot_by_n_features()
-        
-        # 5. 篩選統計
-        plotter.plot_filter_stats()
-        
+
         logger.info(f"圖表已儲存至: {plots_dir}")
 
 def main():
@@ -358,8 +355,17 @@ def main():
     N_DROP_FEATURES = 5
     RANDOM_SEED = 42
 
+    # 分析器類型配置
+    ANALYZER_TYPE: AnalyzerType = "logistic"  # "xgboost" 或 "logistic"
+    ANALYZER_PARAMS = {
+        # Logistic Regression 專用參數（可選）
+        # "lr_params": {"max_iter": 1000, "solver": "lbfgs"}
+        # XGBoost 專用參數（可選）
+        # "xgb_params": {"n_estimators": 100, "max_depth": 6}
+    }
+
     # 輸出目錄（使用 config 的 WORKSPACE_DIR）
-    OUTPUT_DIR = WORKSPACE_DIR / f"analysis_{timestamp}_balancing_{DATA_BALANCING}_allvisits_{USE_ALL_VISITS}"
+    OUTPUT_DIR = WORKSPACE_DIR / f"analysis_{timestamp}_{ANALYZER_TYPE}_balancing_{DATA_BALANCING}_allvisits_{USE_ALL_VISITS}"
 
     # ==================== 執行 Pipeline ====================
 
@@ -377,6 +383,8 @@ def main():
         n_folds=N_FOLDS,
         n_drop_features=N_DROP_FEATURES,
         random_seed=RANDOM_SEED,
+        analyzer_type=ANALYZER_TYPE,
+        analyzer_params=ANALYZER_PARAMS,
     )
 
     pipeline.run()

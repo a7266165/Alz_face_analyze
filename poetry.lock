@@ -522,6 +522,30 @@ files = [
 ]
 
 [[package]]
+name = "emotiefflib"
+version = "1.1.1"
+description = "EmotiEffLib Python Library for Facial Emotion and Engagement Recognition"
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "emotiefflib-1.1.1-py3-none-any.whl", hash = "sha256:ba44da2b3d6120375d76a1e7571f8b2234f4eab5109f05c1f34ad5d5aa8e6242"},
+    {file = "emotiefflib-1.1.1.tar.gz", hash = "sha256:c775c1bde17108042855fa914a2e5e2d5aaa7f61520fd3c1b757fc39e0bde027"},
+]
+
+[package.dependencies]
+numpy = "*"
+onnx = "*"
+onnxruntime = "*"
+opencv-python = "*"
+pillow = "*"
+
+[package.extras]
+all = ["tensorflow", "tf2onnx (==1.16.0)", "timm (==0.9.*)", "torch", "torchvision"]
+engagement = ["tensorflow", "tf2onnx (==1.16.0)"]
+torch = ["timm (==0.9.*)", "torch", "torchvision"]
+
+[[package]]
 name = "filelock"
 version = "3.20.0"
 description = "A platform independent file lock."
@@ -3749,4 +3773,4 @@ test = ["pytest (>=8.1,<9.0)", "pytest-rerunfailures (>=14.0,<15.0)"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11, <3.12"
-content-hash = "aaeaa1ca2e1581cb390cb9cf0d6434be581e5880f402b8738759cffd8158d82a"
+content-hash = "e1fc117a79f6df23d9e74bd225383ad5dff98800d1bd0478fcf249d1cd9968a4"
