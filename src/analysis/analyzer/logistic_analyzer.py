@@ -249,12 +249,6 @@ class LogisticAnalyzer(BaseAnalyzer):
             test_metrics = self._calculate_metrics(y_test, y_pred, y_prob)
             train_metrics = self._calculate_metrics(y_train, y_pred_train)
 
-            corrected_metrics = None
-            if filter_stats:
-                corrected_metrics = self._calculate_corrected_metrics_fold(
-                    y_test, y_pred, filter_stats, test_subject_ids
-                )
-
             # 收集預測（不立即儲存）
             if all_predictions is not None:
                 self._collect_predictions(
@@ -274,7 +268,6 @@ class LogisticAnalyzer(BaseAnalyzer):
                     "model": model,
                     "train_metrics": train_metrics,
                     "test_metrics": test_metrics,
-                    "corrected_metrics": corrected_metrics,
                     "feature_importance": feature_importance,
                     "n_train": len(X_train),
                     "n_test": len(X_test),
@@ -344,12 +337,6 @@ class LogisticAnalyzer(BaseAnalyzer):
 
             test_metrics = self._calculate_metrics(y_test_agg, y_pred_agg, y_prob_agg)
 
-            corrected_metrics = None
-            if filter_stats:
-                corrected_metrics = self._calculate_corrected_metrics_fold(
-                    y_test_agg, y_pred_agg, filter_stats, np.array(test_unique_ids)
-                )
-
             # 收集預測（不立即儲存）
             if all_predictions is not None:
                 self._collect_predictions(
@@ -369,7 +356,6 @@ class LogisticAnalyzer(BaseAnalyzer):
                     "model": model,
                     "train_metrics": train_metrics,
                     "test_metrics": test_metrics,
-                    "corrected_metrics": corrected_metrics,
                     "feature_importance": feature_importance,
                     "n_train": len(X_train),
                     "n_test": len(X_test),
@@ -523,23 +509,47 @@ class LogisticAnalyzer(BaseAnalyzer):
         cms = [np.array(f["test_metrics"]["confusion_matrix"]) for f in fold_results]
         test_metrics["confusion_matrix"] = np.mean(cms, axis=0).tolist()
 
+        # 校正指標：五折 CM 加總後，再加回被篩掉的人
         corrected_metrics = None
-        if filter_stats and fold_results[0].get("corrected_metrics"):
-            corrected_metrics = {}
-            for key in metric_keys:
-                values = [
-                    f["corrected_metrics"].get(key)
-                    for f in fold_results
-                    if f["corrected_metrics"]
-                    and f["corrected_metrics"].get(key) is not None
-                ]
-                corrected_metrics[key] = float(np.mean(values)) if values else None
-            ccms = [
-                np.array(f["corrected_metrics"]["confusion_matrix"])
-                for f in fold_results
-                if f["corrected_metrics"]
-            ]
-            corrected_metrics["confusion_matrix"] = np.mean(ccms, axis=0).tolist()
+        if filter_stats:
+            health_filtered_out = filter_stats.get("health_filtered_out", 0)
+            patient_filtered_out = filter_stats.get("patient_filtered_out", 0)
+
+            if health_filtered_out > 0 or patient_filtered_out > 0:
+                summed_cm = np.sum(cms, axis=0)
+                tn, fp, fn, tp = summed_cm.ravel().astype(int)
+
+                tn += health_filtered_out
+                fn += patient_filtered_out
+
+                total = tn + fp + fn + tp
+                accuracy = (tn + tp) / total if total > 0 else 0
+                sensitivity = tp / (tp + fn) if (tp + fn) > 0 else 0
+                specificity = tn / (tn + fp) if (tn + fp) > 0 else 0
+                precision_val = tp / (tp + fp) if (tp + fp) > 0 else 0
+                recall_val = sensitivity
+                f1_val = (
+                    2 * precision_val * recall_val / (precision_val + recall_val)
+                    if (precision_val + recall_val) > 0
+                    else 0
+                )
+                numerator = (tp * tn) - (fp * fn)
+                denominator = np.sqrt(
+                    (tp + fp) * (tp + fn) * (tn + fp) * (tn + fn)
+                )
+                mcc_val = numerator / denominator if denominator > 0 else 0
+
+                corrected_metrics = {
+                    "confusion_matrix": [[int(tn), int(fp)], [int(fn), int(tp)]],
+                    "accuracy": float(accuracy),
+                    "mcc": float(mcc_val),
+                    "sensitivity": float(sensitivity),
+                    "specificity": float(specificity),
+                    "precision": float(precision_val),
+                    "recall": float(recall_val),
+                    "f1": float(f1_val),
+                    "auc": None,
+                }
 
         importances = [f["feature_importance"] for f in fold_results]
         avg_importance = np.mean(importances, axis=0).tolist()
@@ -605,58 +615,6 @@ class LogisticAnalyzer(BaseAnalyzer):
                 metrics["auc"] = None
 
         return metrics
-
-    def _calculate_corrected_metrics_fold(
-        self,
-        y_test: np.ndarray,
-        y_pred: np.ndarray,
-        filter_stats: Dict,
-        test_subject_ids: np.ndarray = None,
-    ) -> Dict:
-        """計算單一 fold 的校正後指標"""
-        min_age = filter_stats.get("min_predicted_age", 65.0)
-        predicted_ages = filter_stats.get("predicted_ages", {})
-
-        if test_subject_ids is not None and predicted_ages:
-            y_pred_corrected = y_pred.copy()
-            for i, subject_id in enumerate(test_subject_ids):
-                age = predicted_ages.get(subject_id, min_age)
-                if age < min_age:
-                    y_pred_corrected[i] = 0
-        else:
-            y_pred_corrected = y_pred
-
-        cm = confusion_matrix(y_test, y_pred_corrected)
-        tn, fp, fn, tp = cm.ravel() if cm.shape == (2, 2) else (0, 0, 0, 0)
-
-        corrected_cm = [[int(tn), int(fp)], [int(fn), int(tp)]]
-
-        total = tn + fp + fn + tp
-        accuracy = (tn + tp) / total if total > 0 else 0
-        sensitivity = tp / (tp + fn) if (tp + fn) > 0 else 0
-        specificity = tn / (tn + fp) if (tn + fp) > 0 else 0
-        precision = tp / (tp + fp) if (tp + fp) > 0 else 0
-        recall = sensitivity
-        f1 = (
-            2 * precision * recall / (precision + recall)
-            if (precision + recall) > 0
-            else 0
-        )
-
-        numerator = (tp * tn) - (fp * fn)
-        denominator = np.sqrt((tp + fp) * (tp + fn) * (tn + fp) * (tn + fn))
-        mcc = numerator / denominator if denominator > 0 else 0
-
-        return {
-            "confusion_matrix": corrected_cm,
-            "accuracy": float(accuracy),
-            "mcc": float(mcc),
-            "sensitivity": float(sensitivity),
-            "specificity": float(specificity),
-            "precision": float(precision),
-            "recall": float(recall),
-            "f1": float(f1),
-        }
 
     # ========== 儲存 ==========
 

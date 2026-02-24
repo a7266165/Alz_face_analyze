@@ -344,8 +344,8 @@ def main():
     # 資料載入配置
     EMBEDDING_MODELS = ["arcface", "dlib", "topofr"]
     # EMBEDDING_MODELS = ["topofr"]
-    FEATURE_TYPES = ["difference", "absolute_difference", "average", "relative_differences", "absolute_relative_differences"]
-    MIN_AGE_RANGE = (65, 66)
+    FEATURE_TYPES = ["original", "difference", "absolute_difference", "average", "relative_differences", "absolute_relative_differences"]
+    MIN_AGE_RANGE = (0, 1)
     CDR_THRESHOLDS = [0]
     DATA_BALANCING = False
     USE_ALL_VISITS = True

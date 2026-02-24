@@ -20,7 +20,8 @@ dependencies = [
     "xgboost (>=3.0.5,<4.0.0)",
     "transformers (>=4.57.3,<5.0.0)",
     "mivolo @ git+https://github.com/WildChlamydia/MiVOLO.git",
-    "emotiefflib (>=1.1.1,<2.0.0)"
+    "emotiefflib (>=1.1.1,<2.0.0)",
+    "tabpfn (>=6.4.1,<7.0.0)",
 ]
 
 
