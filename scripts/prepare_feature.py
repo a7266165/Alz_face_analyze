@@ -26,7 +26,7 @@ sys.path.insert(0, str(project_root))
 
 from src.config import RAW_IMAGES_DIR, FEATURES_DIR, AnalyzeConfig
 from src.core.preprocess import PreprocessPipeline, ProcessedFace
-from src.core.extractor import FeatureExtractor
+from src.core.extractor import FeatureExtractor, calculate_differences
 
 # 設定日誌
 logging.basicConfig(
@@ -377,7 +377,7 @@ class FeaturePipeline:
                         continue
                     
                     method = FTYPE_TO_METHOD[ftype]
-                    result = extractor.calculate_differences(
+                    result = calculate_differences(
                         left_array,
                         right_array,
                         methods=[method]

@@ -437,12 +437,12 @@ class XGBoostAnalyzer:
             test_output.to_csv(test_path, index=False, encoding="utf-8-sig")
             logger.debug(f"測試集預測已儲存: {test_path}")
 
-        # 儲存 train.csv（取平均，不保留 fold）
+        # 儲存 train.csv（保留 fold 欄位，供 meta-learner 連動使用）
         if not train_df.empty:
-            train_avg = train_df.groupby("個案編號")["預測分數"].mean().reset_index()
-            train_avg = train_avg.sort_values("個案編號")
+            train_output = train_df[["個案編號", "預測分數", "fold"]]
+            train_output = train_output.sort_values(["fold", "個案編號"])
             train_path = output_dir / f"{dataset_key}_train.csv"
-            train_avg.to_csv(train_path, index=False, encoding="utf-8-sig")
+            train_output.to_csv(train_path, index=False, encoding="utf-8-sig")
             logger.debug(f"訓練集預測已儲存: {train_path}")
 
     # ========== 結果彙整 ==========

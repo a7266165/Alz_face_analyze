@@ -7,12 +7,13 @@ Meta Analysis 模組
 
 from src.meta_analysis.config import MetaConfig
 from src.meta_analysis.pipeline import MetaPipeline
-from src.meta_analysis.data import MetaDataset, MetaDataLoader
+from src.meta_analysis.data import FoldData, MetaDataset, MetaDataLoader
 from src.meta_analysis.model import TabPFNMetaTrainer, MetaEvaluator
 
 __all__ = [
     "MetaConfig",
     "MetaPipeline",
+    "FoldData",
     "MetaDataset",
     "MetaDataLoader",
     "TabPFNMetaTrainer",

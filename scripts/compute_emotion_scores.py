@@ -1,7 +1,7 @@
 """
 計算情緒分數
 
-使用 MT-EmotiEffNet 模型對每個受試者的照片計算情緒分數
+使用 EmoNet 8-class 模型對每個受試者的照片計算情緒分數
 輸出 8 種情緒機率 + Valence/Arousal 連續值
 """
 
@@ -12,11 +12,14 @@ from pathlib import Path
 import cv2
 import numpy as np
 import pandas as pd
+import torch
+import torch.nn.functional as F
 from tqdm import tqdm
 
 # 專案路徑
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
+sys.path.insert(0, str(project_root / "external" / "emonet"))
 
 from src.config import WORKSPACE_DIR
 
@@ -29,9 +32,22 @@ logger = logging.getLogger(__name__)
 
 # 路徑設定
 ALIGNED_DIR = WORKSPACE_DIR / "preprocessing" / "aligned"
-OUTPUT_FILE = WORKSPACE_DIR / "emotion_score.csv"
+OUTPUT_FILE = WORKSPACE_DIR / "emotion_score_EmoNet.csv"
+WEIGHTS_PATH = project_root / "external" / "emonet" / "pretrained" / "emonet_8.pth"
 
-# 情緒類別（MTL 模型輸出順序）
+# EmoNet 輸出索引 → 下游欄位名稱映射
+EMONET_INDEX_TO_COLUMN = {
+    0: "Neutral",
+    1: "Happiness",
+    2: "Sadness",
+    3: "Surprise",
+    4: "Fear",
+    5: "Disgust",
+    6: "Anger",
+    7: "Contempt",
+}
+
+# 情緒類別（維持與下游 loader 一致的順序）
 EMOTION_COLUMNS = [
     "Anger",
     "Contempt",
@@ -47,25 +63,33 @@ EMOTION_COLUMNS = [
 
 
 def load_model():
-    """載入 MT-EmotiEffNet 模型"""
-    from emotiefflib.facial_analysis import EmotiEffLibRecognizerOnnx
+    """載入 EmoNet 8-class 模型"""
+    from emonet.models import EmoNet
 
-    logger.info("載入 MT-EmotiEffNet 模型 (enet_b0_8_va_mtl)...")
-    model = EmotiEffLibRecognizerOnnx("enet_b0_8_va_mtl")
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    logger.info(f"載入 EmoNet 8-class 模型 (device={device})...")
 
-    if not model.is_mtl:
-        raise ValueError("載入的模型不是 MTL 模型，無法輸出 Valence/Arousal")
+    model = EmoNet(n_expression=8).to(device)
+
+    if not WEIGHTS_PATH.exists():
+        raise FileNotFoundError(f"找不到 EmoNet 權重檔: {WEIGHTS_PATH}")
+
+    state_dict = torch.load(str(WEIGHTS_PATH), map_location=device, weights_only=False)
+    state_dict = {k.replace("module.", ""): v for k, v in state_dict.items()}
+    model.load_state_dict(state_dict, strict=False)
+    model.eval()
 
     logger.info("模型載入完成")
-    return model
+    return model, device
 
 
-def compute_scores_for_subject(model, subject_dir: Path) -> dict:
+def compute_scores_for_subject(model, device, subject_dir: Path) -> dict:
     """
     計算單一受試者的情緒分數
 
     Args:
-        model: EmotiEffLibRecognizerOnnx 模型
+        model: EmoNet 模型
+        device: torch device
         subject_dir: 受試者照片目錄
 
     Returns:
@@ -78,31 +102,42 @@ def compute_scores_for_subject(model, subject_dir: Path) -> dict:
         logger.warning(f"  {subject_id}: 沒有找到照片")
         return None
 
-    # 載入所有照片
-    face_imgs = []
+    emo_probs_list = []
+    valence_list = []
+    arousal_list = []
+
     for img_path in images:
         img = cv2.imread(str(img_path))
-        if img is not None:
-            # 轉換為 RGB（emotiefflib 預期 RGB）
-            img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-            face_imgs.append(img_rgb)
-        else:
+        if img is None:
             logger.warning(f"  無法載入: {img_path.name}")
+            continue
 
-    if not face_imgs:
+        img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        img_resized = cv2.resize(img_rgb, (256, 256))
+
+        img_tensor = torch.from_numpy(img_resized).permute(2, 0, 1).float() / 255.0
+        img_tensor = img_tensor.unsqueeze(0).to(device)
+
+        with torch.no_grad():
+            out = model(img_tensor)
+            probs = F.softmax(out["expression"], dim=1).squeeze().cpu().numpy()
+            emo_probs_list.append(probs)
+            valence_list.append(out["valence"].item())
+            arousal_list.append(out["arousal"].item())
+
+    if not emo_probs_list:
         logger.warning(f"  {subject_id}: 沒有成功載入任何照片")
         return None
 
-    # 批次預測（傳入 list 可一次處理多張）
-    _, scores = model.predict_emotions(face_imgs, logits=False)
-    # scores shape: (n_images, 10)
-
-    # 計算平均分數
-    avg_scores = np.mean(scores, axis=0)
+    avg_probs = np.mean(emo_probs_list, axis=0)
+    avg_valence = np.mean(valence_list)
+    avg_arousal = np.mean(arousal_list)
 
     result = {"subject_id": subject_id}
-    for i, col in enumerate(EMOTION_COLUMNS):
-        result[col] = float(avg_scores[i])
+    for idx, col_name in EMONET_INDEX_TO_COLUMN.items():
+        result[col_name] = float(avg_probs[idx])
+    result["Valence"] = float(avg_valence)
+    result["Arousal"] = float(avg_arousal)
 
     return result
 
@@ -110,7 +145,7 @@ def compute_scores_for_subject(model, subject_dir: Path) -> dict:
 def main():
     """主程式"""
     logger.info("=" * 60)
-    logger.info("情緒分數計算")
+    logger.info("情緒分數計算 (EmoNet 8-class)")
     logger.info("=" * 60)
     logger.info(f"輸入目錄: {ALIGNED_DIR}")
     logger.info(f"輸出檔案: {OUTPUT_FILE}")
@@ -121,7 +156,7 @@ def main():
         return
 
     # 載入模型
-    model = load_model()
+    model, device = load_model()
 
     # 取得所有子資料夾
     subject_dirs = sorted(
@@ -132,7 +167,7 @@ def main():
     # 計算每個受試者的分數
     results = []
     for subject_dir in tqdm(subject_dirs, desc="計算情緒分數"):
-        result = compute_scores_for_subject(model, subject_dir)
+        result = compute_scores_for_subject(model, device, subject_dir)
         if result:
             results.append(result)
 

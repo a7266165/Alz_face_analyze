@@ -9,15 +9,17 @@ from typing import Literal, Optional, Union
 
 from .base import BaseAnalyzer
 from .logistic_analyzer import LogisticAnalyzer
+from .tabpfn_analyzer import TabPFNAnalyzer
 from .xgboost_analyzer import XGBoostAnalyzer
 
 # 類型別名
-AnalyzerType = Literal["xgboost", "logistic"]
+AnalyzerType = Literal["xgboost", "logistic", "tabpfn"]
 
 # 分析器註冊表
 ANALYZER_REGISTRY = {
     "xgboost": XGBoostAnalyzer,
     "logistic": LogisticAnalyzer,
+    "tabpfn": TabPFNAnalyzer,
 }
 
 
@@ -60,6 +62,12 @@ def create_analyzer(
 
     analyzer_class = ANALYZER_REGISTRY[analyzer_type]
 
+    # 過濾掉 TabPFN 不支援的參數
+    if analyzer_type == "tabpfn":
+        kwargs.pop("lr_params", None)
+        kwargs.pop("xgb_params", None)
+        kwargs.pop("importance_ratio", None)
+
     return analyzer_class(
         models_dir=models_dir,
         reports_dir=reports_dir,
@@ -79,6 +87,7 @@ def get_available_analyzers() -> list:
 __all__ = [
     "BaseAnalyzer",
     "LogisticAnalyzer",
+    "TabPFNAnalyzer",
     "XGBoostAnalyzer",
     "create_analyzer",
     "get_available_analyzers",

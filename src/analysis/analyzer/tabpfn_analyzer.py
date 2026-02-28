@@ -1,5 +1,5 @@
 """
-Logistic Regression 分析器
+TabPFN 分析器
 
 支援兩種資料格式：
 - averaged: 每個個案一個平均特徵向量
@@ -10,12 +10,10 @@ import json
 import logging
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
-import joblib
 import numpy as np
 import pandas as pd
-from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (
     accuracy_score,
     confusion_matrix,
@@ -26,6 +24,7 @@ from sklearn.metrics import (
     roc_auc_score,
 )
 from sklearn.model_selection import GroupKFold
+from tabpfn import TabPFNClassifier
 
 from src.analysis.loader import Dataset
 
@@ -34,8 +33,8 @@ from .base import BaseAnalyzer
 logger = logging.getLogger(__name__)
 
 
-class LogisticAnalyzer(BaseAnalyzer):
-    """Logistic Regression 分析器"""
+class TabPFNAnalyzer(BaseAnalyzer):
+    """TabPFN 分析器"""
 
     def __init__(
         self,
@@ -45,20 +44,7 @@ class LogisticAnalyzer(BaseAnalyzer):
         n_folds: int = 5,
         n_drop_features: int = 5,
         random_seed: int = 42,
-        lr_params: Optional[Dict] = None,
     ):
-        """
-        初始化 Logistic Regression 分析器
-
-        Args:
-            models_dir: 模型儲存目錄
-            reports_dir: 報告儲存目錄
-            pred_prob_dir: 預測機率儲存目錄
-            n_folds: K-fold CV 的折數
-            n_drop_features: 每次迭代丟棄的特徵數量
-            random_seed: 隨機種子
-            lr_params: LogisticRegression 參數
-        """
         super().__init__(
             n_folds=n_folds,
             random_seed=random_seed,
@@ -70,29 +56,18 @@ class LogisticAnalyzer(BaseAnalyzer):
         self.models_dir = Path(models_dir) if models_dir else None
         self.reports_dir = Path(reports_dir) if reports_dir else None
         self.pred_prob_dir = Path(pred_prob_dir) if pred_prob_dir else None
-        self.n_drop_features = n_drop_features
 
-        self.lr_params = lr_params or {
-            "max_iter": 1000,
-            "random_state": random_seed,
-            "solver": "lbfgs",
-            "n_jobs": -1,
-        }
-
-        logger.info("Logistic Regression 分析器初始化完成")
-        logger.info(
-            f"CV 折數: {self.n_folds}, 每次捨棄特徵數: {self.n_drop_features}"
-        )
+        logger.info("TabPFN 分析器初始化完成")
+        logger.info(f"CV 折數: {self.n_folds}")
 
     @property
     def model_name(self) -> str:
-        """模型名稱"""
-        return "LogisticRegression"
+        return "TabPFN"
 
     # ========== 主要分析方法 ==========
 
     def analyze(self, datasets: List[Dataset], filter_stats: Dict = None) -> Dict:
-        """分析所有資料集"""
+        """分析所有資料集（不做特徵篩選）"""
         logger.info(f"開始分析 {len(datasets)} 個資料集")
 
         all_results = {}
@@ -108,10 +83,47 @@ class LogisticAnalyzer(BaseAnalyzer):
             logger.info("-" * 50)
 
             try:
-                results_by_n_features = self._analyze_with_feature_reduction(
-                    dataset, filter_stats
+                X, y = dataset.X, dataset.y
+                subject_ids = np.array(dataset.subject_ids)
+                base_ids = np.array(dataset.base_ids)
+                sample_groups = dataset.sample_groups
+                n_features = X.shape[1]
+
+                logger.info(f"特徵數: {n_features}")
+
+                all_predictions = []
+
+                if dataset.data_format == "per_image":
+                    fold_results = self._run_kfold_cv_per_image(
+                        X, y, subject_ids, base_ids, sample_groups,
+                        filter_stats, all_predictions,
+                    )
+                else:
+                    fold_results = self._run_kfold_cv(
+                        X, y, subject_ids, base_ids,
+                        filter_stats, all_predictions,
+                    )
+
+                self._save_all_predictions(dataset_key, n_features, all_predictions)
+
+                result = self._aggregate_fold_results(fold_results, filter_stats)
+                result["metadata"] = meta
+                result["selected_indices"] = list(range(n_features))
+                result["original_n_features"] = n_features
+                result["current_n_features"] = n_features
+                result["filter_stats"] = filter_stats
+                result["data_format"] = dataset.data_format
+                result["timestamp"] = datetime.now().isoformat()
+
+                self._save_result(dataset_key, n_features, result)
+
+                logger.info(
+                    f"  → Acc: {result['test_metrics']['accuracy']:.3f}, "
+                    f"MCC: {result['test_metrics']['mcc']:.3f}"
                 )
-                all_results[dataset_key] = results_by_n_features
+
+                all_results[dataset_key] = {n_features: result}
+
             except Exception as e:
                 logger.error(f"✗ {dataset_key}: {e}")
                 import traceback
@@ -119,89 +131,6 @@ class LogisticAnalyzer(BaseAnalyzer):
                 traceback.print_exc()
 
         return all_results
-
-    def _analyze_with_feature_reduction(
-        self, dataset: Dataset, filter_stats: Dict = None
-    ) -> Dict[int, Dict]:
-        """遞減特徵選擇分析"""
-        X, y = dataset.X, dataset.y
-        subject_ids = np.array(dataset.subject_ids)
-        base_ids = np.array(dataset.base_ids)
-        sample_groups = dataset.sample_groups
-        data_format = dataset.data_format
-        meta = dataset.metadata
-        dataset_key = (
-            f"{meta['model']}_{meta['feature_type']}_cdr{meta['cdr_threshold']}"
-        )
-
-        n_features = X.shape[1]
-        selected_indices = list(range(n_features))
-        results = {}
-
-        while len(selected_indices) >= 5:
-            current_n_features = len(selected_indices)
-            X_selected = X[:, selected_indices]
-
-            logger.info(f"特徵數: {current_n_features}")
-
-            # 收集所有 fold 的預測
-            all_predictions = []
-
-            if data_format == "per_image":
-                fold_results = self._run_kfold_cv_per_image(
-                    X_selected,
-                    y,
-                    subject_ids,
-                    base_ids,
-                    sample_groups,
-                    filter_stats,
-                    all_predictions,
-                )
-            else:
-                fold_results = self._run_kfold_cv(
-                    X_selected,
-                    y,
-                    subject_ids,
-                    base_ids,
-                    filter_stats,
-                    all_predictions,
-                )
-
-            # 統一儲存所有 fold 的預測
-            self._save_all_predictions(
-                dataset_key, current_n_features, all_predictions
-            )
-
-            result = self._aggregate_fold_results(fold_results, filter_stats)
-            result["metadata"] = meta
-            result["selected_indices"] = selected_indices.copy()
-            result["original_n_features"] = n_features
-            result["current_n_features"] = current_n_features
-            result["filter_stats"] = filter_stats
-            result["data_format"] = data_format
-            result["timestamp"] = datetime.now().isoformat()
-
-            self._save_result(dataset_key, current_n_features, result)
-            results[current_n_features] = result
-
-            logger.info(
-                f"  → Acc: {result['test_metrics']['accuracy']:.3f}, "
-                f"MCC: {result['test_metrics']['mcc']:.3f}"
-            )
-
-            avg_importance = result["feature_importance"]
-            if avg_importance is None or len(selected_indices) <= self.n_drop_features:
-                break
-
-            sorted_idx = np.argsort(avg_importance)
-            drop_positions = sorted_idx[: self.n_drop_features]
-            selected_indices = [
-                idx
-                for i, idx in enumerate(selected_indices)
-                if i not in drop_positions
-            ]
-
-        return results
 
     # ========== K-fold CV（格式一：averaged）==========
 
@@ -226,19 +155,7 @@ class LogisticAnalyzer(BaseAnalyzer):
             train_subject_ids = subject_ids[train_idx]
             test_subject_ids = subject_ids[test_idx]
 
-            # 計算類別權重
-            neg_count = np.sum(y_train == 0)
-            pos_count = np.sum(y_train == 1)
-
-            if pos_count > 0 and neg_count > 0:
-                class_weight = {0: 1.0, 1: neg_count / pos_count}
-            else:
-                class_weight = "balanced"
-
-            fold_lr_params = self.lr_params.copy()
-            fold_lr_params["class_weight"] = class_weight
-
-            model = LogisticRegression(**fold_lr_params)
+            model = TabPFNClassifier(random_state=self.random_seed)
             model.fit(X_train, y_train)
 
             y_pred_train = model.predict(X_train)
@@ -249,7 +166,7 @@ class LogisticAnalyzer(BaseAnalyzer):
             test_metrics = self._calculate_metrics(y_test, y_pred, y_prob)
             train_metrics = self._calculate_metrics(y_train, y_pred_train)
 
-            # 收集預測（不立即儲存）
+            # 收集預測
             if all_predictions is not None:
                 self._collect_predictions(
                     all_predictions, fold_idx + 1,
@@ -260,18 +177,14 @@ class LogisticAnalyzer(BaseAnalyzer):
                     test_subject_ids, y_prob, "test"
                 )
 
-            # 特徵重要性（使用係數絕對值）
-            feature_importance = np.abs(model.coef_[0])
-
             fold_results.append(
                 {
                     "model": model,
                     "train_metrics": train_metrics,
                     "test_metrics": test_metrics,
-                    "feature_importance": feature_importance,
+                    "feature_importance": None,
                     "n_train": len(X_train),
                     "n_test": len(X_test),
-                    "avg_scale_pos_weight": neg_count / pos_count if pos_count > 0 else 1.0,
                 }
             )
 
@@ -301,21 +214,10 @@ class LogisticAnalyzer(BaseAnalyzer):
             subject_ids_train = subject_ids[train_idx]
             subject_ids_test = subject_ids[test_idx]
 
-            neg_count = np.sum(y_train == 0)
-            pos_count = np.sum(y_train == 1)
-
-            if pos_count > 0 and neg_count > 0:
-                class_weight = {0: 1.0, 1: neg_count / pos_count}
-            else:
-                class_weight = "balanced"
-
             n_train_subjects = len(set(subject_ids_train))
             n_test_subjects = len(set(subject_ids_test))
 
-            fold_lr_params = self.lr_params.copy()
-            fold_lr_params["class_weight"] = class_weight
-
-            model = LogisticRegression(**fold_lr_params)
+            model = TabPFNClassifier(random_state=self.random_seed)
             model.fit(X_train, y_train)
 
             y_pred_train = model.predict(X_train)
@@ -337,7 +239,7 @@ class LogisticAnalyzer(BaseAnalyzer):
 
             test_metrics = self._calculate_metrics(y_test_agg, y_pred_agg, y_prob_agg)
 
-            # 收集預測（不立即儲存）
+            # 收集預測
             if all_predictions is not None:
                 self._collect_predictions(
                     all_predictions, fold_idx + 1,
@@ -348,20 +250,16 @@ class LogisticAnalyzer(BaseAnalyzer):
                     test_unique_ids, y_prob_agg, "test"
                 )
 
-            # 特徵重要性（使用係數絕對值）
-            feature_importance = np.abs(model.coef_[0])
-
             fold_results.append(
                 {
                     "model": model,
                     "train_metrics": train_metrics,
                     "test_metrics": test_metrics,
-                    "feature_importance": feature_importance,
+                    "feature_importance": None,
                     "n_train": len(X_train),
                     "n_test": len(X_test),
                     "n_train_subjects": n_train_subjects,
                     "n_test_subjects": n_test_subjects,
-                    "avg_scale_pos_weight": neg_count / pos_count if pos_count > 0 else 1.0,
                 }
             )
 
@@ -448,11 +346,9 @@ class LogisticAnalyzer(BaseAnalyzer):
 
         df = pd.DataFrame(all_predictions)
 
-        # 分離 train 和 test
         train_df = df[df["split"] == "train"].copy()
         test_df = df[df["split"] == "test"].copy()
 
-        # 儲存 test.csv（保留 fold 欄位）
         if not test_df.empty:
             test_output = test_df[["個案編號", "預測分數", "fold"]]
             test_output = test_output.sort_values(["fold", "個案編號"])
@@ -475,14 +371,8 @@ class LogisticAnalyzer(BaseAnalyzer):
     ) -> Dict:
         """彙整各 fold 結果"""
         metric_keys = [
-            "accuracy",
-            "mcc",
-            "sensitivity",
-            "specificity",
-            "precision",
-            "recall",
-            "f1",
-            "auc",
+            "accuracy", "mcc", "sensitivity", "specificity",
+            "precision", "recall", "f1", "auc",
         ]
 
         train_metrics = {}
@@ -551,21 +441,15 @@ class LogisticAnalyzer(BaseAnalyzer):
                     "auc": None,
                 }
 
-        importances = [f["feature_importance"] for f in fold_results]
-        avg_importance = np.mean(importances, axis=0).tolist()
-
         result = {
             "train_metrics": train_metrics,
             "test_metrics": test_metrics,
             "corrected_metrics": corrected_metrics,
-            "feature_importance": avg_importance,
+            "feature_importance": None,
             "n_train": int(np.mean([f["n_train"] for f in fold_results])),
             "n_test": int(np.mean([f["n_test"] for f in fold_results])),
             "n_folds": len(fold_results),
             "fold_models": [f["model"] for f in fold_results],
-            "avg_scale_pos_weight": float(
-                np.mean([f["avg_scale_pos_weight"] for f in fold_results])
-            ),
         }
 
         if "n_train_subjects" in fold_results[0]:
@@ -622,23 +506,6 @@ class LogisticAnalyzer(BaseAnalyzer):
         """儲存結果"""
         feature_suffix = f"n_features_{n_features}"
 
-        if self.models_dir:
-            model_subdir = self.models_dir / feature_suffix
-            model_subdir.mkdir(parents=True, exist_ok=True)
-
-            # 使用 joblib 儲存 Logistic Regression 模型
-            model_path = model_subdir / f"{dataset_key}.joblib"
-            joblib.dump(result["fold_models"][0], model_path)
-
-            feature_info = {
-                "selected_indices": result["selected_indices"],
-                "original_dim": result["original_n_features"],
-                "selected_dim": result["current_n_features"],
-            }
-            feature_path = model_subdir / f"{dataset_key}_features.json"
-            with open(feature_path, "w", encoding="utf-8") as f:
-                json.dump(feature_info, f, indent=2)
-
         if self.reports_dir:
             report_subdir = self.reports_dir / feature_suffix
             report_subdir.mkdir(parents=True, exist_ok=True)
@@ -649,19 +516,13 @@ class LogisticAnalyzer(BaseAnalyzer):
         report_path = report_dir / f"{dataset_key}_report.txt"
 
         metric_order = [
-            "accuracy",
-            "mcc",
-            "sensitivity",
-            "specificity",
-            "precision",
-            "recall",
-            "f1",
-            "auc",
+            "accuracy", "mcc", "sensitivity", "specificity",
+            "precision", "recall", "f1", "auc",
         ]
         data_format = result.get("data_format", "averaged")
 
         with open(report_path, "w", encoding="utf-8") as f:
-            f.write(f"Logistic Regression 分析報告 ({self.n_folds}-Fold CV)\n")
+            f.write(f"TabPFN 分析報告 ({self.n_folds}-Fold CV)\n")
             f.write("=" * 60 + "\n")
             f.write(f"資料集: {dataset_key}\n")
             f.write(f"資料格式: {data_format}\n")
@@ -716,14 +577,14 @@ class LogisticAnalyzer(BaseAnalyzer):
                     f.write(f"  {metric}: {value:.4f}\n")
 
             if result.get("corrected_metrics"):
-                f.write(f"\n校正後混淆矩陣 ({self.n_folds}-Fold 平均):\n")
+                f.write(f"\n校正後混淆矩陣 ({self.n_folds}-Fold 加總+校正):\n")
                 f.write("-" * 30 + "\n")
                 cm = result["corrected_metrics"]["confusion_matrix"]
                 f.write("         真實0  真實1\n")
-                f.write(f"預測0   {cm[0][0]:5.1f}  {cm[1][0]:5.1f}\n")
-                f.write(f"預測1   {cm[0][1]:5.1f}  {cm[1][1]:5.1f}\n")
+                f.write(f"預測0   {cm[0][0]:5d}  {cm[1][0]:5d}\n")
+                f.write(f"預測1   {cm[0][1]:5d}  {cm[1][1]:5d}\n")
 
-                f.write(f"\n校正後效能 ({self.n_folds}-Fold 平均):\n")
+                f.write(f"\n校正後效能:\n")
                 f.write("-" * 30 + "\n")
                 for metric in metric_order:
                     value = result["corrected_metrics"].get(metric)
@@ -754,44 +615,21 @@ class LogisticAnalyzer(BaseAnalyzer):
         X_test: np.ndarray,
         y_test: np.ndarray,
         **kwargs,
-    ) -> Dict[str, Any]:
-        """
-        訓練單一 fold（兼容 BaseAnalyzer）
-
-        Args:
-            X_train: 訓練特徵
-            y_train: 訓練標籤
-            X_test: 測試特徵
-            y_test: 測試標籤
-            **kwargs: 額外參數
-
-        Returns:
-            包含模型、預測結果等的字典
-        """
-        # 計算類別權重
-        neg_count = np.sum(y_train == 0)
-        pos_count = np.sum(y_train == 1)
-
-        if pos_count > 0 and neg_count > 0:
-            class_weight = {0: 1.0, 1: neg_count / pos_count}
-        else:
-            class_weight = "balanced"
-
-        # 建立模型
-        fold_lr_params = self.lr_params.copy()
-        fold_lr_params["class_weight"] = class_weight
-
-        model = LogisticRegression(**fold_lr_params)
+    ) -> Dict:
+        model = TabPFNClassifier(random_state=self.random_seed)
         model.fit(X_train, y_train)
 
-        # 預測
         y_pred_train = model.predict(X_train)
         y_prob_train = model.predict_proba(X_train)[:, 1]
         y_pred = model.predict(X_test)
         y_prob = model.predict_proba(X_test)[:, 1]
 
-        # 特徵重要性（使用係數絕對值）
-        feature_importance = np.abs(model.coef_[0])
+        perm_result = permutation_importance(
+            model, X_test, y_test,
+            n_repeats=self.n_perm_repeats,
+            random_state=self.random_seed,
+            scoring="accuracy",
+        )
 
         return {
             "model": model,
@@ -799,7 +637,5 @@ class LogisticAnalyzer(BaseAnalyzer):
             "y_prob": y_prob,
             "y_pred_train": y_pred_train,
             "y_prob_train": y_prob_train,
-            "feature_importance": feature_importance,
-            "coefficients": model.coef_[0].tolist(),
-            "intercept": float(model.intercept_[0]),
+            "feature_importance": perm_result.importances_mean,
         }

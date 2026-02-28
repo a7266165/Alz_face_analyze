@@ -89,7 +89,7 @@ class MetaPipeline:
         logger.info(f"n_features 層級: {len(self.n_features_list)} 個")
         logger.info(f"模型: {self.config.models}")
         logger.info(f"不對稱方法: {self.config.asymmetry_method}")
-        logger.info(f"CV 折數: {self.config.n_folds}")
+        logger.info(f"CV 折數: 由 base model 預測檔決定（折疊對齊）")
 
         all_results = []
         success_count = 0
@@ -154,8 +154,10 @@ class MetaPipeline:
         )
         dataset = loader.load()
 
-        # 訓練 TabPFN
-        trainer = TabPFNMetaTrainer(random_seed=self.config.random_seed)
+        # 訓練 TabPFN（折疊對齊，折數由 dataset 決定）
+        trainer = TabPFNMetaTrainer(
+            random_seed=self.config.random_seed,
+        )
         train_result = trainer.train(dataset)
 
         # 儲存結果
@@ -229,17 +231,14 @@ class MetaPipeline:
                 test_output.to_csv(test_path, index=False, encoding="utf-8-sig")
 
             if not train_df.empty:
-                train_avg = (
-                    train_df.groupby("subject_id")["pred_score"]
-                    .mean()
-                    .reset_index()
-                )
-                train_avg = train_avg.rename(columns={
+                train_output = train_df[["subject_id", "pred_score", "fold"]]
+                train_output = train_output.rename(columns={
                     "subject_id": "個案編號",
                     "pred_score": "預測分數",
                 })
+                train_output = train_output.sort_values(["fold", "個案編號"])
                 train_path = pred_subdir / f"{dataset_key}_train.csv"
-                train_avg.to_csv(train_path, index=False, encoding="utf-8-sig")
+                train_output.to_csv(train_path, index=False, encoding="utf-8-sig")
 
         # 儲存報告
         if self.config.save_reports:

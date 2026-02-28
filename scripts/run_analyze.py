@@ -342,10 +342,10 @@ def main():
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
     # 資料載入配置
-    EMBEDDING_MODELS = ["arcface", "dlib", "topofr"]
+    EMBEDDING_MODELS = ["arcface", "topofr"]
     # EMBEDDING_MODELS = ["topofr"]
-    FEATURE_TYPES = ["original", "difference", "absolute_difference", "average", "relative_differences", "absolute_relative_differences"]
-    MIN_AGE_RANGE = (0, 1)
+    FEATURE_TYPES = ["original", "absolute_relative_differences"]
+    MIN_AGE_RANGE = (0, 0)
     CDR_THRESHOLDS = [0]
     DATA_BALANCING = False
     USE_ALL_VISITS = True
@@ -356,12 +356,14 @@ def main():
     RANDOM_SEED = 42
 
     # 分析器類型配置
-    ANALYZER_TYPE: AnalyzerType = "logistic"  # "xgboost" 或 "logistic"
+    ANALYZER_TYPE: AnalyzerType = "logistic"  # "logistic", "xgboost", "tabpfn"
     ANALYZER_PARAMS = {
         # Logistic Regression 專用參數（可選）
         # "lr_params": {"max_iter": 1000, "solver": "lbfgs"}
         # XGBoost 專用參數（可選）
         # "xgb_params": {"n_estimators": 100, "max_depth": 6}
+        # TabPFN 專用參數（可選）
+        # "n_perm_repeats": 10  # permutation importance 重複次數
     }
 
     # 輸出目錄（使用 config 的 WORKSPACE_DIR）

@@ -29,8 +29,7 @@ class MetaConfig:
     # 資料設定
     cdr_threshold: float = 0
 
-    # 訓練設定
-    n_folds: int = 10
+    # 訓練設定（折數由 base model 預測檔的 fold 欄位決定）
     random_seed: int = 42
 
     # 輸出設定

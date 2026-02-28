@@ -1,7 +1,8 @@
 """
-TabPFN Meta Trainer
+TabPFN Meta Trainer（折疊對齊版）
 
-使用預定義的 fold 分配進行 K-fold 交叉驗證訓練。
+使用 MetaDataset 的 per-fold 分割進行訓練，
+折疊直接對應 base model 的 K-fold CV。
 """
 
 import logging
@@ -46,57 +47,43 @@ class TrainResult:
 
 class TabPFNMetaTrainer:
     """
-    TabPFN Meta 訓練器
+    TabPFN Meta 訓練器（折疊對齊版）
 
-    使用 14 個特徵 (2 LR 分數 + age_error + real_age + 10 emotion)
-    訓練 TabPFN 進行最終分類。
+    使用 MetaDataset 的 per-fold 分割，
+    折疊直接對應 base model 的 K-fold CV。
     """
 
     def __init__(self, random_seed: int = 42):
-        """
-        初始化訓練器
-
-        Args:
-            random_seed: 隨機種子
-        """
         self.random_seed = random_seed
 
     def train(self, dataset: MetaDataset) -> TrainResult:
         """
-        使用預定義的 fold 分配進行 K-fold CV 訓練
+        使用折疊對齊的分割進行訓練
 
         Args:
-            dataset: MetaDataset 物件
+            dataset: MetaDataset（per-fold 結構）
 
         Returns:
-            TrainResult 物件
+            TrainResult
         """
-        X = dataset.X
-        y = dataset.y
-        subject_ids = np.array(dataset.subject_ids)
-        fold_assignments = dataset.fold_assignments
+        n_folds = dataset.n_folds
         feature_names = dataset.feature_names
 
-        unique_folds = sorted(np.unique(fold_assignments))
-        n_folds = len(unique_folds)
-
-        logger.info(f"開始 {n_folds}-Fold CV 訓練 (TabPFN)")
-        logger.info(f"樣本數: {len(X)}, 特徵數: {X.shape[1]}")
+        logger.info(f"開始 {n_folds}-Fold CV 訓練 (TabPFN, 折疊對齊)")
+        logger.info(f"特徵數: {dataset.n_features}")
 
         fold_metrics = []
         all_predictions = []
         all_importances = []
         models = []
 
-        for fold in unique_folds:
-            # 分割資料
-            test_mask = fold_assignments == fold
-            train_mask = ~test_mask
+        for fold_idx, fold_d in sorted(dataset.fold_data.items()):
+            X_train, y_train = fold_d.X_train, fold_d.y_train
+            X_test, y_test = fold_d.X_test, fold_d.y_test
 
-            X_train, X_test = X[train_mask], X[test_mask]
-            y_train, y_test = y[train_mask], y[test_mask]
-            train_ids = subject_ids[train_mask]
-            test_ids = subject_ids[test_mask]
+            logger.info(
+                f"  Fold {fold_idx}: train={len(X_train)}, test={len(X_test)}"
+            )
 
             # 訓練 TabPFN
             model = TabPFNClassifier(random_state=self.random_seed)
@@ -114,7 +101,7 @@ class TabPFNMetaTrainer:
             test_metrics = MetaEvaluator.calculate(y_test, y_pred_test, y_prob_test)
 
             fold_metrics.append({
-                "fold": fold,
+                "fold": fold_idx,
                 "train": train_metrics,
                 "test": test_metrics,
                 "n_train": len(X_train),
@@ -131,23 +118,23 @@ class TabPFNMetaTrainer:
             all_importances.append(perm_result.importances_mean)
 
             # 收集預測
-            for sid, prob in zip(train_ids, y_prob_train):
+            for sid, prob in zip(fold_d.train_subject_ids, y_prob_train):
                 all_predictions.append({
                     "subject_id": sid,
                     "pred_score": float(prob),
-                    "fold": fold,
+                    "fold": fold_idx,
                     "split": "train",
                 })
-            for sid, prob in zip(test_ids, y_prob_test):
+            for sid, prob in zip(fold_d.test_subject_ids, y_prob_test):
                 all_predictions.append({
                     "subject_id": sid,
                     "pred_score": float(prob),
-                    "fold": fold,
+                    "fold": fold_idx,
                     "split": "test",
                 })
 
             logger.info(
-                f"  Fold {fold}: Test Acc={test_metrics['accuracy']:.4f}, "
+                f"  Fold {fold_idx}: Test Acc={test_metrics['accuracy']:.4f}, "
                 f"MCC={test_metrics['mcc']:.4f}, "
                 f"AUC={test_metrics.get('auc', 'N/A')}"
             )
@@ -179,10 +166,11 @@ class TabPFNMetaTrainer:
             models=models,
             metadata={
                 "n_folds": n_folds,
-                "n_samples": len(X),
-                "n_features": X.shape[1],
+                "n_samples": dataset.n_samples,
+                "n_features": dataset.n_features,
                 "feature_names": feature_names,
                 "classifier": "TabPFN",
+                "fold_aligned": True,
                 "timestamp": datetime.now().isoformat(),
             },
         )

@@ -37,12 +37,12 @@ PREDICTED_AGES_FILE = WORKSPACE_DIR / "predicted_ages.json"
 # LR 預測分數目錄 (根據你的實際目錄名稱修改)
 PREDICTIONS_DIR = (
     WORKSPACE_DIR
-    / "analysis_20260224_080859_logistic_balancing_False_allvisits_True"
+    / "analysis_20260226_100333_logistic_balancing_False_allvisits_True"
     / "pred_probability"
 )
 
 # Emotion 分數檔案
-EMOTION_SCORES_FILE = WORKSPACE_DIR / "emotion_score.csv"
+EMOTION_SCORES_FILE = WORKSPACE_DIR / "emotion_score_EmoNet.csv"
 
 # 輸出目錄
 OUTPUT_DIR = WORKSPACE_DIR / f"tabpfn_meta_analysis_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
@@ -52,8 +52,7 @@ CONFIG = MetaConfig(
     # 資料設定
     cdr_threshold=0,
 
-    # 訓練設定
-    n_folds=10,
+    # 訓練設定（折數由 base model 預測檔自動決定）
     random_seed=42,
 
     # 輸出設定
@@ -62,7 +61,8 @@ CONFIG = MetaConfig(
     save_reports=True,
 
     # 分析範圍
-    models=["arcface", "topofr", "dlib"],
+    # models=["arcface", "topofr", "dlib".],
+    models=["arcface"],
     asymmetry_method="absolute_relative_differences",
     n_features_list=None,  # None = 自動發現全部 n_features
 
@@ -133,10 +133,11 @@ def main():
 
         top_10 = summary_df.head(10)
         for _, row in top_10.iterrows():
+            auc_str = f"{row['auc']:.4f}" if row['auc'] is not None else "N/A"
             logger.info(
                 f"  {row['model']}, n_features={row['n_features']:3d}: "
                 f"MCC={row['mcc']:.4f}, Acc={row['accuracy']:.4f}, "
-                f"AUC={row['auc']:.4f if row['auc'] else 'N/A'}"
+                f"AUC={auc_str}"
             )
 
     logger.info("\n分析完成！")

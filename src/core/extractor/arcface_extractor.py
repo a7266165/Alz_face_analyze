@@ -9,12 +9,12 @@ import numpy as np
 import logging
 
 from .base import BaseExtractor
-from .registry import ExtractorRegistry
+from .feature_extractor import FeatureExtractor
 
 logger = logging.getLogger(__name__)
 
 
-@ExtractorRegistry.register("arcface")
+@FeatureExtractor.register("arcface")
 class ArcFaceExtractor(BaseExtractor):
     """
     ArcFace 特徵提取器
