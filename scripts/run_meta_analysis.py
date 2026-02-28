@@ -62,7 +62,7 @@ CONFIG = MetaConfig(
 
     # 分析範圍
     # models=["arcface", "topofr", "dlib".],
-    models=["arcface"],
+    models=["topofr"],
     asymmetry_method="absolute_relative_differences",
     n_features_list=None,  # None = 自動發現全部 n_features
 

@@ -73,9 +73,11 @@ class LogisticAnalyzer(BaseAnalyzer):
         self.n_drop_features = n_drop_features
 
         self.lr_params = lr_params or {
-            "max_iter": 1000,
-            "random_state": random_seed,
+            "C": 1,
+            "max_iter": 100,
             "solver": "lbfgs",
+            "class_weight": "balanced",
+            "random_state": random_seed,
             "n_jobs": -1,
         }
 
@@ -226,19 +228,7 @@ class LogisticAnalyzer(BaseAnalyzer):
             train_subject_ids = subject_ids[train_idx]
             test_subject_ids = subject_ids[test_idx]
 
-            # 計算類別權重
-            neg_count = np.sum(y_train == 0)
-            pos_count = np.sum(y_train == 1)
-
-            if pos_count > 0 and neg_count > 0:
-                class_weight = {0: 1.0, 1: neg_count / pos_count}
-            else:
-                class_weight = "balanced"
-
-            fold_lr_params = self.lr_params.copy()
-            fold_lr_params["class_weight"] = class_weight
-
-            model = LogisticRegression(**fold_lr_params)
+            model = LogisticRegression(**self.lr_params)
             model.fit(X_train, y_train)
 
             y_pred_train = model.predict(X_train)
@@ -271,7 +261,6 @@ class LogisticAnalyzer(BaseAnalyzer):
                     "feature_importance": feature_importance,
                     "n_train": len(X_train),
                     "n_test": len(X_test),
-                    "avg_scale_pos_weight": neg_count / pos_count if pos_count > 0 else 1.0,
                 }
             )
 
@@ -301,21 +290,10 @@ class LogisticAnalyzer(BaseAnalyzer):
             subject_ids_train = subject_ids[train_idx]
             subject_ids_test = subject_ids[test_idx]
 
-            neg_count = np.sum(y_train == 0)
-            pos_count = np.sum(y_train == 1)
-
-            if pos_count > 0 and neg_count > 0:
-                class_weight = {0: 1.0, 1: neg_count / pos_count}
-            else:
-                class_weight = "balanced"
-
             n_train_subjects = len(set(subject_ids_train))
             n_test_subjects = len(set(subject_ids_test))
 
-            fold_lr_params = self.lr_params.copy()
-            fold_lr_params["class_weight"] = class_weight
-
-            model = LogisticRegression(**fold_lr_params)
+            model = LogisticRegression(**self.lr_params)
             model.fit(X_train, y_train)
 
             y_pred_train = model.predict(X_train)
@@ -361,7 +339,6 @@ class LogisticAnalyzer(BaseAnalyzer):
                     "n_test": len(X_test),
                     "n_train_subjects": n_train_subjects,
                     "n_test_subjects": n_test_subjects,
-                    "avg_scale_pos_weight": neg_count / pos_count if pos_count > 0 else 1.0,
                 }
             )
 
@@ -563,9 +540,6 @@ class LogisticAnalyzer(BaseAnalyzer):
             "n_test": int(np.mean([f["n_test"] for f in fold_results])),
             "n_folds": len(fold_results),
             "fold_models": [f["model"] for f in fold_results],
-            "avg_scale_pos_weight": float(
-                np.mean([f["avg_scale_pos_weight"] for f in fold_results])
-            ),
         }
 
         if "n_train_subjects" in fold_results[0]:
@@ -768,20 +742,7 @@ class LogisticAnalyzer(BaseAnalyzer):
         Returns:
             包含模型、預測結果等的字典
         """
-        # 計算類別權重
-        neg_count = np.sum(y_train == 0)
-        pos_count = np.sum(y_train == 1)
-
-        if pos_count > 0 and neg_count > 0:
-            class_weight = {0: 1.0, 1: neg_count / pos_count}
-        else:
-            class_weight = "balanced"
-
-        # 建立模型
-        fold_lr_params = self.lr_params.copy()
-        fold_lr_params["class_weight"] = class_weight
-
-        model = LogisticRegression(**fold_lr_params)
+        model = LogisticRegression(**self.lr_params)
         model.fit(X_train, y_train)
 
         # 預測
