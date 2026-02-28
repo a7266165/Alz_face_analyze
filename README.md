@@ -7,60 +7,82 @@
 ```
 Alz_face_analyze/
 ├── src/
-│   ├── core/                       # 核心處理模組
-│   │   ├── config.py               # 配置 dataclass
-│   │   ├── age_predictor.py        # 年齡預測 (MiVOLO)
-│   │   │
-│   │   ├── preprocess/             # 臉部預處理子模組
-│   │   │   ├── detector.py         # FaceDetector (MediaPipe)
-│   │   │   ├── selector.py         # FaceSelector (選擇最正面)
-│   │   │   ├── aligner.py          # FaceAligner (角度校正)
-│   │   │   ├── mirror.py           # MirrorGenerator (鏡射影像)
-│   │   │   └── base.py             # PreprocessPipeline (Facade)
-│   │   │
-│   │   └── extractor/              # 特徵萃取子模組
-│   │       ├── base.py             # BaseExtractor (ABC)
-│   │       ├── registry.py         # ExtractorRegistry (Singleton)
-│   │       ├── dlib_extractor.py   # DlibExtractor (128維)
-│   │       ├── arcface_extractor.py    # ArcFaceExtractor (512維)
-│   │       ├── topofr_extractor.py     # TopoFRExtractor (512維)
-│   │       └── vggface_extractor.py    # VGGFaceExtractor (4096維)
+│   ├── config.py                      # 全專案共用配置（路徑常數、PreprocessConfig）
 │   │
-│   ├── analysis/                   # 分析模組
-│   │   ├── loader/                 # 資料載入子模組
-│   │   │   ├── base.py             # Dataset, DataLoaderProtocol
-│   │   │   ├── demographics.py     # DemographicsLoader
-│   │   │   ├── balancer.py         # DataBalancer (年齡分層平衡)
-│   │   │   └── data_loader.py      # DataLoader (主類別)
+│   ├── core/                          # 核心處理模組
+│   │   ├── age_predictor.py           # MiVOLO v2 年齡預測
 │   │   │
-│   │   ├── analyzer/               # 分析器子模組
-│   │   │   ├── base.py             # BaseAnalyzer (ABC)
-│   │   │   └── xgboost_analyzer.py # XGBoostAnalyzer
+│   │   ├── preprocess/                # 臉部預處理子模組
+│   │   │   ├── detector.py            # FaceDetector (MediaPipe)
+│   │   │   ├── selector.py            # FaceSelector (選擇最正面)
+│   │   │   ├── aligner.py             # FaceAligner (角度校正)
+│   │   │   ├── mirror.py              # MirrorGenerator (鏡射影像)
+│   │   │   └── base.py                # PreprocessPipeline (Facade)
 │   │   │
-│   │   └── plotter.py              # ResultPlotter (結果視覺化)
+│   │   └── extractor/                 # 特徵萃取子模組
+│   │       ├── base.py                # BaseExtractor (ABC)
+│   │       ├── feature_extractor.py   # FeatureExtractor (Singleton + Registry)
+│   │       ├── feature_ops.py         # calculate_differences, add_demographics
+│   │       ├── dlib_extractor.py      # DlibExtractor (128維)
+│   │       ├── arcface_extractor.py   # ArcFaceExtractor (512維)
+│   │       ├── topofr_extractor.py    # TopoFRExtractor (512維)
+│   │       └── vggface_extractor.py   # VGGFaceExtractor (4096維)
 │   │
-│   └── common/                     # 共用模組
-│       ├── types.py                # Protocol 定義、資料型別
-│       └── metrics.py              # MetricsCalculator
+│   ├── analysis/                      # 分析模組
+│   │   ├── loader/                    # 資料載入子模組
+│   │   │   ├── base.py                # Dataset, DataLoaderProtocol
+│   │   │   ├── demographics.py        # DemographicsLoader
+│   │   │   ├── balancer.py            # DataBalancer (年齡分層平衡)
+│   │   │   └── data_loader.py         # DataLoader (主類別)
+│   │   │
+│   │   ├── analyzer/                  # 分析器子模組
+│   │   │   ├── __init__.py            # create_analyzer 工廠函數、ANALYZER_REGISTRY
+│   │   │   ├── base.py                # BaseAnalyzer (ABC)
+│   │   │   ├── xgboost_analyzer.py    # XGBoostAnalyzer
+│   │   │   ├── logistic_analyzer.py   # LogisticAnalyzer
+│   │   │   └── tabpfn_analyzer.py     # TabPFNAnalyzer
+│   │   │
+│   │   └── plotter.py                 # ResultPlotter (結果視覺化)
+│   │
+│   ├── meta_analysis/                 # Meta 分析模組
+│   │   ├── config.py                  # MetaConfig (dataclass)
+│   │   ├── pipeline.py                # MetaPipeline (執行流程)
+│   │   ├── data/
+│   │   │   ├── dataset.py             # MetaDataset (14 特徵資料結構)
+│   │   │   └── loader.py              # MetaDataLoader (資料載入合併)
+│   │   └── model/
+│   │       ├── trainer.py             # TabPFNMetaTrainer, TrainResult
+│   │       └── evaluator.py           # MetaEvaluator (指標計算)
+│   │
+│   └── common/                        # 共用模組
+│       ├── types.py                   # Protocol 定義、資料型別
+│       └── metrics.py                 # MetricsCalculator
 │
-├── scripts/                        # 執行腳本
-│   ├── predict_ages.py             # 階段零：年齡預測
-│   ├── prepare_feature.py          # 階段一：特徵準備
-│   ├── run_analyze.py              # 階段二：分析訓練
-│   ├── plot_predicted_ages.py      # 年齡預測統計與視覺化
-│   ├── calibrate_age_prediction.py # 年齡預測校正
-│   └── demographics_statistics.py  # 人口學統計
+├── scripts/                           # 執行腳本
+│   ├── predict_ages.py                # 階段零：年齡預測
+│   ├── prepare_feature.py             # 階段一：特徵準備
+│   ├── run_analyze.py                 # 階段二：分析訓練
+│   ├── run_meta_analysis.py           # 階段三：Meta 分析
+│   ├── compute_emotion_scores.py      # 情緒分數計算
+│   ├── extract_original_features.py   # 原始嵌入提取（不做鏡射）
+│   ├── compare_features.py            # 特徵比對視覺化
+│   ├── plot_predicted_ages.py         # 年齡預測統計與視覺化
+│   ├── plot_tabpfn_meta_by_n_features.py   # TabPFN Meta 趨勢圖
+│   ├── plot_xgboost_meta_by_n_features.py  # XGBoost Meta 趨勢圖
+│   ├── calibrate_age_prediction.py    # 年齡預測校正
+│   └── demographics_statistics.py     # 人口學統計
 │
 ├── data/
-│   ├── images/raw/path.txt         # 原始圖片路徑指向
-│   └── demographics/               # 人口學資料 (ACS.csv, NAD.csv, P.csv)
+│   ├── images/raw/path.txt            # 原始圖片路徑指向
+│   └── demographics/                  # 人口學資料 (ACS.csv, NAD.csv, P.csv)
 │
-├── legacy/                         # 舊版程式碼 (備份參考用)
+├── legacy/                            # 舊版程式碼 (備份參考用)
 │
-└── workspace/                      # 工作區（輸出）
+└── workspace/                         # 工作區（輸出）
     ├── predicted_ages.json
+    ├── emotion_score.csv
     ├── features/
-    └── analysis/
+    └── analysis*/
 ```
 
 ---
@@ -99,7 +121,6 @@ scripts/prepare_feature.py
 │
 ├── FeaturePipeline.__init__()
 │   ├── _setup_cpu_limit()                  ← 設定 OMP/MKL/OpenCV 執行緒數
-│   ├── _read_path_file()                   ← 讀取 data/images/raw/path.txt
 │   └── _setup_output_dirs()                ← 建立 workspace/features/{model}/{type}/
 │
 └── FeaturePipeline.run()
@@ -110,14 +131,15 @@ scripts/prepare_feature.py
         ├── _get_processed_subjects()       ← 斷點續傳：檢查已處理的受試者
         │
         ├── src/core/extractor/             ← 特徵萃取子模組
-        │       ├── registry.py
-        │       │   └── ExtractorRegistry   ← Singleton 註冊中心
-        │       │       ├── register()      ← @register 裝飾器
-        │       │       └── get()           ← 依名稱取得 extractor (lazy load)
+        │       ├── feature_extractor.py
+        │       │   └── FeatureExtractor    ← Singleton + 類別級 Registry
+        │       │       ├── @register()     ← 裝飾器註冊 extractor
+        │       │       ├── _get_extractor()← 懶載入
+        │       │       └── _report_status()← 報告載入狀態
         │       │
-        │       └── FeatureExtractor        ← Facade 包裝類別
-        │           ├── __init__()          ← 透過 Registry 載入各 extractor
-        │           └── _report_status()    ← 報告載入狀態
+        │       └── feature_ops.py          ← 純函式：特徵後處理
+        │           ├── calculate_differences()
+        │           └── add_demographics()
         │
         │       底層 extractors (繼承 BaseExtractor):
         │       ├── dlib_extractor.py       → DlibExtractor (128維)
@@ -129,12 +151,12 @@ scripts/prepare_feature.py
                 │
                 ├── _load_images_from_subject()     ← 載入 jpg/png 圖片
                 │
-                ├── src/core/config.py
+                ├── src/config.py
                 │       └── PreprocessConfig        ← 預處理配置 dataclass
                 │           ├── n_select = 10
                 │           ├── align_face = True
                 │           ├── mirror_size = (512, 512)
-                │           ├── mirror_method = "midline"
+                │           ├── mirror_method = "flip"
                 │           └── steps = ["select", "align", "mirror"]
                 │
                 ├── src/core/preprocess/            ← 臉部預處理子模組
@@ -188,14 +210,14 @@ scripts/prepare_feature.py
                 │           │
                 │           ├── extract_features()                      ← 批次提取特徵
                 │           │   └── 對每個 extractor:
-                │           │       └── extractor.extract()             ← 透過 Registry
+                │           │       └── extractor.extract_batch()
                 │           │
-                │           └── calculate_differences()                 ← 計算左右臉差異
-                │               ├── "difference"              → left - right
-                │               ├── "absolute_difference"     → |left - right|
-                │               ├── "average"                 → (left + right) / 2
-                │               ├── "relative_difference"     → diff / norm
-                │               └── "absolute_relative_difference"
+                │           └── feature_ops.calculate_differences()     ← 計算左右臉差異
+                │               ├── "differences"                → left - right
+                │               ├── "absolute_differences"       → |left - right|
+                │               ├── "averages"                   → (left + right) / 2
+                │               ├── "relative_differences"       → diff / norm
+                │               └── "absolute_relative_differences"
                 │                       │
                 │                       ↓
                 │               {method: feature_array}
@@ -266,56 +288,53 @@ scripts/run_analyze.py
                 │       │
                 │       └── src/analysis/analyzer/          ← 分析器子模組
                 │               │
+                │               ├── __init__.py
+                │               │   └── create_analyzer()   ← 工廠函數
+                │               │       └── ANALYZER_REGISTRY
+                │               │           ├── "xgboost"  → XGBoostAnalyzer
+                │               │           ├── "logistic" → LogisticAnalyzer
+                │               │           └── "tabpfn"   → TabPFNAnalyzer
+                │               │
                 │               ├── base.py
                 │               │   └── BaseAnalyzer        ← ABC 基底類別
                 │               │
-                │               └── xgboost_analyzer.py
-                │                   └── XGBoostAnalyzer     ← XGBoost 分析器
+                │               └── [xgboost|logistic|tabpfn]_analyzer.py
+                │                   └── *Analyzer
                 │                       │
-                │                       ├── __init__()
-                │                       │   └── xgb_params 設定
+                │                       ├── analyze()       ← 分析所有 dataset
                 │                       │
-                │                       └── analyze()       ← 分析所有 dataset
-                │                           │
-                │                           └── _analyze_with_feature_reduction()
-                │                                   │
-                │                                   └── while 特徵數 >= 5:
-                │                                           │
-                │                                           ├── if per_image:
-                │                                           │   └── _run_kfold_cv_per_image()
-                │                                           │       ├── GroupKFold(base_ids)
-                │                                           │       ├── XGBClassifier.fit()
-                │                                           │       ├── _aggregate_predictions()
-                │                                           │       ├── _calculate_metrics()
-                │                                           │       └── _save_predictions()
-                │                                           │
-                │                                           ├── else (averaged):
-                │                                           │   └── _run_kfold_cv()
-                │                                           │       ├── GroupKFold(base_ids)
-                │                                           │       ├── XGBClassifier.fit()
-                │                                           │       ├── _calculate_metrics()
-                │                                           │       └── _save_predictions()
-                │                                           │
-                │                                           ├── _aggregate_fold_results()
-                │                                           ├── _save_result()
-                │                                           │
-                │                                           └── 捨棄最低重要性的 n_drop_features 個特徵
-                │                                                   │
-                │                                                   ↓
-                │                                           workspace/analysis/models/
-                │                                           workspace/analysis/reports/
-                │                                           workspace/analysis/pred_probability/
+                │                       └── _analyze_with_feature_reduction()
+                │                               │
+                │                               └── while 特徵數 >= 5:
+                │                                       │
+                │                                       ├── if per_image:
+                │                                       │   └── _run_kfold_cv_per_image()
+                │                                       │       ├── GroupKFold(base_ids)
+                │                                       │       ├── model.fit() / .predict()
+                │                                       │       ├── _aggregate_predictions()
+                │                                       │       └── _calculate_metrics()
+                │                                       │
+                │                                       ├── else (averaged):
+                │                                       │   └── _run_kfold_cv()
+                │                                       │       ├── GroupKFold(base_ids)
+                │                                       │       ├── model.fit() / .predict()
+                │                                       │       └── _calculate_metrics()
+                │                                       │
+                │                                       ├── _aggregate_fold_results()
+                │                                       ├── _save_result()
+                │                                       │
+                │                                       └── 捨棄最低重要性的 n_drop_features 個特徵
+                │                                               │
+                │                                               ↓
+                │                                       workspace/analysis/models/
+                │                                       workspace/analysis/reports/
+                │                                       workspace/analysis/pred_probability/
                 │
                 ├── _plot_results()
                 │       │
                 │       └── src/analysis/plotter.py
                 │               └── ResultPlotter
-                │                   │
-                │                   ├── plot_individual()       ← 每個 dataset 四張圖
-                │                   ├── plot_combined()         ← 所有組合合併
-                │                   ├── plot_by_model()         ← 按模型分組
-                │                   ├── plot_by_n_features()    ← 按特徵數趨勢
-                │                   └── plot_filter_stats()     ← 篩選統計圖
+                │                   └── plot_by_n_features()    ← 按特徵數趨勢
                 │                           │
                 │                           ↓
                 │                   workspace/analysis/plots/
@@ -324,19 +343,106 @@ scripts/run_analyze.py
                         │
                         ↓
                 workspace/analysis/training_summary.json
+
+
+================================================================================
+[階段三：Meta 分析]
+================================================================================
+
+scripts/run_meta_analysis.py
+│
+├── MetaConfig                              ← 分析設定 dataclass
+│   ├── models = ["arcface", ...]
+│   ├── asymmetry_method = "absolute_relative_differences"
+│   ├── n_folds = 10
+│   └── n_features_list = None (自動發現)
+│
+└── MetaPipeline.__init__()
+    │   ├── MetaDataLoader.discover_n_features()  ← 自動掃描可用 n_features
+    │   └── _ensure_output_dirs()
+    │
+    └── MetaPipeline.run()
+            │
+            └── 對每個 model × n_features：
+                    │
+                    └── run_single()
+                            │
+                            ├── src/meta_analysis/data/
+                            │       │
+                            │       ├── loader.py
+                            │       │   └── MetaDataLoader      ← 14 特徵資料載入
+                            │       │       ├── _load_lr_predictions("original")
+                            │       │       │       → lr_score_original
+                            │       │       ├── _load_lr_predictions(asymmetry_method)
+                            │       │       │       → lr_score_asymmetry
+                            │       │       ├── _load_emotion_scores()
+                            │       │       │       → 8 表情 + Valence + Arousal
+                            │       │       ├── _load_age_data()
+                            │       │       │       → age_error, real_age
+                            │       │       ├── _merge_all()
+                            │       │       ├── _infer_labels()  ← 從 subject_id 推斷
+                            │       │       └── _create_dataset()
+                            │       │               │
+                            │       │               ↓
+                            │       └── dataset.py
+                            │           └── MetaDataset(X, y, subject_ids,
+                            │                   base_ids, fold_assignments,
+                            │                   feature_names)
+                            │               14 特徵:
+                            │               [age_error, real_age,
+                            │                lr_score_original, lr_score_asymmetry,
+                            │                Anger, Contempt, Disgust, Fear,
+                            │                Happiness, Neutral, Sadness, Surprise,
+                            │                Valence, Arousal]
+                            │
+                            ├── src/meta_analysis/model/
+                            │       │
+                            │       ├── trainer.py
+                            │       │   └── TabPFNMetaTrainer
+                            │       │       └── train()
+                            │       │           ├── GroupKFold(base_ids)
+                            │       │           ├── TabPFNClassifier.fit() / .predict()
+                            │       │           ├── MetaEvaluator.calculate()
+                            │       │           ├── permutation_importance()
+                            │       │           └── MetaEvaluator.aggregate_fold_metrics()
+                            │       │                   │
+                            │       │                   ↓
+                            │       │               TrainResult(test_metrics,
+                            │       │                   train_metrics, fold_metrics,
+                            │       │                   feature_importance, predictions)
+                            │       │
+                            │       └── evaluator.py
+                            │           └── MetaEvaluator
+                            │               ├── calculate()               ← 單 fold 指標
+                            │               ├── aggregate_fold_metrics()  ← 多 fold 聚合
+                            │               └── format_metrics_report()
+                            │
+                            └── _save_results()
+                                    │
+                                    ↓
+                            workspace/tabpfn_meta_analysis/
+                                ├── reports/         # 報告 + 特徵重要性
+                                ├── pred_probability/# 預測分數
+                                └── summary.csv      # 彙整結果
 ```
 
 ---
 
 ## 模組功能說明
 
+### src/config.py (全專案共用配置)
+
+| 類別 | 功能 |
+|------|------|
+| `PreprocessConfig` | 預處理配置 (468點、對齊、鏡像參數) |
+| `APIConfig` | API 用配置 (暫存、清理) |
+| `AnalyzeConfig` | 分析用配置 (儲存中間結果) |
+| 路徑常數 | `PROJECT_ROOT`, `RAW_IMAGES_DIR`, `FEATURES_DIR`, `WORKSPACE_DIR` 等 |
+
 ### src/core/
 
-| 檔案/子模組 | 類別 | 功能 |
-|-------------|------|------|
-| `config.py` | `PreprocessConfig` | 預處理配置 (468點、對齊、鏡像參數) |
-| | `APIConfig` | API 用配置 (暫存、清理) |
-| | `AnalyzeConfig` | 分析用配置 (儲存中間結果) |
+| 檔案 | 類別 | 功能 |
+|------|------|------|
 | `age_predictor.py` | `MiVOLOPredictor` | MiVOLO v2 年齡預測 |
 
 #### src/core/preprocess/ (臉部預處理子模組)
@@ -353,15 +459,16 @@ scripts/run_analyze.py
 
 #### src/core/extractor/ (特徵萃取子模組)
 
-| 檔案 | 類別 | 功能 |
-|------|------|------|
+| 檔案 | 類別/函式 | 功能 |
+|------|-----------|------|
 | `base.py` | `BaseExtractor` | ABC 基底類別 |
-| `registry.py` | `ExtractorRegistry` | Singleton 註冊中心、lazy loading |
+| `feature_extractor.py` | `FeatureExtractor` | Singleton + 類別級 Registry、懶載入、批次提取 |
+| `feature_ops.py` | `calculate_differences()` | 計算左右特徵差異 (5 種方法) |
+| | `add_demographics()` | 加入年齡/性別人口學特徵 |
 | `dlib_extractor.py` | `DlibExtractor` | Dlib 128維特徵 |
 | `arcface_extractor.py` | `ArcFaceExtractor` | ArcFace/InsightFace 512維特徵 |
 | `topofr_extractor.py` | `TopoFRExtractor` | TopoFR 512維特徵 |
 | `vggface_extractor.py` | `VGGFaceExtractor` | VGGFace 4096維特徵 |
-| `__init__.py` | `FeatureExtractor` | Facade 包裝類別 (向後兼容) |
 
 ### src/analysis/
 
@@ -379,14 +486,30 @@ scripts/run_analyze.py
 
 | 檔案 | 類別 | 功能 |
 |------|------|------|
+| `__init__.py` | `create_analyzer()` | 工廠函數，依類型建立分析器 |
+| | `ANALYZER_REGISTRY` | 分析器註冊表 |
 | `base.py` | `BaseAnalyzer` | ABC 基底類別 |
-| `xgboost_analyzer.py` | `XGBoostAnalyzer` | K-fold CV、特徵選擇、指標計算 |
+| `xgboost_analyzer.py` | `XGBoostAnalyzer` | XGBoost K-fold CV、特徵選擇 |
+| `logistic_analyzer.py` | `LogisticAnalyzer` | Logistic Regression、係數重要性 |
+| `tabpfn_analyzer.py` | `TabPFNAnalyzer` | TabPFN、permutation importance |
 
 #### src/analysis/plotter.py
 
 | 類別 | 功能 |
 |------|------|
-| `ResultPlotter` | 結果視覺化 |
+| `ResultPlotter` | 結果視覺化 (按特徵數趨勢圖) |
+
+### src/meta_analysis/ (Meta 分析模組)
+
+| 檔案 | 類別 | 功能 |
+|------|------|------|
+| `config.py` | `MetaConfig` | Meta 分析設定 (模型、方法、fold 數) |
+| `pipeline.py` | `MetaPipeline` | 遍歷 model × n_features 組合執行分析 |
+| `data/dataset.py` | `MetaDataset` | 14 特徵資料集 dataclass |
+| `data/loader.py` | `MetaDataLoader` | 載入 LR 分數 + emotion + 年齡 → 合併 |
+| `model/trainer.py` | `TabPFNMetaTrainer` | GroupKFold CV 訓練 TabPFN |
+| | `TrainResult` | 訓練結果 dataclass |
+| `model/evaluator.py` | `MetaEvaluator` | 指標計算、fold 聚合、報告格式化 |
 
 ### src/common/ (共用模組)
 
@@ -416,19 +539,43 @@ predicted_ages.json
     ↓
 workspace/features/{model}/{type}/{subject}.npy
     │
-    ↓ [run_analyze.py]
-    ├── 載入特徵 + 人口學資料
-    ├── CDR 篩選、年齡篩選
-    ├── 資料平衡
-    ├── XGBoost K-fold CV
-    └── 遞迴特徵消除
+    ├──────────────────────────────────────────────────┐
+    │                                                  │
+    ↓ [run_analyze.py]                                 │
+    ├── 載入特徵 + 人口學資料                           │
+    ├── CDR 篩選、年齡篩選                              │
+    ├── 資料平衡（可選）                                │
+    ├── XGBoost / Logistic / TabPFN K-fold CV          │
+    └── 遞迴特徵消除                                    │
+    │                                                  │
+    ↓                                                  │
+workspace/analysis/                                    │
+    ├── models/          # 訓練好的模型                 │
+    ├── reports/         # 分析報告                     │
+    ├── pred_probability/# 預測分數 ──┐                │
+    ├── plots/           # 結果圖表    │                │
+    └── training_summary.json          │                │
+                                       │                │
+    ┌──────────────────────────────────┘                │
+    │          ┌───────────────────────────────────────┘
+    │          │
+    │          ↓ [compute_emotion_scores.py]
+    │   workspace/emotion_score.csv
+    │          │
+    ↓          ↓
+    [run_meta_analysis.py]
+    ├── 合併 14 特徵:
+    │     LR 分數 (original + asymmetry)
+    │     + age_error + real_age
+    │     + 8 表情 + Valence + Arousal
+    ├── TabPFN 10-Fold CV
+    └── 特徵重要性 (permutation importance)
     │
     ↓
-workspace/analysis/
-    ├── models/          # 訓練好的模型
-    ├── reports/         # 分析報告
-    ├── plots/           # 結果圖表
-    └── training_summary.json
+workspace/tabpfn_meta_analysis/
+    ├── reports/         # 報告 + 特徵重要性
+    ├── pred_probability/# 預測分數
+    └── summary.csv      # 彙整結果
 ```
 
 ---
@@ -436,23 +583,49 @@ workspace/analysis/
 ## 使用方式
 
 ```bash
-# 1. 年齡預測
+# 0. 年齡預測
 python scripts/predict_ages.py
 
-# 2. 特徵準備
+# 1. 特徵準備（預處理 + 嵌入提取）
 python scripts/prepare_feature.py
 
-# 3. 分析訓練
+# 1b. 原始嵌入提取（不做鏡射，用於 original 特徵）
+python scripts/extract_original_features.py
+
+# 1c. 情緒分數計算
+python scripts/compute_emotion_scores.py
+
+# 2. 分析訓練（XGBoost / Logistic / TabPFN）
 python scripts/run_analyze.py
+
+# 3. Meta 分析（整合 14 特徵 → TabPFN）
+python scripts/run_meta_analysis.py
 ```
 
 ---
 
 ## 支援的模型
 
+### 嵌入模型
+
 | 模型 | 維度 | 來源 |
 |------|------|------|
 | Dlib | 128 | dlib face_recognition |
 | ArcFace | 512 | InsightFace buffalo_l |
 | TopoFR | 512 | external/TopoFR |
-| MiVOLO v2 | - | HuggingFace iitolstykh/mivolo_v2 |
+| VGGFace | 4096 | keras-vggface |
+
+### 分類器
+
+| 分類器 | 用途 | 特徵重要性 |
+|--------|------|------------|
+| XGBoost | 階段二分析 | 內建 feature importance |
+| Logistic Regression | 階段二分析 | 係數絕對值 |
+| TabPFN | 階段二分析 / Meta 分析 | permutation importance |
+
+### 其他
+
+| 模型 | 功能 |
+|------|------|
+| MiVOLO v2 | 年齡預測 (HuggingFace) |
+| MT-EmotiEffNet | 情緒分數 (8 表情 + Valence + Arousal) |

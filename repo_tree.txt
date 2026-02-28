@@ -1,34 +1,91 @@
 Alz_face_analyze/
 ├── data/
 │   ├── demographics/
-│   │   ├── details.txt
+│   │   ├── _details.txt
 │   │   ├── ACS.csv
 │   │   ├── NAD.csv
 │   │   └── P.csv
 │   └── images/
-│       └── raw
+│       └── raw/
 │           ├── path.txt
 │           └── data_tree.txt
 ├── external/
-│   ├── dlib
-│   └── TopoFR
+│   ├── dlib/
+│   └── TopoFR/
+├── references/                        # 參考文獻 PDF
 ├── scripts/
-│   ├── prepare_feature.py
-│   └── run_analyze.py
+│   ├── predict_ages.py                # 階段零：年齡預測
+│   ├── prepare_feature.py             # 階段一：特徵準備
+│   ├── run_analyze.py                 # 階段二：分析訓練
+│   ├── run_meta_analysis.py           # 階段三：Meta 分析
+│   ├── compute_emotion_scores.py      # 情緒分數計算
+│   ├── extract_original_features.py   # 原始嵌入提取
+│   ├── compare_features.py            # 特徵比對視覺化
+│   ├── plot_predicted_ages.py         # 年齡預測統計圖
+│   ├── plot_tabpfn_meta_by_n_features.py   # TabPFN Meta 趨勢圖
+│   ├── plot_xgboost_meta_by_n_features.py  # XGBoost Meta 趨勢圖
+│   ├── calibrate_age_prediction.py    # 年齡預測校正
+│   └── demographics_statistics.py     # 人口學統計
 ├── src/
-│   ├── analysis/                # 分析專屬模組
-│   │   ├── __init__.py
-│   │   ├── loader.py            # 資料載入 & 篩選器
-│   │   └── analyzer.py          # 分析器
-│   └── core/                    # 🔄 需要與API同步的核心模組
-│       ├── __init__.py
-│       ├── config.py            # 統一配置參數
-│       ├── preprocess.py        # 影像預處理（鏡射、CLAHE、對齊）
-│       ├── feature_extract.py   # 特徵提取（VGGFace、ArcFace等）
-│       └── README.md            # 同步說明文件
-├── workspace/
+│   ├── config.py                      # 全專案共用配置（路徑常數、dataclass）
+│   │
+│   ├── core/                          # 核心處理模組
+│   │   ├── age_predictor.py           # MiVOLOPredictor 年齡預測
+│   │   │
+│   │   ├── preprocess/                # 臉部預處理子模組
+│   │   │   ├── detector.py            # FaceDetector (MediaPipe)
+│   │   │   ├── selector.py            # FaceSelector (選擇最正面)
+│   │   │   ├── aligner.py             # FaceAligner (角度校正)
+│   │   │   ├── mirror.py              # MirrorGenerator (鏡射影像)
+│   │   │   └── base.py                # PreprocessPipeline (Facade)
+│   │   │
+│   │   └── extractor/                 # 特徵萃取子模組
+│   │       ├── base.py                # BaseExtractor (ABC)
+│   │       ├── feature_extractor.py   # FeatureExtractor (Singleton + Registry)
+│   │       ├── feature_ops.py         # calculate_differences, add_demographics
+│   │       ├── dlib_extractor.py      # DlibExtractor (128維)
+│   │       ├── arcface_extractor.py   # ArcFaceExtractor (512維)
+│   │       ├── topofr_extractor.py    # TopoFRExtractor (512維)
+│   │       └── vggface_extractor.py   # VGGFaceExtractor (4096維)
+│   │
+│   ├── analysis/                      # 分析模組
+│   │   ├── loader/                    # 資料載入子模組
+│   │   │   ├── base.py                # Dataset, DataLoaderProtocol
+│   │   │   ├── demographics.py        # DemographicsLoader
+│   │   │   ├── balancer.py            # DataBalancer (年齡分層平衡)
+│   │   │   └── data_loader.py         # DataLoader (主類別)
+│   │   │
+│   │   ├── analyzer/                  # 分析器子模組
+│   │   │   ├── __init__.py            # create_analyzer 工廠函數
+│   │   │   ├── base.py                # BaseAnalyzer (ABC)
+│   │   │   ├── xgboost_analyzer.py    # XGBoostAnalyzer
+│   │   │   ├── logistic_analyzer.py   # LogisticAnalyzer
+│   │   │   └── tabpfn_analyzer.py     # TabPFNAnalyzer
+│   │   │
+│   │   └── plotter.py                 # ResultPlotter (結果視覺化)
+│   │
+│   ├── meta_analysis/                 # Meta 分析模組
+│   │   ├── config.py                  # MetaConfig (dataclass)
+│   │   ├── pipeline.py                # MetaPipeline (執行流程)
+│   │   ├── data/
+│   │   │   ├── dataset.py             # MetaDataset (14 特徵資料結構)
+│   │   │   └── loader.py              # MetaDataLoader (資料載入合併)
+│   │   └── model/
+│   │       ├── trainer.py             # TabPFNMetaTrainer, TrainResult
+│   │       └── evaluator.py           # MetaEvaluator (指標計算)
+│   │
+│   └── common/                        # 共用模組
+│       ├── types.py                   # Protocol 定義、資料型別
+│       └── metrics.py                 # MetricsCalculator
+│
+├── workspace/                         # 工作區（輸出）
+│   ├── predicted_ages.json
+│   ├── emotion_score.csv
+│   ├── features/
+│   └── analysis*/
+│
+├── legacy/                            # 舊版程式碼 (備份參考用)
 ├── .gitignore
 ├── README.md
-├── poetry.lock
-├── pyproject.toml           
+├── pyproject.toml
 └── repo_tree.txt
