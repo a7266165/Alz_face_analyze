@@ -16,12 +16,18 @@ from typing import List, Optional, Tuple
 # 專案根目錄
 PROJECT_ROOT = Path(__file__).parent.parent
 
-# 原始影像目錄（外部資料，不在專案內）
-RAW_IMAGES_DIR = Path(r"D:\project\Alz\face\data\datung\raw")
-
 # 專案內資料目錄
 DATA_DIR = PROJECT_ROOT / "data"
 DEMOGRAPHICS_DIR = DATA_DIR / "demographics"
+
+# 原始影像目錄（外部資料，從 data/path.txt 讀取）
+_RAW_PATH_FILE = DATA_DIR / "path.txt"
+if not _RAW_PATH_FILE.exists():
+    raise FileNotFoundError(
+        f"找不到原始影像路徑設定檔: {_RAW_PATH_FILE}\n"
+        f"請建立此檔案並寫入原始影像目錄路徑"
+    )
+RAW_IMAGES_DIR = Path(_RAW_PATH_FILE.read_text(encoding="utf-8").strip())
 
 # 外部依賴目錄
 EXTERNAL_DIR = PROJECT_ROOT / "external"

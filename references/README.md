@@ -85,14 +85,14 @@
 
 ### OpenFace 3.0
 - **用途**: AU 強度提取、視線方向、頭部姿態
-- **模組**: `src/au_extraction/openface_extractor.py`
+
 - **論文**: OpenFace 3.0: A Lightweight Multitask System for Comprehensive Facial Behavior Analysis
 - **年份**: 2025
 - **連結**: references/2025-OpenFace 3.0_A Lightweight Multitask System for Comprehensive Facial Behavior Analysis.pdf
 
 ### Py-Feat
 - **用途**: AU 機率提取、情緒分類
-- **模組**: `src/au_extraction/pyfeat_extractor.py`
+
 - **論文**: Py-Feat: Python Facial Expression Analysis Toolbox
 - **年份**: 2023
 - **連結**: references/2023-Py-Feat_Python Facial Expression Analysis Toolbox.pdf
@@ -100,7 +100,7 @@
 
 ### LibreFace
 - **用途**: AU 強度提取、情緒分類
-- **模組**: `src/au_extraction/libreface_extractor.py`
+
 - **論文**: LibreFace: An Open-Source Toolkit for Deep Facial Expression Analysis
 - **年份**: 2024
 - **連結**: references/2024-LibreFace-An Open-Source Toolkit for Deep Facial Expression Analysis.pdf
