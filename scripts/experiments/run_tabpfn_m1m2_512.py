@@ -18,10 +18,11 @@ from sklearn.metrics import (
 )
 from tabpfn import TabPFNClassifier
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
+from _paths import PROJECT_ROOT
 from _utils import find_latest_dir
 
 # ── Config ──────────────────────────────────────────────────────────────────
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
 WORKSPACE_DIR = PROJECT_ROOT / "workspace"
 FEATURES_DIR = WORKSPACE_DIR / "features"
 

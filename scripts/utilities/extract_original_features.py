@@ -9,7 +9,7 @@ scripts/extract_original_features.py
 4. 支援斷點續傳
 
 使用方式:
-    poetry run python scripts/extract_original_features.py
+    poetry run python scripts/utilities/extract_original_features.py
 """
 
 import os
@@ -23,8 +23,9 @@ import numpy as np
 from tqdm import tqdm
 
 # 專案路徑
-project_root = Path(__file__).parent.parent
-sys.path.insert(0, str(project_root))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
+from _paths import PROJECT_ROOT
+project_root = PROJECT_ROOT
 
 from src.config import FEATURES_DIR, WORKSPACE_DIR
 from src.core.extractor import FeatureExtractor

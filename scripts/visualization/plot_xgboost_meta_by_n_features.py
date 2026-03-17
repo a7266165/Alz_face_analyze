@@ -7,10 +7,13 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from pathlib import Path
 
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
+from _paths import PROJECT_ROOT
 from _utils import find_latest_dir
 
 # ── 設定 ──────────────────────────────────────────────
-WORKSPACE_DIR = Path(__file__).resolve().parent.parent / "workspace"
+WORKSPACE_DIR = PROJECT_ROOT / "workspace"
 
 # 自動掃描最新 xgboost_meta_analysis 目錄，手動指定時填入 Path
 RESULT_DIR = None

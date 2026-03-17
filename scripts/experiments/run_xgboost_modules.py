@@ -5,7 +5,7 @@ XGBoost 獨立模組分類器
 使用與 TabPFN Meta-Analysis 相同的 fold-aligned 5-fold CV。
 
 使用方式:
-    poetry run python scripts/run_xgboost_modules.py
+    poetry run python scripts/experiments/run_xgboost_modules.py
 """
 
 import json
@@ -22,8 +22,8 @@ from sklearn.metrics import (
 from xgboost import XGBClassifier
 
 # 加入專案根目錄
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(PROJECT_ROOT))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
+from _paths import PROJECT_ROOT
 
 from _utils import find_latest_dir
 

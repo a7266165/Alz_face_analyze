@@ -13,7 +13,7 @@ Meta Analysis 執行腳本
   14. Arousal
 
 使用方式:
-    poetry run python scripts/run_meta_analysis.py
+    poetry run python scripts/pipeline/run_meta_analysis.py
 """
 
 import logging
@@ -22,8 +22,8 @@ from datetime import datetime
 from pathlib import Path
 
 # 加入專案根目錄到 path
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(PROJECT_ROOT))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
+from _paths import PROJECT_ROOT
 
 from _utils import find_latest_dir
 from src.meta_analysis import MetaConfig, MetaPipeline

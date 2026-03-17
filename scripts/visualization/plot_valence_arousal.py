@@ -9,8 +9,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-project_root = Path(__file__).parent.parent
-sys.path.insert(0, str(project_root))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
+from _paths import PROJECT_ROOT
+project_root = PROJECT_ROOT
 from src.config import DEMOGRAPHICS_DIR, WORKSPACE_DIR
 
 # --- Load data ---

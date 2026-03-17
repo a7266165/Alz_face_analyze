@@ -59,18 +59,33 @@ Alz_face_analyze/
 │       └── metrics.py                 # MetricsCalculator
 │
 ├── scripts/                           # 執行腳本
-│   ├── predict_ages.py                # 階段零：年齡預測
-│   ├── prepare_feature.py             # 階段一：特徵準備
-│   ├── run_analyze.py                 # 階段二：分析訓練
-│   ├── run_meta_analysis.py           # 階段三：Meta 分析
-│   ├── compute_emotion_scores.py      # 情緒分數計算
-│   ├── extract_original_features.py   # 原始嵌入提取（不做鏡射）
-│   ├── compare_features.py            # 特徵比對視覺化
-│   ├── plot_predicted_ages.py         # 年齡預測統計與視覺化
-│   ├── plot_tabpfn_meta_by_n_features.py   # TabPFN Meta 趨勢圖
-│   ├── plot_xgboost_meta_by_n_features.py  # XGBoost Meta 趨勢圖
-│   ├── calibrate_age_prediction.py    # 年齡預測校正
-│   └── demographics_statistics.py     # 人口學統計
+│   ├── _paths.py                      # 共用路徑解析
+│   ├── _utils.py                      # 共用工具函式
+│   │
+│   ├── pipeline/                      # 主 Pipeline（依序執行）
+│   │   ├── predict_ages.py            #   Stage 0：年齡預測
+│   │   ├── prepare_feature.py         #   Stage 1：前處理 + 特徵萃取
+│   │   ├── run_analyze.py             #   Stage 2：分類器訓練
+│   │   └── run_meta_analysis.py       #   Stage 3：Meta 分析
+│   │
+│   ├── experiments/                   # 探索性 / 替代分析
+│   │   ├── compute_emotion_scores.py  #   EmoNet 情緒分數計算
+│   │   ├── run_xgboost_modules.py     #   M3/M4 獨立 XGBoost
+│   │   ├── run_full_features_classifier.py  # 1036-d 直接分類
+│   │   ├── run_tabpfn_m1m2_512.py     #   M1+M2 512-d TabPFN
+│   │   └── run_m3m4_deep_analysis.py  #   M3+M4 深度分析 & 出圖
+│   │
+│   ├── visualization/                 # 繪圖 & 統計
+│   │   ├── plot_predicted_ages.py     #   年齡預測統計圖
+│   │   ├── plot_valence_arousal.py    #   Valence-Arousal 散佈圖
+│   │   ├── demographics_statistics.py #   人口學統計
+│   │   ├── plot_tabpfn_meta_by_n_features.py   # TabPFN Meta 趨勢圖
+│   │   └── plot_xgboost_meta_by_n_features.py  # XGBoost Meta 趨勢圖
+│   │
+│   └── utilities/                     # 一次性處理工具
+│       ├── extract_original_features.py   # 原始嵌入提取（不做鏡射）
+│       ├── calibrate_age_prediction.py    # 年齡預測校正
+│       └── compare_features.py            # 特徵比對視覺化
 │
 ├── data/
 │   ├── images/raw/path.txt            # 原始圖片路徑指向
@@ -92,7 +107,7 @@ Alz_face_analyze/
 [階段零：年齡預測]
 ================================================================================
 
-scripts/predict_ages.py
+scripts/pipeline/predict_ages.py
 │
 ├── read_raw_path()                         ← 讀取 path.txt
 ├── scan_subjects()                         ← 掃描 health/ACS, health/NAD, patient/
@@ -115,7 +130,7 @@ scripts/predict_ages.py
 [階段一：特徵準備]
 ================================================================================
 
-scripts/prepare_feature.py
+scripts/pipeline/prepare_feature.py
 │
 ├── FeaturePipeline.__init__()
 │   ├── _setup_cpu_limit()                  ← 設定 OMP/MKL/OpenCV 執行緒數
@@ -230,7 +245,7 @@ scripts/prepare_feature.py
 [階段二：分析訓練]
 ================================================================================
 
-scripts/run_analyze.py
+scripts/pipeline/run_analyze.py
 │
 ├── AnalysisPipeline.__init__()
 │   └── _log_configuration()                ← 記錄設定參數
@@ -347,7 +362,7 @@ scripts/run_analyze.py
 [階段三：Meta 分析]
 ================================================================================
 
-scripts/run_meta_analysis.py
+scripts/pipeline/run_meta_analysis.py
 │
 ├── MetaConfig                              ← 分析設定 dataclass
 │   ├── models = ["arcface", ...]
@@ -582,22 +597,22 @@ workspace/tabpfn_meta_analysis/
 
 ```bash
 # 0. 年齡預測
-python scripts/predict_ages.py
+python scripts/pipeline/predict_ages.py
 
 # 1. 特徵準備（預處理 + 嵌入提取）
-python scripts/prepare_feature.py
+python scripts/pipeline/prepare_feature.py
 
 # 1b. 原始嵌入提取（不做鏡射，用於 original 特徵）
-python scripts/extract_original_features.py
+python scripts/utilities/extract_original_features.py
 
 # 1c. 情緒分數計算
-python scripts/compute_emotion_scores.py
+python scripts/experiments/compute_emotion_scores.py
 
 # 2. 分析訓練（XGBoost / Logistic / TabPFN）
-python scripts/run_analyze.py
+python scripts/pipeline/run_analyze.py
 
 # 3. Meta 分析（整合 14 特徵 → TabPFN）
-python scripts/run_meta_analysis.py
+python scripts/pipeline/run_meta_analysis.py
 ```
 
 ---

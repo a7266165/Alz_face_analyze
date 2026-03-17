@@ -14,10 +14,12 @@ import pandas as pd
 plt.rcParams["font.sans-serif"] = ["Microsoft JhengHei", "SimHei", "Arial Unicode MS"]
 plt.rcParams["axes.unicode_minus"] = False
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
+from _paths import PROJECT_ROOT
 from _utils import find_latest_dir
 
 # ── 設定 ──────────────────────────────────────────────
-WORKSPACE_DIR = Path(__file__).resolve().parent.parent / "workspace"
+WORKSPACE_DIR = PROJECT_ROOT / "workspace"
 
 # 自動掃描最新 tabpfn_meta_analysis 目錄，手動指定時填入 Path
 DEFAULT_RESULT_DIR = None

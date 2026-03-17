@@ -13,7 +13,8 @@ import numpy as np
 from scipy.spatial.distance import cosine
 from scipy.stats import pearsonr
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
+from _paths import PROJECT_ROOT
 WORKSPACE_DIR = PROJECT_ROOT / "workspace"
 OUTPUT_PATH = WORKSPACE_DIR / "feature_comparison_5people.png"
 
