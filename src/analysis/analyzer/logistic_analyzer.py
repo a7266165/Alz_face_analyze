@@ -74,7 +74,7 @@ class LogisticAnalyzer(BaseAnalyzer):
 
         self.lr_params = lr_params or {
             "C": 1,
-            "max_iter": 100,
+            "max_iter": 1000,
             "solver": "lbfgs",
             "class_weight": "balanced",
             "random_state": random_seed,
@@ -192,7 +192,7 @@ class LogisticAnalyzer(BaseAnalyzer):
             )
 
             avg_importance = result["feature_importance"]
-            if avg_importance is None or len(selected_indices) <= self.n_drop_features:
+            if self.n_drop_features <= 0 or avg_importance is None or len(selected_indices) <= self.n_drop_features:
                 break
 
             sorted_idx = np.argsort(avg_importance)

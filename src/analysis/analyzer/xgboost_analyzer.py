@@ -168,7 +168,7 @@ class XGBoostAnalyzer:
             )
 
             avg_importance = result["feature_importance"]
-            if avg_importance is None or len(selected_indices) <= self.n_drop_features:
+            if self.n_drop_features <= 0 or avg_importance is None or len(selected_indices) <= self.n_drop_features:
                 break
 
             sorted_idx = np.argsort(avg_importance)
