@@ -76,8 +76,6 @@ Alz_face_analyze/
 │   ├── images/raw/path.txt            # 原始圖片路徑指向
 │   └── demographics/                  # 人口學資料 (ACS.csv, NAD.csv, P.csv)
 │
-├── legacy/                            # 舊版程式碼 (備份參考用)
-│
 └── workspace/                         # 工作區（輸出）
     ├── predicted_ages.json
     ├── emotion_score.csv
@@ -628,4 +626,4 @@ python scripts/run_meta_analysis.py
 | 模型 | 功能 |
 |------|------|
 | MiVOLO v2 | 年齡預測 (HuggingFace) |
-| MT-EmotiEffNet | 情緒分數 (8 表情 + Valence + Arousal) |
+| EmoNet | 情緒分數 (8 表情 + Valence + Arousal) |

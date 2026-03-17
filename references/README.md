@@ -72,19 +72,51 @@
 
 ---
 
-## 表情辨識 (備用)
+## 表情辨識
 
-### HSEmotion / EmotiEffNet
-- **用途**: 臉部表情辨識
-- **作者**: Andrey V. Savchenko
-- **論文**:
-  1. **HSEmotion** (2021): "Facial Expression and Attributes Recognition Based on Multi-task Learning of Lightweight Neural Networks"
-     - 連結: https://arxiv.org/abs/2103.17107
-  2. **EmotiEffNet** (2022): "Video-based Frame-level Facial Analysis of Affective Behavior on Mobile Devices using EfficientNets"
-     - 連結: https://arxiv.org/abs/2103.09898
-  3. **MT-EmotiEffNet** (2023): "MT-EmotiEffNet for Multi-task Human Affective Behavior Analysis and Learning from Synthetic Data"
-     - 連結: https://arxiv.org/abs/2207.09508
-- **GitHub**: https://github.com/HSE-asavchenko/face-emotion-recognition
+### EmoNet
+- **用途**: 臉部表情辨識（8 類離散情緒 + Valence/Arousal 連續值）
+- **模組**: `scripts/compute_emotion_scores.py`
+- **論文**: Estimation of continuous valence and arousal levels from faces in naturalistic conditions
+- **作者**: Antoine Toisoul, Jean Kossaifi, Adrian Bulat, Georgios Tzimiropoulos, Maja Pantic
+- **年份**: 2021 (Nature Machine Intelligence)
+- **連結**: https://doi.org/10.1038/s42256-020-00280-0
+- **GitHub**: https://github.com/face-analysis/emonet
+
+### OpenFace 3.0
+- **用途**: AU 強度提取、視線方向、頭部姿態
+- **模組**: `src/au_extraction/openface_extractor.py`
+- **論文**: OpenFace 3.0: A Lightweight Multitask System for Comprehensive Facial Behavior Analysis
+- **年份**: 2025
+- **連結**: references/2025-OpenFace 3.0_A Lightweight Multitask System for Comprehensive Facial Behavior Analysis.pdf
+
+### Py-Feat
+- **用途**: AU 機率提取、情緒分類
+- **模組**: `src/au_extraction/pyfeat_extractor.py`
+- **論文**: Py-Feat: Python Facial Expression Analysis Toolbox
+- **年份**: 2023
+- **連結**: references/2023-Py-Feat_Python Facial Expression Analysis Toolbox.pdf
+- **GitHub**: https://github.com/cosanlab/py-feat
+
+### LibreFace
+- **用途**: AU 強度提取、情緒分類
+- **模組**: `src/au_extraction/libreface_extractor.py`
+- **論文**: LibreFace: An Open-Source Toolkit for Deep Facial Expression Analysis
+- **年份**: 2024
+- **連結**: references/2024-LibreFace-An Open-Source Toolkit for Deep Facial Expression Analysis.pdf
+- **GitHub**: https://github.com/ihp-lab/LibreFace
+
+---
+
+## 分類器
+
+### TabPFN
+- **用途**: 表格資料 few-shot 分類（Meta 分析階段）
+- **模組**: `src/analysis/analyzer/tabpfn_analyzer.py`, `src/meta_analysis/model/trainer.py`
+- **論文**: TabPFN: A Transformer That Solves Small Tabular Classification Problems in a Second
+- **作者**: Noah Hollmann, Samuel Müller, Katharina Eggensperger, Frank Hutter
+- **年份**: 2025
+- **連結**: references/Grinsztajn_2025_TabPFN2.5.pdf
 
 ---
 
@@ -97,5 +129,4 @@
 
 例如：
 - `Kuprashevich_2023_MiVOLO.pdf`
-- `Savchenko_2021_HSEmotion.pdf`
 - `Dan_2024_TopoFR.pdf`
