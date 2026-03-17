@@ -25,6 +25,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
+from _utils import find_latest_dir
 from src.meta_analysis import MetaConfig, MetaPipeline
 
 # ========== 設定 ==========
@@ -34,12 +35,11 @@ WORKSPACE_DIR = PROJECT_ROOT / "workspace"
 DEMOGRAPHICS_DIR = PROJECT_ROOT / "data" / "demographics"
 PREDICTED_AGES_FILE = WORKSPACE_DIR / "predicted_ages_calibrated.json"
 
-# LR 預測分數目錄 (根據你的實際目錄名稱修改)
-PREDICTIONS_DIR = (
-    WORKSPACE_DIR
-    / "analysis_20260228_154726_logistic_balancing_False_allvisits_True"
-    / "pred_probability"
-)
+# LR 預測分數目錄 — 自動掃描最新 analysis 目錄
+ANALYSIS_DIR = None  # 手動指定時填入 Path，None 則自動掃描
+if ANALYSIS_DIR is None:
+    ANALYSIS_DIR = find_latest_dir(WORKSPACE_DIR, "analysis_")
+PREDICTIONS_DIR = ANALYSIS_DIR / "pred_probability"
 
 # Emotion 分數檔案
 EMOTION_SCORES_FILE = WORKSPACE_DIR / "emotion_score_EmoNet.csv"

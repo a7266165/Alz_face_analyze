@@ -7,12 +7,17 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from pathlib import Path
 
+from _utils import find_latest_dir
+
 # ── 設定 ──────────────────────────────────────────────
-SUMMARY_CSV = Path(
-    r"C:\Users\4080\Desktop\Alz_face_analyze\workspace"
-    r"\xgboost_meta_analysis_20260221_151449\summary.csv"
-)
-OUTPUT_DIR = SUMMARY_CSV.parent / "plots" / "by_n_features"
+WORKSPACE_DIR = Path(__file__).resolve().parent.parent / "workspace"
+
+# 自動掃描最新 xgboost_meta_analysis 目錄，手動指定時填入 Path
+RESULT_DIR = None
+if RESULT_DIR is None:
+    RESULT_DIR = find_latest_dir(WORKSPACE_DIR, "xgboost_meta_analysis_")
+SUMMARY_CSV = RESULT_DIR / "summary.csv"
+OUTPUT_DIR = RESULT_DIR / "plots" / "by_n_features"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 METRICS = ["accuracy", "mcc", "sensitivity", "specificity"]

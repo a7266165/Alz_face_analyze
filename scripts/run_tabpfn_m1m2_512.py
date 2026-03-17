@@ -18,16 +18,18 @@ from sklearn.metrics import (
 )
 from tabpfn import TabPFNClassifier
 
+from _utils import find_latest_dir
+
 # ── Config ──────────────────────────────────────────────────────────────────
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-FEATURES_DIR = PROJECT_ROOT / "workspace" / "features"
-PRED_DIR = (
-    PROJECT_ROOT
-    / "workspace"
-    / "analysis_20260228_154726_logistic_balancing_False_allvisits_True"
-    / "pred_probability"
-    / "n_features_132"
-)
+WORKSPACE_DIR = PROJECT_ROOT / "workspace"
+FEATURES_DIR = WORKSPACE_DIR / "features"
+
+# 自動掃描最新 analysis 目錄，手動指定時填入 Path
+ANALYSIS_DIR = None
+if ANALYSIS_DIR is None:
+    ANALYSIS_DIR = find_latest_dir(WORKSPACE_DIR, "analysis_")
+PRED_DIR = ANALYSIS_DIR / "pred_probability" / "n_features_132"
 
 EMBEDDING_MODELS = ["arcface", "topofr"]
 FEATURE_TYPES = {

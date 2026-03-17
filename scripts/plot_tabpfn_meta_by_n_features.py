@@ -14,11 +14,15 @@ import pandas as pd
 plt.rcParams["font.sans-serif"] = ["Microsoft JhengHei", "SimHei", "Arial Unicode MS"]
 plt.rcParams["axes.unicode_minus"] = False
 
+from _utils import find_latest_dir
+
 # ── 設定 ──────────────────────────────────────────────
-DEFAULT_RESULT_DIR = Path(
-    r"C:\Users\4080\Desktop\Alz_face_analyze\workspace"
-    r"\tabpfn_meta_analysis_20260228_165700"
-)
+WORKSPACE_DIR = Path(__file__).resolve().parent.parent / "workspace"
+
+# 自動掃描最新 tabpfn_meta_analysis 目錄，手動指定時填入 Path
+DEFAULT_RESULT_DIR = None
+if DEFAULT_RESULT_DIR is None:
+    DEFAULT_RESULT_DIR = find_latest_dir(WORKSPACE_DIR, "tabpfn_meta_analysis_")
 
 METRICS = ["accuracy", "mcc", "sensitivity", "specificity"]
 METRIC_LABELS = {
