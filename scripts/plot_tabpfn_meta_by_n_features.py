@@ -17,7 +17,7 @@ plt.rcParams["axes.unicode_minus"] = False
 # ── 設定 ──────────────────────────────────────────────
 DEFAULT_RESULT_DIR = Path(
     r"C:\Users\4080\Desktop\Alz_face_analyze\workspace"
-    r"\tabpfn_meta_analysis_20260226_151915"
+    r"\tabpfn_meta_analysis_20260228_165700"
 )
 
 METRICS = ["accuracy", "mcc", "sensitivity", "specificity"]
@@ -56,9 +56,17 @@ def load_train_metrics(result_dir: Path, df: pd.DataFrame) -> pd.DataFrame:
         cdr = int(row["cdr_threshold"])
         dataset_key = f"{model}_cdr{cdr}"
 
-        report_path = (
-            result_dir / "reports" / f"n_features_{n_features}" / f"{dataset_key}_report.txt"
-        )
+        # 支援新版 modules 子目錄結構
+        modules_tag = row.get("modules_tag", "")
+        if modules_tag:
+            report_path = (
+                result_dir / "reports" / f"n_features_{n_features}"
+                / modules_tag / f"{dataset_key}_report.txt"
+            )
+        else:
+            report_path = (
+                result_dir / "reports" / f"n_features_{n_features}" / f"{dataset_key}_report.txt"
+            )
         train = parse_train_metrics_from_report(report_path) if report_path.exists() else {}
         rows.append(train)
 
@@ -78,13 +86,28 @@ def plot_by_n_features(result_dir: Path):
     output_dir = result_dir / "plots" / "by_n_features"
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    for (model, cdr), grp in df.groupby(["model", "cdr_threshold"]):
+    # 決定分組欄位（向後相容）
+    group_cols = ["model", "cdr_threshold"]
+    has_modules = "modules_label" in df.columns
+    if has_modules:
+        group_cols.append("modules_label")
+
+    for group_key, grp in df.groupby(group_cols):
+        if has_modules:
+            model, cdr, modules_label = group_key
+            modules_tag = grp["modules_tag"].iloc[0]
+            dataset_key = f"{model}_cdr{int(cdr)}_{modules_tag}"
+            title_suffix = f" [{modules_label}]"
+        else:
+            model, cdr = group_key
+            dataset_key = f"{model}_cdr{int(cdr)}"
+            title_suffix = ""
+
         grp_sorted = grp.sort_values("n_features", ascending=False)
         n_feats = grp_sorted["n_features"].values
-        dataset_key = f"{model}_cdr{int(cdr)}"
 
         fig, axes = plt.subplots(2, 2, figsize=(12, 10))
-        fig.suptitle(f"{dataset_key} (TabPFN Meta-Analysis)", fontsize=14)
+        fig.suptitle(f"{dataset_key} (TabPFN Meta-Analysis){title_suffix}", fontsize=14)
 
         for idx, metric in enumerate(METRICS):
             ax = axes[idx // 2, idx % 2]

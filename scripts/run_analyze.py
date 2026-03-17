@@ -342,8 +342,8 @@ def main():
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
     # 資料載入配置
+    FEATURES_DIRECTORY = FEATURES_DIR  # workspace/features (含 arcface, topofr, dlib)
     EMBEDDING_MODELS = ["arcface", "topofr"]
-    # EMBEDDING_MODELS = ["topofr"]
     FEATURE_TYPES = ["original", "absolute_relative_differences"]
     MIN_AGE_RANGE = (0, 0)
     CDR_THRESHOLDS = [0]
@@ -356,23 +356,24 @@ def main():
     RANDOM_SEED = 42
 
     # 分析器類型配置
-    ANALYZER_TYPE: AnalyzerType = "logistic"  # "logistic", "xgboost", "tabpfn"
+    ANALYZER_TYPE: AnalyzerType = "xgboost"  # "logistic", "xgboost", "tabpfn"
     ANALYZER_PARAMS = {
-        # Logistic Regression 專用參數（可選）
-        # "lr_params": {"max_iter": 1000, "solver": "lbfgs"}
-        # XGBoost 專用參數（可選）
-        # "xgb_params": {"n_estimators": 100, "max_depth": 6}
-        # TabPFN 專用參數（可選）
-        # "n_perm_repeats": 10  # permutation importance 重複次數
+        "xgb_params": {
+            "n_estimators": 100,
+            "max_depth": 6,
+            "learning_rate": 0.1,
+            "random_state": RANDOM_SEED,
+            "n_jobs": 2,
+            "eval_metric": "logloss",
+        }
     }
-
-    # 輸出目錄（使用 config 的 WORKSPACE_DIR）
-    OUTPUT_DIR = WORKSPACE_DIR / f"analysis_{timestamp}_{ANALYZER_TYPE}_balancing_{DATA_BALANCING}_allvisits_{USE_ALL_VISITS}"
 
     # ==================== 執行 Pipeline ====================
 
+    OUTPUT_DIR = WORKSPACE_DIR / f"analysis_{timestamp}_{ANALYZER_TYPE}_balancing_{DATA_BALANCING}_allvisits_{USE_ALL_VISITS}"
+
     pipeline = AnalysisPipeline(
-        features_dir=FEATURES_DIR,
+        features_dir=FEATURES_DIRECTORY,
         demographics_dir=DEMOGRAPHICS_DIR,
         output_dir=OUTPUT_DIR,
         predicted_ages_file=PREDICTED_AGES_FILE,

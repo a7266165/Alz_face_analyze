@@ -10,78 +10,49 @@ import matplotlib
 matplotlib.rc("font", family="Microsoft JhengHei")
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 from scipy.spatial.distance import cosine
 from scipy.stats import pearsonr
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-SEMINAR_DIR = PROJECT_ROOT / "workspace" / "features_seminar"
-OUTPUT_PATH = SEMINAR_DIR / "feature_comparison_5people.png"
+WORKSPACE_DIR = PROJECT_ROOT / "workspace"
+OUTPUT_PATH = WORKSPACE_DIR / "feature_comparison_5people.png"
 
 SUBJECTS = ["ACS1-1", "ACS5-1", "ACS10-1", "ACS13-1", "ACS14-1"]
 PHOTO_IDX = 0  # 取每位個案的第一張照片
 
-NPY_DIR = PROJECT_ROOT / "workspace" / "features" / "arcface" / "original"
-JC_DIR = SEMINAR_DIR / "arc_raw_俊成"
-
-EXTRACTORS = ["馨芳", "以芯", "杰勳", "俊成", "Project"]
+# 各提取者的 arcface/original 目錄
+EXTRACTOR_DIRS = {
+    "馨方": WORKSPACE_DIR / "features_馨方" / "arcface" / "original",
+    "以芯": WORKSPACE_DIR / "features_以芯" / "arcface" / "original",
+    "杰勳": WORKSPACE_DIR / "features_杰勳" / "arcface" / "original",
+    "俊成": WORKSPACE_DIR / "features_俊成" / "arcface" / "original",
+    "Project": WORKSPACE_DIR / "features" / "arcface" / "original",
+}
 COLORS = ["#1f77b4", "#ff7f0e", "#2ca02c", "#9467bd", "#d62728"]
 
 
+def _load_npy_vector(npy_path: Path, photo_idx: int = 0):
+    """從 per-subject npy 載入指定照片的特徵向量"""
+    if not npy_path.exists():
+        return None
+    arr = np.load(npy_path, allow_pickle=True)
+    if arr.ndim == 2 and len(arr) > photo_idx:
+        return arr[photo_idx].astype(np.float64)
+    elif arr.ndim == 1:
+        return arr.astype(np.float64)
+    return None
+
+
 def load_all():
-    """載入五位提取者的資料"""
-
-    # 馨芳 (csv): col0=Subject_ID, col3~=features
-    df_xf = pd.read_csv(SEMINAR_DIR / "arc_raw_馨芳.csv")
-    feat_cols_xf = [c for c in df_xf.columns if c.startswith("feature_")]
-
-    # 以芯 (npy object): col0=group, col1=Subject_ID, col2=filename, col3~=features
-    arr_yx = np.load(SEMINAR_DIR / "arc_raw_以芯.npy", allow_pickle=True)
-
-    # 杰勳 (npy object): col0=label, col1=Subject_ID, col2=filename, col3~=features
-    arr_jx = np.load(SEMINAR_DIR / "arc_raw_杰勳.npy", allow_pickle=True)
-
+    """載入所有提取者的資料"""
     data = {}
     for sid in SUBJECTS:
         vectors = {}
-
-        # 馨芳
-        rows_xf = df_xf[df_xf["Subject_ID"] == sid][feat_cols_xf].values
-        if len(rows_xf) > PHOTO_IDX:
-            vectors["馨芳"] = rows_xf[PHOTO_IDX].astype(np.float64)
-
-        # 以芯
-        mask_yx = arr_yx[:, 1] == sid
-        rows_yx = arr_yx[mask_yx]
-        if len(rows_yx) > PHOTO_IDX:
-            vectors["以芯"] = rows_yx[PHOTO_IDX, 3:].astype(np.float64)
-
-        # 杰勳
-        mask_jx = arr_jx[:, 1] == sid
-        rows_jx = arr_jx[mask_jx]
-        if len(rows_jx) > PHOTO_IDX:
-            vectors["杰勳"] = rows_jx[PHOTO_IDX, 3:].astype(np.float64)
-
-        # 俊成 (per-subject npy): shape=(10, 512)
-        jc_path = JC_DIR / f"{sid}.npy"
-        if jc_path.exists():
-            arr_jc = np.load(jc_path)
-            if arr_jc.ndim == 2 and len(arr_jc) > PHOTO_IDX:
-                vectors["俊成"] = arr_jc[PHOTO_IDX].astype(np.float64)
-            elif arr_jc.ndim == 1:
-                vectors["俊成"] = arr_jc.astype(np.float64)
-
-        # Project (per-subject npy): shape=(N, 512)
-        npy_path = NPY_DIR / f"{sid}.npy"
-        if npy_path.exists():
-            arr_proj = np.load(npy_path)
-            if arr_proj.ndim == 2 and len(arr_proj) > PHOTO_IDX:
-                vectors["Project"] = arr_proj[PHOTO_IDX].astype(np.float64)
-            elif arr_proj.ndim == 1:
-                vectors["Project"] = arr_proj.astype(np.float64)
-
+        for name, feat_dir in EXTRACTOR_DIRS.items():
+            vec = _load_npy_vector(feat_dir / f"{sid}.npy", PHOTO_IDX)
+            if vec is not None:
+                vectors[name] = vec
         data[sid] = vectors
-
     return data
 
 
@@ -119,7 +90,7 @@ def plot(data):
         vectors = data[sid]
         dims = np.arange(1, 513)
 
-        for name, color in zip(EXTRACTORS, COLORS):
+        for name, color in zip(EXTRACTOR_DIRS.keys(), COLORS):
             if name in vectors:
                 ax.plot(dims, vectors[name], alpha=0.65, linewidth=0.6,
                         label=name, color=color)

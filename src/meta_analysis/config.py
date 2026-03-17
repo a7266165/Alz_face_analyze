@@ -4,7 +4,7 @@ Meta Analysis 設定
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 
 @dataclass
@@ -41,6 +41,7 @@ class MetaConfig:
     models: List[str] = field(default_factory=lambda: ["arcface", "topofr"])
     asymmetry_method: str = "absolute_relative_differences"
     n_features_list: Optional[List[int]] = None  # None = 自動發現全部
+    module_combinations: Optional[List[Tuple[int, ...]]] = None  # None = 只跑 (1,2,3,4)
 
     # 資料路徑
     demographics_dir: Optional[Path] = None
@@ -62,3 +63,15 @@ class MetaConfig:
                 f"無效的不對稱方法: {self.asymmetry_method}，"
                 f"必須是 {valid_methods}"
             )
+
+        if self.module_combinations is not None:
+            valid_modules = {1, 2, 3, 4}
+            for combo in self.module_combinations:
+                if not combo:
+                    raise ValueError("模組組合不可為空")
+                invalid = set(combo) - valid_modules
+                if invalid:
+                    raise ValueError(
+                        f"模組組合 {combo} 中含無效 ID: {invalid}，"
+                        f"有效值: {valid_modules}"
+                    )

@@ -2,11 +2,10 @@
 Meta Analysis 資料載入器（折疊對齊版）
 
 載入 14 個特徵：
-  - age_error (real - predicted)
-  - real_age
-  - lr_score_original (原始臉 LR 分數)
-  - lr_score_asymmetry (不對稱性 LR 分數)
-  - 8 個表情 + Valence + Arousal
+  - lr_score_original (原始臉 LR 分數, M1)
+  - lr_score_asymmetry (不對稱性 LR 分數, M2)
+  - real_age, age_error (M3)
+  - 8 個表情 + Valence + Arousal (M4)
 
 從 run_analyze 的 train/test CSV 建構 per-fold 資料，
 使 meta-learner 的折疊與 base model 的 K-fold CV 對齊。
@@ -16,7 +15,7 @@ import json
 import logging
 import re
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -40,13 +39,33 @@ class MetaDataLoader:
         "Neutral", "Sadness", "Surprise", "Valence", "Arousal",
     ]
 
-    # 完整 14 特徵欄位順序
+    # 完整 14 特徵欄位順序（M1~M4 對齊論文）
     FEATURE_COLUMNS = [
-        "age_error", "real_age",
         "lr_score_original", "lr_score_asymmetry",
+        "real_age", "age_error",
         "Anger", "Contempt", "Disgust", "Fear", "Happiness",
         "Neutral", "Sadness", "Surprise", "Valence", "Arousal",
     ]
+
+    # 模組定義（與論文 M1~M4 對齊）
+    # M1: 生物認證 (original embeddings → lr_score_original)
+    # M2: 不對稱性 (abs_rel_diff embeddings → lr_score_asymmetry)
+    # M3: 年齡估測 (real_age, age_error)
+    # M4: 表情 (10 emotion scores)
+    MODULE_GROUPS: Dict[int, List[str]] = {
+        1: ["lr_score_original"],
+        2: ["lr_score_asymmetry"],
+        3: ["real_age", "age_error"],
+        4: ["Anger", "Contempt", "Disgust", "Fear", "Happiness",
+            "Neutral", "Sadness", "Surprise", "Valence", "Arousal"],
+    }
+
+    MODULE_NAMES: Dict[int, str] = {
+        1: "BioAuth",
+        2: "Asymmetry",
+        3: "Age",
+        4: "Expression",
+    }
 
     def __init__(
         self,
@@ -56,6 +75,7 @@ class MetaDataLoader:
         predicted_ages_file: Path,
         n_features: int,
         model: str,
+        modules: Tuple[int, ...] = (1, 2, 3, 4),
         asymmetry_method: str = "absolute_relative_differences",
         cdr_threshold: float = 0,
     ):
@@ -65,8 +85,32 @@ class MetaDataLoader:
         self.predicted_ages_file = Path(predicted_ages_file)
         self.n_features = n_features
         self.model = model
+        self.modules = tuple(sorted(modules))
+        self.active_feature_columns = self._resolve_feature_columns(self.modules)
         self.asymmetry_method = asymmetry_method
         self.cdr_threshold = cdr_threshold
+
+    def _resolve_feature_columns(self, modules: Tuple[int, ...]) -> List[str]:
+        """根據選定模組計算對應的特徵欄位列表"""
+        cols = []
+        for mod_id in sorted(modules):
+            if mod_id not in self.MODULE_GROUPS:
+                raise ValueError(
+                    f"無效的模組 ID: {mod_id}，有效值: {list(self.MODULE_GROUPS.keys())}"
+                )
+            cols.extend(self.MODULE_GROUPS[mod_id])
+        return cols
+
+    @staticmethod
+    def modules_to_tag(modules: Tuple[int, ...]) -> str:
+        """模組元組 → 路徑標籤，如 (1, 2) → 'modules_1_2'"""
+        return "modules_" + "_".join(str(m) for m in sorted(modules))
+
+    @staticmethod
+    def modules_to_label(modules: Tuple[int, ...]) -> str:
+        """模組元組 → 可讀標籤，如 (1, 2) → 'BioAuth+Asymmetry'"""
+        names = [MetaDataLoader.MODULE_NAMES[m] for m in sorted(modules)]
+        return "+".join(names)
 
     def load(self) -> MetaDataset:
         """
@@ -102,6 +146,9 @@ class MetaDataLoader:
         metadata = {
             "n_features": self.n_features,
             "model": self.model,
+            "modules": self.modules,
+            "modules_tag": self.modules_to_tag(self.modules),
+            "modules_label": self.modules_to_label(self.modules),
             "asymmetry_method": self.asymmetry_method,
             "cdr_threshold": self.cdr_threshold,
             "predictions_dir": str(self.predictions_dir),
@@ -110,7 +157,7 @@ class MetaDataLoader:
 
         dataset = MetaDataset(
             fold_data=fold_data,
-            feature_names=self.FEATURE_COLUMNS,
+            feature_names=self.active_feature_columns,
             metadata=metadata,
         )
 
@@ -242,9 +289,9 @@ class MetaDataLoader:
                 continue
 
             # 建構 FoldData
-            X_train = train_df[self.FEATURE_COLUMNS].values.astype(np.float32)
+            X_train = train_df[self.active_feature_columns].values.astype(np.float32)
             y_train = train_df["label"].values.astype(np.int32)
-            X_test = test_df[self.FEATURE_COLUMNS].values.astype(np.float32)
+            X_test = test_df[self.active_feature_columns].values.astype(np.float32)
             y_test = test_df["label"].values.astype(np.int32)
 
             train_sids = train_df["subject_id"].tolist()

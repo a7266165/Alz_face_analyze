@@ -85,9 +85,11 @@ class MetaPipeline:
         combinations = self._get_combinations()
         total = len(combinations)
 
+        module_combos = self.config.module_combinations or [(1, 2, 3, 4)]
         logger.info(f"開始 Meta Analysis (TabPFN): {total} 個組合")
         logger.info(f"n_features 層級: {len(self.n_features_list)} 個")
         logger.info(f"模型: {self.config.models}")
+        logger.info(f"模組組合: {len(module_combos)} 種")
         logger.info(f"不對稱方法: {self.config.asymmetry_method}")
         logger.info(f"CV 折數: 由 base model 預測檔決定（折疊對齊）")
 
@@ -95,25 +97,29 @@ class MetaPipeline:
         success_count = 0
         fail_count = 0
 
-        for i, (model, n_features) in enumerate(combinations, 1):
+        for i, (model, n_features, modules) in enumerate(combinations, 1):
+            modules_label = MetaDataLoader.modules_to_label(modules)
             try:
-                result = self.run_single(model, n_features)
+                result = self.run_single(model, n_features, modules)
                 all_results.append(result)
                 success_count += 1
 
                 logger.info(
-                    f"[{i}/{total}] {model}, n_features={n_features}: "
+                    f"[{i}/{total}] {model}, n_features={n_features}, "
+                    f"modules={modules_label}: "
                     f"MCC={result['mcc']:.4f}, Acc={result['accuracy']:.4f}"
                 )
 
             except FileNotFoundError as e:
                 logger.warning(
-                    f"[{i}/{total}] 跳過 {model}, n_features={n_features}: {e}"
+                    f"[{i}/{total}] 跳過 {model}, n_features={n_features}, "
+                    f"modules={modules_label}: {e}"
                 )
                 fail_count += 1
             except Exception as e:
                 logger.error(
-                    f"[{i}/{total}] 失敗 {model}, n_features={n_features}: {e}"
+                    f"[{i}/{total}] 失敗 {model}, n_features={n_features}, "
+                    f"modules={modules_label}: {e}"
                 )
                 fail_count += 1
 
@@ -130,18 +136,23 @@ class MetaPipeline:
 
         return summary_df
 
-    def run_single(self, model: str, n_features: int) -> Dict[str, Any]:
+    def run_single(
+        self,
+        model: str,
+        n_features: int,
+        modules: Tuple[int, ...] = (1, 2, 3),
+    ) -> Dict[str, Any]:
         """
         執行單一組合的分析
 
         Args:
             model: 模型名稱
             n_features: n_features 層級
+            modules: 使用的特徵模組 (預設全部)
 
         Returns:
             結果字典
         """
-        # 載入資料 (14 特徵)
         loader = MetaDataLoader(
             predictions_dir=self.predictions_dir,
             emotion_scores_file=self.emotion_scores_file,
@@ -149,6 +160,7 @@ class MetaPipeline:
             predicted_ages_file=self.config.predicted_ages_file,
             n_features=n_features,
             model=model,
+            modules=modules,
             asymmetry_method=self.config.asymmetry_method,
             cdr_threshold=self.config.cdr_threshold,
         )
@@ -162,11 +174,15 @@ class MetaPipeline:
 
         # 儲存結果
         dataset_key = f"{model}_cdr{int(self.config.cdr_threshold)}"
-        self._save_results(n_features, dataset_key, train_result, dataset)
+        self._save_results(n_features, dataset_key, modules, train_result, dataset)
 
         return {
             "model": model,
             "n_features": n_features,
+            "modules": str(modules),
+            "modules_tag": MetaDataLoader.modules_to_tag(modules),
+            "modules_label": MetaDataLoader.modules_to_label(modules),
+            "n_meta_features": dataset.n_features,
             "cdr_threshold": self.config.cdr_threshold,
             "n_samples": dataset.n_samples,
             "accuracy": train_result.test_metrics["accuracy"],
@@ -182,27 +198,31 @@ class MetaPipeline:
             "auc_std": train_result.test_metrics.get("auc_std", 0),
         }
 
-    def _get_combinations(self) -> List[Tuple[str, int]]:
-        """取得所有 (model, n_features) 組合"""
+    def _get_combinations(self) -> List[Tuple[str, int, Tuple[int, ...]]]:
+        """取得所有 (model, n_features, modules) 組合"""
+        module_combos = self.config.module_combinations or [(1, 2, 3, 4)]
         combinations = []
         for model in self.config.models:
             for n_features in self.n_features_list:
-                combinations.append((model, n_features))
+                for modules in module_combos:
+                    combinations.append((model, n_features, tuple(sorted(modules))))
         return combinations
 
     def _save_results(
         self,
         n_features: int,
         dataset_key: str,
+        modules: Tuple[int, ...],
         train_result: TrainResult,
         dataset: "MetaDataset",
     ):
         """儲存訓練結果"""
         n_features_suffix = f"n_features_{n_features}"
+        modules_tag = MetaDataLoader.modules_to_tag(modules)
 
         # 儲存特徵重要性
         if self.config.save_reports:
-            report_subdir = self.reports_dir / n_features_suffix
+            report_subdir = self.reports_dir / n_features_suffix / modules_tag
             report_subdir.mkdir(parents=True, exist_ok=True)
 
             importance_path = report_subdir / f"{dataset_key}_importance.json"
@@ -214,7 +234,7 @@ class MetaPipeline:
 
         # 儲存預測結果
         if self.config.save_predictions:
-            pred_subdir = self.pred_prob_dir / n_features_suffix
+            pred_subdir = self.pred_prob_dir / n_features_suffix / modules_tag
             pred_subdir.mkdir(parents=True, exist_ok=True)
 
             pred_df = train_result.predictions
@@ -242,7 +262,7 @@ class MetaPipeline:
 
         # 儲存報告
         if self.config.save_reports:
-            report_subdir = self.reports_dir / n_features_suffix
+            report_subdir = self.reports_dir / n_features_suffix / modules_tag
             report_subdir.mkdir(parents=True, exist_ok=True)
 
             report_path = report_subdir / f"{dataset_key}_report.txt"
@@ -258,15 +278,17 @@ class MetaPipeline:
         n_folds = train_result.metadata["n_folds"]
 
         with open(report_path, "w", encoding="utf-8") as f:
+            modules_label = dataset.metadata.get('modules_label', 'All')
             f.write(f"TabPFN Meta Analysis 報告 ({n_folds}-Fold CV)\n")
             f.write("=" * 60 + "\n")
             f.write(f"分析時間: {train_result.metadata['timestamp']}\n")
             f.write(f"n_features (LR): {dataset.metadata['n_features']}\n")
             f.write(f"模型: {dataset.metadata['model']}\n")
+            f.write(f"模組: {modules_label}\n")
             f.write(f"不對稱方法: {dataset.metadata['asymmetry_method']}\n")
             f.write(f"CDR 閾值: {dataset.metadata['cdr_threshold']}\n")
             f.write(f"樣本數: {dataset.n_samples}\n")
-            f.write(f"特徵數: {dataset.n_features}\n")
+            f.write(f"Meta 特徵數: {dataset.n_features} ({', '.join(dataset.feature_names)})\n")
             f.write(f"類別分布: {dataset.class_distribution}\n")
 
             # 測試集指標

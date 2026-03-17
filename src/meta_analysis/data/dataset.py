@@ -17,9 +17,9 @@ class FoldData:
     單一折疊的訓練/測試資料
 
     Attributes:
-        X_train: 訓練特徵矩陣 (n_train, 14)
+        X_train: 訓練特徵矩陣 (n_train, n_features)
         y_train: 訓練標籤 (n_train,)
-        X_test: 測試特徵矩陣 (n_test, 14)
+        X_test: 測試特徵矩陣 (n_test, n_features)
         y_test: 測試標籤 (n_test,)
         train_subject_ids: 訓練集個案編號
         test_subject_ids: 測試集個案編號
@@ -61,7 +61,7 @@ class MetaDataset:
 
     Attributes:
         fold_data: fold_i → FoldData 的對應
-        feature_names: 特徵欄位名稱 (14 個)
+        feature_names: 特徵欄位名稱
         metadata: 額外資訊 (n_features, model 等)
     """
 
