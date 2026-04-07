@@ -10,7 +10,8 @@ Alz_face_analyze/
 │   ├── config.py                      # 全專案共用配置（路徑常數、PreprocessConfig）
 │   │
 │   ├── core/                          # 核心處理模組
-│   │   ├── age_predictor.py           # MiVOLO v2 年齡預測
+│   │   ├── demographics.py            # DemographicsLoader (canonical)
+│   │   ├── mediapipe_utils.py         # 統一 landmark 常數 (midline/bilateral/rotation)
 │   │   │
 │   │   ├── preprocess/                # 臉部預處理子模組
 │   │   │   ├── detector.py            # FaceDetector (MediaPipe)
@@ -27,6 +28,26 @@ Alz_face_analyze/
 │   │       ├── arcface_extractor.py   # ArcFaceExtractor (512維)
 │   │       ├── topofr_extractor.py    # TopoFRExtractor (512維)
 │   │       └── vggface_extractor.py   # VGGFaceExtractor (4096維)
+│   │
+│   ├── modules/                       # 四大分析模組
+│   │   ├── age/                       # 模組 1：年齡預測
+│   │   │   ├── predictor.py           # MiVOLOPredictor
+│   │   │   └── calibration.py         # BootstrapCorrector, MeanCorrector
+│   │   │
+│   │   ├── emotion/                   # 模組 2：情緒/AU 分析
+│   │   │   ├── extractor/             # AU 提取器
+│   │   │   │   ├── au_config.py       # AU 映射與設定
+│   │   │   │   └── au/                # OpenFace, LibreFace, Py-Feat, POSTER++, Gaze
+│   │   │   └── postprocess/           # 後處理
+│   │   │       ├── harmonizer.py      # AUHarmonizer (跨工具標準化)
+│   │   │       └── aggregator.py      # TemporalAggregator (時序統計)
+│   │   │
+│   │   ├── asymmetry/                 # 模組 3：面部不對稱性
+│   │   │   └── landmark_asymmetry.py  # LandmarkAsymmetryAnalyzer
+│   │   │
+│   │   └── rotation/                  # 模組 4：頭部旋轉
+│   │       ├── angle_calc.py          # VectorAngleCalculator, PnPAngleCalculator
+│   │       └── features.py            # extract_rotation_features()
 │   │
 │   ├── analysis/                      # 分析模組
 │   │   ├── loader/                    # 資料載入子模組
@@ -55,7 +76,6 @@ Alz_face_analyze/
 │   │       └── evaluator.py           # MetaEvaluator (指標計算)
 │   │
 │   └── common/                        # 共用模組
-│       ├── types.py                   # Protocol 定義、資料型別
 │       └── metrics.py                 # MetricsCalculator
 │
 ├── scripts/                           # 執行腳本
@@ -83,12 +103,14 @@ Alz_face_analyze/
 │   │   └── plot_xgboost_meta_by_n_features.py  # XGBoost Meta 趨勢圖
 │   │
 │   └── utilities/                     # 一次性處理工具
-│       ├── extract_original_features.py   # 原始嵌入提取（不做鏡射）
-│       ├── calibrate_age_prediction.py    # 年齡預測校正
-│       └── compare_features.py            # 特徵比對視覺化
+│       ├── extract_original_features.py       # 原始嵌入提取（不做鏡射）
+│       ├── calibrate_age_prediction.py        # 年齡預測校正
+│       ├── age_error_bootstrap_correction.py  # Bootstrap 年齡誤差校正
+│       ├── age_error_mean_correction.py       # Mean 年齡誤差校正
+│       └── compare_features.py                # 特徵比對視覺化
 │
 ├── data/
-│   ├── images/raw/path.txt            # 原始圖片路徑指向
+│   ├── path.txt                       # 原始圖片路徑指向
 │   └── demographics/                  # 人口學資料 (ACS.csv, NAD.csv, P.csv)
 │
 └── workspace/                         # 工作區（輸出）
@@ -113,7 +135,7 @@ scripts/pipeline/predict_ages.py
 ├── scan_subjects()                         ← 掃描 health/ACS, health/NAD, patient/
 ├── load_images()                           ← 載入每個受試者的前 N 張圖
 │
-└── src/core/age_predictor.py
+└── src/modules/age/predictor.py
         └── MiVOLOPredictor
             ├── __init__()
             ├── initialize()                ← 載入 MiVOLO v2 模型 (HuggingFace)
@@ -456,7 +478,8 @@ scripts/pipeline/run_meta_analysis.py
 
 | 檔案 | 類別 | 功能 |
 |------|------|------|
-| `age_predictor.py` | `MiVOLOPredictor` | MiVOLO v2 年齡預測 |
+| `demographics.py` | `DemographicsLoader` | 人口學資料載入 (canonical) |
+| `mediapipe_utils.py` | — | 統一 landmark 常數 (midline, bilateral, rotation) |
 
 #### src/core/preprocess/ (臉部預處理子模組)
 
@@ -491,7 +514,6 @@ scripts/pipeline/run_meta_analysis.py
 |------|------|------|
 | `base.py` | `Dataset` | 資料集封裝 dataclass |
 | | `DataLoaderProtocol` | Protocol 定義 |
-| `demographics.py` | `DemographicsLoader` | 人口學資料載入 |
 | `balancer.py` | `DataBalancer` | 年齡分層平衡 |
 | `data_loader.py` | `DataLoader` | 主類別：載入、篩選、平衡 |
 
@@ -524,12 +546,48 @@ scripts/pipeline/run_meta_analysis.py
 | | `TrainResult` | 訓練結果 dataclass |
 | `model/evaluator.py` | `MetaEvaluator` | 指標計算、fold 聚合、報告格式化 |
 
+### src/modules/ (四大分析模組)
+
+#### src/modules/age/ (年齡預測)
+
+| 檔案 | 類別/函式 | 功能 |
+|------|-----------|------|
+| `predictor.py` | `MiVOLOPredictor` | MiVOLO v2 年齡預測 (canonical) |
+| `calibration.py` | `BootstrapCorrector` | Bootstrap 年齡誤差校正 |
+| | `MeanCorrector` | Mean 年齡誤差校正 |
+| | `CalibrationModel` | 校正模型基底 |
+
+#### src/modules/emotion/ (情緒/AU 分析)
+
+| 檔案 | 類別/函式 | 功能 |
+|------|-----------|------|
+| `extractor/au_config.py` | — | AU 映射、模型權重路徑、常數定義 |
+| `extractor/au/openface.py` | `OpenFaceExtractor` | OpenFace AU 提取 |
+| `extractor/au/libreface.py` | `LibreFaceExtractor` | LibreFace AU 提取 |
+| `extractor/au/pyfeat.py` | `PyFeatExtractor` | Py-Feat AU 提取 |
+| `extractor/au/poster_pp.py` | `PosterPPExtractor` | POSTER++ AU 提取 |
+| `extractor/au/gaze.py` | `GazeFeatureExtractor` | 視線特徵提取 |
+| `postprocess/harmonizer.py` | `AUHarmonizer` | 跨工具 AU 標準化 |
+| `postprocess/aggregator.py` | `TemporalAggregator` | 時序統計聚合 |
+
+#### src/modules/asymmetry/ (面部不對稱性)
+
+| 檔案 | 類別 | 功能 |
+|------|------|------|
+| `landmark_asymmetry.py` | `LandmarkAsymmetryAnalyzer` | 點/線/三角面積不對稱計算 |
+
+#### src/modules/rotation/ (頭部旋轉)
+
+| 檔案 | 類別/函式 | 功能 |
+|------|-----------|------|
+| `angle_calc.py` | `VectorAngleCalculator` | 向量法角度計算 |
+| | `PnPAngleCalculator` | PnP 法角度計算 |
+| `features.py` | `extract_rotation_features()` | 從角度序列提取統計特徵 |
+
 ### src/common/ (共用模組)
 
 | 檔案 | 類別/函式 | 功能 |
 |------|-----------|------|
-| `types.py` | Protocol 定義 | `Extractor`, `Analyzer`, `DataLoader` |
-| | 資料型別 | `FoldResult`, `TrainingResult`, `DatasetInfo` |
 | `metrics.py` | `MetricsCalculator` | 評估指標計算 |
 
 ---
@@ -537,7 +595,7 @@ scripts/pipeline/run_meta_analysis.py
 ## 資料流程
 
 ```
-原始圖片 (data/images/raw/)
+原始圖片 (由 data/path.txt 指向)
     │
     ↓ [predict_ages.py]
 predicted_ages.json

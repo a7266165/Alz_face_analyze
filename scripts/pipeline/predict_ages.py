@@ -15,7 +15,7 @@ from _paths import PROJECT_ROOT
 project_root = PROJECT_ROOT
 
 from src.config import ALIGNED_DIR, AGE_PREDICTION_DIR
-from src.core.age_predictor import MiVOLOPredictor
+from src.modules.age import MiVOLOPredictor
 
 logging.basicConfig(
     level=logging.INFO,
