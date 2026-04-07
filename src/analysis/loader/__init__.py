@@ -6,7 +6,7 @@
 
 from .base import Dataset, DataLoaderProtocol, FilterStats
 from .data_loader import DataLoader
-from src.core.demographics import DemographicsLoader
+from src.common.demographics import DemographicsLoader
 from .balancer import DataBalancer
 
 __all__ = [

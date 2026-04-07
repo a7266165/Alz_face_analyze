@@ -15,7 +15,7 @@ from typing import Dict, List, Tuple
 import numpy as np
 import pandas as pd
 
-from src.core.mediapipe_utils import (
+from src.common.mediapipe_utils import (
     FACEMESH_MID_LINE,
     LEFT_FACE_INDICES,
     LEFT_LINE_INDICES,

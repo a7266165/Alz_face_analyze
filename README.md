@@ -9,32 +9,33 @@ Alz_face_analyze/
 ├── src/
 │   ├── config.py                      # 全專案共用配置（路徑常數、PreprocessConfig）
 │   │
-│   ├── core/                          # 核心處理模組
-│   │   ├── demographics.py            # DemographicsLoader (canonical)
-│   │   ├── mediapipe_utils.py         # 統一 landmark 常數 (midline/bilateral/rotation)
-│   │   │
-│   │   ├── preprocess/                # 臉部預處理子模組
+│   ├── common/                        # 跨模組共用工具
+│   │   ├── metrics.py                 # MetricsCalculator
+│   │   ├── demographics.py            # DemographicsLoader
+│   │   └── mediapipe_utils.py         # 統一 landmark 常數 (midline/bilateral/rotation)
+│   │
+│   ├── modules/                       # Pipeline 模組
+│   │   ├── preprocess/                # 臉部預處理
 │   │   │   ├── detector.py            # FaceDetector (MediaPipe)
 │   │   │   ├── selector.py            # FaceSelector (選擇最正面)
 │   │   │   ├── aligner.py             # FaceAligner (角度校正)
 │   │   │   ├── mirror.py              # MirrorGenerator (鏡射影像)
 │   │   │   └── base.py                # PreprocessPipeline (Facade)
 │   │   │
-│   │   └── extractor/                 # 特徵萃取子模組
-│   │       ├── base.py                # BaseExtractor (ABC)
-│   │       ├── feature_extractor.py   # FeatureExtractor (Singleton + Registry)
-│   │       ├── feature_ops.py         # calculate_differences, add_demographics
-│   │       ├── dlib_extractor.py      # DlibExtractor (128維)
-│   │       ├── arcface_extractor.py   # ArcFaceExtractor (512維)
-│   │       ├── topofr_extractor.py    # TopoFRExtractor (512維)
-│   │       └── vggface_extractor.py   # VGGFaceExtractor (4096維)
-│   │
-│   ├── modules/                       # 四大分析模組
-│   │   ├── age/                       # 模組 1：年齡預測
+│   │   ├── embedding/                 # 嵌入向量萃取
+│   │   │   ├── base.py                # BaseExtractor (ABC)
+│   │   │   ├── feature_extractor.py   # FeatureExtractor (Singleton + Registry)
+│   │   │   ├── feature_ops.py         # calculate_differences, add_demographics
+│   │   │   ├── dlib_extractor.py      # DlibExtractor (128維)
+│   │   │   ├── arcface_extractor.py   # ArcFaceExtractor (512維)
+│   │   │   ├── topofr_extractor.py    # TopoFRExtractor (512維)
+│   │   │   └── vggface_extractor.py   # VGGFaceExtractor (4096維)
+│   │   │
+│   │   ├── age/                       # 年齡預測
 │   │   │   ├── predictor.py           # MiVOLOPredictor
 │   │   │   └── calibration.py         # BootstrapCorrector, MeanCorrector
 │   │   │
-│   │   ├── emotion/                   # 模組 2：情緒/AU 分析
+│   │   ├── emotion/                   # 情緒/AU 分析
 │   │   │   ├── extractor/             # AU 提取器
 │   │   │   │   ├── au_config.py       # AU 映射與設定
 │   │   │   │   └── au/                # OpenFace, LibreFace, Py-Feat, POSTER++, Gaze
@@ -42,17 +43,16 @@ Alz_face_analyze/
 │   │   │       ├── harmonizer.py      # AUHarmonizer (跨工具標準化)
 │   │   │       └── aggregator.py      # TemporalAggregator (時序統計)
 │   │   │
-│   │   ├── asymmetry/                 # 模組 3：面部不對稱性
+│   │   ├── asymmetry/                 # 面部不對稱性
 │   │   │   └── landmark_asymmetry.py  # LandmarkAsymmetryAnalyzer
 │   │   │
-│   │   └── rotation/                  # 模組 4：頭部旋轉
+│   │   └── rotation/                  # 頭部旋轉
 │   │       ├── angle_calc.py          # VectorAngleCalculator, PnPAngleCalculator
 │   │       └── features.py            # extract_rotation_features()
 │   │
 │   ├── analysis/                      # 分析模組
 │   │   ├── loader/                    # 資料載入子模組
 │   │   │   ├── base.py                # Dataset, DataLoaderProtocol
-│   │   │   ├── demographics.py        # DemographicsLoader
 │   │   │   ├── balancer.py            # DataBalancer (年齡分層平衡)
 │   │   │   └── data_loader.py         # DataLoader (主類別)
 │   │   │
@@ -75,9 +75,6 @@ Alz_face_analyze/
 │   │       ├── trainer.py             # TabPFNMetaTrainer, TrainResult
 │   │       └── evaluator.py           # MetaEvaluator (指標計算)
 │   │
-│   └── common/                        # 共用模組
-│       └── metrics.py                 # MetricsCalculator
-│
 ├── scripts/                           # 執行腳本
 │   ├── _paths.py                      # 共用路徑解析
 │   ├── _utils.py                      # 共用工具函式
@@ -165,7 +162,7 @@ scripts/pipeline/prepare_feature.py
         │
         ├── _get_processed_subjects()       ← 斷點續傳：檢查已處理的受試者
         │
-        ├── src/core/extractor/             ← 特徵萃取子模組
+        ├── src/modules/embedding/           ← 嵌入向量萃取子模組
         │       ├── feature_extractor.py
         │       │   └── FeatureExtractor    ← Singleton + 類別級 Registry
         │       │       ├── @register()     ← 裝飾器註冊 extractor
@@ -194,7 +191,7 @@ scripts/pipeline/prepare_feature.py
                 │           ├── mirror_method = "flip"
                 │           └── steps = ["select", "align", "mirror"]
                 │
-                ├── src/core/preprocess/            ← 臉部預處理子模組
+                ├── src/modules/preprocess/          ← 臉部預處理子模組
                 │       │
                 │       ├── detector.py
                 │       │   └── FaceDetector        ← MediaPipe 人臉偵測
@@ -240,7 +237,7 @@ scripts/pipeline/prepare_feature.py
                 │                           ↓
                 │                   ProcessedFace(aligned, left_mirror, right_mirror)
                 │
-                ├── src/core/extractor/
+                ├── src/modules/embedding/
                 │       └── FeatureExtractor
                 │           │
                 │           ├── extract_features()                      ← 批次提取特徵
@@ -474,14 +471,17 @@ scripts/pipeline/run_meta_analysis.py
 | `AnalyzeConfig` | 分析用配置 (儲存中間結果) |
 | 路徑常數 | `PROJECT_ROOT`, `RAW_IMAGES_DIR`, `FEATURES_DIR`, `WORKSPACE_DIR` 等 |
 
-### src/core/
+### src/common/ (跨模組共用工具)
 
 | 檔案 | 類別 | 功能 |
 |------|------|------|
-| `demographics.py` | `DemographicsLoader` | 人口學資料載入 (canonical) |
+| `demographics.py` | `DemographicsLoader` | 人口學資料載入 |
 | `mediapipe_utils.py` | — | 統一 landmark 常數 (midline, bilateral, rotation) |
+| `metrics.py` | `MetricsCalculator` | 評估指標計算 |
 
-#### src/core/preprocess/ (臉部預處理子模組)
+### src/modules/
+
+#### src/modules/preprocess/ (臉部預處理)
 
 | 檔案 | 類別 | 功能 |
 |------|------|------|
@@ -493,7 +493,7 @@ scripts/pipeline/run_meta_analysis.py
 | | `FaceInfo` | 單張臉部資訊 dataclass |
 | | `ProcessedFace` | 處理後臉部資料 dataclass |
 
-#### src/core/extractor/ (特徵萃取子模組)
+#### src/modules/embedding/ (嵌入向量萃取)
 
 | 檔案 | 類別/函式 | 功能 |
 |------|-----------|------|
@@ -583,12 +583,6 @@ scripts/pipeline/run_meta_analysis.py
 | `angle_calc.py` | `VectorAngleCalculator` | 向量法角度計算 |
 | | `PnPAngleCalculator` | PnP 法角度計算 |
 | `features.py` | `extract_rotation_features()` | 從角度序列提取統計特徵 |
-
-### src/common/ (共用模組)
-
-| 檔案 | 類別/函式 | 功能 |
-|------|-----------|------|
-| `metrics.py` | `MetricsCalculator` | 評估指標計算 |
 
 ---
 

@@ -12,7 +12,7 @@ from typing import List, Tuple, Optional
 from dataclasses import dataclass
 import logging
 
-from src.core.mediapipe_utils import MIDLINE_POINTS
+from src.common.mediapipe_utils import MIDLINE_POINTS
 
 logger = logging.getLogger(__name__)
 

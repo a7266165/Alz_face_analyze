@@ -28,7 +28,7 @@ from _paths import PROJECT_ROOT
 project_root = PROJECT_ROOT
 
 from src.config import FEATURES_DIR, WORKSPACE_DIR
-from src.core.extractor import FeatureExtractor
+from src.modules.embedding import FeatureExtractor
 
 # 設定日誌
 logging.basicConfig(

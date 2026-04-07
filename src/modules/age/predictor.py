@@ -1,5 +1,4 @@
 """
-src/core/age_predictor.py
 MiVOLO 年齡預測器
 """
 

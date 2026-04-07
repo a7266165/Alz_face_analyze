@@ -15,7 +15,7 @@ from scipy.spatial.transform import Rotation as R
 from dataclasses import dataclass
 from typing import Optional, List
 
-from src.core.mediapipe_utils import (
+from src.common.mediapipe_utils import (
     VECTOR_LANDMARKS,
     PNP_LANDMARKS,
     PNP_FACE_3D_MODEL,

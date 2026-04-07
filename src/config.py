@@ -81,7 +81,7 @@ class PreprocessConfig:
     """共用預處理配置"""
 
     # ========== MediaPipe 特徵點 ==========
-    midline_points: Tuple[int, ...] = (10, 168, 4, 2)  # 同 src.core.mediapipe_utils.MIDLINE_POINTS
+    midline_points: Tuple[int, ...] = (10, 168, 4, 2)  # 同 src.common.mediapipe_utils.MIDLINE_POINTS
 
     # ========== 相片選擇參數 ==========
     n_select: int = 10  # 選擇多少張最正的臉部相片

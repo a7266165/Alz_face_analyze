@@ -26,8 +26,8 @@ from _paths import PROJECT_ROOT
 project_root = PROJECT_ROOT
 
 from src.config import RAW_IMAGES_DIR, FEATURES_DIR, AnalyzeConfig
-from src.core.preprocess import PreprocessPipeline, ProcessedFace
-from src.core.extractor import FeatureExtractor, calculate_differences
+from src.modules.preprocess import PreprocessPipeline, ProcessedFace
+from src.modules.embedding import FeatureExtractor, calculate_differences
 
 # 設定日誌
 logging.basicConfig(

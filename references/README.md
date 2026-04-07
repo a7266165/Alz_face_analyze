@@ -8,7 +8,7 @@
 
 ### MiVOLO
 - **用途**: 臉部年齡預測
-- **模組**: `src/core/age_predictor.py`
+- **模組**: `src/modules/age/predictor.py`
 - **論文**: MiVOLO: Multi-input Transformer for Age and Gender Estimation
 - **作者**: Maksim Kuprashevich, Irina Tolstykh
 - **年份**: 2023
@@ -21,7 +21,7 @@
 
 ### MediaPipe Face Mesh
 - **用途**: 臉部 468 特徵點偵測、中軸線計算
-- **模組**: `src/core/preprocess/detector.py`
+- **模組**: `src/modules/preprocess/detector.py`
 - **論文**: MediaPipe: A Framework for Building Perception Pipelines
 - **作者**: Camillo Lugaresi et al. (Google)
 - **年份**: 2019
@@ -34,7 +34,7 @@
 
 ### TopoFR
 - **用途**: 臉部拓撲特徵提取
-- **模組**: `src/core/extractor/topofr_extractor.py`
+- **模組**: `src/modules/embedding/topofr_extractor.py`
 - **論文**: TopoFR: A Closer Look at Topology Alignment on Face Recognition
 - **作者**: Jun Dan et al.
 - **年份**: 2024 (NeurIPS)
@@ -43,7 +43,7 @@
 
 ### dlib
 - **用途**: 臉部特徵提取 (128D embedding)
-- **模組**: `src/core/extractor/dlib_extractor.py`
+- **模組**: `src/modules/embedding/dlib_extractor.py`
 - **論文**: Dlib-ml: A Machine Learning Toolkit
 - **作者**: Davis E. King
 - **年份**: 2009
@@ -88,14 +88,14 @@
 
 - **論文**: OpenFace 3.0: A Lightweight Multitask System for Comprehensive Facial Behavior Analysis
 - **年份**: 2025
-- **連結**: references/2025-OpenFace 3.0_A Lightweight Multitask System for Comprehensive Facial Behavior Analysis.pdf
+- **連結**: references/emotion/2025-OpenFace 3.0_A Lightweight Multitask System for Comprehensive Facial Behavior Analysis.pdf
 
 ### Py-Feat
 - **用途**: AU 機率提取、情緒分類
 
 - **論文**: Py-Feat: Python Facial Expression Analysis Toolbox
 - **年份**: 2023
-- **連結**: references/2023-Py-Feat_Python Facial Expression Analysis Toolbox.pdf
+- **連結**: references/emotion/2023-Py-Feat_Python Facial Expression Analysis Toolbox.pdf
 - **GitHub**: https://github.com/cosanlab/py-feat
 
 ### LibreFace
@@ -103,7 +103,7 @@
 
 - **論文**: LibreFace: An Open-Source Toolkit for Deep Facial Expression Analysis
 - **年份**: 2024
-- **連結**: references/2024-LibreFace-An Open-Source Toolkit for Deep Facial Expression Analysis.pdf
+- **連結**: references/emotion/2024-LibreFace-An Open-Source Toolkit for Deep Facial Expression Analysis.pdf
 - **GitHub**: https://github.com/ihp-lab/LibreFace
 
 ---
@@ -116,7 +116,7 @@
 - **論文**: TabPFN: A Transformer That Solves Small Tabular Classification Problems in a Second
 - **作者**: Noah Hollmann, Samuel Müller, Katharina Eggensperger, Frank Hutter
 - **年份**: 2025
-- **連結**: references/Grinsztajn_2025_TabPFN2.5.pdf
+- **連結**: references/analysis/Grinsztajn_2025_TabPFN2.5.pdf
 
 ---
 
