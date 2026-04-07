@@ -52,7 +52,7 @@ class TopoFRExtractor(BaseExtractor):
 
         try:
             # 嘗試載入 TopoFR
-            topofr_path = EXTERNAL_DIR / "TopoFR"
+            topofr_path = EXTERNAL_DIR / "embedding" / "TopoFR"
 
             if not topofr_path.exists():
                 logger.debug("TopoFR 路徑不存在")

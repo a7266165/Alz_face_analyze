@@ -52,7 +52,7 @@ class DlibExtractor(BaseExtractor):
             self._detector = dlib.get_frontal_face_detector()
 
             # 檢查模型檔案
-            dlib_dir = EXTERNAL_DIR / "dlib"
+            dlib_dir = EXTERNAL_DIR / "embedding" / "dlib"
             predictor_path = dlib_dir / "shape_predictor_68_face_landmarks.dat"
             face_rec_path = dlib_dir / "dlib_face_recognition_resnet_model_v1.dat"
 
@@ -66,7 +66,7 @@ class DlibExtractor(BaseExtractor):
                 logger.warning(
                     f"Dlib 模型檔案缺失:\n" +
                     "\n".join(f"  - {f}" for f in missing_files) +
-                    "\n請下載並放置到 external/dlib/ 目錄"
+                    "\n請下載並放置到 external/embedding/dlib/ 目錄"
                 )
                 return
 
