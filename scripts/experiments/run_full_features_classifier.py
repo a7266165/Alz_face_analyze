@@ -42,7 +42,7 @@ PRED_DIR = ANALYSIS_DIR / "pred_probability" / "n_features_132"
 
 EMOTION_FILE = WORKSPACE_DIR / "emotion_score_EmoNet.csv"
 DEMOGRAPHICS_DIR = PROJECT_ROOT / "data" / "demographics"
-PREDICTED_AGES_FILE = WORKSPACE_DIR / "predicted_ages.json"
+PREDICTED_AGES_FILE = WORKSPACE_DIR / "age_prediction" / "predicted_ages.json"
 
 EMBEDDING_MODELS = ["arcface", "topofr"]
 RANDOM_SEED = 42

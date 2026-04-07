@@ -21,8 +21,8 @@ project_root = PROJECT_ROOT
 
 from src.config import (
     DEMOGRAPHICS_DIR,
-    WORKSPACE_DIR,
-    STATISTICS_DIR,
+    AGE_PREDICTION_DIR,
+    CALIBRATION_DIR,
     PREDICTED_AGES_FILE,
 )
 
@@ -416,7 +416,7 @@ def main():
     # 使用 config 常數
     predicted_ages_file = PREDICTED_AGES_FILE
     demo_dir = DEMOGRAPHICS_DIR
-    output_dir = STATISTICS_DIR
+    output_dir = CALIBRATION_DIR
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # 載入資料
@@ -441,7 +441,7 @@ def main():
     export_calibrated_stats(df_result, output_dir)
 
     # 繪製散佈圖
-    plot_path = WORKSPACE_DIR / "predicted_ages_scatter_calibrated.png"
+    plot_path = AGE_PREDICTION_DIR / "predicted_ages_scatter_calibrated.png"
     plot_calibrated_scatter(df_result, plot_path)
 
 

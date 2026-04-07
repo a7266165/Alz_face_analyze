@@ -21,8 +21,8 @@ project_root = PROJECT_ROOT
 
 from src.config import (
     DEMOGRAPHICS_DIR,
-    WORKSPACE_DIR,
-    STATISTICS_DIR,
+    AGE_PREDICTION_DIR,
+    CALIBRATION_DIR,
     PREDICTED_AGES_FILE,
 )
 
@@ -464,11 +464,98 @@ def patient_score_error_correlation(
     logger.info(f"散佈圖已儲存: {png_path}")
 
 
+def sliding_window_age_error(
+    df_matched: pd.DataFrame, output_dir: Path,
+    window: int = 10, step: int = 1,
+):
+    """以滑動視窗統計各族群及全體的年齡預測誤差，輸出 CSV。"""
+    start_min = int(np.floor(df_matched["real_age"].min()))
+    start_max = int(np.floor(df_matched["real_age"].max())) - window + 1
+
+    rows = []
+    for grp_label, df_grp in [
+        *[
+            (g, df_matched[df_matched["group"] == g])
+            for g in ["ACS", "NAD", "P"]
+        ],
+        ("All", df_matched),
+    ]:
+        for s in range(start_min, start_max + 1, step):
+            sub = df_grp[
+                (df_grp["real_age"] >= s) & (df_grp["real_age"] < s + window)
+            ]
+            n = len(sub)
+            if n == 0:
+                continue
+            err = sub["error"]
+            rows.append({
+                "group": grp_label,
+                "age_range": f"{s}-{s + window - 1}",
+                "n": n,
+                "real_age": f"{sub['real_age'].mean():.2f}±{sub['real_age'].std():.2f}",
+                "pred_age": f"{sub['predicted_age'].mean():.2f}±{sub['predicted_age'].std():.2f}",
+                "diff": f"{err.mean():.2f}±{err.std():.2f}",
+                "MAE": f"{err.abs().mean():.2f}",
+            })
+
+    csv_path = output_dir / "age_error_sliding_window.csv"
+    pd.DataFrame(rows).to_csv(csv_path, index=False, encoding="utf-8-sig")
+    logger.info(f"滑動視窗年齡誤差 CSV 已儲存: {csv_path}")
+
+
+COLORS = {"ACS": "#4CAF50", "NAD": "#2196F3", "P": "#F44336"}
+
+
+def plot_error_by_age_combined(output_dir: Path):
+    """讀取 bootstrap 校正後資料，畫三組疊合的 per-integer-age error 折線圖。"""
+    from src.config import BOOTSTRAP_DIR
+
+    csv_path = BOOTSTRAP_DIR / "corrected_ages_bootstrap.csv"
+    df = pd.read_csv(csv_path, encoding="utf-8-sig")
+
+    fig, ax = plt.subplots(figsize=(14, 5))
+
+    for grp, color in COLORS.items():
+        sub = df[df["group"] == grp]
+        if len(sub) == 0:
+            continue
+        st = sub.groupby("age_int")["error_after"].agg(["mean", "std", "count"])
+        st = st[st["count"] >= 3].sort_index()
+        if len(st) == 0:
+            continue
+
+        ages = st.index.values
+        means = st["mean"].values
+        stds = st["std"].fillna(0).values
+
+        ax.plot(ages, means, color=color, linewidth=2,
+                marker="o", markersize=4, label=f"{grp} (n={len(sub)})")
+        ax.fill_between(ages, means - stds, means + stds,
+                        color=color, alpha=0.15)
+
+    ax.axhline(y=0, color="black", linestyle="--", alpha=0.4)
+    ax.set_xlabel("True Age (y)", fontsize=12)
+    ax.set_ylabel("Error (after bootstrap correction)", fontsize=12)
+    ax.set_title(
+        "Corrected Error by True Age — ACS / NAD / P (mean ± std)",
+        fontsize=13,
+    )
+    ax.set_xlim(50, 100)
+    ax.legend(fontsize=10)
+    ax.grid(True, alpha=0.3)
+    plt.tight_layout()
+
+    png_path = output_dir / "error_by_age_combined.png"
+    fig.savefig(str(png_path), dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    logger.info(f"Error-by-age combined 圖已儲存: {png_path}")
+
+
 def main():
     # 使用 config 常數
     predicted_ages_file = PREDICTED_AGES_FILE
     demo_dir = DEMOGRAPHICS_DIR
-    output_dir = WORKSPACE_DIR
+    output_dir = AGE_PREDICTION_DIR
     output_path = output_dir / "predicted_ages_scatter.png"
 
     predicted_ages = load_predicted_ages(predicted_ages_file)
@@ -476,10 +563,12 @@ def main():
     df_matched = match_ages(predicted_ages, demo)
 
     print_statistics(predicted_ages, df_matched, output_dir)
+    sliding_window_age_error(df_matched, output_dir)
+    plot_error_by_age_combined(output_dir)
     plot_scatter(df_matched, output_path)
 
     # Patient 專屬分析
-    stat_dir = STATISTICS_DIR
+    stat_dir = CALIBRATION_DIR
     stat_dir.mkdir(parents=True, exist_ok=True)
     patient_score_stratified_error(df_matched, "MMSE", MMSE_BINS, stat_dir)
     patient_score_stratified_error(df_matched, "CASI", CASI_BINS, stat_dir)

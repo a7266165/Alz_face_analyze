@@ -43,7 +43,14 @@ ALIGNED_DIR = PREPROCESSING_DIR / "aligned"
 MIRRORS_DIR = PREPROCESSING_DIR / "mirrors"
 
 STATISTICS_DIR = WORKSPACE_DIR / "statistics"
-PREDICTED_AGES_FILE = WORKSPACE_DIR / "predicted_ages.json"
+
+# 年齡預測結果
+AGE_PREDICTION_DIR = WORKSPACE_DIR / "age_prediction"
+CALIBRATION_DIR = AGE_PREDICTION_DIR / "calibration"
+BOOTSTRAP_DIR = AGE_PREDICTION_DIR / "bootstrap_correction"
+MEAN_CORRECTION_DIR = AGE_PREDICTION_DIR / "mean_correction"
+PREDICTED_AGES_FILE = AGE_PREDICTION_DIR / "predicted_ages.json"
+PREDICTED_AGES_CALIBRATED_FILE = AGE_PREDICTION_DIR / "predicted_ages_calibrated.json"
 
 
 def get_raw_images_subdir(group: str) -> Path:
@@ -74,7 +81,7 @@ class PreprocessConfig:
     """共用預處理配置"""
 
     # ========== MediaPipe 特徵點 ==========
-    midline_points: Tuple[int, ...] = (10, 168, 4, 2)  # 臉部中軸線特徵點索引
+    midline_points: Tuple[int, ...] = (10, 168, 4, 2)  # 同 src.core.mediapipe_utils.MIDLINE_POINTS
 
     # ========== 相片選擇參數 ==========
     n_select: int = 10  # 選擇多少張最正的臉部相片

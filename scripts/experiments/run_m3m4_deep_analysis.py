@@ -29,7 +29,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
 from _paths import PROJECT_ROOT
 project_root = PROJECT_ROOT
 
-from src.config import DEMOGRAPHICS_DIR, WORKSPACE_DIR, STATISTICS_DIR
+from src.config import DEMOGRAPHICS_DIR, WORKSPACE_DIR, STATISTICS_DIR, PREDICTED_AGES_FILE
 
 logging.basicConfig(
     level=logging.INFO,
@@ -40,7 +40,7 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
-CALIBRATED_AGES_FILE = WORKSPACE_DIR / "predicted_ages.json"
+CALIBRATED_AGES_FILE = PREDICTED_AGES_FILE
 EMOTION_SCORES_FILE = WORKSPACE_DIR / "emotion_score_EmoNet.csv"
 FIGURES_DIR = project_root / "paper" / "figures"
 STATS_DIR = WORKSPACE_DIR / "statistics" / "m3m4_deep"

@@ -12,6 +12,8 @@ from typing import List, Tuple, Optional
 from dataclasses import dataclass
 import logging
 
+from src.core.mediapipe_utils import MIDLINE_POINTS
+
 logger = logging.getLogger(__name__)
 
 
@@ -36,7 +38,7 @@ class FaceDetector:
     def __init__(
         self,
         detection_confidence: float = 0.5,
-        midline_points: Tuple[int, ...] = (10, 168, 4, 2),
+        midline_points: Tuple[int, ...] = MIDLINE_POINTS,
     ):
         """
         初始化偵測器

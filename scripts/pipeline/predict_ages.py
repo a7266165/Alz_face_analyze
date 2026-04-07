@@ -14,7 +14,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
 from _paths import PROJECT_ROOT
 project_root = PROJECT_ROOT
 
-from src.config import ALIGNED_DIR, WORKSPACE_DIR
+from src.config import ALIGNED_DIR, AGE_PREDICTION_DIR
 from src.core.age_predictor import MiVOLOPredictor
 
 logging.basicConfig(
@@ -55,7 +55,7 @@ def main():
 
     # 路徑設定（使用 config 常數）
     aligned_dir = ALIGNED_DIR
-    output_file = WORKSPACE_DIR / "predicted_ages_2.json"
+    output_file = AGE_PREDICTION_DIR / "predicted_ages_2.json"
 
     logger.info(f"影像目錄: {aligned_dir}")
 

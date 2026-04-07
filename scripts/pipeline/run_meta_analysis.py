@@ -33,7 +33,7 @@ from src.meta_analysis import MetaConfig, MetaPipeline
 # 路徑設定
 WORKSPACE_DIR = PROJECT_ROOT / "workspace"
 DEMOGRAPHICS_DIR = PROJECT_ROOT / "data" / "demographics"
-PREDICTED_AGES_FILE = WORKSPACE_DIR / "predicted_ages_calibrated.json"
+PREDICTED_AGES_FILE = WORKSPACE_DIR / "age_prediction" / "predicted_ages_calibrated.json"
 
 # LR 預測分數目錄 — 自動掃描最新 analysis 目錄
 ANALYSIS_DIR = None  # 手動指定時填入 Path，None 則自動掃描
