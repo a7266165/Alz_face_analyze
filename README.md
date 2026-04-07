@@ -1,6 +1,6 @@
 # Alz_face_analyze
 
-阿茲海默症臉部不對稱性分析系統
+阿茲海默症臉部多模態分析系統（年齡、情緒/AU、不對稱性、頭部旋轉）
 
 ## 專案結構
 
@@ -48,13 +48,15 @@ Alz_face_analyze/
 │   │   │
 │   │   └── rotation/                  # 頭部旋轉
 │   │       ├── angle_calc.py          # VectorAngleCalculator, PnPAngleCalculator
-│   │       └── features.py            # extract_rotation_features()
+│   │       ├── features.py            # extract_rotation_features()
+│   │       └── plotter.py             # AnglePlotter, process_single_folder
 │   │
 │   ├── analysis/                      # 分析模組
 │   │   ├── loader/                    # 資料載入子模組
 │   │   │   ├── base.py                # Dataset, DataLoaderProtocol
 │   │   │   ├── balancer.py            # DataBalancer (年齡分層平衡)
-│   │   │   └── data_loader.py         # DataLoader (主類別)
+│   │   │   ├── data_loader.py         # DataLoader (主類別)
+│   │   │   └── au_dataset.py          # AUDatasetLoader (AU 特徵載入)
 │   │   │
 │   │   ├── analyzer/                  # 分析器子模組
 │   │   │   ├── __init__.py            # create_analyzer 工廠函數、ANALYZER_REGISTRY
@@ -63,6 +65,8 @@ Alz_face_analyze/
 │   │   │   ├── logistic_analyzer.py   # LogisticAnalyzer
 │   │   │   └── tabpfn_analyzer.py     # TabPFNAnalyzer
 │   │   │
+│   │   ├── shap_explainer.py          # AUSHAPExplainer (SHAP 可解釋性)
+│   │   ├── cross_tool_comparison.py   # CrossToolComparator (跨工具比較)
 │   │   └── plotter.py                 # ResultPlotter (結果視覺化)
 │   │
 │   ├── meta_analysis/                 # Meta 分析模組
@@ -80,13 +84,23 @@ Alz_face_analyze/
 │   ├── _utils.py                      # 共用工具函式
 │   │
 │   ├── pipeline/                      # 主 Pipeline（依序執行）
-│   │   ├── predict_ages.py            #   Stage 0：年齡預測
-│   │   ├── prepare_feature.py         #   Stage 1：前處理 + 特徵萃取
+│   │   ├── predict_ages.py            #   Stage 0：年齡預測 (MiVOLO)
+│   │   ├── prepare_feature.py         #   Stage 1：前處理 + 嵌入萃取
+│   │   ├── run_au_pipeline.py         #   Stage 1b：AU 提取 → 標準化 → 聚合
+│   │   ├── run_fer_extract.py         #   Stage 1c：FER 情緒提取
+│   │   ├── run_new_models_extract.py  #   Stage 1d：DAN/HSEmotion/ViT 提取
+│   │   ├── process_angle.py           #   Stage 1e：頭部旋轉角度計算
 │   │   ├── run_analyze.py             #   Stage 2：分類器訓練
 │   │   └── run_meta_analysis.py       #   Stage 3：Meta 分析
 │   │
 │   ├── experiments/                   # 探索性 / 替代分析
 │   │   ├── compute_emotion_scores.py  #   EmoNet 情緒分數計算
+│   │   ├── run_classification.py      #   AU 特徵 XGBoost 分類 + SHAP
+│   │   ├── run_au_emo_stats.py        #   AU/情緒統計分析
+│   │   ├── run_extended_analysis.py   #   5 模式延伸分析 (CDR/認知/情緒/縱向/性別)
+│   │   ├── run_pca_eigenvector.py     #   AU PCA 特徵向量分析
+│   │   ├── run_homogeneity_analysis.py #  AU 同質性分析
+│   │   ├── AD_binary_analysis.py      #   認知變化二元預測 (VGGFace 4096-d)
 │   │   ├── run_xgboost_modules.py     #   M3/M4 獨立 XGBoost
 │   │   ├── run_full_features_classifier.py  # 1036-d 直接分類
 │   │   ├── run_tabpfn_m1m2_512.py     #   M1+M2 512-d TabPFN
@@ -96,6 +110,8 @@ Alz_face_analyze/
 │   │   ├── plot_predicted_ages.py     #   年齡預測統計圖
 │   │   ├── plot_valence_arousal.py    #   Valence-Arousal 散佈圖
 │   │   ├── demographics_statistics.py #   人口學統計
+│   │   ├── plot_auc_analysis.py       #   AU 情緒 ROC AUC 分析
+│   │   ├── plot_emotion_comparison.py #   跨模型情緒比較圖
 │   │   ├── plot_tabpfn_meta_by_n_features.py   # TabPFN Meta 趨勢圖
 │   │   └── plot_xgboost_meta_by_n_features.py  # XGBoost Meta 趨勢圖
 │   │
@@ -104,11 +120,41 @@ Alz_face_analyze/
 │       ├── calibrate_age_prediction.py        # 年齡預測校正
 │       ├── age_error_bootstrap_correction.py  # Bootstrap 年齡誤差校正
 │       ├── age_error_mean_correction.py       # Mean 年齡誤差校正
+│       ├── rotation_stat.py                   # 旋轉影像統計
 │       └── compare_features.py                # 特徵比對視覺化
+│
+├── external/                          # 外部模型與權重
+│   ├── embedding/                     # 嵌入模型
+│   │   ├── dlib/                      # Dlib 人臉辨識模型
+│   │   └── TopoFR/                    # TopoFR 拓撲特徵模型
+│   └── emotion/                       # 情緒/AU 模型
+│       ├── emonet/                    # EmoNet (git submodule)
+│       ├── openface/                  # OpenFace 3.0 權重
+│       ├── libreface/                 # LibreFace 權重
+│       ├── DAN/                       # DAN 模型原始碼
+│       ├── dan_weights/               # DAN 權重 (324MB)
+│       ├── EmoNeXt/                   # EmoNeXt 模型
+│       ├── fer/                       # FER 模型
+│       ├── FER-former/                # FER-former 模型
+│       ├── POSTER_V2/                 # POSTER V2 模型
+│       ├── poster_pp/                 # POSTER++ 權重 (356MB)
+│       └── ExpressNet-MoE/            # ExpressNet-MoE 模型
+│
+├── envs/                              # Conda 環境配置
+│   ├── emo_analyze.txt                # 情緒分析主環境
+│   ├── libreface.txt                  # LibreFace 環境
+│   └── pyfeat.txt                     # Py-Feat 環境
 │
 ├── data/
 │   ├── path.txt                       # 原始圖片路徑指向
 │   └── demographics/                  # 人口學資料 (ACS.csv, NAD.csv, P.csv)
+│
+├── references/                        # 參考論文（依模組分類）
+│   ├── embedding/                     # dlib, ArcFace, VGGFace, TopoFR
+│   ├── preprocessing/                 # MediaPipe
+│   ├── age/                           # MiVOLO
+│   ├── emotion/                       # 13 篇 FER/AU 論文
+│   └── analysis/                      # TabPFN
 │
 └── workspace/                         # 工作區（輸出）
     ├── predicted_ages.json
@@ -516,6 +562,7 @@ scripts/pipeline/run_meta_analysis.py
 | | `DataLoaderProtocol` | Protocol 定義 |
 | `balancer.py` | `DataBalancer` | 年齡分層平衡 |
 | `data_loader.py` | `DataLoader` | 主類別：載入、篩選、平衡 |
+| `au_dataset.py` | `AUDatasetLoader` | AU 特徵資料集載入 |
 
 #### src/analysis/analyzer/ (分析器子模組)
 
@@ -528,11 +575,13 @@ scripts/pipeline/run_meta_analysis.py
 | `logistic_analyzer.py` | `LogisticAnalyzer` | Logistic Regression、係數重要性 |
 | `tabpfn_analyzer.py` | `TabPFNAnalyzer` | TabPFN、permutation importance |
 
-#### src/analysis/plotter.py
+#### src/analysis/ (其他分析工具)
 
-| 類別 | 功能 |
-|------|------|
-| `ResultPlotter` | 結果視覺化 (按特徵數趨勢圖) |
+| 檔案 | 類別 | 功能 |
+|------|------|------|
+| `plotter.py` | `ResultPlotter` | 結果視覺化 (按特徵數趨勢圖) |
+| `shap_explainer.py` | `AUSHAPExplainer` | SHAP 可解釋性分析 |
+| `cross_tool_comparison.py` | `CrossToolComparator` | 跨工具 AU/情緒一致性比較 |
 
 ### src/meta_analysis/ (Meta 分析模組)
 
@@ -545,8 +594,6 @@ scripts/pipeline/run_meta_analysis.py
 | `model/trainer.py` | `TabPFNMetaTrainer` | GroupKFold CV 訓練 TabPFN |
 | | `TrainResult` | 訓練結果 dataclass |
 | `model/evaluator.py` | `MetaEvaluator` | 指標計算、fold 聚合、報告格式化 |
-
-### src/modules/ (四大分析模組)
 
 #### src/modules/age/ (年齡預測)
 
@@ -583,6 +630,8 @@ scripts/pipeline/run_meta_analysis.py
 | `angle_calc.py` | `VectorAngleCalculator` | 向量法角度計算 |
 | | `PnPAngleCalculator` | PnP 法角度計算 |
 | `features.py` | `extract_rotation_features()` | 從角度序列提取統計特徵 |
+| `plotter.py` | `AnglePlotter` | 角度訊號圖繪製 |
+| | `process_single_folder()` | 雙方法批次處理 |
 
 ---
 
