@@ -24,7 +24,7 @@ from _utils import find_latest_dir
 
 # ── Config ──────────────────────────────────────────────────────────────────
 WORKSPACE_DIR = PROJECT_ROOT / "workspace"
-FEATURES_DIR = WORKSPACE_DIR / "features"
+FEATURES_DIR = WORKSPACE_DIR / "embedding" / "features"
 
 # 自動掃描最新 analysis 目錄，手動指定時填入 Path
 ANALYSIS_DIR = None

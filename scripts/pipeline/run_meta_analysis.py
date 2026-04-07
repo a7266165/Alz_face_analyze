@@ -33,7 +33,7 @@ from src.meta_analysis import MetaConfig, MetaPipeline
 # 路徑設定
 WORKSPACE_DIR = PROJECT_ROOT / "workspace"
 DEMOGRAPHICS_DIR = PROJECT_ROOT / "data" / "demographics"
-PREDICTED_AGES_FILE = WORKSPACE_DIR / "age_prediction" / "predicted_ages_calibrated.json"
+PREDICTED_AGES_FILE = WORKSPACE_DIR / "age" / "age_prediction" / "predicted_ages_calibrated.json"
 
 # LR 預測分數目錄 — 自動掃描最新 analysis 目錄
 ANALYSIS_DIR = None  # 手動指定時填入 Path，None 則自動掃描
@@ -42,7 +42,7 @@ if ANALYSIS_DIR is None:
 PREDICTIONS_DIR = ANALYSIS_DIR / "pred_probability"
 
 # Emotion 分數檔案
-EMOTION_SCORES_FILE = WORKSPACE_DIR / "emotion_score_EmoNet.csv"
+EMOTION_SCORES_FILE = WORKSPACE_DIR / "emotion" / "emotion_score_EmoNet.csv"
 
 # 輸出目錄
 OUTPUT_DIR = WORKSPACE_DIR / f"tabpfn_meta_analysis_{datetime.now().strftime('%Y%m%d_%H%M%S')}"

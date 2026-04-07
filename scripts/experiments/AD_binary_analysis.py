@@ -35,7 +35,7 @@ plt.rcParams['axes.unicode_minus'] = False
 
 # 設定路徑
 TABLE_DIR = PROJECT_ROOT / "data" / "demographics"
-FEATURES_DIR = PROJECT_ROOT / "workspace" / "features"
+FEATURES_DIR = PROJECT_ROOT / "workspace" / "embedding" / "features"
 OUTPUT_DIR = PROJECT_ROOT / "workspace" / "ad_binary_analysis"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 

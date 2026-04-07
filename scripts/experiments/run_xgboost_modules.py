@@ -30,8 +30,8 @@ from _utils import find_latest_dir
 # ========== 路徑設定 ==========
 WORKSPACE_DIR = PROJECT_ROOT / "workspace"
 DEMOGRAPHICS_DIR = PROJECT_ROOT / "data" / "demographics"
-PREDICTED_AGES_FILE = WORKSPACE_DIR / "age_prediction" / "predicted_ages.json"
-EMOTION_SCORES_FILE = WORKSPACE_DIR / "emotion_score_EmoNet.csv"
+PREDICTED_AGES_FILE = WORKSPACE_DIR / "age" / "age_prediction" / "predicted_ages.json"
+EMOTION_SCORES_FILE = WORKSPACE_DIR / "emotion" / "emotion_score_EmoNet.csv"
 
 # LR 預測分數目錄（取 fold 分配）— 自動掃描最新 analysis 目錄
 ANALYSIS_DIR = None  # 手動指定時填入 Path，None 則自動掃描

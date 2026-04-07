@@ -32,7 +32,7 @@ from _utils import find_latest_dir
 
 # ── Config ──────────────────────────────────────────────────────────────────
 WORKSPACE_DIR = PROJECT_ROOT / "workspace"
-FEATURES_DIR = WORKSPACE_DIR / "features"
+FEATURES_DIR = WORKSPACE_DIR / "embedding" / "features"
 
 # 自動掃描最新 analysis 目錄，手動指定時填入 Path
 ANALYSIS_DIR = None
@@ -40,9 +40,9 @@ if ANALYSIS_DIR is None:
     ANALYSIS_DIR = find_latest_dir(WORKSPACE_DIR, "analysis_")
 PRED_DIR = ANALYSIS_DIR / "pred_probability" / "n_features_132"
 
-EMOTION_FILE = WORKSPACE_DIR / "emotion_score_EmoNet.csv"
+EMOTION_FILE = WORKSPACE_DIR / "emotion" / "emotion_score_EmoNet.csv"
 DEMOGRAPHICS_DIR = PROJECT_ROOT / "data" / "demographics"
-PREDICTED_AGES_FILE = WORKSPACE_DIR / "age_prediction" / "predicted_ages.json"
+PREDICTED_AGES_FILE = WORKSPACE_DIR / "age" / "age_prediction" / "predicted_ages.json"
 
 EMBEDDING_MODELS = ["arcface", "topofr"]
 RANDOM_SEED = 42

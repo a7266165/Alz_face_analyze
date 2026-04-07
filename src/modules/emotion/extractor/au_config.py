@@ -284,12 +284,13 @@ AU_SCALE_INFO = {
 # 路徑配置
 # =============================================================================
 
-AU_FEATURES_DIR = WORKSPACE_DIR / "au_features"
+EMOTION_DIR = WORKSPACE_DIR / "emotion"
+AU_FEATURES_DIR = EMOTION_DIR / "au_features"
 AU_RAW_DIR = AU_FEATURES_DIR / "raw"
 AU_HARMONIZED_DIR = AU_FEATURES_DIR / "harmonized"
 AU_AGGREGATED_DIR = AU_FEATURES_DIR / "aggregated"
 
-AU_ANALYSIS_DIR = WORKSPACE_DIR / "au_analysis"
+AU_ANALYSIS_DIR = EMOTION_DIR / "au_analysis"
 
 # 權重目錄
 WEIGHTS_DIR = EXTERNAL_DIR / "emotion"

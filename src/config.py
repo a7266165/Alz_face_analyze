@@ -32,20 +32,22 @@ RAW_IMAGES_DIR = Path(_RAW_PATH_FILE.read_text(encoding="utf-8").strip())
 # 外部依賴目錄
 EXTERNAL_DIR = PROJECT_ROOT / "external"
 
-# 工作區路徑
+# 工作區路徑（按模組分類）
 WORKSPACE_DIR = PROJECT_ROOT / "workspace"
-FEATURES_DIR = WORKSPACE_DIR / "features"
 
-# 預處理路徑
-PREPROCESSING_DIR = WORKSPACE_DIR / "preprocessing"
+# preprocess 模組
+PREPROCESSING_DIR = WORKSPACE_DIR / "preprocess"
 SELECTED_DIR = PREPROCESSING_DIR / "selected"
 ALIGNED_DIR = PREPROCESSING_DIR / "aligned"
 MIRRORS_DIR = PREPROCESSING_DIR / "mirrors"
 
-STATISTICS_DIR = WORKSPACE_DIR / "statistics"
+# embedding 模組
+EMBEDDING_DIR = WORKSPACE_DIR / "embedding"
+FEATURES_DIR = EMBEDDING_DIR / "features"
+STATISTICS_DIR = EMBEDDING_DIR / "statistics"
 
-# 年齡預測結果
-AGE_PREDICTION_DIR = WORKSPACE_DIR / "age_prediction"
+# age 模組
+AGE_PREDICTION_DIR = WORKSPACE_DIR / "age" / "age_prediction"
 CALIBRATION_DIR = AGE_PREDICTION_DIR / "calibration"
 BOOTSTRAP_DIR = AGE_PREDICTION_DIR / "bootstrap_correction"
 MEAN_CORRECTION_DIR = AGE_PREDICTION_DIR / "mean_correction"

@@ -24,7 +24,7 @@ for csv_file in ["ACS.csv", "NAD.csv", "P.csv"]:
 demo = pd.concat(dfs, ignore_index=True)
 
 # Emotion scores
-emo = pd.read_csv(WORKSPACE_DIR / "emotion_score_EmoNet.csv", encoding="utf-8-sig")
+emo = pd.read_csv(WORKSPACE_DIR / "emotion" / "emotion_score_EmoNet.csv", encoding="utf-8-sig")
 
 # Predicted ages (to filter to valid subjects)
 with open(PREDICTED_AGES_FILE, "r", encoding="utf-8") as f:
@@ -69,7 +69,7 @@ for feat in ["Valence", "Arousal"]:
         print(f"  {n1} vs {n2}: U={U:.0f}, p={p_mw:.2e}, d={d:+.4f}")
 
 # --- Export statistics to CSV ---
-STATS_DIR = WORKSPACE_DIR / "statistics" / "m3m4_deep"
+STATS_DIR = WORKSPACE_DIR / "embedding" / "statistics" / "m3m4_deep"
 STATS_DIR.mkdir(parents=True, exist_ok=True)
 
 # 1) Group descriptive statistics

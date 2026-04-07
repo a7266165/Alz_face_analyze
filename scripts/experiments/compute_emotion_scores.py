@@ -22,7 +22,7 @@ from _paths import PROJECT_ROOT
 project_root = PROJECT_ROOT
 sys.path.insert(0, str(project_root / "external" / "emonet"))
 
-from src.config import WORKSPACE_DIR
+from src.config import WORKSPACE_DIR, ALIGNED_DIR as _ALIGNED_DIR
 
 # 設定日誌
 logging.basicConfig(
@@ -32,8 +32,8 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # 路徑設定
-ALIGNED_DIR = WORKSPACE_DIR / "preprocessing" / "aligned"
-OUTPUT_FILE = WORKSPACE_DIR / "emotion_score_EmoNet.csv"
+ALIGNED_DIR = _ALIGNED_DIR
+OUTPUT_FILE = WORKSPACE_DIR / "emotion" / "emotion_score_EmoNet.csv"
 WEIGHTS_PATH = project_root / "external" / "emonet" / "pretrained" / "emonet_8.pth"
 
 # EmoNet 輸出索引 → 下游欄位名稱映射

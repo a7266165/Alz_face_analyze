@@ -41,9 +41,9 @@ logger = logging.getLogger(__name__)
 # Constants
 # ---------------------------------------------------------------------------
 CALIBRATED_AGES_FILE = PREDICTED_AGES_FILE
-EMOTION_SCORES_FILE = WORKSPACE_DIR / "emotion_score_EmoNet.csv"
+EMOTION_SCORES_FILE = WORKSPACE_DIR / "emotion" / "emotion_score_EmoNet.csv"
 FIGURES_DIR = project_root / "paper" / "figures"
-STATS_DIR = WORKSPACE_DIR / "statistics" / "m3m4_deep"
+STATS_DIR = WORKSPACE_DIR / "embedding" / "statistics" / "m3m4_deep"
 
 COLOR_CONTROL = "#2196F3"
 COLOR_AD = "#F44336"
