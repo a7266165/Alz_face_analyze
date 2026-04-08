@@ -39,17 +39,38 @@ ALL_STEPS = ["extract", "harmonize", "aggregate"]
 
 def _get_extractor_class(tool_name: str):
     if tool_name == "openface":
-        from src.extractor.features.emotion.extractor.au.openface import OpenFaceExtractor
+        from src.extractor.features.emotion.extractor.openface import OpenFaceExtractor
         return OpenFaceExtractor
     elif tool_name == "pyfeat":
-        from src.extractor.features.emotion.extractor.au.pyfeat import PyFeatExtractor
+        from src.extractor.features.emotion.extractor.pyfeat import PyFeatExtractor
         return PyFeatExtractor
     elif tool_name == "libreface":
-        from src.extractor.features.emotion.extractor.au.libreface import LibreFaceExtractor
+        from src.extractor.features.emotion.extractor.libreface import LibreFaceExtractor
         return LibreFaceExtractor
     elif tool_name == "poster_pp":
-        from src.extractor.features.emotion.extractor.au.poster_pp import PosterPPExtractor
+        from src.extractor.features.emotion.extractor.poster_pp import PosterPPExtractor
         return PosterPPExtractor
+    elif tool_name == "dan":
+        from src.extractor.features.emotion.extractor.dan import DANExtractor
+        return DANExtractor
+    elif tool_name == "emonet":
+        from src.extractor.features.emotion.extractor.emonet import EmoNetExtractor
+        return EmoNetExtractor
+    elif tool_name == "emonext":
+        from src.extractor.features.emotion.extractor.emonext import EmoNeXtExtractor
+        return EmoNeXtExtractor
+    elif tool_name == "fer":
+        from src.extractor.features.emotion.extractor.fer_extractor import FERExtractor
+        return FERExtractor
+    elif tool_name == "fer_former":
+        from src.extractor.features.emotion.extractor.fer_former import FERFormerExtractor
+        return FERFormerExtractor
+    elif tool_name == "hsemotion":
+        from src.extractor.features.emotion.extractor.hsemotion import HSEmotionExtractor
+        return HSEmotionExtractor
+    elif tool_name == "vit":
+        from src.extractor.features.emotion.extractor.vit import ViTExtractor
+        return ViTExtractor
     return None
 
 
@@ -149,7 +170,8 @@ def main():
     parser = argparse.ArgumentParser(description="AU 特徵 Pipeline")
     parser.add_argument(
         "--tools", nargs="+", default=None,
-        choices=["openface", "pyfeat", "libreface", "poster_pp", "fer", "dan", "hsemotion", "vit"],
+        choices=["openface", "pyfeat", "libreface", "poster_pp",
+                 "dan", "emonet", "emonext", "fer", "fer_former", "hsemotion", "vit"],
         help="指定工具（預設依 config）",
     )
     parser.add_argument(

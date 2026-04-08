@@ -263,6 +263,67 @@ VIT_EMOTION_MAP: Dict[str, str] = {
 }
 
 # =============================================================================
+# EmoNet 欄位對映
+# =============================================================================
+
+# EmoNet 輸出 8-class emotion（或 5-class）
+# 8-class order: Neutral, Happy, Sad, Surprise, Fear, Disgust, Anger, Contempt
+EMONET_EMOTION_INDEX: Dict[int, str] = {
+    0: "neutral",
+    1: "happiness",
+    2: "sadness",
+    3: "surprise",
+    4: "fear",
+    5: "disgust",
+    6: "anger",
+    7: "contempt",  # 不在 harmonized 7 情緒中
+}
+
+EMONET_AU_MAP: Dict[str, str] = {}
+
+EMONET_EMOTION_MAP: Dict[str, str] = {
+    "neutral": "neutral",
+    "happiness": "happiness",
+    "sadness": "sadness",
+    "surprise": "surprise",
+    "fear": "fear",
+    "disgust": "disgust",
+    "anger": "anger",
+}
+
+# =============================================================================
+# EmoNeXt 欄位對映
+# =============================================================================
+
+EMONEXT_AU_MAP: Dict[str, str] = {}
+
+EMONEXT_EMOTION_MAP: Dict[str, str] = {
+    "anger": "anger",
+    "disgust": "disgust",
+    "fear": "fear",
+    "happiness": "happiness",
+    "sadness": "sadness",
+    "surprise": "surprise",
+    "neutral": "neutral",
+}
+
+# =============================================================================
+# FER-former 欄位對映
+# =============================================================================
+
+FER_FORMER_AU_MAP: Dict[str, str] = {}
+
+FER_FORMER_EMOTION_MAP: Dict[str, str] = {
+    "anger": "anger",
+    "disgust": "disgust",
+    "fear": "fear",
+    "happiness": "happiness",
+    "sadness": "sadness",
+    "surprise": "surprise",
+    "neutral": "neutral",
+}
+
+# =============================================================================
 # 量綱轉換
 # =============================================================================
 
@@ -278,6 +339,9 @@ AU_SCALE_INFO = {
     "dan": {"min": 0.0, "max": 1.0, "type": "softmax"},
     "hsemotion": {"min": 0.0, "max": 1.0, "type": "softmax"},
     "vit": {"min": 0.0, "max": 1.0, "type": "softmax"},
+    "emonet": {"min": 0.0, "max": 1.0, "type": "softmax"},
+    "emonext": {"min": 0.0, "max": 1.0, "type": "softmax"},
+    "fer_former": {"min": 0.0, "max": 1.0, "type": "softmax"},
 }
 
 # =============================================================================
@@ -297,6 +361,12 @@ WEIGHTS_DIR = EXTERNAL_DIR / "emotion"
 OPENFACE_WEIGHTS_DIR = WEIGHTS_DIR / "openface"
 LIBREFACE_WEIGHTS_DIR = WEIGHTS_DIR / "libreface"
 POSTER_PP_WEIGHTS_DIR = WEIGHTS_DIR / "poster_pp"
+DAN_DIR = WEIGHTS_DIR / "DAN"
+DAN_WEIGHTS_DIR = WEIGHTS_DIR / "dan_weights"
+EMONET_DIR = WEIGHTS_DIR / "emonet"
+EMONET_WEIGHTS_DIR = EMONET_DIR / "pretrained"
+EMONEXT_DIR = WEIGHTS_DIR / "EmoNeXt"
+FER_FORMER_DIR = WEIGHTS_DIR / "FER-former"
 
 # =============================================================================
 # 提取配置 Dataclass
