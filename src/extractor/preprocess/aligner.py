@@ -12,7 +12,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class FaceAligner:
+class FaceStraightener:
     """
     臉部對齊器
 
@@ -28,7 +28,7 @@ class FaceAligner:
         """
         self.midline_points = midline_points
 
-    def align(
+    def straighten_pics(
         self,
         image: np.ndarray,
         landmarks: np.ndarray

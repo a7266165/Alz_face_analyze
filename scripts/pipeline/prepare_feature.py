@@ -25,8 +25,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
 from _paths import PROJECT_ROOT
 project_root = PROJECT_ROOT
 
-from src.config import RAW_IMAGES_DIR, FEATURES_DIR, AnalyzeConfig
+from src.config import RAW_IMAGES_DIR, FEATURES_DIR, MIRRORS_DIR, AnalyzeConfig, MirrorConfig
 from src.extractor.preprocess import PreprocessPipeline, ProcessedFace
+from src.extractor.mirror import MirrorGenerator
 from src.extractor.features.embedding import FeatureExtractor
 from src.extractor.features.asymmetry import calculate_differences
 
@@ -80,6 +81,16 @@ class FeaturePipeline:
         self.preprocess_config = AnalyzeConfig(
             n_select=n_select,
             save_intermediate=save_intermediate,
+        )
+
+        # 鏡射配置
+        self.mirror_config = self.preprocess_config.mirror
+        self.mirror_gen = MirrorGenerator(
+            method=self.mirror_config.mirror_method,
+            mirror_size=self.mirror_config.mirror_size,
+            feather_px=self.mirror_config.feather_px,
+            margin=self.mirror_config.margin,
+            midline_points=self.mirror_config.midline_points,
         )
         
 
@@ -326,7 +337,27 @@ class FeaturePipeline:
         if not processed_faces:
             logger.warning(f"{subject_id}: 預處理後沒有有效臉部")
             return None
-        
+
+        # 鏡射生成（獨立步驟）
+        left_images = []
+        right_images = []
+        for i, face in enumerate(processed_faces):
+            left, right = self.mirror_gen.generate(face.aligned, face.landmarks)
+            left_images.append(left)
+            right_images.append(right)
+
+            # 儲存鏡射結果
+            if self.preprocess_config.save_intermediate and subject_id:
+                save_dir = MIRRORS_DIR / subject_id
+                save_dir.mkdir(parents=True, exist_ok=True)
+                base_name = face.metadata.get("path")
+                if base_name:
+                    base_name = Path(base_name).stem
+                else:
+                    base_name = f"face_{i:03d}"
+                cv2.imwrite(str(save_dir / f"{base_name}_left.png"), left)
+                cv2.imwrite(str(save_dir / f"{base_name}_right.png"), right)
+
         # feature_type 到 methods 參數的對應
         FTYPE_TO_METHOD = {
             "difference": "differences",
@@ -335,21 +366,17 @@ class FeaturePipeline:
             "relative_differences": "relative_differences",
             "absolute_relative_differences": "absolute_relative_differences",
         }
-        
+
         # 提取特徵
         subject_features = {}
-        
+
         for model in self.embedding_models:
             if model not in extractor.available_models:
                 continue
-            
-            model_features = {}
-            
-            try:
 
-                # 收集所有左右臉影像
-                left_images = [face.left_mirror for face in processed_faces]
-                right_images = [face.right_mirror for face in processed_faces]
+            model_features = {}
+
+            try:
                 
                 # 批次提取特徵
                 left_dict = extractor.extract_features(left_images, model)

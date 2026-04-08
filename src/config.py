@@ -79,6 +79,17 @@ def get_raw_images_subdir(group: str) -> Path:
 # =============================================================================
 
 @dataclass
+class MirrorConfig:
+    """鏡射生成配置"""
+
+    mirror_method: str = "flip"  # "midline" (沿臉部中線) 或 "flip" (水平翻轉)
+    mirror_size: Tuple[int, int] = (512, 512)  # 輸出鏡射影像大小
+    feather_px: int = 2  # 邊緣羽化像素
+    margin: float = 0.08  # 畫布邊緣留白比例
+    midline_points: Tuple[int, ...] = (10, 168, 4, 2)  # 臉部中軸線特徵點索引
+
+
+@dataclass
 class PreprocessConfig:
     """共用預處理配置"""
 
@@ -88,15 +99,6 @@ class PreprocessConfig:
     # ========== 相片選擇參數 ==========
     n_select: int = 10  # 選擇多少張最正的臉部相片
     detection_confidence: float = 0.5  # MediaPipe 偵測信心度閾值
-
-    # ========== 角度校正參數 ==========
-    align_face: bool = True  # 是否校正角度
-
-    # ========== 鏡射參數 ==========
-    mirror_method: str = "flip"  # "midline" (沿臉部中線) 或 "flip" (水平翻轉)
-    mirror_size: Tuple[int, int] = (512, 512)  # 輸出鏡射影像大小
-    feather_px: int = 2  # 邊緣羽化像素
-    margin: float = 0.08  # 畫布邊緣留白比例
 
     # ========== CLAHE 參數 ==========
     apply_clahe: bool = False  # 是否應用 CLAHE
@@ -112,7 +114,6 @@ class PreprocessConfig:
         default_factory=lambda: [
             "select",  # 選擇最正面的 n 張
             "align",   # 角度校正
-            "mirror",  # 生成左右鏡射
         ]
     )
 
@@ -130,3 +131,4 @@ class AnalyzeConfig(PreprocessConfig):
     """Analyze 配置"""
 
     save_intermediate: bool = True  # Analyze 預設儲存
+    mirror: MirrorConfig = field(default_factory=MirrorConfig)

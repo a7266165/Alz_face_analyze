@@ -74,7 +74,7 @@ class FaceDetector:
             self.face_mesh.close()
             self.face_mesh = None
 
-    def detect_batch(
+    def detect_face_batch(
         self,
         images: List[np.ndarray],
         paths: Optional[List[Path]] = None
@@ -92,7 +92,7 @@ class FaceDetector:
         face_infos = []
 
         for i, image in enumerate(images):
-            face_info = self.detect_single(
+            face_info = self._detect_face_single(
                 image,
                 path=paths[i] if paths else None,
                 index=i
@@ -102,7 +102,7 @@ class FaceDetector:
 
         return face_infos
 
-    def detect_single(
+    def _detect_face_single(
         self,
         image: np.ndarray,
         path: Optional[Path] = None,
@@ -143,31 +143,6 @@ class FaceDetector:
             index=index,
         )
 
-    def redetect_landmarks(
-        self,
-        image: np.ndarray
-    ) -> Optional[np.ndarray]:
-        """
-        重新偵測影像的臉部特徵點
-
-        用於影像經過處理（如旋轉）後需要更新特徵點
-
-        Args:
-            image: BGR 格式的影像
-
-        Returns:
-            特徵點陣列 (468, 2)，若未偵測到則返回 None
-        """
-        rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        results = self.face_mesh.process(rgb_image)
-
-        if not results.multi_face_landmarks:
-            return None
-
-        return self._landmarks_to_array(
-            results.multi_face_landmarks[0],
-            image.shape
-        )
 
     def _landmarks_to_array(
         self,

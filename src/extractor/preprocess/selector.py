@@ -28,7 +28,7 @@ class FaceSelector:
         """
         self.n_select = n_select
 
-    def select_best(self, face_infos: List[FaceInfo]) -> List[FaceInfo]:
+    def select_most_frontal(self, face_infos: List[FaceInfo]) -> List[FaceInfo]:
         """
         選擇最正面的 n 張臉
 
