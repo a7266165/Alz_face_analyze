@@ -78,7 +78,7 @@ class LibreFaceExtractor(BaseAUExtractor):
 
     def __init__(self, device: str = "cpu"):
         self._available = None
-        self.device = device
+        self._device = device
 
     @property
     def tool_name(self) -> str:
@@ -154,7 +154,7 @@ class LibreFaceExtractor(BaseAUExtractor):
             import libreface
 
             attrs = libreface.get_facial_attributes_image(
-                image_path, device=self.device,
+                image_path, device=self._device,
                 weights_download_dir=str(LIBREFACE_WEIGHTS_DIR),
             )
             result = {}

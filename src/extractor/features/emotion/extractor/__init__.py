@@ -10,7 +10,6 @@ from .openface import OpenFaceExtractor
 from .libreface import LibreFaceExtractor
 from .pyfeat import PyFeatExtractor
 from .poster_pp import PosterPPExtractor
-from .gaze import GazeFeatureExtractor
 from .dan import DANExtractor
 from .emonet import EmoNetExtractor
 from .emonext import EmoNeXtExtractor
@@ -26,7 +25,6 @@ __all__ = [
     "LibreFaceExtractor",
     "PyFeatExtractor",
     "PosterPPExtractor",
-    "GazeFeatureExtractor",
     "DANExtractor",
     "EmoNetExtractor",
     "EmoNeXtExtractor",

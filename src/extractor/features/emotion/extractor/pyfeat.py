@@ -30,7 +30,7 @@ class PyFeatExtractor(BaseAUExtractor):
     def __init__(self, device: str = "cpu", **kwargs):
         self._detector = None
         self._available = None
-        self.device = device
+        self._device = device
 
     @property
     def tool_name(self) -> str:
@@ -64,8 +64,8 @@ class PyFeatExtractor(BaseAUExtractor):
         if self._detector is None:
             from feat import Detector
             logger.info("載入 Py-Feat Detector...")
-            self._detector = Detector(device=self.device)
-            logger.info(f"Py-Feat Detector 載入完成 (device={self.device})")
+            self._detector = Detector(device=self._device)
+            logger.info(f"Py-Feat Detector 載入完成 (device={self._device})")
         return self._detector
 
     def extract_frame(self, image: np.ndarray) -> Optional[Dict[str, float]]:

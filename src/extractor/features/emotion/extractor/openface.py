@@ -42,8 +42,8 @@ class OpenFaceExtractor(BaseAUExtractor):
         device: Optional[str] = None,
     ):
         config = AUExtractionConfig()
-        self.weights_dir = Path(weights_dir or config.openface_weights_dir)
-        self.device = device or config.openface_device
+        self._weights_dir = Path(weights_dir or config.openface_weights_dir)
+        self._device = device or config.openface_device
         self._detector = None
         self._predictor = None
         self._available = None
@@ -69,12 +69,12 @@ class OpenFaceExtractor(BaseAUExtractor):
             return self._available
         try:
             import openface  # noqa: F401
-            retina_path = self.weights_dir / "Alignment_RetinaFace.pth"
-            mtl_path = self.weights_dir / "MTL_backbone.pth"
+            retina_path = self._weights_dir / "Alignment_RetinaFace.pth"
+            mtl_path = self._weights_dir / "MTL_backbone.pth"
             if not retina_path.exists() or not mtl_path.exists():
                 logger.warning(
-                    f"OpenFace 權重不存在: {self.weights_dir}\n"
-                    f"  請執行: openface download --output {self.weights_dir}"
+                    f"OpenFace 權重不存在: {self._weights_dir}\n"
+                    f"  請執行: openface download --output {self._weights_dir}"
                 )
                 self._available = False
             else:
@@ -92,15 +92,15 @@ class OpenFaceExtractor(BaseAUExtractor):
         from openface.face_detection import FaceDetector
         from openface.multitask_model import MultitaskPredictor
 
-        retina_path = str(self.weights_dir / "Alignment_RetinaFace.pth")
-        mtl_path = str(self.weights_dir / "MTL_backbone.pth")
+        retina_path = str(self._weights_dir / "Alignment_RetinaFace.pth")
+        mtl_path = str(self._weights_dir / "MTL_backbone.pth")
 
-        logger.info(f"載入 OpenFace 3.0 模型（device={self.device}）...")
+        logger.info(f"載入 OpenFace 3.0 模型（device={self._device}）...")
         self._detector = FaceDetector(
-            model_path=retina_path, device=self.device
+            model_path=retina_path, device=self._device
         )
         self._predictor = MultitaskPredictor(
-            model_path=mtl_path, device=self.device
+            model_path=mtl_path, device=self._device
         )
         logger.info("OpenFace 3.0 模型載入完成")
 
