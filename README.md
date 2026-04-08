@@ -178,7 +178,7 @@ scripts/pipeline/predict_ages.py
 ├── scan_subjects()                         ← 掃描 health/ACS, health/NAD, patient/
 ├── load_images()                           ← 載入每個受試者的前 N 張圖
 │
-└── src/modules/age/predictor.py
+└── src/extractor/features/age/predictor.py
         └── MiVOLOPredictor
             ├── __init__()
             ├── initialize()                ← 載入 MiVOLO v2 模型 (HuggingFace)
@@ -208,7 +208,7 @@ scripts/pipeline/prepare_feature.py
         │
         ├── _get_processed_subjects()       ← 斷點續傳：檢查已處理的受試者
         │
-        ├── src/modules/embedding/           ← 嵌入向量萃取子模組
+        ├── src/extractor/features/embedding/           ← 嵌入向量萃取子模組
         │       ├── feature_extractor.py
         │       │   └── FeatureExtractor    ← Singleton + 類別級 Registry
         │       │       ├── @register()     ← 裝飾器註冊 extractor
@@ -237,7 +237,7 @@ scripts/pipeline/prepare_feature.py
                 │           ├── mirror_method = "flip"
                 │           └── steps = ["select", "align", "mirror"]
                 │
-                ├── src/modules/preprocess/          ← 臉部預處理子模組
+                ├── src/extractor/preprocess/          ← 臉部預處理子模組
                 │       │
                 │       ├── detector.py
                 │       │   └── FaceDetector        ← MediaPipe 人臉偵測
@@ -283,7 +283,7 @@ scripts/pipeline/prepare_feature.py
                 │                           ↓
                 │                   ProcessedFace(aligned, left_mirror, right_mirror)
                 │
-                ├── src/modules/embedding/
+                ├── src/extractor/features/embedding/
                 │       └── FeatureExtractor
                 │           │
                 │           ├── extract_features()                      ← 批次提取特徵
@@ -321,7 +321,7 @@ scripts/pipeline/run_analyze.py
                 │
                 ├── _load_datasets()
                 │       │
-                │       └── src/analysis/loader/            ← 資料載入子模組
+                │       └── src/meta_analysis/loader/            ← 資料載入子模組
                 │               │
                 │               ├── base.py
                 │               │   └── Dataset             ← 資料集封裝 dataclass
@@ -364,7 +364,7 @@ scripts/pipeline/run_analyze.py
                 │
                 ├── _train_models()
                 │       │
-                │       └── src/analysis/analyzer/          ← 分析器子模組
+                │       └── src/meta_analysis/classifier/          ← 分析器子模組
                 │               │
                 │               ├── __init__.py
                 │               │   └── create_analyzer()   ← 工廠函數
@@ -410,7 +410,7 @@ scripts/pipeline/run_analyze.py
                 │
                 ├── _plot_results()
                 │       │
-                │       └── src/analysis/plotter.py
+                │       └── src/meta_analysis/evaluation/plotter.py
                 │               └── ResultPlotter
                 │                   └── plot_by_n_features()    ← 按特徵數趨勢
                 │                           │
@@ -525,9 +525,9 @@ scripts/pipeline/run_meta_analysis.py
 | `mediapipe_utils.py` | — | 統一 landmark 常數 (midline, bilateral, rotation) |
 | `metrics.py` | `MetricsCalculator` | 評估指標計算 |
 
-### src/modules/
+### src/extractor/
 
-#### src/modules/preprocess/ (臉部預處理)
+#### src/extractor/preprocess/ (臉部預處理)
 
 | 檔案 | 類別 | 功能 |
 |------|------|------|
@@ -539,63 +539,18 @@ scripts/pipeline/run_meta_analysis.py
 | | `FaceInfo` | 單張臉部資訊 dataclass |
 | | `ProcessedFace` | 處理後臉部資料 dataclass |
 
-#### src/modules/embedding/ (嵌入向量萃取)
+#### src/extractor/features/embedding/ (嵌入向量萃取)
 
 | 檔案 | 類別/函式 | 功能 |
 |------|-----------|------|
 | `base.py` | `BaseExtractor` | ABC 基底類別 |
 | `feature_extractor.py` | `FeatureExtractor` | Singleton + 類別級 Registry、懶載入、批次提取 |
-| `feature_ops.py` | `calculate_differences()` | 計算左右特徵差異 (5 種方法) |
-| | `add_demographics()` | 加入年齡/性別人口學特徵 |
 | `dlib_extractor.py` | `DlibExtractor` | Dlib 128維特徵 |
 | `arcface_extractor.py` | `ArcFaceExtractor` | ArcFace/InsightFace 512維特徵 |
 | `topofr_extractor.py` | `TopoFRExtractor` | TopoFR 512維特徵 |
 | `vggface_extractor.py` | `VGGFaceExtractor` | VGGFace 4096維特徵 |
 
-### src/analysis/
-
-#### src/analysis/loader/ (資料載入子模組)
-
-| 檔案 | 類別 | 功能 |
-|------|------|------|
-| `base.py` | `Dataset` | 資料集封裝 dataclass |
-| | `DataLoaderProtocol` | Protocol 定義 |
-| `balancer.py` | `DataBalancer` | 年齡分層平衡 |
-| `data_loader.py` | `DataLoader` | 主類別：載入、篩選、平衡 |
-| `au_dataset.py` | `AUDatasetLoader` | AU 特徵資料集載入 |
-
-#### src/analysis/analyzer/ (分析器子模組)
-
-| 檔案 | 類別 | 功能 |
-|------|------|------|
-| `__init__.py` | `create_analyzer()` | 工廠函數，依類型建立分析器 |
-| | `ANALYZER_REGISTRY` | 分析器註冊表 |
-| `base.py` | `BaseAnalyzer` | ABC 基底類別 |
-| `xgboost_analyzer.py` | `XGBoostAnalyzer` | XGBoost K-fold CV、特徵選擇 |
-| `logistic_analyzer.py` | `LogisticAnalyzer` | Logistic Regression、係數重要性 |
-| `tabpfn_analyzer.py` | `TabPFNAnalyzer` | TabPFN、permutation importance |
-
-#### src/analysis/ (其他分析工具)
-
-| 檔案 | 類別 | 功能 |
-|------|------|------|
-| `plotter.py` | `ResultPlotter` | 結果視覺化 (按特徵數趨勢圖) |
-| `shap_explainer.py` | `AUSHAPExplainer` | SHAP 可解釋性分析 |
-| `cross_tool_comparison.py` | `CrossToolComparator` | 跨工具 AU/情緒一致性比較 |
-
-### src/meta_analysis/ (Meta 分析模組)
-
-| 檔案 | 類別 | 功能 |
-|------|------|------|
-| `config.py` | `MetaConfig` | Meta 分析設定 (模型、方法、fold 數) |
-| `pipeline.py` | `MetaPipeline` | 遍歷 model × n_features 組合執行分析 |
-| `data/dataset.py` | `MetaDataset` | 14 特徵資料集 dataclass |
-| `data/loader.py` | `MetaDataLoader` | 載入 LR 分數 + emotion + 年齡 → 合併 |
-| `model/trainer.py` | `TabPFNMetaTrainer` | GroupKFold CV 訓練 TabPFN |
-| | `TrainResult` | 訓練結果 dataclass |
-| `model/evaluator.py` | `MetaEvaluator` | 指標計算、fold 聚合、報告格式化 |
-
-#### src/modules/age/ (年齡預測)
+#### src/extractor/features/age/ (年齡預測)
 
 | 檔案 | 類別/函式 | 功能 |
 |------|-----------|------|
@@ -604,7 +559,7 @@ scripts/pipeline/run_meta_analysis.py
 | | `MeanCorrector` | Mean 年齡誤差校正 |
 | | `CalibrationModel` | 校正模型基底 |
 
-#### src/modules/emotion/ (情緒/AU 分析)
+#### src/extractor/features/emotion/ (情緒/AU 分析)
 
 | 檔案 | 類別/函式 | 功能 |
 |------|-----------|------|
@@ -617,13 +572,15 @@ scripts/pipeline/run_meta_analysis.py
 | `postprocess/harmonizer.py` | `AUHarmonizer` | 跨工具 AU 標準化 |
 | `postprocess/aggregator.py` | `TemporalAggregator` | 時序統計聚合 |
 
-#### src/modules/asymmetry/ (面部不對稱性)
+#### src/extractor/features/asymmetry/ (面部不對稱性)
 
-| 檔案 | 類別 | 功能 |
-|------|------|------|
+| 檔案 | 類別/函式 | 功能 |
+|------|-----------|------|
 | `landmark_asymmetry.py` | `LandmarkAsymmetryAnalyzer` | 點/線/三角面積不對稱計算 |
+| `feature_ops.py` | `calculate_differences()` | 計算左右特徵差異 (5 種方法) |
+| | `add_demographics()` | 加入年齡/性別人口學特徵 |
 
-#### src/modules/rotation/ (頭部旋轉)
+#### src/extractor/features/rotation/ (頭部旋轉)
 
 | 檔案 | 類別/函式 | 功能 |
 |------|-----------|------|
@@ -632,6 +589,47 @@ scripts/pipeline/run_meta_analysis.py
 | `features.py` | `extract_rotation_features()` | 從角度序列提取統計特徵 |
 | `plotter.py` | `AnglePlotter` | 角度訊號圖繪製 |
 | | `process_single_folder()` | 雙方法批次處理 |
+
+### src/meta_analysis/ (分析模組)
+
+#### src/meta_analysis/loader/ (資料載入)
+
+| 檔案 | 類別 | 功能 |
+|------|------|------|
+| `base.py` | `Dataset` | 資料集封裝 dataclass |
+| | `DataLoaderProtocol` | Protocol 定義 |
+| `balancer.py` | `DataBalancer` | 年齡分層平衡 |
+| `embedding.py` | `DataLoader` | Embedding .npy 載入、篩選、平衡 |
+| `au_dataset.py` | `AUDatasetLoader` | AU 特徵資料集載入 |
+| `meta.py` | `MetaDataLoader` | 載入 LR 分數 + emotion + 年齡 → 合併 |
+| `dataset.py` | `MetaDataset` | 14 特徵資料集 dataclass |
+
+#### src/meta_analysis/classifier/ (Base-level 分類器)
+
+| 檔案 | 類別 | 功能 |
+|------|------|------|
+| `__init__.py` | `create_analyzer()` | 工廠函數，依類型建立分析器 |
+| `base.py` | `BaseAnalyzer` | ABC 基底類別 (K-fold CV) |
+| `xgboost.py` | `XGBoostAnalyzer` | XGBoost K-fold CV、特徵選擇 |
+| `logistic.py` | `LogisticAnalyzer` | Logistic Regression、係數重要性 |
+| `tabpfn.py` | `TabPFNAnalyzer` | TabPFN、permutation importance |
+
+#### src/meta_analysis/stacking/ (Meta-level stacking)
+
+| 檔案 | 類別 | 功能 |
+|------|------|------|
+| `config.py` | `MetaConfig` | Meta 分析設定 (模型、方法、fold 數) |
+| `pipeline.py` | `MetaPipeline` | 遍歷 model × n_features 組合執行分析 |
+| `trainer.py` | `TabPFNMetaTrainer` | GroupKFold CV 訓練 TabPFN |
+| `evaluator.py` | `MetaEvaluator` | 指標計算、fold 聚合、報告格式化 |
+
+#### src/meta_analysis/evaluation/ (評估工具)
+
+| 檔案 | 類別 | 功能 |
+|------|------|------|
+| `plotter.py` | `ResultPlotter` | 結果視覺化 (按特徵數趨勢圖) |
+| `shap_explainer.py` | `AUSHAPExplainer` | SHAP 可解釋性分析 |
+| `cross_tool_comparison.py` | `CrossToolComparator` | 跨工具 AU/情緒一致性比較 |
 
 ---
 

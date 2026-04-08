@@ -28,7 +28,7 @@ import fitz  # PyMuPDF
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
 from _paths import PROJECT_ROOT
 
-from src.modules.emotion.extractor.au_config import AU_ANALYSIS_DIR
+from src.extractor.features.emotion.extractor.au_config import AU_ANALYSIS_DIR
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)

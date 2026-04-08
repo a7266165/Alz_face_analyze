@@ -14,8 +14,8 @@ from datetime import datetime
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
 from _paths import PROJECT_ROOT
 
-from src.modules.rotation import VectorAngleCalculator, PnPAngleCalculator
-from src.modules.rotation.plotter import AnglePlotter, process_single_folder
+from src.extractor.features.rotation import VectorAngleCalculator, PnPAngleCalculator
+from src.extractor.features.rotation.plotter import AnglePlotter, process_single_folder
 from src.config import RAW_IMAGES_DIR
 
 

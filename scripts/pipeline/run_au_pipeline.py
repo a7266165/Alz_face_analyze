@@ -20,9 +20,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
 from _paths import PROJECT_ROOT
 
 from src.config import ALIGNED_DIR
-from src.modules.emotion.extractor.au_config import AU_RAW_DIR, AUExtractionConfig
-from src.modules.emotion.postprocess.harmonizer import AUHarmonizer
-from src.modules.emotion.postprocess.aggregator import TemporalAggregator
+from src.extractor.features.emotion.extractor.au_config import AU_RAW_DIR, AUExtractionConfig
+from src.extractor.features.emotion.postprocess.harmonizer import AUHarmonizer
+from src.extractor.features.emotion.postprocess.aggregator import TemporalAggregator
 
 logging.basicConfig(
     level=logging.INFO,
@@ -39,16 +39,16 @@ ALL_STEPS = ["extract", "harmonize", "aggregate"]
 
 def _get_extractor_class(tool_name: str):
     if tool_name == "openface":
-        from src.modules.emotion.extractor.au.openface import OpenFaceExtractor
+        from src.extractor.features.emotion.extractor.au.openface import OpenFaceExtractor
         return OpenFaceExtractor
     elif tool_name == "pyfeat":
-        from src.modules.emotion.extractor.au.pyfeat import PyFeatExtractor
+        from src.extractor.features.emotion.extractor.au.pyfeat import PyFeatExtractor
         return PyFeatExtractor
     elif tool_name == "libreface":
-        from src.modules.emotion.extractor.au.libreface import LibreFaceExtractor
+        from src.extractor.features.emotion.extractor.au.libreface import LibreFaceExtractor
         return LibreFaceExtractor
     elif tool_name == "poster_pp":
-        from src.modules.emotion.extractor.au.poster_pp import PosterPPExtractor
+        from src.extractor.features.emotion.extractor.au.poster_pp import PosterPPExtractor
         return PosterPPExtractor
     return None
 

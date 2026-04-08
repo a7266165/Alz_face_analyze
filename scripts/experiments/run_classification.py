@@ -29,10 +29,10 @@ from scipy.spatial import KDTree
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
 from _paths import PROJECT_ROOT
 
-from src.modules.emotion.extractor.au_config import AU_AGGREGATED_DIR, AU_ANALYSIS_DIR
-from src.analysis.analyzer.xgboost_analyzer import XGBoostAnalyzer
-from src.analysis.loader.base import Dataset
-from src.analysis.shap_explainer import AUSHAPExplainer
+from src.extractor.features.emotion.extractor.au_config import AU_AGGREGATED_DIR, AU_ANALYSIS_DIR
+from src.meta_analysis.classifier.xgboost import XGBoostAnalyzer
+from src.meta_analysis.loader.base import Dataset
+from src.meta_analysis.evaluation.shap_explainer import AUSHAPExplainer
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)

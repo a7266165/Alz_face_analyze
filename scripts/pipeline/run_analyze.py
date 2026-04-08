@@ -20,9 +20,9 @@ from src.config import (
     WORKSPACE_DIR,
     PREDICTED_AGES_FILE,
 )
-from src.analysis.loader import DataLoader
-from src.analysis.analyzer import create_analyzer, AnalyzerType
-from src.analysis.plotter import ResultPlotter
+from src.meta_analysis.loader import DataLoader
+from src.meta_analysis.classifier import create_analyzer, AnalyzerType
+from src.meta_analysis.evaluation.plotter import ResultPlotter
 
 # 設定日誌
 logging.basicConfig(

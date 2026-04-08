@@ -1,1 +1,0 @@
-from .landmark_asymmetry import LandmarkAsymmetryAnalyzer

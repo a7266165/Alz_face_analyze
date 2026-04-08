@@ -24,7 +24,7 @@ import seaborn as sns
 from collections import defaultdict
 from tqdm import tqdm
 
-from src.modules.emotion.extractor.au_config import HARMONIZED_EMOTIONS, AU_RAW_DIR, AU_ANALYSIS_DIR
+from src.extractor.features.emotion.extractor.au_config import HARMONIZED_EMOTIONS, AU_RAW_DIR, AU_ANALYSIS_DIR
 
 # ── 設定 ──
 MODELS = ["pyfeat", "poster_pp", "fer", "dan", "hsemotion", "vit"]
