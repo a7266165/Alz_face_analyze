@@ -94,10 +94,26 @@ class OpenFaceExtractor(BaseAUExtractor):
         retina_path = str(self._weights_dir / "Alignment_RetinaFace.pth")
         mtl_path = str(self._weights_dir / "MTL_backbone.pth")
 
+        # openface 的 RetinaFace 內部 hardcode 了
+        # "./weights/mobilenetV1X0.25_pretrain.tar"，
+        # monkey-patch torch.load 重導到實際路徑
+        mobilenet_path = str(self._weights_dir / "mobilenetV1X0.25_pretrain.tar")
+        original_torch_load = torch.load
+
+        def patched_load(f, *args, **kwargs):
+            if isinstance(f, str) and "mobilenetV1X0.25_pretrain.tar" in f:
+                f = mobilenet_path
+            return original_torch_load(f, *args, **kwargs)
+
         logger.info(f"載入 OpenFace 3.0 模型（device={self._device}）...")
-        self._detector = FaceDetector(
-            model_path=retina_path, device=self._device
-        )
+        try:
+            torch.load = patched_load
+            self._detector = FaceDetector(
+                model_path=retina_path, device=self._device
+            )
+        finally:
+            torch.load = original_torch_load
+
         self._predictor = MultitaskPredictor(
             model_path=mtl_path, device=self._device
         )

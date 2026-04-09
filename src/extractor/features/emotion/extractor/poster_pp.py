@@ -24,12 +24,13 @@ from .base import BaseAUExtractor
 from src.extractor.features.emotion.extractor.au_config import (
     POSTER_PP_EMOTION_INDEX,
     POSTER_PP_WEIGHTS_DIR,
+    WEIGHTS_DIR,
 )
 
 logger = logging.getLogger(__name__)
 
-# POSTER_V2 repo 路徑
-_POSTER_V2_DIR = Path(__file__).resolve().parents[4] / "models" / "POSTER_V2"
+# POSTER_V2 repo 路徑（external/emotion/POSTER_V2）
+_POSTER_V2_DIR = WEIGHTS_DIR / "POSTER_V2"
 
 
 class PosterPPExtractor(BaseAUExtractor):
