@@ -60,9 +60,23 @@ class BaseAUExtractor(ABC):
         """
         ...
 
+    def _extract_from_path(self, image_path: Path) -> Optional[Dict[str, float]]:
+        """
+        從檔案路徑提取單幀特徵
+
+        預設：cv2.imread → extract_frame。
+        若 API 需要檔案路徑（如 OpenFace, LibreFace），子類可覆寫此方法
+        以避免不必要的暫存檔讀寫。
+        """
+        img = cv2.imread(str(image_path))
+        if img is None:
+            logger.warning(f"  無法載入: {image_path.name}")
+            return None
+        return self.extract_frame(img)
+
     def extract_subject(self, subject_dir: Path) -> Optional[pd.DataFrame]:
         """
-        提取單一受試者所有影像的 AU 特徵
+        提取單一受試者所有影像的特徵
 
         Args:
             subject_dir: 受試者影像目錄
@@ -82,12 +96,7 @@ class BaseAUExtractor(ABC):
 
         results = []
         for img_path in image_paths:
-            img = cv2.imread(str(img_path))
-            if img is None:
-                logger.warning(f"  無法載入: {img_path.name}")
-                continue
-
-            frame_data = self.extract_frame(img)
+            frame_data = self._extract_from_path(img_path)
             if frame_data is not None:
                 frame_data["frame"] = img_path.stem
                 results.append(frame_data)
@@ -97,7 +106,6 @@ class BaseAUExtractor(ABC):
             return None
 
         df = pd.DataFrame(results)
-        # 將 frame 移到第一欄
         cols = ["frame"] + [c for c in df.columns if c != "frame"]
         return df[cols]
 

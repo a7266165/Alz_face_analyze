@@ -117,38 +117,15 @@ class LibreFaceExtractor(BaseAUExtractor):
             cv2.imwrite(tmp_path, image)
 
         try:
-            return self._extract_from_path(tmp_path)
+            return self._do_extract(tmp_path)
         finally:
             Path(tmp_path).unlink(missing_ok=True)
 
-    def extract_subject(self, subject_dir: Path) -> Optional[pd.DataFrame]:
-        """直接使用檔案路徑提取"""
-        image_paths = sorted(
-            [p for p in subject_dir.iterdir()
-             if p.suffix.lower() in (".jpg", ".jpeg", ".png", ".bmp")],
-            key=lambda p: p.name,
-        )
+    def _extract_from_path(self, image_path: Path) -> Optional[Dict[str, float]]:
+        """直接使用檔案路徑提取，避免不必要的暫存"""
+        return self._do_extract(str(image_path))
 
-        if not image_paths:
-            logger.warning(f"  {subject_dir.name}: 沒有找到影像")
-            return None
-
-        results = []
-        for img_path in image_paths:
-            frame_data = self._extract_from_path(str(img_path))
-            if frame_data is not None:
-                frame_data["frame"] = img_path.stem
-                results.append(frame_data)
-
-        if not results:
-            logger.warning(f"  {subject_dir.name}: 沒有成功提取任何幀")
-            return None
-
-        df = pd.DataFrame(results)
-        cols = ["frame"] + [c for c in df.columns if c != "frame"]
-        return df[cols]
-
-    def _extract_from_path(self, image_path: str) -> Optional[Dict[str, float]]:
+    def _do_extract(self, image_path: str) -> Optional[Dict[str, float]]:
         """從檔案路徑提取所有特徵（單次 API 呼叫）"""
         try:
             import libreface
