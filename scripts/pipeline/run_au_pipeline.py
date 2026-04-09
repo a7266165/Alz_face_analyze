@@ -56,15 +56,9 @@ def _get_extractor_class(tool_name: str):
     elif tool_name == "emonet":
         from src.extractor.features.emotion.extractor.emonet import EmoNetExtractor
         return EmoNetExtractor
-    elif tool_name == "emonext":
-        from src.extractor.features.emotion.extractor.emonext import EmoNeXtExtractor
-        return EmoNeXtExtractor
     elif tool_name == "fer":
         from src.extractor.features.emotion.extractor.fer_extractor import FERExtractor
         return FERExtractor
-    elif tool_name == "fer_former":
-        from src.extractor.features.emotion.extractor.fer_former import FERFormerExtractor
-        return FERFormerExtractor
     elif tool_name == "hsemotion":
         from src.extractor.features.emotion.extractor.hsemotion import HSEmotionExtractor
         return HSEmotionExtractor
@@ -171,7 +165,7 @@ def main():
     parser.add_argument(
         "--tools", nargs="+", default=None,
         choices=["openface", "pyfeat", "libreface", "poster_pp",
-                 "dan", "emonet", "emonext", "fer", "fer_former", "hsemotion", "vit"],
+                 "dan", "emonet", "fer", "hsemotion", "vit"],
         help="指定工具（預設依 config）",
     )
     parser.add_argument(

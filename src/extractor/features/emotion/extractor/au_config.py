@@ -292,38 +292,6 @@ EMONET_EMOTION_MAP: Dict[str, str] = {
 }
 
 # =============================================================================
-# EmoNeXt 欄位對映
-# =============================================================================
-
-EMONEXT_AU_MAP: Dict[str, str] = {}
-
-EMONEXT_EMOTION_MAP: Dict[str, str] = {
-    "anger": "anger",
-    "disgust": "disgust",
-    "fear": "fear",
-    "happiness": "happiness",
-    "sadness": "sadness",
-    "surprise": "surprise",
-    "neutral": "neutral",
-}
-
-# =============================================================================
-# FER-former 欄位對映
-# =============================================================================
-
-FER_FORMER_AU_MAP: Dict[str, str] = {}
-
-FER_FORMER_EMOTION_MAP: Dict[str, str] = {
-    "anger": "anger",
-    "disgust": "disgust",
-    "fear": "fear",
-    "happiness": "happiness",
-    "sadness": "sadness",
-    "surprise": "surprise",
-    "neutral": "neutral",
-}
-
-# =============================================================================
 # 量綱轉換
 # =============================================================================
 
@@ -340,8 +308,6 @@ AU_SCALE_INFO = {
     "hsemotion": {"min": 0.0, "max": 1.0, "type": "softmax"},
     "vit": {"min": 0.0, "max": 1.0, "type": "softmax"},
     "emonet": {"min": 0.0, "max": 1.0, "type": "softmax"},
-    "emonext": {"min": 0.0, "max": 1.0, "type": "softmax"},
-    "fer_former": {"min": 0.0, "max": 1.0, "type": "softmax"},
 }
 
 # =============================================================================
@@ -365,8 +331,6 @@ DAN_DIR = WEIGHTS_DIR / "DAN"
 DAN_WEIGHTS_DIR = WEIGHTS_DIR / "dan_weights"
 EMONET_DIR = WEIGHTS_DIR / "emonet"
 EMONET_WEIGHTS_DIR = EMONET_DIR / "pretrained"
-EMONEXT_DIR = WEIGHTS_DIR / "EmoNeXt"
-FER_FORMER_DIR = WEIGHTS_DIR / "FER-former"
 
 # =============================================================================
 # 提取配置 Dataclass

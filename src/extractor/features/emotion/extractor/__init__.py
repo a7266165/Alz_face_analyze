@@ -12,9 +12,7 @@ from .pyfeat import PyFeatExtractor
 from .poster_pp import PosterPPExtractor
 from .dan import DANExtractor
 from .emonet import EmoNetExtractor
-from .emonext import EmoNeXtExtractor
 from .fer_extractor import FERExtractor
-from .fer_former import FERFormerExtractor
 from .hsemotion import HSEmotionExtractor
 from .vit import ViTExtractor
 
@@ -27,9 +25,7 @@ __all__ = [
     "PosterPPExtractor",
     "DANExtractor",
     "EmoNetExtractor",
-    "EmoNeXtExtractor",
     "FERExtractor",
-    "FERFormerExtractor",
     "HSEmotionExtractor",
     "ViTExtractor",
 ]
