@@ -540,8 +540,20 @@ def _build_longitudinal_cohort_hc(hc_source, demo, caliper, seed, do_match=True)
             f"build_longitudinal_hc_and_vectors.py first")
     hc_delta_all = pd.read_csv(HC_LONGITUDINAL_CSV)
 
+    # External EACS delta（當 HC_SOURCE_MODE 指定 ACS_ext / EACS）
+    eacs_csv = (PROJECT_ROOT / "workspace" / "longitudinal" /
+                 "eacs_patient_deltas.csv")
+    if HC_SOURCE_MODE in ("ACS_ext", "EACS") and eacs_csv.exists():
+        eacs_delta_all = pd.read_csv(eacs_csv)
+        eacs_delta_all["group"] = "ACS"  # 併入 ACS 群
+        if HC_SOURCE_MODE == "EACS":
+            hc_delta_all = eacs_delta_all
+        else:
+            hc_delta_all = pd.concat([hc_delta_all, eacs_delta_all],
+                                       ignore_index=True, sort=False)
+
     # Filter by requested HC subgroup + strict HC criteria (CDR=0 or MMSE>=26
-    # in first visit)
+    # in first visit)；Source != "internal" 在 _strict_hc_filter 已自動 bypass
     hc_strict = _strict_hc_filter(demo, hc_source)
     allowed_base = set(hc_strict["base_id"])
     hc_delta = hc_delta_all[hc_delta_all["base_id"].isin(allowed_base)].copy()
