@@ -25,7 +25,7 @@ from scipy.spatial.distance import cosine as cosine_distance
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 DEMOGRAPHICS_DIR = PROJECT_ROOT / "data" / "demographics"
-EMOTION_DIR = PROJECT_ROOT / "workspace" / "emotion" / "features" / "aggregated"
+EMOTION_DIR = PROJECT_ROOT / "workspace" / "emotion" / "au_features" / "aggregated"
 AGE_FILE = PROJECT_ROOT / "workspace" / "age" / "age_prediction" / "predicted_ages.json"
 EMBEDDING_DIR = PROJECT_ROOT / "workspace" / "embedding" / "features"
 LANDMARK_FEATURES_CSV = PROJECT_ROOT / "workspace" / "asymmetry" / "features.csv"

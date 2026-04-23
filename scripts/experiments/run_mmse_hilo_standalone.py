@@ -31,7 +31,7 @@ import matplotlib.pyplot as plt
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEMOGRAPHICS_DIR = PROJECT_ROOT / "data" / "demographics"
 AGES_FILE = PROJECT_ROOT / "workspace" / "age" / "age_prediction" / "predicted_ages.json"
-EMOTION_DIR = PROJECT_ROOT / "workspace" / "emotion" / "features" / "aggregated"
+EMOTION_DIR = PROJECT_ROOT / "workspace" / "emotion" / "au_features" / "aggregated"
 LANDMARK_FEATURES_CSV = PROJECT_ROOT / "workspace" / "asymmetry" / "features.csv"
 EMBEDDING_DIFF_DIR = PROJECT_ROOT / "workspace" / "embedding" / "features"
 OUTPUT_DIR = PROJECT_ROOT / "workspace" / "age_ladder" / "mmse_hilo_standalone"

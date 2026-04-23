@@ -63,7 +63,7 @@ load_p_demographics = _arm_b.load_p_demographics
 # === Paths ===
 DEMOGRAPHICS_DIR = PROJECT_ROOT / "data" / "demographics"
 AGES_FILE = PROJECT_ROOT / "workspace" / "age" / "age_prediction" / "predicted_ages.json"
-EMOTION_DIR = PROJECT_ROOT / "workspace" / "emotion" / "features" / "aggregated"
+EMOTION_DIR = PROJECT_ROOT / "workspace" / "emotion" / "au_features" / "aggregated"
 LANDMARK_FEATURES_CSV = PROJECT_ROOT / "workspace" / "asymmetry" / "features.csv"
 EMBEDDING_DIR = PROJECT_ROOT / "workspace" / "embedding" / "features"
 LONGITUDINAL_CSV = PROJECT_ROOT / "workspace" / "longitudinal" / "patient_deltas.csv"

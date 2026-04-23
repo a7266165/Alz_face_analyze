@@ -26,7 +26,7 @@ from src.config import ALIGNED_DIR
 
 # ── 路徑 ──
 RAW_OUTPUT_DIR = PROJECT_ROOT / "workspace" / "au_features" / "raw"
-WEIGHTS_DIR = PROJECT_ROOT / "weights"
+WEIGHTS_DIR = PROJECT_ROOT / "external" / "emotion"
 
 HARMONIZED_COLS = ["anger", "disgust", "fear", "happiness", "sadness", "surprise", "neutral"]
 
@@ -57,13 +57,13 @@ class DANExtractor:
         if self.model is not None:
             return
         # Add DAN to path
-        dan_dir = PROJECT_ROOT / "models" / "DAN"
+        dan_dir = PROJECT_ROOT / "external" / "emotion" / "DAN"
         if str(dan_dir) not in sys.path:
             sys.path.insert(0, str(dan_dir))
         from networks.dan import DAN
 
         model = DAN(num_class=7, num_head=4, pretrained=False)
-        checkpoint_path = WEIGHTS_DIR / "dan" / "rafdb_epoch21_acc0.8970_bacc0.8272.pth"
+        checkpoint_path = WEIGHTS_DIR / "dan_weights" / "rafdb_epoch21_acc0.8970_bacc0.8272.pth"
         checkpoint = torch.load(str(checkpoint_path), map_location="cpu", weights_only=False)
         model.load_state_dict(checkpoint["model_state_dict"], strict=True)
         model = model.to(self.device)
