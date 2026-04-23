@@ -1,0 +1,34 @@
+name,category,size,age_range,asian_label,license,url,notes
+AFAD (Asian Face Age Dataset),A-Asian specific,164K+,15-40,全亞洲面孔,學術非商業,https://github.com/afad-dataset/tarball,年齡上限40無真正老人但全亞洲
+AAF (All-Age-Faces),A-Asian specific,13322,2-80,多數亞洲人,學術,https://github.com/JingchunCheng/All-Age-Faces-Dataset,可篩60+子集
+MegaAge-Asian,A-Asian specific,~40K,寬範圍,專門亞洲子集,非商業,https://mmlab.ie.cuhk.edu.hk/projects/MegaAge/,港中文出品有年齡分布標注
+Tsinghua-FED (清華面部表情庫),A-Asian specific,110人x8表情,含年輕+老年,中國人,學術需email申請,https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0231304,中國年輕與老年成人表情
+AFD (Asian Face Dataset),A-Asian specific,大規模,未知,亞洲面孔,學術,https://github.com/X-zhangyang/Asian-Face-Image-Dataset-AFD-dataset,大規模亞洲面孔
+Diverse Asian Facial Ages,A-Asian specific,未知,多年齡,亞洲面孔,未知,https://www.kaggle.com/datasets/leewanhung/diverse-asian-facial-ages,Kaggle需登入查看
+FairFace,B-General filterable,108K,0-70+,East Asian / SE Asian,CC BY 4.0,https://huggingface.co/datasets/HuggingFaceM4/FairFace,篩race+age最方便授權最好
+UTKFace,B-General filterable,20K+,0-116,Asian (race=2),非商業,https://susanqq.github.io/UTKFace/,篩race=2 + age>=60
+IMDB-WIKI,B-General filterable,500K+,0-100,無族群標注需自行分類,學術,https://data.vision.ee.ethz.ch/cvl/rrothe/imdb-wiki/,最大面孔資料集但無race標注
+IMDB-Clean,B-General filterable,清洗版,同IMDB-WIKI,無族群標注,MIT,https://github.com/yiminglin-ai/imdb-clean,IMDB-WIKI清洗版
+AgeDB,B-General filterable,16K,1-101,無族群標注,學術需申請,需向作者申請,in-the-wild有標注
+MORPH II,B-General filterable,55K,16-77,有族群標注但亞洲<1%,學術需申請,需向北卡大學申請,亞洲人極少
+FG-NET,B-General filterable,1K,0-69,無族群標注以歐洲人為主,學術需申請,需申請,經典小型資料集
+CACD (Cross-Age Celebrity),B-General filterable,163K,14-62,無族群標注西方名人為主,學術,https://bcsiriuschen.github.io/CARC/,跨年齡名人
+APPA-REAL,B-General filterable,7.5K,0-95,無族群標注,學術,ChaLearn LAP,表觀年齡標注
+Adience,B-General filterable,中等,年齡分組,無族群標注,學術,Flickr來源,年齡分組標注
+ETRI-Activity3D,C-Activity/Health,影像+骨架,含老年人,韓國老年人,需向ETRI申請,需向ETRI申請,韓國老年人日常活動居家監測
+NTU RGB+D,C-Activity/Health,大規模,多年齡,部分亞洲人,學術,https://rose1.ntu.edu.sg/dataset/actionRecognition/,60類活動含跌倒等健康相關
+SZU-EmoDage,A-Asian specific,120人x6表情x年齡變體,10-70(含60-70),中國人,CC BY 4.0,https://osf.io/7a5fs/,AI合成中國面孔含老年變體可免費下載
+K-FACE,A-Asian specific,100萬+張(1000+人),20-50,韓國人,需註冊,http://kface.kist.re.kr,韓國面孔27姿勢35光照3表情
+LAOFIW,B-General filterable,~14K,含年齡標注,東亞子集,學術,https://www.robots.ox.ac.uk/~vgg/data/laofiw/,Oxford VGG出品含東亞祖源標注
+RFW,B-General filterable,~12K(每族群3K),未特別標注,亞洲子集,非商業,http://www.whdeng.cn/RFW/index.html,跨種族面孔驗證基準含亞洲子集
+CALFW,B-General filterable,6K pairs,跨年齡,無族群標注,學術,http://whdeng.cn/CALFW/index.html,跨年齡面孔驗證基準
+Face-Age-10K,B-General filterable,~9K,含56-65/66-80/80+,混合族群,見HuggingFace,https://huggingface.co/datasets/prithivMLmods/Face-Age-10K,含老年分組標注
+GIRAF,B-General filterable,186張(62人x3階段),18-35/36-64/65+,多膚色,開放,https://osf.io/vfn5c/,AI生成同一人三個年齡階段
+ADReFV,D-Dementia/Clinical,102段影片,老年,中國AD患者,聯繫作者,聯繫作者(Wiley論文),中國AD患者面部影片用於認知分類
+PROMPT Dataset,D-Dementia/Clinical,447段影片(117人),老年,日本失智患者,需倫理審查,聯繫慶應醫學院,日本失智+躁鬱+憂鬱+對照組
+東京大學AD面部資料集,D-Dementia/Clinical,238人,老年,日本老年人,聯繫作者,聯繫東京大學老年學研究所,AD vs 對照面部膚色分析準確率92.56%
+YT-DemTalk,D-Dementia/Clinical,300段影片,老年,混合(YouTube),學術,聯繫作者(arXiv 2511.13802),YouTube失智症影片AUROC 0.953
+DementiaBank,D-Dementia/Clinical,117 AD+93對照,老年,西方為主,開放需註冊,https://talkbank.org/dementia/access/,含影音轉錄的失智症語料庫
+ElderReact,E-Elderly Emotion,1323段影片(46人),50+,西方為主,學術需申請,https://github.com/Mayer123/ElderReact,老年人多模態情緒辨識
+FaceAge,F-Tool/Model,訓練58K+人,60+,含部分亞洲,開源,https://github.com/AIM-Harvard/FaceAge,生物年齡估計模型Lancet Digital Health 2025
+Park Aging Mind Face DB,B-General filterable,575張(158人70+),18-93,西方為主,學術,https://agingmind.utdallas.edu/download-stimuli/face-database/,專門設計老年人高佔比資料集

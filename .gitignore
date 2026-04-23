@@ -15,11 +15,17 @@ external/embedding/dlib/*
 !/external/embedding/dlib/download_dlib.py
 !external/emotion/
 external/emotion/*
+!external/public_face_datasets/
+external/public_face_datasets/*
+!external/public_face_datasets/README.md
+!external/public_face_datasets/DOWNLOAD_STATUS.md
+!external/public_face_datasets/asian_elderly_datasets.csv
 
 /data/*
 !/data/demographics/
 /data/demographics/*
 !/data/demographics/_details.txt
+!/data/demographics/EACS.csv
 
 !/data/images/ 
 /data/images/*                        

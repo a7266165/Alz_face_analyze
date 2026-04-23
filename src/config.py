@@ -32,6 +32,11 @@ RAW_IMAGES_DIR = Path(_RAW_PATH_FILE.read_text(encoding="utf-8").strip())
 # 外部依賴目錄
 EXTERNAL_DIR = PROJECT_ROOT / "external"
 
+# 公開人臉資料集（ACS 擴充）
+EXTERNAL_PUBLIC_FACE_DIR = EXTERNAL_DIR / "public_face_datasets"
+EXTERNAL_DATASETS_DIR = EXTERNAL_PUBLIC_FACE_DIR / "datasets"
+EXTERNAL_FILTERED_DIR = EXTERNAL_PUBLIC_FACE_DIR / "filtered"
+
 # 工作區路徑（按模組分類）
 WORKSPACE_DIR = PROJECT_ROOT / "workspace"
 
@@ -65,6 +70,8 @@ def get_raw_images_subdir(group: str) -> Path:
     Returns:
         完整路徑
     """
+    if group == "EACS":
+        return EXTERNAL_FILTERED_DIR
     group_mapping = {
         "ACS": "health/ACS",
         "NAD": "health/NAD",
