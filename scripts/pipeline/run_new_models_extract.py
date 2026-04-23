@@ -168,11 +168,14 @@ def get_subject_dirs(input_dir: Path) -> List[Path]:
     return sorted([d for d in input_dir.iterdir() if d.is_dir()])
 
 
-def extract_tool(tool_name: str, device: str):
+def extract_tool(tool_name: str, device: str, aligned_dir=None, subject_prefix=None):
     output_dir = RAW_OUTPUT_DIR / tool_name
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    subject_dirs = get_subject_dirs(ALIGNED_DIR)
+    aligned = aligned_dir if aligned_dir is not None else ALIGNED_DIR
+    subject_dirs = get_subject_dirs(aligned)
+    if subject_prefix:
+        subject_dirs = [d for d in subject_dirs if d.name.startswith(subject_prefix)]
     logger.info(f"[{tool_name}] 共 {len(subject_dirs)} 個受試者")
 
     extractor = EXTRACTORS[tool_name](device=device)
@@ -219,13 +222,18 @@ def main():
     parser.add_argument("--tools", nargs="+", default=["dan", "hsemotion", "vit"],
                         choices=["dan", "hsemotion", "vit"])
     parser.add_argument("--device", default="cuda", choices=["cuda", "cpu"])
+    parser.add_argument("--aligned-dir", type=Path, default=None,
+                        help="覆寫對齊影像目錄；留空用 ALIGNED_DIR")
+    parser.add_argument("--subject-prefix", default=None,
+                        help="只處理 ID 開頭符合 prefix 的受試者 (e.g. EACS_)")
     args = parser.parse_args()
 
     for tool in args.tools:
         logger.info(f"\n{'='*60}")
         logger.info(f"開始提取: {tool}")
         logger.info(f"{'='*60}")
-        extract_tool(tool, args.device)
+        extract_tool(tool, args.device, aligned_dir=args.aligned_dir,
+                     subject_prefix=args.subject_prefix)
 
 
 if __name__ == "__main__":

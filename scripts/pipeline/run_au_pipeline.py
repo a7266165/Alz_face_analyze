@@ -68,8 +68,13 @@ def _get_extractor_class(tool_name: str):
     return None
 
 
-def get_subject_dirs(input_dir: Path, exclude_acs: bool = True) -> List[Path]:
+def get_subject_dirs(input_dir: Path, exclude_acs: bool = True,
+                     subject_prefix: str = None) -> List[Path]:
     dirs = sorted([d for d in input_dir.iterdir() if d.is_dir()])
+    if subject_prefix:
+        dirs = [d for d in dirs if d.name.startswith(subject_prefix)]
+        logger.info(f"prefix={subject_prefix} 過濾後剩餘 {len(dirs)} 個受試者")
+        return dirs
     if exclude_acs:
         dirs = [d for d in dirs if not d.name.startswith("ACS")]
         logger.info(f"排除 ACS 後剩餘 {len(dirs)} 個受試者")
@@ -85,7 +90,10 @@ def run_extract(tools: List[str], config: AUExtractionConfig, device: str):
         logger.error(f"輸入目錄不存在: {config.input_dir}")
         return
 
-    subject_dirs = get_subject_dirs(config.input_dir, config.exclude_acs)
+    subject_dirs = get_subject_dirs(
+        config.input_dir, config.exclude_acs,
+        subject_prefix=getattr(config, "_subject_prefix", None),
+    )
     logger.info(f"共 {len(subject_dirs)} 個受試者待處理")
 
     for tool_name in tools:
@@ -180,11 +188,25 @@ def main():
         "--include-acs", action="store_true",
         help="包含 ACS 受試者（預設排除）",
     )
+    parser.add_argument(
+        "--aligned-dir", type=Path, default=None,
+        help="覆寫對齊影像目錄；留空用 config.input_dir (ALIGNED_DIR)",
+    )
+    parser.add_argument(
+        "--subject-prefix", default=None,
+        help="只處理 ID 開頭符合 prefix 的受試者 (e.g. EACS_)；覆寫 --include-acs",
+    )
     args = parser.parse_args()
 
     config = AUExtractionConfig()
     if args.include_acs:
         config.exclude_acs = False
+    if args.aligned_dir is not None:
+        config.input_dir = args.aligned_dir
+    if args.subject_prefix:
+        # prefix 走自訂路徑，關掉 exclude_acs 保證不會誤殺 EACS_ 之類
+        config.exclude_acs = False
+        config._subject_prefix = args.subject_prefix
     tools = args.tools or config.tools
 
     logger.info(f"工具: {tools}")

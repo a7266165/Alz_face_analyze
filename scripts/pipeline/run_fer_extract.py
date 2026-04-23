@@ -80,9 +80,20 @@ def extract_subject(detector: FER, subject_dir: Path) -> list:
 
 
 def main():
+    import argparse
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--aligned-dir", type=Path, default=None,
+                    help="覆寫對齊影像目錄；留空用 ALIGNED_DIR")
+    ap.add_argument("--subject-prefix", default=None,
+                    help="只處理 ID 開頭符合 prefix 的受試者 (e.g. EACS_)")
+    args = ap.parse_args()
+
     RAW_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    subject_dirs = get_subject_dirs(ALIGNED_DIR)
+    aligned = args.aligned_dir if args.aligned_dir is not None else ALIGNED_DIR
+    subject_dirs = get_subject_dirs(aligned)
+    if args.subject_prefix:
+        subject_dirs = [d for d in subject_dirs if d.name.startswith(args.subject_prefix)]
     logger.info(f"共 {len(subject_dirs)} 個受試者待處理")
 
     # 初始化 FER detector（使用 MTCNN 以提高準確度）
