@@ -62,9 +62,17 @@ def _visits_with_features():
     from vector_deltas.npz entirely.
     """
     arcface_dir = EMBEDDING_DIR / "arcface" / "original"
-    if not arcface_dir.exists():
-        return set()
-    return {p.stem for p in arcface_dir.glob("*.npy")}
+    ids = set()
+    if arcface_dir.exists():
+        ids.update(p.stem for p in arcface_dir.glob("*.npy"))
+    # EACS 沒跑 embedding，但有 emotion / age prediction → 用 emotion CSV 作 proxy
+    # 讓 build_group 不會把 EACS 全部過濾掉
+    for tool in ("dan", "openface", "pyfeat", "vit"):
+        emo_raw = (PROJECT_ROOT / "workspace" / "emotion" / "au_features"
+                    / "raw" / tool)
+        if emo_raw.exists():
+            ids.update(p.stem for p in emo_raw.glob("EACS_*.csv"))
+    return ids
 
 
 def _load_all_demographics(include_eacs=False):

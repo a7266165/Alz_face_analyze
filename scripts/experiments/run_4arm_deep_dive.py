@@ -453,6 +453,13 @@ def build_cohort_ad_vs_HCgroup(hc_source, arm="A", caliper=2.0, seed=SEED):
         frames.append(df)
     if HC_SOURCE_MODE in ("ACS_ext", "EACS"):
         df_e = pd.read_csv(DEMOGRAPHICS_DIR / "EACS.csv")
+        # 可選擇性 filter EACS source 子集（環境變數 EACS_SOURCES="UTKFace,MegaAge"）
+        eacs_sources_env = os.environ.get("EACS_SOURCES", "").strip()
+        if eacs_sources_env:
+            wanted = {s.strip() for s in eacs_sources_env.split(",") if s.strip()}
+            if "Source" in df_e.columns:
+                df_e = df_e[df_e["Source"].isin(wanted)].copy()
+                logger.info(f"filtered EACS to sources {wanted}: {len(df_e)} rows")
         df_e["group"] = "ACS"  # external 也歸入 ACS 群
         # Source 欄已存在於 EACS.csv
         frames.append(df_e)
@@ -1189,7 +1196,19 @@ def _compute_cell_header_stats(arm, compare, cohort):
 def run_all():
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    # Define 16 cells: arm × comparison
+    # Env-driven subset controls（optional；預設跑全部）
+    arms_env = os.environ.get("ARMS", "").strip()
+    arms_to_run = ([s.strip() for s in arms_env.split(",") if s.strip()]
+                    if arms_env else ["A", "B", "C", "D"])
+    modalities_env = os.environ.get("MODALITIES", "").strip()
+    if modalities_env:
+        wanted_mods = {s.strip() for s in modalities_env.split(",") if s.strip()}
+        active_specs = [s for s in MODALITY_SPECS if s[0] in wanted_mods]
+    else:
+        active_specs = list(MODALITY_SPECS)
+    logger.info(f"arms={arms_to_run}  modalities={[s[0] for s in active_specs]}")
+
+    # Define cells: arm × comparison；N/A cells get 'skipped_arm' status later
     cells = []
     for arm in ["A", "B", "C", "D"]:
         for compare in ["HC", "NAD", "ACS", "hi-lo"]:
@@ -1200,6 +1219,16 @@ def run_all():
     header_stat_rows = []
     cohorts = {}
     for arm, compare in cells:
+        if arm not in arms_to_run:
+            # Arm 不在 whitelist → 標 n/a 但留在 grid
+            feasibility_rows.append({
+                "arm": arm, "comparison": compare,
+                "n_total": 0, "n_pos": 0, "n_neg": 0,
+                "status": "n/a (arm skipped)", "note": "arm not in ARMS env",
+            })
+            header_stat_rows.append(_compute_cell_header_stats(arm, compare, None))
+            cohorts[(arm, compare)] = (None, None)
+            continue
         try:
             if compare == "hi-lo":
                 cohort, pairs = build_cohort_ad_hi_lo(arm=arm)
@@ -1250,8 +1279,18 @@ def run_all():
         logger.info(f"=== {arm} × {compare} : n_pos={fstat['n_pos']} "
                      f"n_neg={fstat['n_neg']} ===")
         cell_results = []
+        # 先把所有 MODALITY_SPECS 都建立 placeholder，被選中的才覆寫
+        active_keys = {s[0] for s in active_specs}
         for (parent, sub, test_kind, extra) in MODALITY_SPECS:
             name = parent if sub is None else f"{parent}::{sub}"
+            if parent not in active_keys:
+                res = {"modality": name, "n": 0, "p": np.nan,
+                        "statistic": np.nan, "effect": np.nan,
+                        "skip_reason": "modality not in MODALITIES env"}
+                res["arm"] = arm; res["comparison"] = compare
+                res["modality_parent"] = parent; res["modality_sub"] = sub
+                cell_results.append(res)
+                continue
             try:
                 X_df = _feature_df_for_modality(test_kind, extra, cohort, arm)
                 res = _dispatch_test(test_kind, extra, name, X_df, cohort, arm)
@@ -1300,16 +1339,49 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument(
         "--hc-source", choices=["ACS", "ACS_ext", "EACS"], default=None,
-        help="ACS 群體組成：ACS=內部 91 人（預設）；ACS_ext=內部+EACS 公開資料集；"
-             "EACS=僅 EACS。設定會覆寫 HC_SOURCE_MODE 環境變數。",
+        help="ACS 群體組成：ACS=內部 91 人（預設）；ACS_ext=內部+EACS；EACS=僅 EACS",
+    )
+    ap.add_argument(
+        "--eacs-sources", nargs="+", default=None,
+        help="EACS source 子集（例：UTKFace），只在 ACS_ext/EACS mode 有效；"
+             "預設用全部 EACS sources",
+    )
+    ap.add_argument(
+        "--arms", nargs="+", choices=["A", "B", "C", "D"], default=None,
+        help="只跑指定 arms；其他 arms 在 grid 上標 n/a",
+    )
+    ap.add_argument(
+        "--modalities", nargs="+", default=None,
+        help="只算指定 modality_parent；其他 modality 在 grid 上標 skip_reason",
+    )
+    ap.add_argument(
+        "--output-suffix", default=None,
+        help="覆寫 OUTPUT_DIR 後綴，e.g. acs_ext_utk_ab_age → deep_dive_<suffix>/",
     )
     args = ap.parse_args()
     if args.hc_source is not None:
         HC_SOURCE_MODE = args.hc_source
-        _variant_cli = HC_SOURCE_MODE.lower() if HC_SOURCE_MODE != "ACS" else ""
-        if _variant_cli:
-            OUTPUT_DIR = (PROJECT_ROOT / "workspace" / "age_ladder" /
-                          f"deep_dive_{_variant_cli}")
-            OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    if args.eacs_sources:
+        os.environ["EACS_SOURCES"] = ",".join(args.eacs_sources)
+    if args.arms:
+        os.environ["ARMS"] = ",".join(args.arms)
+    if args.modalities:
+        os.environ["MODALITIES"] = ",".join(args.modalities)
+    suffix = args.output_suffix
+    if suffix is None:
+        parts = []
+        if HC_SOURCE_MODE != "ACS":
+            parts.append(HC_SOURCE_MODE.lower())
+        if args.eacs_sources:
+            parts.append("+".join(s.lower() for s in args.eacs_sources))
+        if args.arms:
+            parts.append("".join(sorted(args.arms)))
+        if args.modalities:
+            parts.append("_".join(args.modalities)[:40])
+        suffix = "_".join(parts)
+    if suffix:
+        OUTPUT_DIR = (PROJECT_ROOT / "workspace" / "age_ladder" /
+                      f"deep_dive_{suffix}")
+        OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     logger.info(f"HC_SOURCE_MODE={HC_SOURCE_MODE}  OUTPUT_DIR={OUTPUT_DIR}")
     run_all()
