@@ -67,7 +67,9 @@ logger = logging.getLogger(__name__)
 # Cohort
 # ============================================================
 
-def load_demographics():
+def load_demographics(include_eacs_sources=None):
+    """include_eacs_sources: list of EACS Source values to append as HC
+    (e.g. ['UTKFace'])。各 row 會被標 group='UTKFace' 等並標 is_external=True。"""
     frames = []
     for grp in ["P", "NAD", "ACS"]:
         path = DEMOGRAPHICS_DIR / f"{grp}.csv"
@@ -80,10 +82,28 @@ def load_demographics():
                     df = df.rename(columns={col: "ID"})
                     break
         df["group"] = grp
+        df["is_external"] = False
         df["Age"] = pd.to_numeric(df["Age"], errors="coerce")
         df["MMSE"] = pd.to_numeric(df.get("MMSE"), errors="coerce")
         df["Global_CDR"] = pd.to_numeric(df.get("Global_CDR"), errors="coerce")
         frames.append(df)
+
+    if include_eacs_sources:
+        eacs_path = DEMOGRAPHICS_DIR / "EACS.csv"
+        if eacs_path.exists():
+            edf = pd.read_csv(eacs_path, encoding="utf-8-sig")
+            edf = edf[edf["Source"].isin(include_eacs_sources)].copy()
+            edf["group"] = edf["Source"]  # e.g. "UTKFace"
+            edf["is_external"] = True
+            edf["Age"] = pd.to_numeric(edf["Age"], errors="coerce")
+            edf["MMSE"] = pd.to_numeric(edf.get("MMSE"), errors="coerce")
+            edf["Global_CDR"] = pd.to_numeric(edf.get("Global_CDR"), errors="coerce")
+            frames.append(edf)
+            logger.info(f"  loaded {len(edf)} external rows from "
+                        f"EACS sources={include_eacs_sources}")
+        else:
+            logger.warning(f"EACS.csv missing at {eacs_path}")
+
     demo = pd.concat(frames, ignore_index=True)
     demo["base_id"] = demo["ID"].str.extract(r"^(.+)-\d+$")
     demo["visit"] = pd.to_numeric(
@@ -102,17 +122,23 @@ def apply_visit_selection(df, selection):
 
 
 def apply_labels_and_hc_filter(df):
-    """P with CDR≥0.5 → label=1; NAD/ACS with strict HC rule → label=0.
+    """P with CDR≥0.5 → label=1; NAD/ACS 走 strict HC filter → label=0；
+    外部 EACS rows (is_external=True) 直接 label=0（無認知評估，age-only control）。
     Unlabelled rows dropped."""
     rows = []
     for _, r in df.iterrows():
         g = r["group"]
-        cdr = r.get("Global_CDR")
-        mmse = r.get("MMSE")
+        is_ext = bool(r.get("is_external", False))
         if g == "P":
+            cdr = r.get("Global_CDR")
             if pd.notna(cdr) and cdr >= 0.5:
                 rows.append({**r.to_dict(), "label": 1})
+        elif is_ext:
+            # external rows bypass strict HC filter (no cognitive scores)
+            rows.append({**r.to_dict(), "label": 0})
         else:  # NAD / ACS — strict healthy filter
+            cdr = r.get("Global_CDR")
+            mmse = r.get("MMSE")
             if (pd.notna(cdr) and cdr == 0) or (
                     pd.isna(cdr) and pd.notna(mmse) and mmse >= 26):
                 rows.append({**r.to_dict(), "label": 0})
@@ -198,18 +224,19 @@ def run_repeats(feat_df, feat_cols, classifier, n_runs, n_folds, base_seed=0):
     real_age = feat_df["real_age"].to_numpy(dtype=float)
     ids = feat_df["ID"].to_numpy()
     group_tag = feat_df["group"].to_numpy()
+    is_ext = feat_df["is_external"].to_numpy(dtype=bool) \
+        if "is_external" in feat_df.columns else np.zeros(len(y), dtype=bool)
 
     all_rows = []
     for run_idx in range(n_runs):
         seed = base_seed + run_idx
-        # Shuffle rows deterministically by seed so the same group always goes
-        # together but the fold assignment changes across runs
         rng = np.random.RandomState(seed)
         order = rng.permutation(len(y))
         X_s, y_s, g_s = X[order], y[order], groups[order]
         age_s = real_age[order]
         ids_s = ids[order]
         tag_s = group_tag[order]
+        ext_s = is_ext[order]
 
         gkf = GroupKFold(n_splits=n_folds)
         for fold_idx, (tr, te) in enumerate(gkf.split(X_s, y_s, groups=g_s)):
@@ -226,6 +253,7 @@ def run_repeats(feat_df, feat_cols, classifier, n_runs, n_folds, base_seed=0):
                     "fold": fold_idx,
                     "ID": ids_s[ii],
                     "group": tag_s[ii],
+                    "is_external": bool(ext_s[ii]),
                     "real_age": age_s[ii],
                     "y_true": int(y_s[ii]),
                     "y_prob": float(prob[j]),
@@ -315,13 +343,26 @@ def metrics_per_run(pred_df, threshold=0.5):
 
 
 def filter_view(pred_df, view):
-    """view in {'AD_vs_NAD', 'AD_vs_ACS', 'AD_vs_HC'}."""
+    """view in {'AD_vs_NAD', 'AD_vs_ACS', 'AD_vs_HC'}.
+
+    外部 (is_external=True) rows 一律歸為 E-ACS（ACS 類的擴充）：
+      AD_vs_NAD: P + internal NAD only（external 不列入）
+      AD_vs_ACS: P + internal ACS + external (E-ACS)
+      AD_vs_HC : P + internal NAD + internal ACS + external
+    """
+    is_p = pred_df["group"] == "P"
+    is_ext = pred_df.get("is_external", False)
+    if isinstance(is_ext, bool):
+        is_ext = pd.Series(False, index=pred_df.index)
     if view == "AD_vs_NAD":
-        return pred_df[(pred_df["group"] == "P") | (pred_df["group"] == "NAD")]
+        return pred_df[is_p | ((pred_df["group"] == "NAD") & (~is_ext))]
     if view == "AD_vs_ACS":
-        return pred_df[(pred_df["group"] == "P") | (pred_df["group"] == "ACS")]
+        # internal ACS + any external (external treated as E-ACS)
+        acs_mask = ((pred_df["group"] == "ACS") & (~is_ext)) | is_ext
+        return pred_df[is_p | acs_mask]
     if view == "AD_vs_HC":
-        return pred_df[pred_df["group"].isin(["P", "NAD", "ACS"])]
+        hc_mask = pred_df["group"].isin(["NAD", "ACS"]) | is_ext
+        return pred_df[is_p | hc_mask]
     raise ValueError(view)
 
 
@@ -344,16 +385,24 @@ def plot_metrics_by_window(summary_df, out_path, view, group2_label,
 
     ax2 = ax1.twinx()
     w = 0.35
-    ax2.bar(x - w / 2, summary_df["n_neg"], width=w, alpha=0.3,
+    # n (HC) — 若 summary 有 n_neg_external 欄則 stacked 外部於內部之上
+    n_neg_ext = (summary_df["n_neg_external"].values
+                 if "n_neg_external" in summary_df.columns
+                 else np.zeros(len(x)))
+    n_neg_int = summary_df["n_neg"].values - n_neg_ext
+    ax2.bar(x - w / 2, n_neg_int, width=w, alpha=0.35,
             label=f"n ({group2_label})", color="C0")
+    if (n_neg_ext > 0).any():
+        ax2.bar(x - w / 2, n_neg_ext, width=w, alpha=0.55,
+                bottom=n_neg_int, color="#9C27B0",
+                label="n (E-ACS)")
     ax2.bar(x + w / 2, summary_df["n_pos"], width=w, alpha=0.3,
             label="n (Patient)", color="C3")
     ax2.set_ylabel("n samples")
     ax2.legend(loc="upper right")
 
-    # Optional second-axis annotation of per-window threshold
+    # Optional threshold overlay on ax1
     if "threshold" in summary_df.columns and threshold_mode != "fixed":
-        # overlay threshold as small grey dots on ax1 scale
         ax1.plot(x, summary_df["threshold"], ".", color="gray",
                  alpha=0.6, label="threshold")
         ax1.legend(loc="upper left")
@@ -449,6 +498,16 @@ def analyze_predictions(pred_df, out_root, view_order, view_group2,
                 per_run.append({k: m[k] for k in
                                  ("n", "n_pos", "n_neg", "balacc", "mcc", "auc")})
                 cm_acc += m["cm"]
+            # 計算 external (EACS) 佔 n_neg 的比例（per-run 平均後轉回整數近似）
+            n_neg_ext_avg = 0
+            if "is_external" in w.columns and not w.empty:
+                per_run_ext = []
+                for run, g in w.groupby("run"):
+                    neg = g[g["y_true"] == 0]
+                    per_run_ext.append(int(neg["is_external"].sum()))
+                if per_run_ext:
+                    n_neg_ext_avg = int(round(sum(per_run_ext) / len(per_run_ext)))
+
             row = {"view": view, "window_start": start, "window_end": end,
                    "threshold": wthr}
             if not per_run:
@@ -456,6 +515,7 @@ def analyze_predictions(pred_df, out_root, view_order, view_group2,
                 row.update({
                     "n_pos": full["n_pos"] // max(n_runs, 1) if full else 0,
                     "n_neg": full["n_neg"] // max(n_runs, 1) if full else 0,
+                    "n_neg_external": n_neg_ext_avg,
                     "balacc_mean": np.nan, "balacc_std": np.nan,
                     "mcc_mean": np.nan, "mcc_std": np.nan,
                     "auc_mean": np.nan, "auc_std": np.nan,
@@ -466,6 +526,7 @@ def analyze_predictions(pred_df, out_root, view_order, view_group2,
                 row.update({
                     "n_pos": int(pdf["n_pos"].mean()),
                     "n_neg": int(pdf["n_neg"].mean()),
+                    "n_neg_external": n_neg_ext_avg,
                     "balacc_mean": pdf["balacc"].mean(),
                     "balacc_std": pdf["balacc"].std(),
                     "mcc_mean": pdf["mcc"].mean(),
@@ -526,9 +587,15 @@ def main():
     ap.add_argument("--reuse-predictions", action="store_true",
                     help="skip training; load existing predictions.csv "
                          "and only recompute metrics + plots")
+    ap.add_argument("--include-eacs-sources", nargs="+", default=None,
+                    help="外部 EACS Source 子集拉進 HC（e.g. UTKFace）；"
+                         "輸出子目錄會加 _eacs_{sources} 後綴")
     args = ap.parse_args()
 
-    out_root = OUTPUT_BASE / args.classifier / f"{args.features}feat"
+    tag = f"{args.features}feat"
+    if args.include_eacs_sources:
+        tag += "_eacs_" + "+".join(sorted(args.include_eacs_sources))
+    out_root = OUTPUT_BASE / args.classifier / tag / args.visit_selection
     out_root.mkdir(parents=True, exist_ok=True)
     logger.info(f"=== run_age_window_classifier ===")
     logger.info(f"  features={args.features}  clf={args.classifier}  "
@@ -547,12 +614,15 @@ def main():
                     f"({pred_df['run'].nunique()} runs)")
     else:
         # 1. Cohort
-        demo = load_demographics()
+        demo = load_demographics(include_eacs_sources=args.include_eacs_sources)
         demo = apply_visit_selection(demo, args.visit_selection)
         labeled = apply_labels_and_hc_filter(demo)
+        n_ext = int(((labeled["label"] == 0) &
+                      (labeled.get("is_external", False) == True)).sum())
         logger.info(f"  labeled: P={int((labeled['label']==1).sum())}  "
                     f"NAD={int(((labeled['label']==0) & (labeled['group']=='NAD')).sum())}  "
-                    f"ACS={int(((labeled['label']==0) & (labeled['group']=='ACS')).sum())}")
+                    f"ACS={int(((labeled['label']==0) & (labeled['group']=='ACS')).sum())}  "
+                    f"External={n_ext}")
 
         # 2. Features
         feat = attach_age_error(labeled)
