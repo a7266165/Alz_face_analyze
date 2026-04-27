@@ -83,15 +83,27 @@ HC_SOURCE_MODE = os.environ.get("HC_SOURCE_MODE", "ACS")
 #   "ACS_ext" → 讀 ACS.csv + EACS.csv，ACS 群體 = internal + external
 #   "EACS"    → 只讀 EACS.csv，ACS 群體 = external only（strict HC 全 bypass）
 
-_variant = os.environ.get("DEEP_DIVE_VARIANT", "")
-if not _variant and HC_SOURCE_MODE != "ACS":
-    _variant = HC_SOURCE_MODE.lower()
-_variant_suffix = f"_{_variant}" if _variant else ""
-OUTPUT_DIR = (PROJECT_ROOT / "workspace" / "age_ladder" /
-              f"deep_dive{_variant_suffix}")
-OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+GRID_ROOT = PROJECT_ROOT / "workspace" / "arms_analysis" / "grid"
+# Baseline output：grid/<hc_source.lower()>/，CLI subset 覆寫見 __main__。
+# mkdir 延後到 run_all() / __main__，避免 import 即建立非預期目錄。
+OUTPUT_DIR = GRID_ROOT / HC_SOURCE_MODE.lower()
 
 EMBEDDING_MODELS = ["arcface", "topofr", "dlib"]
+
+# Modality direction grouping for per-direction grid subfolders.
+# 5 directions: age / embedding_mean / embedding_asymmetry / landmark_asymmetry / emotion
+DIRECTION_MAP = {
+    "age_only": "age",
+    "age_error": "age",
+    "embedding_arcface_mean": "embedding_mean",
+    "embedding_dlib_mean": "embedding_mean",
+    "embedding_topofr_mean": "embedding_mean",
+    "embedding_arcface_asymmetry": "embedding_asymmetry",
+    "embedding_dlib_asymmetry": "embedding_asymmetry",
+    "embedding_topofr_asymmetry": "embedding_asymmetry",
+    "landmark_asymmetry": "landmark_asymmetry",
+    "emotion_8methods": "emotion",
+}
 EMOTION_METHODS = ["openface", "libreface", "pyfeat", "dan",
                    "hsemotion", "vit", "poster_pp", "fer"]
 EMOTIONS = ["anger", "disgust", "fear", "happiness", "sadness", "surprise", "neutral"]
@@ -654,34 +666,40 @@ def _match_longitudinal_1to1(prep, caliper, seed):
     return pd.DataFrame(records), pairs_df
 
 
-def build_cohort_ad_hi_lo(arm="A", caliper=2.0, seed=SEED):
-    """AD-internal MMSE median split, per arm."""
+def build_cohort_ad_hi_lo(arm="A", caliper=2.0, seed=SEED, metric="MMSE"):
+    """AD-internal hi-lo cohort, per arm. metric ∈ {"MMSE","CASI"}.
+
+    For B (cross-sec matched): reads pre-built matched cohort from
+    arm_b/<metric.lower()>_high_vs_low/matched_features.csv.
+    """
+    metric_low = metric.lower()
+    group_col = f"{metric_low}_group"
+    first_metric = f"first_{metric}"
     if arm == "A":
-        # Naive: AD cross-sec, MMSE median split, no matching
         demo = load_p_demographics()
-        cohort = demo.dropna(subset=["MMSE", "Age"]).copy()
+        cohort = demo.dropna(subset=[metric, "Age"]).copy()
         cohort = cohort.sort_values(["base_id", "visit"]).groupby(
             "base_id", as_index=False).first()
         # Filter by AD: CDR>=0.5
         cohort["Global_CDR"] = pd.to_numeric(cohort.get("Global_CDR"),
                                                 errors="coerce")
         cohort = cohort[cohort["Global_CDR"] >= 0.5].copy()
-        med = cohort["MMSE"].median()
-        cohort["mmse_group"] = np.where(cohort["MMSE"] >= med, "high", "low")
-        cohort["label"] = (cohort["mmse_group"] == "high").astype(int)
+        med = cohort[metric].median()
+        cohort[group_col] = np.where(cohort[metric] >= med, "high", "low")
+        cohort["label"] = (cohort[group_col] == "high").astype(int)
         return cohort, None
     if arm == "B":
-        # Current Arm B style — reuse matched_features from arm_b if exists,
-        # else rebuild here. matched_features.csv only saves Age+MMSE; merge
-        # CASI/Global_CDR/CDR_SB from raw P.csv so header stats can include them.
-        arm_b_csv = (PROJECT_ROOT / "workspace" / "age_ladder" /
-                     "mmse_hilo_standalone" / "matched_features.csv")
+        arm_b_csv = (PROJECT_ROOT / "workspace" / "arms_analysis" / "per_arm" /
+                     "arm_b" / f"{metric_low}_high_vs_low" /
+                     "matched_features.csv")
         if not arm_b_csv.exists():
-            raise FileNotFoundError(f"Run run_mmse_hilo_standalone.py first")
+            raise FileNotFoundError(
+                f"Run run_mmse_hilo_standalone.py with HILO_METRIC={metric} "
+                f"first")
         cohort = pd.read_csv(arm_b_csv)
-        cohort["label"] = (cohort["mmse_group"] == "high").astype(int)
+        cohort["label"] = (cohort[group_col] == "high").astype(int)
         p_df = pd.read_csv(DEMOGRAPHICS_DIR / "P.csv")
-        keep_cog = [c for c in ["CASI", "Global_CDR", "CDR_SB"]
+        keep_cog = [c for c in ["MMSE", "CASI", "Global_CDR", "CDR_SB"]
                     if c in p_df.columns and c not in cohort.columns]
         if keep_cog:
             cohort = cohort.merge(p_df[["ID"] + keep_cog].drop_duplicates("ID"),
@@ -690,40 +708,41 @@ def build_cohort_ad_hi_lo(arm="A", caliper=2.0, seed=SEED):
                 cohort[c] = pd.to_numeric(cohort[c], errors="coerce")
         return cohort, None
     if arm == "C":
-        # Longitudinal naive hi-lo: all multi-visit AD, MMSE median split,
-        # no matching.
+        # Longitudinal naive hi-lo: all multi-visit AD, metric median split, no matching.
         if not AD_DELTAS_CSV.exists():
             raise FileNotFoundError(
                 f"Missing {AD_DELTAS_CSV}; run "
                 f"build_longitudinal_hc_and_vectors.py first")
         ad_d = pd.read_csv(AD_DELTAS_CSV)
         ad_d = ad_d[ad_d["follow_up_days"] >= 180].copy()
-        ad_d = ad_d[ad_d["first_MMSE"].notna() & ad_d["first_age"].notna()]
-        med = ad_d["first_MMSE"].median()
-        ad_d["mmse_group"] = np.where(ad_d["first_MMSE"] >= med, "high", "low")
-        ad_d["label"] = (ad_d["mmse_group"] == "high").astype(int)
+        ad_d = ad_d[ad_d[first_metric].notna() & ad_d["first_age"].notna()]
+        med = ad_d[first_metric].median()
+        ad_d[group_col] = np.where(ad_d[first_metric] >= med, "high", "low")
+        ad_d["label"] = (ad_d[group_col] == "high").astype(int)
         return ad_d, None
     if arm == "D":
         # Longitudinal matched hi-lo: same as C but +1:1 baseline-age matching.
-        # Use ad_patient_deltas.csv to get the full 56-emotion schema (legacy
-        # matched_features_longitudinal.csv was built before emotion expansion
-        # and lacks ann_delta_{method}__{emo} columns).
         if not AD_DELTAS_CSV.exists():
             raise FileNotFoundError(
                 f"Missing {AD_DELTAS_CSV}; run "
                 f"build_longitudinal_hc_and_vectors.py first")
         ad_d = pd.read_csv(AD_DELTAS_CSV)
         ad_d = ad_d[ad_d["follow_up_days"] >= 180].copy()
-        ad_d = ad_d[ad_d["first_MMSE"].notna() & ad_d["first_age"].notna()]
-        med = ad_d["first_MMSE"].median()
-        ad_d["mmse_group"] = np.where(ad_d["first_MMSE"] >= med, "high", "low")
-        # Prepare for _match_longitudinal_1to1
+        ad_d = ad_d[ad_d[first_metric].notna() & ad_d["first_age"].notna()]
+        med = ad_d[first_metric].median()
+        ad_d[group_col] = np.where(ad_d[first_metric] >= med, "high", "low")
+        # _match_longitudinal_1to1 looks for "mmse_group" hardcoded — pass
+        # alias column (kept under both names so downstream is happy).
         prep = ad_d.copy()
         prep["Age"] = prep["first_age"]
+        if group_col != "mmse_group":
+            prep["mmse_group"] = prep[group_col]
         matched, pairs_df = _match_longitudinal_1to1(prep, caliper, seed)
+        if "mmse_group" in matched.columns and group_col != "mmse_group":
+            matched = matched.rename(columns={"mmse_group": group_col})
         cohort = matched.merge(ad_d, on="base_id", how="left",
                                 suffixes=("", "_p"))
-        cohort["label"] = (cohort["mmse_group"] == "high").astype(int)
+        cohort["label"] = (cohort[group_col] == "high").astype(int)
         return cohort, pairs_df
     raise ValueError(f"unknown arm: {arm}")
 
@@ -1165,8 +1184,8 @@ def _compute_cell_header_stats(arm, compare, cohort):
             row["age_p"] = float(p)
         else:
             row["age_p"] = np.nan
-    # Cog stats only for hi-lo (AD internal severity split)
-    if compare == "hi-lo":
+    # Cog stats only for hi-lo cells (AD internal severity split)
+    if compare in ("mmse-hi-lo", "casi-hi-lo"):
         cog_triples = [
             ("mmse", "MMSE", "first_MMSE"),
             ("casi", "CASI", "first_CASI"),
@@ -1208,10 +1227,10 @@ def run_all():
         active_specs = list(MODALITY_SPECS)
     logger.info(f"arms={arms_to_run}  modalities={[s[0] for s in active_specs]}")
 
-    # Define cells: arm × comparison；N/A cells get 'skipped_arm' status later
+    # Define cells: arm × comparison (5 columns: HC, NAD, ACS, mmse-hi-lo, casi-hi-lo)
     cells = []
     for arm in ["A", "B", "C", "D"]:
-        for compare in ["HC", "NAD", "ACS", "hi-lo"]:
+        for compare in ["HC", "NAD", "ACS", "mmse-hi-lo", "casi-hi-lo"]:
             cells.append((arm, compare))
 
     # Feasibility check first
@@ -1230,8 +1249,10 @@ def run_all():
             cohorts[(arm, compare)] = (None, None)
             continue
         try:
-            if compare == "hi-lo":
-                cohort, pairs = build_cohort_ad_hi_lo(arm=arm)
+            if compare == "mmse-hi-lo":
+                cohort, pairs = build_cohort_ad_hi_lo(arm=arm, metric="MMSE")
+            elif compare == "casi-hi-lo":
+                cohort, pairs = build_cohort_ad_hi_lo(arm=arm, metric="CASI")
             else:
                 cohort, pairs = build_cohort_ad_vs_HCgroup(compare, arm=arm)
             n = len(cohort) if cohort is not None else 0
@@ -1332,6 +1353,29 @@ def run_all():
     pivot.to_csv(OUTPUT_DIR / "stat_grid_wide.csv")
     logger.info(f"Wide grid saved")
 
+    # Per-direction subfolder splits (5 directions: age / embedding_mean /
+    # embedding_asymmetry / landmark_asymmetry / emotion)
+    long_df_dir = long_df.copy()
+    long_df_dir["direction"] = long_df_dir["modality_parent"].map(DIRECTION_MAP)
+    for direction, sub in long_df_dir.groupby("direction"):
+        d_dir = OUTPUT_DIR / direction
+        d_dir.mkdir(parents=True, exist_ok=True)
+        sub.drop(columns=["direction"]).to_csv(
+            d_dir / "stat_grid_long.csv", index=False)
+        sub_wide = sub.copy()
+        sub_wide["cell"] = sub_wide["arm"] + "-" + sub_wide["comparison"]
+        sub_wide["label"] = sub_wide["modality_parent"] + sub_wide["modality_sub"].apply(
+            lambda s: "" if pd.isna(s) else f" [{s}]")
+        sub_pivot = sub_wide.pivot_table(
+            index="label", columns="cell",
+            values=["statistic", "p", "q", "effect", "auc_auc",
+                    "auc_auc_ci_low", "auc_auc_ci_high", "n"],
+            aggfunc="first"
+        )
+        sub_pivot.to_csv(d_dir / "stat_grid_wide.csv")
+    logger.info(f"Per-direction subfolders saved: "
+                f"{sorted(long_df_dir['direction'].dropna().unique())}")
+
     return long_df, feas_df
 
 
@@ -1356,7 +1400,7 @@ if __name__ == "__main__":
     )
     ap.add_argument(
         "--output-suffix", default=None,
-        help="覆寫 OUTPUT_DIR 後綴，e.g. acs_ext_utk_ab_age → deep_dive_<suffix>/",
+        help="覆寫 subset 資料夾名，輸出到 grid/subsets/<suffix>/",
     )
     args = ap.parse_args()
     if args.hc_source is not None:
@@ -1367,21 +1411,26 @@ if __name__ == "__main__":
         os.environ["ARMS"] = ",".join(args.arms)
     if args.modalities:
         os.environ["MODALITIES"] = ",".join(args.modalities)
-    suffix = args.output_suffix
-    if suffix is None:
-        parts = []
-        if HC_SOURCE_MODE != "ACS":
-            parts.append(HC_SOURCE_MODE.lower())
-        if args.eacs_sources:
-            parts.append("+".join(s.lower() for s in args.eacs_sources))
-        if args.arms:
-            parts.append("".join(sorted(args.arms)))
-        if args.modalities:
-            parts.append("_".join(args.modalities)[:40])
-        suffix = "_".join(parts)
-    if suffix:
-        OUTPUT_DIR = (PROJECT_ROOT / "workspace" / "age_ladder" /
-                      f"deep_dive_{suffix}")
-        OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+    is_subset = bool(args.eacs_sources or args.arms or args.modalities or
+                     args.output_suffix)
+    if is_subset:
+        if args.output_suffix is not None:
+            suffix = args.output_suffix
+        else:
+            parts = []
+            if HC_SOURCE_MODE != "ACS":
+                parts.append(HC_SOURCE_MODE.lower())
+            if args.eacs_sources:
+                parts.append("+".join(s.lower() for s in args.eacs_sources))
+            if args.arms:
+                parts.append("".join(sorted(args.arms)))
+            if args.modalities:
+                parts.append("_".join(args.modalities)[:40])
+            suffix = "_".join(parts)
+        OUTPUT_DIR = GRID_ROOT / "subsets" / suffix
+    else:
+        OUTPUT_DIR = GRID_ROOT / HC_SOURCE_MODE.lower()
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     logger.info(f"HC_SOURCE_MODE={HC_SOURCE_MODE}  OUTPUT_DIR={OUTPUT_DIR}")
     run_all()

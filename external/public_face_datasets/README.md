@@ -60,7 +60,7 @@ external/public_face_datasets/
 | `EACS` | `EACS.csv` only | 外部 7,933 人（strict HC 全 bypass） |
 
 Strict HC filter 對 `Source != "internal"` 的 rows 自動通過（external 無
-MMSE/CDR，視為 age-only control）。結果落 `workspace/age_ladder/deep_dive{_acs_ext,_eacs}/`。
+MMSE/CDR，視為 age-only control）。結果落 `workspace/arms_analysis/grid/{acs_ext,eacs}/`。
 
 ## Non-Goals
 

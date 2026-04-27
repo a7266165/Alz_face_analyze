@@ -1,13 +1,13 @@
 """
-Cohort overview for the 4-arm age ladder.
+Cohort overview for the 4-arm analysis.
 
 Reads:
-  workspace/age_ladder/arm_a_ad_vs_hc/cohort.csv
-  workspace/age_ladder/mmse_hilo_standalone/matched_features.csv
-  workspace/age_ladder/arm_c_longitudinal_matched/matched_features_longitudinal.csv
+  workspace/arms_analysis/per_arm/arm_a/cohort.csv
+  workspace/arms_analysis/per_arm/arm_b/mmse_high_vs_low/matched_features.csv
+  workspace/arms_analysis/per_arm/arm_c/mmse_high_vs_low/matched_features_longitudinal.csv
 
 Produces:
-  workspace/age_ladder/cohort_overview.png
+  workspace/arms_analysis/cohort_overview.png
 """
 
 from pathlib import Path
@@ -19,11 +19,11 @@ import numpy as np
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[2]
-LADDER = ROOT / "workspace" / "age_ladder"
-ARM_A_CSV = LADDER / "arm_a_ad_vs_hc" / "cohort.csv"
-ARM_B_CSV = LADDER / "mmse_hilo_standalone" / "matched_features.csv"
-ARM_C_CSV = LADDER / "arm_c_longitudinal_matched" / "matched_features_longitudinal.csv"
-OUT_PNG = LADDER / "cohort_overview.png"
+ARMS = ROOT / "workspace" / "arms_analysis"
+ARM_A_CSV = ARMS / "per_arm" / "arm_a" / "cohort.csv"
+ARM_B_CSV = ARMS / "per_arm" / "arm_b" / "mmse_high_vs_low" / "matched_features.csv"
+ARM_C_CSV = ARMS / "per_arm" / "arm_c" / "mmse_high_vs_low" / "matched_features_longitudinal.csv"
+OUT_PNG = ARMS / "cohort_overview.png"
 
 COLOR_POS = "#C44E52"  # red  = AD / MMSE-high / last visit
 COLOR_NEG = "#4C72B0"  # blue = HC / MMSE-low  / baseline

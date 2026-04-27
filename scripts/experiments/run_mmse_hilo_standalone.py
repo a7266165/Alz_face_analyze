@@ -16,6 +16,7 @@ Usage:
 import argparse
 import json
 import logging
+import os
 import re
 import sys
 from pathlib import Path
@@ -34,7 +35,7 @@ AGES_FILE = PROJECT_ROOT / "workspace" / "age" / "age_prediction" / "predicted_a
 EMOTION_DIR = PROJECT_ROOT / "workspace" / "emotion" / "au_features" / "aggregated"
 LANDMARK_FEATURES_CSV = PROJECT_ROOT / "workspace" / "asymmetry" / "features.csv"
 EMBEDDING_DIFF_DIR = PROJECT_ROOT / "workspace" / "embedding" / "features"
-OUTPUT_DIR = PROJECT_ROOT / "workspace" / "age_ladder" / "mmse_hilo_standalone"
+OUTPUT_DIR = PROJECT_ROOT / "workspace" / "arms_analysis" / "per_arm" / "arm_b"
 
 EMOTION_METHODS = [
     "openface", "libreface", "pyfeat", "dan",
@@ -44,6 +45,14 @@ EMOTIONS = ["anger", "disgust", "fear", "happiness", "sadness", "surprise", "neu
 STATS = ["mean", "std", "range", "entropy"]
 LANDMARK_REGIONS = ["eye", "nose", "mouth", "face_oval"]
 EMBEDDING_MODELS = ["arcface", "topofr", "dlib"]
+
+# Hi-lo split metric: "MMSE" (default) or "CASI". Configurable via env var
+# HILO_METRIC or CLI --metric. The grid script imports match_1to1 etc. with
+# default MMSE behavior, so changing this only affects __main__ runs.
+METRIC = os.environ.get("HILO_METRIC", "MMSE")
+METRIC_LOW = METRIC.lower()
+GROUP_COL = f"{METRIC_LOW}_group"
+COMPARISON_NAME = f"{METRIC_LOW}_high_vs_low"
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s")
 logger = logging.getLogger(__name__)
@@ -56,6 +65,7 @@ logger = logging.getLogger(__name__)
 def load_p_demographics():
     df = pd.read_csv(DEMOGRAPHICS_DIR / "P.csv")
     df["MMSE"] = pd.to_numeric(df["MMSE"], errors="coerce")
+    df["CASI"] = pd.to_numeric(df.get("CASI"), errors="coerce")
     df["Age"] = pd.to_numeric(df["Age"], errors="coerce")
     df["Global_CDR"] = pd.to_numeric(df.get("Global_CDR"), errors="coerce")
     df["base_id"] = df["ID"].str.extract(r"^([A-Za-z]+\d+)")
@@ -63,9 +73,14 @@ def load_p_demographics():
     return df
 
 
-def select_visit(df, visit_selection="first"):
-    """Pick one visit per base_id where MMSE and Age are present."""
-    elig = df.dropna(subset=["MMSE", "Age"]).copy()
+def select_visit(df, visit_selection="first", metric=None):
+    """Pick one visit per base_id where <metric> and Age are present.
+
+    metric defaults to module-level METRIC ("MMSE" or "CASI").
+    """
+    if metric is None:
+        metric = METRIC
+    elig = df.dropna(subset=[metric, "Age"]).copy()
     elig = elig.sort_values(["base_id", "visit"])
     if visit_selection == "first":
         picked = elig.groupby("base_id", as_index=False).first()
@@ -74,23 +89,43 @@ def select_visit(df, visit_selection="first"):
     return picked
 
 
-def split_by_mmse_median(cohort, tiebreak="high"):
-    median = cohort["MMSE"].median()
+def split_by_metric_median(cohort, tiebreak="high", metric=None, group_col=None):
+    """Median split of cohort by `metric` (MMSE or CASI). Adds <metric_low>_group col."""
+    if metric is None:
+        metric = METRIC
+    if group_col is None:
+        group_col = GROUP_COL
+    median = cohort[metric].median()
     if tiebreak == "high":
-        cohort["mmse_group"] = np.where(cohort["MMSE"] >= median, "high", "low")
+        cohort[group_col] = np.where(cohort[metric] >= median, "high", "low")
     else:
-        cohort["mmse_group"] = np.where(cohort["MMSE"] > median, "high", "low")
+        cohort[group_col] = np.where(cohort[metric] > median, "high", "low")
     return cohort, float(median)
+
+
+# Backward-compat alias (older callers / grid script may import this name).
+split_by_mmse_median = split_by_metric_median
 
 
 # ============================================================
 # 1:1 age nearest-neighbor matching
 # ============================================================
 
-def match_1to1(cohort, caliper=2.0, seed=42):
+def match_1to1(cohort, caliper=2.0, seed=42, metric=None, group_col=None):
+    """1:1 age NN match; cohort must have <group_col> set to 'high'/'low'.
+
+    metric defaults to module-level METRIC (MMSE or CASI). Pairs CSV uses
+    `minor_<metric_low>` / `major_<metric_low>` column names so per-metric
+    runs produce schema-distinguishable CSVs.
+    """
+    if metric is None:
+        metric = METRIC
+    if group_col is None:
+        group_col = GROUP_COL
+    metric_low = metric.lower()
     rng = np.random.RandomState(seed)
-    high = cohort[cohort["mmse_group"] == "high"].copy()
-    low = cohort[cohort["mmse_group"] == "low"].copy()
+    high = cohort[cohort[group_col] == "high"].copy()
+    low = cohort[cohort[group_col] == "low"].copy()
 
     # Minor group drives the iteration
     if len(low) <= len(high):
@@ -120,10 +155,10 @@ def match_1to1(cohort, caliper=2.0, seed=42):
             "pair_id": len(pairs),
             "minor_id": row["ID"],
             "minor_age": age,
-            "minor_mmse": row["MMSE"],
+            f"minor_{metric_low}": row[metric],
             "major_id": picked["ID"],
             "major_age": picked["Age"],
-            "major_mmse": picked["MMSE"],
+            f"major_{metric_low}": picked[metric],
             "age_diff": picked["Age"] - age,
         })
         available = available.drop(picked.name).reset_index(drop=True)
@@ -135,13 +170,13 @@ def match_1to1(cohort, caliper=2.0, seed=42):
     for _, p in pairs_df.iterrows():
         records.append({
             "pair_id": p["pair_id"], "ID": p["minor_id"],
-            "Age": p["minor_age"], "MMSE": p["minor_mmse"],
-            "mmse_group": minor_label,
+            "Age": p["minor_age"], metric: p[f"minor_{metric_low}"],
+            group_col: minor_label,
         })
         records.append({
             "pair_id": p["pair_id"], "ID": p["major_id"],
-            "Age": p["major_age"], "MMSE": p["major_mmse"],
-            "mmse_group": major_label,
+            "Age": p["major_age"], metric: p[f"major_{metric_low}"],
+            group_col: major_label,
         })
     matched = pd.DataFrame(records)
     return matched, pairs_df, (minor_label, major_label)
@@ -341,53 +376,67 @@ def compare_groups(values_high, values_low, feature_name, stat_mode="auto",
 # Plots
 # ============================================================
 
-def plot_age_error_violin(matched_df, out_path):
-    high = matched_df[matched_df["mmse_group"] == "high"]["age_error"].dropna()
-    low = matched_df[matched_df["mmse_group"] == "low"]["age_error"].dropna()
+def plot_age_error_violin(matched_df, out_path, metric=None, group_col=None):
+    if metric is None:
+        metric = METRIC
+    if group_col is None:
+        group_col = GROUP_COL
+    high = matched_df[matched_df[group_col] == "high"]["age_error"].dropna()
+    low = matched_df[matched_df[group_col] == "low"]["age_error"].dropna()
     fig, ax = plt.subplots(figsize=(5, 5))
     parts = ax.violinplot([high, low], showmedians=True)
     for pc, color in zip(parts["bodies"], ["#4C72B0", "#C44E52"]):
         pc.set_facecolor(color)
         pc.set_alpha(0.6)
     ax.set_xticks([1, 2])
-    ax.set_xticklabels([f"High MMSE\n(n={len(high)})", f"Low MMSE\n(n={len(low)})"])
+    ax.set_xticklabels([f"High {metric}\n(n={len(high)})",
+                        f"Low {metric}\n(n={len(low)})"])
     ax.set_ylabel("Age error (real − predicted)")
-    ax.set_title("Age prediction error by MMSE group\n(age-matched 1:1 within AD)")
+    ax.set_title(f"Age prediction error by {metric} group\n"
+                 f"(age-matched 1:1 within AD)")
     ax.axhline(0, color="gray", linestyle="--", linewidth=0.8)
     fig.tight_layout()
     fig.savefig(out_path, dpi=150)
     plt.close(fig)
 
 
-def plot_mmse_figure(cohort, matched_df, median_val, out_path):
-    """MMSE-only figure: pre-match distribution + post-match boxplot."""
+def plot_metric_figure(cohort, matched_df, median_val, out_path,
+                        metric=None, group_col=None):
+    """<metric>-only figure: pre-match distribution + post-match boxplot."""
+    if metric is None:
+        metric = METRIC
+    if group_col is None:
+        group_col = GROUP_COL
     fig, axes = plt.subplots(1, 2, figsize=(12, 5))
 
-    # (a) MMSE histogram (pre-matching), median split annotated
+    # (a) <metric> histogram (pre-matching), median split annotated
     ax = axes[0]
-    hi = cohort[cohort["mmse_group"] == "high"]["MMSE"]
-    lo = cohort[cohort["mmse_group"] == "low"]["MMSE"]
-    bins = np.arange(0, 31, 1)
+    hi = cohort[cohort[group_col] == "high"][metric]
+    lo = cohort[cohort[group_col] == "low"][metric]
+    metric_max = max(30, int(np.ceil(cohort[metric].max() / 5.0)) * 5)
+    bins = np.arange(0, metric_max + 1, max(1, metric_max // 30))
     ax.hist([lo, hi], bins=bins, stacked=True,
             color=["#C44E52", "#4C72B0"],
-            label=[f"Low MMSE (n={len(lo)})", f"High MMSE (n={len(hi)})"])
+            label=[f"Low {metric} (n={len(lo)})",
+                   f"High {metric} (n={len(hi)})"])
     ax.axvline(median_val, color="black", linestyle="--", linewidth=1.2,
                label=f"median={median_val:.1f}")
-    ax.set_xlabel("MMSE")
+    ax.set_xlabel(metric)
     ax.set_ylabel("# subjects")
-    ax.set_title("(a) MMSE distribution (pre-matching AD cohort)")
+    ax.set_title(f"(a) {metric} distribution (pre-matching AD cohort)")
     ax.legend()
 
-    # (b) MMSE boxplot post-match
+    # (b) <metric> boxplot post-match
     ax = axes[1]
-    hi_m = matched_df[matched_df["mmse_group"] == "high"]["MMSE"]
-    lo_m = matched_df[matched_df["mmse_group"] == "low"]["MMSE"]
+    hi_m = matched_df[matched_df[group_col] == "high"][metric]
+    lo_m = matched_df[matched_df[group_col] == "low"][metric]
     bp = ax.boxplot([hi_m, lo_m], patch_artist=True,
-                    tick_labels=[f"High\n(n={len(hi_m)})", f"Low\n(n={len(lo_m)})"])
+                    tick_labels=[f"High\n(n={len(hi_m)})",
+                                  f"Low\n(n={len(lo_m)})"])
     for patch, c in zip(bp["boxes"], ["#4C72B0", "#C44E52"]):
         patch.set_facecolor(c); patch.set_alpha(0.6)
-    ax.set_ylabel("MMSE")
-    ax.set_title(f"(b) MMSE by group (post-matching)\n"
+    ax.set_ylabel(metric)
+    ax.set_title(f"(b) {metric} by group (post-matching)\n"
                  f"High: {hi_m.mean():.1f}±{hi_m.std():.1f}  |  "
                  f"Low: {lo_m.mean():.1f}±{lo_m.std():.1f}")
     ax.axhline(median_val, color="black", linestyle="--", linewidth=0.8)
@@ -397,17 +446,26 @@ def plot_mmse_figure(cohort, matched_df, median_val, out_path):
     plt.close(fig)
 
 
-def plot_age_figure(cohort, matched_df, median_val, out_path):
-    """Age-only figure: pre/post distribution + Age×MMSE scatter showing matching losses."""
+# Backward-compat alias
+plot_mmse_figure = plot_metric_figure
+
+
+def plot_age_figure(cohort, matched_df, median_val, out_path,
+                     metric=None, group_col=None):
+    """Age-only figure: pre/post distribution + Age×<metric> scatter showing matching losses."""
+    if metric is None:
+        metric = METRIC
+    if group_col is None:
+        group_col = GROUP_COL
     fig, axes = plt.subplots(1, 2, figsize=(12, 5))
 
     # (a) Age distribution: pre vs post matching, per group
     ax = axes[0]
     bins_age = np.arange(50, 100, 2)
-    hi_pre = cohort[cohort["mmse_group"] == "high"]["Age"]
-    lo_pre = cohort[cohort["mmse_group"] == "low"]["Age"]
-    hi_post = matched_df[matched_df["mmse_group"] == "high"]["Age"]
-    lo_post = matched_df[matched_df["mmse_group"] == "low"]["Age"]
+    hi_pre = cohort[cohort[group_col] == "high"]["Age"]
+    lo_pre = cohort[cohort[group_col] == "low"]["Age"]
+    hi_post = matched_df[matched_df[group_col] == "high"]["Age"]
+    lo_post = matched_df[matched_df[group_col] == "low"]["Age"]
     ax.hist(hi_pre, bins=bins_age, alpha=0.3, color="#4C72B0",
             label=f"High pre (n={len(hi_pre)})", histtype="stepfilled")
     ax.hist(lo_pre, bins=bins_age, alpha=0.3, color="#C44E52",
@@ -421,22 +479,22 @@ def plot_age_figure(cohort, matched_df, median_val, out_path):
     ax.set_title("(a) Age distribution: pre (fill) vs post (line) matching")
     ax.legend(fontsize=8)
 
-    # (b) Age vs MMSE scatter — pre/post coloring
+    # (b) Age vs <metric> scatter — pre/post coloring
     ax = axes[1]
     matched_ids = set(matched_df["ID"])
     unmatched = cohort[~cohort["ID"].isin(matched_ids)]
-    ax.scatter(unmatched["Age"], unmatched["MMSE"], color="lightgray",
+    ax.scatter(unmatched["Age"], unmatched[metric], color="lightgray",
                s=18, alpha=0.5, label=f"unmatched (n={len(unmatched)})")
-    hi_mm = matched_df[matched_df["mmse_group"] == "high"]
-    lo_mm = matched_df[matched_df["mmse_group"] == "low"]
-    ax.scatter(hi_mm["Age"], hi_mm["MMSE"], color="#4C72B0", s=22,
+    hi_mm = matched_df[matched_df[group_col] == "high"]
+    lo_mm = matched_df[matched_df[group_col] == "low"]
+    ax.scatter(hi_mm["Age"], hi_mm[metric], color="#4C72B0", s=22,
                alpha=0.7, label=f"High matched (n={len(hi_mm)})")
-    ax.scatter(lo_mm["Age"], lo_mm["MMSE"], color="#C44E52", s=22,
+    ax.scatter(lo_mm["Age"], lo_mm[metric], color="#C44E52", s=22,
                alpha=0.7, label=f"Low matched (n={len(lo_mm)})")
     ax.axhline(median_val, color="black", linestyle="--", linewidth=0.8)
     ax.set_xlabel("Age")
-    ax.set_ylabel("MMSE")
-    ax.set_title("(b) Age × MMSE (matched highlighted)")
+    ax.set_ylabel(metric)
+    ax.set_title(f"(b) Age × {metric} (matched highlighted)")
     ax.legend(fontsize=8)
 
     fig.tight_layout()
@@ -472,7 +530,8 @@ def plot_emotion_heatmap(summary_df, out_path):
         for j in range(len(EMOTIONS)):
             if sig[i, j]:
                 ax.text(j, i, sig[i, j], ha="center", va="center", fontsize=10)
-    ax.set_title("Δ mean (High MMSE − Low MMSE) of emotion probabilities\n* q<0.05, ** q<0.01, *** q<0.001")
+    ax.set_title(f"Δ mean (High {METRIC} − Low {METRIC}) of emotion probabilities\n"
+                 "* q<0.05, ** q<0.01, *** q<0.001")
     fig.colorbar(im, ax=ax, label="Δ mean")
     fig.tight_layout()
     fig.savefig(out_path, dpi=150)
@@ -487,18 +546,23 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--visit-selection", choices=["first", "latest"], default="first")
     parser.add_argument("--median-tiebreak", choices=["high", "low"], default="high",
-                        help="Where to place MMSE == median subjects")
+                        help=f"Where to place {METRIC} == median subjects")
     parser.add_argument("--caliper", type=float, default=2.0)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--stat", choices=["ttest", "mannwhitney", "auto"], default="auto")
     args = parser.parse_args()
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    comparison_dir = OUTPUT_DIR / COMPARISON_NAME
+    comparison_dir.mkdir(parents=True, exist_ok=True)
+    for d in ("age", "embedding_mean", "embedding_asymmetry",
+              "landmark_asymmetry", "emotion"):
+        (comparison_dir / d).mkdir(parents=True, exist_ok=True)
 
     # 1. Cohort
     demo = load_p_demographics()
     cohort = select_visit(demo, args.visit_selection)
-    logger.info(f"P patients with MMSE+Age ({args.visit_selection} visit): n={len(cohort)}")
+    logger.info(f"P patients with {METRIC}+Age ({args.visit_selection} visit): n={len(cohort)}")
 
     # 2. Filter to those with predicted age
     with open(AGES_FILE) as f:
@@ -506,19 +570,19 @@ def main():
     cohort = cohort[cohort["ID"].isin(pred_ages)].copy()
     logger.info(f"After requiring predicted_age: n={len(cohort)}")
 
-    # 3. Split by MMSE median
-    cohort, median_val = split_by_mmse_median(cohort, args.median_tiebreak)
-    n_high = (cohort["mmse_group"] == "high").sum()
-    n_low = (cohort["mmse_group"] == "low").sum()
-    logger.info(f"MMSE median={median_val:.1f}; high n={n_high}, low n={n_low}")
+    # 3. Split by metric median
+    cohort, median_val = split_by_metric_median(cohort, args.median_tiebreak)
+    n_high = (cohort[GROUP_COL] == "high").sum()
+    n_low = (cohort[GROUP_COL] == "low").sum()
+    logger.info(f"{METRIC} median={median_val:.1f}; high n={n_high}, low n={n_low}")
 
-    cohort.to_csv(OUTPUT_DIR / "cohort.csv", index=False)
+    cohort.to_csv(comparison_dir / "cohort.csv", index=False)
 
     # 4. 1:1 age matching
     matched, pairs_df, (minor_label, major_label) = match_1to1(
         cohort, caliper=args.caliper, seed=args.seed
     )
-    pairs_df.to_csv(OUTPUT_DIR / "matched_pairs.csv", index=False)
+    pairs_df.to_csv(comparison_dir / "matched_pairs.csv", index=False)
 
     n_pairs = len(pairs_df)
     logger.info(f"Matched pairs: {n_pairs} (caliper={args.caliper}, minor={minor_label})")
@@ -545,25 +609,25 @@ def main():
         merged = merged.drop(columns=["subject_id_emb_sid"])
     merged = merged.drop(columns=[c for c in merged.columns if c.startswith("subject_id")])
 
-    merged.to_csv(OUTPUT_DIR / "matched_features.csv", index=False)
+    merged.to_csv(comparison_dir / "matched_features.csv", index=False)
 
     # 6. Matching report
-    with open(OUTPUT_DIR / "matching_report.txt", "w", encoding="utf-8") as f:
-        f.write("=== AD MMSE age-balanced cohort ===\n")
+    with open(comparison_dir / "matching_report.txt", "w", encoding="utf-8") as f:
+        f.write(f"=== AD {METRIC} age-balanced cohort ===\n")
         f.write(f"Visit selection: {args.visit_selection}\n")
-        f.write(f"MMSE median: {median_val:.2f} (tiebreak={args.median_tiebreak})\n")
+        f.write(f"{METRIC} median: {median_val:.2f} (tiebreak={args.median_tiebreak})\n")
         f.write(f"Pre-matching: high n={n_high}, low n={n_low}\n")
         f.write(f"Post-matching: {n_pairs} pairs ({2*n_pairs} subjects)\n")
         f.write(f"Caliper (years): {args.caliper}\n\n")
-        high_m = matched[matched["mmse_group"] == "high"]
-        low_m = matched[matched["mmse_group"] == "low"]
+        high_m = matched[matched[GROUP_COL] == "high"]
+        low_m = matched[matched[GROUP_COL] == "low"]
         f.write(f"Post-match age: high {high_m['Age'].mean():.2f}±{high_m['Age'].std():.2f}, "
                 f"low {low_m['Age'].mean():.2f}±{low_m['Age'].std():.2f}\n")
         if len(high_m) > 1 and len(low_m) > 1:
             t, p = stats.ttest_ind(high_m["Age"], low_m["Age"], equal_var=False)
             f.write(f"Age t-test p={p:.4f} (should be >>0.05 if matching worked)\n")
-        f.write(f"Post-match MMSE: high {high_m['MMSE'].mean():.2f}±{high_m['MMSE'].std():.2f}, "
-                f"low {low_m['MMSE'].mean():.2f}±{low_m['MMSE'].std():.2f}\n")
+        f.write(f"Post-match {METRIC}: high {high_m[METRIC].mean():.2f}±{high_m[METRIC].std():.2f}, "
+                f"low {low_m[METRIC].mean():.2f}±{low_m[METRIC].std():.2f}\n")
 
     # 7. Per-feature stats
     feature_cols = ["age_error", "abs_age_error"]
@@ -586,8 +650,8 @@ def main():
             feature_cols.append(col)
 
     # Build paired-aligned arrays by pair_id (for paired t-test)
-    high_by_pair = merged[merged["mmse_group"] == "high"].set_index("pair_id")
-    low_by_pair = merged[merged["mmse_group"] == "low"].set_index("pair_id")
+    high_by_pair = merged[merged[GROUP_COL] == "high"].set_index("pair_id")
+    low_by_pair = merged[merged[GROUP_COL] == "low"].set_index("pair_id")
     common_pairs = high_by_pair.index.intersection(low_by_pair.index)
     high_aligned = high_by_pair.loc[common_pairs].sort_index()
     low_aligned = low_by_pair.loc[common_pairs].sort_index()
@@ -612,30 +676,35 @@ def main():
         if valid.sum() > 0:
             summary.loc[valid, qcol] = bh_fdr(summary.loc[valid, pcol].values)
 
-    summary.to_csv(OUTPUT_DIR / "summary_stats.csv", index=False)
+    summary.to_csv(comparison_dir / "summary_stats.csv", index=False)
 
-    # 9. Continuous MMSE correlations (robustness)
+    # 9. Continuous metric correlations (robustness)
     cont_rows = []
     for col in feature_cols:
         if col not in merged.columns:
             continue
-        sub = merged[[col, "MMSE"]].dropna()
+        sub = merged[[col, METRIC]].dropna()
         if len(sub) < 5:
             continue
-        r_p, p_p = stats.pearsonr(sub["MMSE"], sub[col])
-        r_s, p_s = stats.spearmanr(sub["MMSE"], sub[col])
+        r_p, p_p = stats.pearsonr(sub[METRIC], sub[col])
+        r_s, p_s = stats.spearmanr(sub[METRIC], sub[col])
         cont_rows.append({
             "feature": col, "n": len(sub),
             "pearson_r": r_p, "pearson_p": p_p,
             "spearman_r": r_s, "spearman_p": p_s,
         })
-    pd.DataFrame(cont_rows).to_csv(OUTPUT_DIR / "mmse_continuous_corr.csv", index=False)
+    pd.DataFrame(cont_rows).to_csv(
+        comparison_dir / f"{METRIC_LOW}_continuous_corr.csv", index=False)
 
     # 10. Plots
-    plot_mmse_figure(cohort, matched, median_val, OUTPUT_DIR / "fig_mmse_overview.png")
-    plot_age_figure(cohort, matched, median_val, OUTPUT_DIR / "fig_age_overview.png")
-    plot_age_error_violin(merged, OUTPUT_DIR / "fig_age_error_violin.png")
-    plot_emotion_heatmap(summary, OUTPUT_DIR / "fig_emotion_grid_heatmap.png")
+    plot_metric_figure(cohort, matched, median_val,
+                        comparison_dir / f"fig_{METRIC_LOW}_overview.png")
+    plot_age_figure(cohort, matched, median_val,
+                     comparison_dir / "fig_age_overview.png")
+    plot_age_error_violin(merged,
+                           comparison_dir / "age" / "fig_age_error_violin.png")
+    plot_emotion_heatmap(summary,
+                          comparison_dir / "emotion" / "fig_emotion_grid_heatmap.png")
 
     logger.info(f"Done. Outputs at {OUTPUT_DIR}")
     logger.info(f"  Pairs: {n_pairs}, features tested: {len(summary)}")

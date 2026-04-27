@@ -14,6 +14,7 @@ Usage:
 
 import importlib.util
 import logging
+import os
 import sys
 from pathlib import Path
 
@@ -37,7 +38,11 @@ load_embedding_mean = _l1.load_embedding_mean
 load_embedding_asymmetry = _l1.load_embedding_asymmetry
 EMBEDDING_MODELS = _l1.EMBEDDING_MODELS
 
-L3_DIR = PROJECT_ROOT / "workspace" / "age_ladder" / "mmse_hilo_standalone"
+ARM_B_DIR = PROJECT_ROOT / "workspace" / "arms_analysis" / "per_arm" / "arm_b"
+# HILO_METRIC: MMSE (default) → mmse_high_vs_low/, CASI → casi_high_vs_low/
+METRIC = os.environ.get("HILO_METRIC", "MMSE")
+GROUP_COL = f"{METRIC.lower()}_group"
+COMPARISON_DIR = ARM_B_DIR / f"{METRIC.lower()}_high_vs_low"
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s")
 logger = logging.getLogger(__name__)
@@ -67,8 +72,8 @@ def eval_modality(name, X_df, matched, model_cls="xgb"):
 
 
 def main():
-    matched = pd.read_csv(L3_DIR / "matched_features.csv")
-    matched["label"] = (matched["mmse_group"] == "high").astype(int)
+    matched = pd.read_csv(COMPARISON_DIR / "matched_features.csv")
+    matched["label"] = (matched[GROUP_COL] == "high").astype(int)
     matched["base_id"] = matched["ID"].str.extract(r"^([A-Za-z]+\d+)")
 
     ids = matched["ID"].tolist()
@@ -129,7 +134,8 @@ def main():
             results.append(eval_modality(f"embedding_{model}_mean", emb, matched))
 
     df = pd.DataFrame(results)
-    out_csv = L3_DIR / "summary_per_modality_auc.csv"
+    COMPARISON_DIR.mkdir(parents=True, exist_ok=True)
+    out_csv = COMPARISON_DIR / "summary_per_modality_auc.csv"
     df.to_csv(out_csv, index=False)
 
     logger.info(f"Saved {out_csv}")
