@@ -34,6 +34,9 @@ class DataLoader:
         random_seed: int = 42,
         predicted_ages_file: Optional[Path] = None,
         min_predicted_age: float = 65.0,
+        group_filter: Optional[str] = None,
+        label_mode: str = "binary",
+        visit_selection: str = "latest",
     ):
         self.features_dir = Path(features_dir)
         self.demographics_dir = Path(demographics_dir)
@@ -47,6 +50,9 @@ class DataLoader:
         self.random_seed = random_seed
         self.predicted_ages_file = predicted_ages_file
         self.min_predicted_age = min_predicted_age
+        self.group_filter = group_filter
+        self.label_mode = label_mode
+        self.visit_selection = visit_selection
         self._predicted_ages = None
 
         self._features_cache = {}
@@ -131,7 +137,12 @@ class DataLoader:
         logger.info("載入人口學資料...")
 
         dfs = []
-        for csv_name in ["ACS.csv", "NAD.csv", "P.csv"]:
+        if self.group_filter:
+            csv_names = [f"{self.group_filter}.csv"]
+            logger.info(f"群組篩選: 僅載入 {self.group_filter}")
+        else:
+            csv_names = ["ACS.csv", "NAD.csv", "P.csv"]
+        for csv_name in csv_names:
             csv_path = self.demographics_dir / csv_name
             if csv_path.exists():
                 df = pd.read_csv(csv_path)
@@ -237,19 +248,18 @@ class DataLoader:
             features, filtered_demo, data_format
         )
 
+        class_dist = {int(k): int(v) for k, v in zip(*np.unique(y, return_counts=True))}
         metadata = {
             "model": model,
             "feature_type": feature_type,
             "cdr_threshold": cdr_threshold,
+            "label_mode": self.label_mode,
             "data_balancing": self.data_balancing,
             "use_all_visits": self.use_all_visits,
             "n_samples": len(X),
             "n_features": X.shape[1],
             "data_format": data_format,
-            "class_distribution": {
-                "negative": int(np.sum(y == 0)),
-                "positive": int(np.sum(y == 1)),
-            },
+            "class_distribution": class_dist,
         }
 
         if data_format == "per_image":
@@ -311,6 +321,25 @@ class DataLoader:
             df["Global_CDR"] = pd.to_numeric(df["Global_CDR"], errors="coerce")
             df["Global_CDR"] = df["Global_CDR"].fillna(0)
 
+        if self.label_mode == "cdr_severity":
+            df = self._filter_cdr_severity(df)
+        else:
+            df = self._filter_binary(df, cdr_threshold)
+
+        if not self.use_all_visits:
+            df = self._keep_single_visit(df)
+
+        label_counts = df["label"].value_counts().sort_index()
+        logger.debug(
+            f"最終篩選結果: {len(df)} 筆, 標籤分佈: {dict(label_counts)}"
+        )
+        return df
+
+    def _filter_binary(
+        self, df: pd.DataFrame, cdr_threshold: float
+    ) -> pd.DataFrame:
+        """原始二元分類篩選（CDR=0 vs CDR≥threshold）"""
+
         def assign_label(group):
             if group in ["ACS", "NAD"]:
                 return 0
@@ -349,26 +378,47 @@ class DataLoader:
                 f"(保留 {filtered_count / original_count * 100:.1f}%)"
             )
 
-        if not self.use_all_visits:
-            df = self._keep_latest_visit(df)
+        return df
 
-        logger.debug(
-            f"最終篩選結果: {len(df)} 筆 "
-            f"(label=0: {(df['label'] == 0).sum()}, label=1: {(df['label'] == 1).sum()})"
+    def _filter_cdr_severity(self, df: pd.DataFrame) -> pd.DataFrame:
+        """CDR 嚴重度三類別篩選（CDR 0.5 vs 1 vs 2+），僅限 P 群體"""
+        original_count = len(df)
+
+        if "Global_CDR" not in df.columns:
+            raise ValueError("cdr_severity 模式需要 Global_CDR 欄位")
+
+        # 僅保留 CDR >= 0.5 的 P 群體
+        df = df[(df["group"] == "P") & (df["Global_CDR"] >= 0.5)].copy()
+
+        def assign_severity_label(cdr):
+            if cdr == 0.5:
+                return 0  # 輕度
+            elif cdr == 1.0:
+                return 1  # 中度
+            else:  # CDR >= 2.0
+                return 2  # 中重度
+
+        df["label"] = df["Global_CDR"].apply(assign_severity_label)
+
+        logger.info(
+            f"CDR 嚴重度篩選: {original_count} → {len(df)} 筆 "
+            f"(CDR0.5={(df['label']==0).sum()}, CDR1={(df['label']==1).sum()}, CDR2+={(df['label']==2).sum()})"
         )
         return df
 
-    def _keep_latest_visit(self, df: pd.DataFrame) -> pd.DataFrame:
-        """保留每個受試者的最新訪視"""
+    def _keep_single_visit(self, df: pd.DataFrame) -> pd.DataFrame:
+        """保留每個受試者的單一訪視（依 visit_selection 決定首次或末次）"""
         df = df.copy()
         df["base_id"] = df["ID"].str.extract(r"^([A-Z]+\d+)", expand=False)
         df["visit"] = df["ID"].str.extract(r"-(\d+)$", expand=False).astype(float)
+        ascending = self.visit_selection == "first"
         df = (
-            df.sort_values("visit", ascending=False)
+            df.sort_values("visit", ascending=ascending)
             .groupby("base_id")
             .first()
             .reset_index(drop=True)
         )
+        logger.info(f"每人取 {self.visit_selection} visit: {len(df)} 筆")
         df = df.drop(columns=["base_id", "visit"], errors="ignore")
         return df
 

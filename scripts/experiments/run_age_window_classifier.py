@@ -384,20 +384,26 @@ def plot_metrics_by_window(summary_df, out_path, view, group2_label,
     ax1.legend(loc="upper left")
 
     ax2 = ax1.twinx()
-    w = 0.35
-    # n (HC) — 若 summary 有 n_neg_external 欄則 stacked 外部於內部之上
+    w = 0.75
     n_neg_ext = (summary_df["n_neg_external"].values
                  if "n_neg_external" in summary_df.columns
                  else np.zeros(len(x)))
     n_neg_int = summary_df["n_neg"].values - n_neg_ext
-    ax2.bar(x - w / 2, n_neg_int, width=w, alpha=0.35,
-            label=f"n ({group2_label})", color="C0")
+    n_pos = summary_df["n_pos"].values
+
+    color_int = "#3B78B5"   # NAD+ACS / ACS / NAD (medium blue)
+    color_ext = "#7FB3D9"   # E-ACS (lighter shade of same blue)
+    color_pos = "#E89A9A"   # Patient (salmon)
+
+    ax2.bar(x, n_neg_int, width=w, alpha=0.6, color=color_int,
+            label=f"n ({group2_label})")
     if (n_neg_ext > 0).any():
-        ax2.bar(x - w / 2, n_neg_ext, width=w, alpha=0.55,
-                bottom=n_neg_int, color="#9C27B0",
+        ax2.bar(x, n_neg_ext, width=w, alpha=0.75,
+                bottom=n_neg_int, color=color_ext,
                 label="n (E-ACS)")
-    ax2.bar(x + w / 2, summary_df["n_pos"], width=w, alpha=0.3,
-            label="n (Patient)", color="C3")
+    ax2.bar(x, n_pos, width=w, alpha=0.55,
+            bottom=n_neg_int + n_neg_ext, color=color_pos,
+            label="n (Patient)")
     ax2.set_ylabel("n samples")
     ax2.legend(loc="upper right")
 

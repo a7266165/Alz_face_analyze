@@ -38,6 +38,8 @@ EACS_SOURCE_COLORS = {
     "SZU-EmoDage": "#9467bd",
     "AFAD":        "#8c564b",
     "DiverseAsian": "#e377c2",
+    "AgeDB":       "#17becf",
+    "APPA-REAL":   "#bcbd22",
 }
 
 
@@ -168,7 +170,7 @@ def main():
                     single_color="#2196F3")
         default_name = "predicted_ages_scatter_acs_vs_eacs.png"
     else:
-        # per_source: ACS + 7 EACS sources, 2×4 grid
+        # per_source: ACS + 9 EACS sources, 2×5 grid
         sources_in_order = [
             ("ACS (internal)", acs, "#4CAF50"),
             ("E-ACS | IMDB", eacs[eacs["Source"] == "IMDB"],
@@ -185,8 +187,12 @@ def main():
              EACS_SOURCE_COLORS["AFAD"]),
             ("E-ACS | DiverseAsian", eacs[eacs["Source"] == "DiverseAsian"],
              EACS_SOURCE_COLORS["DiverseAsian"]),
+            ("E-ACS | AgeDB", eacs[eacs["Source"] == "AgeDB"],
+             EACS_SOURCE_COLORS["AgeDB"]),
+            ("E-ACS | APPA-REAL", eacs[eacs["Source"] == "APPA-REAL"],
+             EACS_SOURCE_COLORS["APPA-REAL"]),
         ]
-        fig, axes = plt.subplots(2, 4, figsize=(22, 11))
+        fig, axes = plt.subplots(2, 5, figsize=(27, 11))
         for ax, (title, sub, color) in zip(axes.flat, sources_in_order):
             _draw_panel(ax, sub, title=title, color_by="single",
                         single_color=color)
