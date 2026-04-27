@@ -53,9 +53,10 @@ STATISTICS_DIR = EMBEDDING_DIR / "statistics"
 
 # age 模組
 AGE_PREDICTION_DIR = WORKSPACE_DIR / "age" / "age_prediction"
-CALIBRATION_DIR = AGE_PREDICTION_DIR / "calibration"
-BOOTSTRAP_DIR = AGE_PREDICTION_DIR / "bootstrap_correction"
-MEAN_CORRECTION_DIR = AGE_PREDICTION_DIR / "mean_correction"
+CORRECTIONS_DIR = AGE_PREDICTION_DIR / "corrections"
+CALIBRATION_DIR = CORRECTIONS_DIR / "calibration"
+BOOTSTRAP_DIR = CORRECTIONS_DIR / "bootstrap_correction"
+MEAN_CORRECTION_DIR = CORRECTIONS_DIR / "mean_correction"
 PREDICTED_AGES_FILE = AGE_PREDICTION_DIR / "predicted_ages.json"
 PREDICTED_AGES_CALIBRATED_FILE = AGE_PREDICTION_DIR / "predicted_ages_calibrated.json"
 

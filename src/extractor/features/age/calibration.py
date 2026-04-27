@@ -10,6 +10,13 @@
 - load_predicted_ages: 載入預測年齡 JSON
 - load_demographics_for_calibration: 載入 ACS/NAD/P 人口學資料
 - match_ages: 配對預測年齡與真實年齡
+
+統一輸出格式：
+- CSV 欄位: ID, subject, group, real_age, predicted_age, corrected_age,
+             error_before, error_after, age_int
+- 共用圖表: scatter_before_after, error_distribution_before_after,
+            residual_by_age_combined
+- 共用統計: summary_stats.csv
 """
 
 import json
@@ -18,11 +25,15 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Dict, List, Tuple
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import StratifiedKFold
 
 logger = logging.getLogger(__name__)
+
+# 共用配色
+COLORS = {"ACS": "#4CAF50", "NAD": "#2196F3", "P": "#F44336"}
 
 
 # ---------------------------------------------------------------------------
@@ -121,22 +132,31 @@ AGE_BINS = [
 
 class CalibrationModel:
     """
-    使用健康族群 (ACS + NAD) 進行 10-fold 校正。
+    使用健康族群 (ACS + NAD) 進行 K-fold 校正。
 
     按年齡分層抽樣 (StratifiedKFold)，
-    每個 fold 訓練 error ~ predicted_age 線性迴歸，
-    Patient 族群取 10 個 fold 的平均校正值。
+    每個 fold 訓練 error ~ predicted_age 線性迴歸。
+
+    use_val_only=True  (Train 90% / Val 10%):
+        健康組只用被分到 val set 的 1 個 fold 校正。
+    use_val_only=False (Train 10% / Val 90%):
+        健康組被分到 val set 的 9 個 fold 校正後取平均。
+    P 組在兩種模式下都用全部 K 個 fold 平均。
     """
 
     def __init__(self, n_splits: int = 10, random_state: int = 42):
         self.n_splits = n_splits
         self.random_state = random_state
 
-    def fit_and_transform(self, df_matched: pd.DataFrame) -> pd.DataFrame:
-        """執行 10-fold 校正，回傳包含 calibrated_age 的 DataFrame。"""
+    def fit_and_transform(
+        self, df_matched: pd.DataFrame, use_val_only: bool = True,
+    ) -> pd.DataFrame:
+        """執行 K-fold 校正，回傳包含 corrected_age 的 DataFrame。"""
         df_healthy = df_matched[df_matched["group"].isin(["ACS", "NAD"])].copy()
         df_patient = df_matched[df_matched["group"] == "P"].copy()
 
+        mode = "Train 90%/Val 10%" if use_val_only else "Train 10%/Val 90%"
+        logger.info(f"模式: {mode}")
         logger.info(f"健康族群: {len(df_healthy)} 人次")
         logger.info(f"Patient 族群: {len(df_patient)} 人次")
 
@@ -151,10 +171,9 @@ class CalibrationModel:
             random_state=self.random_state,
         )
 
-        healthy_calibrated = []
-        patient_fold_calibrated: Dict[str, List[float]] = {
-            pid: [] for pid in df_patient["ID"]
-        }
+        # 健康組和 P 組都用 dict 累積多 fold 結果
+        healthy_fold_calibrated: Dict[str, List[float]] = defaultdict(list)
+        patient_fold_calibrated: Dict[str, List[float]] = defaultdict(list)
 
         for fold_idx, (train_idx, val_idx) in enumerate(
             skf.split(healthy_subjects, subject_strata)
@@ -170,47 +189,89 @@ class CalibrationModel:
             y_train = df_train["error"].values
             a, b = np.polyfit(x_train, y_train, 1)
 
-            # 校正 validation
+            # 校正健康組 validation set
             for _, row in df_val.iterrows():
                 pred = row["predicted_age"]
                 calibrated = pred + (a * pred + b)
-                healthy_calibrated.append({
-                    "ID": row["ID"],
-                    "subject": row["subject"],
-                    "group": row["group"],
-                    "real_age": row["real_age"],
-                    "predicted_age": pred,
-                    "calibrated_age": calibrated,
-                    "error_before": row["error"],
-                    "error_after": row["real_age"] - calibrated,
-                    "fold": fold_idx + 1,
-                })
+                healthy_fold_calibrated[row["ID"]].append(calibrated)
 
-            # 校正 Patient
+            # 校正 Patient（全部 fold 都套用）
             for _, row in df_patient.iterrows():
                 pred = row["predicted_age"]
                 calibrated = pred + (a * pred + b)
                 patient_fold_calibrated[row["ID"]].append(calibrated)
 
-        df_healthy_result = pd.DataFrame(healthy_calibrated)
+        # 組裝結果
+        def _build_rows(df_src, fold_dict):
+            rows = []
+            for _, row in df_src.iterrows():
+                vals = fold_dict.get(row["ID"], [])
+                if not vals:
+                    continue
+                corrected = np.mean(vals)
+                rows.append({
+                    "ID": row["ID"],
+                    "subject": row["subject"],
+                    "group": row["group"],
+                    "real_age": row["real_age"],
+                    "predicted_age": row["predicted_age"],
+                    "corrected_age": corrected,
+                    "error_before": row["error"],
+                    "error_after": row["real_age"] - corrected,
+                    "age_int": int(np.floor(row["real_age"])),
+                })
+            return rows
 
-        patient_results = []
-        for _, row in df_patient.iterrows():
-            calibrated_mean = np.mean(patient_fold_calibrated[row["ID"]])
-            patient_results.append({
-                "ID": row["ID"],
-                "subject": row["subject"],
-                "group": row["group"],
-                "real_age": row["real_age"],
-                "predicted_age": row["predicted_age"],
-                "calibrated_age": calibrated_mean,
-                "error_before": row["error"],
-                "error_after": row["real_age"] - calibrated_mean,
-                "fold": "avg",
-            })
+        healthy_rows = _build_rows(df_healthy, healthy_fold_calibrated)
+        patient_rows = _build_rows(df_patient, patient_fold_calibrated)
 
-        df_patient_result = pd.DataFrame(patient_results)
-        return pd.concat([df_healthy_result, df_patient_result], ignore_index=True)
+        return pd.concat(
+            [pd.DataFrame(healthy_rows), pd.DataFrame(patient_rows)],
+            ignore_index=True,
+        )
+
+
+def run_multi_seed_calibration(
+    df_matched: pd.DataFrame,
+    n_splits: int = 10,
+    n_seeds: int = 30,
+    use_val_only: bool = True,
+    base_seed: int = 42,
+) -> pd.DataFrame:
+    """多隨機種子校正：跑 n_seeds 次 StratifiedKFold，每個 ID 取平均。"""
+    all_corrected: Dict[str, List[float]] = defaultdict(list)
+
+    for i in range(n_seeds):
+        seed = base_seed + i
+        model = CalibrationModel(n_splits=n_splits, random_state=seed)
+        result = model.fit_and_transform(df_matched, use_val_only=use_val_only)
+        for _, row in result.iterrows():
+            all_corrected[row["ID"]].append(row["corrected_age"])
+
+        if (i + 1) % 10 == 0:
+            logger.info(f"  Seed {i+1}/{n_seeds} done")
+
+    # 取回 metadata（從原始 df_matched），計算跨種子平均
+    rows = []
+    for _, row in df_matched.iterrows():
+        vals = all_corrected.get(row["ID"], [])
+        if not vals:
+            continue
+        corrected = np.mean(vals)
+        rows.append({
+            "ID": row["ID"],
+            "subject": row["subject"],
+            "group": row["group"],
+            "real_age": row["real_age"],
+            "predicted_age": row["predicted_age"],
+            "corrected_age": corrected,
+            "error_before": row["error"],
+            "error_after": row["real_age"] - corrected,
+            "age_int": row.get("age_int", int(np.floor(row["real_age"]))),
+        })
+
+    logger.info(f"多種子校正完成: {n_seeds} seeds, {len(rows)} 筆")
+    return pd.DataFrame(rows)
 
 
 # ---------------------------------------------------------------------------
@@ -332,7 +393,7 @@ class BootstrapCorrector:
                     "group": group,
                     "real_age": row["real_age"],
                     "predicted_age": row["predicted_age"],
-                    "corrected_predicted_age": corrected,
+                    "corrected_age": corrected,
                     "error_before": row["error"],
                     "error_after": row["real_age"] - corrected,
                     "age_int": row["age_int"],
@@ -392,12 +453,264 @@ class MeanCorrector:
                 corrected = row["predicted_age"] + fitted_error
                 rows.append({
                     "ID": row["ID"],
+                    "subject": row.get("subject", row["ID"].rsplit("-", 1)[0]),
                     "group": row["group"],
                     "real_age": row["real_age"],
                     "predicted_age": row["predicted_age"],
-                    "corrected_predicted_age": corrected,
+                    "corrected_age": corrected,
                     "error_before": row["error"],
                     "error_after": row["real_age"] - corrected,
                     "age_int": row["age_int"],
                 })
         return pd.DataFrame(rows)
+
+
+# ---------------------------------------------------------------------------
+# 共用輸出函式 — 統一三種方法的圖表與統計
+# ---------------------------------------------------------------------------
+
+
+def export_summary_stats(df_result: pd.DataFrame, output_dir: Path) -> pd.DataFrame:
+    """輸出校正前後統計表 CSV（族群 × 年齡分層）。"""
+
+    def _row(sub: pd.DataFrame, group: str, age_group: str) -> dict:
+        n = len(sub)
+        return {
+            "group": group,
+            "age_group": age_group,
+            "n": n,
+            "real_age": f"{sub['real_age'].mean():.2f}±{sub['real_age'].std():.2f}",
+            "predicted_age": f"{sub['predicted_age'].mean():.2f}±{sub['predicted_age'].std():.2f}",
+            "corrected_age": f"{sub['corrected_age'].mean():.2f}±{sub['corrected_age'].std():.2f}",
+            "error_before": f"{sub['error_before'].mean():.2f}±{sub['error_before'].std():.2f}",
+            "error_after": f"{sub['error_after'].mean():.2f}±{sub['error_after'].std():.2f}",
+            "MAE_before": f"{sub['error_before'].abs().mean():.2f}",
+            "MAE_after": f"{sub['error_after'].abs().mean():.2f}",
+        }
+
+    rows = []
+    for grp in ["ACS", "NAD", "ACS+NAD", "P", "All"]:
+        if grp == "All":
+            df_grp = df_result
+        elif grp == "ACS+NAD":
+            df_grp = df_result[df_result["group"].isin(["ACS", "NAD"])]
+        else:
+            df_grp = df_result[df_result["group"] == grp]
+
+        if len(df_grp) == 0:
+            continue
+        rows.append(_row(df_grp, grp, "Total"))
+
+        for label, mask_fn in AGE_BINS:
+            sub = df_grp[mask_fn(df_grp["real_age"])]
+            if len(sub) > 0:
+                rows.append(_row(sub, grp, label))
+
+    df_stats = pd.DataFrame(rows)
+    csv_path = output_dir / "summary_stats.csv"
+    df_stats.to_csv(csv_path, index=False, encoding="utf-8-sig")
+    logger.info(f"統計表已儲存: {csv_path}")
+    return df_stats
+
+
+def print_summary(df_result: pd.DataFrame, method_name: str = ""):
+    """印出校正前後統計摘要。"""
+    logger.info("")
+    logger.info("=" * 60)
+    logger.info(f"{method_name} 校正前後統計比較")
+    logger.info("=" * 60)
+    for grp in ["ACS", "NAD", "P", "All"]:
+        sub = df_result if grp == "All" else df_result[df_result["group"] == grp]
+        n = len(sub)
+        if n == 0:
+            continue
+        mae_b = sub["error_before"].abs().mean()
+        mae_a = sub["error_after"].abs().mean()
+        mean_b, std_b = sub["error_before"].mean(), sub["error_before"].std()
+        mean_a, std_a = sub["error_after"].mean(), sub["error_after"].std()
+        logger.info(
+            f"{grp:>5s} (n={n}): "
+            f"MAE {mae_b:.2f} → {mae_a:.2f}, "
+            f"Mean {mean_b:.2f}±{std_b:.2f} → {mean_a:.2f}±{std_a:.2f}"
+        )
+
+
+def plot_scatter_before_after(
+    df_result: pd.DataFrame, output_dir: Path, method_name: str = "",
+):
+    """2×3 散佈圖：校正前後 × ACS/NAD/P。"""
+    fig, axes = plt.subplots(2, 3, figsize=(18, 12))
+    groups = ["ACS", "NAD", "P"]
+
+    for col_idx, grp in enumerate(groups):
+        sub = df_result[df_result["group"] == grp]
+        if len(sub) == 0:
+            continue
+        color = COLORS[grp]
+
+        for row_idx, (y_col, label, err_col) in enumerate([
+            ("predicted_age", "Before Correction", "error_before"),
+            ("corrected_age", "After Correction", "error_after"),
+        ]):
+            ax = axes[row_idx, col_idx]
+            ax.scatter(
+                sub["real_age"], sub[y_col],
+                c=color, alpha=0.4, s=20, edgecolors="white", linewidth=0.3,
+            )
+            vmin, vmax = 20, 100
+            ax.plot([vmin, vmax], [vmin, vmax], "k--", alpha=0.5, linewidth=1,
+                    label="y = x")
+
+            x = sub["real_age"].values.astype(np.float64)
+            y = sub[y_col].values.astype(np.float64)
+            mask = np.isfinite(x) & np.isfinite(y)
+            x, y = x[mask], y[mask]
+            if len(x) > 2:
+                a, b = np.polyfit(x, y, 1)
+                x_line = np.array([vmin, vmax])
+                ax.plot(x_line, a * x_line + b, color="#FF9800", linewidth=2,
+                        alpha=0.8, label=f"y = {a:.2f}x + {b:.2f}")
+
+            corr = sub["real_age"].corr(sub[y_col])
+            mae = sub[err_col].abs().mean()
+            mean_err = sub[err_col].mean()
+
+            ax.set_xlabel("Real Age", fontsize=11)
+            ax.set_ylabel("Predicted Age" if row_idx == 0 else "Corrected Age",
+                          fontsize=11)
+            ax.set_title(
+                f"{grp} - {label}\n"
+                f"(n={len(sub)}, r={corr:.3f}, MAE={mae:.2f}, "
+                f"Mean Err={mean_err:.2f})",
+                fontsize=11,
+            )
+            ax.legend(fontsize=9)
+            ax.set_xlim(vmin, vmax)
+            ax.set_ylim(vmin, vmax)
+            ax.set_aspect("equal")
+            ax.grid(True, alpha=0.3)
+
+    title = "Real Age vs Predicted Age: Before & After"
+    if method_name:
+        title += f" {method_name}"
+    fig.suptitle(title, fontsize=15, fontweight="bold", y=1.01)
+    plt.tight_layout()
+    fig.savefig(str(output_dir / "scatter_before_after.png"),
+                dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    logger.info("scatter_before_after.png 已儲存")
+
+
+def plot_error_distribution(
+    df_result: pd.DataFrame, output_dir: Path, method_name: str = "",
+):
+    """2×3 直方圖：校正前後誤差分佈。"""
+    groups = ["ACS", "NAD", "P"]
+    fig, axes = plt.subplots(2, 3, figsize=(16, 9))
+
+    for col_idx, grp in enumerate(groups):
+        sub = df_result[df_result["group"] == grp]
+        if len(sub) == 0:
+            continue
+        color = COLORS[grp]
+
+        ax_before = axes[0, col_idx]
+        ax_before.hist(sub["error_before"], bins=30, color=color, alpha=0.7,
+                       edgecolor="white", linewidth=0.5)
+        mae_b = sub["error_before"].abs().mean()
+        mean_b = sub["error_before"].mean()
+        ax_before.axvline(x=0, color="black", linestyle="--", alpha=0.5)
+        ax_before.set_title(
+            f"{grp} Before (n={len(sub)})\nMean={mean_b:.2f}, MAE={mae_b:.2f}",
+            fontsize=11,
+        )
+        ax_before.set_xlabel("Error (real − predicted)")
+        ax_before.grid(True, alpha=0.3)
+
+        ax_after = axes[1, col_idx]
+        ax_after.hist(sub["error_after"], bins=30, color=color, alpha=0.7,
+                      edgecolor="white", linewidth=0.5)
+        mae_a = sub["error_after"].abs().mean()
+        mean_a = sub["error_after"].mean()
+        ax_after.axvline(x=0, color="black", linestyle="--", alpha=0.5)
+        ax_after.set_title(
+            f"{grp} After\nMean={mean_a:.2f}, MAE={mae_a:.2f}",
+            fontsize=11,
+        )
+        ax_after.set_xlabel("Corrected Error")
+        ax_after.grid(True, alpha=0.3)
+
+    title = "Age Error Distribution: Before vs After"
+    if method_name:
+        title += f" {method_name}"
+    fig.suptitle(title, fontsize=14, fontweight="bold", y=1.01)
+    plt.tight_layout()
+    fig.savefig(str(output_dir / "error_distribution_before_after.png"),
+                dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    logger.info("error_distribution_before_after.png 已儲存")
+
+
+def plot_residual_combined(
+    df_result: pd.DataFrame, output_dir: Path, method_name: str = "",
+):
+    """三組疊合的校正後殘差折線圖。"""
+    fig, ax = plt.subplots(figsize=(14, 5))
+
+    for grp, color in COLORS.items():
+        sub = df_result[df_result["group"] == grp]
+        if len(sub) == 0:
+            continue
+        st = sub.groupby("age_int")["error_after"].agg(["mean", "std", "count"])
+        st = st[st["count"] >= 3].sort_index()
+        if len(st) == 0:
+            continue
+        ages = st.index.values
+        means = st["mean"].values
+        stds = st["std"].fillna(0).values
+        ax.plot(ages, means, color=color, linewidth=2,
+                marker="o", markersize=4, label=f"{grp} (n={len(sub)})")
+        ax.fill_between(ages, means - stds, means + stds,
+                        color=color, alpha=0.15)
+
+    ax.axhline(y=0, color="black", linestyle="--", alpha=0.4)
+    ax.set_xlabel("True Age (y)", fontsize=12)
+    ax.set_ylabel("Residual ε = y − corrected", fontsize=12)
+    title = "Correction Residual by True Age — ACS / NAD / P (mean ± std)"
+    if method_name:
+        title += f"\n{method_name}"
+    ax.set_title(title, fontsize=13)
+    ax.set_xlim(50, 100)
+    ax.legend(fontsize=10)
+    ax.grid(True, alpha=0.3)
+    plt.tight_layout()
+    fig.savefig(str(output_dir / "residual_by_age_combined.png"),
+                dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    logger.info("residual_by_age_combined.png 已儲存")
+
+
+def save_and_plot_all(
+    df_result: pd.DataFrame,
+    output_dir: Path,
+    method_name: str = "",
+):
+    """統一輸出入口：CSV → output_dir/data/，PNG → output_dir/plots/。"""
+    data_dir = output_dir / "data"
+    plots_dir = output_dir / "plots"
+    data_dir.mkdir(parents=True, exist_ok=True)
+    plots_dir.mkdir(parents=True, exist_ok=True)
+
+    # CSV → data/
+    csv_path = data_dir / "corrected_ages.csv"
+    df_result.to_csv(csv_path, index=False, encoding="utf-8-sig")
+    logger.info(f"校正結果已儲存: {csv_path}")
+
+    # 統計 CSV → data/
+    print_summary(df_result, method_name)
+    export_summary_stats(df_result, data_dir)
+
+    # 共用圖表 → plots/
+    plot_scatter_before_after(df_result, plots_dir, method_name)
+    plot_error_distribution(df_result, plots_dir, method_name)
+    plot_residual_combined(df_result, plots_dir, method_name)

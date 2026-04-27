@@ -510,7 +510,7 @@ def plot_error_by_age_combined(output_dir: Path):
     """讀取 bootstrap 校正後資料，畫三組疊合的 per-integer-age error 折線圖。"""
     from src.config import BOOTSTRAP_DIR
 
-    csv_path = BOOTSTRAP_DIR / "corrected_ages_bootstrap.csv"
+    csv_path = BOOTSTRAP_DIR / "data" / "corrected_ages.csv"
     df = pd.read_csv(csv_path, encoding="utf-8-sig")
 
     fig, ax = plt.subplots(figsize=(14, 5))
