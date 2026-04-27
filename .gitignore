@@ -5,18 +5,27 @@ __pycache__*
 /workspace/*
 
 external/*
-!external/TopoFR/
-external/TopoFR/*
-!/external/TopoFR/link.txt
-
-!external/dlib/
-external/dlib/*
-!/external/dlib/download_dlib.py
+!external/embedding/
+external/embedding/*
+!external/embedding/TopoFR/
+external/embedding/TopoFR/*
+!/external/embedding/TopoFR/link.txt
+!external/embedding/dlib/
+external/embedding/dlib/*
+!/external/embedding/dlib/download_dlib.py
+!external/emotion/
+external/emotion/*
+!external/public_face_datasets/
+external/public_face_datasets/*
+!external/public_face_datasets/README.md
+!external/public_face_datasets/DOWNLOAD_STATUS.md
+!external/public_face_datasets/asian_elderly_datasets.csv
 
 /data/*
 !/data/demographics/
 /data/demographics/*
 !/data/demographics/_details.txt
+!/data/demographics/EACS.csv
 
 !/data/images/ 
 /data/images/*                        
@@ -26,8 +35,6 @@ external/dlib/*
 !/data/images/raw/path.txt
 
 test_results/*
-
-src_seminar/
 
 /paper/
 /tmp/

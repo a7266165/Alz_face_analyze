@@ -27,8 +27,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
 from _paths import PROJECT_ROOT
 project_root = PROJECT_ROOT
 
-from src.config import FEATURES_DIR, WORKSPACE_DIR
-from src.core.extractor import FeatureExtractor
+from src.config import FEATURES_DIR, WORKSPACE_DIR, ALIGNED_DIR as _ALIGNED_DIR
+from src.extractor.features.embedding import FeatureExtractor
 
 # 設定日誌
 logging.basicConfig(
@@ -38,7 +38,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # ========== 設定 ==========
-ALIGNED_DIR = WORKSPACE_DIR / "preprocessing" / "aligned"
+ALIGNED_DIR = _ALIGNED_DIR
 OUTPUT_DIR = FEATURES_DIR  # workspace/features
 EMBEDDING_MODELS = ["arcface", "topofr", "dlib"]
 MAX_CPU_CORES = 2

@@ -25,9 +25,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
 from _paths import PROJECT_ROOT
 project_root = PROJECT_ROOT
 
-from src.config import RAW_IMAGES_DIR, FEATURES_DIR, AnalyzeConfig
-from src.core.preprocess import PreprocessPipeline, ProcessedFace
-from src.core.extractor import FeatureExtractor, calculate_differences
+from src.config import RAW_IMAGES_DIR, FEATURES_DIR, MIRRORS_DIR, AnalyzeConfig, MirrorConfig
+from src.extractor.preprocess import PreprocessPipeline, ProcessedFace
+from src.extractor.mirror import MirrorGenerator
+from src.extractor.features.embedding import FeatureExtractor
+from src.extractor.features.asymmetry import calculate_differences
 
 # 設定日誌
 logging.basicConfig(
@@ -49,6 +51,7 @@ class FeaturePipeline:
         n_select: int = 10,
         save_intermediate: bool = True,
         max_cpu_cores: Optional[int] = None,
+        input_groups: Optional[List[str]] = None,
     ):
         """
         初始化 Pipeline
@@ -60,9 +63,13 @@ class FeaturePipeline:
             feature_types: 特徵類型列表
             n_select: 選擇多少張最正面的相片
             save_intermediate: 是否儲存中間結果
+            input_groups: 子目錄名稱列表，每個子目錄直接包含 subject folder
+                (e.g., ["asian_elderly_60plus", "IMDB_60_plus"]).
+                留空 (None) 用內建預設 (health/ACS、health/NAD、patient/good)。
         """
         self.raw_images_dir = Path(raw_images_dir)
         self.output_dir = Path(output_dir)
+        self.input_groups = input_groups
 
         # 預設模型和特徵類型
         self.embedding_models = embedding_models or ["arcface", "dlib", "topofr"]
@@ -79,6 +86,16 @@ class FeaturePipeline:
         self.preprocess_config = AnalyzeConfig(
             n_select=n_select,
             save_intermediate=save_intermediate,
+        )
+
+        # 鏡射配置
+        self.mirror_config = self.preprocess_config.mirror
+        self.mirror_gen = MirrorGenerator(
+            method=self.mirror_config.mirror_method,
+            mirror_size=self.mirror_config.mirror_size,
+            feather_px=self.mirror_config.feather_px,
+            margin=self.mirror_config.margin,
+            midline_points=self.mirror_config.midline_points,
         )
         
 
@@ -263,8 +280,21 @@ class FeaturePipeline:
     def _scan_subjects(self) -> List[Path]:
         """掃描受試者目錄"""
         subject_dirs = []
-        
-        # 掃描三個族群的目錄
+
+        if self.input_groups is not None:
+            # 自訂 group list：每個 group 是 raw_images_dir 底下的直接子目錄，
+            # 其中放 subject folder。用於外部公開資料集 pool。
+            for group_name in self.input_groups:
+                group_path = self.raw_images_dir / group_name
+                if group_path.exists():
+                    for subject_dir in sorted(group_path.iterdir()):
+                        if subject_dir.is_dir() and self._has_images(subject_dir):
+                            subject_dirs.append(subject_dir)
+                else:
+                    logger.warning(f"找不到目錄: {group_path}")
+            return subject_dirs
+
+        # 預設：內部 cohort 結構 health/ACS、health/NAD、patient/good
         for group_name in ["ACS", "NAD"]:
             group_path = self.raw_images_dir / "health" / group_name
             if group_path.exists():
@@ -273,8 +303,7 @@ class FeaturePipeline:
                         subject_dirs.append(subject_dir)
             else:
                 logger.warning(f"找不到目錄: {group_path}")
-        
-        # 掃描 patient 目錄
+
         patient_path = self.raw_images_dir / "patient" / "good"
         if patient_path.exists():
             for subject_dir in sorted(patient_path.iterdir()):
@@ -282,7 +311,7 @@ class FeaturePipeline:
                     subject_dirs.append(subject_dir)
         else:
             logger.warning(f"找不到目錄: {patient_path}")
-        
+
         return subject_dirs
     
     def _has_images(self, directory: Path) -> bool:
@@ -325,7 +354,27 @@ class FeaturePipeline:
         if not processed_faces:
             logger.warning(f"{subject_id}: 預處理後沒有有效臉部")
             return None
-        
+
+        # 鏡射生成（獨立步驟）
+        left_images = []
+        right_images = []
+        for i, face in enumerate(processed_faces):
+            left, right = self.mirror_gen.generate(face.aligned, face.landmarks)
+            left_images.append(left)
+            right_images.append(right)
+
+            # 儲存鏡射結果
+            if self.preprocess_config.save_intermediate and subject_id:
+                save_dir = MIRRORS_DIR / subject_id
+                save_dir.mkdir(parents=True, exist_ok=True)
+                base_name = face.metadata.get("path")
+                if base_name:
+                    base_name = Path(base_name).stem
+                else:
+                    base_name = f"face_{i:03d}"
+                cv2.imwrite(str(save_dir / f"{base_name}_left.png"), left)
+                cv2.imwrite(str(save_dir / f"{base_name}_right.png"), right)
+
         # feature_type 到 methods 參數的對應
         FTYPE_TO_METHOD = {
             "difference": "differences",
@@ -334,21 +383,17 @@ class FeaturePipeline:
             "relative_differences": "relative_differences",
             "absolute_relative_differences": "absolute_relative_differences",
         }
-        
+
         # 提取特徵
         subject_features = {}
-        
+
         for model in self.embedding_models:
             if model not in extractor.available_models:
                 continue
-            
-            model_features = {}
-            
-            try:
 
-                # 收集所有左右臉影像
-                left_images = [face.left_mirror for face in processed_faces]
-                right_images = [face.right_mirror for face in processed_faces]
+            model_features = {}
+
+            try:
                 
                 # 批次提取特徵
                 left_dict = extractor.extract_features(left_images, model)
@@ -477,20 +522,34 @@ class FeaturePipeline:
 
 def main():
     """主程式"""
+    import argparse
 
-    # 建立 Pipeline（使用 config 中的路徑常數）
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--input-root", type=Path, default=None,
+                    help="覆寫 RAW_IMAGES_DIR；留空沿用 data/path.txt 設定")
+    ap.add_argument("--input-groups", nargs="+", default=None,
+                    help="自訂 group 子目錄名 (e.g. asian_elderly_60plus IMDB_60_plus)；"
+                         "留空沿用內部預設 health/ACS, health/NAD, patient/good")
+    ap.add_argument("--output-dir", type=Path, default=None,
+                    help="覆寫 FEATURES_DIR；留空用預設 workspace/embedding/features")
+    ap.add_argument("--n-select", type=int, default=10)
+    ap.add_argument("--max-cpu-cores", type=int, default=2)
+    args = ap.parse_args()
+
+    raw_dir = args.input_root if args.input_root is not None else RAW_IMAGES_DIR
+    out_dir = args.output_dir if args.output_dir is not None else FEATURES_DIR
+
     try:
         pipeline = FeaturePipeline(
-            raw_images_dir=RAW_IMAGES_DIR,
-            output_dir=FEATURES_DIR,
+            raw_images_dir=raw_dir,
+            output_dir=out_dir,
             embedding_models=["arcface", "dlib", "topofr"],
             feature_types=["difference", "absolute_difference", "average", "relative_differences", "absolute_relative_differences"],
-            n_select=10,
+            n_select=args.n_select,
             save_intermediate=True,
-            max_cpu_cores=2,
+            max_cpu_cores=args.max_cpu_cores,
+            input_groups=args.input_groups,
         )
-
-        # 執行
         pipeline.run()
 
     except Exception as e:

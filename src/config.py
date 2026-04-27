@@ -32,18 +32,33 @@ RAW_IMAGES_DIR = Path(_RAW_PATH_FILE.read_text(encoding="utf-8").strip())
 # 外部依賴目錄
 EXTERNAL_DIR = PROJECT_ROOT / "external"
 
-# 工作區路徑
-WORKSPACE_DIR = PROJECT_ROOT / "workspace"
-FEATURES_DIR = WORKSPACE_DIR / "features"
+# 公開人臉資料集（ACS 擴充）
+EXTERNAL_PUBLIC_FACE_DIR = EXTERNAL_DIR / "public_face_datasets"
+EXTERNAL_DATASETS_DIR = EXTERNAL_PUBLIC_FACE_DIR / "datasets"
+EXTERNAL_FILTERED_DIR = EXTERNAL_PUBLIC_FACE_DIR / "filtered"
 
-# 預處理路徑
-PREPROCESSING_DIR = WORKSPACE_DIR / "preprocessing"
+# 工作區路徑（按模組分類）
+WORKSPACE_DIR = PROJECT_ROOT / "workspace"
+
+# preprocess 模組
+PREPROCESSING_DIR = WORKSPACE_DIR / "preprocess"
 SELECTED_DIR = PREPROCESSING_DIR / "selected"
 ALIGNED_DIR = PREPROCESSING_DIR / "aligned"
 MIRRORS_DIR = PREPROCESSING_DIR / "mirrors"
 
-STATISTICS_DIR = WORKSPACE_DIR / "statistics"
-PREDICTED_AGES_FILE = WORKSPACE_DIR / "predicted_ages.json"
+# embedding 模組
+EMBEDDING_DIR = WORKSPACE_DIR / "embedding"
+FEATURES_DIR = EMBEDDING_DIR / "features"
+STATISTICS_DIR = EMBEDDING_DIR / "statistics"
+
+# age 模組
+AGE_PREDICTION_DIR = WORKSPACE_DIR / "age" / "age_prediction"
+CORRECTIONS_DIR = AGE_PREDICTION_DIR / "corrections"
+CALIBRATION_DIR = CORRECTIONS_DIR / "calibration"
+BOOTSTRAP_DIR = CORRECTIONS_DIR / "bootstrap_correction"
+MEAN_CORRECTION_DIR = CORRECTIONS_DIR / "mean_correction"
+PREDICTED_AGES_FILE = AGE_PREDICTION_DIR / "predicted_ages.json"
+PREDICTED_AGES_CALIBRATED_FILE = AGE_PREDICTION_DIR / "predicted_ages_calibrated.json"
 
 
 def get_raw_images_subdir(group: str) -> Path:
@@ -56,6 +71,8 @@ def get_raw_images_subdir(group: str) -> Path:
     Returns:
         完整路徑
     """
+    if group == "EACS":
+        return EXTERNAL_FILTERED_DIR
     group_mapping = {
         "ACS": "health/ACS",
         "NAD": "health/NAD",
@@ -70,24 +87,26 @@ def get_raw_images_subdir(group: str) -> Path:
 # =============================================================================
 
 @dataclass
-class PreprocessConfig:
-    """共用預處理配置"""
+class MirrorConfig:
+    """鏡射生成配置"""
 
-    # ========== MediaPipe 特徵點 ==========
-    midline_points: Tuple[int, ...] = (10, 168, 4, 2)  # 臉部中軸線特徵點索引
-
-    # ========== 相片選擇參數 ==========
-    n_select: int = 10  # 選擇多少張最正的臉部相片
-    detection_confidence: float = 0.5  # MediaPipe 偵測信心度閾值
-
-    # ========== 角度校正參數 ==========
-    align_face: bool = True  # 是否校正角度
-
-    # ========== 鏡射參數 ==========
     mirror_method: str = "flip"  # "midline" (沿臉部中線) 或 "flip" (水平翻轉)
     mirror_size: Tuple[int, int] = (512, 512)  # 輸出鏡射影像大小
     feather_px: int = 2  # 邊緣羽化像素
     margin: float = 0.08  # 畫布邊緣留白比例
+    midline_points: Tuple[int, ...] = (10, 168, 4, 2)  # 臉部中軸線特徵點索引
+
+
+@dataclass
+class PreprocessConfig:
+    """共用預處理配置"""
+
+    # ========== MediaPipe 特徵點 ==========
+    midline_points: Tuple[int, ...] = (10, 168, 4, 2)  # 同 src.common.mediapipe_utils.MIDLINE_POINTS
+
+    # ========== 相片選擇參數 ==========
+    n_select: int = 10  # 選擇多少張最正的臉部相片
+    detection_confidence: float = 0.5  # MediaPipe 偵測信心度閾值
 
     # ========== CLAHE 參數 ==========
     apply_clahe: bool = False  # 是否應用 CLAHE
@@ -103,7 +122,6 @@ class PreprocessConfig:
         default_factory=lambda: [
             "select",  # 選擇最正面的 n 張
             "align",   # 角度校正
-            "mirror",  # 生成左右鏡射
         ]
     )
 
@@ -121,3 +139,4 @@ class AnalyzeConfig(PreprocessConfig):
     """Analyze 配置"""
 
     save_intermediate: bool = True  # Analyze 預設儲存
+    mirror: MirrorConfig = field(default_factory=MirrorConfig)

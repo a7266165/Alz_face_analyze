@@ -16,18 +16,18 @@ from scipy.stats import pearsonr
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
 from _paths import PROJECT_ROOT
 WORKSPACE_DIR = PROJECT_ROOT / "workspace"
-OUTPUT_PATH = WORKSPACE_DIR / "feature_comparison_5people.png"
+OUTPUT_PATH = WORKSPACE_DIR / "embedding" / "feature_comparison_5people.png"
 
 SUBJECTS = ["ACS1-1", "ACS5-1", "ACS10-1", "ACS13-1", "ACS14-1"]
 PHOTO_IDX = 0  # 取每位個案的第一張照片
 
 # 各提取者的 arcface/original 目錄
 EXTRACTOR_DIRS = {
-    "馨方": WORKSPACE_DIR / "features_馨方" / "arcface" / "original",
-    "以芯": WORKSPACE_DIR / "features_以芯" / "arcface" / "original",
-    "杰勳": WORKSPACE_DIR / "features_杰勳" / "arcface" / "original",
-    "俊成": WORKSPACE_DIR / "features_俊成" / "arcface" / "original",
-    "Project": WORKSPACE_DIR / "features" / "arcface" / "original",
+    "馨方": WORKSPACE_DIR / "seminar" / "features_馨方" / "arcface" / "original",
+    "以芯": WORKSPACE_DIR / "seminar" / "features_以芯" / "arcface" / "original",
+    "杰勳": WORKSPACE_DIR / "seminar" / "features_杰勳" / "arcface" / "original",
+    "俊成": WORKSPACE_DIR / "seminar" / "features_俊成" / "arcface" / "original",
+    "Project": WORKSPACE_DIR / "embedding" / "features" / "arcface" / "original",
 }
 COLORS = ["#1f77b4", "#ff7f0e", "#2ca02c", "#9467bd", "#d62728"]
 
