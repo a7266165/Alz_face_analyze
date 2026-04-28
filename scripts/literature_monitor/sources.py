@@ -139,6 +139,26 @@ class PaperRecord:
 _ARXIV_NS = {"a": "http://www.w3.org/2005/Atom", "arxiv": "http://arxiv.org/schemas/atom"}
 
 
+def _decode_inverted_index(idx: dict | None) -> str:
+    """OpenAlex stores abstracts as inverted index: {word: [positions]}.
+    Reconstruct linear text in original word order.
+    """
+    if not idx:
+        return ""
+    try:
+        max_pos = max((max(positions) for positions in idx.values() if positions), default=-1)
+    except ValueError:
+        return ""
+    if max_pos < 0:
+        return ""
+    words = [""] * (max_pos + 1)
+    for word, positions in idx.items():
+        for pos in positions:
+            if 0 <= pos <= max_pos:
+                words[pos] = word
+    return " ".join(w for w in words if w)
+
+
 def search_arxiv(query: str, max_results: int = 25, year_from: int = 2018,
                  offset: int = 0) -> list[PaperRecord]:
     """Direct hit to arXiv's Atom API (no `arxiv` package — avoids sgmllib3k chain)."""
@@ -290,6 +310,45 @@ def _pubmed_translate(query: str) -> str:
     return query
 
 
+def _pubmed_fetch_abstracts(ids: list[str], headers: dict) -> dict[str, str]:
+    """Fetch abstract text for each PMID via efetch. Returns {pmid: abstract}."""
+    import xml.etree.ElementTree as ET
+
+    if not ids:
+        return {}
+    out: dict[str, str] = {}
+    try:
+        time.sleep(0.4)
+        r = _get(
+            f"{PUBMED_BASE}/efetch.fcgi",
+            params={
+                "db": "pubmed",
+                "id": ",".join(ids),
+                "rettype": "abstract",
+                "retmode": "xml",
+            },
+            headers=headers,
+        )
+        root = ET.fromstring(r.text)
+        for article in root.findall(".//PubmedArticle"):
+            pmid_el = article.find(".//PMID")
+            if pmid_el is None or not pmid_el.text:
+                continue
+            pmid = pmid_el.text.strip()
+            parts: list[str] = []
+            for abst in article.findall(".//Abstract/AbstractText"):
+                # Some have Label="BACKGROUND/METHODS/RESULTS/CONCLUSIONS"
+                label = abst.get("Label")
+                text = "".join(abst.itertext()).strip()
+                if not text:
+                    continue
+                parts.append(f"{label}: {text}" if label else text)
+            out[pmid] = " ".join(parts)
+    except Exception as e:
+        logger.warning("PubMed efetch abstracts failed: %s", e)
+    return out
+
+
 def search_pubmed(query: str, max_results: int = 25, year_from: int = 2018,
                   offset: int = 0) -> list[PaperRecord]:
     headers = {"User-Agent": DEFAULT_USER_AGENT}
@@ -321,6 +380,8 @@ def search_pubmed(query: str, max_results: int = 25, year_from: int = 2018,
         logger.warning("PubMed search failed: %s", e)
         return []
 
+    abstracts = _pubmed_fetch_abstracts(ids, headers)
+
     out: list[PaperRecord] = []
     for pmid in ids:
         rec = result.get(pmid)
@@ -341,13 +402,13 @@ def search_pubmed(query: str, max_results: int = 25, year_from: int = 2018,
                 title=(rec.get("title") or "").strip(),
                 authors=authors,
                 year=year,
-                abstract="",  # PubMed esummary does not return abstract; efetch needed
+                abstract=abstracts.get(pmid, ""),
                 doi=doi,
                 arxiv_id=None,
                 venue=rec.get("fulljournalname") or rec.get("source"),
                 citation_count=None,
                 source="pubmed",
-                pdf_url=None,  # try via Unpaywall in download.py
+                pdf_url=None,
                 extra={"pmid": pmid},
             )
         )
@@ -382,8 +443,8 @@ def search_openalex(query: str, max_results: int = 25, year_from: int = 2018,
     for w in data.get("results", []):
         ids = w.get("ids", {}) or {}
         doi = (ids.get("doi") or "").replace("https://doi.org/", "") or None
-        # OpenAlex stores abstract as inverted index — skip reconstruction here.
         oa = (w.get("best_oa_location") or {}).get("pdf_url")
+        abstract = _decode_inverted_index(w.get("abstract_inverted_index"))
         out.append(
             PaperRecord(
                 title=(w.get("title") or "").strip(),
@@ -392,7 +453,7 @@ def search_openalex(query: str, max_results: int = 25, year_from: int = 2018,
                     for a in (w.get("authorships") or [])
                 ],
                 year=w.get("publication_year"),
-                abstract="",
+                abstract=abstract,
                 doi=doi,
                 arxiv_id=None,
                 venue=((w.get("primary_location") or {}).get("source") or {}).get("display_name"),
