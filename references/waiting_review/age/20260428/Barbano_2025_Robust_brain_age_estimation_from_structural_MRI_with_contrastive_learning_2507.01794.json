@@ -1,0 +1,22 @@
+{
+  "title": "Robust brain age estimation from structural MRI with contrastive learning",
+  "authors": [
+    "Carlo Alberto Barbano",
+    "Benoit Dufumier",
+    "Edouard Duchesnay",
+    "Marco Grangetto",
+    "Pietro Gori"
+  ],
+  "year": 2025,
+  "abstract": "Estimating brain age from structural MRI has emerged as a powerful tool for characterizing normative and pathological aging. In this work, we explore contrastive learning as a scalable and robust alternative to L1-supervised approaches for brain age estimation. We introduce a novel contrastive loss function, $\\mathcal{L}^{exp}$, and evaluate it across multiple public neuroimaging datasets comprising over 20,000 scans. Our experiments reveal four key findings. First, scaling pre-training on diverse, multi-site data consistently improves generalization performance, cutting external mean absolute error (MAE) nearly in half. Second, $\\mathcal{L}^{exp}$ is robust to site-related confounds, maintaining low scanner-predictability as training size increases. Third, contrastive models reliably capture accelerated aging in patients with cognitive impairment and Alzheimer's disease, as shown through brain age gap analysis, ROC curves, and longitudinal trends. Lastly, unlike L1-supervised baselines, $\\mathcal{L}^{exp}$ maintains a strong correlation between brain age accuracy and downstream diagnostic performance, supporting its potential as a foundation model for neuroimaging. These results position contrastive learning as a promising direction for building generalizable and clinically meaningful brain representations.",
+  "doi": null,
+  "arxiv_id": "2507.01794",
+  "venue": "arXiv",
+  "citation_count": null,
+  "source": "arxiv",
+  "pdf_url": "https://arxiv.org/pdf/2507.01794v2",
+  "relevance_score": null,
+  "extra": {},
+  "pdf_status": "ok",
+  "primary_id": "arxiv:2507.01794"
+}

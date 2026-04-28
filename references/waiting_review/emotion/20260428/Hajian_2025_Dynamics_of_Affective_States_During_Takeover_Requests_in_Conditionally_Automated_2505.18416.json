@@ -1,0 +1,22 @@
+{
+  "title": "Dynamics of Affective States During Takeover Requests in Conditionally Automated Driving Among Older Adults with and without Cognitive Impairment",
+  "authors": [
+    "Gelareh Hajian",
+    "Ali Abedi",
+    "Bing Ye",
+    "Jennifer Campos",
+    "Alex Mihailidis"
+  ],
+  "year": 2025,
+  "abstract": "Driving is a key component of independence and quality of life for older adults. However, cognitive decline associated with conditions such as mild cognitive impairment and dementia can compromise driving safety and often lead to premature driving cessation. Conditionally automated vehicles, which require drivers to take over control when automation reaches its operational limits, offer a potential assistive solution. However, their effectiveness depends on the driver's ability to respond to takeover requests (TORs) in a timely and appropriate manner. Understanding emotional responses during TORs can provide insight into drivers' engagement, stress levels, and readiness to resume control, particularly in cognitively vulnerable populations. This study investigated affective responses, measured via facial expression analysis of valence and arousal, during TORs among cognitively healthy older adults and those with cognitive impairment. Facial affect data were analyzed across different road geometries and speeds to evaluate within- and between-group differences in affective states. Within-group comparisons using the Wilcoxon signed-rank test revealed significant changes in valence and arousal during TORs for both groups. Cognitively healthy individuals showed adaptive increases in arousal under higher-demand conditions, while those with cognitive impairment exhibited reduced arousal and more positive valence in several scenarios. Between-group comparisons using the Mann-Whitney U test indicated that cognitively impaired individuals displayed lower arousal and higher valence than controls across different TOR conditions. These findings suggest reduced emotional response and awareness in cognitively impaired drivers, highlighting the need for adaptive vehicle systems that detect affective states and support safe handovers for vulnerable users.",
+  "doi": null,
+  "arxiv_id": "2505.18416",
+  "venue": "arXiv",
+  "citation_count": null,
+  "source": "arxiv",
+  "pdf_url": "https://arxiv.org/pdf/2505.18416v1",
+  "relevance_score": null,
+  "extra": {},
+  "pdf_status": "ok",
+  "primary_id": "arxiv:2505.18416"
+}

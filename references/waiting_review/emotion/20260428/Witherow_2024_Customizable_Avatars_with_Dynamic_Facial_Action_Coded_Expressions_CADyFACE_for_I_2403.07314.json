@@ -1,0 +1,25 @@
+{
+  "title": "Customizable Avatars with Dynamic Facial Action Coded Expressions (CADyFACE) for Improved User Engagement",
+  "authors": [
+    "Megan A. Witherow",
+    "Crystal Butler",
+    "Winston J. Shields",
+    "Furkan Ilgin",
+    "Norou Diawara",
+    "Janice Keener",
+    "John W. Harrington",
+    "Khan M. Iftekharuddin"
+  ],
+  "year": 2024,
+  "abstract": "Customizable 3D avatar-based facial expression stimuli may improve user engagement in behavioral biomarker discovery and therapeutic intervention for autism, Alzheimer's disease, facial palsy, and more. However, there is a lack of customizable avatar-based stimuli with Facial Action Coding System (FACS) action unit (AU) labels. Therefore, this study focuses on (1) FACS-labeled, customizable avatar-based expression stimuli for maintaining subjects' engagement, (2) learning-based measurements that quantify subjects' facial responses to such stimuli, and (3) validation of constructs represented by stimulus-measurement pairs. We propose Customizable Avatars with Dynamic Facial Action Coded Expressions (CADyFACE) labeled with AUs by a certified FACS expert. To measure subjects' AUs in response to CADyFACE, we propose a novel Beta-guided Correlation and Multi-task Expression learning neural network (BeCoME-Net) for multi-label AU detection. The beta-guided correlation loss encourages feature correlation with AUs while discouraging correlation with subject identities for improved generalization. We train BeCoME-Net for unilateral and bilateral AU detection and compare with state-of-the-art approaches. To assess construct validity of CADyFACE and BeCoME-Net, twenty healthy adult volunteers complete expression recognition and mimicry tasks in an online feasibility study while webcam-based eye-tracking and video are collected. We test validity of multiple constructs, including face preference during recognition and AUs during mimicry.",
+  "doi": null,
+  "arxiv_id": "2403.07314",
+  "venue": "arXiv",
+  "citation_count": null,
+  "source": "arxiv",
+  "pdf_url": "https://arxiv.org/pdf/2403.07314v1",
+  "relevance_score": null,
+  "extra": {},
+  "pdf_status": "ok",
+  "primary_id": "arxiv:2403.07314"
+}

@@ -1,0 +1,20 @@
+{
+  "title": "Emotion Detection in Older Adults Using Physiological Signals from Wearable Sensors",
+  "authors": [
+    "Md. Saif Hassan Onim",
+    "Andrew M. Kiselica",
+    "Himanshu Thapliyal"
+  ],
+  "year": 2025,
+  "abstract": "Emotion detection in older adults is crucial for understanding their cognitive and emotional well-being, especially in hospital and assisted living environments. In this work, we investigate an edge-based, non-obtrusive approach to emotion identification that uses only physiological signals obtained via wearable sensors. Our dataset includes data from 40 older individuals. Emotional states were obtained using physiological signals from the Empatica E4 and Shimmer3 GSR+ wristband and facial expressions were recorded using camera-based emotion recognition with the iMotion's Facial Expression Analysis (FEA) module. The dataset also contains twelve emotion categories in terms of relative intensities. We aim to study how well emotion recognition can be accomplished using simply physiological sensor data, without the requirement for cameras or intrusive facial analysis. By leveraging classical machine learning models, we predict the intensity of emotional responses based on physiological signals. We achieved the highest 0.782 r2 score with the lowest 0.0006 MSE on the regression task. This method has significant implications for individuals with Alzheimer's Disease and Related Dementia (ADRD), as well as veterans coping with Post-Traumatic Stress Disorder (PTSD) or other cognitive impairments. Our results across multiple classical regression models validate the feasibility of this method, paving the way for privacy-preserving and efficient emotion recognition systems in real-world settings.",
+  "doi": "10.1145/3716368.3735280",
+  "arxiv_id": "2507.08167",
+  "venue": "arXiv",
+  "citation_count": null,
+  "source": "arxiv",
+  "pdf_url": "https://arxiv.org/pdf/2507.08167v1",
+  "relevance_score": null,
+  "extra": {},
+  "pdf_status": "ok",
+  "primary_id": "arxiv:2507.08167"
+}

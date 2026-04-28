@@ -1,0 +1,28 @@
+{
+  "title": "Brain Age Estimation From MRI Using Cascade Networks With Ranking Loss",
+  "authors": [
+    "Jian Cheng",
+    "Ziyang Liu",
+    "Hao Guan",
+    "Zhenzhou Wu",
+    "Haogang Zhu",
+    "Jiyang Jiang",
+    "Wei Wen",
+    "Dacheng Tao",
+    "Tao Liu"
+  ],
+  "year": 2021,
+  "abstract": "",
+  "doi": "10.1109/tmi.2021.3085948",
+  "arxiv_id": null,
+  "venue": "IEEE Transactions on Medical Imaging",
+  "citation_count": 85,
+  "source": "openalex",
+  "pdf_url": "https://arxiv.org/pdf/2106.03052",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W3164341367"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.1109/tmi.2021.3085948"
+}

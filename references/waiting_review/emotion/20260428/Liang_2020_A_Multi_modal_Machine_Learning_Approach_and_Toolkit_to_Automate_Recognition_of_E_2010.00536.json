@@ -1,0 +1,23 @@
+{
+  "title": "A Multi-modal Machine Learning Approach and Toolkit to Automate Recognition of Early Stages of Dementia among British Sign Language Users",
+  "authors": [
+    "Xing Liang",
+    "Anastassia Angelopoulou",
+    "Epaminondas Kapetanios",
+    "Bencie Woll",
+    "Reda Al-batat",
+    "Tyron Woolfe"
+  ],
+  "year": 2020,
+  "abstract": "The ageing population trend is correlated with an increased prevalence of acquired cognitive impairments such as dementia. Although there is no cure for dementia, a timely diagnosis helps in obtaining necessary support and appropriate medication. Researchers are working urgently to develop effective technological tools that can help doctors undertake early identification of cognitive disorder. In particular, screening for dementia in ageing Deaf signers of British Sign Language (BSL) poses additional challenges as the diagnostic process is bound up with conditions such as quality and availability of interpreters, as well as appropriate questionnaires and cognitive tests. On the other hand, deep learning based approaches for image and video analysis and understanding are promising, particularly the adoption of Convolutional Neural Network (CNN), which require large amounts of training data. In this paper, however, we demonstrate novelty in the following way: a) a multi-modal machine learning based automatic recognition toolkit for early stages of dementia among BSL users in that features from several parts of the body contributing to the sign envelope, e.g., hand-arm movements and facial expressions, are combined, b) universality in that it is possible to apply our technique to users of any sign language, since it is language independent, c) given the trade-off between complexity and accuracy of machine learning (ML) prediction models as well as the limited amount of training and testing data being available, we show that our approach is not over-fitted and has the potential to scale up.",
+  "doi": "10.1007/978-3-030-66096-3_20",
+  "arxiv_id": "2010.00536",
+  "venue": "arXiv",
+  "citation_count": null,
+  "source": "arxiv",
+  "pdf_url": "https://arxiv.org/pdf/2010.00536v1",
+  "relevance_score": null,
+  "extra": {},
+  "pdf_status": "ok",
+  "primary_id": "arxiv:2010.00536"
+}

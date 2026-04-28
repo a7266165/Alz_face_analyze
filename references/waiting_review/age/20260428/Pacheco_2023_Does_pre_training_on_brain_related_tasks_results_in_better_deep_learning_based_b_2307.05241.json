@@ -1,0 +1,22 @@
+{
+  "title": "Does pre-training on brain-related tasks results in better deep-learning-based brain age biomarkers?",
+  "authors": [
+    "Bruno Machado Pacheco",
+    "Victor Hugo Rocha de Oliveira",
+    "Augusto Braga Fernandes Antunes",
+    "Saulo Domingos de Souza Pedro",
+    "Danilo Silva"
+  ],
+  "year": 2023,
+  "abstract": "Brain age prediction using neuroimaging data has shown great potential as an indicator of overall brain health and successful aging, as well as a disease biomarker. Deep learning models have been established as reliable and efficient brain age estimators, being trained to predict the chronological age of healthy subjects. In this paper, we investigate the impact of a pre-training step on deep learning models for brain age prediction. More precisely, instead of the common approach of pre-training on natural imaging classification, we propose pre-training the models on brain-related tasks, which led to state-of-the-art results in our experiments on ADNI data. Furthermore, we validate the resulting brain age biomarker on images of patients with mild cognitive impairment and Alzheimer's disease. Interestingly, our results indicate that better-performing deep learning models in terms of brain age prediction on healthy patients do not result in more reliable biomarkers.",
+  "doi": "10.1007/978-3-031-45389-2_13",
+  "arxiv_id": "2307.05241",
+  "venue": "arXiv",
+  "citation_count": null,
+  "source": "arxiv",
+  "pdf_url": "https://arxiv.org/pdf/2307.05241v1",
+  "relevance_score": null,
+  "extra": {},
+  "pdf_status": "ok",
+  "primary_id": "arxiv:2307.05241"
+}

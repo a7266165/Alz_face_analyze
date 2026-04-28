@@ -1,0 +1,22 @@
+{
+  "title": "Image Augmentation Using a Task Guided Generative Adversarial Network for Age Estimation on Brain MRI",
+  "authors": [
+    "Ruizhe Li",
+    "Matteo Bastiani",
+    "Dorothee Auer",
+    "Christian Wagner",
+    "Xin Chen"
+  ],
+  "year": 2021,
+  "abstract": "Brain age estimation based on magnetic resonance imaging (MRI) is an active research area in early diagnosis of some neurodegenerative diseases (e.g. Alzheimer, Parkinson, Huntington, etc.) for elderly people or brain underdevelopment for the young group. Deep learning methods have achieved the state-of-the-art performance in many medical image analysis tasks, including brain age estimation. However, the performance and generalisability of the deep learning model are highly dependent on the quantity and quality of the training data set. Both collecting and annotating brain MRI data are extremely time-consuming. In this paper, to overcome the data scarcity problem, we propose a generative adversarial network (GAN) based image synthesis method. Different from the existing GAN-based methods, we integrate a task-guided branch (a regression model for age estimation) to the end of the generator in GAN. By adding a task-guided loss to the conventional GAN loss, the learned low-dimensional latent space and the synthesised images are more task-specific. It helps to boost the performance of the down-stream task by combining the synthesised images and real images for model training. The proposed method was evaluated on a public brain MRI data set for age estimation. Our proposed method outperformed (statistically significant) a deep convolutional neural network based regression model and the GAN-based image synthesis method without the task-guided branch. More importantly, it enables the identification of age-related brain regions in the image space. The code is available on GitHub (https://github.com/ruizhe-l/tgb-gan).",
+  "doi": null,
+  "arxiv_id": "2108.01659",
+  "venue": "arXiv",
+  "citation_count": null,
+  "source": "arxiv",
+  "pdf_url": "https://arxiv.org/pdf/2108.01659v1",
+  "relevance_score": null,
+  "extra": {},
+  "pdf_status": "ok",
+  "primary_id": "arxiv:2108.01659"
+}

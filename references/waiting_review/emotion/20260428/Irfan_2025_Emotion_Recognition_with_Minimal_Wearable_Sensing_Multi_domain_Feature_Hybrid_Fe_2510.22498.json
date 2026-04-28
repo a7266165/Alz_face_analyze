@@ -1,0 +1,24 @@
+{
+  "title": "Emotion Recognition with Minimal Wearable Sensing: Multi-domain Feature, Hybrid Feature Selection, and Personalized vs. Generalized Ensemble Model Analysis",
+  "authors": [
+    "Muhammad Irfan",
+    "Anum Nawaz",
+    "Ayse Kosal Bulbul",
+    "Riku Klen",
+    "Abdulhamit Subasi",
+    "Tomi Westerlund",
+    "Wei Chen"
+  ],
+  "year": 2025,
+  "abstract": "Negative emotions are linked to the onset of neurodegenerative diseases and dementia, yet they are often difficult to detect through observation. Physiological signals from wearable devices offer a promising noninvasive method for continuous emotion monitoring. In this study, we propose a lightweight, resource-efficient machine learning approach for binary emotion classification, distinguishing between negative (sadness, disgust, anger) and positive (amusement, tenderness, gratitude) affective states using only electrocardiography (ECG) signals. The method is designed for deployment in resource-constrained systems, such as Internet of Things (IoT) devices, by reducing battery consumption and cloud data transmission through the avoidance of computationally expensive multimodal inputs. We utilized ECG data from 218 CSV files extracted from four studies in the Psychophysiology of Positive and Negative Emotions (POPANE) dataset, which comprises recordings from 1,157 healthy participants across seven studies. Each file represents a unique subject emotion, and the ECG signals, recorded at 1000 Hz, were segmented into 10-second epochs to reflect real-world usage. Our approach integrates multidomain feature extraction, selective feature fusion, and a voting classifier. We evaluated it using a participant-exclusive generalized model and a participant-inclusive personalized model. The personalized model achieved the best performance, with an average accuracy of 95.59%, outperforming the generalized model, which reached 69.92% accuracy. Comparisons with other studies on the POPANE and similar datasets show that our approach consistently outperforms existing methods. This work highlights the effectiveness of personalized models in emotion recognition and their suitability for wearable applications that require accurate, low-power, and real-time emotion tracking.",
+  "doi": null,
+  "arxiv_id": "2510.22498",
+  "venue": "arXiv",
+  "citation_count": null,
+  "source": "arxiv",
+  "pdf_url": "https://arxiv.org/pdf/2510.22498v1",
+  "relevance_score": null,
+  "extra": {},
+  "pdf_status": "ok",
+  "primary_id": "arxiv:2510.22498"
+}

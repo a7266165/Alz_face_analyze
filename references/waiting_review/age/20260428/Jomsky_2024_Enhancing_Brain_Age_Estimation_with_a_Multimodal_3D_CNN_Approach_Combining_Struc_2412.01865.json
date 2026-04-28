@@ -1,0 +1,25 @@
+{
+  "title": "Enhancing Brain Age Estimation with a Multimodal 3D CNN Approach Combining Structural MRI and AI-Synthesized Cerebral Blood Volume Measures",
+  "authors": [
+    "Jordan Jomsky",
+    "Kay C. Igwe",
+    "Zongyu Li",
+    "Yiren Zhang",
+    "Max Lashley",
+    "Tal Nuriel",
+    "Andrew Laine",
+    "Jia Guo"
+  ],
+  "year": 2024,
+  "abstract": "Brain age gap estimation (BrainAGE) is a promising imaging-derived biomarker of neurobiological aging and disease risk, yet current approaches rely predominantly on T1-weighted structural MRI (T1w), overlooking functional vascular changes that may precede tissue damage and cognitive decline. Artificial intelligence-generated cerebral blood volume (AICBV) maps, synthesized from non-contrast MRI, offer an alternative to contrast-enhanced perfusion imaging by capturing vascular information relevant to early neurodegeneration. We developed a multimodal BrainAGE framework that integrates brain age predictions using linear regression from two separate 3D VGG-based networks, one model trained on only structural T1w scans and one trained on only AICBV maps generated from a pre-trained 3D patch-based deep learning model. Each model was trained and validated on 2,851 scans from 13 open-source datasets and was evaluated for concordance with mild cognitive impairment (MCI) and Alzheimer's disease (AD) using ADNI subjects (n=1,233). The combined model achieved the most accurate brain age gap for cognitively normal (CN) controls, with a mean absolute error (MAE) of 3.95 years ($R^2$=0.943), outperforming models trained on T1w (MAE=4.10) or AICBV alone (MAE=4.49). Saliency maps revealed complementary modality contributions: T1w emphasized white matter and cortical atrophy, while AICBV highlighted vascular-rich and periventricular regions implicated in hypoperfusion and early cerebrovascular dysfunction, consistent with normal aging. Next, we observed that BrainAGE increased stepwise across diagnostic strata (CN < MCI < AD) and correlated with cognitive impairment (CDRSB r=0.403; MMSE r=-0.310). AICBV-based BrainAGE showed particularly strong separation between stable vs. progressive MCI (p=$1.47 \\times 10^{-8}$), suggesting sensitivity to prodromal vascular changes that precede overt atrophy.",
+  "doi": null,
+  "arxiv_id": "2412.01865",
+  "venue": "arXiv",
+  "citation_count": null,
+  "source": "arxiv",
+  "pdf_url": "https://arxiv.org/pdf/2412.01865v4",
+  "relevance_score": null,
+  "extra": {},
+  "pdf_status": "ok",
+  "primary_id": "arxiv:2412.01865"
+}

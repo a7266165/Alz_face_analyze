@@ -1,0 +1,29 @@
+{
+  "title": "Feasibility of Detecting Cognitive Impairment and Psychological Well-being among Older Adults Using Facial, Acoustic, Linguistic, and Cardiovascular Patterns Derived from Remote Conversations",
+  "authors": [
+    "Xiaofan Mu",
+    "Merna Bibars",
+    "Salman Seyedi",
+    "Iris Zheng",
+    "Zifan Jiang",
+    "Liu Chen",
+    "Bolaji Omofojoye",
+    "Rachel Hershenberg",
+    "Allan I. Levey",
+    "Gari D. Clifford",
+    "Hiroko H. Dodge",
+    "Hyeokhyen Kwon"
+  ],
+  "year": 2024,
+  "abstract": "The aging society urgently requires scalable methods to monitor cognitive decline and identify social and psychological factors indicative of dementia risk in older adults. Our machine learning (ML) models captured facial, acoustic, linguistic, and cardiovascular features from 39 older adults with normal cognition or Mild Cognitive Impairment (MCI), derived from remote video conversations and quantified their cognitive status, social isolation, neuroticism, and psychological well-being. Our model could distinguish Clinical Dementia Rating Scale (CDR) of 0.5 (vs. 0) with 0.77 area under the receiver operating characteristic curve (AUC), social isolation with 0.74 AUC, social satisfaction with 0.75 AUC, psychological well-being with 0.72 AUC, and negative affect with 0.74 AUC. Our feature importance analysis showed that speech and language patterns were useful for quantifying cognitive impairment, whereas facial expressions and cardiovascular patterns were useful for quantifying social and psychological well-being. Our bias analysis showed that the best-performing models for quantifying psychological well-being and cognitive states in older adults exhibited significant biases concerning their age, sex, disease condition, and education levels. Our comprehensive analysis shows the feasibility of monitoring the cognitive and psychological health of older adults, as well as the need for collecting largescale interview datasets of older adults to benefit from the latest advances in deep learning technologies to develop generalizable models across older adults with diverse demographic backgrounds and disease conditions.",
+  "doi": null,
+  "arxiv_id": "2412.14194",
+  "venue": "arXiv",
+  "citation_count": null,
+  "source": "arxiv",
+  "pdf_url": "https://arxiv.org/pdf/2412.14194v4",
+  "relevance_score": null,
+  "extra": {},
+  "pdf_status": "ok",
+  "primary_id": "arxiv:2412.14194"
+}

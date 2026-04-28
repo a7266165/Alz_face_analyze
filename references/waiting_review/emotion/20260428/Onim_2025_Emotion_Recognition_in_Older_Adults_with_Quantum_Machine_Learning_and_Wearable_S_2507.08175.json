@@ -1,0 +1,20 @@
+{
+  "title": "Emotion Recognition in Older Adults with Quantum Machine Learning and Wearable Sensors",
+  "authors": [
+    "Md. Saif Hassan Onim",
+    "Travis S. Humble",
+    "Himanshu Thapliyal"
+  ],
+  "year": 2025,
+  "abstract": "We investigate the feasibility of inferring emotional states exclusively from physiological signals, thereby presenting a privacy-preserving alternative to conventional facial recognition techniques. We conduct a performance comparison of classical machine learning algorithms and hybrid quantum machine learning (QML) methods with a quantum kernel-based model. Our results indicate that the quantum-enhanced SVM surpasses classical counterparts in classification performance across all emotion categories, even when trained on limited datasets. The F1 scores over all classes are over 80% with around a maximum of 36% improvement in the recall values. The integration of wearable sensor data with quantum machine learning not only enhances accuracy and robustness but also facilitates unobtrusive emotion recognition. This methodology holds promise for populations with impaired communication abilities, such as individuals with Alzheimer's Disease and Related Dementias (ADRD) and veterans with Post-Traumatic Stress Disorder (PTSD). The findings establish an early foundation for passive emotional monitoring in clinical and assisted living conditions.",
+  "doi": null,
+  "arxiv_id": "2507.08175",
+  "venue": "arXiv",
+  "citation_count": null,
+  "source": "arxiv",
+  "pdf_url": "https://arxiv.org/pdf/2507.08175v1",
+  "relevance_score": null,
+  "extra": {},
+  "pdf_status": "ok",
+  "primary_id": "arxiv:2507.08175"
+}
