@@ -130,3 +130,38 @@
 例如：
 - `Kuprashevich_2023_MiVOLO.pdf`
 - `Dan_2024_TopoFR.pdf`
+
+---
+
+## waiting_review/ — 自動文獻監測二篩區
+
+`waiting_review/` 由 `scripts/literature_monitor/` 自動填入候選論文（每天 10
+個 slot，覆蓋 embedding / asymmetry / emotion / age 四面向）。落地的 PDF +
+JSON metadata 需經人工二篩決定升格或丟棄。
+
+### 結構
+
+```
+waiting_review/
+├── _state.json                       # 已見 paper ID（去重狀態）
+├── _logs/<YYYYMMDD>.log              # 每日 log
+├── _digests/<YYYYMMDD>.md            # 每 slot 增量 digest
+├── _digests/<YYYYMMDD>_summary.md    # 當日 summary（slot 9 產出）
+├── embedding/<YYYYMMDD>/*.pdf, *.json
+├── asymmetry/<YYYYMMDD>/*.pdf, *.json
+├── emotion/<YYYYMMDD>/*.pdf, *.json
+└── age/<YYYYMMDD>/*.pdf, *.json
+```
+
+### 二篩流程
+
+1. 每日 review `_digests/<TODAY>_summary.md` 與當日 PDF
+2. **保留**：把 PDF + JSON 從 `waiting_review/<topic>/<DATE>/` 搬到 `references/<topic>/`，
+   並在本 README 主目錄補一筆條目
+3. **丟棄**：搬到 `references/_archive_rejected/<DATE>/`（保留紀錄，避免下輪再被抓）
+
+### 既有論文索引
+
+`_indexed.json` 由 `python -m scripts.literature_monitor.run --rebuild-index`
+產生，記錄 `references/<topic>/*.pdf` 的標題列表，給去重邏輯交叉比對用。
+新增 / 移除 PDF 後請 rerun 此指令。

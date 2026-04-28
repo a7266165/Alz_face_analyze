@@ -1,0 +1,55 @@
+{
+  "seen_ids": {
+    "doi:10.1016/j.cortex.2026.03.009": {
+      "first_seen": "2026-04-28",
+      "topic": "emotion",
+      "pdf_path": null,
+      "pdf_status": "no_oa"
+    },
+    "doi:10.1159/000551440": {
+      "first_seen": "2026-04-28",
+      "topic": "emotion",
+      "pdf_path": null,
+      "pdf_status": "no_oa"
+    },
+    "doi:10.12779/dnd.2023.22.4.158": {
+      "first_seen": "2026-04-28",
+      "topic": "emotion",
+      "pdf_path": "references\\waiting_review\\emotion\\20260428\\Y_2023_Facial_Emotion_Recognition_in_Older_Adults_With_Cognitive_Complaints_10.12779_dnd.2023.22.4.158.pdf",
+      "pdf_status": "ok"
+    },
+    "doi:10.3758/s13415-023-01114-3": {
+      "first_seen": "2026-04-28",
+      "topic": "emotion",
+      "pdf_path": "references\\waiting_review\\emotion\\20260428\\M_2023_Brain_mechanisms_associated_with_facial_encoding_of_affective_states_10.3758_s13415-023-01114-3.pdf",
+      "pdf_status": "ok"
+    },
+    "doi:10.1093/brain/awac217": {
+      "first_seen": "2026-04-28",
+      "topic": "emotion",
+      "pdf_path": null,
+      "pdf_status": "no_oa"
+    },
+    "doi:10.1001/jamapsychiatry.2018.0482": {
+      "first_seen": "2026-04-28",
+      "topic": "emotion",
+      "pdf_path": null,
+      "pdf_status": "no_oa"
+    },
+    "doi:10.1016/j.cortex.2018.02.011": {
+      "first_seen": "2026-04-28",
+      "topic": "emotion",
+      "pdf_path": null,
+      "pdf_status": "no_oa"
+    },
+    "doi:10.1016/j.cortex.2023.02.009": {
+      "first_seen": "2026-04-28",
+      "topic": "emotion",
+      "pdf_path": "references\\waiting_review\\emotion\\20260428\\Hazelton_2023_Thinking_versus_feeling_How_interoception_and_cognition_influence_emotion_recogn_10.1016_j.cortex.2023.02.009.pdf",
+      "pdf_status": "ok"
+    }
+  },
+  "last_run": {
+    "emotion": "2026-04-28T04:18:44Z"
+  }
+}

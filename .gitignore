@@ -38,3 +38,6 @@ test_results/*
 
 /paper/
 /tmp/
+
+# literature_monitor logs (run-time noise; PDFs/state/digests still tracked)
+references/waiting_review/_logs/
