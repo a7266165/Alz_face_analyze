@@ -139,14 +139,15 @@ class PaperRecord:
 _ARXIV_NS = {"a": "http://www.w3.org/2005/Atom", "arxiv": "http://arxiv.org/schemas/atom"}
 
 
-def search_arxiv(query: str, max_results: int = 25, year_from: int = 2018) -> list[PaperRecord]:
+def search_arxiv(query: str, max_results: int = 25, year_from: int = 2018,
+                 offset: int = 0) -> list[PaperRecord]:
     """Direct hit to arXiv's Atom API (no `arxiv` package — avoids sgmllib3k chain)."""
     import xml.etree.ElementTree as ET
 
     url = "https://export.arxiv.org/api/query"
     params = {
         "search_query": query,
-        "start": 0,
+        "start": offset,
         "max_results": max_results,
         "sortBy": "submittedDate",
         "sortOrder": "descending",
@@ -225,12 +226,14 @@ S2_FIELDS = ",".join([
 
 
 def search_semantic_scholar(
-    query: str, max_results: int = 25, year_from: int = 2018
+    query: str, max_results: int = 25, year_from: int = 2018,
+    offset: int = 0,
 ) -> list[PaperRecord]:
     url = "https://api.semanticscholar.org/graph/v1/paper/search"
     params = {
         "query": query,
         "limit": min(max_results, 100),
+        "offset": offset,
         "fields": S2_FIELDS,
         "year": f"{year_from}-",
     }
@@ -287,7 +290,8 @@ def _pubmed_translate(query: str) -> str:
     return query
 
 
-def search_pubmed(query: str, max_results: int = 25, year_from: int = 2018) -> list[PaperRecord]:
+def search_pubmed(query: str, max_results: int = 25, year_from: int = 2018,
+                  offset: int = 0) -> list[PaperRecord]:
     headers = {"User-Agent": DEFAULT_USER_AGENT}
     try:
         time.sleep(0.4)
@@ -297,7 +301,9 @@ def search_pubmed(query: str, max_results: int = 25, year_from: int = 2018) -> l
                 "db": "pubmed",
                 "term": _pubmed_translate(query) + f" AND ({year_from}:3000[dp])",
                 "retmax": max_results,
+                "retstart": offset,
                 "retmode": "json",
+                "sort": "pub_date",
             },
             headers=headers,
         )
@@ -351,11 +357,15 @@ def search_pubmed(query: str, max_results: int = 25, year_from: int = 2018) -> l
 # ---------------------------------------------------------------------------
 # OpenAlex
 # ---------------------------------------------------------------------------
-def search_openalex(query: str, max_results: int = 25, year_from: int = 2018) -> list[PaperRecord]:
+def search_openalex(query: str, max_results: int = 25, year_from: int = 2018,
+                    offset: int = 0) -> list[PaperRecord]:
     url = "https://api.openalex.org/works"
+    page = (offset // max_results) + 1 if max_results else 1
     params = {
         "search": query,
         "per-page": min(max_results, 200),
+        "page": page,
+        "sort": "publication_date:desc",
         "filter": f"from_publication_date:{year_from}-01-01",
         "mailto": "a1234567891934@gmail.com",
     }
@@ -406,8 +416,9 @@ SEARCHERS = {
 }
 
 
-def search(source: str, query: str, max_results: int = 25, year_from: int = 2018) -> list[PaperRecord]:
+def search(source: str, query: str, max_results: int = 25, year_from: int = 2018,
+           offset: int = 0) -> list[PaperRecord]:
     fn = SEARCHERS.get(source)
     if fn is None:
         raise ValueError(f"unknown source: {source}")
-    return fn(query, max_results=max_results, year_from=year_from)
+    return fn(query, max_results=max_results, year_from=year_from, offset=offset)

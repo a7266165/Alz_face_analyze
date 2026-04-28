@@ -80,12 +80,25 @@ def run_slot(
     for topic in topics:
         q = query_for(topic, query_idx)
         for source in sources:
-            logging.info("[slot %d] %s x %s :: %s", slot, topic, source, q)
+            cursor = state.get_cursor(source, topic, q)
+            logging.info("[slot %d] %s x %s @offset=%d :: %s",
+                         slot, topic, source, cursor, q)
             try:
-                records = src_mod.search(source, q, max_results=max_per_source, year_from=year_from)
+                records = src_mod.search(
+                    source, q, max_results=max_per_source,
+                    year_from=year_from, offset=cursor,
+                )
             except Exception as e:
                 logging.warning("search %s/%s failed: %s", source, topic, e)
                 continue
+            # Cursor management: advance by what we got; reset if exhausted
+            if not records:
+                if cursor > 0:
+                    logging.info("  exhausted at offset %d; resetting cursor", cursor)
+                    state.reset_cursor(source, topic, q)
+                # else: zero results from offset 0, leave cursor at 0
+            else:
+                state.advance_cursor(source, topic, q, len(records))
             for rec in records:
                 if not rec.title or rec.title == "":
                     continue

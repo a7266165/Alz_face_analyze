@@ -3,9 +3,14 @@
 `_state.json` records all paper IDs that have been seen by any prior run, so
 subsequent runs do not re-download them. Existing `references/<topic>/*.pdf`
 files are also cross-checked via a sidecar index `references/_indexed.json`.
+
+Also tracks pagination cursors per (source, topic, query) so successive sweeps
+walk through the back-catalog from newest to oldest (or by relevance rank)
+instead of always re-fetching the same top-N.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import re
@@ -19,13 +24,20 @@ STATE_FILE = "_state.json"
 INDEXED_FILE = "_indexed.json"
 
 
+def _cursor_key(source: str, topic: str, query: str) -> str:
+    qhash = hashlib.md5(query.encode("utf-8")).hexdigest()[:8]
+    return f"{source}|{topic}|{qhash}"
+
+
 class StateStore:
     def __init__(self, waiting_review_dir: Path, references_dir: Path):
         self.waiting_review_dir = waiting_review_dir
         self.references_dir = references_dir
         self.state_path = waiting_review_dir / STATE_FILE
         self.indexed_path = references_dir / INDEXED_FILE
-        self._state: dict = {"seen_ids": {}, "aliases": {}, "last_run": {}}
+        self._state: dict = {
+            "seen_ids": {}, "aliases": {}, "cursors": {}, "last_run": {},
+        }
         self._existing_titles: set[str] = set()
         self._load()
 
@@ -36,10 +48,11 @@ class StateStore:
             except Exception as e:
                 logger.warning("Failed to load %s: %s; starting empty", self.state_path, e)
                 self._state = {"seen_ids": {}, "aliases": {}, "last_run": {}}
-        # Backward-compat: older state files won't have 'aliases'
+        # Backward-compat for older state files
         self._state.setdefault("aliases", {})
         self._state.setdefault("seen_ids", {})
         self._state.setdefault("last_run", {})
+        self._state.setdefault("cursors", {})
         # Indexed reference titles (from existing references/<topic>/*.pdf)
         if self.indexed_path.exists():
             try:
@@ -87,6 +100,16 @@ class StateStore:
     def update_last_run(self, topic: str) -> None:
         ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
         self._state["last_run"][topic] = ts
+
+    def get_cursor(self, source: str, topic: str, query: str) -> int:
+        return self._state["cursors"].get(_cursor_key(source, topic, query), 0)
+
+    def advance_cursor(self, source: str, topic: str, query: str, increment: int) -> None:
+        key = _cursor_key(source, topic, query)
+        self._state["cursors"][key] = self._state["cursors"].get(key, 0) + increment
+
+    def reset_cursor(self, source: str, topic: str, query: str) -> None:
+        self._state["cursors"][_cursor_key(source, topic, query)] = 0
 
     def save(self) -> None:
         self.state_path.parent.mkdir(parents=True, exist_ok=True)
