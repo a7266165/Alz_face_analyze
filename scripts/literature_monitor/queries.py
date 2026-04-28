@@ -44,14 +44,17 @@ TOPIC_QUERIES: dict[str, list[str]] = {
         '"emotion expression" "neurodegeneration"',
     ],
     "age": [
-        '("apparent age" OR "facial age" OR "age estimation") AND ("Alzheimer" OR "dementia" OR "MCI")',
-        '"age error" ("cognitive decline" OR "Alzheimer" OR "dementia")',
-        '("MiVOLO" OR "DEX" OR "SSR-Net") AND ("Alzheimer" OR "dementia")',
-        '"perceived age" ("Alzheimer" OR "dementia" OR "cognitive")',
-        '"biological age" face ("Alzheimer" OR "dementia")',
-        '"facial aging" ("Alzheimer" OR "dementia" OR "MCI")',
-        '"age gap" face ("Alzheimer" OR "dementia")',
-        '"brain age" face',
+        # Face-image-explicit only. AVOID: "age estimation" alone, "brain age",
+        # "biological age" alone, "age error" alone — all of these pull in brain
+        # MRI / epigenetic / blood biomarker papers we do NOT want.
+        '("facial age estimation" OR "age from face" OR "age from photograph" OR "age from facial image") AND ("Alzheimer" OR "dementia" OR "MCI")',
+        '"apparent age" ("face" OR "facial" OR "photograph") ("Alzheimer" OR "dementia" OR "cognitive")',
+        '("MiVOLO" OR "DEX" OR "SSR-Net" OR "FaceAge") AND ("Alzheimer" OR "dementia" OR "aging")',
+        '"perceived age" ("face" OR "facial" OR "photograph") ("Alzheimer" OR "dementia" OR "cognitive")',
+        '"facial aging" ("Alzheimer" OR "dementia" OR "MCI" OR "cognitive decline")',
+        '("face age gap" OR "facial age gap") ("Alzheimer" OR "dementia" OR "cognitive")',
+        '"chronological age" ("face image" OR "facial photograph") ("Alzheimer" OR "dementia")',
+        '"face-based age" ("Alzheimer" OR "dementia" OR "cognitive")',
     ],
 }
 
