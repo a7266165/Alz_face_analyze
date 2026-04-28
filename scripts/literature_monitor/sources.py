@@ -50,21 +50,36 @@ def _is_retryable(exc: BaseException) -> bool:
     return False
 
 
-@retry(
-    retry=retry_if_exception(_is_retryable),
-    wait=wait_exponential(multiplier=2, min=2, max=30),
-    stop=stop_after_attempt(4),
-    reraise=True,
-)
-def _get(url: str, params: dict | None = None, headers: dict | None = None,
-         timeout: int = DEFAULT_TIMEOUT) -> requests.Response:
+def _get(
+    url: str,
+    params: dict | None = None,
+    headers: dict | None = None,
+    timeout: int = DEFAULT_TIMEOUT,
+    max_attempts: int = 4,
+    max_wait: int = 30,
+) -> requests.Response:
     """GET with exponential backoff on 429 / 5xx / network errors.
 
-    Backoff schedule: 2s, 4s, 8s (capped at 30s), max 4 attempts total.
+    Default: 2s -> 4s -> 8s waits, max 4 attempts (~15s total budget).
+    Pass max_attempts=6, max_wait=60 for endpoints that share rate-limit
+    pools (e.g. unauthenticated Semantic Scholar) to ride out transient
+    saturation.
     """
-    r = requests.get(url, params=params, headers=headers, timeout=timeout)
-    r.raise_for_status()
-    return r
+
+    @retry(
+        retry=retry_if_exception(_is_retryable),
+        wait=wait_exponential(multiplier=2, min=2, max=max_wait),
+        stop=stop_after_attempt(max_attempts),
+        reraise=True,
+    )
+    def _do() -> requests.Response:
+        r = requests.get(url, params=params, headers=headers, timeout=timeout)
+        if r.status_code in (429,) or 500 <= r.status_code < 600:
+            logger.info("HTTP %s on %s; will retry with backoff", r.status_code, url)
+        r.raise_for_status()
+        return r
+
+    return _do()
 
 
 @dataclass
@@ -201,9 +216,17 @@ def search_semantic_scholar(
     api_key = os.environ.get("S2_API_KEY")
     if api_key:
         headers["x-api-key"] = api_key
+        # With key: own 1 RPS lane, normal retry budget
+        sleep_s, max_attempts, max_wait = 1.1, 4, 30
+    else:
+        # Unauthenticated: shared global pool, 429 storms common.
+        # Slow inter-call cadence to 2s and use 6 attempts up to 60s wait
+        # (~2 min total budget) to ride out transient saturation.
+        sleep_s, max_attempts, max_wait = 2.0, 6, 60
     try:
-        time.sleep(1.1)  # courtesy delay even with key (1 RPS introductory limit)
-        r = _get(url, params=params, headers=headers)
+        time.sleep(sleep_s)
+        r = _get(url, params=params, headers=headers,
+                 max_attempts=max_attempts, max_wait=max_wait)
         data = r.json()
     except Exception as e:
         logger.warning("Semantic Scholar search failed: %s", e)
