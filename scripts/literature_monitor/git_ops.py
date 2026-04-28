@@ -23,36 +23,45 @@ def _has_changes(cwd: Path) -> bool:
 
 
 def auto_push(repo_root: Path, paths: list[str], commit_msg: str) -> str | None:
-    """Pull --rebase, stage `paths`, commit, push. Returns commit SHA or None.
+    """Stage `paths`, commit locally, rebase onto remote, push. Returns SHA or None.
 
-    On rebase conflict: stash, retry; if still failing, abort and return None.
+    Pattern: commit-first-then-rebase. Pull --rebase requires a clean tree, so
+    we commit our changes first (creating a tree-clean state), then rebase the
+    new commit on top of remote main, then push.
     """
-    try:
-        _run(["git", "pull", "--rebase", "origin", "main"], cwd=repo_root)
-    except subprocess.CalledProcessError as e:
-        logger.warning("git pull --rebase failed: %s", e.stderr)
-        # Try recovery: stash, rebase abort, pull again, pop
-        try:
-            _run(["git", "rebase", "--abort"], cwd=repo_root, check=False)
-            _run(["git", "stash"], cwd=repo_root, check=False)
-            _run(["git", "pull", "--rebase", "origin", "main"], cwd=repo_root)
-            _run(["git", "stash", "pop"], cwd=repo_root, check=False)
-        except subprocess.CalledProcessError as e2:
-            logger.error("git rebase recovery failed: %s", e2.stderr)
-            return None
-
+    # Stage everything first
     for p in paths:
         _run(["git", "add", "--", p], cwd=repo_root, check=False)
 
-    if not _has_changes(repo_root):
-        logger.info("no changes to commit")
+    # If nothing was staged (after dedup runs leave _state.json idempotent), bail
+    staged = _run(
+        ["git", "diff", "--cached", "--name-only"], cwd=repo_root, check=False
+    ).stdout.strip()
+    if not staged:
+        logger.info("no staged changes to commit")
+        # Still try to fetch/sync so next run starts clean
+        _run(["git", "fetch", "origin", "main"], cwd=repo_root, check=False)
         return None
 
     try:
         _run(["git", "commit", "-m", commit_msg], cwd=repo_root)
-        sha = _run(["git", "rev-parse", "HEAD"], cwd=repo_root).stdout.strip()
+    except subprocess.CalledProcessError as e:
+        logger.error("git commit failed: %s", e.stderr)
+        return None
+
+    # Rebase onto latest remote main
+    try:
+        _run(["git", "fetch", "origin", "main"], cwd=repo_root)
+        _run(["git", "rebase", "origin/main"], cwd=repo_root)
+    except subprocess.CalledProcessError as e:
+        logger.warning("rebase failed; aborting and skipping push: %s", e.stderr)
+        _run(["git", "rebase", "--abort"], cwd=repo_root, check=False)
+        return None
+
+    sha = _run(["git", "rev-parse", "HEAD"], cwd=repo_root).stdout.strip()
+    try:
         _run(["git", "push", "origin", "main"], cwd=repo_root)
         return sha
     except subprocess.CalledProcessError as e:
-        logger.error("git commit/push failed: %s", e.stderr)
+        logger.error("git push failed: %s", e.stderr)
         return None

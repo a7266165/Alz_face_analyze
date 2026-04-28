@@ -61,45 +61,77 @@ class PaperRecord:
 # ---------------------------------------------------------------------------
 # arXiv
 # ---------------------------------------------------------------------------
+_ARXIV_NS = {"a": "http://www.w3.org/2005/Atom", "arxiv": "http://arxiv.org/schemas/atom"}
+
+
 def search_arxiv(query: str, max_results: int = 25, year_from: int = 2018) -> list[PaperRecord]:
+    """Direct hit to arXiv's Atom API (no `arxiv` package — avoids sgmllib3k chain)."""
+    import xml.etree.ElementTree as ET
+
+    url = "https://export.arxiv.org/api/query"
+    params = {
+        "search_query": query,
+        "start": 0,
+        "max_results": max_results,
+        "sortBy": "submittedDate",
+        "sortOrder": "descending",
+    }
+    headers = {"User-Agent": DEFAULT_USER_AGENT}
     try:
-        import arxiv  # type: ignore
-    except ImportError:
-        logger.warning("`arxiv` package not installed; skipping arxiv search")
+        time.sleep(3)  # arXiv courtesy delay
+        r = requests.get(url, params=params, headers=headers, timeout=DEFAULT_TIMEOUT)
+        r.raise_for_status()
+    except Exception as e:
+        logger.warning("arxiv search failed: %s", e)
         return []
 
-    # arXiv uses lucene-like syntax. Strip surrounding parens; quotes survive.
-    q = re.sub(r"\bAND\b", "AND", query)
-    q = re.sub(r"\bOR\b", "OR", q)
-
-    client = arxiv.Client(page_size=max_results, delay_seconds=3, num_retries=2)
-    search = arxiv.Search(
-        query=q,
-        max_results=max_results,
-        sort_by=arxiv.SortCriterion.SubmittedDate,
-        sort_order=arxiv.SortOrder.Descending,
-    )
     out: list[PaperRecord] = []
     try:
-        for r in client.results(search):
-            if r.published.year < year_from:
+        root = ET.fromstring(r.text)
+        for entry in root.findall("a:entry", _ARXIV_NS):
+            title_el = entry.find("a:title", _ARXIV_NS)
+            summary_el = entry.find("a:summary", _ARXIV_NS)
+            published_el = entry.find("a:published", _ARXIV_NS)
+            id_el = entry.find("a:id", _ARXIV_NS)
+            doi_el = entry.find("arxiv:doi", _ARXIV_NS)
+            if title_el is None or id_el is None or published_el is None:
                 continue
+            year_str = (published_el.text or "")[:4]
+            try:
+                year = int(year_str)
+            except ValueError:
+                continue
+            if year < year_from:
+                continue
+            authors = [
+                (a.find("a:name", _ARXIV_NS).text or "").strip()
+                for a in entry.findall("a:author", _ARXIV_NS)
+                if a.find("a:name", _ARXIV_NS) is not None
+            ]
+            arxiv_id = (id_el.text or "").rsplit("/", 1)[-1].split("v")[0]
+            pdf_url = None
+            for link in entry.findall("a:link", _ARXIV_NS):
+                if link.get("title") == "pdf":
+                    pdf_url = link.get("href")
+                    break
+            if not pdf_url and arxiv_id:
+                pdf_url = f"https://arxiv.org/pdf/{arxiv_id}.pdf"
             out.append(
                 PaperRecord(
-                    title=r.title.strip(),
-                    authors=[a.name for a in r.authors],
-                    year=r.published.year,
-                    abstract=(r.summary or "").strip(),
-                    doi=getattr(r, "doi", None),
-                    arxiv_id=r.entry_id.rsplit("/", 1)[-1].split("v")[0],
+                    title=(title_el.text or "").strip(),
+                    authors=authors,
+                    year=year,
+                    abstract=(summary_el.text or "").strip() if summary_el is not None else "",
+                    doi=(doi_el.text or "").strip() if doi_el is not None else None,
+                    arxiv_id=arxiv_id,
                     venue="arXiv",
                     citation_count=None,
                     source="arxiv",
-                    pdf_url=r.pdf_url,
+                    pdf_url=pdf_url,
                 )
             )
-    except Exception as e:
-        logger.warning("arxiv search failed: %s", e)
+    except ET.ParseError as e:
+        logger.warning("arxiv XML parse failed: %s", e)
     return out
 
 
