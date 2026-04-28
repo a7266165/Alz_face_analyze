@@ -90,7 +90,8 @@ def run_slot(
                 if not rec.title or rec.title == "":
                     continue
                 pid = rec.primary_id()
-                if state.is_seen(pid) or state.is_existing_reference(rec.title):
+                aliases = rec.all_ids()
+                if state.is_seen(pid, aliases) or state.is_existing_reference(rec.title):
                     skipped_total += 1
                     continue
                 if dry_run:
@@ -104,6 +105,7 @@ def run_slot(
                     topic,
                     pdf_path=str(pdf_path.relative_to(repo_root)) if pdf_path else None,
                     pdf_status="ok" if pdf_path else "no_oa",
+                    all_ids=aliases,
                 )
                 new_per_topic[topic].append((rec, pdf_path))
                 written_paths.append(str(json_path.relative_to(repo_root)))
@@ -185,6 +187,8 @@ def main() -> int:
     parser.add_argument("--no-push", action="store_true", help="explicitly disable push")
     parser.add_argument("--rebuild-index", action="store_true",
                         help="rebuild references/_indexed.json from existing PDFs and exit")
+    parser.add_argument("--rebuild-aliases", action="store_true",
+                        help="back-fill _state.json aliases from existing waiting_review JSON sidecars and exit")
     parser.add_argument("-v", "--verbose", action="store_true")
     args = parser.parse_args()
 
@@ -195,6 +199,40 @@ def main() -> int:
     if args.rebuild_index:
         out = write_reference_index(repo_root / "references")
         print(f"wrote {out.relative_to(repo_root)}")
+        return 0
+
+    if args.rebuild_aliases:
+        import json as _json
+        wr = repo_root / "references" / "waiting_review"
+        state = StateStore(wr, repo_root / "references")
+        added = 0
+        for sidecar in wr.glob("*/*/*.json"):
+            try:
+                meta = _json.loads(sidecar.read_text(encoding="utf-8"))
+            except Exception:
+                continue
+            primary = meta.get("primary_id") or ""
+            if not primary:
+                continue
+            ids = []
+            if meta.get("arxiv_id"):
+                ids.append(f"arxiv:{meta['arxiv_id']}")
+            if meta.get("doi"):
+                ids.append(f"doi:{meta['doi'].lower()}")
+            pmid = (meta.get("extra") or {}).get("pmid")
+            if pmid:
+                ids.append(f"pmid:{pmid}")
+            title = meta.get("title", "")
+            if title:
+                import re as _re
+                norm = _re.sub(r"\s+", " ", title.strip().lower())[:120]
+                ids.append(f"title:{norm}")
+            for alias in ids:
+                if alias != primary and alias not in state._state["aliases"]:
+                    state._state["aliases"][alias] = primary
+                    added += 1
+        state.save()
+        print(f"added {added} aliases to _state.json")
         return 0
 
     if args.slot is None and args.topic is None:

@@ -101,14 +101,36 @@ class PaperRecord:
         return asdict(self)
 
     def primary_id(self) -> str:
-        """Stable canonical ID for dedup."""
+        """Stable canonical ID for dedup. Prefers arxiv > doi > title."""
         if self.arxiv_id:
             return f"arxiv:{self.arxiv_id}"
         if self.doi:
             return f"doi:{self.doi.lower()}"
-        # Fallback: title-based hash
         norm = re.sub(r"\s+", " ", self.title.strip().lower())
         return f"title:{norm[:120]}"
+
+    def all_ids(self) -> list[str]:
+        """All known IDs for this record, used for cross-source dedup aliases.
+
+        When the same paper appears from multiple sources with different
+        identifier coverage (e.g. arXiv returns arxiv_id only, S2 returns
+        arxiv_id+doi, OpenAlex returns doi only), registering ALL ids as
+        aliases lets later sources hit the dedup hash regardless of which
+        id field they happen to populate.
+        """
+        ids: list[str] = []
+        if self.arxiv_id:
+            ids.append(f"arxiv:{self.arxiv_id}")
+        if self.doi:
+            ids.append(f"doi:{self.doi.lower()}")
+        pmid = (self.extra or {}).get("pmid")
+        if pmid:
+            ids.append(f"pmid:{pmid}")
+        # Always include title-hash as last-resort alias
+        norm = re.sub(r"\s+", " ", self.title.strip().lower())
+        if norm:
+            ids.append(f"title:{norm[:120]}")
+        return ids
 
 
 # ---------------------------------------------------------------------------

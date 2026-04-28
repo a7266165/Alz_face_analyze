@@ -25,7 +25,7 @@ class StateStore:
         self.references_dir = references_dir
         self.state_path = waiting_review_dir / STATE_FILE
         self.indexed_path = references_dir / INDEXED_FILE
-        self._state: dict = {"seen_ids": {}, "last_run": {}}
+        self._state: dict = {"seen_ids": {}, "aliases": {}, "last_run": {}}
         self._existing_titles: set[str] = set()
         self._load()
 
@@ -35,7 +35,11 @@ class StateStore:
                 self._state = json.loads(self.state_path.read_text(encoding="utf-8"))
             except Exception as e:
                 logger.warning("Failed to load %s: %s; starting empty", self.state_path, e)
-                self._state = {"seen_ids": {}, "last_run": {}}
+                self._state = {"seen_ids": {}, "aliases": {}, "last_run": {}}
+        # Backward-compat: older state files won't have 'aliases'
+        self._state.setdefault("aliases", {})
+        self._state.setdefault("seen_ids", {})
+        self._state.setdefault("last_run", {})
         # Indexed reference titles (from existing references/<topic>/*.pdf)
         if self.indexed_path.exists():
             try:
@@ -44,8 +48,18 @@ class StateStore:
             except Exception as e:
                 logger.warning("Failed to load %s: %s", self.indexed_path, e)
 
-    def is_seen(self, primary_id: str) -> bool:
-        return primary_id in self._state["seen_ids"]
+    def is_seen(self, primary_id: str, all_ids: list[str] | None = None) -> bool:
+        """True if primary_id OR any of `all_ids` matches a known canonical or alias."""
+        if primary_id in self._state["seen_ids"]:
+            return True
+        if all_ids is None:
+            return False
+        for alias in all_ids:
+            if alias in self._state["aliases"]:
+                return True
+            if alias in self._state["seen_ids"]:
+                return True
+        return False
 
     def is_existing_reference(self, title: str) -> bool:
         return _norm_title(title) in self._existing_titles
@@ -56,6 +70,7 @@ class StateStore:
         topic: str,
         pdf_path: str | None = None,
         pdf_status: str = "ok",
+        all_ids: list[str] | None = None,
     ) -> None:
         self._state["seen_ids"][primary_id] = {
             "first_seen": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
@@ -63,6 +78,11 @@ class StateStore:
             "pdf_path": pdf_path,
             "pdf_status": pdf_status,
         }
+        # Register all known IDs of this record as aliases pointing to primary_id
+        if all_ids:
+            for alias in all_ids:
+                if alias != primary_id:
+                    self._state["aliases"][alias] = primary_id
 
     def update_last_run(self, topic: str) -> None:
         ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
