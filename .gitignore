@@ -41,3 +41,5 @@ test_results/*
 
 # literature_monitor logs (run-time noise; PDFs/state/digests still tracked)
 references/waiting_review/_logs/
+# rejected papers — _state.json already records dedup info, archive is just a safety net
+references/waiting_review/_archive_rejected/
