@@ -1,0 +1,24 @@
+{
+  "title": "VisionRescue: AI-Powered Live Missing Person Identification System",
+  "authors": [
+    "Kothapalle Kasivisweswarreddy",
+    "Kalyani Kothapelli",
+    "Komatigunta Ahalya",
+    "M. Priya"
+  ],
+  "year": 2025,
+  "abstract": "With the growing number of missing persons worldwide, VisionRescue introduces an AI-powered, real-time facial recognition system designed for immediate identification and response.Using advanced computer vision and deep learning techniques, this system continuously scans live video feeds, comparing detected faces against a pre-stored dataset of missing individuals.If a match is found, the system highlights the person with a red circle, instantly alerting authorities or relevant personnel.If no match is detected, individuals are marked with a green circle, ensuring non-intrusive monitoring.Unlike traditional missing person searches that rely on manual verification, VisionRescue provides an automated, high-speed, and efficient approach for law enforcement agencies, public safety officers, and humanitarian organizations.Designed with a lightweight, database-free structure, this solution can be deployed in public surveillance networks, airports, train stations, and high-traffic areas, significantly increasing the chances of finding and reuniting missing individuals with their families.With VisionRescue, we take a step toward transforming public safety by integrating cutting-edge AI to bridge the gap between missing persons and their loved ones.In our society, A countless number of people are missing every day which includes kids, Teens, Girls, Mentally challenged, Old-aged people with Alzheimer's etc.Even though missing cases are getting filed against them in police stations.It's really getting impossible to find them in most cases.In the existing way, If the person was found missing we have to file a complaint in the nearby police station of where he was lost.After filing the complaint, police will start the enquiry by taking required information.It is a time consuming process and needs much effort.so, we plan something named as \"missing person identification using face recognition\" which makes our task quiet simpler.We are going to design a web application where one can able to upload the missing person details and store it in database",
+  "doi": "10.55248/gengpi.6.0425.14119",
+  "arxiv_id": null,
+  "venue": "International Journal of Research Publication and Reviews",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://doi.org/10.55248/gengpi.6.0425.14119",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4409812061"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.55248/gengpi.6.0425.14119",
+  "_rejected_reason": "abstract_review_off_topic"
+}

@@ -1,0 +1,29 @@
+{
+  "title": "Metagenomics and metabolomics to evaluate the potential role of gut microbiota and blood metabolites in patients with cerebral infarction",
+  "authors": [
+    "Wei Huang",
+    "Yinghui Chai",
+    "Xiang Li",
+    "Qiuyue Zhang",
+    "Zengkui Yan",
+    "Yan Wang",
+    "Xiaoyong Tao",
+    "Jiatang Zhang",
+    "Feng Qiu"
+  ],
+  "year": 2025,
+  "abstract": "Cerebral infarction, a cerebrovascular disorder, is characterized by the sudden onset of neurological deficits and clinical symptoms. It ranks among the leading causes of death and severe disability worldwide. The etiology of cerebral infarction is multifaceted, with common risk factors including dietary patterns, smoking, hypertension, and diabetes mellitus. In recent years, the role of the gut microbiota in systemic immunity and tumorigenesis has been intensively explored, thrusting the research on the gut-brain axis into the spotlight. However, there is a lack of literature investigating the relationship between the gut microbiota and blood metabolites in cerebral infarction. In this study, we employed 16S rRNA analysis and ultra-high-performance liquid chromatography-tandem mass spectrometry (UHPLC-MS/MS) for a comprehensive metagenomic and metabolomic analysis of fecal samples from cerebral infarction patients and the general population. Our results revealed a significant correlation between the gut microbiome and serum metabolites, highlighting the impact of the microbiome on metabolic pathways. Specifically, we found that 35 gut microbiome taxa, such as Actinobacteriota and Peptostreptococcales-Tissierellales, were significantly enriched in the control group (N group). Through Linear Discriminant Analysis Effect Size (LEfSe) analysis, 72 taxa showed significant differences between cerebral infarction patients and healthy individuals. Among them, 22 key taxa were identified as microbial biomarkers for differentiating patients from healthy controls. These findings suggest that variations in the microbiome and metabolites could potentially serve as biomarkers for future diagnostic and therapeutic strategies in cerebral infarction.",
+  "doi": "10.1186/s12866-025-04259-y",
+  "arxiv_id": null,
+  "venue": "BMC Microbiology",
+  "citation_count": 1,
+  "source": "openalex",
+  "pdf_url": "https://bmcmicrobiol.biomedcentral.com/counter/pdf/10.1186/s12866-025-04259-y",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4413845445"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.1186/s12866-025-04259-y",
+  "_rejected_reason": "no_face_in_enriched_abstract"
+}

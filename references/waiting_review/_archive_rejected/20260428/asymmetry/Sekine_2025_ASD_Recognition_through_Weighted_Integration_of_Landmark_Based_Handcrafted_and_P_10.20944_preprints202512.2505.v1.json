@@ -1,0 +1,28 @@
+{
+  "title": "ASD Recognition through Weighted Integration of Landmark-Based Handcrafted and Pixel-Based Deep Learning Features",
+  "authors": [
+    "Asahi Sekine",
+    "Abu Saleh Musa Miah",
+    "Koki Hirooka",
+    "Najmul Hassan",
+    "Md Al Mehedi Hasan",
+    "Yuichi Okuyama",
+    "Yoichi Tomioka",
+    "Jungpil Shin"
+  ],
+  "year": 2025,
+  "abstract": "Autism Spectrum Disorder (ASD) is a neurological condition that impairs communication skills, with individuals often experiencing mild to severe challenges that may require specialised care. While numerous researchers are developing automated ASD recognition systems, achieving high performance remains challenging due to the lack of effective features. In this study, we propose a novel dual-stream model that combines handcrafted facial-landmark features and pixel-level deep learning features to classify ASD and non-ASD faces. The system processes images through two distinct streams to capture complementary features. In the first stream, facial landmarks are extracted using Mediapipe, initially capturing 478 points and selecting 137 symmetric landmarks. The face position is determined by applying in-plane rotation using the angles calculated from the outer eye corners (landmarks 33 and 263). Geometric features and 52 blendshape features are then fed into Dense layers (128 units) with dropout for regularisation. These features are merged and refined through additional Dense layers (128 and 64 units) to produce the final output for Stream-1. In the second stream, the RGB image is resized, normalised using the preprocessing function corresponding to the chosen backbone (e.g., ResNet50V2, DenseNet121, InceptionV3), and then extracted features using a Convolutional Neural Network (CNN) enhanced with Squeeze-and-Excitation (SE) blocks. Global Average Pooling (GAP) reduces dimensionality, followed by DenseNet (256 units with dropout) and a final Dense layer (64 units) to extract features for Stream-2. The outputs from both streams are concatenated, and a softmax gate with weighted concatenation is applied to combine the features. A final Dense layer (128 units with dropout) refines the features before passing them through a softmax layer to produce the probabilistic classification score. This hybrid approach, integrating landmark-based and RGB-based features, significantly enhances the model’s ability to distinguish between ASD and Non-ASD faces. Using the Kaggle dataset, the model achieved an accuracy of 96.43%, with a precision of 97.10%, recall of 95.71%, and an F1 score of 96.40%. On the YTUIA dataset, the accuracy increased to 97.83%, with a precision of 97.78%, recall of 97.78%, and an F1 score of 97.78%. Although these results are promising, they fall short of surpassing the highest reported performance of 95.00\\% for Kaggle and 95.90\\% for YTUIA. Future work will focus on optimizing the model’s performance to exceed these benchmarks.",
+  "doi": "10.20944/preprints202512.2505.v1",
+  "arxiv_id": null,
+  "venue": "Preprints.org",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://www.preprints.org/frontend/manuscript/6ddd02dea96f4c75d0fdf94c0a4acd96/download_pub",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W7117566280"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.20944/preprints202512.2505.v1",
+  "_rejected_reason": "abstract_review_off_topic"
+}

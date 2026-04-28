@@ -1,0 +1,25 @@
+{
+  "title": "Index",
+  "authors": [
+    "Surjeet Dalal",
+    "Neeraj Dahiya",
+    "Vivek Jaglan",
+    "Deepika Koundal",
+    "Dac-Nhuong Le"
+  ],
+  "year": 2024,
+  "abstract": "Page numbers followed by f and t indicate notes.Abstraction layer.see Application layer Access control system, smart parking and, 451 Access Control Technologies (ACT), 511 Accountability in decision-making, 92 Accuracy, predicting used car prices, 109, 110 Accurate artificial intelligence, 70t Activation maximization, 74 Active attack, 164t Actuation process/task, technical challenge in SDCs, 467 Actuator(s), 8, 128, 208, 210 in sensor layer, 126 IoT device, traffic management, 442, 444 perception layer, function of, 127 smart farming, structure of, 410 type of transducer, 124 AdaBoost, 109, 352 Adaptive IoT system, 122 Address resolution protocol (ARP) spoofing attack, 241, 242t, 243 Advanced driver assistance systems (ADAS), 130-131 Advanced message queue protocol (AMQP), 225, 227, 229, 231, 233 Advanced metering infrastructure (AMI), 163 Advertising, of legal services, 85, 90 Aerial imaging and survey, AI applications and, 12 Age of vehicle and price, correlation, 112f Agents, AI, 7-9 Agglomerative approach, hierarchical clustering, 103 Aggregator, primitive of NoT, 309, 310 Aging facial, 362 skin transformations and, 363 Agricultural machinery recognition network (AMTNet), 409 crop safety, 415 data analysis, 415 data storage, 415 feeding crops, 416 harvesting, 416 monitoring soil health, 415-416 response time and accuracy, 415 risk analysis, 415 components of AI and IoT for acquisition of data, 410 analysis of data, 411 layers of smart agriculture, 411-412 processing of data, 410 structure of smart farming, 410 IoT, application of, 133-137, 147, 163, 217-218, 256 smart farming, 409 smart irrigation, 409 soil monitoring industry, 410 IoT and AI in agricultural automation fertilization, 413-414 greenhouse environment, 412 irrigation, 413 machinery for farming, 412 pest control, 414 production management, 412 soil management, 413 weed management, 413 predictive analytics and precision agriculture analysis in data mining high-tech farming of future, 423-424 crop yield prediction, Bayesian algorithm, 424 crop yield prediction using Hadoop's agro algorithm, 424 crop yield prediction using ML, 423 data from soil testing for cultivation advisory report, 424-426 meam squared error, 423 process, 420-421 robots in, 406-407 Agri-Gaia project, 274 AIoT-based smart bin for real-time monitoring challenges and future work, 302 GMS, 298 IoT-based SWM, 298 overview, 296-297 proposed methodology processing of trash bin, 300-302 system design, 299 transmission pattern of proposed system, 299 SWC as a service, 299 SWM by K-Query scheduling, 298-299 SWMS, 297 AIoT-enabled personalized banking (AIoT-PB) literature review and hypotheses attitude and behavioral intention, 318, 319, 320, 322 bank reputation, 317, 318-319, 320, 322 perceived ease of use (PEU), 317, 318, 319, 322 perceived usefulness (PU), 317-318, 319, 322 TAM, 317-319 methodology sample and data collection procedure, 319 variable measures and method of analysis, 319-320 assessment of measurement model, 320-322 limitations and scope for further research, 322-323 managerial implications, 322 AIoT-PB.see AIoT-enabled personalized banking (AIoT-PB) Air pollution, risk of, 264-265 Air quality index management, smart, 264-265 Alcohol, rubbing,",
+  "doi": "10.1002/9781119905202.index",
+  "arxiv_id": null,
+  "venue": null,
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://onlinelibrary.wiley.com/doi/pdfdirect/10.1002/9781119905202.index",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4402313113"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.1002/9781119905202.index",
+  "_rejected_reason": "abstract_review_off_topic"
+}

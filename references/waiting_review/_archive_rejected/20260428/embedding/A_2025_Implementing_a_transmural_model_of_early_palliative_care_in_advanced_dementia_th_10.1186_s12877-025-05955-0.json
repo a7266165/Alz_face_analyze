@@ -1,0 +1,39 @@
+{
+  "title": "Implementing a transmural model of early palliative care in advanced dementia: the use of a hybrid effectiveness-implementation study design.",
+  "authors": [
+    "Hum A",
+    "Kaur P",
+    "Goh WY",
+    "Tay R",
+    "Neo HY",
+    "Koh MYH",
+    "Ali NB",
+    "Lim WS",
+    "Tan YJ",
+    "Wu HY",
+    "Kannapiran P",
+    "Tan HTR",
+    "Sun Y",
+    "Ong CE",
+    "Sachdev RS",
+    "Low ZJ",
+    "Tey LH",
+    "Tan WS",
+    "Ding YY"
+  ],
+  "year": 2025,
+  "abstract": "BACKGROUND: People with dementia receive differential access to palliative care services despite suffering from a significant burden of the disease in the advanced stage. Professional and familial caregivers may not view dementia as a terminal illness and are less likely to engage in end-of-life care discussions. Healthcare providers also face challenges coordinating palliative care in the community for dementia, demonstrating a lack of understanding of the needs of patients living with advanced dementia, and resources available to support them within the community. AIM: The aim of this study is to implement a transmural model of care in a tertiary care setting where patients living with advanced dementia (PLAD) at risk of deterioration in one year are identified early to receive tailored palliative care interventions using a predictive algorithm. METHODS/DESIGN: The updated medical research council (MRC) framework for complex interventions is used to guide the development and implementation of the transmural model which incorporates a predictive algorithm in clinical practice, with interventions tailored for at risk PLAD both within, and beyond the tertiary care setting. The PROgnostic Model for Advanced DEmentia (PRO-MADE) developed to predict one-year all-cause mortality in PLAD presenting to an acute care hospital was embedded into the electronic health records of the tertiary care setting as a mathematical equation. Predictive modeling markup language in the digital records platform is used to calculate the risk score for PLAD by inputting the predictors. The clinical team is alerted of at risk PLAD through timed directive prompts, with advice on management given through tailored care bundles. The study will adopt a mixed methods approach in a Type 1 effectiveness-implementation study design to concurrently study the effectiveness of the transmural model in practice, and the barriers and facilitators to its implementation. CONCLUSION: The implementation of a transmural model of early palliative care for patients with advanced dementia requires the coordination between clinicians in the tertiary care setting and community, together with health information technologists. This study protocol describes its development and implementation, and the study design to evaluate its outcomes.",
+  "doi": "10.1186/s12877-025-05955-0",
+  "arxiv_id": null,
+  "venue": "BMC geriatrics",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "40316895"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.1186/s12877-025-05955-0",
+  "_rejected_reason": "pdf_content_review_off_topic"
+}

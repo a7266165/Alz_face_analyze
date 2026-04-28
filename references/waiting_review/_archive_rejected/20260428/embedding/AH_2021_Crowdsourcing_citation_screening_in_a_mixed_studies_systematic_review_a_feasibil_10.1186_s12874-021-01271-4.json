@@ -1,0 +1,29 @@
+{
+  "title": "Crowdsourcing citation-screening in a mixed-studies systematic review: a feasibility study.",
+  "authors": [
+    "Noel-Storr AH",
+    "Redmond P",
+    "Lamé G",
+    "Liberati E",
+    "Kelly S",
+    "Miller L",
+    "Dooley G",
+    "Paterson A",
+    "Burt J"
+  ],
+  "year": 2021,
+  "abstract": "BACKGROUND: Crowdsourcing engages the help of large numbers of people in tasks, activities or projects, usually via the internet. One application of crowdsourcing is the screening of citations for inclusion in a systematic review. There is evidence that a 'Crowd' of non-specialists can reliably identify quantitative studies, such as randomized controlled trials, through the assessment of study titles and abstracts. In this feasibility study, we investigated crowd performance of an online, topic-based citation-screening task, assessing titles and abstracts for inclusion in a single mixed-studies systematic review. METHODS: This study was embedded within a mixed studies systematic review of maternity care, exploring the effects of training healthcare professionals in intrapartum cardiotocography. Citation-screening was undertaken via Cochrane Crowd, an online citizen science platform enabling volunteers to contribute to a range of tasks identifying evidence in health and healthcare. Contributors were recruited from users registered with Cochrane Crowd. Following completion of task-specific online training, the crowd and the review team independently screened 9546 titles and abstracts. The screening task was subsequently repeated with a new crowd following minor changes to the crowd agreement algorithm based on findings from the first screening task. We assessed the crowd decisions against the review team categorizations (the 'gold standard'), measuring sensitivity, specificity, time and task engagement. RESULTS: Seventy-eight crowd contributors completed the first screening task. Sensitivity (the crowd's ability to correctly identify studies included within the review) was 84% (N = 42/50), and specificity (the crowd's ability to correctly identify excluded studies) was 99% (N = 9373/9493). Task completion was 33 h for the crowd and 410 h for the review team; mean time to classify each record was 6.06 s for each crowd participant and 3.96 s for review team members. Replicating this task with 85 new contributors and an altered agreement algorithm found 94% sensitivity (N = 48/50) and 98% specificity (N = 9348/9493). Contributors reported positive experiences of the task. CONCLUSION: It might be feasible to recruit and train a crowd to accurately perform topic-based citation-screening for mixed studies systematic reviews, though resource expended on the necessary customised training required should be factored in. In the face of long review production times, crowd screening may enable a more time-efficient conduct of reviews, with minimal reduction of citation-screening accuracy, but further research is needed.",
+  "doi": "10.1186/s12874-021-01271-4",
+  "arxiv_id": null,
+  "venue": "BMC medical research methodology",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "33906604"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.1186/s12874-021-01271-4",
+  "_rejected_reason": "pdf_content_review_off_topic"
+}

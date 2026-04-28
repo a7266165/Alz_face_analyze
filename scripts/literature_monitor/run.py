@@ -59,6 +59,7 @@ def run_slot(
     override_topics: list[str] | None = None,
     override_sources: list[str] | None = None,
     override_query_idx: int | None = None,
+    download_pdf: bool = True,
 ) -> dict:
     plan = SLOT_PLAN.get(slot, {"topics": [], "sources": [], "query_idx": 0})
     digest_only = plan.get("digest_only", False)
@@ -112,7 +113,7 @@ def run_slot(
                     new_per_topic[topic].append((rec, None))
                     continue
                 day_dir = waiting_review / topic / _today()
-                pdf_path, json_path = save_record(rec, day_dir, download_pdf=True)
+                pdf_path, json_path = save_record(rec, day_dir, download_pdf=download_pdf)
                 state.mark_seen(
                     pid,
                     topic,
@@ -204,6 +205,8 @@ def main() -> int:
                         help="back-fill _state.json aliases from existing waiting_review JSON sidecars and exit")
     parser.add_argument("--batch", type=int, default=1,
                         help="run N consecutive sweeps with cursor pagination; stops early if a sweep returns 0 new papers")
+    parser.add_argument("--no-pdf", action="store_true",
+                        help="save metadata JSON only; defer PDF download to download_pdfs.py")
     parser.add_argument("-v", "--verbose", action="store_true")
     args = parser.parse_args()
 
@@ -269,6 +272,7 @@ def main() -> int:
                 dry_run=args.dry_run,
                 push=push,
                 override_topics=override,
+                download_pdf=not args.no_pdf,
             )
         else:
             topics = list(TOPICS) if args.topic == "all" else [args.topic]
@@ -282,6 +286,7 @@ def main() -> int:
                 override_topics=topics,
                 override_sources=["arxiv", "s2", "openalex", "pubmed"],
                 override_query_idx=0,
+                download_pdf=not args.no_pdf,
             )
 
     for n in range(batch):

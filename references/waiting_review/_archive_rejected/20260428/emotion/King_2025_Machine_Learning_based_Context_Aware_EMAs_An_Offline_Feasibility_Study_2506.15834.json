@@ -1,0 +1,30 @@
+{
+  "title": "Machine Learning-based Context-Aware EMAs: An Offline Feasibility Study",
+  "authors": [
+    "Zachary D King",
+    "Maryam Khalid",
+    "Han Yu",
+    "Kei Shibuya",
+    "Khadija Zanna",
+    "Marzieh Majd",
+    "Ryan L Brown",
+    "Yufei Shen",
+    "Thomas Vaessen",
+    "George Kypriotakis",
+    "Christopher P Fagundes",
+    "Akane Sano"
+  ],
+  "year": 2025,
+  "abstract": "Mobile health (mHealth) systems help researchers monitor and care for patients in real-world settings. Studies utilizing mHealth applications use Ecological Momentary Assessment (EMAs), passive sensing, and contextual features to develop emotion recognition models, which rely on EMA responses as ground truth. Due to this, it is crucial to consider EMA compliance when conducting a successful mHealth study. Utilizing machine learning is one approach that can solve this problem by sending EMAs based on the predicted likelihood of a response. However, literature suggests that this approach may lead to prompting participants more frequently during emotions associated with responsiveness, thereby narrowing the range of emotions collected. We propose a multi-objective function that utilizes machine learning to identify optimal times for sending EMAs. The function identifies optimal moments by combining predicted response likelihood with model uncertainty in emotion predictions. Uncertainty would lead the function to prioritize time points when the model is less confident, which often corresponds to underrepresented emotions. We demonstrate that this objective function would result in EMAs being sent when participants are responsive and experiencing less commonly observed emotions. The evaluation is conducted offline using two datasets: (1) 91 spousal caregivers of individuals with Alzheimer's Disease and Related dementias (ADRD), (2) 45 healthy participants. Results show that the multi-objective function tends to be higher when participants respond to EMAs and report less commonly observed emotions. This suggests that using the proposed objective function to guide EMA delivery could improve receptivity rates and capture a broader range of emotions.",
+  "doi": null,
+  "arxiv_id": "2506.15834",
+  "venue": "arXiv",
+  "citation_count": null,
+  "source": "arxiv",
+  "pdf_url": "https://arxiv.org/pdf/2506.15834v1",
+  "relevance_score": null,
+  "extra": {},
+  "pdf_status": "ok",
+  "primary_id": "arxiv:2506.15834",
+  "_rejected_reason": "no_face_in_existing_abstract"
+}

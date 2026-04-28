@@ -1,0 +1,24 @@
+{
+  "title": "A Dynamic Model for Early Prediction of Alzheimer's Disease by Leveraging Graph Convolutional Networks and Tensor Algebra.",
+  "authors": [
+    "Ozdemir C",
+    "Olaimat MA",
+    "Bozdag S",
+    "Alzheimer’s Disease Neuroimaging Initiative"
+  ],
+  "year": 2025,
+  "abstract": "Alzheimer's disease (AD) is a neurocognitive disorder that deteriorates memory and impairs cognitive functions. Mild Cognitive Impairment (MCI) is generally considered as an intermediate phase between normal cognitive aging and more severe conditions such as AD. Although not all individuals with MCI will develop AD, they are at an increased risk of developing AD. Diagnosing AD once strong symptoms are already present is of limited value, as AD leads to irreversible cognitive decline and brain damage. Thus, it is crucial to develop methods for the early prediction of AD in individuals with MCI. Recurrent Neural Networks (RNN)-based methods have been effectively used to predict the progression from MCI to AD by analyzing electronic health records (EHR). However, despite their widespread use, existing RNN-based tools may introduce increased model complexity and often face difficulties in capturing long-term dependencies. In this study, we introduced a novel Dynamic deep learning model for Early Prediction of AD (DyEPAD) to predict MCI subjects' progression to AD utilizing EHR data. In the first phase of DyEPAD, embeddings for each time step or visit are captured through Graph Convolutional Networks (GCN) and aggregation functions. In the final phase, DyEPAD employs tensor algebraic operations for frequency domain analysis of these embeddings, capturing the full scope of evolutionary patterns across all time steps. Our experiments on the Alzheimer's Disease Neuroimaging Initiative (ADNI) and National Alzheimer's Coordinating Center (NACC) datasets demonstrate that our proposed model outperforms or is in par with the state-of-the-art and baseline methods.",
+  "doi": "10.1142/9789819807024_0048",
+  "arxiv_id": null,
+  "venue": "Pacific Symposium on Biocomputing. Pacific Symposium on Biocomputing",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "39670404"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.1142/9789819807024_0048",
+  "_rejected_reason": "abstract_review_off_topic"
+}

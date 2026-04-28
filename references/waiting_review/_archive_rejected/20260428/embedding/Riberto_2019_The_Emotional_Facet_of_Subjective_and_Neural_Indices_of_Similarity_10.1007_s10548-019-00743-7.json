@@ -1,0 +1,23 @@
+{
+  "title": "The Emotional Facet of Subjective and Neural Indices of Similarity",
+  "authors": [
+    "Martina Riberto",
+    "Gorana Pobric",
+    "Deborah Talmi"
+  ],
+  "year": 2019,
+  "abstract": "Emotional similarity refers to the tendency to group stimuli together because they evoke the same feelings in us. The majority of research on similarity perception that has been conducted to date has focused on non-emotional stimuli. Different models have been proposed to explain how we represent semantic concepts, and judge the similarity among them. They are supported from behavioural and neural evidence, often combined by using Multivariate Pattern Analyses. By contrast, less is known about the cognitive and neural mechanisms underlying the judgement of similarity between real-life emotional experiences. This review summarizes the major findings, debates and limitations in the semantic similarity literature. They will serve as background to the emotional facet of similarity that will be the focus of this review. A multi-modal and overarching approach, which relates different levels of neuroscientific explanation (i.e., computational, algorithmic and implementation), would be the key to further unveil what makes emotional experiences similar to each other.",
+  "doi": "10.1007/s10548-019-00743-7",
+  "arxiv_id": null,
+  "venue": "Brain Topography",
+  "citation_count": 23,
+  "source": "openalex",
+  "pdf_url": "https://link.springer.com/content/pdf/10.1007/s10548-019-00743-7.pdf",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W2983433193"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.1007/s10548-019-00743-7",
+  "_rejected_reason": "no_face_in_enriched_abstract"
+}

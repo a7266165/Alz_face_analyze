@@ -1,0 +1,23 @@
+{
+  "title": "Comparative Analysis of Execution of CNN-Based Sanguine Data Transmission with LSB-SS and PVD-SS",
+  "authors": [
+    "Alaknanda S. Patil",
+    "G. Sundari",
+    "Arun Kumar Sivaraman"
+  ],
+  "year": 2023,
+  "abstract": "The intact data transmission to the authentic user is becoming crucial at every moment in the current era. Steganography; is a technique for concealing the hidden message in any cover media such as image, video; and audio to increase the protection of data. The resilience and imperceptibility are improved by choosing an appropriate embedding position. This paper gives a novel system to immerse the secret information in different videos with different methods. An audio and video steganography with novel amalgamations are implemented to immerse the confidential auditory information and the authentic user’s face image. A hidden message is first included in the audio from the multimedia file; using LSB Technique. The Stego-video is created in the second stage by merging the authorized user’s face into the frame of the video; by using PVD technology. Stego-audio is linked again with the stego-video in the third stage. The incorporated perspective techniques (LSB-SS and PVD-SS algorithms) with more significant data immersing capacity, good robustness and imperceptibility are proposed in this research work. The spread spectrum approach is used to increase the complexity of secret data recognition. Two different video files are tested with different voice files with the results such as PSNR, SSIM, RMSE and MSE as 52.3, 0.9963, 0.0024 and 0.0000059, respectively.",
+  "doi": "10.32604/csse.2023.034270",
+  "arxiv_id": null,
+  "venue": "Computer Systems Science and Engineering",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://file.techscience.com/files/csse/2023/TSP_CSSE-46-2/TSP_CSSE_34270/TSP_CSSE_34270.pdf",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4319659907"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.32604/csse.2023.034270",
+  "_rejected_reason": "pdf_content_review_off_topic"
+}

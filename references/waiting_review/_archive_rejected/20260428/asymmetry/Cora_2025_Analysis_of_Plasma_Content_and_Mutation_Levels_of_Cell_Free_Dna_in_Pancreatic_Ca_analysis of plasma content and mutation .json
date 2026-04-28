@@ -1,0 +1,26 @@
+{
+  "title": "Analysis of Plasma Content and Mutation Levels of Cell-Free Dna in Pancreatic Cancer Patients",
+  "authors": [
+    "Claudia Cora",
+    "Gintautė Diringytė",
+    "Emilija Valerija Petrauskaitė",
+    "Romualdas Riauka",
+    "Sandra Ivanauskienė",
+    "Darius Stukas"
+  ],
+  "year": 2025,
+  "abstract": "Introduction Cell-free DNA (cfDNA) detection in liquid biopsies is a promising non-invasive diagnostic procedure for cancers diagnosed at advanced stages, such as pancreatic ductal adenocarcinoma (PDAC). (1) CfDNA content, fragmentation patterns, DNA methylation profiles, mutation levels and mutated genes are all potential biomarkers for malignancy detection, and cancer type identification with different proven efficacy, accuracy and consistency. (1-4) There is a critical need to understand how cfDNA and single nucleotide polymorphisms (SNPs) levels differ between PDAC patients and healthy individuals for the improvement of early detection and diagnostic strategies. Aim Compare plasma cell-free DNA content between patients with PDAC and healthy controls. Methods The patient plasma cfDNA was sequenced according to “Oxford Nanopore tech” kits using Promethion flow cells and Native barcoding kit. The sequenced data was analysed using: “MinKnow” software for basecalling, “Nanoplot” for read calculation, “Minimap2” for DNA mapping to reference genome and “Deepvariant” for mutation calling. 10 PDAC patients and 8 healthy controls were analysed. Results Significant increase of circulating cfDNA concentration was observed in PDAC patients as compared to healthy patients, with a median of 77.60 ng/ml for PDAC patients and 19.75 ng/ml for healthy patients (p&lt;0.0001). Single nucleotide polymorphisms (SNPs) in PDAC patients per 100 reads were significantly higher (median 2.567 vs 2.098, p = 0.0005) than in healthy subjects. The proportion of clinically relevant SNPs in PDAC patients per 100 000 reads was significantly higher (median 1.748 vs 1.589, p = 0.0044) than healthy controls. Lastly, the number of PDAC related gene mutations in affected patients was significantly higher compared to healthy patients. Conclusions PDAC patients had higher cfDNA content, more SNPs, clinically relevant mutations and PDAC related mutations compared to healthy controls. These findings could frame the development of simpler initial diagnostic tests in the detection of malignancy, which can guide targeted investigations to identify the specific type of cancer, however further research is needed to establish a clear clinical pattern.",
+  "doi": null,
+  "arxiv_id": null,
+  "venue": "Lithuanian University of Health Sciences",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "http://portalcris.lsmuni.lt:4000/cris/bitstreams/f305bcf5-5eaa-428a-aa34-f6969cb007e0/download",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W7132566339"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "title:analysis of plasma content and mutation levels of cell-free dna in pancreatic cancer patients",
+  "_rejected_reason": "no_face_in_enriched_abstract"
+}

@@ -1,0 +1,26 @@
+{
+  "title": "Confidence-Aware Self-Distillation for Multimodal Sentiment Analysis with Incomplete Modalities",
+  "authors": [
+    "Luo, Yanxi",
+    "Shijin Wang",
+    "Zhongxing Xu",
+    "Yulong Li",
+    "Feilong Tang",
+    "Jionglong Su"
+  ],
+  "year": 2025,
+  "abstract": "Multimodal sentiment analysis (MSA) aims to understand human sentiment through multimodal data. In real-world scenarios, practical factors often lead to uncertain modality missingness. Existing methods for handling modality missingness are based on data reconstruction or common subspace projections. However, these methods neglect the confidence in multimodal combinations and impose constraints on intra-class representation, hindering the capture of modality-specific information and resulting in suboptimal performance. To address these challenges, we propose a Confidence-Aware Self-Distillation (CASD) strategy that effectively incorporates multimodal probabilistic embeddings via a mixture of Student's $t$-distributions, enhancing its robustness by incorporating confidence and accommodating heavy-tailed properties. This strategy estimates joint distributions with uncertainty scores and reduces uncertainty in the student network by consistency distillation. Furthermore, we introduce a reparameterization representation module that facilitates CASD in robust multimodal learning by sampling embeddings from the joint distribution for the prediction module to calculate the task loss. As a result, the directional constraint from the loss minimization is alleviated by the sampled representation. Experimental results on three benchmark datasets demonstrate that our method achieves state-of-the-art performance.",
+  "doi": "10.48550/arxiv.2506.01490",
+  "arxiv_id": null,
+  "venue": "ArXiv.org",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://arxiv.org/pdf/2506.01490",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4414853909"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.48550/arxiv.2506.01490",
+  "_rejected_reason": "no_face_in_enriched_abstract"
+}

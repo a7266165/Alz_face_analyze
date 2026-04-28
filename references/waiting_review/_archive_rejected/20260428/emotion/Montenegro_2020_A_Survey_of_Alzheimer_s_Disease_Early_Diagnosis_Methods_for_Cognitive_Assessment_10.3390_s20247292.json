@@ -1,0 +1,26 @@
+{
+  "title": "A Survey of Alzheimer’s Disease Early Diagnosis Methods for Cognitive Assessment",
+  "authors": [
+    "Juan Manuel Fernández Montenegro",
+    "Barbara Villarini",
+    "Anastassia Angelopoulou",
+    "Epaminondas Kapetanios",
+    "José García‐Rodríguez",
+    "Vasileios Argyriou"
+  ],
+  "year": 2020,
+  "abstract": "Dementia is a syndrome that is characterised by the decline of different cognitive abilities. A high rate of deaths and high cost for detection, treatments, and patients care count amongst its consequences. Although there is no cure for dementia, a timely diagnosis helps in obtaining necessary support, appropriate medication, and maintenance, as far as possible, of engagement in intellectual, social, and physical activities. The early detection of Alzheimer Disease (AD) is considered to be of high importance for improving the quality of life of patients and their families. In particular, Virtual Reality (VR) is an expanding tool that can be used in order to assess cognitive abilities while navigating through a Virtual Environment (VE). The paper summarises common AD screening and diagnosis techniques focusing on the latest approaches that are based on Virtual Environments, behaviour analysis, and emotions recognition, aiming to provide more reliable and non-invasive diagnostics at home or in a clinical environment. Furthermore, different AD diagnosis evaluation methods and metrics are presented and discussed together with an overview of the different datasets.",
+  "doi": "10.3390/s20247292",
+  "arxiv_id": null,
+  "venue": "Sensors",
+  "citation_count": 51,
+  "source": "openalex",
+  "pdf_url": "https://www.mdpi.com/1424-8220/20/24/7292/pdf?version=1608380866",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W3114702115"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.3390/s20247292",
+  "_rejected_reason": "no_face_in_enriched_abstract"
+}

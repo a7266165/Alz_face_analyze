@@ -1,0 +1,25 @@
+{
+  "title": "AI-powered analysis of affective dimensions in speech and its relevance for FTD diagnosis.",
+  "authors": [
+    "Denève A",
+    "Dauchez R",
+    "Lebouvier T",
+    "D'Hondt F",
+    "Bertoux M"
+  ],
+  "year": 2026,
+  "abstract": "INTRODUCTION: Affective disturbances are common across behavioral variant frontotemporal degeneration (bvFTD), primary psychiatric disorders (PPD), and Alzheimer's disease (AD). Objective markers are needed for differential and transdiagnostic characterization. We tested whether artificial intelligence (AI)-based analysis of natural speech could provide such markers. METHODS: Speech from 112 participants (bvFTD = 31, AD = 28, PPD = 15, controls = 39) was analyzed using a fine-tuned speech emotion recognition model estimating valence, arousal, dominance, and entropy. Group differences were assessed with analyses of covariance, diagnostic utility with logistic regression, and neuroanatomical correlates with voxel-based morphometry. RESULTS: Group-specific affective profiles emerged. Overall, PPD exhibited a lower valence. bvFTD and AD showed a reduced arousal and a higher dominance. Affective dimensions predicted bvFTD with 80.4% accuracy (area under the curve  =  0.732) and mapped onto fronto-insular and temporal networks. Entropy was identified as a transdiagnostic marker. DISCUSSION: AI-based speech analysis provides objective, scalable biomarkers for differential diagnosis, transdiagnostic characterization, and disease monitoring.",
+  "doi": "10.1002/dad2.70300",
+  "arxiv_id": null,
+  "venue": "Alzheimer's & dementia (Amsterdam, Netherlands)",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "42004206"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.1002/dad2.70300",
+  "_rejected_reason": "abstract_review_off_topic"
+}

@@ -1,0 +1,28 @@
+{
+  "title": "Machine learning predictive model for aspiration screening in hospitalized patients with acute stroke",
+  "authors": [
+    "Dougho Park",
+    "Seok Il Son",
+    "Min Sol Kim",
+    "TaeYeon Kim",
+    "Jun Hwa Choi",
+    "Sang-Eok Lee",
+    "Daeyoung Hong",
+    "Mun-Chul Kim"
+  ],
+  "year": 2023,
+  "abstract": "Abstract Dysphagia is a fatal condition after acute stroke. We established machine learning (ML) models for screening aspiration in patients with acute stroke. This retrospective study enrolled patients with acute stroke admitted to a cerebrovascular specialty hospital between January 2016 and June 2022. A videofluoroscopic swallowing study (VFSS) confirmed aspiration. We evaluated the Gugging Swallowing Screen (GUSS), an early assessment tool for dysphagia, in all patients and compared its predictive value with ML models. Following ML algorithms were applied: regularized logistic regressions (ridge, lasso, and elastic net), random forest, extreme gradient boosting, support vector machines, k -nearest neighbors, and naïve Bayes. We finally analyzed data from 3408 patients, and 448 of them had aspiration on VFSS. The GUSS showed an area under the receiver operating characteristics curve (AUROC) of 0.79 (0.77–0.81). The ridge regression model was the best model among all ML models, with an AUROC of 0.81 (0.76–0.86), an F1 measure of 0.45. Regularized logistic regression models exhibited higher sensitivity (0.66–0.72) than the GUSS (0.64). Feature importance analyses revealed that the modified Rankin scale was the most important feature of ML performance. The proposed ML prediction models are valid and practical for screening aspiration in patients with acute stroke.",
+  "doi": "10.1038/s41598-023-34999-8",
+  "arxiv_id": null,
+  "venue": "Scientific Reports",
+  "citation_count": 11,
+  "source": "openalex",
+  "pdf_url": "https://www.nature.com/articles/s41598-023-34999-8.pdf",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4376642969"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.1038/s41598-023-34999-8",
+  "_rejected_reason": "no_face_in_enriched_abstract"
+}

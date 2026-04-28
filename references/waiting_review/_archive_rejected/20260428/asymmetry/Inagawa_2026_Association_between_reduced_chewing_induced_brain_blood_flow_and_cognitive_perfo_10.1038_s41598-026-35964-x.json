@@ -1,0 +1,26 @@
+{
+  "title": "Association between reduced chewing-induced brain blood flow and cognitive performance in mandibular prognathism patients in a pilot study",
+  "authors": [
+    "Yuri Inagawa",
+    "Hiroyuki Kanzaki",
+    "Chihiro Kariya",
+    "Saki Tanaka",
+    "Masao Kumazawa",
+    "Hiroshi Tomonari"
+  ],
+  "year": 2026,
+  "abstract": "Despite established links between masticatory dysfunction and cognitive impairment, cognitive function in dentofacial deformity patients remains unexplored. This study represents the first comprehensive cognitive assessment in mandibular prognathism (MP) patients. Brain blood flow (BBF) during chewing was measured using functional near-infrared spectroscopy in MP patients versus normal occlusion controls (NORM, n = 17). Cognitive function using eye-tracking technology (Mirudake) in MP patients (n = 44) was compared to healthy controls (HC, n = 59), with assessing six cognitive domains. MP patients demonstrated significantly reduced chewing-induced BBF in bilateral inferior frontal gyrus compared to NORM. Global cognitive performance showed no significant difference between MP and HC groups (p = 0.48). However, positive correlations existed between BBF and cognitive performance domains including global performance and memory. ROC analysis using pooled bilateral BBF data (n = 88) revealed modest diagnostic potential for cognitive assessment (AUC = 0.657, 95% CI 0.431-0.865). The optimal threshold yielded 62.5% sensitivity, 73.8% specificity, and 72.7% overall accuracy for detecting cognitive impairment. This first systematic cognitive evaluation of MP patients revealed no significant global cognitive impairment despite confirmed reductions in masticatory-induced brain activation. The observed BBF-cognition correlations suggest BBF measurements may have potential utility as an adjunct measure in cognitive screening, warranting further investigation through longitudinal studies examining orthognathic surgery's potential cognitive effects.",
+  "doi": "10.1038/s41598-026-35964-x",
+  "arxiv_id": null,
+  "venue": "Scientific Reports",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://www.nature.com/articles/s41598-026-35964-x_reference.pdf",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W7124443174"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.1038/s41598-026-35964-x",
+  "_rejected_reason": "no_face_in_enriched_abstract"
+}

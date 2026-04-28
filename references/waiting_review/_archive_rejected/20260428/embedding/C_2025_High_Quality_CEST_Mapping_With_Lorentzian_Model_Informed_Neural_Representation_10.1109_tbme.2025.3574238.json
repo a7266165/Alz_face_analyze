@@ -1,0 +1,28 @@
+{
+  "title": "High-Quality CEST Mapping With Lorentzian-Model Informed Neural Representation.",
+  "authors": [
+    "Chen C",
+    "Liu Y",
+    "Park SW",
+    "Li J",
+    "Chan KWY",
+    "Huang J",
+    "Morel JM",
+    "Chan RH"
+  ],
+  "year": 2025,
+  "abstract": "Chemical Exchange Saturation Transfer (CEST) MRI has demonstrated its remarkable ability to enhance the detection of macromolecules and metabolites with low concentrations. While CEST mapping is essential for quantifying molecular information, conventional methods face critical limitations: model-based approaches are constrained by limited sensitivity and robustness depending heavily on parameter setups, while data-driven deep learning methods lack generalizability across heterogeneous datasets and acquisition protocols. To overcome these challenges, we propose a Lorentzian-model Informed Neural Representation (LINR) framework for high-quality CEST mapping. LINR employs a self-supervised neural architecture embedding the Lorentzian equation - the fundamental biophysical model of CEST signal evolution - to directly reconstruct high-sensitivity parameter maps from raw z-spectra, eliminating dependency on labeled training data. Convergence of the self-supervised training strategy is guaranteed theoretically, ensuring LINR's mathematical validity. The superior performance of LINR in capturing CEST contrasts is revealed through comprehensive evaluations based on synthetic phantoms and in-vivo experiments (including tumor and Alzheimer's disease models). The intuitive parameter-free design enables adaptive integration into diverse CEST imaging workflows, positioning LINR as a versatile tool for non-invasive molecular diagnostics and pathophysiological discovery.",
+  "doi": "10.1109/TBME.2025.3574238",
+  "arxiv_id": null,
+  "venue": "IEEE transactions on bio-medical engineering",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "40434851"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.1109/tbme.2025.3574238",
+  "_rejected_reason": "abstract_review_off_topic"
+}

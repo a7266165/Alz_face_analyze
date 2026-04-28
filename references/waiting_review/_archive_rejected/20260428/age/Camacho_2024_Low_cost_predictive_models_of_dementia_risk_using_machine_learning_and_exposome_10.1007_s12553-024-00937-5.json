@@ -1,0 +1,25 @@
+{
+  "title": "Low-cost predictive models of dementia risk using machine learning and exposome predictors",
+  "authors": [
+    "Marina Camacho",
+    "Angélica Atehortúa",
+    "Tim Wilkinson",
+    "Polyxeni Gkontra",
+    "Karim Lekadir"
+  ],
+  "year": 2024,
+  "abstract": "Abstract Purpose Diagnosing dementia, affecting over 55 million people globally, is challenging and costly, often leading to late-stage diagnoses. This study aims to develop early, accurate, and cost-effective dementia screening methods using exposome predictors and machine learning. We investigate whether low-cost exposome predictors combined with machine learning models can reliably identify individuals at risk of dementia. Methods We analyzed data from 500,000 UK Biobank participants, selecting 1523 diagnosed with dementia and an equal number of healthy controls, matched by age and sex. A total of 3046 participants were included: 2740 for internal validation and 306 for external validation. We used 128 low-cost exposome factors from baseline visits, imputed missing data, and assessed two predictive models: a classical logistic regression and a machine learning ensemble classifier (XGBoost). Feature importance was estimated within the predictive models. Results The XGBoost model outperformed the logistic regression model, achieving a mean AUC of 0.88 in external validation. We identified novel exposome factors that might be combined as potential markers for dementia, such as facial aging, the frequency of use of sun/ultraviolet light protection, and the length of mobile phone use. Conclusions Machine learning models utilizing exposome data can reliably identify individuals at risk of dementia, with XGBoost showing superior performance. This approach highlights the potential of low-cost, readily available exposome factors as markers for dementia. Future studies should validate these findings in diverse populations and explore the integration of additional exposome factors to enhance prediction accuracy.",
+  "doi": "10.1007/s12553-024-00937-5",
+  "arxiv_id": null,
+  "venue": "Health and Technology",
+  "citation_count": 5,
+  "source": "openalex",
+  "pdf_url": "https://link.springer.com/content/pdf/10.1007/s12553-024-00937-5.pdf",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4405656835"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.1007/s12553-024-00937-5",
+  "_rejected_reason": "pdf_content_review_off_topic"
+}
