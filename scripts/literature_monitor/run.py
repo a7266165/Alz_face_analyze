@@ -224,7 +224,7 @@ def main() -> int:
             max_per_source=args.max_per_source,
             year_from=args.year_from,
             dry_run=args.dry_run,
-            push=False,
+            push=push,
             override_topics=topics,
             override_sources=["arxiv", "s2", "openalex", "pubmed"],
             override_query_idx=0,
