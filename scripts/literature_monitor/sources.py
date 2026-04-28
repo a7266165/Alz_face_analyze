@@ -13,6 +13,7 @@ Supported sources:
 from __future__ import annotations
 
 import logging
+import os
 import re
 import time
 from dataclasses import dataclass, field, asdict
@@ -20,6 +21,12 @@ from datetime import datetime
 from typing import Any
 
 import requests
+from tenacity import (
+    retry,
+    retry_if_exception,
+    stop_after_attempt,
+    wait_exponential,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +34,37 @@ DEFAULT_USER_AGENT = (
     "AlzFaceLitMonitor/0.1 (mailto:a1234567891934@gmail.com)"
 )
 DEFAULT_TIMEOUT = 30
+
+
+def _is_retryable(exc: BaseException) -> bool:
+    """Retry on 429 / 5xx / network errors. Do NOT retry on 4xx other than 429."""
+    if isinstance(exc, requests.exceptions.Timeout):
+        return True
+    if isinstance(exc, requests.exceptions.ConnectionError):
+        return True
+    if isinstance(exc, requests.exceptions.HTTPError):
+        status = getattr(exc.response, "status_code", None)
+        if status is None:
+            return False
+        return status == 429 or 500 <= status < 600
+    return False
+
+
+@retry(
+    retry=retry_if_exception(_is_retryable),
+    wait=wait_exponential(multiplier=2, min=2, max=30),
+    stop=stop_after_attempt(4),
+    reraise=True,
+)
+def _get(url: str, params: dict | None = None, headers: dict | None = None,
+         timeout: int = DEFAULT_TIMEOUT) -> requests.Response:
+    """GET with exponential backoff on 429 / 5xx / network errors.
+
+    Backoff schedule: 2s, 4s, 8s (capped at 30s), max 4 attempts total.
+    """
+    r = requests.get(url, params=params, headers=headers, timeout=timeout)
+    r.raise_for_status()
+    return r
 
 
 @dataclass
@@ -79,8 +117,7 @@ def search_arxiv(query: str, max_results: int = 25, year_from: int = 2018) -> li
     headers = {"User-Agent": DEFAULT_USER_AGENT}
     try:
         time.sleep(3)  # arXiv courtesy delay
-        r = requests.get(url, params=params, headers=headers, timeout=DEFAULT_TIMEOUT)
-        r.raise_for_status()
+        r = _get(url, params=params, headers=headers)
     except Exception as e:
         logger.warning("arxiv search failed: %s", e)
         return []
@@ -161,14 +198,12 @@ def search_semantic_scholar(
         "year": f"{year_from}-",
     }
     headers = {"User-Agent": DEFAULT_USER_AGENT}
+    api_key = os.environ.get("S2_API_KEY")
+    if api_key:
+        headers["x-api-key"] = api_key
     try:
-        time.sleep(1.1)  # 1 req/sec for unauthenticated
-        r = requests.get(url, params=params, headers=headers, timeout=DEFAULT_TIMEOUT)
-        if r.status_code == 429:
-            logger.warning("S2 rate-limited; sleeping 10s and retrying once")
-            time.sleep(10)
-            r = requests.get(url, params=params, headers=headers, timeout=DEFAULT_TIMEOUT)
-        r.raise_for_status()
+        time.sleep(1.1)  # courtesy delay even with key (1 RPS introductory limit)
+        r = _get(url, params=params, headers=headers)
         data = r.json()
     except Exception as e:
         logger.warning("Semantic Scholar search failed: %s", e)
@@ -211,7 +246,7 @@ def search_pubmed(query: str, max_results: int = 25, year_from: int = 2018) -> l
     headers = {"User-Agent": DEFAULT_USER_AGENT}
     try:
         time.sleep(0.4)
-        r = requests.get(
+        r = _get(
             f"{PUBMED_BASE}/esearch.fcgi",
             params={
                 "db": "pubmed",
@@ -220,20 +255,16 @@ def search_pubmed(query: str, max_results: int = 25, year_from: int = 2018) -> l
                 "retmode": "json",
             },
             headers=headers,
-            timeout=DEFAULT_TIMEOUT,
         )
-        r.raise_for_status()
         ids = r.json().get("esearchresult", {}).get("idlist", []) or []
         if not ids:
             return []
         time.sleep(0.4)
-        s = requests.get(
+        s = _get(
             f"{PUBMED_BASE}/esummary.fcgi",
             params={"db": "pubmed", "id": ",".join(ids), "retmode": "json"},
             headers=headers,
-            timeout=DEFAULT_TIMEOUT,
         )
-        s.raise_for_status()
         result = s.json().get("result", {})
     except Exception as e:
         logger.warning("PubMed search failed: %s", e)
@@ -286,8 +317,7 @@ def search_openalex(query: str, max_results: int = 25, year_from: int = 2018) ->
     headers = {"User-Agent": DEFAULT_USER_AGENT}
     try:
         time.sleep(0.2)
-        r = requests.get(url, params=params, headers=headers, timeout=DEFAULT_TIMEOUT)
-        r.raise_for_status()
+        r = _get(url, params=params, headers=headers)
         data = r.json()
     except Exception as e:
         logger.warning("OpenAlex search failed: %s", e)
