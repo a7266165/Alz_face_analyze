@@ -1,0 +1,23 @@
+{
+  "title": "Auditing Demographic Bias in Facial Landmark Detection for Fair Human-Robot Interaction",
+  "authors": [
+    "Pablo Parte",
+    "Roberto Valle",
+    "Jose Miguel Buenaposada",
+    "Luis Baumela"
+  ],
+  "year": 2026,
+  "abstract": "Fairness in human-robot interaction critically depends on the reliability of the perceptual models that enable robots to interpret human behavior. While demographic biases have been widely studied in high-level facial analysis tasks, their presence in facial landmark detection remains unexplored. In this paper, we conduct a systematic audit of demographic bias in this task, analyzing the age, gender and race biases. To this end we introduce a controlled statistical methodology to disentangle demographic effects from confounding visual factors. Evaluations of a standard representative model demonstrate that confounding visual factors, particularly head pose and image resolution, heavily outweigh the impact of demographic attributes. Notably, after accounting for these confounders, we show that performance disparities across gender and race vanish. However, we identify a statistically significant age-related effect, with higher biases observed for older individuals. This shows that fairness issues can emerge even in low-level vision components and can propagate through the HRI pipeline, disproportionately affecting vulnerable populations. We argue that auditing and correcting such biases is a necessary step toward trustworthy and equitable robot perception systems.",
+  "doi": null,
+  "arxiv_id": null,
+  "venue": "arXiv (Cornell University)",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://arxiv.org/pdf/2604.06961",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W7153670663"
+  },
+  "pdf_status": "ok",
+  "primary_id": "title:auditing demographic bias in facial landmark detection for fair human-robot interaction"
+}

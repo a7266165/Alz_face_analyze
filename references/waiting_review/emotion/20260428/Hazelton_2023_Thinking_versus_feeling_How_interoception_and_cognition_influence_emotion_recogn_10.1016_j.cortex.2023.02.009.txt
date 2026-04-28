@@ -1,0 +1,1499 @@
+Behavioural Neurology
+Thinking versus feeling: How interoception and
+cognition inﬂuence emotion recognition in
+behavioural-variant frontotemporal dementia,
+Alzheimer's disease, and Parkinson's disease
+Jessica L. Hazelton a,b, Sol Fittipaldi c,d,e,f, Matias Fraile-Vazquez c,
+Marion Sourty b,g, Agustina Legaz c,d,e, Anna L. Hudson h,i,j,
+Indira Garcia Cordero c,d,k, Paula C. Salamone d,l, Adrian Yoris d,m,
+Agustı´n Iba~nez c,d,f,n,o, Olivier Piguet a,b and Fiona Kumfor a,b,*
+a The University of Sydney, School of Psychology, Sydney, Australia
+b The University of Sydney, Brain & Mind Centre, Sydney, Australia
+c Cognitive Neuroscience Center (CNC) Universidad de San Andres, Buenos Aires, Argentina
+d National Scientiﬁc and Technical Research Council (CONICET), Buenos Aires, Argentina
+e Facultad de Psicologı´a, Universidad Nacional de Cordoba, Argentina
+f Latin American Brain Health Institute (BrainLat), Universidad Adolfo Iba~nez, Santiago, Chile
+g The University of Sydney, School of Engineering, Sydney, Australia
+h Flinders University, College of Medicine and Public Health, Adelaide, Australia
+i Neuroscience Research Australia (NeuRA), Sydney, Australia
+j The University of New South Wales, School of Medical Sciences, Sydney, Australia
+k Tanz Centre for Research in Neurodegenerative Diseases, University of Toronto, Toronto, Canada
+l Department of Biomedical and Clinical Sciences, Center for Social and Affective Neuroscience, Link€oping University,
+Link€oping, Sweden
+m Institute of Cognitive and Translational Neuroscience (INCYT), Buenos Aires, Argentina
+n Global Brain Health Institute, University of California, San Francisco, USA
+o Trinity College Dublin (TCD), Dublin, Ireland
+a r t i c l e i n f o
+Article history:
+Received 18 July 2022
+Reviewed 8 September 2022
+Revised 18 November 2022
+Accepted 17 February 2023
+a b s t r a c t
+Disease-speciﬁc mechanisms underlying emotion recognition difﬁculties in behaviouralvariant frontotemporal dementia (bvFTD), Alzheimer's disease (AD), and Parkinson's disease (PD) are unknown. Interoceptive accuracy, accurately detecting internal cues (e.g.,
+one's heart beating), and cognitive abilities are candidate mechanisms underlying emotion
+recognition.
+Abbreviations: ACE-III, Addenbrooke's Cognitive Examination e III; AD, Alzheimer's disease; bvFTD, behavioural-variant frontotemporal dementia; FAST, Facial Affect Selection Task; FRS, Frontotemporal dementia Rating Scale; mini-SEA, mini-Social and
+Emotional Assessment; MoCA, Montreal Cognitive Examination; PD, Parkinson's disease; VBM, Voxel Based Morphometry.
+* Corresponding author. 94 Mallett Street Camperdown, Sydney, NSW, 2050, Australia.
+E-mail address: ﬁona.kumfor@sydney.edu.au (F. Kumfor).
+Available online at www.sciencedirect.com
+ScienceDirect
+Journal homepage: www.elsevier.com/locate/cortex
+c o r t e x 1 6 3 ( 2 0 2 3 ) 6 6 e7 9
+https://doi.org/10.1016/j.cortex.2023.02.009
+0010-9452/© 2023 The Author(s). Published by Elsevier Ltd. This is an open access article under the CC BY-NC-ND license (http://
+creativecommons.org/licenses/by-nc-nd/4.0/).
+
+Action editor Brad Dickerson
+Published online 23 March 2023
+Keywords:
+Behavioural-variant frontotemporal
+dementia
+Interoception
+Emotion
+Social cognition
+Insula
+One hundred and sixty-eight participants (52 bvFTD; 41 AD; 24 PD; 51 controls) were
+recruited. Emotion recognition was measured via the Facial Affect Selection Task or the
+Mini-Social and Emotional Assessment Emotion Recognition Task. Interoception was
+assessed with a heartbeat detection task. Participants pressed a button each time they: 1)
+felt their heartbeat (Interoception); or 2) heard a recorded heartbeat (Exteroception-control). Cognition was measured via the Addenbrooke's Cognitive Examination-III or the
+Montreal Cognitive Assessment. Voxel-based morphometry analyses identiﬁed neural
+correlates associated with emotion recognition and interoceptive accuracy.
+All patient groups showed worse emotion recognition and cognition than controls (all
+P's  .008). Only the bvFTD showed worse interoceptive accuracy than controls (P < .001).
+Regression analyses revealed that in bvFTD worse interoceptive accuracy predicted worse
+emotion recognition (P ¼ .008). Whereas worse cognition predicted worse emotion recognition overall (P < .001). Neuroimaging analyses revealed that the insula, orbitofrontal cortex,
+and amygdala were involved in emotion recognition and interoceptive accuracy in bvFTD.
+Here, we provide evidence for disease-speciﬁc mechanisms for emotion recognition
+difﬁculties. In bvFTD, emotion recognition impairment is driven by inaccurate perception
+of the internal milieu. Whereas, in AD and PD, cognitive impairment likely underlies
+emotion recognition deﬁcits. The current study furthers our theoretical understanding of
+emotion and highlights the need for targeted interventions.
+© 2023 The Author(s). Published by Elsevier Ltd. This is an open access article under the CC
+BY-NC-ND license (http://creativecommons.org/licenses/by-nc-nd/4.0/).
+Navigating the social world is a complex undertaking and is
+proposed to involve the continual integration of information
+from the world around us with cues from within our own
+bodies (Barrett, 2017; Barrett & Simmons, 2015; Damasio, 1996,
+2006; James, 1884, 1894; Schachter & Singer, 1962). Interoception is the ongoing processing of one's internal body
+environment and encompasses a range of cues from autonomic,
+hormonal,
+visceral
+and
+immunological
+sources
+(Cameron, 2001; Craig, 2002, 2003, 2009). While these processes occur without full awareness, interoceptive accuracy
+requires, at least in part, conscious perception and accurate
+monitoring of this internal milieu, such as changes in heart
+rate, feelings of fullness and ﬂuctuations in breathing (Khalsa
+et al., 2018). Despite increasing recognition of the role of
+interoception in emotion processing (Adolﬁet al., 2017; Couto
+et al., 2015; Critchley & Garﬁnkel, 2017; Critchley & Harrison,
+2013; Fittipaldi et al., 2020; Salamone et al., 2021; Yoris et al.,
+2020), the extent to which deﬁcits in interoceptive accuracy
+contribute to the well-recognised emotion recognition impairments in some dementia has been surprisingly underexplored. Moreover, whether other potential mechanisms,
+such as cognitive impairment may better explain emotion
+recognition difﬁculties in some dementia syndromes warrants investigation. Understanding syndrome-speciﬁc mechanisms contributing to emotion recognition deﬁcits, and in
+turn the social and behavioural symptoms observed in dementia, is essential to inform differential diagnosis, alleviate
+carer
+distress,
+and
+develop
+disease-speciﬁc
+therapeutic
+interventions.
+It is increasingly recognised that people with behaviouralvariant
+frontotemporal
+dementia
+(bvFTD)
+are
+severely
+impaired on tasks of facial emotion recognition, particularly
+for negative emotions (see for meta analysis Bora, Velakoulis,
+& Walterfang, 2016; Boeve, Boxer, Kumfor, Pijnenburg, &
+Rohrer, 2022; Chiu et al., 2018; Goodkind et al., 2015; Kumfor
+et al., 2011; Piguet & Kumfor, 2020; Salamone et al., 2021).
+These emotional deﬁcits contribute substantially to carer
+burden and distress (Miller et al., 2013). Clinically, bvFTD is
+characterised by profound changes to behaviour and personality, with early brain atrophy observed in the ventromedial
+prefrontal cortex and insula (Rascovsky et al., 2011), extending
+to the temporal lobes and subcortical regions with disease
+progression (Landin-Romero et al., 2017). The insula is a key
+brain structure involved in interoception (Craig, 2002, 2003,
+2008) and is also one of the earliest sites of atrophy in bvFTD
+(Seeley et al., 2008). Neurobiological models of social interaction, such as the Social Context Network Model propose that
+the insula modulates social contextual understanding by
+integrating information arising from the body with the
+external environment (Baez, Garcı´a, & Iba~nez, 2016; Iba~nez,
+2018, 2019; Iba~nez & Manes, 2012; Ibanez & Schulte, 2020;
+Legaz et al., 2021), and is involved in assigning value to internal and external information as part of the salience
+network (Menon & Uddin, 2010; Salamone et al., 2021; Seeley
+et al., 2007). Recent updates of this model suggest that allostatic interoceptive overload, or the imbalanced weighting of
+interoceptive cues with external demands, underlie the neural
+and behavioural deﬁcits in bvFTD (Birba et al., 2022). Moreover, given the role of interoception in emotion (see for review
+Critchley & Garﬁnkel, 2017), it is plausible that deﬁcits in
+interoceptive processing also contribute to emotion recognition impairments routinely observed in bvFTD. Emerging
+studies have shown that bvFTD patients have impaired
+interoceptive accuracy (Abrevaya et al., 2020; Garcı´a-Cordero
+et al., 2016; Salamone et al., 2021; but see Marshall et al.,
+2017), although results are mixed, and limited by small sample sizes. Of relevance here, no study has investigated
+whether impaired interoceptive accuracy underlies the profound emotion recognition deﬁcits in bvFTD, or if these abilities have a shared neurobiological basis.
+c o r t e x 1 6 3 ( 2 0 2 3 ) 6 6 e7 9
+67
+
+In contrast, while patients with Alzheimer's disease (AD)
+and Parkinson's disease (PD) show impairment on emotion
+recognition tasks, these impairments may be secondary to
+more
+generalised
+cognitive
+impairment
+(see
+for
+metaanalysis Bora et al., 2016; Baggio et al., 2012; Gray & Tickle-
+Degnen, 2010; Kumfor, Sapey-Triomphe, et al., 2014; Torres
+Mendonc¸a
+De
+Melo
+Fadel,
+Santos
+De
+Carvalho,
+Belfort
+Almeida Dos Santos, & Dourado, 2019). AD patients present
+with predominant episodic memory loss and impaired executive functioning, with atrophy observed in the medial
+temporal lobe, most notably in the hippocampus and posterior cingulate (McKhann et al., 2011). PD patients present
+with tremors, bradykinesia and rigidity, with atrophy initially
+observed in the substantial nigra and brainstem, progressing
+to the basal ganglia and related subcortical regions over the
+course of the disease (Postuma et al., 2015). Importantly, in
+both AD and PD, the insula is relatively preserved, and
+emotion recognition deﬁcits tend to be milder compared with
+those observed in bvFTD (see for meta analysis Bora et al.,
+2016; Goodkind et al., 2015). In addition, there is some
+emerging evidence of impaired interoceptive accuracy in
+both AD and PD (Abrevaya et al., 2020; Garcı´a-Cordero et al.,
+2016; Ricciardi et al., 2016; Santangelo et al., 2018), however
+this is not consistently observed (Salamone et al., 2021)
+Altered
+interoceptive
+accuracy
+in
+these
+patient
+groups,
+however, may be due to the cognitive demands of the tasks
+used,
+which
+required
+sustained
+attention
+and
+working
+memory
+(Marshall
+et
+al.,
+2017;
+Ricciardi
+et
+al.,
+2016;
+Santangelo et al., 2018).
+The current study aimed to examine disease-speciﬁc
+mechanisms
+underlying
+facial
+emotion
+recognition
+in
+bvFTD, AD and PD. Based on the neuroanatomical proﬁle,
+we hypothesised that bvFTD patients would be impaired on
+a continuous monitoring interoceptive accuracy task. We
+further
+hypothesised
+that
+interoceptive
+accuracy
+would
+predict emotion recognition performance in bvFTD. Secondly, we hypothesised that AD and PD patients would not
+show interoceptive accuracy deﬁcits using a continuous
+monitoring interoception task, where cognitive demands of
+the interoception tasks used were minimised and multiple
+biases of previous interoceptive accuracy methods were
+avoided (de la Fuente et al., 2019; Fittipaldi et al., 2020).
+Moreover,
+we
+hypothesised
+that
+cognitive
+impairment
+would predict emotion recognition performance in AD and
+PD. Finally, we aimed to investigate the neural correlates of
+interoceptive
+accuracy
+and
+emotion
+recognition.
+We
+hypothesised
+that
+interoceptive
+accuracy
+and
+emotion
+recognition tasks would be associated with reduced integrity of shared brain structures underpinning both processes, speciﬁcally the insula as a key interoceptive brain
+region involved in integrating internal and external social
+cues.
+1.
+Methods
+We report how we determined our sample size, all data exclusions, all inclusion/exclusion criteria, whether inclusion/
+exclusion criteria were established prior to data analysis, all
+manipulations, and all measures in the study.
+1.1.
+Participants
+One hundred and sixty-eight participants (52 behaviouralvariant frontotemporal dementia; 41 Alzheimer's disease; 24
+Parkinson's disease; 51 controls) were recruited from three
+international dementia centres: FRONTIER, the younger onset
+dementia research clinic in Sydney, Australia; the Institute of
+Cognitive Neurology (INECO) in Buenos Aires, Argentina; and
+the Latin American Brain Health Institute (BrainLat) of Universidad Adolfo Iba~nez in Santiago, Chile. All participants
+underwent a comprehensive examination that included a
+neuropsychological assessment, an anatomical brain MRI
+acquisition, and examination by an experienced behavioural
+neurologist. All assessments were conducted in either English
+(Australia) or Spanish (Argentina, Chile). Diagnosis was
+established by the multidisciplinary teams at each research
+institute based on current consensus diagnostic criteria
+(McKhann et al., 2011; Postuma et al., 2015; Rascovsky et al.,
+2011). All healthy controls scored >88/100 on the Addenbrooke's Cognitive Examination-III (ACE-III) (Hsieh, Schubert,
+Hoon, Mioshi, & Hodges, 2013) or >26/30 on the Montreal
+Cognitive Assessment (MoCA) (Nasreddine et al., 2005). Patients and healthy controls were excluded for the following:
+lifelong and untreated history of psychiatric disorder; signiﬁcant head injury; alcohol or substance abuse; presence of
+other neurological disorder; or limited language proﬁciency
+for that country. All participants provided informed consent
+in accordance with the Declaration of Helsinki. The study was
+approved by the Ethical Research Committee of INECO
+(Argentina), the South Eastern Sydney Local Health District
+ethics committee, the University of New South Wales, and the
+University of Sydney ethics committees (Australia), and Universidad Adolfo Iba~nez (Chile).
+A priori power analyses were conducted using G*Power 3.1
+and indicated that a total sample of 48 participants would be
+appropriate for a repeated measures (within-between) subjects design with 2 repeated measures and 4 groups (effect size
+f ¼ 0.25, power ¼ 0.80, a ¼ 0.05). Additionally, a sample size of
+131 participants would be appropriate for a multiple linear
+regression with 13 predictors (effect size f ¼ 0.25, power ¼ 0.80,
+a ¼ 0.05). Our sample size exceeded this estimation and
+therefore our study was sufﬁciently powered. No part of the
+study procedures or analyses were pre-registered prior to the
+research being conducted.
+1.2.
+Measures
+1.2.1.
+Disease severity and duration
+The Frontotemporal dementia Rating Scale (FRS) was used to
+provide an index of disease severity and an associated Rasch
+score, with higher Rasch scores indicating less severe disease
+stage (Mioshi, Hsieh, Savage, Hornberger, & Hodges, 2010).
+Disease duration was determined by the number of years
+since symptoms were noticed by the carer/informant. The FRS
+is available freely online here: https://www.sydney.edu.au/
+brain-mind/resources-for-clinicians/dementia-test.html.
+1.2.2.
+Global cognitive ability
+Participants completed either the ACE-III (Hsieh et al., 2013) or
+the MoCA (Nasreddine et al., 2005). The ACE-III was completed
+c o r t e x 1 6 3 ( 2 0 2 3 ) 6 6 e7 9
+68
+
+by Australian participants in English, and the MoCA was
+completed by Argentinean and Chilean participants in Spanish. Each measure assesses attention, memory, language, and
+visuospatial abilities. To account for potential differences in
+the tests used, z-scores were calculated relative to controls
+scores on the ACE-III or MoCA.
+The ACE-III is available freely online here: https://www.
+sydney.edu.au/brain-mind/resources-for-clinicians/
+dementia-test.html. The MoCA is available freely online here:
+https://mocacognition.com/paper/.
+1.2.3.
+Emotion assessment
+Participants completed either the Facial Affect Selection Task
+(FAST) (Kumfor, Sapey-Triomphe, et al., 2014; Miller et al.,
+2012) or Emotion Recognition subtest of the Mini-Social and
+Emotional Assessment (SEA) (Bertoux et al., 2012). The FAST
+was completed by Australian participants in English and the
+Mini-SEA was completed by Argentinean and Chilean participants in Spanish. For the FAST, participants viewed an array
+of seven faces of the same individual posing several different
+emotional expressions (fear, sadness, disgust, surprise, anger,
+happiness and neutral). On the Mini-SEA Emotion Perception
+task, participants selected an emotional label to match a
+presented emotion showing the same six basic emotion categories presented in the FAST (i.e., fear, sadness, disgust,
+surprise, anger and happiness) as well as a neutral expression.
+To account for potential differences in the tests used, z-scores
+were calculated relative to controls scores on the FAST or the
+mini-SEA.
+Legal
+copyright
+restrictions
+prevent
+public
+archiving of FAST and mini-SEA which can be obtained from
+the copyright holders in the cited references.
+1.2.4.
+Interoception task
+Interoception was assessed using a validated motor-tracking
+heartbeat detection task with two, 2-min experimental conditions, where attention was directed to either external or
+internal cues (Garcı´a-Cordero et al., 2017; Gonzalez Campo
+et al., 2020; Richter et al., 2021; Salamone et al., 2021) available online here: http://bit.ly/2EpfGrq. In the exteroception
+condition, participants responded by tapping a button or key
+press each time they heard a heartbeat played by an external
+audio recording. The recorded heartbeat was presented at a
+varied rate equivalent to 60 beats per minute. Participants
+were instructed to respond immediately after hearing the
+sound, without anticipating the next beat. This condition was
+used as a control condition, to ensure all participants were
+able to follow instructions and respond appropriately. In the
+interoception condition, participants responded via button or
+key press each time they felt their heart beating. They were
+instructed not to rely on external cues (e.g., not checking their
+pulse).
+1.3.
+Physiological recording
+Electrocardiographic (ECG) signals were recorded using an 8/
+35 Powerlab Data Acquisition System (ADinstruments, Castle
+Hill, Australia) with LabChart Pro for Windows (v. 7.3.7)
+(Australia) or an AD620 ampliﬁer (Analog Devices, Massachusetts, U.S.A) with PsychToolbox (Brainard & Vision, 1997),
+script via MATLAB (MathWorks) (Argentina and Chile). ECG
+was measured via a 3-lead placement using 3 Ag/AgeCl electrodes and ECG signals were digitised at a sampling rate of
+1000 Hz/sec. R-wave values from the ECG signal were identi-
+ﬁed using peak detection functions in LabChart Pro or in
+MATLAB and were veriﬁed manually.
+1.4.
+Data reduction and analyses
+1.4.1.
+Interoceptive accuracy
+Performance accuracy for both conditions was calculated
+using the mean distance index (See supplementary material
+for more details; Abrevaya et al., 2020; de la Fuente et al., 2019;
+Fittipaldi et al., 2020; Salamone et al., 2020). In brief, alignment
+was tested by comparing the frequencies of the event in the
+corresponding condition (i.e., audio cue in exteroception;
+actual heartbeat in interoception) and the frequencies of the
+participant's response in that condition (i.e., button/key press)
+in 10-s overlapping windows across the task. Accuracy within
+each window was then averaged over the duration of the task
+to give a mean distance index for each condition. The lowest
+possible score for the mean distance index is 0 and reﬂects an
+exact match between frequencies of the condition's cue and
+the participant's response. Higher scores indicate larger distances between frequencies, and therefore, worse performance. This method is free of the bias present in other
+approaches (regarding average estimation, number of tracked
+responses, time-locking assessment, and heart rate ﬂuctuations), and yields more robust responses (de la Fuente et al.,
+2019; Fittipaldi et al., 2020). To investigate the regularity of
+participant's responses and to account for any potential lapses
+in attention, a coefﬁcient of variation was also calculated as a
+ratio of the standard deviation and the mean response frequency over the duration of the condition (segmented into 10s individual overlapping windows). Response windows that
+did not meet the speciﬁed threshold of regularity (coefﬁcient
+of variation >0.5) were not included in the ﬁnal mean distance
+index calculation (see supplementary materials; de la Fuente
+et al., 2019; Fittipaldi et al., 2020). Five participants (2 AD, 2
+PD, and 1 control) were identiﬁed as signiﬁcant outliers on the
+exteroception condition (>3 box lengths above 75th percentile)
+and were removed from subsequent analyses. Twenty-four
+participants did not complete the exteroception condition
+(bvFTD ¼ 11; AD ¼ 12; PD ¼ 1), due to an update in the protocol
+at
+the
+Argentinian
+centre, but
+these
+participants
+were
+retained in the interoception analyses to maximise power.
+1.5.
+Neuroimaging
+1.5.1.
+Data acquisition
+Whole-brain structural MRI data were obtained using the
+standard imaging protocols of each research centre (see
+Supplementary Table 1). MRI images were collected from four
+MRI scanners (1: Phillips Ingenia 3.0 T, 224  224, 160 slices,
+echo time/repetition time ¼ 3.8/8.3 ms; 2: Phillips Intera 1.5 T,
+256  256, 196 slices, echo time/repetition time ¼ 3.4/7.49 ms;
+3: GE 3 T 256  256, 200 slices, echo time/repetition time ¼ 2.5/
+6.7 ms; Scanner 4: Siemens Skyra 3.0 T, 256  256, 192 slices,
+echo time/repetition time ¼ 2/2.4 ms) with 1 mm3 isotropic
+resolution and a ﬂip angle a ¼ 8. To account for potential
+differences in acquisition, MRI scanner was included as a
+c o r t e x 1 6 3 ( 2 0 2 3 ) 6 6 e7 9
+69
+
+covariate in the imaging analyses. MRI scans were available
+for 138 participants (40 healthy controls, 34 AD patients, 46
+bvFTD patients and 18 PD patients). Participants who had an
+MRI did not differ signiﬁcantly to those who did not have an
+MRI in relevant demographics or cognitive ability: age (t
+(159) ¼ 1.00, P ¼ .32), education (t (158) ¼ 1.51, P ¼ .13), sex
+(c2 ¼ 0.27, P ¼ .60) or overall cognition (t (153) ¼ 1.00, P ¼ .32)).
+1.5.2.
+Pre-processing
+MRI data were analysed using the FSL suite (http://fsl.fmrib.
+ox.ac.uk) (Ashburner & Friston, 2000; Mechelli, Price, Friston,
+& Ashburner, 2005; Smith et al., 2004; Woolrich et al., 2009).
+First, structural images were brain-extracted using BET, then
+tissue segmentation was conducted via automatic segmentation (Zhang, Brady, & Smith, 2001). Next, grey matter partial
+volume maps were aligned to Montreal Neurological Institute
+(MNI) standard space (MNI152) using non-linear registration
+(FNIRT) which uses a b-spline representation of the registration warp ﬁeld (Rueckert et al., 1999). A study speciﬁc template
+was
+created
+using
+participants
+representative
+of
+each
+research centre and diagnostic group, and the native grey
+matter images were non-linearly re-registered. Modulation of
+the registered partial volume maps were carried out by
+dividing them by the Jacobian of the warp ﬁeld. Finally, the
+modulated, segmented images were smoothed with an
+isotropic Gaussian kernel with a sigma of 3 mm.
+1.6.
+Statistical analyses
+1.6.1.
+Behavioural analyses
+Clinical and behavioural data were analysed using IBM SPSS (v.
+28). One-wayANOVAs were conductedfor continuousvariables
+(e.g., age, education, heart rate) and chi-square analyses for
+categorical variables (e.g., sex). Analyses were also conducted
+between centres for each diagnostic group on demographic and
+cognitive variables (see Supplementary Table 2).
+Two separate one-way ANCOVA's were used to determine
+group differences in emotion recognition performance (zscore) or cognitive ability (z-score) controlling for relevant
+demographics that differed signiﬁcantly between samples
+(e.g., age, education) and test used.
+Next, a linear mixed effects model (LME) was used to analyse performance on the interoception task. The mean distance
+index for the exteroception and interoception condition was
+the outcome variable with the following ﬁxed effects: (i) diagnostic group (controls, AD, bvFTD, PD), (ii) condition (exteroception vs. interoception), (iii) the interaction between
+diagnostic group and condition. Covariates included in the
+model
+were
+(iv)
+age,
+(v)
+education
+(years),
+(vi)
+centre
+(Argentina, Australia, Chile); together with (vii) the intercept,
+and (viii) individual participant variability as a random effects.
+Condition was speciﬁed as a repeated effect. Signiﬁcant
+continuous main effects (e.g., age) were investigated using
+Pearson's correlation (two-tailed, Bonferroni corrected for
+multiple comparison).
+Finally, a backwards stepwise multiple linear regression
+analysis was conducted to identify signiﬁcant predictors of
+emotion recognition performance using the emotion recognition z-score. Thirteen predictors were included in the regression model: age, education (years), diagnosis (dummy coded
+with reference to controls), interoception accuracy, cognitive
+z-score, the interaction terms between interoception and each
+diagnostic group (dummy coded), and the interaction terms
+between cognition and each diagnostic group (dummy coded).
+The backwards stepwise multiple linear regression procedure
+was employed. Statistical signiﬁcance was set to P < .05 for
+behavioural analyses, unless otherwise stated. Analysis codes
+is available here: https://osf.io/x28ky/.
+1.6.2.
+Neuroimaging analyses
+Voxel-wise general linear models (GLM) were created to
+investigate grey matter intensity differences between groups
+with permutation-based, non-parametric testing, correcting
+for multiple comparisons across space, with 5000 permutations per contrast (Nichols & Holmes, 2002). Then, to examine
+the neural correlates of interoception and emotion recognition, interoception accuracy and emotion recognition scores
+were entered into separate GLMs to determine the regions
+associated with each task in each patient group combined
+with controls. Combining patients with controls has been
+shown to achieve greater variance in scores, increasing the
+statistical power to detect behavioural correlations in neuroimaging (Sollberger et al., 2009). Scatterplots between the peak
+voxel and the relevant score (interoceptive accuracy; emotion
+recognition z-score) were checked for linearity. Inclusive
+masking analysis was conducted to identify common brain
+regions associated with interoceptive accuracy and emotion.
+Each GLM was Family-Wise Error corrected for multiple
+comparisons
+using
+threshold
+free
+cluster
+enhancement
+(TFCE), and a conservative cluster threshold of 100 voxels reported. In each GLM, demographic information (age, years of
+education), and MRI scanner (dummy coded) were included as
+covariates. Relevant t scores for each GLM are listed beneath
+each table and ﬁgure. The statistical threshold for neuroimaging analyses was set at P < .05 unless otherwise speciﬁed.
+Anatomical locations of signiﬁcant results were overlaid on
+the MNI standard brain. Anatomical labels were determined
+with reference to the HarvardeOxford probabilistic cortical
+and subcortical atlases.
+1.7.
+Data availability
+The conditions of our ethics approval do not permit public
+archiving of the data supporting this study. Readers seeking
+access to this data should contact the senior author, Fiona
+Kumfor to discuss a formal data sharing agreement.
+2.
+Results
+2.1.
+Demographics
+Signiﬁcant group differences were observed for age and education (both P  .001; Table 1). Control participants and bvFTD
+patients were signiﬁcantly younger than the AD and PD groups
+(all P values < .005) consistent with typically observed demographics. Control participants had more years of education
+than AD (P < .001), bvFTD (P ¼ .023) and PD patients (P ¼ .003). No
+signiﬁcant differences were observed for sex (P ¼ .16). Cognitive ability differed between groups (P < .001), with all patient
+c o r t e x 1 6 3 ( 2 0 2 3 ) 6 6 e7 9
+70
+
+groups performing worse than controls (all P values < .001), and
+AD worse than bvFTD and PD patients (both P's < .001). No
+signiﬁcant differences in heart rate (bpm) were observed between groups during the interoception condition (P ¼ .14).
+2.2.
+Behavioural results
+Emotion recognition differed signiﬁcantly across diagnostic
+groups, F (3, 128) ¼ 13.32, P < .001, partial h2 ¼ .239 (Fig. 1A),
+after controlling for demographics and emotion test used.
+Post-hoc comparisons revealed that all patient groups performed worse than controls (bvFTD vs controls: P < .001; AD vs
+controls: P < .001; PD vs controls: P ¼ .008), with no differences
+observed between patient groups (all P values > .35).
+2.3.
+Interoceptive accuracy
+On the heartbeat detection task, a main effect of diagnosis
+was observed, F (3, 88.87) ¼ 6.62, P < .001, with bvFTD patients
+showing worse accuracy than controls (P < .001) (Fig. 1C). No
+other
+post
+hoc
+comparisons
+were
+signiﬁcant
+(all
+P
+values > .15). A main effect of condition was also present, F (1,
+144.55) ¼ 314.97, P < .001, with greater accuracy in the exteroception than in the interoception condition. Importantly, a
+signiﬁcant interaction between condition and diagnosis was
+observed, F (3,144.40) ¼ 6.33, P < .001. On the interoceptive
+condition, bvFTD showed worse performance than controls
+(P < .001), whereas no difference was seen between AD, PD,
+and controls (AD vs controls: P ¼ .09; PD vs controls: P ¼ .73) or
+between patient groups (bvFTD vs AD: P ¼ .43; bvFTD vs PD:
+P ¼ .16; AD vs PD: P ¼ .98). On the exteroception condition, no
+signiﬁcant difference between controls or patients (controls vs
+AD: P ¼ .96; controls vs bvFTD: P ¼ .34; controls vs PD: P ¼ 1.0)
+or between patient groups (bvFTD vs AD: P ¼ .10; bvFTD vs PD:
+P ¼ .87; AD vs PD: P ¼ .87) were present (Fig. 1B). Within group
+analyses showed that all groups performed worse on the
+interoception
+than
+exteroception
+condition
+(all
+P
+values < .001). A main effect of age was present, F (1,
+103.78) ¼ 5.17, P ¼ .025. Correlation analyses showed that older
+age was associated with worse exteroception, r (136) ¼ .233,
+P < .006, with no signiﬁcant correlation observed between age
+and interoception, r (151) ¼ .143, P ¼ .08. No other covariates
+included in the model were signiﬁcant: education, F (1,
+99.63) ¼ 2.94, P ¼ .09, centre, F (2, 98.33) ¼ 0.58, P ¼ .56.
+2.4.
+Predictors of emotion recognition performance
+Backwards step-wise multiple linear regression analyses
+revealed a signiﬁcant model F (5, 121) ¼ 16.00, P < .001, which
+explained 39.8% of the variance in emotion recognition performance (Table 2; Fig. 2). Overall cognitive performance was a
+signiﬁcant predictor of emotion recognition performance in all
+participants. Additionally, interoception in bvFTD (relative to
+controls) was a signiﬁcant predictor of emotion recognition
+performance. In the ﬁnal model, the interaction between
+bvFTD and cognition, AD and cognition and PD and cognition
+contributed to the overall regression equation but were not a
+signiﬁcant predictors of emotion recognition. Additionally,
+age, education, interoception, AD x interoception, PD x interoception were not signiﬁcant predictors and were removed
+from the model at earlier stages of the backwards regression
+procedure.
+2.5.
+Neuroimaging results
+Patterns of differences in grey matter integrity in bvFTD and
+AD compared to controls were consistent with expectations
+and reported in Supplementary Figure 1 and Supplementary
+Table 3. No signiﬁcant clusters were observed in PD.
+2.5.1.
+Neural correlates of emotion recognition
+In bvFTD, emotion recognition performance was associated
+with integrity in frontal (frontal pole, orbitofrontal cortex,
+medial prefrontal cortex) and temporal (middle temporal and
+superior temporal gyrus) regions, as well as the insula, striatum (putamen and caudate), precentral gyrus and central
+opercular gyrus, bilaterally (Fig. 3A and Supplementary Table
+4). In AD, emotion recognition was associated with integrity
+of parietal (bilateral angular gyrus and supramarginal gyrus)
+and temporal (middle temporal, inferior temporal) brain regions bilaterally (Supplementary Table 5). No signiﬁcant
+clusters were identiﬁed in PD.
+Table 1 e Comparison of demographic, overall cognition, and emotion across diagnostic groups.
+Controls
+bvFTD
+AD
+PD
+Statistic
+p
+Post-hoc
+n ¼ 50
+n ¼ 52
+n ¼ 39
+n ¼ 22
+Age (years)
+65.00 ± 5.44
+66.53 ± 9.50
+72.89 ± 8.23
+72.23 ± 6.78
+11.33
+<.001
+Controls ¼ bvFTD < AD ¼ PD
+Education (years)
+15.72 ± 2.17
+13.52 ± 4.11
+12.42 ± 4.29
+11.95 ± 4.52
+8.04
+<.001
+Patients < Controls
+Sex (M:F)
+24:26
+34:18
+16:23
+12:10
+5.14
+.16
+Disease duration (years)
+e
+5.74 ± 4.73
+3.57 ± 1.91
+e
+2.71
+.11
+FRS (Rasch score)
+e
+0.26 ± 1.36
+0.51 ± 1.69
+1.43 ± 1.28
+9.32
+<.001
+AD ¼ bvFTD < PD
+Cognition (z-score)
+0.00 ± 1.00
+6.74 ± 3.74
+9.55 ± 4.45
+5.45 ± 3.59
+51.65a
+<.001
+Patients < Controls; AD < bvFTD &PD
+Heart rate (bpm)b
+66.00 ± 7.38
+72.87 ± 22.25
+66.45 ± 12.88
+71.50 ± 17.73
+1.87
+.14
+Note. Values are mean ± standard deviation.
+a ANCOVA F Statistic, covariates included: Age (years), Education (years), Cognition z-score (ACE-III or MOCA).
+b Interoception condition; bvFTD ¼ behavioural-variant frontotemporal dementia; AD ¼ Alzheimer's disease; PD ¼ Parkinson's disease. Disease
+duration ¼ years since symptom onset; FRS ¼ Frontotemporal dementia Rating Scale; Cognition (z-score) relative to controls (ACE-III:
+MoCA ¼ 77:78); Available data: Age (years): 50/50 Controls, 51/52 bvFTD, 38/39 AD, 22/22 PD; Education (years): 50/50 Controls, 50/52 bvFTD, 38/
+39 AD; Disease Duration (years): 31/52 bvFTD, 14/39 AD, 22/22 PD; FRS: 38/52 bvFTD, 24/39 AD, 15/22 PD; Global cognition (%): 46/50 Controls, 50/
+52 bvFTD, 38/39 AD, 21/22 PD; Heart rate (bpm): 50/50 Controls; 46/52 bvFTD; 38/39 AD; 22/22 PD.
+c o r t e x 1 6 3 ( 2 0 2 3 ) 6 6 e7 9
+71
+
+2.5.2.
+Neural correlates of interoceptive accuracy
+In bvFTD, interoceptive accuracy was associated with reduced
+integrity of the insula, superior frontal gyrus, inferior and
+superior temporal gyrus, temporal fusiform cortex, bilateral
+caudate,
+putamen,
+amygdala,
+hippocampus,
+and
+parahippocampal gyrus (Fig. 3B, Supplementary Table 4). No signiﬁcant clusters were identiﬁed in AD or PD.
+2.5.3.
+Shared neural correlates of emotion recognition and
+interoceptive accuracy
+The overlap analysis revealed shared regions associated with
+emotion recognition and interoceptive accuracy in bvFTD
+including the left insula, left temporal pole, left orbitofrontal
+cortex, left frontal opercular cortex, bilateral striatum, left
+inferior temporal gyrus, left temporal fusiform gyrus, left
+parahippocampal gyrus, left amygdala, left hippocampus, as
+well as right supplementary motor cortices, right superior
+frontal gyrus, and the right occipital lobe region (Fig. 3C,
+Supplementary Table 4).
+3.
+Discussion
+This study is the ﬁrst to investigate the contribution of interoceptive accuracy and cognitive ability as potential mechanisms underlying emotion recognition impairments in three
+unique dementia syndromes. We found that bvFTD patients
+showed
+impaired
+interoceptive
+accuracy,
+and
+that
+this
+impairment uniquely contributed to their emotion recognition ability. In contrast, individuals diagnosed with AD and PD
+performed similarly to healthy controls with respect to
+interoceptive accuracy. In line with previous reports, emotion
+recognition in these syndromes is likely secondary to cognitive impairment. Neuroimaging analyses in bvFTD revealed
+that both interoceptive accuracy and emotion recognition
+shared common neural correlates in the insula as well as
+being associated with a broader network of frontal and temporal brain regions. Taken together, these ﬁndings provide
+further evidence that the social cognitive proﬁle seen in bvFTD
+is underpinned by a compromised ability to sense internal
+body signals which impacts on their capacity to interpret
+external social cues. In contrast, in AD and PD, emotion
+recognition deﬁcits reﬂect broader cognitive decline. In the
+following sections, we discuss how these ﬁndings advance our
+current knowledge of these dementia syndromes as well as
+informing the theoretical constructs of interoception, cognition, and emotion.
+We found that bvFTD patients showed profound impairment in the ability to recognise emotions and that this
+impairment was associated with widespread atrophy to
+Fig. 1 e Behavioural performance in each diagnostic group. (A) Emotion recognition performance using z-scores relative to
+controls. Available data for emotion recognition: 45/52 bvFTD, 37/39 AD, 21/22 PD, 35/50 Controls. (B) Exteroception
+accuracy. Available data for exteroception task: 38/52 bvFTD; 27/39 AD; 21/22 PD; Controls: 50/50. (C) Interoceptive accuracy.
+Available data for interoception task: 46/52 bvFTD; 38/39 AD, 22/22 PD, 50/50 Controls. In (B) and (C), lower mean distance
+shows better performance. **P < .01 ***P < .001. bvFTD ¼ behavioural-variant frontotemporal dementia; AD ¼ Alzheimer's
+disease; PD ¼ Parkinson's disease; md index ¼ mean distance index.
+Table 2 e Unstandardised (B) and standardised regression
+(b) coefﬁcients for predictors of emotion recognition
+performance.
+Variables
+B(SE)
+b
+t
+p
+(Constant)
+0.04 (0.26)
+e
+0.14
+.893
+Overall cognition (%)
+0.29 (0.07)
+0.65
+4.51
+<.001
+bvFTD x Interoception
+2.11 (0.78)
+0.27
+2.71
+.008
+AD x Cognition
+0.09 (0.07)
+0.20
+1.27
+.207
+PD x Cognition
+0.15 (0.14)
+0.16
+1.10
+.274
+PD diagnosis
+1.30 (0.78)
+0.22
+1.67
+.100
+Note. SE ¼ Standard Error of B; bvFTD ¼ behavioural variant frontotemporal dementia; AD ¼ Alzheimer's disease; PD ¼ Parkinson's
+disease. Model Summary: Model 1: R2 ¼ .404, P < .001; Model 2:
+DR2 ¼ .000, P ¼ .953; Model 3: DR2 ¼ .000, P ¼ .919; Model 4: DR2 ¼ .000,
+P ¼ .907, Model 5: DR2 ¼ .000, P ¼ .823; Model 6: DR2 ¼ - .002, P ¼ .519,
+Model 7: DR2 ¼ .000, P ¼ .771, Model 8: DR2 ¼ .002, P ¼ .521, Model 9
+(Final): DR2 ¼ .003, P ¼ .449.
+c o r t e x 1 6 3 ( 2 0 2 3 ) 6 6 e7 9
+72
+
+frontal, temporal, and insular cortices in line with previous
+reports (see for meta-analysis Bora et al., 2016; Chiu et al.,
+2018; Goodkind et al., 2015; Kumfor et al., 2011). Moreover,
+we found that bvFTD had a unique impairment in interoceptive accuracy. These results are consistent with emerging reports of reduced interoceptive accuracy in bvFTD (Abrevaya et
+al., 2020; Birba et al., 2022; Garcı´a-Cordero et al., 2016;
+Salamone et al., 2021) and ﬁt with previous evidence of altered
+body schemas in bvFTD, particularly in patients with the
+C9orf72 gene expansion (Downey et al., 2014). Taken together,
+our ﬁndings suggest that in everyday life, bvFTD patients are
+not able to interpret relevant interoceptive cues and integrate
+these cues with external environmental demands, in line with
+recent accounts of allostatic interoceptive overload (Birba et
+al., 2022). It is possible that these patients become overly
+reliant on external contextual cues to compensate for insuf-
+ﬁcient internal cues (Kumfor et al., 2018). Another possible
+explanation for the emotional disturbances in bvFTD is that
+the strength of the interoceptive signal is dampened. Indeed,
+bvFTD patients have previously shown blunted physiological
+responses to social situations (Sturm, Ascher, Miller, &
+Levenson, 2008), as well as when viewing emotionally evocative stimuli (Kumfor, Hazelton, Rushby, Hodges, & Piguet,
+2019) suggesting that interoceptive signals from the body
+may be compromised as well. While we found no differences
+in heart rate in our study, future research is necessary to
+disentangle whether emotional disturbances in bvFTD are due
+to a lack of interoceptive accuracy (top-down processing) and/
+or dampened interoceptive signals (bottom-up processing).
+Future studies should consider comparing interoceptive accuracy at rest and when manipulating interoceptive cues,
+such as via vagus nerve stimulation (Richter et al., 2021;
+Villani, Tsakiris, & Azevedo, 2019; Weng et al., 2021).
+For the ﬁrst time, we have shown that impaired interoceptive accuracy uniquely predicts impaired emotion recognition in bvFTD patients only. Previous research in healthy
+adults found that the heart evoked potential, a neural marker
+of interoception, is ampliﬁed when viewing emotional content
+(Couto et al., 2015), as well as following brief periods of
+interoception (Ernst, Northoff, B€oker, Seifritz, & Grimm, 2013).
+Our study complements a
+recent EEG study in bvFTD
+(Salamone et al., 2021), which found that reduced emotion
+recognition co-occurs with reduced heart-evoked potentials
+following interoceptive attention. Importantly, bvFTD patients experience a myriad of social cognitive deﬁcits beyond
+the emotion recognition difﬁculties observed here, including
+reduced empathy (Carr & Mendez, 2018), inappropriate social
+behaviours
+(Piguet,
+Kumfor,
+&
+Hodges,
+2017),
+reduced
+perspective taking (Henry, Phillips, & Von Hippel, 2014;
+Strikwerda-Brown, Ahmed, Piguet, & Irish, 2022), and difﬁculties identifying their own emotional state (Mendez, 2021). In
+healthy people, these fundamental social cognitive abilities
+have been linked to interoception (Fukushima, Terasawa, &
+Umeda, 2011; Terasawa, Moriguchi, Tochizawa, & Umeda,
+2014). Therefore, the impact of compromised interoception
+in bvFTD likely goes beyond impaired emotion recognition
+and also may account for the broader social functioning deficits characteristic of this syndrome.
+Our neuroimaging results support a shared neurobiological
+mechanism underpinning both interoceptive accuracy and
+emotion recognition in bvFTD, with the left insula emerging as
+a key region in both processes. The insula is responsible for
+receiving and interpreting ascending signals from within the
+body (Craig, 2002, 2003) and plays a key role in the salience
+network (Seeley et al., 2007). Previously, the insula has also
+been implicated in emotion recognition, particularly for
+negative emotions (Adolphs, 2002; Bora et al., 2016; Kumfor,
+Irish, Hodges, & Piguet, 2013) and is thought to integrate internal and external contextual information (Baez et al., 2016;
+Birba et al., 2022; Iba~nez & Manes, 2012). Both interoceptive
+accuracy and emotion were also associated with reduced
+structural integrity of salience network regions, such as the
+left orbitofrontal cortex, left amygdala and bilateral striatum
+(Seeley et al., 2007) as well as the parahippocampal gyrus
+which is thought to be crucial for deciphering context
+(Baumann & Mattingley, 2016) and the hippocampus which
+plays a role in emotional memory (Kumfor, Irish, Hodges, &
+Piguet, 2014; Phelps, 2004). It is plausible that degeneration
+of these key areas means that bvFTD patients are no longer
+able to assign appropriate value to internal interoceptive cues
+Fig. 2 e Predictors of emotion recognition. Note. **P < .01; ***P < .001.
+c o r t e x 1 6 3 ( 2 0 2 3 ) 6 6 e7 9
+73
+
+or external social stimuli or use this information to update
+their behaviours over time (Birba et al., 2022). Of note, we
+observed relatively left-lateralised involvement of several key
+interoceptive regions. Although interoception has been proposed to involve right-lateralised structures, such as the right
+anterior insula and anterior cingulate cortex, left hemisphere
+involvement has also been observed in experimental studies
+of healthy people (Dobrushina et al., 2021; Fittipaldi et al.,
+2020; Wiebking et al., 2014) and is also observed in metaanalyses on interoception, together with right hemisphere
+structures (see for meta-analyses Adolﬁet al., 2017; Schulz,
+2016). Further research is needed in lesion models characterised by left- or right-predominant atrophy to further
+investigate
+lateralisation
+of
+interoception
+and
+emotion.
+Importantly, the regions identiﬁed in our neuroimaging analyses are highly connected to the insula via white matter
+tracts (Ghaziri et al., 2018). Therefore, degeneration of these
+underlying white matter pathways in each hemisphere may
+also relate to the interoceptive accuracy and emotion recognition deﬁcits and warrants future research.
+In both AD and PD patients, emotion recognition ability
+was impaired, however the performance was likely due to a
+disruption in cognitive ability rather than interoceptive accuracy. Notably, in contrast with previous reports interoceptive accuracy remained largely intact (Garcı´a-Cordero et al.,
+2016; Ricciardi et al., 2016; Salamone et al., 2021; Santangelo
+et al., 2018). This discrepancy is likely due to differences in
+task design. The task employed here, allowed participants to
+Fig. 3 e Voxel-based morphometry analyses of brain regions associated with emotion and interoception. (A) Emotion
+recognition performance in bvFTD (blue) (B) Interoceptive accuracy in bvFTD (red); and (C) overlap analyses for emotion and
+interoceptive accuracy in bvFTD (green). Coloured voxels show regions identiﬁed via in a threshold free cluster
+enhancement (TFCE) contrasts that reached statistical signiﬁcance at either P < .05 or P < .001 as displayed on ﬁgure.
+Scatterplots are included showing the linear relationship between the peak voxel and (A) emotion or (B) interoception. All
+analyses were Family-Wise Error corrected for multiple comparisons with a cluster extent threshold of 100 voxels, t
+(85) > 1.66. Covariates included in each GLM included: age (years), education (years), and Scanner used. Note, images are in
+radiological orientation (i.e., right hemisphere appears on left side of page). MNI coordinates: X ¼ ¡33, Y ¼ 15; Z ¼ 0.
+R ¼ right, L ¼ left. bvFTD ¼ behavioural variant frontotemporal dementia; AD ¼ Alzheimer's disease.
+c o r t e x 1 6 3 ( 2 0 2 3 ) 6 6 e7 9
+74
+
+adjust their responding over time and only considered time
+periods where patients were actively attending to the task (de
+la Fuente et al., 2019; Fittipaldi et al., 2020). This adaptation
+reduced attentional and memory-related task demands. We
+found instead that cognitive impairment was a signiﬁcant
+predictor of emotion recognition performance, in line with
+previous reports (see for meta-analysis Bora et al., 2016;
+Baggio et al., 2012; Gray & Tickle-Degnen, 2010; Kumfor,
+Sapey-Triomphe, et al., 2014; Torres Mendonc¸a De Melo
+Fadel et al., 2019). Therefore, in AD and PD patients, difﬁculties in understanding others’ emotions do not appear to be
+necessarily dependent on the failure to integrate internal
+interoceptive cues, but rather arise from impairments in
+cognitive processes, such as memory and attention, which
+impact on task performance.
+Our neuroimaging results support our ﬁndings of different
+underlying mechanisms driving reduced emotion recognition
+in AD to those observed in bvFTD. In AD, impaired emotion
+recognition was associated with reduced structural integrity
+of
+bilateral
+temporal
+and
+parietal
+structures,
+and
+not
+interoception-related brain structures (e.g., insula). Indeed,
+the structures identiﬁed as important for emotion recognition
+in AD are commonly implicated in memory processing, with
+the middle temporal gyrus and angular gyrus being involved
+in autobiographical memory, semantic memory, and future
+thinking (Davey et al., 2016; Ramanan, Piguet, & Irish, 2018;
+Seghier, 2013). Here, it is likely that the emotion recognition
+impairments observed in AD reﬂect memory-related task demands rather than a primary emotion recognition deﬁcit.
+Our neuroimaging results in PD patients are less clear, with
+no brain regions associated with interoceptive accuracy or
+emotion recognition performance. These ﬁndings echo previous neuroimaging research in PD. For instance, previous
+research using whole brain VBM analyses in PD found no associations between grey matter integrity and emotion (Baggio
+et al., 2012), emotional learning (Legaz et al., 2021), or cognition (Dalaker et al., 2010). Of note, the PD patients in the current study were at a relatively mild disease stage. Future
+research using advanced imaging tools that can accurately
+measure brain regions involved in mild PD, such as the brain
+stem nuclei and basal ganglia may be necessary to understand
+the neural bases of impaired cognition and emotion recognition in these patients, particularly early in the disease course.
+Although our study is the ﬁrst to identify syndromespeciﬁc mechanisms underlying emotion recognition impairments in separate dementia syndromes, some caveats
+should be noted. The multi-centre approach taken by this
+study meant that different tests were used as part of routine
+clinical assessment (i.e., different tests of cognition and
+emotion across research centres). We mitigated this limitation
+by using z-scores relative to controls to account for any potential differences. Future prospective studies will beneﬁt
+from the establishment of gold-standard tests of cognition
+and emotion, validated cross-culturally. In addition, our study
+focused on cardiac interoceptive accuracy. Other interoceptive cues, however, such as changes in breathing rate or sensations of hunger, may also be affected in bvFTD, as they rely
+on the same interoceptive neural network (Craig, 2002, 2008).
+For instance, changes to eating behaviours, including binge
+eating, are commonly observed in bvFTD (see for review
+Ahmed et al., 2018), and are associated with integrity of the
+insula, anterior cingulate, thalamus, hypothalamus, orbitofrontal cortex and striatum (Ahmed et al., 2016; Piguet, 2011;
+Woolley et al., 2007). These changes in eating may reﬂect
+impaired recognition of fullness via gastric interoceptive accuracy, which warrants future investigation. Finally, the patients included in the current study had an average disease
+duration of more than three years. It is possible that interoceptive impairments precede observable clinical symptoms in
+bvFTD, due to the early degeneration of the insula (Seeley
+et al., 2008). Indeed, atrophy to the insula has also been
+observed in pre-symptomatic gene carriers of bvFTD (Cash
+et al., 2018). Therefore, future research is needed to determine whether interoception can be used as a potential preclinical biomarker of disease onset.
+4.
+Conclusion
+Our study is the ﬁrst to identify disease-speciﬁc mechanisms
+contributing to emotion recognition in three of the most
+common
+dementia
+syndromes.
+Over
+the
+past
+decade,
+impairment in emotion recognition has been established as a
+characteristic diagnostic feature (Boeve et al., 2022; Ducharme
+et al., 2020). However, the mechanisms driving these impairments remain poorly understood. While the potential role of
+interoceptive accuracy has been previously hypothesised (Van
+den Stock & Kumfor, 2017), this study is the ﬁrst to our
+knowledge to empirically demonstrate this link. Clinically,
+attempts to rehabilitate emotion perception in bvFTD have
+focused on directing attention to emotionally salient features,
+with limited success (Kumfor et al., 2011). Indeed, bvFTD patients do not show abnormalities in directing attention to
+these emotional cues (Hutchings et al., 2018). Our results
+suggest that a more effective intervention will likely involve
+the modulation of internal cues to enable improved detection
+and decoding of the internal body state. This represents an
+unexplored opportunity for interventions which target the
+underlying mechanism. From a theoretical perspective, our
+results support theories of emotion which emphasise the
+critical role of physiological state in guiding our interactions
+with the social world.
+Open Practices
+The study in this article earned Open Material badges for
+transparent practices. The materials for this study are available at: https://osf.io/x28ky/
+Funding
+This work was supported in part by funding to ForeFront, a
+collaborative research group dedicated to the study of frontotemporal dementia and motor neuron disease, from the
+National Health and Medical Research Council (NHMRC)
+(GNT1037746). JH is supported by a National Health and
+c o r t e x 1 6 3 ( 2 0 2 3 ) 6 6 e7 9
+75
+
+Medical Research Council (NHMRC) Postgraduate scholarship
+(GNT1168597). SF is supported by CONICET, Universidad de
+San Andres, and BrainLat Postdoctoral Fellowship. MS is
+supported
+by
+the
+Australian
+Research
+Council
+grant
+(DP170101815).
+AI
+is
+supported
+by
+grants
+of
+Takeda
+CW2680521; CONICET; FONCYT-PICT (2017e1818, 2017e1820);
+ANID/FONDECYT Regular (1,210,195, 1,210,176, 1,220,995);
+ANID/FONDAP (15,150,012); ANID/PIA/ANILLOS ACT210096;
+and the Multi-Partner Consortium to Expand Dementia
+Research in Latin America (ReDLat), funded by the National
+Institutes of Aging of the National Institutes of Health under
+award number R01AG057234, an Alzheimer's Association
+grant (SG-20-725707-ReDLat), the Rainwater Foundation, and
+the Global Brain Health Institute. OP is supported by a NHMRC
+Senior Research Fellowship (GNT1103258). FK is supported by
+a NHMRC Career Development Fellowship (GNT1158762). The
+content is solely the responsibility of the authors and does not
+represent the ofﬁcial views of these institutions.
+CRediT author statement
+Jessica L. Hazelton: Conceptualisation, Methodology, Investigation, Formal analysis, WritingeOriginal draft, Visualization;
+Sol
+Fittipaldi:
+Software,
+Data
+curation,
+Investigation,
+WritingeReviewing & editing; Matias Fraile-Vazquez: Software, WritingeReviewing & editing; Marion Sourty: Software,
+Formal analysis, WritingeReviewing & editing; Agustina Legaz:
+Investigation, WritingeReviewing & editing; Anna L. Hudson:
+WritingeReviewing & editing; Indira Garcia Cordero: Investigation, WritingeReviewing & editing; Paula C. Salamone:
+Investigation, WritingeReviewing & editing; Adrian Yoris:
+Investigatio, WritingeReviewing & editing; Agustı´n Iba~nez:
+Conceptualisation,
+Methodology,
+Resources,
+Supervision,
+Funding Acquisition, WritingeReviewing & editing; Olivier
+Piguet: Conceptualisation, Methodology, Resources, Supervision, Funding Acquisition, WritingeReviewing & editing; Fiona
+Kumfor: Conceptualisation, Methodology, Resources, Supervision, Funding Acquisition, WritingeReviewing & editing.
+Declaration of competing interest
+The authors report no competing interests.
+Acknowledgements
+We would like to acknowledge the patients and their families
+for participating in this research. We would also like to
+acknowledge the technical assistance provided by the Sydney
+Informatics Hub, a Core Research Facility of the University of
+Sydney.
+Supplementary data
+Supplementary data to this article can be found online at
+https://doi.org/10.1016/j.cortex.2023.02.009.
+r e f e r e n c e s
+Abrevaya, S., Fittipaldi, S., Garcı´a, A. M., Dottori, M., Santamaria-
+Garcia, H., Birba, A., et al. (2020). At the heart of neurological
+dimensionality: Cross-nosological and multimodal cardiac
+interoceptive deﬁcits. Psychosomatic medicine, 82(9), 850e861.
+Adolﬁ, F., Couto, B., Richter, F., Decety, J., Lopez, J., Sigman, M.,
+et al. (2017). Convergence of interoception, emotion, and social
+cognition: A twofold fMRI meta-analysis and lesion approach.
+Cortex; a Journal Devoted To the Study of the Nervous System and
+Behavior, 88, 124e142.
+Adolphs, R. (2002). Neural systems for recognizing emotion.
+Current opinion in neurobiology, 12(2), 169e177.
+Ahmed, R. M., Irish, M., Henning, E., Dermody, N., Bartley, L.,
+Kiernan, M. C., et al. (2016). Assessment of eating behavior
+disturbance and associated neural networks in
+frontotemporal dementia. JAMA Neurology, 73(3), 282e290.
+https://doi.org/10.1001/jamaneurol.2015.4478
+Ahmed, R. M., Ke, Y. D., Vucic, S., Ittner, L. M., Seeley, W.,
+Hodges, J. R., et al. (2018). Physiological changes in
+neurodegenerationdmechanistic insights and clinical utility.
+Nature Reviews Neurology, 14(5), 259e271.
+Ashburner, J., & Friston, K. J. (2000). Voxel-based
+morphometrydthe methods. Neuroimage, 11(6), 805e821.
+Baez, S., Garcı´a, A. M., & Iba~nez, A. (2016). The social context
+network model in psychiatric and neurological diseases. Social
+Behavior from Rodents to Humans, 379e396.
+Baggio, H. C., Segura, B., Ibarretxe-Bilbao, N., Valldeoriola, F.,
+Marti, M., Compta, Y., et al. (2012). Structural correlates of
+facial emotion recognition deﬁcits in Parkinson's disease
+patients. Neuropsychologia, 50(8), 2121e2128.
+Barrett, L. F. (2017). The theory of constructed emotion: An active
+inference account of interoception and categorization. [Social
+Cognitive and Affective Neuroscience Electronic Resource], 12(1),
+1e23.
+Barrett, L. F., & Simmons, W. K. (2015). Interoceptive predictions
+in the brain. Nature reviews neuroscience, 16(7), 419e429.
+Baumann, O., & Mattingley, J. B. (2016). Functional organization of
+the parahippocampal cortex: Dissociable roles for context
+representations and the perception of visual scenes. Journal of
+Neuroscience, 36(8), 2536e2542.
+Bertoux, M., Delavest, M., de Souza, Funkiewiez, A., Lepine, J. P.,
+… Sarazin, M. (2012). Social cognition and emotional
+assessment differentiates frontotemporal dementia from
+depression. Journal of Neurology, Neurosurgery & Psychiatry,
+83(4), 411e416.
+Birba, A., Santamarı´a-Garcı´a, H., Prado, P., Cruzat, J.,
+Ballesteros, A. S., Legaz, A., et al. (2022). Allostatic
+interoceptive overload in frontotemporal dementia. Biological
+Psychiatry, 92(1), 54e67.
+Boeve, B. F., Boxer, A. L., Kumfor, F., Pijnenburg, Y., & Rohrer, J. D.
+(2022). Advances and controversies in frontotemporal
+dementia: Diagnosis, biomarkers, and therapeutic
+considerations. Lancet Neurology, 21(3), 258e272.
+Bora, E., Velakoulis, D., & Walterfang, M. (2016). Meta-analysis of
+facial emotion recognition in behavioral variant
+frontotemporal dementia: Comparison with alzheimer
+disease and healthy controls. Journal of Geriatric Psychiatry and
+Neurology, 29(4), 205e211.
+Brainard, D. H., & Vision, S. (1997). The psychophysics toolbox.
+Spatial vision, 10(4), 433e436.
+Cameron, O. G. (2001). Visceral sensory neuroscience: Interoception.
+Oxford University Press.
+Carr, A. R., & Mendez, M. F. (2018). Affective empathy in
+behavioral variant frontotemporal dementia: A meta-analysis.
+The Florida Nurse, 9, 417.
+c o r t e x 1 6 3 ( 2 0 2 3 ) 6 6 e7 9
+76
+
+Cash, D. M., Bocchetta, M., Thomas, D. L., Dick, K. M., van
+Swieten, J. C., Borroni, B., et al. (2018). Patterns of gray matter
+atrophy in genetic frontotemporal dementia: Results from the
+GENFI study. Neurobiology of Aging, 62, 191e196.
+Chiu, I., Piguet, O., Diehl-Schmid, J., Riedl, L., Beck, J., Leyhe, T.,
+et al. (2018). Facial emotion recognition performance
+differentiates between behavioral variant frontotemporal
+dementia and major depressive disorder. The Journal of clinical
+psychiatry, 79(1).
+Couto, B., Adolﬁ, F., Velasquez, M., Mesow, M., Feinstein, J.,
+Canales-Johnson, A., et al. (2015). Heart evoked potential
+triggers brain responses to natural affective scenes: A
+preliminary study. Autonomic Neuroscience, 193, 132e137.
+Craig, A. D. (2002). How do you feel? Interoception: The sense of
+the physiological condition of the body. Nature reviews
+neuroscience, 3(8), 655e666.
+Craig, A. D. (2003). Interoception: The sense of the physiological
+condition of the body. Current opinion in neurobiology, 13(4),
+500e505.
+Craig, A. D. (2008). Interoception and emotion: A neuroanatomical
+perspective. Handbook of emotions, 3(602), 272e288.
+Craig, A. D. (2009). How do you feel–now? The anterior insula and
+human awareness. Nature reviews neuroscience, 10(1).
+Critchley, H. D., & Garﬁnkel, S. N. (2017). Interoception and
+emotion. Current opinion in psychology, 17, 7e14.
+Critchley, H. D., & Harrison, N. A. (2013). Visceral inﬂuences on
+brain and behavior. Neuron, 77(4), 624e638.
+Dalaker, T. O., Zivadinov, R., Larsen, J. P., Beyer, M. K., Cox, J. L.,
+Alves, G., et al. (2010). Gray matter correlations of cognition in
+incident Parkinson's disease. Movement disorders, 25(5),
+629e633.
+Damasio, A. R. (1996). The somatic marker hypothesis and the
+possible functions of the prefrontal cortex. Philosophical
+Transactions of the Royal Society of London. Series B: Biological
+Sciences, 351(1346), 1413e1420.
+Damasio, A. R. (2006). Descartes' error. Random House.
+Davey, J., Thompson, H. E., Hallam, G., Karapanagiotidis, T.,
+Murphy, C., De Caso, I., et al. (2016). Exploring the role of the
+posterior middle temporal gyrus in semantic cognition:
+Integration of anterior temporal lobe with executive
+processes. Neuroimage, 137, 165e177.
+Dobrushina, O. R., Arina, G. A., Dobrynina, L. A., Novikova, E. S.,
+Gubanova, M. V., Belopasova, A. V., et al. (2021). Sensory
+integration in interoception: Interplay between top-down and
+bottom-up processing. Cortex; a Journal Devoted To the Study of
+the Nervous System and Behavior, 144, 185e197.
+Downey, L. E., Fletcher, P. D., Golden, H. L., Mahoney, C. J.,
+Agustus, J. L., Schott, J. M., et al. (2014). Altered body schema
+processing in frontotemporal dementia with C9ORF72
+mutations. Journal of Neurology, Neurosurgery, and Psychiatry,
+85(9), 1016e1023.
+Ducharme, S., Dols, A., Laforce, R., Devenney, E., Kumfor, F., Van
+Den Stock, J., et al. (2020). Recommendations to distinguish
+behavioural variant frontotemporal dementia from
+psychiatric disorders. Brain: a Journal of Neurology, 143(6),
+1632e1650.
+de la Fuente, A., Sede~no, L., Vignaga, S. S., Ellmann, C.,
+Sonzogni, S., Belluscio, L., et al. (2019). Multimodal
+neurocognitive markers of interoceptive tuning in smoked
+cocaine. Neuropsychopharmacology: Ofﬁcial Publication of the
+American College of Neuropsychopharmacology, 44(8), 1425e1434.
+Ernst, J., Northoff, G., B€oker, H., Seifritz, E., & Grimm, S. (2013).
+Interoceptive awareness enhances neural activity during
+empathy. Human brain mapping, 34(7), 1615e1624.
+Fittipaldi, S., Abrevaya, S., de la Fuente, A., Pascariello, G. O.,
+Hesse, E., Birba, A., et al. (2020). A multidimensional and
+multi-feature framework for cardiac interoception.
+Neuroimage, 212, Article 116677.
+Fukushima, H., Terasawa, Y., & Umeda, S. (2011). Association
+between interoception and empathy: Evidence from
+heartbeat-evoked brain potential. International Journal of
+Psychophysiology, 79(2), 259e265.
+Garcı´a-Cordero, I., Esteves, S., Mikulan, E. P., Hesse, E.,
+Baglivo, F. H., Silva, W., et al. (2017). Attention, in and out:
+Scalp-level and intracranial EEG correlates of interoception
+and exteroception. The Florida Nurse, 11, 411.
+Garcı´a-Cordero, I., Sede~no, L., De La Fuente, L., Slachevsky, A.,
+Forno, G., Klein, F., et al. (2016). Feeling, learning from and
+being aware of inner states: Interoceptive dimensions in
+neurodegeneration and stroke. Philosophical Transactions of the
+Royal Society B: Biological Sciences, 371(1708), Article 20160006.
+Ghaziri, J., Tucholka, A., Girard, G., Boucher, O., Houde, J.-C.,
+Descoteaux, M., … Nguyen, D. K. (2018). Subcortical
+structural connectivity of insular subregions. Scientiﬁc reports,
+8(1), 1e12.
+Gonzalez Campo, C., Salamone, P. C., Rodrı´guez-Arriagada, N.,
+Richter, F., Herrera, E., Bruno, D., et al. (2020). Fatigue in
+multiple sclerosis is associated with multimodal interoceptive
+abnormalities. Multiple Sclerosis: Clinical and Laboratory
+Research, 26(14), 1845e1853.
+Goodkind, M. S., Sturm, V. E., Ascher, E. A., Shdo, S. M.,
+Miller, B. L., Rankin, K. P., et al. (2015). Emotion recognition in
+frontotemporal dementia and Alzheimer's disease: A new
+ﬁlm-based assessment. Emotion, 15(4), 416.
+Gray, H. M., & Tickle-Degnen, L. (2010). A meta-analysis of
+performance on emotion recognition tasks in Parkinson's
+disease. Neuropsychology, 24(2), 176.
+Henry, J. D., Phillips, L. H., & Von Hippel, C. (2014). A metaanalytic review of theory of mind difﬁculties in behaviouralvariant frontotemporal dementia. Neuropsychologia, 56, 53e62.
+Hsieh, S., Schubert, S., Hoon, C., Mioshi, E., & Hodges, J. R. (2013).
+Validation of the Addenbrooke's Cognitive Examination III in
+frontotemporal dementia and Alzheimer's disease. Dementia
+and Geriatric Cognitive Disorders, 36(3e4), 242e250.
+Hutchings, R., Palermo, R., Bruggemann, J., Hodges, J. R.,
+Piguet, O., & Kumfor, F. (2018). Looking but not seeing:
+Increased eye ﬁxations in behavioural-variant frontotemporal
+dementia. Cortex; a Journal Devoted To the Study of the Nervous
+System and Behavior, 103, 71e81.
+Iba~nez, A. (2018). Brain oscillations, inhibition and social
+inappropriateness in frontotemporal degeneration. Brain: a
+Journal of Neurology, 141(10), e73. e73.
+Iba~nez, A. (2019). Insular networks and intercognition in the wild.
+Cortex; a journal devoted to the study of the nervous system and
+behavior, 115, 341e344.
+Iba~nez, A., & Manes, F. (2012). Contextual social cognition and the
+behavioral variant of frontotemporal dementia. Neurology,
+78(17), 1354e1362.
+Ibanez, A., & Schulte, M. (2020). Situated minds: Conceptual and
+emotional blending in neurodegeneration and beyond. Brain: a
+Journal of Neurology, 143(12), 3523e3525.
+James, W. (1884). What is emotion?.
+James, W. (1894). The physical basis of emotion.
+Khalsa, S. S., Adolphs, R., Cameron, O. G., Critchley, H. D.,
+Davenport, P. W., Feinstein, J. S., et al. (2018). Interoception
+and mental health: A roadmap. Biological psychiatry: cognitive
+neuroscience and neuroimaging, 3(6), 501e513.
+Kumfor, F., Hazelton, J. L., Rushby, J. A., Hodges, J. R., & Piguet, O.
+(2019). Facial expressiveness and physiological arousal in
+frontotemporal dementia: Phenotypic clinical proﬁles and
+neural correlates. Cognitive, Affective & Behavioral Neuroscience,
+19(1), 197e210.
+Kumfor, F., Iba~nez, A., Hutchings, R., Hazelton, J. L., Hodges, J. R.,
+& Piguet, O. (2018). Beyond the face: How context modulates
+emotion processing in frontotemporal dementia subtypes.
+Brain: a Journal of Neurology, 141(4), 1172e1185.
+c o r t e x 1 6 3 ( 2 0 2 3 ) 6 6 e7 9
+77
+
+Kumfor, F., Irish, M., Hodges, J. R., & Piguet, O. (2013). Discrete
+neural correlates for the recognition of negative emotions:
+Insights from frontotemporal dementia. Plos One, 8(6), Article
+e67457.
+Kumfor, F., Irish, M., Hodges, J. R., & Piguet, O. (2014a). Frontal and
+temporal lobe contributions to emotional enhancement of
+memory in behavioral-variant frontotemporal dementia and
+Alzheimer's disease. Frontiers in behavioral neuroscience, 8, 225.
+Kumfor, F., Miller, L., Lah, S., Hsieh, S., Savage, S., Hodges, J. R.,
+et al. (2011). Are you really angry? The effect of intensity on
+facial emotion recognition in frontotemporal dementia. Social
+Neuroscience, 6(5e6), 502e514.
+Kumfor, F., Sapey-Triomphe, L.-A., Leyton, C. E., Burrell, J. R.,
+Hodges, J. R., & Piguet, O. (2014b). Degradation of emotion
+processing ability in corticobasal syndrome and Alzheimer's
+disease. Brain: a Journal of Neurology, 137(11), 3061e3072.
+https://doi.org/10.1093/brain/awu246
+Landin-Romero, R., Kumfor, F., Leyton, C. E., Irish, M.,
+Hodges, J. R., & Piguet, O. (2017). Disease-speciﬁc patterns of
+cortical and subcortical degeneration in a longitudinal study
+of Alzheimer's disease and behavioural-variant
+frontotemporal dementia. Neuroimage, 151, 72e80.
+Legaz, A., Abrevaya, S., Dottori, M., Campo, C. G., Birba, A.,
+Caro, M. M., et al. (2021). Multimodal mechanisms of human
+socially reinforced learning across neurodegenerative
+diseases. Brain: a Journal of Neurology, 145(3), 1052e1068.
+Marshall, C. R., Hardy, C. J., Russell, L. L., Clark, C. N., Dick, K. M.,
+Brotherhood, E. V., et al. (2017). Impaired interoceptive
+accuracy in semantic variant primary progressive aphasia. The
+Florida Nurse, 8, 610.
+McKhann, G. M., Knopman, D. S., Chertkow, H., Hyman, B. T.,
+Jack, C. R., Jr., Kawas, C. H., et al. (2011). The diagnosis of
+dementia due to alzheimer's disease: Recommendations from
+the national institute on aging-alzheimer's association
+workgroups on diagnostic guidelines for alzheimer's disease.
+Alzheimer's & dementia, 7(3), 263e269.
+Mechelli, A., Price, C. J., Friston, K. J., & Ashburner, J. (2005). Voxelbased morphometry of the human brain: Methods and
+applications. Current Medical Imaging, 1(2), 105e113.
+Mendez, M. F. (2021). Frontotemporal dementia: A window to
+alexithymia. The Journal of Neuropsychiatry and Clinical
+Neurosciences, 33(2), 157e160.
+Menon, V., & Uddin, L. Q. (2010). Saliency, switching, attention
+and control: A network model of insula function. Brain
+Structure & Function, 214(5), 655e667.
+Miller, L. A., Hsieh, S., Lah, S., Savage, S., Hodges, J. R., & Piguet, O.
+(2012). One size does not ﬁt all: Face emotion processing
+impairments in semantic dementia, behavioural-variant
+frontotemporal dementia and alzheimer's disease are
+mediated by distinct cognitive deﬁcits. Behavioural neurology,
+25(1), 53e60.
+Miller, L. A., Mioshi, E., Savage, S., Lah, S., Hodges, J. R., &
+Piguet, O. (2013). Identifying cognitive and demographic
+variables that contribute to carer burden in dementia.
+Dementia and Geriatric Cognitive Disorders, 36(1e2), 43e49.
+Mioshi, E., Hsieh, S., Savage, S., Hornberger, M., & Hodges, J. R.
+(2010). Clinical staging and disease progression in
+frontotemporal dementia. Neurology, 74(20), 1591e1597.
+Nasreddine, Z. S., Phillips, N. A., Bedirian, V., Charbonneau, S.,
+Whitehead, V., Collin, I., et al. (2005). The montreal cognitive
+assessment, MoCA: A brief screening tool for mild cognitive
+impairment. Journal of the American Geriatrics Society, 53(4),
+695e699.
+Nichols, T. E., & Holmes, A. P. (2002). Nonparametric permutation
+tests for functional neuroimaging: A primer with examples.
+Human brain mapping, 15(1), 1e25.
+Phelps, E. A. (2004). Human emotion and memory: Interactions of
+the amygdala and hippocampal complex. Current opinion in
+neurobiology, 14(2), 198e202.
+Piguet, O. (2011). Eating disturbance in behavioural-variant
+frontotemporal dementia. Journal of Molecular Neuroscience: MN,
+45(3), 589e593.
+Piguet, O., & Kumfor, F. (2020). Frontotemporal dementias: Main
+syndromes and underlying brain changes. Current Opinion in
+Neurology, 33(2), 215e221. https://doi.org/10.1097/
+wco.0000000000000792
+Piguet, O., Kumfor, F., & Hodges, J. (2017). Diagnosing, monitoring
+and managing behavioural variant frontotemporal dementia.
+Medical Journal of Australia, 207(7), 303e308.
+Postuma, R. B., Berg, D., Stern, M., Poewe, W., Olanow, C. W.,
+Oertel, W., et al. (2015). MDS clinical diagnostic criteria for
+Parkinson's disease. Movement disorders, 30(12), 1591e1601.
+Ramanan, S., Piguet, O., & Irish, M. (2018). Rethinking the role of
+the angular gyrus in remembering the past and imagining the
+future: The contextual integration model. The Neuroscientist: a
+Review Journal Bringing Neurobiology, Neurology and Psychiatry,
+24(4), 342e352.
+Rascovsky, K., Hodges, J. R., Knopman, D., Mendez, M. F.,
+Kramer, J. H., Neuhaus, J., et al. (2011). Sensitivity of revised
+diagnostic criteria for the behavioural variant of frontotemporal
+dementia. Brain: a Journal of Neurology, 134(9), 2456e2477.
+Ricciardi, L., Ferrazzano, G., Demartini, B., Morgante, F., Erro, R.,
+Ganos, C., et al. (2016). Know thyself: Exploring interoceptive
+sensitivity in Parkinson's disease. Journal of the neurological
+sciences, 364, 110e115.
+Richter, F., Garcı´a, A. M., Rodriguez Arriagada, N., Yoris, A.,
+Birba, A., Huepe, D., et al. (2021). Behavioral and
+neurophysiological signatures of interoceptive enhancements
+following vagus nerve stimulation. Human brain mapping, 42(5),
+1227e1242.
+Rueckert, D., Sonoda, L. I., Hayes, C., Hill, D. L., Leach, M. O., &
+Hawkes, D. J. (1999). Nonrigid registration using free-form
+deformations: Application to breast MR images. IEEE
+transactions on medical imaging, 18(8), 712e721.
+Salamone, P. C., Legaz, A., Sede~no, L., Moguilner, S., Fraile-
+Vazquez, M., Campo, C. G., et al. (2021). Interoception primes
+emotional processing: Multimodal evidence from
+neurodegeneration. Journal of Neuroscience, 41(19), 4276e4292.
+Salamone, P. C., Sede~no, L., Legaz, A., Bekinschtein, T.,
+Martorell, M., Adolﬁ, F., et al. (2020). Dynamic neurocognitive
+changes in interoception after heart transplant. Brain
+communications, 2(2). fcaa095.
+Santangelo, G., Vitale, C., Baiano, C., D'Iorio, A., Longo, K.,
+Barone, P., et al. (2018). Interoceptive processing deﬁcit: A
+behavioral marker for subtyping Parkinson's disease.
+Parkinsonism & Related Disorders, 53, 64e69.
+Schachter, S., & Singer, J. (1962). Cognitive, social, and
+physiological determinants of emotional state. Psychological
+review, 69(5), 379.
+Schulz, S. M. (2016). Neural correlates of heart-focused
+interoception: A functional magnetic resonance imaging
+meta-analysis. Philosophical Transactions of the Royal Society B:
+Biological Sciences, 371(1708), Article 20160018.
+Seeley, W. W., Crawford, R., Rascovsky, K., Kramer, J. H.,
+Weiner, M., Miller, B. L., et al. (2008). Frontal paralimbic
+network atrophy in very mild behavioral variant
+frontotemporal dementia. Archives of neurology, 65(2),
+249e255.
+Seeley, W. W., Menon, V., Schatzberg, A. F., Keller, J., Glover, G. H.,
+Kenna, H., et al. (2007). Dissociable intrinsic connectivity
+networks for salience processing and executive control.
+Journal of Neuroscience, 27(9), 2349e2356.
+c o r t e x 1 6 3 ( 2 0 2 3 ) 6 6 e7 9
+78
+
+Seghier, M. L. (2013). The angular gyrus: Multiple functions and
+multiple subdivisions. The Neuroscientist: a Review Journal
+Bringing Neurobiology, Neurology and Psychiatry, 19(1), 43e61.
+Smith, S. M., Jenkinson, M., Woolrich, M. W., Beckmann, C. F.,
+Behrens, T. E., Johansen-Berg, H., et al. (2004). Advances in
+functional and structural MR image analysis and
+implementation as FSL. Neuroimage, 23, S208eS219.
+Sollberger, M., Stanley, C. M., Wilson, S. M., Gyurak, A.,
+Beckman, V., Growdon, M., et al. (2009). Neural basis of
+interpersonal traits in neurodegenerative diseases.
+Neuropsychologia, 47(13), 2812e2827.
+Strikwerda-Brown, C., Ahmed, R. M., Piguet, O., & Irish, M. (2022).
+Try to see it my wayeExamining the relationship between
+visual perspective taking and theory of mind in frontotemporal
+dementia. Brain and Cognition, 157, Article 105835.
+Sturm, V. E., Ascher, E. A., Miller, B. L., & Levenson, R. W. (2008).
+Diminished self-conscious emotional responding in
+frontotemporal lobar degeneration patients. Emotion, 8(6), 861.
+Terasawa, Y., Moriguchi, Y., Tochizawa, S., & Umeda, S. (2014).
+Interoceptive sensitivity predicts sensitivity to the emotions of
+others. Cognition & Emotion, 28(8), 1435e1448.
+Torres Mendonc¸a De Melo Fadel, B., Santos De Carvalho, R. L.,
+Belfort Almeida Dos Santos, T. T., & Dourado, M. C. N. (2019).
+Facial expression recognition in Alzheimer's disease: A
+systematic review. Journal of clinical and experimental
+neuropsychology, 41(2), 192e203.
+Van den Stock, J., & Kumfor, F. (2017). Behavioural variant
+frontotemporal dementia: At the interface of interoception,
+emotion and social cognition. Cortex; a Journal Devoted To the
+Study of the Nervous System and Behavior, 115, 335e340.
+Villani, V., Tsakiris, M., & Azevedo, R. (2019). Transcutaneous
+vagus nerve stimulation improves interoceptive accuracy.
+Neuropsychologia, 134, Article 107201.
+Weng, H. Y., Feldman, J. L., Leggio, L., Napadow, V., Park, J., &
+Price, C. J. (2021). Interventions and manipulations of
+interoception. Trends in neurosciences, 44(1), 52e62.
+Wiebking, C., Duncan, N. W., Tiret, B., Hayes, D. J., Marjaǹska, M.,
+Doyon, J., et al. (2014). GABA in the insulada predictor of the
+neural response to interoceptive awareness. Neuroimage, 86,
+10e18.
+Woolley, J. D., Gorno-Tempini, M.-L., Seeley, W. W., Rankin, K.,
+Lee, S. S., Matthews, B. R., et al. (2007). Binge eating is
+associated with right orbitofrontal-insular-striatal atrophy in
+frontotemporal dementia. Neurology, 69(14), 1424e1433.
+https://doi.org/10.1212/01.wnl.0000277461.06713.23
+Woolrich, M. W., Jbabdi, S., Patenaude, B., Chappell, M., Makni, S.,
+Behrens, T., et al. (2009). Bayesian analysis of neuroimaging
+data in FSL. Neuroimage, 45(1), S173eS186.
+Yoris, A., Legaz, A., Abrevaya, S., Alarco, S., Pelaez, J. L.,
+Sanchez, R., et al. (2020). Multicentric evidence of emotional
+impairments in hypertensive heart disease. Scientiﬁc reports,
+10(1), 1e13.
+Zhang, Y., Brady, M., & Smith, S. (2001). Segmentation of brain MR
+images through a hidden Markov random ﬁeld model and the
+expectation-maximization algorithm. IEEE T Med Imaging, 20,
+45e57 (In: English).
+c o r t e x 1 6 3 ( 2 0 2 3 ) 6 6 e7 9
+79

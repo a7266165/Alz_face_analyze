@@ -1,0 +1,25 @@
+{
+  "title": "AI-Based Facial Emotion Analysis for Early and Differential Diagnosis of Dementia.",
+  "authors": [
+    "Bergamasco L",
+    "Coletta A",
+    "Olmo G",
+    "Cermelli A",
+    "Rubino E",
+    "Rainero I"
+  ],
+  "year": 2025,
+  "abstract": "Early and differential diagnosis of dementia is essential for timely and targeted care. This study investigated the feasibility of using an artificial intelligence (AI)-based system to discriminate between different stages and etiologies of dementia by analyzing facial emotions. We collected video recordings of 64 participants exposed to standardized audio-visual stimuli. Facial emotion features in terms of valence and arousal were extracted and used to train machine learning models on multiple classification tasks, including distinguishing individuals with mild cognitive impairment (MCI) and overt dementia from healthy controls (HCs) and differentiating Alzheimer's disease (AD) from other types of cognitive impairment. Nested cross-validation was adopted to evaluate the performance of different tested models (K-Nearest Neighbors, Logistic Regression, and Support Vector Machine models) and optimize their hyperparameters. The system achieved a cross-validation accuracy of 76.0% for MCI vs. HCs, 73.6% for dementia vs. HCs, and 64.1% in the three-class classification (MCI vs. dementia vs. HCs). Among cognitively impaired individuals, a 75.4% accuracy was reached in distinguishing AD from other etiologies. These results demonstrated the potential of AI-driven facial emotion analysis as a non-invasive tool for early detection of cognitive impairment and for supporting differential diagnosis of AD in clinical settings.",
+  "doi": "10.3390/bioengineering12101082",
+  "arxiv_id": null,
+  "venue": "Bioengineering (Basel, Switzerland)",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "41155081"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.3390/bioengineering12101082"
+}

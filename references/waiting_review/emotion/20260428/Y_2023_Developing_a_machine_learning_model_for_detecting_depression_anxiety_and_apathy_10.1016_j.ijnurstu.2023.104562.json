@@ -1,0 +1,25 @@
+{
+  "title": "Developing a machine learning model for detecting depression, anxiety, and apathy in older adults with mild cognitive impairment using speech and facial expressions: A cross-sectional observational study.",
+  "authors": [
+    "Zhou Y",
+    "Han W",
+    "Yao X",
+    "Xue J",
+    "Li Z",
+    "Li Y"
+  ],
+  "year": 2023,
+  "abstract": "BACKGROUND: Depression, anxiety, and apathy are highly prevalent in older people with preclinical dementia and mild cognitive impairment. These symptoms have also proven valuable in predicting the progression from mild cognitive impairment to dementia, enabling a timely diagnosis and treatment. However, objective and reliable indicators to detect and distinguish depression, anxiety, and apathy are relatively scarce. OBJECTIVE: This study aimed to develop a machine learning model to detect and distinguish depression, anxiety, and apathy based on speech and facial expressions. DESIGN: An observational, cross-sectional study design. SETTING(S): The memory outpatient department of a tertiary hospital. PARTICIPANTS: 319 older adults diagnosed with mild cognitive impairment. METHODS: Depression, anxiety, and apathy were evaluated by the Public Health Questionnaire, General Anxiety Disorder, and Apathy Evaluation Scale, respectively. Speech and facial expressions of older adults with mild cognitive impairment were digitally captured using audio and video recording software. Open-source data analysis toolkits were utilized to extract speech, facial, and text features. The multiclass classification was used to develop classification models, and shapely additive explanations were used to explain the contribution of each feature within the model. RESULTS: The random forest method was used to develop a multiclass emotion classification model, which performed well in classifying emotions with a weighted-average F1 score of 96.6 %. The model also demonstrated high accuracy, precision, and recall, with 87.4 %, 86.6 %, and 87.6 %, respectively. CONCLUSIONS: The machine learning model developed in this study demonstrated strong classification performance in detecting and differentiating depression, anxiety, and apathy. This innovative approach combines text, audio, and video to provide objective methods for precise classification and remote monitoring of these symptoms in nursing practice. REGISTRATION: This study was registered at the Chinese Clinical Trial Registry (registration number: ChiCTR1900023892; registration date: June 19th, 2019).",
+  "doi": "10.1016/j.ijnurstu.2023.104562",
+  "arxiv_id": null,
+  "venue": "International journal of nursing studies",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "37531702"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.1016/j.ijnurstu.2023.104562"
+}

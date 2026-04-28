@@ -1,0 +1,24 @@
+{
+  "title": "Exploring automated machine learning to develop facial expression recognition systems",
+  "authors": [
+    "Atharv Goel",
+    "Praneet Saurabh",
+    "Dhananjay Bisen",
+    "Rishav Dubey",
+    "Prathap Somu"
+  ],
+  "year": 2025,
+  "abstract": "With human-computer interactions on the rise, in use for even the most mundane things like shopping, making travel arrangements and ordering food as well as matters of national importance such as healthcare and security, Facial Expression Recognition has become crucial to our lives. Currently used traditional facial expression recognition systems rely on manual tuning by experts to get optimised results, face challenges such as the demand of resources and expert-level knowledge of a plethora of neural network architectures which prevents the technology from being widely adopted. This paper demonstrates a practical application of Automated Machine Learning using a framework known as AutoGluon to automate model selection and hyperparameter tuning for Facial Expression Recognition, achieving competitive accuracy (76.4%) on the challenging FER2013 dataset. It also provides a comprehensive analysis of four model configurations (Default, Low Resource, Balanced, High Quality), enabling users to balance computational cost and performance. These models outperform several state-of-the-art manually tuned models (RMN, ViT, MLFCC etc.) and highlight AutoML’s potential to democratize FER development for non-experts. This paper also includes the use of metrics such as precision, recall and f1-score along with accuracy to provide a more holistic understanding of the models’ strengths and limitations, and includes ethical considerations and future directions, addressing critical issues like bias mitigation and real-world deployment challenges. This work confirms the potential of AutoML to revolutionize facial expression recognition, making advanced facial expression analysis more accessible and effective. A novel model with automated model selection, hyperparameter tuning and ensembling achieves state-of-the-art accuracy of 76.4% on the FER2013 dataset, surpassing several manually tuned models. Evaluates four model configurations, namely Default, Low Resource, Balanced, and High Quality, allowing users to balance computational cost and accuracy based on available resources. Discusses potential ethical challenges in FER applications and proposes future research directions, including cross-dataset generalization, model interpretability, and bias mitigation.",
+  "doi": "10.1007/s42452-025-07728-1",
+  "arxiv_id": null,
+  "venue": "Discover Applied Sciences",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://link.springer.com/content/pdf/10.1007/s42452-025-07728-1.pdf",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4414994688"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.1007/s42452-025-07728-1"
+}

@@ -1,0 +1,1107 @@
+The FASEB Journal. 2025;39:e70480.
+﻿
+   |  1 of 16
+https://doi.org/10.1096/fj.202403009R
+wileyonlinelibrary.com/journal/fsb2
+Received: 27 November 2024  |  Revised: 25 February 2025  |  Accepted: 12 March 2025
+DOI: 10.1096/fj.202403009R
+R E S E A R C H  A R T I C L E
+Potential of facial biomarkers for Alzheimer's disease
+and obstructive sleep apnea in Down syndrome and
+general population
+L. M. Echeverry-­Quiceno1
+  |   S. Llambrich1
+  |   Á. Heredia-­Lidón2
+  |
+S. Giménez3,4,5
+  |   M. Rozalem-­Aranha4,5,6
+  |   P. Inampudi7
+  |   Y. Heuzé8
+  |
+X. Sevillano2
+  |   J. Fortea4,5
+  |   N. Martínez-­Abadías1
+  |
+for the Alzheimer's Disease Neuroimaging Initiative
+1Departament de Biologia Evolutiva, Ecologia i Ciències Ambientals (BEECA), Facultat de Biologia, Universitat de Barcelona (UB), Barcelona, Spain
+2HER -­ Human-­Environment Research Group, La Salle -­ Universitat Ramon Llull, Barcelona, Spain
+3Multidisciplinary Sleep Unit -­ Respiratory Department, Hospital de la Santa Creu i Sant Pau, Biomedical Research Institute Sant Pau, Institut de
+Recerca Sant Pau -­, Universitat Autònoma de Barcelona, Barcelona, Spain
+4Memory Unit, Department of Neurology, Institut de Recerca Sant Pau -­ Hospital de la Santa Creu i Sant Pau, Universitat Autònoma de Barcelona,
+Madrid, Spain
+5Centro de Investigación Biomédica en Red en Enfermedades Neurodegenerativas (CIBERNED), Madrid, Spain
+6Neuroradiology Section, Department of Radiology, Hospital de la Santa Creu i Sant Pau, Universitat Autònoma de Barcelona, Barcelona, Spain
+7Columbia University College of Dental Medicine, New York, USA
+8Univ. Bordeaux, CNRS, Ministère de la Culture, PACEA, UMR 5199, Pessac, France
+Data used in preparation of this article were obtained from the Alzheimer's Disease Neuroimaging Initiative (ADNI) database (adni.​loni.​usc.​edu). As
+such, the investigators within the ADNI contributed to the design and implementation of ADNI and/or provided data but did not participate in
+analysis or writing of this report. A complete listing of ADNI investigators can be found at: adni.​loni.​usc.​edu/​wp-­​conte​nt/​uploa​ds/​how_​to_​apply/​​
+ADNI_​Ackno​wledg​ement_​List.​pdf.
+Abbreviations: AD, Alzheimer's disease; ADNI, Alzheimer's Disease Neuroimaging Initiative; AHI, Apnea–Hypopnea Index; APP, Amyloid
+Precursor Protein; Aβ, β-­amyloid; BMD, bone mineral density; CS, centroid size; CSF, cerebrospinal fluid; CVA, canonical variate analyses; DS, Down
+syndrome; EU, euploid control; GM, geometric morphometrics; GPA, generalized procrustes analysis; MRI, magnetic resonance image; MV-­CNN,
+Multi-­View Consensus Convolutional Neural Networks; NFL, neurofilament light; OSA, obstructive sleep apnea; PSG, polysomnography; RARC,
+Resource Allocation Review Committee.
+Correspondence
+N. Martínez-­Abadías, Departament de
+Biologia Evolutiva, Ecologia i Ciències
+Ambientals (BEECA), Facultat de
+Biologia, Universitat de Barcelona (UB),
+Avinguda Diagonal, 643, Les Corts,
+08028 Barcelona, España.
+Email: neusmartinez@ub.edu
+Funding information
+Fondation Jérôme Lejeune, Grant/
+Award Number: 2020b cycle-­Project
+2001, JLF1801 and No.55(2023Edition);
+Generalitat de Catalunya, Grant/
+Abstract
+Down syndrome (DS), caused by trisomy 21, is associated with an increased risk of
+Alzheimer's disease (AD) and obstructive sleep apnea (OSA). Traditional diagnostic methods for AD and OSA, like cerebrospinal fluid analysis and polysomnography, are invasive and challenging for people with DS. In this study, we assessed
+whether facial morphology could be used as a potential noninvasive biomarker for
+these conditions in both DS and the general population. We performed a comprehensive 3D analysis of facial shape variation by registering the 3D coordinates of
+21 landmarks on facial models extracted from magnetic resonance images of 131
+individuals with DS and 216 euploid (EU) adult controls, including AD and OSA
+This is an open access article under the terms of the Creative Commons Attribution-NonCommercial License, which permits use, distribution and reproduction in any
+medium, provided the original work is properly cited and is not used for commercial purposes.
+© 2025 The Author(s). The FASEB Journal published by Wiley Periodicals LLC on behalf of Federation of American Societies for Experimental Biology.
+
+2 of 16  |
+ECHEVERRY-­QUICENO et al.
+1  |  INTRODUCTION
+Down syndrome (DS) (OMIM 190685) is a complex genetic disorder occurring in one out of 700–1000 live births
+that is caused by trisomy of chromosome 21.1 The overexpression of more than 200 triplicated genes leads to a
+dosage imbalance, disrupting signaling pathways that regulate the development of multiple systems, including the
+nervous, cardiac, immune, gastrointestinal, and skeletal
+systems.2 Advances in research, early intervention, educational therapy, and improvements in medical care have
+facilitated the management of pathologies associated with
+DS that manifest early in life. As a result, the quality of
+life of patients with DS has significantly improved, with
+life expectancy increasing from 9 to 60 years.1,3,4 However,
+this increased longevity has led to greater vulnerability to
+age-­related comorbidities,1,5 such as Alzheimer's disease
+(AD)6 and obstructive sleep apnea (OSA).7 These disorders further impact cognitive impairment and substantially reduce the quality of life in people with DS.
+Individuals diagnosed with DS present an ultrahigh
+risk of developing early-­onset AD6 In DS, the triplication
+of the Amyloid Precursor Protein (APP) gene, located in
+Hsa21,8 is considered a necessary and sufficient condition for the overproduction of β-­amyloid peptides (Aβ) in
+the brain and the development of AD.8 Furthermore, individuals with DS also present a higher prevalence of severe sleep disruptions (74.5%) and OSA (78%).7,9 Typical
+features associated with DS, such as midfacial flatness
+and mandibular hypoplasia,10,11 muscular hypotonia,10,11 adenotonsillar hypertrophy, and macroglossia,12
+are risk factors for respiratory problems in people with
+DS. Sleep disorders have in turn been associated with
+cognitive deterioration due to deficient rest and lack of
+oxygen,13 as well as with higher burden and deposition
+rates of Aβ14,15 and tau proteins16,17 due to a poor protein
+clearance, further contributing to an earlier onset of AD
+in people with DS.18
+Diagnosis of AD and OSA is challenging in the general population, but particularly in individuals with DS.
+Research on biomarkers based on the analysis of protein concentration, such as Aβ, tau, and neurofilament
+light (NFL) in the cerebrospinal Fluid (CSF) showed
+a high diagnostic potential for AD.19,20 However, CSF
+extraction is invasive and poorly tolerated by people
+with DS. Concerning OSA detection, an overnight polysomnography (PSG) study is the established gold standard.21 However, this procedure can be tedious, cause
+discomfort, and has been questioned as a diagnostic tool
+in the DS population.12 Similar to CSF extraction, performing a PSG in people with DS presents additional
+challenges, since the presence of craniofacial dysmorphologies, obesity, and restless behavior during testing
+can alter the PSG output, misdiagnosing the presence
+and severity of OSA.21
+In the search for complementary biomarkers that are
+reliable and noninvasive to diagnose the presence of AD
+and OSA, facial morphology has emerged as a potential
+biomarker.22–27 Recent advancements in imaging, computational, and artificial intelligence technologies have
+developed faster and more reliable tools for diagnosing genetic, rare, neurodevelopmental, and psychotic
+Award Number: 2024 FI-­3 00160 and
+2023 FI-­2 00160; MEC | Instituto de
+Salud Carlos III (ISCIII), Grant/Award
+Number: PI14/01126, PI17/01019
+and PI20/00836; HHS | National
+Institutes of Health (NIH), Grant/
+Award Number: 1R01AG056850-­
+01A1, R21AG056974, R01AG061566
+and 1RF1AG080769-­01; Alzheimer's
+Association (AA) and Global Brain
+Health Institute (GBHI), Grant/Award
+Number: UK-­23-­971107; Agència de
+Gestió d'Ajuts Universitaris i de Recerca
+(AGAUR), Grant/Award Number:
+2021 SGR00706 and 2021SGR01396;
+MEC | Agencia Española de
+Investigación (AEI), Grant/Award
+Number: PID2020-­113609RB-­C21/
+AEI/10.13039/501100011033;
+Fundación Álvaro Entrecanales-­
+Lejeune
+cases. Procrustes ANOVA and MANOVA quantified shape variation by sex, age,
+and facial size, while geometric morphometrics assessed diagnostic group differences. Significant facial shape differences were observed between the DS and EU
+groups, indicating sex-­dependent differences and altered age-­related changes in
+DS, particularly in females. Facial shape correlated with the amyloid beta ratio
+(Aβ1-­42/Aβ1-­40), a key AD biomarker. In DS, facial shape differences by AD diagnosis were not significant after adjusting for age and facial size, but significant
+shape differences were detected in the EU population. For OSA, facial shape correlated with the apnea–hypopnea index (AHI), and DS individuals with severe
+OSA showed distinct facial morphology compared with those without OSA, suggesting an association between facial shape and sleep respiratory disturbances.
+These results highlight the potential of facial morphology as a noninvasive biomarker for AD and OSA detection and management.
+K E Y W O R D S
+dementia, facial development, facial dysmorphology, geometric morphometrics, ontogenetic
+trajectories, sexual dimorphism, sleep and respiratory disorders, trisomy 21
+ 15306860, 2025, 6, Downloaded from https://faseb.onlinelibrary.wiley.com/doi/10.1096/fj.202403009R by Spanish Cochrane National Provision (Ministerio de Sanidad), Wiley Online Library on [25/11/2025]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+      |  3 of 16
+ECHEVERRY-­QUICENO et al.
+disorders.22,23,26,28 These tools use high-­throughput methods based on 2D and 3D image analysis to identify phenotypic biomarkers through comparisons of facial patterns
+between patients and healthy controls.22–27 Assuming
+facial development is closely integrated with brain and
+upper airway development through common signaling
+pathways,29,30 previous research underscored that facial
+traits may indirectly reflect neurological and respiratory
+disorders in the general population.
+Specifically for AD, previous studies have demonstrated that automated computational methods can non-­
+invasively detect dementia using facial traits, with an
+accuracy above 80% in 2D frontal images31 and 66% with
+3D facial meshes.32 Regarding OSA, previous research
+has been able to detect this respiratory condition using
+noninvasive facial biomarkers with 2D images based on
+cephalometric parameters33–36 as well as with 3D meshes,
+revealing significant local differences concentrated in
+the nasal region in patients with OSA.37 Although these
+studies showed promising results that reinforce the reliability of using facial biomarkers for detecting AD and
+OSA, they overlooked significant factors that influence
+facial shape variation, such as sex, age, and facial size.
+Moreover, these methods have not been assessed in individuals diagnosed with genetic conditions who are at
+an elevated risk of developing AD and OSA, such as the
+DS population.
+To fill these gaps and to further improve the use of facial biomarkers for early detection and prognosis of neurodevelopmental and respiratory disorders, we conducted
+the first comprehensive quantitative 3D analysis of facial
+shape variation, including euploid controls (EU) and individuals diagnosed with DS, AD, and OSA. First, we assessed the effect of age, sex, facial size, and genetic factors
+on facial shape to understand how these critical factors
+modulate the facial phenotype. Second, we explored facial
+adult ontogeny in healthy controls and tested whether this
+process is altered in DS individuals depending on sex. This
+is crucial in the investigation of the diagnostic potential of
+facial biomarkers because the mechanisms that regulate
+the process of facial development, growth, and aging vary
+during the ontogenetic trajectory, among individuals, and
+between sexes.38–40
+To address these issues, we applied quantitative geometric morphometric analyses,41–43 which have been
+previously used to identify disease-­and sex-­specific facial features associated with genetic and neurodevelopmental disorders. In an earlier study, we reported subtle
+but significant facial shape differences between healthy
+controls and patients diagnosed with schizophrenia and
+bipolar disorder, showing that these facial traits were
+significantly different between disorders and between
+male and female patients within each disorder.28 These
+results underscore the sensitivity of facial biomarkers
+for disease diagnosis. In this study, we accounted for the
+key factors modulating facial shape to assess the potential of facial biomarkers for detecting sex-­specific facial
+traits associated with AD and OSA in the general and the
+DS populations.
+2  |  MATERIALS AND METHODS
+2.1  |  Sample composition
+The sample analyzed in this cross-­sectional study comprised 347 individuals with and without a diagnosis of
+AD, including 216 euploid individuals (EU) (72 males,
+144 females) and 131 individuals with Down syndrome
+(DS) (80 males, 51 females) (Table 1). For all individuals,
+a head magnetic resonance image (MRI) was available,
+along with information regarding dementia stage and
+diagnosis of Alzheimer's disease (AD). Data on obstructive sleep apnea (OSA) was also available for a subsample
+of individuals (Table 1). See Figure S1 for more detailed
+information on the sample composition. We conducted
+a power analysis to determine the minimum number of
+subjects required to assess facial shape differences between EU and DS populations. The results indicated that
+the minimum required sample size, with a power of 0.8,
+was 20 individuals for EU controls and 10 for individuals with DS. Our sample overly exceeds these minimum
+requirements, even when stratified by diagnosis and sex
+(Figure S1).
+All individuals with DS were recruited from
+the
+population-­based
+Down-­Alzheimer
+Barcelona
+Neuroimaging Initiative (DABNI) cohort. Cognitively
+unimpaired EU participants were recruited from the
+Sant Pau Initiative on Neurodegeneration (SPIN) cohort, while EU participants with AD were selected
+from the Alzheimer's Disease Neuroimaging Initiative
+(ADNI) database (adni.​loni.​usc.​edu). All participants
+were of European origin, with ages ranging from 18 to
+62 years (individuals with DS) and from 18 to 90 years
+(EU controls). The study was approved by the Sant Pau
+Ethics Committee following the standards for medical
+research in humans recommended by the Declaration
+of Helsinki. All participants or their legally authorized
+representatives gave written informed consent before
+enrollment. To use the ADNI database, we followed an
+application protocol that, after evaluation, provided us
+access to the clinical and imaging data of ADNI participants, who signed consent forms approved by the
+Resource Allocation Review Committee (RARC).
+ 15306860, 2025, 6, Downloaded from https://faseb.onlinelibrary.wiley.com/doi/10.1096/fj.202403009R by Spanish Cochrane National Provision (Ministerio de Sanidad), Wiley Online Library on [25/11/2025]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+4 of 16  |
+ECHEVERRY-­QUICENO et al.
+2.2  |  AD diagnosis
+In the DS cohort, AD diagnosis was established after
+neurological and neuropsychological examinations with
+a semi-­structured health questionnaire (Cambridge
+Examination for Mental Disorders of Older People with
+Down Syndrome and others with intellectual disabilities [CAMDEX-­DS]),44 and a neuropsychological battery including the Cambridge Cognition Examination
+(CAMCOG). Both tests were adapted for intellectual
+disabilities, as in Fortea et  al.19 In the ADNI EU cohort, AD diagnosis was obtained following the National
+Institute on Aging –Alzheimer's Association guidelines for the neuropathologic and neuropsychological
+assessments of AD.45
+In both cohorts, the neuropsychological evaluations
+were accompanied by molecular data, including the concentration ratio of Aβ1-­42/Aβ1-­40 proteins obtained from
+CSF samples. For each individual, the degree of AD dementia was classified as “No Alzheimer” when no signs
+of AD dementia were detected or as “Alzheimer disease” when individuals showed prodromal or advanced
+signs of AD dementia (Table 1), following the criteria in
+Fortea et al.19
+2.3  |  OSA diagnosis
+To score the presence and severity of OSA, we used the
+apnea–hypopnea index (AHI) obtained from nocturnal
+polysomnography tests performed in sound-­attenuated
+and temperature regulated rooms in the sleep laboratory at the Sant Pau sleep unit following the protocols
+described in Giménez et al.30 AHI is defined as the sum
+of all apneas (airflow reduction greater than 90% for
+more than 10 seconds) and hypopneas (airflow reduction
+greater than 30% for at least 10 seconds with an oxygen
+saturation decrease of ~3% or a cortical awakening) per
+hour of sleep.7 Individuals were classified into three categories according to the severity of sleep disruption: (a) no
+OSA (AHI: <5), (b) mild OSA (AHI: 5–30) and (c) severe
+OSA (AHI: >30) (Table 1). To streamline the analysis and
+increase sample size for each group, the “mild OSA category” contained individuals with mild OSA (AHI 5–15)
+and moderate OSA (AHI 15–30).
+2.4  |  Facial 3D models and landmarking
+3D facial models were generated from MR images
+(Figure  S2) by adjusting the gray-­scale threshold that
+optimized skin segmentation using Amira 5.2.1 (v6.3,
+Visualization Sciences Group, FEI). The facial models
+showed similar reconstruction quality and were derived
+from T1-­weighted images obtained from Hospital del
+Mar (Barcelona, Spain) or Hospital Clinic (Barcelona,
+Spain), and the ADNI database. Since all individuals were
+scanned using a 3 T scanner with similar scanning protocols (Table S1), potential experimental bias due to different scan origins was considered negligible.
+To capture facial shape, we used an automatic
+method to record the 3D coordinates of 21 anatomical landmarks on the 3D facial models generated from
+MR images (Figure  1 and Table  S2). The automatic
+landmarking method is included in BioFace3D, a pipeline for the automatic computation of potential facial
+TABLE 1  Sample composition.
+AD
+Sample size
+Age range (median)
+Median ratio
+Aβ42/40
+No Alzheimer
+Alzheimer
+Total
+EU
+169 (50/119)
+47 (22/25)
+216
+18–90 (57.07)
+0.04–0.121 (0.104)
+DS
+82 (49/33)
+49 (31/18)
+131
+18–62 (42.51)
+0.026–0.116 (0.069)
+Total
+251
+96
+347
+OSA
+Sample size
+Age range (median)
+Median AHI
+No
+Mild
+Severe
+Total
+EU
+20 (2/18)
+5 (2/3)
+2 (0/2)
+27
+18–90 (53.21)
+0–38.1 (3)
+DS
+22 (11/11)
+30 (15/15)
+30 (26/4)
+82
+18–62 (40.51)
+0–120 (20)
+Total
+42
+35
+32
+109
+Note: EU and DS groups are divided by AD dementia stages and OSA level. The number of males and females is indicated in brackets as (males/females).
+ 15306860, 2025, 6, Downloaded from https://faseb.onlinelibrary.wiley.com/doi/10.1096/fj.202403009R by Spanish Cochrane National Provision (Ministerio de Sanidad), Wiley Online Library on [25/11/2025]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+      |  5 of 16
+ECHEVERRY-­QUICENO et al.
+biomarkers from 3D head models reconstructed from
+MRI scans.46 Bioface3D46 applies a domain adaptation and architecture reuse approach47 on Multi-­View
+Consensus Convolutional Neural Networks (MV-­CNN),
+a deep learning-­based state-­of-­the-­art method devised
+for automatic 3D facial landmarking.48 This method is
+based on creating 2D views of the 3D anatomical facial
+models from different viewpoints. Then, the hourglass
+model is used to predict candidate landmarks on 2D
+heat maps, and the final position is determined by ray-­
+projecting onto the surface of the 3D mesh using least
+squares combined with random sample consensus.48
+The model was trained with datasets of 21 landmarks
+manually collected on 538 facial meshes, including
+healthy controls and subjects with genetic and neurodevelopmental disorders.46 This automatic facial landmarking method has an average landmarking error of
+1.78 mm. This accuracy level is lower than 2 mm, which
+is the intra-­observer measurement error commonly accepted for craniometric measurements.49
+2.5  |  Geometric Morphometrics and
+multivariate statistical analyses
+To quantify facial shape variation, we used geometric morphometric (GM) analyses. First, we performed a generalized procrustes analysis (GPA)50 to superimpose all the
+configurations of landmarks into a common morphospace
+by scaling, rotating, and translating the landmark coordinates.51 As the resulting Procrustes coordinates still contained an allometric effect, we computed the centroid size
+(CS) of the facial configurations of landmarks and used
+this variable51 to account for the effect of facial size on
+shape in all subsequent analyses.
+To quantify the amount of facial shape variation attributable to sex, age, facial size, and genetic diagnosis, we
+implemented Procrustes ANOVA and MANOVA tests52,53
+using the function ProcD.lm in the Geomorph R package
+with 1,000 permutations and enforcing the randomized
+residuals in a permutation procedure (RRPP).53,54 When
+sex, age, or facial size were significant factors influencing
+facial shape variation, subsequent analyses were adjusted
+using the residuals derived from the Procrustes MANOVA.
+Analyses were performed combined and separately for EU
+and DS samples. When sex differences were detected, further analyses were also performed separately for males
+and females.
+Further Procrustes ANOVA tests were performed to
+assess whether biomarkers for AD (concentration ratio
+Aβ1-­42/Aβ1-­40) and OSA (AHI) explained a significant
+amount of facial shape variation. Additionally, multivariate linear regressions were performed to further test,
+statistically and visually, the correlation between facial
+shape, age, concentration ratio Aβ1-­42/Aβ1-­40, and AHI.
+To assess statistically significant facial shape differences between diagnostic groups, we computed the
+Procrustes distances between the average shapes of each
+group and performed permutation tests with 1,000 iterations.50 Facial comparisons were performed between the
+following diagnostic groups: (a) DS/EU, (b) Alzheimer/
+No Alzheimer in EU and DS groups, and (c) no OSA/
+mild OSA/severe OSA in the DS group. To visualize the
+facial shape differences between groups, we conducted
+canonical variate analysis (CVA), a statistical discriminant method that maximizes the separation among predefined groups.55,56 Facial morphings and wireframes
+associated with the negative and positive extremes of the
+first two CVs were created with IDAV Landmark Editor
+version and MorphoJ version 1.07a b57 respectively.
+Moreover, we created heatmaps using Amira 5.2.1 (v6.3,
+Visualization Sciences Group, FEI) to identify the facial
+regions where differences between diagnostic groups
+were mainly located.
+FIGURE 1  Anatomical position of the facial landmarks used
+for geometric morphometric and multivariate statistical analyses.
+For landmark definitions see Table S2. This facial model is a
+morphing which does not belong to a real individual and is based
+on 3D landmark coordinates.
+9
+8
+7
+2
+1
+10
+11
+12
+3
+4
+5
+6
+13
+14
+15
+16
+17
+18
+19
+20
+21
+ 15306860, 2025, 6, Downloaded from https://faseb.onlinelibrary.wiley.com/doi/10.1096/fj.202403009R by Spanish Cochrane National Provision (Ministerio de Sanidad), Wiley Online Library on [25/11/2025]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+6 of 16  |
+ECHEVERRY-­QUICENO et al.
+All GM and multivariate statistical analyses were executed using MorphoJ version 1.07a b57 and Geomorph R-­
+Package version 4.0.5.54
+3  |  RESULTS
+3.1  |  Sex, age, and facial size influence
+facial shape
+Procrustes ANOVA analyses revealed that sex (Z = 4.0879,
+p = .001), age (Z = 7.4097, p = .001), and facial size (Z = 7.1928,
+p = .001) were significant factors influencing facial shape in
+our sample (Table S3). After adjusting for these factors, the
+Procrustes MANOVA test also indicated a significant influence of trisomy on facial shape variation (Z = 6.9455, p = .001)
+(Table S4). Comparative shape analysis based on Procrustes
+distances confirmed significant facial differences between
+EU controls and individuals with DS (p < .0001), whereas the
+CVA showed that trisomic individuals exhibited shorter and
+wider faces, midfacial retrusion with flattened nasal bridges,
+and oblique palpebral fissures (Figure 2A,B), which are the
+facial features typically associated with DS.
+3.2  |  Sex-­dependent effect of trisomy 21
+on facial shape
+To determine whether trisomy 21 differently affected males
+and females, we performed a Procrustes MANOVA adjusting only for age and facial size. The results showed that the
+interaction between genetic diagnosis and sex was statistically significant (Z = 3.7046, p = .002) (Table S5), suggesting
+a sex-­dependent effect of trisomy 21 on facial shape.
+To further explore these sex-­specific effects, we performed independent analyses for males and females.
+Procrustes distances between diagnostic groups confirmed
+significant facial shape differences between individuals
+with DS and EU controls in both males (p < .0001) and
+females (p < .0001). The CVAs showed that individuals diagnosed with DS from both sexes showed the typical DS
+facial features (Figure 2C–F). However, the heatmaps and
+wireframes representing facial shape differences between
+EU controls and DS individuals showed that DS facial
+traits were more pronounced in females (Figure 2E,F).
+3.3  |  Altered facial ontogenetic
+trajectories in females with Down
+syndrome
+After evaluating the effect of sex on facial shape, we compared how facial shape changes over adulthood in EU
+and DS groups. A multivariate linear regression analysis revealed a significant relationship of facial shape
+with age (%Predicted = 7.11%, P ≤ .0001) and showed
+the effects of aging in both groups. Since the slope of
+the regressions was not parallel, the analysis suggested
+differences in the ontogenetic trajectories of EU controls and individuals diagnosed with DS (Figure 3A). A
+Procrustes MANOVA confirmed a significant interaction between genetic diagnosis and age after adjusting
+for sex and facial size (Z = 1.5826, p = .005) (Table S6A),
+demonstrating that facial adult ontogeny is altered in
+DS. Individuals with DS presented a steeper slope of the
+ontogenetic trajectory, showing more pronounced facial
+shape changes during aging in comparison to EU controls (Figure 3A).
+To further explore sex-­specific facial shape changes in
+the ontogenetic trajectories between EU controls and individuals with DS, we repeated the multivariate regressions and Procrustes MANOVA tests separately for males
+and females, adjusting only for facial size. In the male
+sample, the multivariate regression results showed a significant correlation between facial shape and age among
+EU and DS individuals (%Predicted = 8.79%, p ≤ .0001)
+(Figure 3B). However, the Procrustes MANOVA showed
+that the interaction between diagnosis and age was not
+significant (Z = −0.3126, p = .605) (Table S6B, Figure 3B),
+indicating no differences in the ontogenetic trajectories
+between the EU and DS groups in males. On the contrary, in the female sample, we detected both a statistical
+significance in the correlation between facial shape and
+age (%Predicted = 6.98%, p ≤ .0001) (Figure  3C) and in
+the interaction between diagnosis and age (Z = 1.8775,
+p = .033) (Table S6C, Figure 3C). These results indicated
+that the altered ontogenetic trajectory in the DS population (Figure 3A) was only due to female individuals
+(Figure 3C), who showed more pronounced facial aging
+effects.
+3.4  |  Significant correlations of facial
+shape with AD and OSA
+Considering the previous results, we accounted for
+the effect of sex, age, and facial size in the subsequent
+analyses assessing the potential of facial shape as a diagnostic biomarker for AD and OSA in the DS and EU
+populations.
+Regarding AD, we first investigated the association between facial shape variation and molecular biomarkers
+of dementia. A multivariate regression analysis indicated
+that the concentration ratio of Aβ1-­42/Aβ1-­40 in CSF was significantly correlated with facial shape after adjusting for
+sex, age, and facial size when EU controls and individuals
+ 15306860, 2025, 6, Downloaded from https://faseb.onlinelibrary.wiley.com/doi/10.1096/fj.202403009R by Spanish Cochrane National Provision (Ministerio de Sanidad), Wiley Online Library on [25/11/2025]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+      |  7 of 16
+ECHEVERRY-­QUICENO et al.
+with DS were pooled together (%Predicted = 4.4%, p = .001)
+(Table S7, Figure 4). However, when the association was
+evaluated separately for each group, the multivariate
+regressions did not show significant correlations either for
+EU controls (%Predicted = 1.8%, p = .369) or for individuals with DS (%Predicted = 2.1%, p = .689).
+FIGURE 2  Results of the canonical variate analyses (CVA) between EU controls and individuals with DS. Analyses were performed
+for three groups: Males and females (A, B), only males (C, D), and only females (E, F). Panels A, C, and E display Canonical Variate1
+(CV1), accounting for 100% of facial shape variation. Panels B, D, and F show facial morphings and wireframes associated with the negative
+extreme of CV1 (representing frontal and lateral views of EU individuals in blue), and the positive extreme of CV1 (representing individuals
+diagnosed with DS in red). Facial morphings are magnified by a factor of 2. CVA results are accompanied by heatmaps illustrating facial
+shape differences between the morphings at the positive and negative extremes of CV1. Red areas indicate anatomical regions with largest
+facial shape differences between EU controls and individuals with DS, whereas blue areas indicate smallest facial shape differences.
+*Statistically significant difference between groups (p < .0001). The faces in the figure are morphings which do not belong to a real individual
+and are based on 3D landmark coordinates.
+ 15306860, 2025, 6, Downloaded from https://faseb.onlinelibrary.wiley.com/doi/10.1096/fj.202403009R by Spanish Cochrane National Provision (Ministerio de Sanidad), Wiley Online Library on [25/11/2025]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+8 of 16  |
+ECHEVERRY-­QUICENO et al.
+Second, we explored the facial morphological variation associated with the diagnosis of AD in each group,
+and separately for males and females. In the DS population, facial shape differences between individuals with
+and without an AD diagnosis were significant before adjusting for age, sex, and facial size (Z = 2.3385, p = .008).
+However, once adjusted for those variables, statistical
+significance was not achieved (Z = −0.30077, p = .611)
+(Figure 5A). Moreover, when we performed the analyses
+separately for each sex, we did not detect any significant
+facial shape differences between individuals with and
+without AD in males (Z = 0.21119, p = .411) (Figure 5C),
+nor in females (Z = 0.072242, p = .468) (Figure 5E).
+In the EU population, significant shape differences
+were detected between individuals with and without
+an AD diagnosis before (Z = 4.4324, p = .001) and after
+(Z = 3.5777, p = .001) (Figure 6A) adjusting for age, sex,
+and facial size. We found that the main facial morphological differences between EU controls with and without AD were independent of age, with facial changes
+located in the facial midline, specifically on the forehead and chin (Figure  6A,B). Moreover, we identified
+significant facial differences between individuals with
+and without AD dementia in both males (Z = 2.2095,
+p = .015) (Figure 6C) and females (Z = 2.4276, p = .009)
+(Figure 6E). In males, the main facial differences were
+detected in the facial midline (Figure 6D), whereas in
+females, the differences were localized on the forehead
+and the facial width (Figure 6F).
+Regarding OSA, we explored the association between facial shape variation and a clinical score of sleep
+apnea in a subsample of individuals. The multivariate
+regression of facial shape variation on AHI after adjusting for age, sex, and facial size demonstrated a significant correlation when the EU and DS populations were
+pooled together (%Predicted = 3.4%, Z = 1.8139, p = .039)
+(Figure  7). When the association was tested separately
+for each group, the multivariate regressions indicated no
+significant correlation for EU controls (%Predicted = 2.1%,
+p = .902), but a significant correlation for individuals with
+DS (%Predicted = 2.9%, p = .009). A Procrustes ANOVA
+confirmed that AHI accounted for a small but significant percentage of facial shape variation in the DS group
+(Z = 2.1487, p = .017) (Table S8).
+Finally, when we assessed whether there were significant facial shape differences between individuals diagnosed with DS and different levels of OSA severity, the
+Procrustes distances between groups revealed that individuals with DS and severe OSA presented a significantly
+different facial morphology than individuals with DS and
+no OSA (p = .005). The CVA showed that, in comparison
+to individuals with no signs of OSA, individuals with DS
+and severe OSA were characterized by narrower faces and
+FIGURE 3  Ontogenetic trajectories of EU and DS populations assessed by multivariate regression of facial shape on age. (A) Male +
+Female, (B) Male and (C) Female groups.
+FIGURE 4  Multivariate regression of facial shape on
+concentration ratio Aβ1-­42/Aβ1-­40, an AD diagnostic biomarker.
+ 15306860, 2025, 6, Downloaded from https://faseb.onlinelibrary.wiley.com/doi/10.1096/fj.202403009R by Spanish Cochrane National Provision (Ministerio de Sanidad), Wiley Online Library on [25/11/2025]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+      |  9 of 16
+ECHEVERRY-­QUICENO et al.
+subtle mandibular retraction (Figure  8A,B). Individuals
+with mild OSA fell between the individuals with no signs
+of OSA and individuals with severe OSA, showing a continuum spectrum of facial shape variation associated with
+OSA and suggesting a relationship between facial morphology and OSA worsening.
+4  |  DISCUSSION
+Our study is the first to perform a comprehensive and quantitative 3D analysis of facial shape variation in Down syndrome (DS) and euploid control (EU) populations to assess
+the diagnostic potential of facial biomarkers for Alzheimer's
+FIGURE 5  Results of the canonical variate analyses (CVA) between DS individuals with and without AD dementia. Panels A, C, and E
+display Canonical Variate1 (CV1), accounting for 100% of facial shape variation. Panels B, D, and F show facial morphings and wireframes
+associated with the negative extreme of CV1 (representing frontal and lateral views of DS individuals with AD dementia in dark pink),
+and the positive extreme of CV1 (representing DS individuals without AD dementia in light pink). Red areas of the heatmaps indicate
+anatomical regions with largest facial shape differences between DS individuals with and without AD dementia, whereas blue areas indicate
+smallest facial shape differences. For more details see legend in Figure 2.
+ 15306860, 2025, 6, Downloaded from https://faseb.onlinelibrary.wiley.com/doi/10.1096/fj.202403009R by Spanish Cochrane National Provision (Ministerio de Sanidad), Wiley Online Library on [25/11/2025]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+10 of 16  |
+ECHEVERRY-­QUICENO et al.
+disease (AD) and obstructive sleep apnea (OSA). Our results demonstrated that age, sex, and facial size are significant factors in facial shape variation, and that these factors
+should be accounted for to optimize the diagnostic potential
+and accuracy of facial biomarkers. Furthermore, we demonstrated that facial shape showed diagnostic and sex-­specific
+patterns. First, we identified more severe facial traits in females with DS. Second, we detected significant facial patterns associated with AD in EU and OSA in DS populations.
+Overall, our results support the use of facial shape as an indirect biomarker for neurodegenerative and respiratory disorders in future studies and clinical applications.
+FIGURE 6  Results of the canonical variate analyses (CVA) between EU controls with and without AD dementia. Panels A, C, and E
+display Canonical Variate1 (CV1), accounting for 100% of facial shape variation. Panels B, D, and F show facial morphings and wireframes
+associated with the negative extreme of CV1 (representing frontal and lateral views of EU controls without AD dementia in dark blue),
+and the positive extreme of CV1 (representing EU controls with AD dementia in light blue). Red areas of the heatmaps indicate anatomical
+regions with largest facial shape differences between EU controls with and without AD dementia, whereas blue areas indicate smallest facial
+shape differences. For more details see legend in Figure 2.
+ 15306860, 2025, 6, Downloaded from https://faseb.onlinelibrary.wiley.com/doi/10.1096/fj.202403009R by Spanish Cochrane National Provision (Ministerio de Sanidad), Wiley Online Library on [25/11/2025]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+      |  11 of 16
+ECHEVERRY-­QUICENO et al.
+Our findings showed that after adjusting for the significant effect of age, sex, and facial size, individuals
+diagnosed with DS displayed a significantly different facial morphology as compared with EU controls. The facial traits associated with DS in our study coincided with
+the typical DS facial features described in previous studies,10,11,58 including shorter and wider faces, midfacial
+retrusion, flattened nasal bridges, and oblique palpebral
+fissures. However, our study provided original evidence
+that trisomy 21 differentially affects the facial morphology
+of males and females diagnosed with DS, with females
+showing more pronounced facial shape differences. Other
+studies have reported sex-­related differences in individuals with DS, such as an earlier decline in bone mineral
+density (BMD) in males59,60 and a slower rate of BMD
+acquisition in females.61 Additionally, females with DS
+tend to have higher fat levels and lower lean mass, which
+carry significant health implications.62 Given that facial
+anatomy is composed of both bone and soft tissue (fat and
+lean mass), these previous findings59–62 suggest that the
+reduced BMD and lean mass in females could contribute
+to the more pronounced DS-­associated facial features observed in this population.
+Our results also evidenced facial shape changes over
+adult ontogeny in both the EU and DS populations. These
+findings are consistent with previous studies indicating that age had a significant effect on facial shape in the
+general63 and the DS populations.64,65 Specifically, these
+studies showed that individuals with DS exhibit specific
+facial patterns that appear early in life but can vary in adolescence or adulthood, becoming either subtler or more
+pronounced.64,65 Our results showed that adults with DS
+retained the characteristic facial features associated with
+trisomy 21, but only females showed a significant deviation of facial adult ontogeny compared with EU controls,
+displaying more pronounced facial aging effects. Our results thus support previous research showing that even
+though there is an early genetic contribution establishing
+the typical facial morphology of diverse syndromes, postnatal ontogeny plays a key role in facial morphological variation throughout life.40 Moreover, this result aligns with our
+previous findings, which indicate a more severe phenotype
+in females with DS, particularly in early adulthood. We
+detected significant differences in the slopes of the ontogenetic trajectories in females, showing more severe DS phenotypes during adolescence that vary with aging.
+Regarding the association between facial morphology and
+AD, our study demonstrated that when EU controls and individuals with DS were pooled together, facial shape significantly correlated with Aβ1-­42 concentration in CSF, which
+has been proposed as an accurate diagnostic biomarker for
+AD.19 However, this association was not observed when EU
+controls and individuals with DS were analyzed separately,
+possibly due to the limited sample size. Furthermore, we detected significant facial shape differences between individuals with and without AD in the EU population that were
+sex-­specific and independent of age. These results highlight
+the need for sex-­differential approaches for AD detection
+using facial biomarkers, and suggest that facial morphology could be used as a noninvasive and complementary
+biomarker for detecting AD. This supports the findings in
+Umeda-­Kameyama et al.31 and Zheng et al.,32 who demonstrated that 2D31 and 3D32 facial morphology accurately assist in the noninvasive detection of AD dementia.
+However, the significant facial shape differences between individuals with and without AD that were detected
+in the DS population were not consistent after adjusting
+for age, sex, and facial size. With the available data, we
+cannot determine whether this result is due to experimental bias from limited sample sizes in the DS population or
+due to biological mechanisms associated with DS and AD.
+It is likely that the facial dysmorphologies caused by trisomy 21 are so pronounced that they may mask the facial
+shape changes associated with AD. Further studies are
+needed to confirm this hypothesis.
+Concerning the association between facial shape and
+OSA, our study indicated a significant correlation between facial morphology and AHI, the most commonly
+used biomarker for diagnosing OSA.7 Furthermore,
+when analyzing the facial morphological variation associated with OSA, our results demonstrated that individuals diagnosed with DS and severe OSA displayed
+a significantly different facial shape compared with
+individuals with DS and no signs of OSA. The facial
+morphology of individuals with DS affected by severe
+OSA was characterized by narrower faces and a slight
+mandibular retraction, which can lead to restricted
+upper airways and a minor backward displacement of
+FIGURE 7  Multivariate regression of facial shape on AHI, and
+OSA diagnostic biomarker.
+EU
+DS
+AHI
+Facial Shape
+ 15306860, 2025, 6, Downloaded from https://faseb.onlinelibrary.wiley.com/doi/10.1096/fj.202403009R by Spanish Cochrane National Provision (Ministerio de Sanidad), Wiley Online Library on [25/11/2025]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+12 of 16  |
+ECHEVERRY-­QUICENO et al.
+the oropharynx that may explain the higher prevalence
+of OSA in the DS population. In contrast to previous
+studies that found no statistically significant differences associated with OSA using 3D photogrammetric
+measurement66 or detected only 2D local significant
+facial differences in the EU population or using linear
+measurements based on cephalometric parameters,33–36
+our study showed significant differences in the DS population. Therefore, our results demonstrate that 3D facial anatomy is a potential noninvasive biomarker for
+detecting OSA and for preventing further cognitive impairment in the DS population.
+4.1  |  Future directions and conclusions
+Understanding the bidirectional link between AD and
+OSA is crucial for the DS population. Several studies
+have demonstrated that sleep disturbances, including
+OSA, can increase the risk of an earlier AD onset,67,68
+likely due to poor sleep quality, which impairs neuronal
+repair and reduces the clearance of proteins such as
+Aβ14,15 and tau,16,17 leading to increased deposition rates.
+Moreover, other studies have shown that sleep-­related
+problems generally increase as AD progresses.18,67,69
+Currently, there is no effective cure or treatment for AD
+that can mitigate the progress of this neurodegenerative
+disorder. Moreover, people with DS are at an ultrahigh
+risk for suffering from AD due to different genetic and
+morphological factors, and will invariably develop AD
+in adulthood.70–72 However, sleep-­related disturbances,
+such as OSA, display modifiable risk factors that can
+be treated, minimizing derived neurodegenerative comorbidities such as AD and thereby improving life
+quality.7,73
+Our results encourage further research using larger
+samples to determine whether a significant association
+between facial shape and AD biomarkers, such as Aβ1-­
+42 concentration, can be detected when EU controls and
+individuals with DS are analyzed separately. Moreover,
+FIGURE 8  Results of the CVA assessing facial differences between individuals with DS and different OSA levels. Panel A displays
+CVA results with heatmaps illustrating facial shape differences between individuals with DS at the positive extreme (severe OSA) and
+negative extreme (no OSA) of CV1. Red areas indicate anatomical regions with the largest facial shape differences, while blue areas indicate
+the smallest. Panel B presents facial morphings and wireframes representing individuals with DS at different OSA levels along CV1.
+*Statistically significant difference between groups (p < .0001). The faces in the figure are morphings which do not belong to a real individual
+and are based on 3D landmark coordinates.
+ 15306860, 2025, 6, Downloaded from https://faseb.onlinelibrary.wiley.com/doi/10.1096/fj.202403009R by Spanish Cochrane National Provision (Ministerio de Sanidad), Wiley Online Library on [25/11/2025]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+      |  13 of 16
+ECHEVERRY-­QUICENO et al.
+a larger sample of individuals with DS is required to
+assess whether facial shape differences can be identified between those with and without AD dementia.
+Regarding OSA, larger samples could enable the evaluation of facial shape differences by sex and to determine
+if significant morphological differences can be detected
+in individuals with mild OSA. Moreover, additional data
+of EU controls with OSA are needed to extend our facial morphological analyses to populations with sleep-­
+related disorders but no genetic condition.
+Our study concludes that 3D facial morphology
+can serve as a noninvasive diagnostic biomarker for
+Alzheimer's disease and obstructive sleep apnea. With
+adequate adjustments for sex, age, and size, and further
+research, facial biomarkers could be used in the future
+for early detection and improved clinical management
+of these disorders in Down syndrome and the general
+populations.
+AUTHOR CONTRIBUTIONS
+LME-­Q, YH, XS, JF, and NM-­A conceived the project.
+SG and JF recruited participants, performed MR scanning, cognitive evaluations, polysomnography tests, and
+diagnosed cases with AD and OSA within the DS cohort.
+MR-­A provided us with the magnetic resonance images
+and the clinical data associated. AH-­L, XS, and LME-­Q
+developed and validated the automatic landmarking
+method. LME-­Q, SL, PI, YH, and NM-­A analyzed data and
+interpreted results. LME-­Q, SL, and NM-­A prepared the
+manuscript and figures. All authors critically reviewed the
+manuscript.
+ACKNOWLEDGMENTS
+The authors would like to thank all study participants,
+their families, and caregivers from the DABNI and SPIN
+cohort for their support of, and dedication to, this research. We also would like to acknowledge the Fundació
+Catalana Síndrome de Down (https://​fcsd.​org/​) for
+global support. We also acknowledge the Alzheimer's
+Disease Neuroimaging Initiative (ADNI) for the data
+shared. Data collection and sharing for this project
+was funded by the Alzheimer's Disease Neuroimaging
+Initiative (ADNI) (National Institutes of Health Grant
+U01 AG024904) and DOD ADNI (Department of
+Defense award number W81XWH-­12-­2-­0012). ADNI is
+funded by the National Institute on Aging, the National
+Institute of Biomedical Imaging and Bioengineering,
+and through generous contributions from the following:
+AbbVie, Alzheimer's Association; Alzheimer's Drug
+Discovery Foundation; Araclon Biotech; BioClinica,
+Inc.; Biogen; Bristol-­Myers Squibb Company; CereSpir,
+Inc.; Cogstate; Eisai Inc.; Elan Pharmaceuticals, Inc.;
+Eli Lilly and Company; EuroImmun; F. Hoffmann-­La
+Roche Ltd. and its affiliated company Genentech,
+Inc.; Fujirebio; GE Healthcare; IXICO Ltd.; Janssen
+Alzheimer Immunotherapy Research & Development,
+LLC; Johnson & Johnson Pharmaceutical Research &
+Development LLC; Lumosity; Lundbeck; Merck & Co.,
+Inc.; Meso Scale Diagnostics, LLC; NeuroRx Research;
+Neurotrack Technologies; Novartis Pharmaceuticals
+Corporation; Pfizer Inc.; Piramal Imaging; Servier;
+Takeda Pharmaceutical Company; and Transition
+Therapeutics. The Canadian Institutes of Health
+Research is providing funds to support ADNI clinical
+sites in Canada. Private sector contributions are facilitated by the Foundation for the National Institutes
+of Health (www.​fnih.​org). The grantee organization is the Northern California Institute for Research
+and Education, and the study is coordinated by the
+Alzheimer's Therapeutic Research Institute at the
+University of Southern California. ADNI data are disseminated by the Laboratory for Neuro Imaging at the
+University of Southern California.
+FUNDING INFORMATION
+The research in this article was supported by the
+Fondation Jérôme Lejeune with grant 2020b cycle-­Project
+No. 2001 and a postdoctoral fellowship to SL (No. 55,
+2023 edition), as well as Beca predoctoral Fundación
+Álvaro Entrecanales-­Lejeune to LME-­Q and Joan Oró
+grant (2024 FI-­300160) from the Recerca i Universitats
+Departament (DRU) of the Generalitat de Catalunya and
+the European Social Fund to AH-­L. This study was funded
+by the Fondo de Investigaciones Sanitario, Instituto de
+Salud Carlos III and co-­funded by the European Union
+(PI14/01126 and PI17/01019 to JF, and PI20/00836
+to SG). This work was also supported by the National
+Institutes of Health (NIH grants 1R01AG056850-­01A1;
+R21AG056974; R01AG061566 and 1RF1AG080769-­01)
+and Jérôme Lejeune Foundation (JLF1801) to JF, and
+from the Alzheimer's Association and Global Brain Health
+Institute (GBHI ALZ UK-­23-­971 107) to SG. The authors
+would also like to thank the support from the Agència
+de Gestió d'Ajuts Universitaris i de Recerca (AGAUR)
+of the Generalitat de Catalunya (2021 SGR00706 and
+2021 SGR01396), the Agencia Española de Investigación
+(PID2020-­113609RB-­C21/AEI/10.13039/501100011033),
+and the International Collaboration and Exchange
+Program (ICEP).
+DISCLOSURES
+Mateus
+Rozalem-­Aranha
+Funding:
+Alzheimer's
+Association Research Fellowship to promote Diversity
+(AARFD-­21-­852 492). Mateus Rozalem-­Aranha COI:
+Payed consultancy to VERANEX. Board participation in
+Masima – Soluções em Imagens Médicas LTDA.
+ 15306860, 2025, 6, Downloaded from https://faseb.onlinelibrary.wiley.com/doi/10.1096/fj.202403009R by Spanish Cochrane National Provision (Ministerio de Sanidad), Wiley Online Library on [25/11/2025]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+14 of 16  |
+ECHEVERRY-­QUICENO et al.
+DATA AVAILABILITY STATEMENT
+Raw image data cannot be made available due to restrictions imposed by the ethics approval. Landmark data supporting the findings of this study are available from the
+corresponding authors upon reasonable request.
+ETHICS APPROVAL AND CONSENT TO
+PARTICIPATE
+All participants or their legally authorized representatives coming from Hospital de la Santa Creu i Sant Pau
+signed an informed consent before enrollment with
+the protocols approved by the local ethics committee of Hospital de la Santa Creu i Sant Pau following
+the standards for medical research in humans recommended by the Declaration of Helsinki. To use the
+ADNI database, we followed an application protocol
+that, after evaluation, provided us access to the clinical and imaging data of ADNI participants, who signed
+consent forms approved by the Resource Allocation
+Review Committee (RARC).
+CONSENT FOR PUBLICATION
+Alzheimer's Disease Neuroimaging Initiative (ADNI) provided us the consent for publication after following all the
+data request processes and reviewing the manuscript.
+ORCID
+L. M. Echeverry-­Quiceno
+ https://orcid.
+org/0000-0002-9799-0252
+S. Llambrich
+ https://orcid.org/0000-0001-9980-0208
+Á. Heredia-­Lidón
+ https://orcid.
+org/0000-0001-6325-8744
+S. Giménez
+ https://orcid.org/0000-0001-8031-2319
+M. Rozalem-­Aranha
+ https://orcid.
+org/0000-0001-9594-292X
+P. Inampudi
+ https://orcid.org/0009-0003-0206-1317
+Y. Heuzé
+ https://orcid.org/0000-0002-0660-9613
+X. Sevillano
+ https://orcid.org/0000-0002-6209-3033
+J. Fortea
+ https://orcid.org/0000-0002-1340-638X
+N. Martínez-­Abadías
+ https://orcid.
+org/0000-0003-3061-2123
+REFERENCES
+ 1. Bittles AH, Glasson EJ. Clinical, social, and ethical implications of changing life expectancy in Down syndrome. Dev
+Med Child Neurol. 2004;46(4):282-286. doi:10.1017/s00121​62​
+2​04000441
+ 2. Roper RJ, Reeves RH. Understanding the basis for Down syndrome phenotypes. PLoS Genet. 2006;2(3):e50. doi:10.1371/
+journal.pgen.0020050
+ 3. Glasson EJ, Sullivan SG, Hussain R, et al. The changing survival profile of people with Down's syndrome: implications
+for genetic counselling. Clin Genet. 2002;62(5):390-393.
+doi:10.1034/j.1399-­0004.2002.620506.x
+ 4. Guralnick MJ. Why early intervention works: a systems perspective. Infants Young Child. 2011;24(1):6-28. doi:10.1097/
+IYC.0b013e3182002cfe
+ 5. Glasson EJ, Dye DE, Bittles AH. The triple challenges associated with age-­related comorbidities in Down syndrome. J
+Intellect Disabil Res. 2014;58(4):393-398. doi:10.1111/jir.12026
+ 6. Real de Asua D, Quero M, Moldenhauer F, Suarez C. Clinical
+profile and main comorbidities of Spanish adults with Down
+syndrome. Eur J Intern Med. 2015;26(6):385-391. doi:10.1016/j.
+ejim.2015.05.003
+ 7. Giménez S, Videla L, Romero S, et al. Prevalence of sleep disorders in adults with Down syndrome: a comparative study of
+self-­reported, actigraphic, and polysomnographic findings. J
+Clin Sleep Med. 2018;14(10):1725-1733. doi:10.5664/jcsm.7382
+ 8. Wiseman FK, Pulford LJ, Barkus C, et al. Trisomy of human
+chromosome 21 enhances amyloid-­β deposition independently
+of an extra copy of APP. Brain. 2019;142(6):e25. doi:10.1093/
+brain/awz061
+ 9. Trois MS, Capone GT, Lutz JA, et al. Obstructive sleep apnea in
+adults with Down syndrome. J Clin Sleep Med. 2009;5(4):317-
+323. doi:10.5664/jcsm.27541
+ 10. Starbuck JM, Cole TM 3rd, Reeves RH, Richtsmeier JT. Trisomy
+21 and facial developmental instability. Am J Phys Anthropol.
+2013;151(1):49-57. doi:10.1002/ajpa.22255
+ 11. Starbuck JM, Llambrich S, Gonzàlez R, et al. Green tea extracts
+containing epigallocatechin-­3-­gallate modulate facial development in Down syndrome. Sci Rep. 2021;11(1):4715. doi:10.1038/
+s41598-­021-­83757-­1
+ 12. Hurvitz MS, Lesser DJ, Dever G, et  al. Findings of routine
+nocturnal polysomnography in children with Down syndrome: a retrospective cohort study. Sleep Med. 2020;76:58-64.
+doi:10.1016/j.sleep.2020.10.003
+ 13. Gao F, Wei S, Dang L, et al. Sleep disturbance is associated with
+mild cognitive impairment: a community population-­based
+cross-­sectional study. BMC Public Health. 2022;22(1):2000.
+doi:10.1186/s12889-­022-­14391-­3
+ 14. Yun CH, Lee HY, Lee SK, et al. Amyloid burden in obstructive
+sleep apnea. J Alzheimers Dis. 2017;59(1):21-29. doi:10.3233/
+JAD-­161047
+ 15. Sharma RA, Varga AW, Bubu OM, et al. Obstructive sleep apnea
+severity affects amyloid burden in cognitively normal elderly. a
+longitudinal study. Am J Respir Crit Care Med. 2018;197(7):933-
+943. doi:10.1164/rccm.201704-­0704OC
+ 16. Carvalho DZ, St Louis EK, Schwarz CG, et al. Witnessed apneas are associated with elevated tau-­PET levels in cognitively
+unimpaired
+elderly.
+Neurology.
+2020;94(17):e1793-e1802.
+doi:10.1212/WNL.0000000000009315
+ 17. Bubu OM, Pirraglia E, Andrade AG, et  al. Obstructive sleep
+apnea and longitudinal Alzheimer's disease biomarker changes.
+Sleep. 2019;42(6):zsz048. doi:10.1093/sleep/zsz048
+ 18. Emamian F, Khazaie H, Tahmasian M, et al. The association
+between obstructive sleep apnea and Alzheimer's disease: a
+meta-­analysis perspective. Front Aging Neurosci. 2016;8:78.
+doi:10.3389/fnagi.2016.00078
+ 19. Fortea J, Carmona-­Iragui M, Benejam B, et al. Plasma and CSF
+biomarkers for the diagnosis of Alzheimer's disease in adults
+with Down syndrome: a cross-­sectional study. Lancet Neurol.
+2018;17(10):860-869. doi:10.1016/S1474-­4422(18)30285-­0
+ 20. Fortea J, Zaman SH, Hartley S, et  al. Alzheimer's disease associated with Down syndrome: a genetic form of
+ 15306860, 2025, 6, Downloaded from https://faseb.onlinelibrary.wiley.com/doi/10.1096/fj.202403009R by Spanish Cochrane National Provision (Ministerio de Sanidad), Wiley Online Library on [25/11/2025]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+      |  15 of 16
+ECHEVERRY-­QUICENO et al.
+dementia. Lancet Neurol. 2021;20(11):930-942. doi:10.1016/
+S1474-­4422(21)00245-­3
+ 21. Sutherland K, Almeida FR, de Chazal P, Cistulli PA. Prediction
+in obstructive sleep apnoea: diagnosis, comorbidity risk, and
+treatment outcomes. Expert Rev Respir Med. 2018;12(4):293-
+307. doi:10.1080/17476348.2018.1439743
+ 22. Echeverry-­Quiceno LM, Candelo E, Gómez E, et al. Population-­
+specific facial traits and diagnosis accuracy of genetic and
+rare diseases in an admixed Colombian population. Sci Rep.
+2023;13:6869. doi:10.1038/s41598-­023-­33374-­x
+ 23. Hallgrímsson B, Aponte JD, Katz DC, et  al. Automated syndrome diagnosis by three-­dimensional facial imaging. Genet
+Med. 2020;22(10):1682-1693. doi:10.1038/s41436-­020-­0845-­y
+ 24. Gurovich Y, Hanani Y, Bar O, et  al. Identifying facial phenotypes of genetic disorders using deep learning. Nat Med.
+2019;25(1):60-64. doi:10.1038/s41591-­018-­0279-­0
+ 25. Hsieh TC, Bar-­Haim A, Moosa S, et al. GestaltMatcher facilitates rare disease matching using facial phenotype descriptors.
+Nat Genet. 2022;54(3):349-357. doi:10.1038/s41588-­021-­01010-­x
+ 26. Bannister JJ, Crites SR, Aponte JD, et al. Fully automatic landmarking of syndromic 3D facial surface scans using 2D images.
+Sensors. 2020;20(11):3171. doi:10.3390/s20113171
+ 27. Hammond P, Suttie M. Large-­scale objective phenotyping
+of 3D facial morphology. Hum Mutat. 2012;33(5):817-825.
+doi:10.1002/humu.22054
+ 28. Hostalet N, González A, Salgado-­Pineda P, et  al. Face-­brain
+correlates as potential sex-­specific biomarkers for schizophrenia and bipolar disorder. Psychiatry Res. 2024;339:116027.
+doi:10.1016/j.psychres.2024.116027
+ 29. Halewyck S, Louryan S, Van Der Veken P, et al. Craniofacial
+embryology and postnatal development of relevant parts of the
+upper respiratory system. B-­ENT. 2012;8(Suppl 19):5-11.
+ 30. Marcucio R, Hallgrimsson B, Young NM. Facial morphogenesis: physical and molecular interactions between the brain
+and the face. Curr Top Dev Biol. 2015;115:299-320. doi:10.1016/
+bs.ctdb.2015.09.001
+ 31. Umeda-­Kameyama Y, Kameyama M, Tanaka T, et al. Screening
+of Alzheimer's disease by facial complexion using artificial intelligence. Aging (Albany NY). 2021;13(2):1765-1772.
+doi:10.18632/aging.202545
+ 32. Zheng C, Bouazizi M, Ohtsuki T, et  al. Detecting dementia
+from face-­related features with automated computational
+methods. Bioengineering (Basel). 2023;10(7):862. doi:10.3390/
+bioengineering10070862
+ 33. Lee RW, Chan AS, Grunstein RR, et al. Craniofacial phenotyping
+in obstructive sleep apnea—a novel quantitative photographic
+approach. Sleep. 2009;32(1):37-45. doi:10.5665/sleep/32.1.37
+ 34. Park JS, Kwon B, Kang HS, et  al. Craniofacial phenotype in
+obstructive sleep apnea and its impact on positive airway pressure (PAP) adherence. J Pers Med. 2023;13(8):1196. doi:10.3390/
+jpm13081196
+ 35. Tepedino M, Illuzzi G, Laurenziello M, et al. Craniofacial morphology in patients with obstructive sleep apnea: cephalometric evaluation. Braz J Otorhinolaryngol. 2022;88(2):228-234.
+doi:10.1016/j.bjorl.2020.05.026
+ 36. Huang L, Xu Y, Gong X, Gao X. Anatomical phenotype of obstructive sleep apnea patients based on cluster analysis. Orthod
+Craniofac Res. 2023;26(4):608-617. doi:10.1111/ocr.12653
+ 37. Ozdemir ST, Ercan I, Can FE, et al. Three-­dimensional analysis of craniofacial shape in obstructive sleep apnea syndrome
+using geometric morphometrics. Int J Morphol. 2019;37(1):338-
+343. doi:10.4067/S0717-­95022019000100338
+ 38. Enlow DH, Hans MG. Essentials of facial growth. Am J Orth
+Dent Orth. 1996;110:568.
+ 39. Bulygina E, Mitteroecker P, Aiello L. Ontogeny of facial dimorphism and patterns of individual development within one
+human population. Am J Phys Anthropol. 2006;131(3):432-443.
+doi:10.1002/ajpa.20317
+ 40. Farrera A, Villanueva M, Vizcaíno A, et  al. Ontogeny of the
+facial phenotypic variability in Mexican patients with 22q11.2
+deletion syndrome. Head Face Med. 2019;15(1):29. doi:10.1186/
+s13005-­019-­0213-­9
+ 41. Bookstein FL. Morphometric Tools for Landmark Data. Cambridge
+University Press; 1992. doi:10.1017/CBO9780511573064
+ 42. Dryden I, Mardia K. Statistical Shape Analysis, with Applications
+in R: Second Edition. Wiley; 2016. doi:10.1002/9781119072492
+ 43. Mitteroecker P, Schaefer K. Thirty years of geometric morphometrics: achievements, challenges, and the ongoing quest for biological meaningfulness. Am J Biol Anthropol. 2022;178(Suppl
+74):181-210. doi:10.1002/ajpa.24531
+ 44. Esteba-­Castillo S, Dalmau-­Bueno A, Ribas-­Vidal N, et  al.
+Adaptacion y validacion del Cambridge Examination for
+Mental Disorders of Older People with Down's Syndrome
+and Others with Intellectual Disabilities (CAMDEX-­DS) en
+poblacion española con discapacidad intelectual [Adaptation
+and validation of CAMDEX-­DS (Cambridge Examination for
+Mental Disorders of Older People with Down's Syndrome and
+others with intellectual disabilities) in Spanish population
+with intellectual disabilities]. Rev Neurol. 2013;57(8):337-346.
+doi:10.33588/rn.5708.2013259
+ 45. Montine TJ, Phelps CH, Beach TG, et  al. National Institute
+on Aging -­ Alzheimer's Association guidelines for the neuropathologic assessment of Alzheimer's disease: a practical
+approach. Acta Neuropathol. 2012;123(1):1-11. doi:10.1007/
+s00401-­011-­0910-­3
+ 46. Heredia-­Lidón A, Echeverry-­Quiceno LM, González A, et al.
+BioFace3D: a fully automatic pipeline for facial biomarkers extraction of 3D face reconstructions segmented from MRI. arXiv
+2410.00711 2024. doi:10.48550/arXiv.2410.00711
+ 47. Heredia-­Lidón A, García-­Mascarell C, Echeverry-­Quiceno
+LM, et al. A critical comparison between template-­based and
+architecture-­reused deep learning methods for generic 3D
+landmarking of anatomical structures. ShapeMI MICCAI
+Workshop on Shape in Medical Imaging 2024.
+ 48. Paulsen R, Sørensen K, Haspang T, et al. Multi-­view consensus
+CNN for 3D facial landmark placement. Asian Conference on
+Computer Vision. Vol 11361. Springer International Publishing;
+2019:706-719. doi:10.1007/978-­3-­030-­20887-­5_44
+ 49. Stull KE, Tise ML, Ali Z, Fowler DR. Accuracy and reliability
+of measurements obtained from computed tomography 3D
+volume rendered images. Forensic Sci Int. 2014;238:133-140.
+doi:10.1016/j.forsciint.2014.03.005
+ 50. Mitteroecker P, Gunz P. Advances in geometric morphometrics.
+Evo Bio. 2009;36:235-247. doi:10.1007/s11692-­009-­9055-­x
+ 51. Rohlf FJ, Slice D. Extensions of the Procrustes method for the
+optimal superimposition of landmarks. Syst Biol. 1990;39(1):40-
+59. doi:10.2307/2992207
+ 52. Goodall C. Procrustes methods in the statistical analysis
+of shape. J Roy Stat Soc. 1991;53(2):285-321. doi:10.1111/
+j.2517-­6161.1991.tb01825.x
+ 15306860, 2025, 6, Downloaded from https://faseb.onlinelibrary.wiley.com/doi/10.1096/fj.202403009R by Spanish Cochrane National Provision (Ministerio de Sanidad), Wiley Online Library on [25/11/2025]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+16 of 16  |
+ECHEVERRY-­QUICENO et al.
+ 53. Larson JR, Manyama MF, Cole JB, et al. Body size and allometric variation in facial shape in children. Am J Phys Anthropol.
+2018;165(2):327-342. doi:10.1002/ajpa.23356
+ 54. Adams DC, Otárola-­Castillo E. Geomorph: an R package for the collection and analysis of geometric morphometric shape data. Methods Ecol Evol. 2013;4(4):393-399.
+doi:10.1111/2041-­210X.12035
+ 55. Campbell NA, Atchley WR. The Geometry of Canonical Variate
+Analysis. Syst Zool. 1981;30(3):268-280. doi:10.2307/2413249
+ 56. Klingenberg CP, Monteiro LR. Distances and directions in multidimensional shape spaces: implications for morphometric applications. Syst Biol. 2005;54(4):678-688. doi:10.1080/​10635​150​
+590947258
+ 57. Klingenberg CP. MorphoJ: an integrated software package for
+geometric morphometrics. Mol Ecol Resour. 2011;11(2):353-
+357. doi:10.1111/j.1755-­0998.2010.02924.x
+ 58. Korayem M, Nuha MA, Waleed B, et al. Craniofacial manifestations of Down syndrome: a review of literature. Ac J Sci Res.
+2019;7(3):176-181. doi:10.15413/ajsr.2018.0502
+ 59. LaCombe JM, Roper RJ. Skeletal dynamics of Down syndrome:
+a developing perspective. Bone. 2020;133:115215. doi:10.1016/j.
+bone.2019.115215
+ 60. Thomas JR, Roper RJ. Current analysis of skeletal phenotypes
+in Down syndrome. Curr Osteoporos Rep. 2021;19(3):338-346.
+doi:10.1007/s11914-­021-­00674-­y
+ 61. González-­Agüero A, Vicente-­Rodríguez G, Moreno LA, Casajús
+JA. Bone mass in male and female children and adolescents
+with Down syndrome. Osteoporos Int. 2011;22(7):2151-2157.
+doi:10.1007/s00198-­010-­1443-­7
+ 62. González-­Agüero A, Ara I, Moreno LA, Vicente-­Rodríguez G,
+Casajús JA. Fat and lean masses in youths with Down syndrome: gender differences. Res Dev Disabil. 2011;32(5):1685-
+1693. doi:10.1016/j.ridd.2011.02.023
+ 63. Vioarsdóttir US, O'Higgins P, Stringer C. A geometric morphometric study of regional differences in the ontogeny of the
+modern human facial skeleton. J Anat. 2002;201(3):211-229.
+doi:10.1046/j.1469-­7580.2002.00092.x
+ 64. Allanson JE, O'Hara P, Farkas LG, Nair RC. Anthropometric
+craniofacial pattern profiles in Down syndrome. Am J Med
+Genet. 1993;47(5):748-752. doi:10.1002/ajmg.1320470530
+ 65. Farkas LG, Katic MJ, Forrest CR. Surface anatomy of the face
+in Down's syndrome: age-­related changes of anthropometric
+proportion indices in the craniofacial regions. J Craniofac Surg.
+2002;13(3):368-374. doi:10.1097/00001665-­200205000-­00002
+ 66. Jayaratne YSN, Elsharkawi I, Macklin EA, et  al. The facial
+morphology in Down syndrome: a 3D comparison of patients
+with and without obstructive sleep apnea. Am J Med Genet A.
+2017;173(11):3013-3021. doi:10.1002/ajmg.a.38399
+ 67. Andrade AG, Bubu OM, Varga AW, et al. The Relationship
+between Obstructive Sleep Apnea and Alzheimer's Disease.
+J Alzheimers Dis. 2018;64(s1):S255-S270. doi:10.3233/
+JAD-­179936
+ 68. Chen CC, Spanò G, Edgin JO. The impact of sleep disruption
+on executive function in Down syndrome. Res Dev Disabil.
+2013;34(6):2033-2039. doi:10.1016/j.ridd.2013.03.009
+ 69. Zhang Y, Ren R, Yang L, et al. Sleep in Alzheimer's disease:
+a systematic review and meta-­analysis of polysomnographic
+findings. Transl Psychiatry. 2022;12(1):136. doi:10.1038/
+s41398-­022-­01897-­y
+ 70. Carmona-­Iragui M, Videla L, Lleó A, Fortea J. Down syndrome, Alzheimer disease, and cerebral amyloid angiopathy:
+the complex triangle of brain amyloidosis. Dev Neurobiol.
+2019;79(7):716-737. doi:10.1002/dneu.22709
+ 71. McCarron M, McCallion P, Reilly E, et al. A prospective 20-­year
+longitudinal follow-­up of dementia in persons with Down syndrome. J Intellect Disabil Res. 2017;61(9):843-852. doi:10.1111/
+jir.12390
+ 72. Zis P, Strydom A. Clinical aspects and biomarkers of Alzheimer's
+disease in Down syndrome. Free Radic Biol Med. 2018;114:3-9.
+doi:10.1016/j.freeradbiomed.2017.08.024
+ 73. Lao P, Zimmerman ME, Hartley SL, et  al. Obstructive sleep
+apnea, cerebrovascular disease, and amyloid in older adults
+with Down syndrome across the Alzheimer's continuum. Sleep
+Adv. 2022;3(1):zpac013. doi:10.1093/sleepadvances/zpac013
+SUPPORTING INFORMATION
+Additional supporting information can be found online
+in the Supporting Information section at the end of this
+article.
+How to cite this article: Echeverry-­Quiceno LM,
+Llambrich S, Heredia-­Lidón Á, et al. Potential of
+facial biomarkers for Alzheimer's disease and
+obstructive sleep apnea in Down syndrome and
+general population. The FASEB Journal.
+2025;39:e70480. doi:10.1096/fj.202403009R
+ 15306860, 2025, 6, Downloaded from https://faseb.onlinelibrary.wiley.com/doi/10.1096/fj.202403009R by Spanish Cochrane National Provision (Ministerio de Sanidad), Wiley Online Library on [25/11/2025]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License

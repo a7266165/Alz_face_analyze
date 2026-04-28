@@ -1,0 +1,23 @@
+{
+  "title": "Computational Analysis of Expressive Behavior in Clinical Assessment",
+  "authors": [
+    "Jeffrey M. Girard",
+    "Dasha A. Yermol",
+    "Albert Ali Salah",
+    "Jeffrey F. Cohn"
+  ],
+  "year": 2025,
+  "abstract": "Clinical psychological assessment often relies on self-report, interviews, and behavioral observation, methods that pose challenges for reliability, validity, and scalability. Computational approaches offer new opportunities to analyze expressive behavior (e.g., facial expressions, vocal prosody, and language use) with greater precision and efficiency. This paper provides an accessible conceptual framework for understanding how methods from computer vision, speech signal processing, and natural language processing can enhance clinical assessment. We outline the goals, frameworks, and methods of both clinical and computational approaches, and present an illustrative review of interdisciplinary research applying these techniques across a range of mental health conditions. We also examine key challenges related to data quality, measurement, interdisciplinarity, and ethics. Finally, we highlight future directions for building systems that are robust, interpretable, and clinically meaningful. This review is intended to support dialogue between clinical and computational communities and to guide ongoing research and development at their intersection.",
+  "doi": "10.31234/osf.io/uf4nq_v3",
+  "arxiv_id": null,
+  "venue": null,
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://osf.io/uf4nq_v3/download",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4414051360"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.31234/osf.io/uf4nq_v3"
+}

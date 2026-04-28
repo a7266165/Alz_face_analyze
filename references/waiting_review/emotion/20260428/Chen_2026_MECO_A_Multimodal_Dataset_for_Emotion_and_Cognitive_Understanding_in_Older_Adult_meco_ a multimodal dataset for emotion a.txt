@@ -1,0 +1,1208 @@
+MECO: A Multimodal Dataset for Emotion and Cognitive
+Understanding in Older Adults
+Hongbin Chen
+Nanjing Medical University
+Nanjing, China
+hongbinchen@stu.njmu.edu.cn
+Jie Li
+Nanjing Medical University
+Nanjing, China
+jerry@njmu.edu.cn
+Wei Wang
+Nanjing Medical University
+Nanjing, China
+bmeww@njmu.edu.cn
+Siyang Song
+University of Exeter
+Exeter, U.K.
+s.song@exeter.ac.uk
+Xiao Gu
+University of Oxford
+Oxford, U.K.
+xiao.gu@eng.ox.ac.uk
+Jianqing Li∗
+Nanjing Medical University
+Nanjing, China
+jqli@njmu.edu.cn
+Wentao Xiang∗
+Nanjing Medical University
+Nanjing, China
+xiangbmu@njmu.edu.cn
+Figure 1: Overview of MECO dataset. (a) Emotion-inducing video stimuli for older adults. (b) Data acquisition protocol, encompassing cognitive assessment, synchronized multimodal recording, and self-assessed annotations. (c) Extracted multimodal
+signals and corresponding feature representations. (d) Downstream tasks for emotion and cognitive prediction. (e) Demographic
+characteristics of the study subjects, highlighting group-specific differences.
+∗Corresponding author.
+Permission to make digital or hard copies of all or part of this work for personal or
+classroom use is granted without fee provided that copies are not made or distributed
+for profit or commercial advantage and that copies bear this notice and the full citation
+on the first page. Copyrights for components of this work owned by others than the
+author(s) must be honored. Abstracting with credit is permitted. To copy otherwise, or
+republish, to post on servers or to redistribute to lists, requires prior specific permission
+and/or a fee. Request permissions from permissions@acm.org.
+Conference acronym ’XX, Woodstock, NY
+© 2026 Copyright held by the owner/author(s). Publication rights licensed to ACM.
+ACM ISBN 978-1-4503-XXXX-X/2018/06
+https://doi.org/XXXXXXX.XXXXXXX
+Abstract
+While affective computing has advanced considerably, multimodal
+emotion prediction in aging populations remains underexplored,
+largely due to the scarcity of dedicated datasets. Existing multimodal benchmarks predominantly target young, cognitively healthy
+subjects, neglecting the influence of cognitive decline on emotional
+expression and physiological responses. To bridge this gap, we
+present MECO, a Multimodal dataset for Emotion and Cognitive understanding in Older adults. MECO includes 42 participants and provides approximately 38 hours of multimodal signals, yielding 30,592
+arXiv:2604.03050v1  [cs.HC]  3 Apr 2026
+
+Conference acronym ’XX, June 03–05, 2026, Woodstock, NY
+Chen et al.
+synchronized samples. To maximize ecological validity, data collection followed standardized protocols within community-based
+settings. The modalities cover video, audio, electroencephalography (EEG), and electrocardiography (ECG). In addition, the dataset
+offers comprehensive annotations of emotional and cognitive states,
+including self-assessed valence, arousal, six basic emotions, and
+Mini-Mental State Examination cognitive scores. We further establish baseline benchmarks for both emotion and cognitive prediction.
+MECO serves as a foundational resource for multimodal modeling
+of affect and cognition in aging populations, facilitating downstream applications such as personalized emotion recognition and
+early detection of mild cognitive impairment (MCI) in real-world
+settings. The complete dataset and supplementary materials are
+available at https://maitrechen.github.io/meco-page/.
+CCS Concepts
+• Human-centered computing →Human computer interaction; • Computing methodologies →Artificial intelligence.
+Keywords
+Multimodal dataset, affective computing, cognitive states, older
+adults, behavioral and physiological signals
+ACM Reference Format:
+Hongbin Chen, Jie Li, Wei Wang, Siyang Song, Xiao Gu, Jianqing Li, and Wentao Xiang. 2026. MECO: A Multimodal Dataset for Emotion and Cognitive
+Understanding in Older Adults. In Proceedings of Make sure to enter the correct
+conference title from your rights confirmation email (Conference acronym ’XX).
+ACM, New York, NY, USA, 8 pages. https://doi.org/XXXXXXX.XXXXXXX
+1
+Introduction
+With the rapid growth of the global aging population, understanding affective states in older adults is increasingly critical for mental
+health monitoring and cognitive assessment [4]. Cognitive decline,
+such as mild cognitive impairment (MCI), can markedly alter emotional expression and physiological responses [14], posing significant challenges for reliable affective analysis in older adults. Automated and quantitative modeling of these coupled factors holds
+substantial potential for improving early detection and intervention
+in geriatric care [17].
+Despite recent advances in multimodal affective computing, the
+development of robust systems for older adults remains constrained
+by intersecting gaps in existing datasets. Most public benchmarks
+are dominated by young, cognitively intact individuals and assume modality congruence, where outward facial expressions synchronously reflect internal arousal [18, 19, 27, 52]. This assumption
+fails to capture atypical affective manifestations in older populations, particularly those with MCI. Patients with MCI frequently
+exhibit facial apathy [34], leading to a disconnect between blunted
+outward expressions and active internal physiological arousal. This
+renders traditional visually-driven datasets inadequate and causes
+existing models to misinterpret emotional states. Moreover, the
+intrinsic interplay between cognition and emotion is largely overlooked, as current datasets typically annotate these states in isolation [20, 25, 30, 40], ignoring the clinical reality that cognitive
+decline actively modulates emotional reactivity, making it difficult to investigate how progressive cognitive degradation reshapes
+multimodal emotional representations. To capture these complex
+interactions, models require synchronized behavioral (video) and
+physiological modalities-electroencephalography (EEG) and electrocardiography (ECG)-alongside cognitive assessments [2, 16, 46].
+To address these limitations, we introduce MECO, a Multimodal
+dataset for Emotion and Cognitive understanding in Older adults.
+Collected in community-based settings under standardized emotion
+elicitation protocols, MECO captures behavioral and physiological
+responses in ecologically valid conditions. The dataset synchronizes
+records of around 38 hours of multimodal signals from 42 older participants, comprising 27 healthy controls (HC) and 15 individuals
+with MCI. The data covers video, audio, EEG, and ECG modalities, yielding a total of 30,592 samples. Motivated by interactions
+between emotional responses and cognitive performance, MECO
+provides not only comprehensive annotations of emotional states,
+including self-assessed valence, arousal, and six basic emotions, but
+also cognitive scores based on the Mini-Mental State Examination
+(MMSE). Therefore, MECO supports a range of downstream tasks,
+including emotion–cognition modeling in aging populations, robust
+emotion recognition, and emotion-assisted cognitive impairment
+screening. Our contributions are summarized as follows:
+• To the best of our knowledge, we present the first multimodal dataset for older adults that jointly models emotion
+and cognitive states. It integrates diverse behavioral and
+physiological modalities, addressing the lack of resources
+capturing emotion and cognition within aging populations.
+• We establish baseline benchmarks for emotional and cognitive prediction, demonstrating the feasibility of multimodal
+modeling and providing standardized evaluation protocols.
+• MECO provides a valuable resource for advancing affective
+computing in elderly populations, enabling the study of emotion–cognition interactions and supporting robust emotion
+recognition models under cognitive decline.
+2
+Related Work
+Emotion Recognition Emotion Recognition (ER) infers human
+emotions from behavioral and physiological signals [19, 40, 52].
+Multimodal approaches that integrate complementary cues outperform unimodal methods by capturing information absent in individual modalities [40, 47]. However, most studies focus on young
+or middle-aged populations, leaving older adults and individuals
+with MCI underrepresented. Age-related changes in physiological
+responses and behavior introduce ER challenges, such as altered
+EEG signatures and diminished facial expressivity [31]. Multimodal
+fusion in these demographics is further hindered by increased signal
+noise and high inter-subject variability. Consequently, multimodal
+ER approaches for older adults are urgently needed to enable accurate emotion prediction and support downstream applications,
+including mental health monitoring and cognitive care.
+Multimodal Emotion Dataset Table 1 summarizes representative multimodal emotion datasets. Despite their contributions,
+several limitations remain for geriatric and emotion-cognition research. First, concerning age distribution, most datasets (e.g., DEAP
+[19], SEED-IV [52], and MAHNOB-HCI [40]) predominantly feature young adults. While ElderReact [26] targets older populations,
+it focuses solely on cognitively healthy individuals and lacks the
+
+MECO: A Multimodal Dataset for Emotion and Cognitive Understanding in Older Adults
+Conference acronym ’XX, June 03–05, 2026, Woodstock, NY
+Table 1: Review of representative multimodal emotion datasets. "N/A" denotes information not available.
+Dataset
+Age (Avg.)
+#Subjects (M/F)
+Length
+Label
+Primary Modality
+Language
+Source
+IEMOCAP [6]
+N/A
+10 (5/5)
+12 h
+Emotion
+Audio, Video
+English
+In the lab
+DFEW [16]
+N/A
+N/A
+N/A
+Emotion
+Audio, Video
+N/A
+In the wild
+DREAMER [18]
+22–33 (26.6)
+23 (14/9)
+7 h
+Emotion
+EEG, ECG
+N/A
+In the lab
+SEED-IV [52]
+18–30 (23.3)
+15 (7/8)
+30 h
+Emotion
+EEG, EOG
+Chinese
+In the lab
+DEAP [19]
+19–37 (26.9)
+32 (16/16)
+21 h
+Emotion
+Video, EEG
+N/A
+In the lab
+MAHNOB-HCI [40]
+19–40 (26.1)
+27 (11/16)
+12 h
+Emotion
+Audio, Video, EEG
+English
+In the lab
+ElderReact [26]
+N/A
+46 (20/26)
+2 h
+Emotion
+Audio, Video
+English
+In the wild
+EMOTyDA [36]
+N/A
+N/A
+22 h
+Emotion, Intention
+Audio, Video, Text
+English
+TV+In the lab
+MINE [46]
+N/A
+N/A
+22 h
+Emotion, Intention
+Audio, Video, Image, Text
+English
+In the wild
+ASCERTAIN [42]
+N/A (30.0)
+58 (37/21)
+46 h
+Emotion, Personality
+Video, EEG, ECG, GSR
+English
+In the lab
+AMIGOS [28]
+21–40 (28.3)
+40 (27/13)
+69 h
+Emotion, Personality, Mood
+Video, EEG, ECG, GSR
+English
+In the lab
+MECO (Ours)
+57–85 (74.1)
+42 (9/33)
+38 h
+Emotion, Cognition
+Audio, Video, EEG, ECG
+Chinese
+In the community
+physiological modalities necessary to investigate internal affective
+mechanisms. Second, existing datasets typically provide isolated
+emotional annotations. Although some datasets offer multi-label
+annotations, such as EMOTyDA [36] and MINE [46] (emotion and
+intention), cognitive assessments are generally absent, limiting
+emotion-cognition interaction studies. Third, a trade-off persists between ecological validity and signal richness. In-the-wild datasets
+(e.g., DFEW [16], MINE [46]) lack physiological data, whereas labbased ones (e.g., DREAMER [18], DEAP [19]) provide high-quality
+recordings but may not reflect real-world responses. To bridge these
+gaps, the MECO dataset provides synchronized behavioral and physiological signals with joint emotion and cognitive annotations for
+older adults, including those with MCI.
+3
+MECO Dataset
+As shown in Fig. 1, MECO dataset consists of approximately 38
+hours of multimodal recordings from 42 participants, resulting in
+30,592 samples, with details on acquisition, annotation, statistics,
+and ethical considerations. We introduce MECO to support studies
+of the interplay between emotion and cognition in older adults.
+3.1
+Data Acquisition
+Emotion-Induction Videos Emotion elicitation was performed using the Emotion-Inducing Video Dataset [21], designed for Chinese
+older adults. The stimuli have been validated through subjective and
+physiological measures, ensuring high inter-rater reliability and
+effective elicitation. The dataset includes six discrete emotions, each
+with three distinct events to guarantee stimulus diversity (duration
+distributions are detailed in Fig. 1 (a)). These age-appropriate, culturally relevant, and safety-screened stimuli provide a standardized
+and ecologically valid foundation for affective data acquisition.
+Equipment and Setup Data acquisition was conducted using a
+portable tablet-based platform [49] to synchronously capture behavioral and physiological signals (see Fig. 1 (b-ii)). Video (1920 × 1080
+resolution at 30 fps) and audio streams were temporally aligned with
+physiological recordings. Single-channel ECG and dual-channel prefrontal EEG (Fp1, Fp2) were recorded at 250 Hz. This unobtrusive
+wearable setup ensures high-fidelity acquisition while minimizing the physical burden placed upon older adults. All multimodal
+recordings were performed in a semi-controlled, naturalistic indoor
+environment, ensuring a quiet and familiar setting for participants.
+Session 1
+Session 2
+Session 3
+＞24h
+＞24h
+Pre-test
+MMSE
+assessment
+15 s
+2-4 min
+2 min
+15 s
+Trial i
+H
+T
+B
+A
+N
+S
+Hint of start
+Movie clip
+Selfassessment
+Rest
+H: Happiness
+T: Tension
+B: Boredom
+A: Anger
+N: Neutral
+S: Sadness
+Figure 2: Overview of the experimental protocol.
+Experimental Protocol As illustrated in Fig. 2, the experimental protocol consisted of several sequential phases, began with the
+MMSE assessment [1], followed by a pre-test phase. Participants
+then completed three sequential sessions, each separated by intervals exceeding 24 hours to mitigate carryover effects and emotional
+fatigue. Each session consisted of six trials, corresponding to the
+induction of six emotions (e.g., anger, boredom, happiness, neutral,
+sadness, tension). In each trial, participants first received a 15-second
+prompt and then viewed a 2–4 minute emotion-inducing video,
+during which video, EEG, and ECG signals were synchronously
+recorded (see Fig. 1 (c)). Subsequently, participants completed a 2minute self-assessment, with audio recorded alongside video, EEG,
+and ECG signals. Each trial concluded with a 15-second rest period
+before proceeding to the next trial.
+Participants Participants were elderly native Chinese speakers
+with underlying health conditions. To ensure sample consistency
+and reduce confounding effects, inclusion criteria required participants to be aged 50 years or older, capable of independent daily
+living, and able to provide informed consent. Exclusion criteria
+included severe neurological or psychiatric disorders (e.g., cerebrovascular diseases, schizophrenia, or severe depression), major
+systemic illnesses (e.g., hepatic or renal insufficiency), and communication impairments that could hinder compliance with the
+protocol. Initially, 102 participants were recruited. After accounting for technical anomalies and incomplete participation, the final
+MECO dataset comprises 42 subjects (27 HC and 15 MCI) who
+completed all three recording sessions. Fig 1 (d) summarizes the
+demographic characteristics and MMSE assessment results.
+
+Conference acronym ’XX, June 03–05, 2026, Woodstock, NY
+Chen et al.
+Table 2: Continuous emotion annotation ICCs across three
+sessions. Both single-rater consistency ICC(2,1) and averagerater reliability ICC(2,𝑘) are highly significant (𝑝< 0.001).
+Session
+Dimension
+Single-Rater ICC(2,1)
+Average-Rater ICC(2,𝑘)
+ICC
+95% CI
+ICC
+95% CI
+Session 1
+Valence
+0.7038
+[0.47, 0.94]
+0.9901
+[0.97, 1.00]
+Arousal
+0.4272
+[0.21, 0.82]
+0.9691
+[0.92, 0.99]
+Session 2
+Valence
+0.6875
+[0.45, 0.93]
+0.9893
+[0.97, 1.00]
+Arousal
+0.3250
+[0.15, 0.75]
+0.9529
+[0.88, 0.99]
+Session 3
+Valence
+0.6182
+[0.38, 0.91]
+0.9855
+[0.96, 1.00]
+Arousal
+0.1705
+[0.06, 0.57]
+0.8962
+[0.74, 0.98]
+3.2
+Data Annotation
+To ensure reliable and reproducible labels, both cognitive status
+and emotional states were systematically annotated.
+Cognitive Annotation Participants were dichotomized into
+MCI (MMSE score ≤26) and HC (MMSE score > 26). This threshold
+serves as a practical criterion for cognitive stratification, consistent
+with prior studies employing MMSE as a screening tool [11, 21].
+Emotion Annotation Emotional responses were collected via
+a hybrid combining categorical-dimensional scheme (Fig. 1 b-iii).
+Immediately post-stimulus, participants self-reported six discrete
+categories alongside 9-point Likert ratings (1–9) for valence (negative to positive) and arousal (calm to excited). To mitigate ambiguity
+from perceptual and physiological overlap in low-arousal states,
+boredom was merged into the neutral category [21].
+Annotation Reliability To quantify consistency, the intraclass
+correlation coefficient (ICC) was computed via a two-way randomeffects model [39]. The high average-measure reliability (ICC(2,𝑘))
+for valence (0.9855–0.9901) and arousal (0.8962–0.9691) confirms
+strong consistency in aggregated annotations (Table 2). Conversely,
+the lower single-measure reliability (ICC(2,1)) reflects inter-subject
+variability in emotional perception, particularly among older adults.
+3.3
+Dataset Statistics
+Fig. 3 details the MECO dataset statistics. Globally, the dataset
+exhibits a natural class imbalance characteristic of authentic emotion elicitation. Negative emotions (e.g., sadness, tension) dominate
+both the 3-class (Fig. 3 (a)) and 5-class (Fig. 3 (b)) settings, posing
+a challenging yet practical scenario for training robust emotion
+recognition models. Furthermore, the continuous valence-arousal
+distribution (Fig. 3 (c)) is consistent with the discrete labels, showing
+dense clusters aligned with dominant affective states. Subject-level
+heatmaps (Fig. 3 (d, e)) reveal substantial inter-subject variability. Although overall biased toward negative states, individual responses
+vary markedly, highlighting the dataset as a benchmark for evaluating model generalization and personalized prediction.
+3.4
+Ethics Review and License
+This study was approved by the Institutional Ethics Committee (No.
+KY2022784), and all participants gave written informed consent.
+All privacy-sensitive information is protected, and anonymity is
+strictly guaranteed. The dataset is released under CC BY 4.0 license,
+permitting academic and commercial reuse with attribution.
+(a) 3-class emotions
+(b) 5-class emotions
+(c) Valence-Arousal space
+(e) Subject-wise 5-class emotions
+4574
+15.0%
+3548
+11.6%
+6344
+20.7%
+8930
+29.2%
+7196
+23.5%
+Tension
+Sadness
+Neutral
+Anger
+Happiness
+Positive
+Negative
+Neutral
+6344
+20.7%
+8930
+29.2%
+15318
+50.1%
+(d) Subject-wise 3-class emotions
+Figure 3: Distribution of MECO dataset. (a-c) Global-level statistics, including 3- and 5-class discrete emotion distributions
+and the continuous valence-arousal space. (d, e) Subject-level
+emotion distributions under 3- and 5-class settings.
+4
+Baseline Experiments
+4.1
+Task Definition
+We formulate predictive tasks across emotion and cognition dimensions. Let the dataset be denoted as D = {(𝒙𝑖,𝑒𝑖, 𝑣𝑖,𝑎𝑖,𝑐𝑖,𝑚𝑖)}𝑁
+𝑖=1,
+where 𝒙𝑖represents the multimodal recording of the 𝑖-th sample
+among 𝑁samples. For emotion prediction, 𝑒𝑖∈{1, 2, . . . ,𝐶} denotes the discrete emotion category, which 𝑣𝑖,𝑎𝑖∈[1, 9] denote
+continuous valence and arousal scores. For cognitive prediction,
+𝑐𝑖∈{0, 1} indicates binary cognitive impairment status, and 𝑚𝑖
+denotes the continuous MMSE score.
+Based on D and Fig. 1 (e), we define five emotion-related tasks:
+T1 (SR), stimulus-induced emotion recognition using intended stimulus labels; T2 (SA), 3-class sentiment analysis; T3 (ER), 5-class
+emotion recognition; T4 (VR), valence regression; and T5 (AR),
+arousal regression. In addition, two cognition-related tasks are defined: T6 (CR), binary cognitive impairment recognition; and T7
+(MR), MMSE score regression. Notably, the baseline tasks focus on
+spontaneous responses elicited during stimulus viewing, utilizing
+video, EEG, and ECG modalities.
+4.2
+Feature Extraction
+Data Preprocessing Before extracting features, we apply preprocessing steps to enhance signal quality. For video data, we uniformly
+sample 16 frames from each clip [2, 5, 43, 48]. Facial regions are
+then detected and aligned using OpenFace [3], and the cropped
+face images are resized to 224 × 224. For EEG signals, a 0.5-50 Hz
+band-pass filter is applied [52]. For ECG signals, baseline wander is
+removed and amplitude bias is mitigated using median filtering [13],
+followed by 0.5-45 Hz band-pass filtering and Z-score normalization. To enable multimodal alignment and fusion, all modalities are
+segmented into non-overlapping 4-second sliding windows [51].
+Video Modality 1) Action Units (AU): We leverage the OpenFace
+[3] to extract 35 AUs capturing facial muscle dynamics [50]. For
+each segment, the mean, standard deviation, and delta mean are
+computed, yielding a 105-D feature vector. 2) Head Pose (HP): We
+
+MECO: A Multimodal Dataset for Emotion and Cognitive Understanding in Older Adults
+Conference acronym ’XX, June 03–05, 2026, Woodstock, NY
+extract the six degrees of freedom of head pose [37, 44] and compute
+the same statistical and temporal descriptors, resulting in an 18-D
+feature vector. 3) Eye Gaze (EG): Two gaze angles are extracted
+and processed with the same temporal descriptors, producing a 6-D
+feature vector. 4) Deep Features (DF): We extract 512-D frame-level
+features using a ResNet-50 pretrained on the wild-FER dataset [35]
+to capture high-level spatial representations.
+EEG Modality 1) Differential Entropy (DE): DE [38] is extracted
+across five frequency bands to characterize logarithmic energy distribution, yielding a 10-D representation of band-specific patterns.
+2) Power Spectral Density (PSD): PSD [15, 52] is computed over
+the same bands, producing a 10-D vector reflecting spectral power
+linked to emotional arousal. 3) Higuchi Fractal Dimension (HFD):
+Given the chaotic, non-stationary EEG, we compute HFD [12] to
+capture transient cognitive and morphological variations, producing a 2-D vector. 4) Sample Entropy (SE): SE [32] is computed to
+quantify temporal irregularity, yielding a 2-D vector.
+ECG Modality 1) Time Domain (TD): Five standard heart rate
+variability metrics (Mean RR, SDNN, RMSSD, NN50, and pNN50)
+are derived from R–R intervals, forming a 5-D vector reflecting autonomic balance and physiological correlates of emotional arousal
+and valence. 2) HFD: We compute HFD [12] to quantify cardiovascular morphological irregularity and chaotic behavior, yielding a
+1-D feature. 3) SE: SE [32] is computed to assess cardiac structural
+regularity and temporal predictability, producing a 1-D feature
+reflecting autonomic arousal.
+4.3
+Implementation Details
+To establish baseline performance, temporally aligned multimodal
+features are concatenated, processed by a gated recurrent unit [8] to
+capture temporal dynamics, and subsequently fed into a multilayer
+perceptron for prediction.
+All experiments were conducted on an NVIDIA RTX 3090 GPU.
+Models were trained for 100 epochs with a batch size of 32. Optimization is performed using AdamW [24], with cross-entropy
+loss for classification and mean squared error for regression. The
+learning rate was selected from 10−1, 10−2, 10−3, 3 × 10−4, combined
+with a cosine annealing scheduler [23] and a weight decay of
+10−3. To reduce overfitting, dropout [41] was applied with rates in
+{0.1, 0.2, 0.3}, along with an early stopping mechanism.
+4.4
+Evaluation Protocol and Metrics
+To comprehensively benchmark MECO dataset, we define two
+evaluation protocols to assess both personalized and generalized
+capabilities of the models: Subject-Dependent (SD) and Subject-
+Independent (SI). Under the SD protocol, a chronological split is
+applied within each trial to preserve the temporal dynamics of the
+elicited responses. Specifically, the first 60% of segments in each
+trial are allocated for training, the next 20% for validation, and the
+final 20% for testing. Under the SI protocol, subject-wise five-fold
+cross-validation is adopted to evaluate model generalization across
+unseen participants. All subjects are partitioned into five disjoint
+subsets, with four (approximately 80%) used for training and the
+remaining one (20%) for testing in each fold.
+For emotion classification tasks, unweighted average recall (UAR)
+and weighted average recall (WAR) [7, 10, 22]. For continuous
+emotion regression and MMSE score tasks, concordance correlation
+coefficient (CCC) and mean absolute error (MAE) [9, 29, 33] are
+used. Specifically, for MCI screening task, accuracy (ACC) and the
+macro F1-score (F1) are adopted to evaluate both overall correctness
+and sensitivity to the minority MCI class [45].
+5
+Results and Analysis
+5.1
+Emotion Prediction
+Table 3 reports the performance under the SD protocol across
+five emotion tasks, where the two best-performing features from
+each modality are selected for fusion. 1) For unimodal evaluation,
+video modality yields the most competitive overall performance.
+DF consistently outperforms handcrafted features, indicating that
+high-dimensional representations are essential for capturing subtle
+facial dynamics. For physiological signals, performance is modalitydependent. For EEG modality, DE and PSD achieve the best results, suggesting that emotional variations are more effectively captured by localized frequency-band energy than by global non-linear
+complexity. For ECG modality, non-linear features consistently
+outperform TD features, as linear statistics tend to smooth rapid
+autonomic fluctuations associated with short-term stimuli. 2) For
+multimodal evaluation, the results demonstrate clear cross-modal
+complementarity. Bimodal combinations (e.g., VE and VC) consistently surpass all unimodal baselines, confirming that integrating
+facial behaviors with physiological signals enhances prediction.
+However, trimodal fusion does not yield further improvements and
+may even degrade performance, suggesting that direct concatenation introduces redundancy and cross-modal interference.
+Table 4 presents results under the SI protocol. Unimodal performance, particularly from the video modality, provides a strong
+baseline. Multimodal results are comparable to or slightly lower
+than the best unimodal outcomes. This degradation primarily stems
+from the strict cross-subject generalization setting, where substantial inter-subject variability in facial expressions and physiological
+responses exists. When evaluated on unseen subjects, feature concatenation fails to capture cross-modal representations and instead
+amplifies heterogeneous subject-specific noise.
+5.2
+Cognitive Prediction
+Table 4 reports the cognitive prediction results. 1) Similar to emotion tasks, video modality provides a strong unimodal baseline.
+Although ECG features reach the highest ACC for T6 (63.71%), its
+lower F1 indicates a bias toward the majority class, highlighting
+video representations as more stable indicators under the SI protocol. EEG features provide moderate but consistent contributions
+across both tasks. 2) Multimodal fusion demonstrates promising
+potential, particularly for continuous cognitive assessment. For T7,
+multimodal integration yields the best overall performance, with
+bimodal combinations such as VC and VE achieving highest CCC
+and lowest MAE, respectively. This suggests that physiological signals provide complementary information for fine-grained cognitive
+tracking. For T6, multimodal configurations perform comparably
+to the strong video baseline. Rather than indicating modality limitations, this plateau under the strict SI protocol reflects the profound
+individual heterogeneity inherent in the physiological responses
+among older adults. Simple feature concatenation is insufficient
+
+Conference acronym ’XX, June 03–05, 2026, Woodstock, NY
+Chen et al.
+Table 3: Results for the five emotion prediction tasks (T1–T5) on MECO dataset under the SD protocol. Best and second-best
+results are highlighted in bold and underlined, respectively. “M” denotes the modality: Video (V), EEG (E), and ECG (C).
+M
+Feature
+T1: SR (%)
+T2: SA (%)
+T3: ER (%)
+T4: VR
+T5: AR
+UAR±𝑠𝑡𝑑↑
+WAR±𝑠𝑡𝑑↑
+UAR±𝑠𝑡𝑑↑
+WAR±𝑠𝑡𝑑↑
+UAR±𝑠𝑡𝑑↑
+WAR±𝑠𝑡𝑑↑
+CCC±𝑠𝑡𝑑↑
+MAE±𝑠𝑡𝑑↓
+CCC±𝑠𝑡𝑑↑
+MAE±𝑠𝑡𝑑↓
+V
+AU
+43.09±10.48
+45.60±10.10
+59.20±9.52
+62.27±9.68
+48.00±10.75
+52.03±10.40
+0.4686±0.1729
+1.7899±0.4995
+0.4916±0.1463
+1.7007±0.4011
+HP
+44.09±11.38
+45.94±11.02
+64.03±11.26
+69.13±9.23
+52.54±11.24
+58.14±9.68
+0.4558±0.1900
+1.7639±0.4977
+0.5247±0.1592
+1.6262±0.5067
+EG
+30.73±7.00
+32.87±7.14
+45.79±8.34
+54.42±10.18
+34.66±6.93
+40.87±8.31
+0.2153±0.1594
+2.1855±0.6889
+0.2314±0.1947
+2.5147±1.4359
+DF
+58.09±12.48
+59.47±11.96
+69.85±11.32
+72.74±8.44
+63.64±11.52
+65.80±10.08
+0.5972±0.1544
+1.4106±0.3949
+0.6347±0.1339
+1.3270±0.3691
+E
+DE
+30.54±7.55
+33.38±8.05
+45.85±7.01
+53.44±7.38
+35.10±6.95
+41.41±8.12
+0.2789±0.1548
+2.0873±0.5138
+0.2964±0.1718
+2.0340±0.5656
+PSD
+28.45±6.03
+31.68±6.47
+44.54±6.51
+51.08±9.84
+32.97±7.27
+38.60±8.14
+0.2503±0.1218
+2.1433±0.5047
+0.2637±0.1725
+2.0628±0.5686
+HFD
+23.19±4.11
+25.25±5.03
+40.94±6.40
+46.26±10.35
+28.83±6.14
+34.35±7.03
+0.1522±0.1360
+2.3880±0.7002
+0.1767±0.1550
+2.2506±0.7885
+SE
+23.13±4.65
+25.11±6.15
+39.00±6.17
+46.69±7.25
+26.47±5.44
+31.25±5.83
+0.1376±0.1326
+2.3028±0.5321
+0.1675±0.1674
+2.2104±0.6316
+C
+TD
+19.05±3.08
+22.21±4.89
+35.01±3.59
+43.36±10.86
+23.12±4.31
+28.33±11.56
+0.0532±0.0816
+2.7174±1.2650
+0.0895±0.0950
+2.3558±1.0149
+HFD
+23.39±4.09
+26.85±4.73
+41.09±7.85
+49.49±9.99
+28.28±5.05
+37.32±8.31
+0.1634±0.1518
+2.1319±0.4987
+0.2397±0.1609
+2.0763±0.6139
+SE
+25.32±4.66
+28.32±5.73
+40.10±6.61
+49.10±8.03
+28.38±6.35
+34.82±9.25
+0.1809±0.1487
+2.1795±0.6836
+0.2287±0.1538
+2.1366±0.9865
+VE
+Top-1
+62.10±10.93
+63.43±10.35
+70.48±10.99
+73.27±8.23
+65.83±10.03
+67.89±9.03
+0.5980±0.1558
+1.4199±0.4191
+0.6424±0.1261
+1.3433±0.3924
+Top-2
+51.94±11.36
+53.83±11.04
+61.13±11.03
+66.30±8.90
+54.59±10.63
+59.54±9.00
+0.4503±0.1738
+1.8346±0.4796
+0.5192±0.1418
+1.6695±0.4593
+VC
+Top-1
+62.20±12.39
+63.37±11.56
+71.76±10.98
+73.82±8.53
+64.96±12.43
+67.47±10.04
+0.6041±0.1590
+1.4111±0.4195
+0.6423±0.1351
+1.3218±0.3626
+Top-2
+51.20±11.23
+52.90±10.74
+63.03±10.68
+67.84±9.52
+54.80±12.65
+59.85±10.81
+0.4768±0.1981
+1.7345±0.5187
+0.5120±0.1804
+1.7266±0.7182
+EC
+Top-1
+34.40±8.22
+37.13±8.01
+50.08±7.07
+56.91±8.68
+39.13±9.56
+45.58±9.14
+0.3004±0.1470
+2.1469±0.6492
+0.2796±0.1940
+2.2094±0.8099
+Top-2
+32.72±7.34
+35.67±7.43
+48.03±8.79
+54.12±8.56
+36.15±7.97
+42.13±7.96
+0.2673±0.1477
+2.2401±0.6858
+0.2704±0.1853
+2.2250±0.8046
+VEC
+Top-1
+62.13±11.19
+63.40±10.61
+71.22±10.92
+73.25±8.18
+65.09±10.37
+67.17±9.17
+0.5974±0.1558
+1.4246±0.3989
+0.6324±0.1328
+1.3892±0.4047
+Top-2
+61.48±11.96
+62.71±11.31
+65.96±10.76
+68.10±9.64
+54.87±11.65
+58.91±11.38
+0.4694±0.1776
+1.8320±0.5492
+0.5081±0.1496
+1.7054±0.4570
+Table 4: Results for the two emotion (T2–T3) and cognitive (T6–T7) prediction tasks on MECO dataset under the SI protocol.
+M
+Feature
+T2: SA (%)
+T3: ER (%)
+T6: CR (%)
+T7: MR
+UAR±𝑠𝑡𝑑↑
+WAR±𝑠𝑡𝑑↑
+UAR±𝑠𝑡𝑑↑
+WAR±𝑠𝑡𝑑↑
+ACC±𝑠𝑡𝑑↑
+F1±𝑠𝑡𝑑↑
+CCC±𝑠𝑡𝑑↑
+MAE±𝑠𝑡𝑑↓
+V
+AU
+41.30±2.32
+49.64±1.90
+25.90±0.76
+29.60±2.89
+60.84±2.44
+54.28±3.64
+0.0981±0.0838
+3.2101±0.5792
+HP
+36.66±1.30
+47.74±2.55
+22.67±1.25
+28.44±3.32
+60.51±4.73
+51.23±3.89
+0.0762±0.0357
+3.4828±0.5989
+EG
+35.34±0.37
+49.34±1.12
+22.37±1.20
+30.46±4.65
+62.46±2.99
+45.55±4.00
+0.0228±0.0280
+3.6050±0.1252
+DF
+40.21±1.09
+45.49±1.12
+24.56±1.04
+28.07±1.61
+57.89±12.55
+52.57±11.39
+0.2286±0.1805
+3.4754±0.7802
+E
+DE
+34.19±0.25
+47.90±2.21
+21.11±0.35
+26.53±1.42
+56.72±3.50
+52.72±3.17
+0.1401±0.0865
+4.2936±2.0246
+PSD
+35.48±0.71
+45.89±2.33
+21.97±0.73
+25.54±2.83
+56.73±4.20
+53.16±2.86
+0.1439±0.0731
+3.9832±1.5692
+HFD
+35.64±1.16
+40.92±5.65
+22.23±0.44
+27.79±3.69
+55.59±6.89
+44.74±3.78
+0.1356±0.0841
+5.0774±1.2861
+SE
+33.70±0.31
+48.42±2.21
+21.42±0.30
+28.80±2.68
+58.95±4.84
+42.60±1.16
+0.0991±0.0516
+3.4277±0.8076
+C
+TD
+33.35±0.03
+49.59±2.00
+20.66±0.92
+28.00±4.37
+62.28±4.15
+42.24±6.64
+0.0105±0.0136
+7.7322±6.5972
+HFD
+37.08±1.80
+35.20±10.81
+22.45±0.33
+24.90±3.93
+62.79±2.76
+44.04±5.32
+0.2086±0.1065
+5.3417±2.0126
+SE
+34.28±1.26
+49.22±1.79
+21.58±0.95
+29.66±4.06
+63.71±2.81
+41.76±3.65
+0.1221±0.1029
+4.4568±0.4578
+VE
+Top-1
+41.55±2.39
+48.35±2.09
+25.58±0.81
+30.26±2.49
+59.23±1.75
+54.58±2.63
+0.2626±0.2837
+3.1895±0.9175
+Top-2
+40.00±1.08
+45.45±1.61
+23.98±1.52
+26.62±2.41
+56.17±3.33
+53.15±3.55
+0.1015±0.1541
+3.3886±0.7263
+VC
+Top-1
+41.24±1.84
+48.47±2.86
+25.37±1.39
+30.36±1.40
+60.29±2.60
+53.88±4.45
+0.2812±0.2800
+3.3263±0.9776
+Top-2
+39.76±1.08
+45.85±1.86
+24.16±0.90
+27.15±1.11
+59.61±6.54
+50.55±5.04
+0.1424±0.1433
+3.3833±0.5293
+EC
+Top-1
+35.31±1.20
+47.57±2.49
+22.65±0.84
+26.71±2.19
+55.09±4.49
+51.00±3.52
+0.2371±0.1100
+3.8719±1.2773
+Top-2
+35.11±0.72
+41.61±7.26
+22.64±0.56
+26.37±2.18
+56.98±2.78
+53.07±2.26
+0.1655±0.0726
+4.1042±1.4751
+VEC
+Top-1
+40.16±1.76
+47.64±2.00
+25.13±0.17
+28.79±1.57
+59.24±3.08
+54.53±2.98
+0.2795±0.2602
+3.3568±1.0216
+Top-2
+39.75±1.89
+45.72±3.15
+24.21±1.31
+27.77±1.38
+55.59±3.38
+50.30±4.93
+0.1387±0.1755
+3.6860±0.7725
+to disentangle these complex individual differences, highlighting
+the need for domain-adaptive or context-aware fusion strategies to
+better exploit cross-modal synergies.
+6
+Conclusion
+In this work, we introduced MECO, the first multimodal dataset
+dedicated to emotion and cognitive understanding in older adults,
+which integrates behavioral and physiological signals with unified annotations for affective states and cognitive assessment. We
+established baseline benchmarks for both emotion and cognitive
+prediction under unimodal and multimodal settings, providing a
+standardized reference for reproducible evaluation. However, the
+current study has certain limitations. Specifically, the analysis is
+restricted to stimulus-elicited data, leaving the audio modality unanalyzed, and the dataset is limited to 42 subjects. We plan to integrate
+audio data and recruit more subjects for further analysis. Furthermore, MECO offers a rich multimodal foundation to pre-train robust
+emotion recognition models for geriatric populations, ultimately
+advancing cognitively aware intelligent systems.
+
+MECO: A Multimodal Dataset for Emotion and Cognitive Understanding in Older Adults
+Conference acronym ’XX, June 03–05, 2026, Woodstock, NY
+References
+[1] Ingrid Arevalo-Rodriguez, Nadja Smailagic, Marta Roqué-Figuls, Agustín Ciapponi, Erick Sanchez-Perez, Antri Giannakou, Olga L Pedraza, Xavier Bonfill Cosp,
+and Sarah Cullum. 2021. Mini-Mental State Examination (MMSE) for the early
+detection of dementia in people with mild cognitive impairment (MCI). Cochrane
+Database of Systematic Reviews 2021, 7 (July 2021).
+[2] AmirAli Bagher Zadeh, Paul Pu Liang, Soujanya Poria, Erik Cambria, and Louis-
+Philippe Morency. 2018. Multimodal Language Analysis in the Wild: CMU-
+MOSEI Dataset and Interpretable Dynamic Fusion Graph. In Proceedings of the
+56th Annual Meeting of the Association for Computational Linguistics (Volume 1:
+Long Papers). 2236–2246.
+[3] Tadas Baltrusaitis, Peter Robinson, and Louis-Philippe Morency. 2016. OpenFace:
+An open source facial behavior analysis toolkit. In 2016 IEEE Winter Conference
+on Applications of Computer Vision (WACV). 1–10.
+[4] John R Beard, Alana Officer, Islene Araujo de Carvalho, Ritu Sadana, Anne Margriet Pot, Jean-Pierre Michel, Peter Lloyd-Sherlock, JoAnne E Epping-Jordan,
+G M E E (Geeske) Peeters, Wahyu Retno Mahanani, Jotheeswaran Amuthavalli
+Thiyagarajan, and Somnath Chatterji. 2016. The World report on ageing and
+health: a policy framework for healthy ageing. The Lancet 387, 10033 (May 2016),
+2145–2154.
+[5] Gedas Bertasius, Heng Wang, and Lorenzo Torresani. 2021. Is space-time attention
+all you need for video understanding?. In Icml, Vol. 2. 4.
+[6] Carlos Busso, Murtaza Bulut, Chi-Chun Lee, Abe Kazemzadeh, Emily Mower,
+Samuel Kim, Jeannette N. Chang, Sungbok Lee, and Shrikanth S. Narayanan. 2008.
+IEMOCAP: interactive emotional dyadic motion capture database. Language
+Resources and Evaluation 42, 4 (Nov. 2008), 335–359.
+[7] Yin Chen, Jia Li, Shiguang Shan, Meng Wang, and Richang Hong. 2025. From
+Static to Dynamic: Adapting Landmark-Aware Image Models for Facial Expression Recognition in Videos. IEEE Transactions on Affective Computing 16, 2 (April
+2025), 624–638.
+[8] Kyunghyun Cho, Bart van Merrienboer, Caglar Gulcehre, Dzmitry Bahdanau,
+Fethi Bougares, Holger Schwenk, and Yoshua Bengio. 2014. Learning Phrase
+Representations using RNN Encoder–Decoder for Statistical Machine Translation.
+In Proceedings of the 2014 Conference on Empirical Methods in Natural Language
+Processing (EMNLP). 1724–1734.
+[9] Chenyin Chu, Yihan Wang, Paul Maruff, Colin L. Masters, Benjamin Goudey,
+Liang Jin, and Yijun Pan. 2024. Developing a machine learning stack model to
+forecast the progression of mild cognitive impairment to Alzheimer’s dementia, using the Australian Imaging, Biomarker & Lifestyle (AIBL) Study dataset.
+Alzheimer’s & Dementia 20, S10 (Dec. 2024).
+[10] Kateryna Chumachenko, Alexandros Iosifidis, and Moncef Gabbouj. 2024. MMA-
+DFER: MultiModal Adaptation of unimodal models for Dynamic Facial Expression
+Recognition in-the-wild. In CVPR Workshops. 4673–4682.
+[11] Marshal F. Folstein, Susan E. Folstein, and Paul R. McHugh. 1975. “Mini-mental
+state”. Journal of Psychiatric Research 12, 3 (Nov. 1975), 189–198.
+[12] T. Higuchi. 1988. Approach to an irregular time series on the basis of the fractal
+theory. Physica D: Nonlinear Phenomena 31, 2 (June 1988), 277–283.
+[13] Yu-Liang Hsu, Jeen-Shing Wang, Wei-Chun Chiang, and Chien-Han Hung. 2020.
+Automatic ECG-Based Emotion Recognition in Music Listening. IEEE Transactions
+on Affective Computing 11, 1 (Jan. 2020), 85–99.
+[14] Zahinoor Ismail, Eric E. Smith, Yonas Geda, David Sultzer, Henry Brodaty, Gwenn
+Smith, Luis Agüera-Ortiz, Rob Sweet, David Miller, and Constantine G. Lyketsos.
+2015. Neuropsychiatric symptoms as early manifestations of emergent dementia:
+Provisional diagnostic criteria for mild behavioral impairment. Alzheimer’s &
+Dementia 12, 2 (June 2015), 195–202.
+[15] Robert Jenke, Angelika Peer, and Martin Buss. 2014. Feature Extraction and
+Selection for Emotion Recognition from EEG. IEEE Transactions on Affective
+Computing 5, 3 (July 2014), 327–339.
+[16] Xingxun Jiang, Yuan Zong, Wenming Zheng, Chuangao Tang, Wanchuang Xia,
+Cheng Lu, and Jiateng Liu. 2020. DFEW: A Large-Scale Database for Recognizing Dynamic Facial Expressions in the Wild. In Proceedings of the 28th ACM
+International Conference on Multimedia. 2881–2889.
+[17] A. John, U. Patel, J. Rusted, M. Richards, and D. Gaysina. 2018. Affective problems
+and decline in cognitive state in older adults: a systematic review and metaanalysis. Psychological Medicine 49, 3 (May 2018), 353–365.
+[18] Stamos Katsigiannis and Naeem Ramzan. 2018. DREAMER: A Database for
+Emotion Recognition Through EEG and ECG Signals From Wireless Low-cost
+Off-the-Shelf Devices. IEEE Journal of Biomedical and Health Informatics 22, 1
+(Jan. 2018), 98–107.
+[19] S. Koelstra, C. Muhl, M. Soleymani, Jong-Seok Lee, A. Yazdani, T. Ebrahimi, T.
+Pun, A. Nijholt, and I. Patras. 2012. DEAP: A Database for Emotion Analysis;
+Using Physiological Signals. IEEE Transactions on Affective Computing 3, 1 (Jan.
+2012), 18–31.
+[20] Min-Ho Lee, Adai Shomanov, Balgyn Begim, Zhuldyz Kabidenova, Aruna Nyssanbay, Adnan Yazici, and Seong-Whan Lee. 2024. EAV: EEG-Audio-Video Dataset
+for Emotion Recognition in Conversational Contexts. Scientific Data 11, 1 (2024).
+[21] Tao Liang, Junxiao Yu, Keke Shi, Yihao Yao, Jie Li, Bin Liu, Wei Wang, Chengyu
+Liu, Liangcheng Qu, Kuiying Yin, Wentao Xiang, and Jianqing Li. 2025. Construction and evaluation of an emotion-inducing video dataset towards Chinese
+elderly healthy controls and individuals with mild cognitive impairment. Cognitive Neurodynamics 19, 1 (Sept. 2025).
+[22] Yuanyuan Liu, Lin Wei, Kejun Liu, Zijing Chen, Zhe Chen, Chang Tang, Jingying
+Chen, and Shiguang Shan. 2025. Leveraging Eye Movement for Instructing
+Robust Video-Based Facial Expression Recognition. IEEE Transactions on Affective
+Computing 16, 4 (Oct. 2025), 3404–3420.
+[23] Ilya Loshchilov and Frank Hutter. 2017. SGDR: Stochastic Gradient Descent with
+Warm Restarts. In International Conference on Learning Representations.
+[24] Ilya Loshchilov and Frank Hutter. 2019. Decoupled Weight Decay Regularization.
+In International Conference on Learning Representations.
+[25] Saturnino Luz, Fasih Haider, Sofia de la Fuente, Davida Fromm, and Brian
+MacWhinney. 2020. Alzheimer’s Dementia Recognition Through Spontaneous
+Speech: The ADReSS Challenge. In Interspeech 2020. 2172–2176.
+[26] Kaixin Ma, Xinyu Wang, Xinru Yang, Mingtong Zhang, Jeffrey M Girard, and
+Louis-Philippe Morency. 2019. ElderReact: A Multimodal Dataset for Recognizing Emotional Response in Aging Adults. In 2019 International Conference on
+Multimodal Interaction. 349–357.
+[27] Iris B. Mauss, Robert W. Levenson, Loren McCarter, Frank H. Wilhelm, and
+James J. Gross. 2005. The Tie That Binds? Coherence Among Emotion Experience,
+Behavior, and Physiology. Emotion 5, 2 (2005), 175–190.
+[28] Juan Abdon Miranda-Correa, Mojtaba Khomami Abadi, Nicu Sebe, and Ioannis
+Patras. 2021. AMIGOS: A Dataset for Affect, Personality and Mood Research on
+Individuals and Groups. IEEE Transactions on Affective Computing 12, 2 (April
+2021), 479–493.
+[29] M. A. Nicolaou, H. Gunes, and M. Pantic. 2011. Continuous Prediction of Spontaneous Affect from Multiple Cues and Modalities in Valence-Arousal Space. IEEE
+Transactions on Affective Computing 2, 2 (April 2011), 92–105.
+[30] Cheul Young Park, Narae Cha, Soowon Kang, Auk Kim, Ahsan Habib Khandoker,
+Leontios Hadjileontiadis, Alice Oh, Yong Jeong, and Uichin Lee. 2020. K-EmoCon,
+a multimodal sensor dataset for continuous emotion recognition in naturalistic
+conversations. Scientific Data 7, 1 (Sept. 2020).
+[31] Soujanya Poria, Erik Cambria, Rajiv Bajpai, and Amir Hussain. 2017. A review of
+affective computing: From unimodal analysis to multimodal fusion. Information
+Fusion 37 (Sept. 2017), 98–125.
+[32] Joshua S. Richman and J. Randall Moorman. 2000. Physiological time-series
+analysis using approximate entropy and sample entropy. American Journal of
+Physiology-Heart and Circulatory Physiology 278, 6 (June 2000), H2039–H2049.
+[33] Fabien Ringeval, Björn Schuller, Michel Valstar, Shashank Jaiswal, Erik Marchi,
+Denis Lalanne, Roddy Cowie, and Maja Pantic. 2015. AV+EC 2015: The First
+Affect Recognition Challenge Bridging Across Audio, Video, and Physiological
+Data. In Proceedings of the 5th International Workshop on Audio/Visual Emotion
+Challenge. 3–8.
+[34] P. Robert, C.U. Onyike, A.F.G. Leentjens, K. Dujardin, P. Aalten, S. Starkstein, F.R.J.
+Verhey, J. Yessavage, J.P. Clement, D. Drapier, F. Bayle, M. Benoit, P. Boyer, P.M.
+Lorca, F. Thibaut, S. Gauthier, G. Grossberg, B. Vellas, and J. Byrne. 2009. Proposed
+diagnostic criteria for apathy in Alzheimer’s disease and other neuropsychiatric
+disorders. European Psychiatry 24, 2 (March 2009), 98–104.
+[35] Elena Ryumina, Denis Dresvyanskiy, and Alexey Karpov. 2022. In search of a
+robust facial expressions recognition model: A large-scale visual cross-corpus
+study. Neurocomputing 514 (Dec. 2022), 435–450.
+[36] Tulika Saha, Aditya Patra, Sriparna Saha, and Pushpak Bhattacharyya. 2020.
+Towards Emotion-aided Multi-modal Dialogue Act Classification. In Proceedings
+of the 58th Annual Meeting of the Association for Computational Linguistics.
+[37] Taylan K. Sen, Gazi Naven, Luke Gerstner, Daryl Bagley, Raiyan Abdul Baten,
+Wasifur Rahman, Md Kamrul Hasan, Kurtis Haut, Abdullah Al Mamun, Samiha
+Samrose, Anne Solbu, R. Eric Barnes, Mark G. Frank, and Ehsan Hoque. 2023.
+DBATES: Dataset for Discerning Benefits of Audio, Textual, and Facial Expression Features in Competitive Debate Speeches. IEEE Transactions on Affective
+Computing 14, 2 (April 2023), 1028–1043.
+[38] Li-Chen Shi, Ying-Ying Jiao, and Bao-Liang Lu. 2013. Differential entropy feature
+for EEG-based vigilance estimation. In 2013 35th Annual International Conference
+of the IEEE Engineering in Medicine and Biology Society (EMBC). 6627–6630.
+[39] Patrick E. Shrout and Joseph L. Fleiss. 1979. Intraclass correlations: Uses in
+assessing rater reliability. Psychological Bulletin 86, 2 (1979), 420–428.
+[40] M. Soleymani, J. Lichtenauer, T. Pun, and M. Pantic. 2012. A Multimodal Database
+for Affect Recognition and Implicit Tagging. IEEE Transactions on Affective
+Computing 3, 1 (Jan. 2012), 42–55.
+[41] Nitish Srivastava, Geoffrey Hinton, Alex Krizhevsky, Ilya Sutskever, and Ruslan
+Salakhutdinov. 2014. Dropout: a simple way to prevent neural networks from
+overfitting. J. Mach. Learn. Res. 15, 1 (Jan. 2014), 1929–1958.
+[42] Ramanathan Subramanian, Julia Wache, Mojtaba Khomami Abadi, Radu L. Vieriu,
+Stefan Winkler, and Nicu Sebe. 2018. ASCERTAIN: Emotion and Personality
+Recognition Using Commercial Sensors. IEEE Transactions on Affective Computing
+9, 2 (April 2018), 147–160.
+
+Conference acronym ’XX, June 03–05, 2026, Woodstock, NY
+Chen et al.
+[43] Du Tran, Lubomir Bourdev, Rob Fergus, Lorenzo Torresani, and Manohar Paluri.
+2015. Learning Spatiotemporal Features with 3D Convolutional Networks. In
+2015 IEEE International Conference on Computer Vision (ICCV). 4489–4497.
+[44] Michel Valstar, Jonathan Gratch, Björn Schuller, Fabien Ringeval, Denis Lalanne,
+Mercedes Torres Torres, Stefan Scherer, Giota Stratou, Roddy Cowie, and Maja
+Pantic. 2016. AVEC 2016: Depression, Mood, and Emotion Recognition Workshop
+and Challenge. In Proceedings of the 6th International Workshop on Audio/Visual
+Emotion Challenge. 3–10.
+[45] Michael W. Weiner, Dallas P. Veitch, Paul S. Aisen, Laurel A. Beckett, Nigel J.
+Cairns, Robert C. Green, Danielle Harvey, Clifford R. Jack, William Jagust, Enchi
+Liu, John C. Morris, Ronald C. Petersen, Andrew J. Saykin, Mark E. Schmidt, Leslie
+Shaw, Judith A. Siuciak, Holly Soares, Arthur W. Toga, and John Q. Trojanowski.
+2011. The Alzheimer’s Disease Neuroimaging Initiative: A review of papers
+published since its inception. Alzheimer’s & Dementia 8, 1S (Nov. 2011).
+[46] Qu Yang, Qinghongya Shi, Tongxin Wang, and Mang Ye. 2025. Uncertain Multimodal Intention and Emotion Understanding in the Wild. In 2025 IEEE/CVF
+Conference on Computer Vision and Pattern Recognition (CVPR). 24700–24709.
+[47] Shiqing Zhang, Yijiao Yang, Chen Chen, Xingnan Zhang, Qingming Leng, and
+Xiaoming Zhao. 2024. Deep learning-based multimodal emotion recognition from
+audio, visual, and text modalities: A systematic review of recent advancements
+and future prospects. Expert Systems with Applications 237 (2024), 121692.
+[48] Zhicheng Zhang, Pancheng Zhao, Eunil Park, and Jufeng Yang. 2024. MART:
+Masked Affective RepresenTation Learning via Masked Temporal Distribution
+Distillation. In 2024 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR). 12830–12840.
+[49] Minghui Zhao, Hongxiang Gao, Xinru Qi, Haiyan Yin, Yulei Song, Yamei Bai,
+Jianqing Li, Lulu Zhao, and Chengyu Liu. 2025. Multi-Query Cross-Modal Attention Fusion for Cognitive Impairment Recognition. IEEE Transactions on Neural
+Systems and Rehabilitation Engineering 33 (2025), 2520–2530.
+[50] Yuliang Zhao, Huawei Zhang, Jian Li, Siyang Song, Chao Lian, Yinghao Liu, Yulin
+Wang, and Changzeng Fu. 2025. Multimodal Depression Assessment Framework
+Integrating Personality and Gait for Older Adults With Medical Conditions. IEEE
+Transactions on Affective Computing 16, 3 (July 2025), 2048–2061.
+[51] Wei-Long Zheng, Wei Liu, Yifei Lu, Bao-Liang Lu, and Andrzej Cichocki. 2019.
+EmotionMeter: A Multimodal Framework for Recognizing Human Emotions.
+IEEE Transactions on Cybernetics 49, 3 (March 2019), 1110–1122.
+[52] Wei-Long Zheng and Bao-Liang Lu. 2015. Investigating Critical Frequency Bands
+and Channels for EEG-Based Emotion Recognition with Deep Neural Networks.
+IEEE Transactions on Autonomous Mental Development 7, 3 (Sept. 2015), 162–175.
+Received 20 February 2007; revised 12 March 2009; accepted 5 June 2009

@@ -1,0 +1,22 @@
+{
+  "title": "CRBP: A Benchmark Dataset of Color-Rendered 3-D-to-2.5-D Facial Projections",
+  "authors": [
+    "Sahil Sharma",
+    "Ashima Sood",
+    "Vijay Kumar"
+  ],
+  "year": 2026,
+  "abstract": "The Colour-Rendered Bosphorus Projections (CRBP) Face dataset overcomes key limitations in 3-D facial analysis by offering a photometrically normalized, multiview dataset specifically tailored for 2.5-D modeling. CRBP utilizes the Bosphorus 3D Face Database, reconstructing textured 3-D meshes for each individual and producing six canonical 2-D projections. To improve model compatibility and minimize background noise, each projection is processed using YOLOv8 for face detection. This results in two organized subsets, namely, CRBP-Raw (full scene) and CRBP-YOLOv8 (face-cropped). This dual-format design facilitates thorough benchmarking of pose-invariant, occlusion-resilient, and expression-aware models within a convolutional neural network-compatible image space. Dataset statistics indicate that YOLOv8 enhances facial alignment, however, it also introduces sample selection bias, especially in extreme yaw and occlusion scenarios. CRBP facilitates applications in emotion recognition, biometric authentication, and avatar creation. The dataset is available at: https://dx.doi.org/10.21227/4qns-ys45.",
+  "doi": "10.1109/mitp.2025.3624674",
+  "arxiv_id": null,
+  "venue": "IT Professional",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://pure.ulster.ac.uk/ws/files/238539959/Author_Manuscript.pdf",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W7130331673"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.1109/mitp.2025.3624674"
+}

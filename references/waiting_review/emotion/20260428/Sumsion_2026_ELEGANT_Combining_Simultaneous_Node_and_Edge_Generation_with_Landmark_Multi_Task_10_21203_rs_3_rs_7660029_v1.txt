@@ -1,0 +1,1434 @@
+ELEGANT: Combining Simultaneous Node and Edge
+Generation with Landmark Multi-Task Learning for
+Facial Action Unit Recognition
+Andrew Sumsion
+Brigham Young University
+Dah-Jye Lee
+Brigham Young University
+Research Article
+Keywords: Ensemble learning, Facial AU recognition, Facial landmarks, Graph neural network, Multi-task
+learning, Transformer
+Posted Date: February 11th, 2026
+DOI: https://doi.org/10.21203/rs.3.rs-7660029/v1
+License:   This work is licensed under a Creative Commons Attribution 4.0 International License.
+Read Full License
+Additional Declarations: No competing interests reported.
+
+ELEGANT: Combining Simultaneous Node and Edge
+Generation with Landmark Multi-Task Learning for Facial
+Action Unit Recognition
+Andrew Sumsion1 and Dah-Jye Lee1*
+1*Department of Electrical and Computer Engineering, Brigham Young University,
+Provo, 84602, UT, USA.
+*Corresponding author(s). E-mail(s): djlee@byu.edu;
+Contributing authors: andreww9@byu.edu;
+Abstract
+Facial Action Units (AUs) have recently been used in dementia detection, pain detection, talking head
+generation, and even facial reconstruction tasks. The success of each of these applications is at least
+partially due to the performance of the underlying AU recognition model. The commonly reported
+metric for comparing AU recognition is the average F1 score. Improving the average F1 score for AU
+recognition will directly improve the performance of each application that requires AU recognition.
+To improve the average F1 score, we propose simultaneously generating the nodes and edges for the
+graph neural network, strategically using landmark data, present additional AU recognition multitask learning methods, and introduce ensemble learning to AU recognition. Although most current
+solutions for AU recognition generate the nodes and the edges separately, our proposed method
+demonstrates the improvement that comes from simultaneously generating the nodes and edges. In
+addition, our method proposes to use the available landmark data in a multi-task learning method.
+Our solution also applies ensemble learning to AU recognition. Through extensive experimentation,
+we demonstrate an improvement in the state-of-the-art average F1 score from 66.3 to 67.3 and from
+66.9 to 67.8 on the BP4D and DISFA datasets, a considerable improvement in this ﬁeld. These
+results underscore the substantial improvements our proposed method brings to the application of
+AU recognition.
+Keywords: Ensemble learning, Facial AU recognition, Facial landmarks, Graph neural network, Multi-task
+learning, Transformer
+1 Introduction
+Facial action units (AUs) have been used recently
+in dementia detection [1], pilot mental workload
+assessment [2], talking head generation [3], artiﬁcial expression synthetization [4], and other tasks
+[5]. Each of these applications takes AU recognition as the input for its task. The performance
+of the underlying AU recognition model drives
+at least part of the success for each of these
+applications. Improving the average F1 score for
+an AU recognition model will also enhance the
+performance of each of these applications.
+Current solutions for AU recognition commonly use Graph Neural Networks (GNNs) [6–12].
+1
+
+Previous
+Methods
+ELEGANT
+Pre-training
+✓
+✓
+GNN
+✓
+✓
+Attention
+✓
+✓
+Multi-Dimensional Edges
+✓
+✓
+Simultaneous Node & Edge
+Creation (AGG Module)
+✗
+✓
+Landmark
+prediction
+as
+multi task learning (COAL
+Module)
+✗
+✓
+Ensemble Learning
+✗
+✓
+Table 1 Contributions: We contribute simultaneous
+node & edge creation through our AGG module, using
+landmark predictions in multi-task learning through our
+COAL module, and ensemble learning. Together, these
+contributions form the ELEGANT solution.
+Now that many use GNNs to improve AU recognition performance, the discussion has transitioned
+to focus on the method that generates the optimal nodes and edges. Current methods generate
+the nodes and edges separately [6–12] with some
+methods even generating the nodes and edges in
+separate training runs [11]. In addition, both the
+BP4D [13, 14] and DISFA [15, 16] datasets contain
+facial landmarks. Methods use these landmarks as
+an intermediate prediction to crop to certain areas
+of the face.
+Despite the success achieved by generating
+nodes and edges separately, there remains potential for improvement in simultaneously creating
+both nodes and edges. A similar argument is found
+in related ﬁelds through model fusion or model
+consolidation. Model consolidation argues for better performance by merging multiple models into
+one model [17]. The reasoning behind model consolidation is that when a model learns multiple
+tasks, it can improve the overall performance on
+each task individually. The same reasoning can be
+applied to learning the nodes and edges simultaneously during training. In addition, many of the
+methods that do not crop to certain areas of the
+face throw away the landmark data. Ignoring the
+available data limits the overall performance of a
+system.
+The current approach of generating nodes and
+edges separately is in contrast to the beneﬁts
+found in model consolidation. In addition, the current use of landmark data limits which models
+can use this additional training data. We propose a solution that simultaneously learns the
+nodes and edges for the GNN and strategically
+uses the landmark data. We name our solution Ensemble Learning Encoder GrAph Neural
+Multi-Task Learning (ELEGANT). The simultaneous node and edge creation happens with our
+Attention Graph Generator (AGG) module. Later
+in the model’s architecture, the landmark data is
+used to introduce landmark prediction as a Multi-
+Task Learning (MTL) method in our COntrastive
+Au-co-prediction Landmark (COAL) module. In
+addition, ELEGANT combines two base models
+in an ensemble learning approach, which increases
+performance even further. Notably, ELEGANT
+outperformed all previous AU recognition solutions on the average F1 metric even without
+ensemble learning. ELEGANT’s contributions are
+compared with previous methods in Table 1.
+In summary, the contributions of this work
+include:
+1. The proposal of a neural network architecture, ELEGANT, which simultaneously learns the
+nodes and edges within the AGG module, allowing
+for interaction before being passed into the GNN.
+2. We introduce using landmark predictions
+as an MTL approach for AU recognition within
+our COAL learning module. This additional training data provides a more complete understanding
+of the face in general. Previous solutions could
+only use the additional landmark data when their
+model architecture directly used it.
+3. We also introduce additional MTL learning methods in the COAL learning module and
+ensemble learning for AU recognition. Our solution uses established deep learning methodologies
+speciﬁcally applied to AU recognition in areas that
+have not been extensively explored.
+4. Extensive experimentation that provides
+evidence that the ELEGANT solution outperforms all other current state-of-the-art methods on
+the generally used AU recognition datasets: BP4D
+[13, 14] and DISFA [15, 16].
+The subsequent sections of this paper are organized as follows. Section 2 provides an overview
+of the necessary background, followed by Section
+3 with the proposed methodology. Then, Section
+4 presents the associated results. Each element of
+our model is analyzed through the ablation study
+given in Section 5, and we provide a discussion of
+our ﬁndings in Section 6. Finally, we conclude in
+Section 7.
+2
+
+Fig. 1 Example images: These images are taken from
+the BP4D-Spontaneous and DISFA datasets. The left two
+are from the BP4D dataset, while the right two are from
+the DISFA dataset.
+AU #
+FACS name
+BP4D
+DISFA
+1
+Inner brow raiser
+✓
+✓
+2
+Outer brow raiser
+✓
+✓
+4
+Brow lowerer
+✓
+✓
+6
+Cheek raiser
+✓
+✓
+7
+Lid tightener
+✓
+✗
+9
+Nose wrinkler
+✗
+✓
+10
+Upper lip raiser
+✓
+✗
+12
+Lip corner puller
+✓
+✓
+14
+Dimpler
+✓
+✗
+15
+Lip corner depressor
+✓
+✗
+17
+Chin raiser
+✓
+✗
+23
+Lip tightener
+✓
+✗
+24
+Lip pressor
+✓
+✗
+25
+Lips part
+✗
+✓
+26
+Jaw drop
+✗
+✓
+Table 2 FACS Descriptions: Facial Action Coding
+System (FACS) terminology corresponds to the AU
+numbers within the BP4D and DISFA datasets. A
+checkmark (✓) indicates inclusion within the dataset,
+while a cross (✗) denotes exclusion.
+2 Background
+AUs were originally developed as part of the Facial
+Action Coding System (FACS) to describe human
+facial motion using anatomical movements [18].
+Real-world applications ﬁrst began with depression analysis [19], micro-expression recognition
+[20], emotion recognition [21–23], and have now
+been applied in various ﬁelds [5]. The BP4D
+[13, 14] and DISFA [15, 16] datasets were released
+in 2013 to serve as benchmarks for AU recognition.
+Example images are shown in Figure 1 while Table
+2 lists the AUs in these datasets. The average F1
+score is generally recognized as the best metric to
+compare performance across diﬀerent research in
+this ﬁeld [9–12, 24–29].
+2.1 Landmarks in AU Recognition
+Both the BP4D [13, 14] and DISFA [15, 16]
+datasets provide landmark data for training purposes. Some methods use these landmarks for
+cropping to areas of the face [30], normalization
+[25], pre-processing techniques [24], cropping [8],
+or an anchor for their predictions [12]. Many of
+these methods have improved the average F1 score
+by using the provided landmark labels.
+However, an increasing number of studies do
+not use landmark information [9–11, 26, 29, 31].
+Some claim that using landmarks is restrictive
+[29]. Many others claim that their method performed better without using this additional information, but seem to suggest that having this
+additional data would improve results. However,
+these researchers have no way of including the
+landmark data in their solution’s architecture and
+simply must set these data aside. Our solution
+proposes using these landmark data in our COAL
+learning module in a way that can be applied to
+all future research projects.
+2.2 Graph Neural Network with
+AU Recognition
+GNN based AU recognition approaches began in
+2018 [6], and many have continued to use GNNs
+in their AU recognition architecture [7–12]. GNN
+based AU recognition architectures have focused
+improvements on providing probailistic solutions
+[7], using the edges as correlation between AUs
+[8], addressing class imbalance [9], and moving beyond maximum likelihood estimation [10].
+Recent improvements have focused on making
+the edges in a GNN multidimensional [11] and
+combining region and global feature learning [12].
+These methods generate the nodes and the
+edges in diﬀerent locations within the network.
+Some methods, such as ME-GraphAU, generate
+the nodes and the edges even in separate training
+runs [11]. ELEGANT builds on previous advancements by simultaneously generating edges and
+nodes while uniquely incorporating established
+deep learning methodologies, oﬀering a higher
+average F1 score in AU recognition.
+2.3 Ensemble Learning
+Ensemble learning, combines multiple models to
+improve performance. The ﬁrst deep ensemble
+appeared in 2016, merging Bayesian and non-
+Bayesian neural networks [32]. Despite ensemble
+learning’s long history, ELEGANT is the ﬁrst AU
+recognition model to employ ensemble learning,
+leveraging its beneﬁts to enhance AU recognition
+performance.
+3
+
+Fig. 2 ELEGANT Base Learner Architecture: The ELEGANT system presents unique advancements within the
+AGG (Attention Graph Generator) module and the COAL (COntrastive AU-Co-Prediction Landmark) learning module.
+We highlight the AGG module in red and the COAL module in blue. The portions of the architecture that are found in
+prior works are highlighted in green.
+3 Methods
+In this paper, we propose a new architecture, ELE-
+GANT for AU recognition. In our approach, the
+image is passed through pre-processing, the visual
+backbone, and then our AGG module generates
+the nodes and edges simultaneously. Next, the
+edges and nodes are passed to the GCN, which is
+then passed to both our COAL learning module
+and the AU ﬁnal prediction head. The base learner
+of our ELEGANT solution is given in Figure 2.
+To maintain the baseline and accurately compare with previous studies, ELEGANT also uses
+MTCNN [33] to crop and align the face as preprocessing. The visual backbone is a ViT [34],
+speciﬁcally a Swin Transformer base model [35].
+The graph neural network is a gated GCN [36].
+As these three items are used in previous articles
+[11, 12], we do not give a further explanation in
+this article concerning these topics. However, we
+provide an in-depth discussion of our unique contributions to modifying and including the AGG,
+COAL learning, and Ensemble Learning modules
+for AU recognition.
+3.1 AGG Module
+While previous methods generate the nodes and
+edges independently [8–12], our method generates the nodes and edges simultaneously. This is
+accomplished by using attention as deﬁned as:
+Attention(Q, K, V ) = softmax(QKT
+√dk
+)V
+(1)
+where Q is the query, K is the key, and V is
+the value as deﬁned by Vaswani et al. [37]. Using
+the attention mechanism, the nodes and edges
+are generated simultaneously, allowing for each to
+learn from the other before any combination in the
+GNN.
+Before the attention layers, we use a learned
+positional encoding that passes the input vector
+through a linear layer for each input, resulting
+in learning a unique representation for each positional location. Positional encodings are critical
+to attention heads. We have the total number of
+input and output nodes for the attention layers to
+be:
+N = n × n + n
+(2)
+where N represents the number of inputs into
+the Encoder and n represents the number of AUs
+being classiﬁed. This results in having enough outputs to then split the ﬁrst n outputs from the
+encoder to be the nodes and the remaining n × n
+elements to be the edges. We combine multiple
+encoder layers, using three for the BP4D dataset
+and ﬁve for the DISFA dataset. We provide a
+diagram to better visualize the AGG module
+in Figure 3. The output is then passed to the
+single-layer GNN.
+3.2 COAL Learning
+The COntrasitive AU-co-prediction Landmark
+(COAL) learning module is built to perform MTL
+and strategically use the landmark data included
+in the datasets. We include three additional
+tasks to the AU predictions to increase the overall performance: landmark prediction, contrastive
+embedding learning, and AU co-prediction. A
+schematic illustrating the COAL learning module
+is provided in Figure 4.
+Including landmark predictions as an MTL
+method allows us to use the landmark data
+included in the datasets as additional training
+data. Using these data as training data allows us
+to combine the beneﬁts of not being limited to
+4
+
+Fig. 3 AGG Module: While previous methods used linear or attention layers exclusively for edge generation [11], the
+AGG (Attention Graph Generator) module generates nodes and edges simultaneously before passing the data to the GNN.
+This ensures a more cohesive interaction between nodes and edges, not only in the GNN but also before it.
+Fig.
+4 COAL
+Learning
+Module:
+The
+COAL
+(COntrasitive
+AU-Co-Prediction
+Landmark)
+learning
+module enhances the average F1 score, as it engages
+the overall network in three supplementary tasks, which
+improves generalization. Speciﬁcally, the module employs
+landmark predictions, a contrastive loss embedding, and
+AU Co-occurrence predictions.
+cropping to landmark areas on the face as well as
+the beneﬁt of additional training information.
+3.3 Ensemble Learning
+We note that using the FEC dataset for pretraining is beneﬁcial for increasing the average
+F1 score for AU recognition. This is because pretraining distills speciﬁc information about facial
+Fig. 5 Ensemble Learning: Ensemble learning is integrated into the ELEGANT approach through two networks. The initial network undergoes pre-training on
+the FEC dataset and subsequent ﬁne-tuning for the AU
+recognition task, while the second network replaces the
+pre-training with random initialization. AU conﬁdences
+between the two networks are combined in a bagging
+ensemble method to furnish a more accurate AU prediction.
+structure into the network before the AU recognition training. However, the labels for the FEC
+dataset are simply between three images in which
+two facial expressions are more similar than the
+other facial expression. In this related task, the
+network can learn speciﬁc areas of the face with
+greater understanding. We ﬁnd that it also hinders the network’s ability to classify certain AUs
+due to the underlying bias in the FEC dataset.
+We include the use or not use of the FEC
+dataset as the diﬀerence in the training data in
+our bagging ensemble approach, as seen in Figure
+5. While researchers have previously pre-trained
+networks on the FEC dataset, we train two networks: one with the FEC pre-training weights and
+5
+
+one without. Then, we combine the two networks’
+ﬁnal predictions in a bagging method.
+3.4 Training Details
+We ﬁrst pretrain a base learner on the FEC
+dataset. We then train the AU recognition model
+with the COAL learning module, and then ﬁnetune the model directly on the AU prediction task
+without the COAL learning module.
+For pretraining, we use the AdamW optimizer
+[38] with a learning rate weight decay of 5e-4. The
+pretraining is done on the FEC dataset task.
+After pre-training, we train with the COAL
+learning module included. For our ensemble, we
+have one base model that uses the pretrained
+weights and another base model that uses randomly initialized weights. We use a learning rate of
+1e-4 for both networks, regardless of their initialization method, across both datasets. We weight
+each loss from the COAL learning module by
+weights that were found by inspection, although
+we maintained the weights across folds to prevent
+overﬁtting. The initial training was conducted
+for 5 epochs, and the best-performing epoch was
+selected while ensuring that each fold used the
+same epoch to again prevent overﬁtting.
+Upon completing the ﬁrst training stage, we
+removed the COAL learning module, decreased
+the learning rate, and ﬁne-tuned the model
+directly on the AU recognition task. We now train
+for 20 epochs, again selecting the same epoch
+across all folds to prevent overﬁtting. To maintain
+a valid comparison, we perform three-fold crossvalidation using the same train and validation
+split as previous work [11, 12].
+3.5 Data
+BP4D [13] is a manually annotated dataset that
+includes facial videos in response to tasks that
+elicit diﬀerent emotions. The dataset also contains
+ground truth 2D landmark points. The 41 participants pictured in the dataset ranged from 18
+to 29 years old. Of the 41 participants, 23 were
+women and the remaining 18 were men. Six of
+the participants were Black, 11 were Asian, four
+were Hispanic or Latino, and 20 were White or
+Caucasian.
+DISFA [15] is another manually annotated
+dataset that contains facial videos. The dataset
+also included 66 facial landmark points for each
+image. The dataset contains 27 participants aged
+18 to 50 years old. 12 of the participants were
+women and 15 were men. One of the participants
+was Black, three were Asian, two were Hispanic or
+Latino, and 21 were White or Caucasian.
+FEC [39] is not a AU recognition dataset.
+Rather, it is a dataset that contains triplets of
+images and includes a label for which image is the
+most diﬀerent from the other two. The dataset is
+a large-scale facial expression dataset with 87,517
+diﬀerent images downloaded from Flickr. As this
+dataset does not contain any AU labels, we use it
+in the pre-training step of the ELEGANT method.
+4 Results
+We ﬁnd that across the literature, not one solution
+dominates performance over all the selected AUs
+in the BP4D and DISFA datasets. This is seen
+with the improvements from line to line not fully
+outperforming all AUs in the previous line in Table
+3 and Table 4. Rather, the focus is on the average
+F1 score across all AUs. Across AU recognition
+literature the average F1 score is used as the main
+metric for comparison [9–12, 24–29].
+In Table 3, we compare against other AU
+recognition methods on the BP4D dataset. We
+ﬁnd that the ELEGANT method obtains the best
+average F1 score on the BP4D dataset. Similarly, we compare the ELEGANT method against
+the same top-performing methods on the DISFA
+dataset in Table 4. The ELGEGANT method
+again outperforms all other methods that benchmark results with the average F1 score. Our
+ELEGANT solution achieves the highest average
+F1 score on both the BP4D and DISFA datasets.
+5 Ablation Study
+We provide an ablation study on the main components of our contributions. This is done to
+analyze how each contribution aﬀects the overall
+performance individually and collectively.
+5.1 AGG Module Ablation
+The AGG module is central to the overall creation
+of the graph for the nodes and edges. As such,
+we cannot make comparison without it, as we will
+have no way to generate a graph. We use the prior
+work of ME-GraphAU to serve as a baseline. The
+6
+
+Method
+Individual AU F1 Scores
+Avg. F1
+1
+2
+4
+6
+7
+10
+12
+14
+15
+17
+23
+24
+Score (↑)
+DRML [40]
+36.4
+41.8
+43.0
+55.0
+67.0
+66.3
+65.8
+54.1
+33.2
+48.0
+31.7
+30.0
+48.3
+EAC-Net [30]
+39.1
+35.2
+48.6
+76.1
+72.9
+81.9
+86.2
+58.8
+7.5
+59.1
+35.9
+35.8
+55.9
+JAA-Net [24]
+47.2
+44.0
+54.9
+77.5
+74.6
+84.0
+86.9
+61.9
+43.6
+60.3
+42.7
+41.9
+60.0
+LP-Net [25]
+43.4
+38.0
+54.2
+77.1
+76.7
+83.8
+87.2
+63.3
+45.3
+60.5
+48.1
+54.2
+61.0
+ARL [31]
+45.8
+39.8
+55.1
+75.7
+77.2
+82.3
+86.6
+58.8
+47.6
+62.1
+47.4
+55.4
+61.1
+AU-GCN [8]
+46.8
+38.5
+60.1
+[80.1]
+79.5
+84.8
+88.0
+67.3
+52.0
+63.2
+40.9
+52.8
+62.8
+SRERL [7]
+46.9
+45.3
+55.6
+77.1
+78.4
+83.5
+87.6
+63.9
+52.2
+63.9
+47.1
+53.3
+62.9
+UGN-B [9]
+54.2
+46.4
+56.8
+76.2
+76.7
+82.4
+86.1
+64.7
+51.2
+63.1
+48.5
+53.6
+63.3
+HMP-PS [10]
+53.1
+46.1
+56.0
+76.5
+76.9
+82.1
+86.4
+64.8
+51.5
+63.0
+49.9
+54.5
+63.4
+SEV-Net [41]
+[58.2] [50.4]
+58.3
+[81.9] 73.9
+[87.8] 87.5
+61.6
+52.6
+62.2
+44.6
+47.6
+63.9
+AUFM [26]
+57.4
+[52.6] [64.6]
+79.3
+[81.5] 82.7
+85.6
+67.9
+47.3
+58.0
+47.0
+44.9
+64.1
+FAUDT [27]
+51.7
+49.3
+61.0
+77.8
+79.5
+82.9
+86.3
+67.6
+51.9
+63.0
+43.7
+[56.3]
+64.2
+KDSRL [28]
+53.3
+47.4
+56.2
+79.4
+[80.7]
+85.1
+89.0
+67.4
+55.9
+61.9
+48.5
+49.0
+64.5
+ME-GraphAU [11]
+52.7
+44.3
+60.9
+79.9
+80.1
+[85.3]
+89.2
+[69.4] 55.4
+64.4
+49.8
+55.1
+65.5
+SACL [12]
+57.8
+48.8
+59.4
+79.1
+78.8
+84.0
+88.2
+65.2
+[56.1]
+63.8
+[50.8]
+55.2
+65.6
+GTLE-Net [29]
+[58.2] 48.7
+61.5
+78.7
+79.2
+84.2
+[89.8] 66.3
+[56.7] [64.8]
+[53.5] 53.6
+[66.3]
+ELEGANT (Ours)
+57.4
+50.1
+[66.9] 79.2
+80.4
+84.9
+[89.5]
+[68.9]
+55.2
+[65.6] [50.8]
+[59.1]
+[67.3]
+Table 3 F1 scores on the BP4D dataset: The proposed ELEGANT method surpasses all other methods on the
+average F1 score. We focus on the average F1 score for comparison, as none of the previous methods achieves the highest
+across all individual AU F1 scores. For ease of comparison, the highest-performing value in each column is bolded and
+bracketed, and the second-highest-performing value is bracketed.
+Method
+AU (F1 Score)
+Avg. F1
+1
+2
+4
+6
+9
+12
+25
+26
+Score (↑)
+DRML [40]
+17.3
+17.7
+37.4
+29.0
+10.7
+37.7
+38.5
+20.1
+26.1
+EAC-Net [30]
+41.5
+26.4
+66.4
+50.7
+[80.5]
+[89.3]
+88.9
+15.6
+48.5
+AU-GCN [8]
+32.3
+19.5
+55.7
+[57.9]
+61.4
+62.7
+90.9
+60.0
+55.0
+SRERL [7]
+45.7
+47.8
+59.6
+47.1
+45.6
+76.5
+84.3
+43.6
+55.9
+JAA-Net [24]
+43.7
+46.2
+56.0
+41.4
+44.7
+69.6
+88.3
+58.4
+56.0
+LP-Net [25]
+29.9
+24.7
+72.7
+46.8
+49.6
+72.9
+93.8
+65.0
+56.9
+AUFM [26]
+41.5
+44.9
+60.3
+51.5
+50.3
+70.4
+91.3
+55.3
+58.2
+ARL [31]
+43.9
+42.1
+63.6
+41.8
+40.0
+76.2
+95.2
+66.8
+58.7
+SEV-Net [41]
+55.3
+53.1
+61.5
+53.6
+38.2
+71.6
+[95.7]
+41.5
+58.8
+UGN-B [9]
+43.3
+48.1
+63.4
+49.5
+48.2
+72.9
+90.8
+59.0
+60.0
+HMP-PS [10]
+38.0
+45.9
+65.2
+50.9
+50.8
+76.0
+93.3
+[67.6]
+61.0
+FAUDT [27]
+46.1
+48.6
+72.8
+[56.7]
+50.0
+72.1
+90.8
+55.4
+61.5
+ME-GraphAU [11]
+54.6
+47.1
+72.9
+54.0
+[55.7]
+76.7
+91.1
+53.0
+63.1
+KDSRL [28]
+60.4
+59.2
+67.5
+52.7
+51.5
+76.1
+91.3
+57.7
+64.5
+SACL [12]
+62.0
+[65.7]
+[74.5]
+53.2
+43.1
+[76.9]
+[95.6]
+53.1
+65.5
+GTLE-Net [29]
+[64.5]
+63.2
+70.1
+47.7
+53.6
+76.2
+94.8
+65.1
+[66.9]
+ELEGANT (Ours)
+[67.2]
+[64.1]
+[74.2]
+52.2
+47.0
+73.1
+95.1
+[69.8]
+[67.8]
+Table 4 F1 scores on the DISFA dataset: The proposed ELEGANT method surpasses all other methods on the
+average F1 score. We focus on the average F1 score for comparison, as none of the previous methods achieves the highest
+across all individual AU F1 scores. The top-performing method in each column is bolded and bracketed, while the second
+top-performing method is bracketed.
+most accurate comparison between ME-GraphAU
+and our method is seen in Models B, C, and D in
+Table 5 as ME-GraphAU has one MTL approach.
+The results on Models B, C, and D obtained
+average F1 scores of 65.4, 65.6, and 65.5, while
+the ME-Graph AU method achieved 63.1 on the
+DISFA dataset. The improvement of 2.3, 2.5, and
+2.4 average F1 percentage points demonstrates the
+contributions of the AGG module.
+5.2 COAL Learning Module
+Ablation
+In the ELEGANT method, we include the landmark data in the ﬁnal stage of the architecture, the
+COAL learning module. The baseline diﬀerence
+between including the COAL module increases the
+average F1 score by 2.3 average F1 score points
+as seen in the diﬀerence between Model A and
+Model E in Table 5. This highlights the contribution of the COAL learning module. In addition,
+Models B, C, and D in Table 5 demonstrate the
+individual improvement of each element of the
+COAL learning module. COAL 1 represents the
+AU co-occurrence predictions, COAL 2 represents
+the contrastive learning, and COAL 3 represents
+the landmark predictions.
+7
+
+Method
+AGG
+COAL 1
+COAL 2
+COAL 3
+Pre-train
+Ensemble
+Average F1 Score (↑)
+Model A
+✓
+64.7
+Model B
+✓
+✓
+65.4
+Model C
+✓
+✓
+65.6
+Model D
+✓
+✓
+65.5
+Model E
+✓
+✓
+✓
+✓
+67.0
+Model F
+✓
+✓
+✓
+✓
+✓
+67.7
+ELEGANT
+✓
+✓
+✓
+✓
+✓
+✓
+67.8
+Table 5 Overall Ablation Study: Each model (A-F) has each of the contributions of this paper applied one at a time to
+demonstrate their individual contributions. The ﬁnal line (ELEGANT) demonstrates the overall improvement with all the
+contributions of this paper included. COAL 1 corresponds to AU co-occurrence predictions, COAL 2 involves contrastive
+learning, and COAL 3 pertains to landmark predictions. All assessments were conducted using the DISFA dataset.
+Method
+BP4D
+Avg.
+DISFA
+Avg.
+F1 Score
+(↑)
+F1 Score
+(↑)
+DRML [40]
+48.3
+26.1
+EAC-Net [30]
+55.9
+48.5
+JAA-Net [24]
+60.0
+56.0
+LP-Net [25]
+61.0
+56.9
+ARL [31]
+61.1
+58.7
+AU-GCN [12]
+62.8
+55.0
+SRERL [7]
+62.9
+55.9
+UGN-B [9]
+63.3
+60.0
+HMP-PS [10]
+63.4
+61.0
+FAUDT [27]
+64.2
+61.5
+ME-GraphAU [11]
+65.5
+63.1
+SACL [12]
+[65.6]
+[65.5]
+ELEGANT
+with
+no
+pretrain, no Ensemble (Ours)
+[65.9]
+[67.0]
+ELEGANT with pre-train
+and Ensemble (Ours)
+[67.3]
+[67.8]
+Table 6 No Additional Data Model Comparison:
+Even without using additional pre-training data, the
+ELEGANT method outperforms all prior approaches on
+the average F1 score that do not use pre-training data.
+Method
+BP4D
+Avg.
+DISFA
+Avg.
+F1 Score
+(↑)
+F1 Score
+(↑)
+SEV-Net [41]
+63.9
+58.8
+AUFM [26]
+64.1
+58.2
+KDSRL [28]
+64.5
+64.5
+GTLE-Net [29]
+[66.3]
+[66.9]
+ELEGANT
+with
+no
+Ensemble (Ours)
+[66.6]
+[67.7]
+ELEGANT with Ensemble
+(Ours)
+[67.3]
+[67.8]
+Table 7 With Additional Data Model
+Comparison: Even without using the ensemble
+learning technique, the ELEGANT method outperforms
+all prior approaches on the average F1 score that use
+additional data during training.
+5.3 Ensemble Learning Ablation
+We demonstrate that even without the ensemble
+learning, the ELEGANT method still improves
+over the previous methods on the average F1
+score. When we use no additional data and no
+ensemble learning, the ELEGANT method outperforms previous methods, as seen in Table 6.
+Many researchers have included additional data in
+training, such as pretraining on the FEC dataset.
+We demonstrate in Table 7 that the ELEGANT
+method outperforms all these methods when pretrained on the FEC dataset and without ensemble
+learning.
+6 Discussion
+Improving the average F1 score for AU recognition
+can enhance the performance of certain downstream applications. We ﬁnd that simultaneously
+generating the nodes and edges while using landmark data as additional training data within our
+COAL learning module improves the average F1
+score. Additionally, we ﬁnd that while pretraining on the FEC dataset increases the average F1
+score, it hinders performance on certain AUs.
+Many previous methods generate nodes and
+edges in separate locations in the network, and
+even across diﬀerent training runs. We ﬁnd that
+using our AGG module to generate the nodes and
+edges simultaneously in the same location within
+the network architecture improves the average F1
+score. We hypothesize that this is due to the
+nodes and edges attending to each other before
+being passed into the GNN. Future researchers
+can apply this ﬁnding by exchanging their graph
+generation method with positional encodings and
+transformer layers, as we described in our AGG
+module.
+Before this article, in AU recognition, landmark data was used only in intermediate steps,
+such as cropping to certain locations. We ﬁnd
+that using landmark predictions as an additional
+MTL method in the COAL learning module also
+improves the average F1 score. Future AU recognition models can apply this ﬁnding by adding
+8
+
+an MTL head for landmark prediction, which will
+make the network learn a more comprehensive
+facial representation.
+We discovered that while pretraining on the
+FEC dataset improved the average F1 score, it
+actually decreased the F1 score for certain AUs.
+AUs such as inner brow raiser, brow lowerer,
+chin raiser, and lip tightener decreased in performance when the model was pretrained on the FEC
+dataset. We hypothesize that this is due to the fact
+that these AUs being smaller facial expressions.
+The FEC dataset labels which of the three images
+contains the most diﬀerent facial expressions. As
+such, these smaller facial motions were primarily
+overlooked as the labelers were instructed to focus
+on the larger diﬀerences in facial expressions. As
+the model is pretrained on this dataset, it is taught
+to ignore these smaller facial motions, making it
+more diﬃcult to relearn them during model training. Future researchers can apply this ﬁnding as
+we did by using a stacking ensemble or other methods that take into account the tradeoﬀs of using
+the FEC dataset for pretraining.
+We acknowledge that our solution does not
+account for variation in lighting, nor extreme head
+rotation. In addition, as with many face recognition datasets [42], our solution is not tested in
+variation across race, gender, and age. These limitations are primarily due to the BP4D and the
+DISFA datasets being collected in a controlled
+environment. Future research can focus on developing evaluation sets that contain this variation
+or designing solutions to address these directly. As
+these limitations are outside the scope of this article, we maintain our position on the importance
+of our contributions to the ﬁeld of AU recognition
+while simultaneously encouraging future research
+to address these limitations.
+Future researchers can apply the ﬁndings of
+this article by using attention layers for generating the nodes and edges simultaneously, as we
+do in our AGG module. Researchers can also add
+landmark prediction as a way to incorporate additional data in an MTL learning approach, as we do
+in our COAL learning module. Researchers may
+also be interested in adding more MTL learning
+approaches, such as contrastive learning and AU
+co-occurrence predictions. Finally, researchers can
+be intentional with their use of pre-training data
+and acknowledge the tradeoﬀs that come from
+using it.
+7 Conclusion
+In conclusion, this study presents an AU recognition solution, ELEGANT, which incorporates
+a new AGG module, a COAL learning module,
+and ensemble learning. This solution introduces a
+unique approach that simultaneously develops the
+edges and nodes for the AU recognition task. It
+also provides three MTL methods that contribute
+to learning the AU recognition task more broadly:
+AU co-occurrence prediction, contrastive learning,
+and facial landmark prediction. Finally, this article brings the beneﬁts of ensemble learning to
+the AU recognition ﬁeld. The experiments demonstrate the improvements from each of these contributions and ultimately achieve SOTA results on
+the BP4D and DISFA datasets by increasing the
+average F1 score by 1.0 and 0.9 percentage points,
+respectively. The code for this method is available
+at https://github.com/byu-rvl/ELEGANT.
+Declarations
+Acknowledgements: This work is made possible by researchers at the University of Denver and
+Binghamton University who created and provided
+the DISFA and BP4D datasets.
+Author contributions: Andrew Sumsion: Conceptualization, methodology, software, validation,
+formal
+analysis,
+investigation,
+data
+curation,
+manuscript writing, manuscript review and editing, and visualization. Dah-Jye Lee: Conceptualization, resources, manuscript review and editing,
+supervision, project administration, and funding
+acquisition. All authors reviewed and approved
+the ﬁnal version of the manuscript.
+Competing interests: The authors declare no
+competing interests
+Data availability: A link to our code is provided
+within the manuscript.
+Funding: The authors did not receive support
+from any organization for the submitted work.
+References
+[1] Okunishi, T., Zheng, C., Bouazizi, M., Ohtsuki, T., Kitazawa, M., Horigome, T., Kishimoto, T.: Dementia and mci detection based
+on comprehensive facial expression analysis
+9
+
+from videos during conversation. IEEE Journal of Biomedical and Health Informatics
+(2025)
+[2] Luo, S., Zhang, C., Zhu, W., Chen, H., Yuan,
+J., Li, Q., Wang, T., Jiang, C.: Noncontact
+perception for assessing pilot mental workload during the approach and landing under
+various weather conditions. Signal, Image and
+Video Processing 19(2), 98 (2025)
+[3] Shi, W., Xue, Z., Wen, Y.: Keypoints and
+action units jointly drive talking head generation for video conferencing. IEEE Transactions on Circuits and Systems for Video
+Technology (2025)
+[4] Sham, A.H., Tikka, P., Lamas, D., Anbarjafari, G.: Synthesizing facial expressions
+in dyadic human–robot interaction. Signal,
+Image and Video Processing 18(Suppl 1),
+909–918 (2024)
+[5] Zhi, R., Liu, M., Zhang, D.: A comprehensive
+survey on automatic facial action unit analysis. The Visual Computer 36, 1067–1093
+(2020)
+[6] Corneanu, C., Madadi, M., Escalera, S.:
+Deep structure inference network for facial
+action unit recognition. In: Proceedings of the
+European Conference on Computer Vision
+(ECCV), pp. 298–313 (2018)
+[7] Li, G., Zhu, X., Zeng, Y., Wang, Q., Lin, L.:
+Semantic relationships guided representation
+learning for facial action unit recognition.
+In: Proceedings of the AAAI Conference on
+Artiﬁcial Intelligence, vol. 33, pp. 8594–8601
+(2019)
+[8] Liu, Z., Dong, J., Zhang, C., Wang, L., Dang,
+J.: Relation modeling with graph convolutional networks for facial action unit detection. In: MultiMedia Modeling: 26th International Conference, MMM 2020, Daejeon,
+South Korea, January 5–8, 2020, Proceedings, Part II 26, pp. 489–501 (2020). Springer
+[9] Song, T., Chen, L., Zheng, W., Ji, Q.: Uncertain graph neural networks for facial action
+unit detection. In: Proceedings of the AAAI
+Conference on Artiﬁcial Intelligence, vol. 35,
+pp. 5993–6001 (2021)
+[10] Song, T., Cui, Z., Zheng, W., Ji, Q.: Hybrid
+message
+passing
+with
+performance-driven
+structures for facial action unit detection. In:
+Proceedings of the IEEE/CVF Conference on
+Computer Vision and Pattern Recognition,
+pp. 6267–6276 (2021)
+[11] Luo, C., Song, S., Xie, W., Shen, L., Gunes,
+H.: Learning multi-dimensional edge featurebased au relation graph for facial action unit
+recognition. arXiv preprint arXiv:2205.01782
+(2022)
+[12] Liu, X., Yuan, K., Niu, X., Shi, J., Yu,
+Z.,
+Yue,
+H.,
+Yang,
+J.:
+Multi-scale
+promoted self-adjusting correlation learning for
+facial action unit detection. arXiv preprint
+arXiv:2308.07770 (2023)
+[13] Zhang,
+X.,
+Yin,
+L.,
+Cohn,
+J.F.,
+Canavan, S., Reale, M., Horowitz, A., Liu, P.,
+Girard, J.M.: Bp4d-spontaneous: a highresolution spontaneous 3d dynamic facial
+expression database. Image and Vision Computing 32(10), 692–706 (2014)
+[14] Zhang, X., Yin, L., Cohn, J.F., Canavan, S.,
+Reale, M., Horowitz, A., Liu, P.: A highresolution spontaneous 3d dynamic facial
+expression database. In: 2013 10th IEEE
+International Conference and Workshops on
+Automatic Face and Gesture Recognition
+(FG), pp. 1–6 (2013). IEEE
+[15] Mavadati, S.M., Mahoor, M.H., Bartlett, K.,
+Trinh, P., Cohn, J.F.: Disfa: A spontaneous
+facial action intensity database. IEEE Transactions on Aﬀective Computing 4(2), 151–
+160 (2013)
+[16] Mavadati, S.M., Mahoor, M.H., Bartlett, K.,
+Trinh, P.: Automatic detection of non-posed
+facial action units. In: 2012 19th IEEE International Conference on Image Processing, pp.
+1817–1820 (2012). IEEE
+[17] Li, W., Peng, Y., Zhang, M., Ding, L., Hu,
+H., Shen, L.: Deep model fusion: A survey.
+arXiv preprint arXiv:2309.15698 (2023)
+10
+
+[18] Ekman, P., Friesen, W.V.: Facial action coding system. Environmental Psychology &
+Nonverbal Behavior (1978)
+[19] Reed, L.I., Sayette, M.A., Cohn, J.F.: Impact
+of depression on response to comedy: a
+dynamic facial coding analysis. Journal of
+abnormal psychology 116(4), 804 (2007)
+[20] Xing, H., Ma, Z., Su, B., Cao, T., Li, Z.,
+Wang, J., Shao, Z., Liu, Y., Cao, Y.: Global
+and local au-assisted graph convolutional network for micro-expression recognition. Signal, Image and Video Processing 19(8), 599
+(2025)
+[21] Liu, Y., Zhang, X., Lin, Y., Wang, H.:
+Facial expression recognition via deep action
+units graph network based on psychological
+mechanism. IEEE Transactions on Cognitive
+and Developmental Systems 12(2), 311–322
+(2019)
+[22] Wang, X., Zhang, T., Chen, C.P.: Paunet: Privileged action unit network for facial
+expression recognition. IEEE Transactions on
+Cognitive and Developmental Systems 15(3),
+1252–1262 (2022)
+[23] Jiddah, S.M., Yurtkan, K.: Dominant and
+complementary emotion recognition using
+hybrid
+recurrent
+neural
+network.
+Signal,
+Image and Video Processing 17(7), 3415–
+3423 (2023)
+[24] Shao, Z., Liu, Z., Cai, J., Ma, L.: Deep
+adaptive attention for joint facial action unit
+detection and face alignment. In: Proceedings
+of the European Conference on Computer
+Vision (ECCV), pp. 705–720 (2018)
+[25] Niu, X., Han, H., Yang, S., Huang, Y.,
+Shan, S.: Local relationship learning with
+person-speciﬁc shape regularization for facial
+action unit detection. In: Proceedings of the
+IEEE/CVF Conference on Computer Vision
+and Pattern Recognition, pp. 11917–11926
+(2019)
+[26] Cui, Z., Kuang, C., Gao, T., Talamadupula,
+K., Ji, Q.: Biomechanics-guided facial action
+unit detection through force modeling. In:
+Proceedings of the IEEE/CVF Conference on
+Computer Vision and Pattern Recognition,
+pp. 8694–8703 (2023)
+[27] Jacob, G.M., Stenger, B.: Facial action unit
+detection with transformers. In: Proceedings
+of the IEEE/CVF Conference on Computer
+Vision and Pattern Recognition, pp. 7680–
+7689 (2021)
+[28] Chang, Y., Wang, S.: Knowledge-driven selfsupervised representation learning for facial
+action unit recognition. In: Proceedings of the
+IEEE/CVF Conference on Computer Vision
+and Pattern Recognition, pp. 20417–20426
+(2022)
+[29] An, R., Jin, A., Chen, W., Zhang, W.,
+Zeng, H., Deng, Z., Ding, Y.: Learning facial
+expression-aware global-to-local representation for robust action unit detection. Applied
+Intelligence, 1–21 (2024)
+[30] Li, W., Abtahi, F., Zhu, Z., Yin, L.: Eacnet: Deep nets with enhancing and cropping for facial action unit detection. IEEE
+transactions on pattern analysis and machine
+intelligence 40(11), 2583–2596 (2018)
+[31] Shao, Z., Liu, Z., Cai, J., Wu, Y., Ma, L.:
+Facial action unit detection using attention
+and relation learning. IEEE transactions on
+aﬀective computing 13(3), 1274–1289 (2019)
+[32] Lakshminarayanan, B., Pritzel, A., Blundell,
+C.:
+Simple
+and
+scalable
+predictive
+uncertainty estimation using deep ensembles.
+Advances in neural information processing
+systems 30 (2017)
+[33] Yin, X., Liu, X.: Multi-task convolutional
+neural network for pose-invariant face recognition. IEEE Transactions on Image Processing 27(2), 964–975 (2017)
+[34] Dosovitskiy, A., Beyer, L., Kolesnikov, A.,
+Weissenborn, D., Zhai, X., Unterthiner, T.,
+Dehghani, M., Minderer, M., Heigold, G.,
+Gelly, S., et al.: An image is worth 16x16
+words: Transformers for image recognition
+at scale. arXiv preprint arXiv:2010.11929
+(2020)
+11
+
+[35] Liu, Z., Lin, Y., Cao, Y., Hu, H., Wei,
+Y.,
+Zhang,
+Z.,
+Lin,
+S.,
+Guo,
+B.:
+Swin
+transformer: Hierarchical vision transformer
+using shifted windows. In: Proceedings of
+the IEEE/CVF International Conference on
+Computer Vision, pp. 10012–10022 (2021)
+[36] Scarselli, F., Gori, M., Tsoi, A.C., Hagenbuchner, M., Monfardini, G.: The graph neural network model. IEEE transactions on
+neural networks 20(1), 61–80 (2008)
+[37] Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A.N., Kaiser,  L.,
+Polosukhin, I.: Attention is all you need.
+Advances in neural information processing
+systems 30 (2017)
+[38] Loshchilov,
+I.,
+Hutter,
+F.:
+Decoupled
+weight decay regularization. arXiv preprint
+arXiv:1711.05101 (2017)
+[39] Vemulapalli, R., Agarwala, A.: A compact
+embedding for facial expression similarity. In:
+Proceedings of the IEEE/cvf Conference on
+Computer Vision and Pattern Recognition,
+pp. 5683–5692 (2019)
+[40] Zhao, K., Chu, W.-S., Zhang, H.: Deep region
+and multi-label learning for facial action unit
+detection. In: Proceedings of the IEEE Conference on Computer Vision and Pattern
+Recognition, pp. 3391–3399 (2016)
+[41] Yang, H., Yin, L., Zhou, Y., Gu, J.: Exploiting semantic embedding and visual feature
+for facial action unit detection. In: Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, pp.
+10482–10491 (2021)
+[42] Sumsion, A., Torrie, S., Lee, D.-J., Sun, Z.:
+Surveying racial bias in facial recognition:
+Balancing datasets and algorithmic enhancements. Electronics 13(12), 2317 (2024)
+12

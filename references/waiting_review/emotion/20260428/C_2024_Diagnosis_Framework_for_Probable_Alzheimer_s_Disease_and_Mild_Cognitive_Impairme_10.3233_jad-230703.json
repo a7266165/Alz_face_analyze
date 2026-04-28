@@ -1,0 +1,27 @@
+{
+  "title": "Diagnosis Framework for Probable Alzheimer's Disease and Mild Cognitive Impairment Based on Multi-Dimensional Emotion Features.",
+  "authors": [
+    "Zhang C",
+    "Lei X",
+    "Ma W",
+    "Long J",
+    "Long S",
+    "Chen X",
+    "Luo J",
+    "Tao Q"
+  ],
+  "year": 2024,
+  "abstract": "BACKGROUND: Emotion and cognition are intercorrelated. Impaired emotion is common in populations with Alzheimer's disease (AD) and mild cognitive impairment (MCI), showing promises as an early detection approach. OBJECTIVE: We aim to develop a novel automatic classification tool based on emotion features and machine learning. METHODS: Older adults aged 60 years or over were recruited among residents in the long-term care facilities and the community. Participants included healthy control participants with normal cognition (HC, n = 26), patients with MCI (n = 23), and patients with probable AD (n = 30). Participants watched emotional film clips while multi-dimensional emotion data were collected, including mental features of Self-Assessment Manikin (SAM), physiological features of electrodermal activity (EDA), and facial expressions. Emotional features of EDA and facial expression were abstracted by using continuous decomposition analysis and EomNet, respectively. Bidirectional long short-term memory (Bi-LSTM) was used to train classification model. Hybrid fusion was used, including early feature fusion and late decision fusion. Data from 79 participants were utilized into deep machine learning analysis and hybrid fusion method. RESULTS: By combining multiple emotion features, the model's performance of AUC value was highest in classification between HC and probable AD (AUC = 0.92), intermediate between MCI and probable AD (AUC = 0.88), and lowest between HC and MCI (AUC = 0.82). CONCLUSIONS: Our method demonstrated an excellent predictive power to differentiate HC/MCI/AD by fusion of multiple emotion features. The proposed model provides a cost-effective and automated method that can assist in detecting probable AD and MCI from normal aging.",
+  "doi": "10.3233/JAD-230703",
+  "arxiv_id": null,
+  "venue": "Journal of Alzheimer's disease : JAD",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "38189751"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.3233/jad-230703"
+}

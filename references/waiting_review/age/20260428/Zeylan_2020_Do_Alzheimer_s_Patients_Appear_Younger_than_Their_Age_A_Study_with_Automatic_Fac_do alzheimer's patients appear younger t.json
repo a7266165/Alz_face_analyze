@@ -1,0 +1,20 @@
+{
+  "title": "Do Alzheimer's Patients Appear Younger than Their Age? A Study with Automatic Face Analysis",
+  "authors": [
+    "Abdullah Emir Zeylan"
+  ],
+  "year": 2020,
+  "abstract": "Facial age estimation is a challenging task, especially if the subjects are older. The facial appearance of human face changes due to several lifestyle factors. Estimating the age of a person with a disease based on facial images is a relatively new topic. In this thesis, we test the hypothesis that Alzheimer’s patients appear younger than their real age. To analyze this, we use automatic age estimation for this task. First, we propose training and normalization regimes to improve deep learning based facial age estimation. Then we fine-tune a pre-trained ImageNet model using first the APPA-REAL database and then the UTKFace database. The experimental results show that the proposed approach predicts older faces more accurately compared to other studies, and improves the mean absolute error for the FG-NET database to 8.14 for the age group 60-69. While the tested database is too small for broad estimations, the results on the current database show promising results. Then, we run our approach on a special database from patients with Alzheimer’s Disease (AD) and healthy controls, to test our main hypothesis. The database contains video recordings of 96 subjects with an age range between 64 and 87. Our findings show that residual age estimation indeed underestimates the age of AD patients significantly more than the healthy subjects.",
+  "doi": null,
+  "arxiv_id": null,
+  "venue": "Utrecht University Repository (Utrecht University)",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "http://dspace.library.uu.nl/handle/1874/397886",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W3092258868"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "title:do alzheimer's patients appear younger than their age? a study with automatic face analysis"
+}

@@ -1,0 +1,21 @@
+{
+  "title": "A Meta-Learner Based on the Combination of Stacking Ensembles and a Mixture of Experts for Balancing Action Unit Recognition",
+  "authors": [
+    "Andrew Sumsion",
+    "Dah-Jye Lee"
+  ],
+  "year": 2025,
+  "abstract": "Facial action units (AUs) are used throughout animation, clinical settings, and robotics. AU recognition usually works better for these downstream tasks when it achieves high performance across all AUs. Current facial AU recognition approaches tend to perform unevenly across all AUs. Among other potential reasons, one cause is their focus on improving the overall average F1 score, where good performance on a small number of AUs increases the overall average F1 score even with poor performance on other AUs. Building on our previous success, which achieved the highest average F1 score, this work focuses on improving its performance across all AUs to address this challenge. We propose a mixture of experts as the meta-learner to combine the outputs of an explicit stacking ensemble. For our ensemble, we use a heterogeneous, negative correlation, explicit stacking ensemble. We introduce an additional measurement called Borda ranking to better evaluate the overall performance across all AUs. As indicated by this additional metric, our method not only maintains the best overall average F1 score but also achieves the highest performance across all AUs on the BP4D and DISFA datasets. We also release a synthetic dataset as additional training data, the first with balanced AU labels.",
+  "doi": "10.3390/electronics14132665",
+  "arxiv_id": null,
+  "venue": "Electronics",
+  "citation_count": 1,
+  "source": "openalex",
+  "pdf_url": "https://www.mdpi.com/2079-9292/14/13/2665/pdf?version=1751318315",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4411845133"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.3390/electronics14132665"
+}

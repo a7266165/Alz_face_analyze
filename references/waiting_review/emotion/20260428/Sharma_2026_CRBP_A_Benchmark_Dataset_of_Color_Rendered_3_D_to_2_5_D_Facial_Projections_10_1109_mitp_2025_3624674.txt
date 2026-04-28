@@ -1,0 +1,705 @@
+CRBP: A Benchmark Dataset of Color-Rendered 3-D-to-2.5-D Facial Projections
+Sharma, S., Sood, A., & Kumar, V. (2026). CRBP: A Benchmark Dataset of Color-Rendered 3-D-to-2.5-D Facial
+Projections. IT Professional, 28(1), 59-65. https://doi.org/10.1109/MITP.2025.3624674
+Link to publication record in Ulster University Research Portal
+Published in:
+IT Professional
+Publication Status:
+Published (in print/issue): 18/02/2026
+DOI:
+10.1109/MITP.2025.3624674
+Document Version
+Author Accepted version
+For Author Accepted Manuscripts (AAM) published under Ulster University's Rights Retention Policy for Scholarly Works
+(RRPSW)
+When citing an AAM published under Ulster University's RRPSW please use the following citation structure:
+Author, A. A. (Year). Title of article. Journal Name, [Accepted Author Manuscript]. PURE Portal URL. Licensed under CC BY 4.0.
+General rights
+The copyright and moral rights to the output are retained by the output author(s), unless otherwise stated by the document licence.
+Unless otherwise stated, users are permitted to download a copy of the output for personal study or non-commercial research and are
+permitted to freely distribute the URL of the output. They are not permitted to alter, reproduce, distribute or make any commercial use of the
+output without obtaining the permission of the author(s).
+If the document is licenced under Creative Commons, the rights of users of the documents can be found at
+https://creativecommons.org/share-your-work/cclicenses/.
+Take down policy
+The Research Portal is Ulster University's institutional repository that provides access to Ulster's research outputs. Every effort has been
+made to ensure that content in the Research Portal does not infringe any person's rights, or applicable UK laws. If you discover content in
+the Research Portal that you believe breaches copyright or violates any law, please contact pure-support@ulster.ac.uk
+Download date: 28/04/2026
+
+CRBP: A Benchmark Dataset of
+Color-Rendered 3D-to-2.5D Facial Projections
+Sahil Sharma, Member, IEEE, Ulster University, Londonderry, United Kingdom
+Ashima Sood, Student Member, IEEE, Ulster University, Londonderry, United Kingdom
+Vijay Kumar, Dr B R Ambedkar National Institute of Technology, Jalandhar, India
+Abstract—The Colour-Rendered Bosphorus Projections (CRBP) Face Dataset
+overcomes key limitations in 3D facial analysis by offering a photometrically
+normalised, multi-view dataset specifically tailored for 2.5D modelling. CRBP
+utilizes the Bosphorus 3D Face Database, reconstructing textured 3D meshes
+for each individual and producing six canonical 2D projections, such as frontal,
+oblique, and profile views, employing subject-specific colour normalisation, where
+the average RGB value of each subject’s texture replaces detailed texture, ensuring
+photometric consistency, together with camera-aligned lighting. To improve
+model compatibility and minimize background noise, each projection is processed
+using YOLOv8 for face detection. This results in two organised subsets, namely,
+CRBP-Raw (full-scene) and CRBP-YOLOv8 (face-cropped). This dual-format
+design facilitates thorough benchmarking of pose-invariant, occlusion-resilient, and
+expression-aware models within CNN-compatible image space. Dataset statistics
+indicate that YOLOv8 enhances facial alignment; however, it also introduces sample
+selection bias, especially in extreme yaw and occlusion scenarios. Benchmark
+experiments utilising EfficientNet-B0 demonstrate enhanced balanced accuracy
+(84.7%) and MCC (0.859) for CRBP-YOLOv8 in comparison to CRBP-Raw,
+thereby validating the effectiveness of face-localized views. CRBP facilitates
+applications in emotion recognition, biometric authentication, and avatar creation.
+It is accessible through IEEE DataPort: https://dx.doi.org/10.21227/4qns-ys45.
+T
+hree-dimensional (3D) facial analysis supports
+healthcare applications like anxiety and dementia screening, education, including student engagement monitoring, and security, including biometric
+authentication, biometric verification, surveillance, and
+human–computer interaction. As these fields require
+real-time and reliable systems, models must manage
+position variation, illumination changes, occlusions,
+and delicate expressions. Three-dimensional (3D) facial datasets improve geometry and identification feature representation. Many available datasets lack consistent colour information and structured projections,
+limiting their use by practitioners and deep learning
+frameworks.
+Notable 3D datasets, including BU-3DFE [1], Texas
+3D [2], and Bosphorus [3], provide high-resolution
+geometry; however, they often exhibit deficiencies in
+photometric consistency, multi-view diversity, and fa-
+XXXX-XXX © 2021 IEEE
+Digital Object Identifier 10.1109/XXX.0000.0000000
+cial focus. These issues impede their appropriateness
+for contemporary deep learning systems, particularly
+those utilising image-level inputs. Moreover, these systems are not intended for benchmarking 2.5D models,
+which function based on 2D projections obtained from
+3D geometry.
+We present the Colour-Rendered Bosphorus Projections (CRBP) dataset as a solution to these limitations. This dataset serves as a structured, colorconsistent benchmark derived from the Bosphorus 3D
+Face Database. CRBP offers six standard 2D projections for each subject, including frontal, oblique, and
+profile perspectives. The projections maintain threedimensional geometric accuracy and photometric consistency. A fine-tuned YOLOv8 face detector1 is employed to eliminate non-facial background clutter and
+enhance alignment by producing tightly cropped variants.
+1arnabdhar/YOLOv8-Face-Detection
+Month
+Published by the IEEE Computer Society
+Publication Name
+1
+
+THEME/FEATURE/DEPARTMENT
+CRBP functions within the 2.5D domain, facilitating the integration of raw 3D data with 2D learning frameworks. In contrast to UV-textured meshes
+or depth maps, color-rendered projections incorporate
+geometric and photometric features in a format compatible with images. The dataset presents controlled
+challenges, including pose-induced self-occlusion and
+feature asymmetry, thereby serving as a significant
+testbed for occlusion-aware and pose-robust models.
+CRBP facilitates multiple downstream applications,
+such as face recognition across pose variations, expression classification, and avatar construction. The
+dataset includes both raw and face-cropped variants
+for comparative analysis of preprocessing strategies.
+Current 3D datasets frequently lack sufficient detail for facial analysis, primarily due to inconsistent
+colour rendering and background noise. CRBP mitigates these deficiencies by providing organised, multiperspective projections that maintain uniform photometric quality and facial localisation, for 2.5D model
+evaluation.
+The key contributions of this work are:
+• The CRBP Face Dataset is presented as a structured, publicly accessible resource comprising
+color-rendered 2.5D facial projections sourced
+from the Bosphorus 3D Face Database [3].
+• The dataset includes six canonical views for
+each subject (frontal, oblique, and profile), to
+maintain geometric fidelity and facilitate poseaware model training.
+• All projections are rendered using a subjectspecific mean colour, computed by averaging
+across each subject’s texture map. This replaces
+detailed texture with a uniform colour per subject, ensuring photometric consistency across
+views while emphasizing geometric fidelity.
+• We utilise YOLOv8 for facial localisation to generate a cropped variant (CRBP-YOLOv8) in conjunction with the unprocessed full-scene set
+(CRBP-Raw), facilitating a controlled comparison of preprocessing impacts.
+• CRBP facilitates the benchmarking of facial analysis models in 2.5D space, by combining 3D
+mesh realism with CNN-compatible 2D formats,
+particularly under challenging conditions such as
+self-occlusion and significant yaw.
+This paper is organized as follows. Section II discusses related 3D facial datasets and preprocessing
+methods. Section III describes the construction of the
+CRBP dataset, including projection rendering and face
+detection. Section IV presents dataset statistics and
+detection analysis. Section V concludes with future
+Colour Rendered 3D Views
+3D Mesh and
+2D Ground Truth
+a. Input View
+b. Input view with
+elevation 45°
+c. Right profile view,
+azimuth 90°
+d. Left profile view,
+azimuth 270°
+e. Right three quarter view,
+azimuth 45°, elevation 45°
+f. Left three quarter view,
+azimuth 135°, elevation 45°
+FIGURE 1. Augmentation-based Mean-Colour Rendered 3D
+Faces
+directions and dataset availability.
+RELATED WORK
+Three-dimensional facial datasets have significantly
+contributed to the progress of face recognition, expression analysis, and biometric modeling. Notable benchmarks are BU-3DFE [1], Texas 3D [2], FRGC v2.0 [4],
+and the Bosphorus Database [3]. Despite providing
+high-resolution 3D geometry, these systems frequently
+exhibit issues such as incomplete or inconsistent texture maps, limited view diversity, and background clutter, which diminish their effectiveness in image-based
+deep learning applications. Dynamic datasets such as
+4DFAB2 and FaceScape3 offer extensive expression
+data; however, they do not provide standardized, 2.5D
+projections across different views. NoW [5] provides
+benchmarks for 2D-to-3D reconstruction; however, it
+does not include multiview textured images for training
+purposes.
+Recent advances in 3D acquisition have not resulted in a sufficient number of publicly available
+datasets that integrate structured, color-rendered 2.5D
+views with face-localized crops. The existing gap restricts the training and evaluation of facial analysis
+models required to function effectively amidst variations in pose, expression, and occlusion.
+We introduce CRBP, a dataset specifically designed
+for 2.5D facial modeling, ensuring consistent photometric quality, comprehensive multi-view coverage, and
+2https://ibug.doc.ic.ac.uk/resources/4dfab/
+3https://github.com/zhuhao-nju/facescape
+2
+Publication Title
+Month 2021
+
+THEME/FEATURE/DEPARTMENT
+utilizing YOLOv8 for facial region extraction. Practitioners can use CRBP’s structured, color-rendered, facelocalized 2.5D projections without mesh management
+or rendering pipelines. Table 1 provides a comparative
+analysis of commonly utilised 3D facial datasets. Existing datasets include varying levels of geometric detail and expression diversity; however, they frequently
+exhibit deficiencies in colour fidelity, facial isolation,
+and structured 2.5D projections. The CRBP dataset
+effectively addresses existing gaps by incorporating
+consistent color-rendered views, YOLOv8-based facial
+cropping, and multi-view projections, making it more
+suitable for pose-aware and occlusion-resilient facial
+analysis.
+TABLE 1. Comparison of 3D Facial Datasets Relevant to
+2.5D Facial Analysis. Columns denote: (a) 3D Geometry, (b)
+Texture Quality, (c) Multi-view Coverage, (d) Color Consistency, (e) Occlusion Labels, (f) Facial Crops, and (g) 2.5D
+Projections.
+Dataset
+(a)
+(b)
+(c)
+(d)
+(e)
+(f)
+(g)
+BU-3DFE [1]
+✓
+✗
+✗
+✗
+✗
+✗
+✗
+Texas 3D [2]
+✓
+✓
+✗
+✗
+✗
+✗
+✗
+FRGC v2.0 [4]
+✓
+✗
+✗
+✗
+✗
+✗
+✗
+Bosphorus [3]
+✓
+✗
+✗
+✗
+✓
+✗
+✗
+4DFAB
+✓
+✓
+✗
+✓
+✗
+✗
+✗
+FaceScape
+✓
+✓
+✗
+✗
+✗
+✗
+✗
+NoW [5]
+✓
+✗
+✗
+✗
+✗
+✗
+✗
+CRBP (Ours)
+✓
+✓
+✓
+✓
+✓
+✓
+✓
+DATASET DESCRIPTION
+This study presents the Colour-Rendered Bosphorus
+Projections (CRBP) Face Dataset, a resource that integrates high-resolution geometry with photometrically
+consistent colour, provided as six canonical 2.5D views
+for each subject. CRBP reconstructs textured surface
+meshes using raw depth (*.bnt) and texture (*.png)
+pairs from the Bosphorus Database [3]. The meshes
+are rendered using six predefined camera viewpoints
+defined by azimuth and elevation angles (see Figure
+1), resulting in 2D projections that maintain 3D shape
+cues and are compatible with CNN back-ends4.
+To isolate facial content and suppress irrelevant
+background
+artefacts,
+the
+YOLOv8-Face-Detection
+model [6] is used to automatically localize and crop
+each projection. This refinement standardises spatial
+alignment across samples and enhances the salience
+of facial features, improving data quality for downstream analysis. Unlike conventional 3D datasets that
+4See Appendix B (Table B.1) in the supplementary material
+for exact azimuth–elevation values of the six viewpoints.
+require raw mesh handling or separate rendering
+pipelines, CRBP is explicitly structured for 2.5D facial analysis, offering ready-to-train, view-consistent,
+colour-aligned images that embed geometry within
+image-based formats. The dataset’s multi-view design enables evaluation of pose-robust recognition and
+occlusion-aware models, particularly under challenging conditions such as large yaw angles and partial self-occlusion (see Figure A.3), which are underrepresented in most public benchmarks.
+Pipeline. The CRBP pipeline starts from the
+Bosphorus 3D Face Database [3], which contains 105
+subjects (61 males, 44 females). Each subject has
+four modalities: a depth map stored in the Bayes-
+Net-Toolbox *.bnt format, a canonical RGB texture,
+2D landmarks (LM2), and 3D landmarks (LM3). All
+assets stored in per-subject folders bsXXX that include
+textured meshes (*.obj) and their associated PNG
+textures. The details are presented in Algorithm 1.
+For each subject, we reconstructed the 3D facial
+mesh from raw depth maps (‘*.bnt‘) and aligned them
+with the corresponding texture images (‘*.png‘) to form
+a textured surface model. The mesh was parsed to
+extract vertices and faces, with the vertex set defined
+as V = {vi ∈R3 | i = 1, ... , Nv}, where each vertex
+vi = (xi, yi, zi) represents a 3D point, and the face set
+as F = {fj | j = 1, ... , Nf }, where fj = (vj1, vj2, vj3) are
+vertex indices forming triangular facets.
+Each texture image I ∈RH×W×3 was reduced to
+a subject-specific mean colour vector by averaging all
+pixel RGB values:
+µnorm =
+1
+255 · HW
+H
+X
+i=1
+W
+X
+j=1
+Ii,j.
+(1)
+This single colour µnorm replaced the detailed texture and was applied uniformly to all mesh faces of the
+subject, producing consistent photometric rendering
+across views. Gouraud shading [7] and headlight illumination (camera-aligned lighting) were used for smooth
+and standardized visualisation.
+Each colored mesh was rendered from six predefined viewpoints, V = {(θk, ϕk) | k = 1, ... , 6}, covering
+frontal (0°), oblique (±45°), and profile (±90°) angles,
+with elevation values fixed at 0° or 45° as defined in
+our rendering setup (see Figure 1 and Table B.1). For
+each viewpoint, a virtual camera was positioned, and
+the resulting image Rk was saved using a subject- and
+view-specific filename.
+To localize facial content and suppress background
+artifacts,
+we
+applied
+the
+YOLOv8-Face-Detection
+model to each projection (Rk). YOLOv8 is a realtime object detection architecture that leverages a
+Month 2021
+Publication Title
+3
+
+THEME/FEATURE/DEPARTMENT
+0
+500
+1000
+1500
+Sample Count
+Anger
+Disgust
+Fear
+Happy
+Sadness
+Surprise
+Neutral
+a) Emotion
+71
+69
+70
+106
+66
+71
+299
+426
+414
+420
+636
+396
+426
+1794
+233
+237
+239
+372
+240
+250
+1041
+0
+1000
+2000
+3000
+4000
+5000
+6000
+7000
+8000
+9000
+Sample Count
+Combined Au
+Lower Face Au
+Upper Face Au
+b) Action Unit
+169
+1549
+432
+1014
+9294
+2592
+592
+5545
+1511
+0
+1000
+2000
+3000
+4000
+Sample Count
+Cross Rotation
+Pitch Rotation
+Yaw Rotation
+c) Pose
+211
+419
+735
+1266
+2514
+4410
+606
+1346
+1826
+0
+100
+200
+300
+400
+500
+600
+Sample Count
+Eye
+Glasses
+Hair
+Mouth
+d) Occlusion
+105
+104
+67
+105
+630
+624
+402
+630
+341
+353
+165
+280
+Original
+CRBP_Raw
+CRBP_YOLOv8
+FIGURE 2. Distribution of samples across (a) emotions, (b) action units, (c) head poses, and (d) occlusions, comparing original,
+CRBP-Raw, and CRBP-YOLOv8.
+decoupled head with anchor-free detection, to achieve
+precise localization of small and varied-scale facial regions. For our task, we used a variant fine-tuned specifically for facial bounding box prediction, pretrained on
+large-scale datasets such as WIDER-Face [8].
+For each rendered projection Rk, the detector outputs a set of bounding boxes B = {bl}, where each box
+bl = (xl, yl, wl, hl, sl) encodes the top-left coordinate
+(xl, yl), width wl, height hl, and associated confidence
+score sl ∈[0, 1]. We selected the bounding box with
+the highest confidence score as the most probable face
+detection:
+b∗= arg max
+bl∈B sl.
+(2)
+To maintain spatial consistency across samples, we
+applied non-maximum suppression (NMS) with an IoU
+threshold of 0.5 prior to selection. We retained only
+detections with sl > 0.5 to ensure robustness. The
+selected bounding box (b∗) was then used to crop the
+image Rk, resulting in the refined facial projection R′
+k.
+The refined facial views emphasize on key biometric regions (eyes, nose, mouth) and reduce variability introduced by background clutter or pose-induced
+padding. The processed outputs were organized into
+two subsets: CRBP-Raw which contained the original
+full-scene renderings (Rk), and CRBP-YOLOv8, which
+contained the face-localized crops (R′
+k). All images
+were saved in lossless PNG format and arranged in
+a directory hierarchy indexed by subject ID and view
+label.
+To ensure dataset integrity, automated scripts verified that each subject had the complete set of six
+views, with consistent filenames and formatting. In
+addition, a stratified sample of refined projections was
+visually inspected to validate bounding box accuracy,
+facial alignment, and identity preservation under pose
+variation. The pipeline also incorporated exception
+handling routines that logged missing, corrupted, or
+unprocessable assets to avoid pipeline interruptions.
+Algorithm 1 presents the multi-step generation of
+the CRBP dataset. This pipeline reconstructs threedimensional meshes, generates photometrically normalized projections from canonical views, and employs
+YOLOv8-based detection to isolate facial content. The
+output includes both raw and refined 2.5D facial projections, which are organized for subsequent training
+and assessment in image-based models.
+This sequential pipeline guarantees spatial consistency, photometric uniformity, and facial focus across
+all projections, which are essential for developing robust, pose-aware facial analysis models. This pipeline
+generated a pose-diverse, photometrically normalized
+dataset of 2.5D facial views, with precise facial localization. The CRBP dataset supports pose-robust,
+occlusion-aware facial analysis in a CNN-ready image
+format.
+DATASET STATISTICS AND
+ANALYSIS
+Figure 2 demonstrates a steady decrease in image
+count across all categories after YOLOv8 processing.
+In the Emotion category (Figure 2a), “Neutral” samples
+decrease from 1794 to 1041, indicating missed low-
+4
+Publication Title
+Month 2021
+
+THEME/FEATURE/DEPARTMENT
+intensity expressions. The effect is particularly noticeable in the Pose category (Figure 2c), with the “Yaw
+Rotation” class experiencing a significant decline from
+4410 to 1826. This indicates that YOLOv8 encounters
+difficulties with extreme side profiles, where essential
+facial features may be partially covered or distorted,
+thereby diminishing detection confidence. In the Action
+Unit (AU) categories (Figure 2b), significant reductions
+are observed in the "Lower Face AU" group, likely
+attributable to the more subtle movements in the mouth
+region failing to satisfy YOLOv8’s detection criteria. In
+the Occlusion category (Figure 2d), samples impacted
+by hair and mouth are significantly underrepresented
+in the CRBP_YOLOv8 subset. This likely indicates the
+model prefers clear, unobstructed facial areas. The
+observed trends indicate that YOLOv8 enhances alignment and visual clarity; however, it also introduces a
+detection bias that favors frontal or minimally occluded
+faces. This approach enhances tasks such as emotion
+recognition and biometric identification in controlled
+environments; however, it limits diversity in pose and
+occlusion. Consequently, CRBP-Raw is better suitable
+for applications that require large view coverage and
+real-world variability. Figure 3 illustrates the dataset’s
+expressive and geometric variability across key annotation categories.
+CRBP-Yolov8 demonstrated superior and more
+consistent performance across classes, achieving a
+balanced accuracy of 84.7% and an MCC of 0.859,
+compared to 81.4% and 0.827 for CRBP-Raw5 by employing EfficientNet-B0 (5M). Additional visualizations
+and performance comparisons are provided in the supplementary material (Appendix A, Figures A.1–A.7).
+These further validate the advantages and limitations
+of the CRBP-YOLOv8 subset.
+CONCLUSION
+This study presents the Colour-Rendered Bosphorus
+Projections (CRBP) Face Dataset, aimed at integrating
+3D facial geometry with deep learning frameworks via
+structured, photometrically consistent 2.5D projections.
+CRBP generates six canonical views per subject using
+mean-colour rendering, where each mesh is shaded
+with the average RGB of the subject’s texture map, together with mesh-based shading. YOLOv8-based face
+detection refines each image to reduce background
+noise and align facial content. The dataset includes
+two formats, namely, CRBP-Raw and CRBP-YOLOv8,
+5https://github.com/sahil301290/CRBP-3D-to-
+2.5D/blob/main/02_CRBP_Raw_vs_YOLOv8_EfficientNetb0.ipynb
+Algorithm 1 CRBP Data Generation Pipeline with
+subject-specific mean-colour rendering and YOLOv8based face localisation
+Input: Bosphorus dataset (‘*.bnt‘, ‘*.png‘), camera
+viewpoints V
+Output:
+CRBP-Raw
+(full-scene)
+and
+CRBP-
+YOLOv8 (cropped) projections
+1: Initialize YOLOv8-Face-Detection with pretrained
+weights, set threshold τ = 0.5
+2: for all subjects do
+3:
+for all depth–texture pairs do
+4:
+Reconstruct mesh (V, F) from depth map
+5:
+Compute mean texture colour µnorm and
+apply uniformly to mesh faces
+6:
+for all viewpoints (θk, ϕk) ∈V do
+7:
+Render shaded mesh M = (V, F, µnorm)
+→image Rk
+8:
+Save Rk in CRBP-Raw
+9:
+Detect faces B in Rk with YOLOv8
+10:
+Apply NMS, keep boxes with sl > τ
+11:
+if B ̸= ∅then
+12:
+Select highest-confidence box b∗
+13:
+Crop and resize Rk using b∗→R′
+k
+14:
+Save R′
+k in CRBP-YOLOv8
+15:
+else
+16:
+Log missing detection for Rk
+17:
+end if
+18:
+end for
+19:
+end for
+20: end for
+Post-processing: Verify six views per subject; log
+or discard incomplete cases
+to support controlled evaluation of preprocessing impacts. The results reveal that YOLOv8 improves alignment and model performance while introducing bias,
+especially under extreme pose or occlusion scenarios.
+EfficientNet-B0 achieves 84.7% balanced accuracy on
+CRBP-YOLOv8, outperforming the 81.4% from CRBP-
+Raw, demonstrating the value of refined facial focus.
+However, this results in less data diversity. CRBP
+supports emotion recognition, biometric authentication,
+and avatar creation.
+Beyond benchmarking, CRBP has several practical
+uses. Facial expression recognition is a reliable method
+for screening generalised anxiety disorder in healthcare [9] and dementia/Parkinson’s therapy [10]. Realtime student engagement monitoring in digital classrooms is possible with facial affect recognition [11].
+Multimodal techniques such as 3D facial structure and
+expression signals enhance biometric authentication
+for security [12]. With ready-to-use, photometrically
+Month 2021
+Publication Title
+5
+
+THEME/FEATURE/DEPARTMENT
+Anger
+Disgust
+Fear
+Sadness
+Surprise
+Happy
+Neutral
+Combined AU
+Upper Face AU
+Lower Face AU
+Yaw Rotation
+Pitch Rotation
+Cross Rotation
+Eye
+Mouth
+Glasses
+Hair
+a) Emotion
+b) Action Unit
+d) Occlusion
+c) Pose
+FIGURE 3. Representative CRBP samples across (a) emotions, (b) action units, (c) poses, and (d) occlusions, showing
+expressive and geometric diversity.
+consistent 2.5D projections, CRBP simplifies crossdomain applications. Future work aims to increase
+demographic diversity and incorporate 4D sequences
+for better longitudinal and affective facial modelling.
+Supplementary Material
+The supplementary file includes Appendix A (Figures A.1–A.7: qualitative and quantitative examples)
+and Appendix B (Table B.1: camera viewpoints used
+for CRBP rendering).
+REFERENCES
+1. L. Yin, X. Wei, Y. Sun, J. Wang, and M. J. Rosato, “A
+3d facial expression database for facial behavior research,” in 7th International Conference on Automatic
+Face and Gesture Recognition (FGR06).
+IEEE,
+2006, pp. 211–216.
+2. S. Gupta, K. Patil, and A. Gupta, “Texas 3d face
+recognition database,” in 2010 IEEE Computer Society Conference on Computer Vision and Pattern
+Recognition Workshops.
+IEEE, 2010, pp. 1–6.
+3. A. Savran, N. Alyüz, H. Dibeklio˘glu, O. Çeliktutan,
+B. Gökberk, B. Sankur, and L. Akarun, “Bosphorus
+database for 3d face analysis,” in Biometrics and
+Identity Management.
+Springer, 2008, pp. 47–56.
+4. P. Phillips, P. Flynn, T. Scruggs, K. Bowyer, J. Chang,
+K. Hoffman, J. Marques, J. Min, and W. Worek,
+“Overview of the face recognition grand challenge,” in
+2005 IEEE Computer Society Conference on Computer Vision and Pattern Recognition (CVPR’05),
+vol. 1, 2005, pp. 947–954.
+5. S. Sanyal, T. Bolkart, H. Feng, and M. J. Black,
+“Learning to regress 3d face shape and expression
+from an image without 3d supervision,” in Proceedings of the IEEE/CVF conference on computer vision
+and pattern recognition, 2019, pp. 7763–7772.
+6. G. Jocher, J. Qiu, and A. Chaurasia, “Ultralytics
+yolo,” Ultralytics, 2023, available at https://github.
+com/ultralytics/ultralytics.
+7. H. Gouraud, “Continuous shading of curved surfaces,” in Seminal Graphics: Pioneering efforts that
+shaped the field, 1998, pp. 87–93.
+8. S. Yang, P. Luo, C.-C. Loy, and X. Tang, “Wider
+face: A face detection benchmark,” in Proceedings of
+the IEEE conference on computer vision and pattern
+recognition, 2016, pp. 5525–5533.
+9. X. Ren, S. Su, W. Jiang, Y. Wang, J. Yao, Y. Su,
+Y. Wu, J. Tao, Y. Peng, and J. Qiu, “Reliability and validity of facial expression recognition in the screening
+of generalized anxiety disorder,” Journal of Affective
+Disorders, vol. 369, pp. 538–546, 2025.
+10. S.
+Yoonesi,
+R.
+Abedi
+Azar,
+M.
+Arab
+Bafrani,
+S. Yaghmayee, H. Shahavand, M. Mirmazloumi,
+N. Moazeni Limoudehi, M. Rahmani, S. Hasany,
+F. Z. Idjadi et al., “Facial expression deep learning
+algorithms in the detection of neurological disorders:
+a systematic review and meta-analysis,” BioMedical
+Engineering OnLine, vol. 24, no. 1, p. 64, 2025.
+11. F. R. T. Ferreira, L. M. do Couto, G. de Melo Baptista Domingues, and C. M. Saporetti, “Development
+of a framework using deep learning for the identification and classification of engagement levels in
+distance learning students,” Social Network Analysis
+and Mining, vol. 15, no. 1, p. 37, 2025.
+12. L. Pedrouzo-Rodriguez, P. Delgado-DeRobles, L. F.
+Gomez, R. Tolosana, R. Vera-Rodriguez, A. Morales,
+and J. Fierrez, “Is it really you? exploring biometric verification scenarios in photorealistic talkinghead avatar videos,” arXiv preprint arXiv:2508.00748,
+2025.
+6
+Publication Title
+Month 2021

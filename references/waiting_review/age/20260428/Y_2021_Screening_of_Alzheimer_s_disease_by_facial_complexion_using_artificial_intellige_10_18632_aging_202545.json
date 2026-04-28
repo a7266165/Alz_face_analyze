@@ -1,0 +1,29 @@
+{
+  "title": "Screening of Alzheimer's disease by facial complexion using artificial intelligence.",
+  "authors": [
+    "Umeda-Kameyama Y",
+    "Kameyama M",
+    "Tanaka T",
+    "Son BK",
+    "Kojima T",
+    "Fukasawa M",
+    "Iizuka T",
+    "Ogawa S",
+    "Iijima K",
+    "Akishita M"
+  ],
+  "year": 2021,
+  "abstract": "Despite the increasing incidence and high morbidity associated with dementia, a simple, non-invasive, and inexpensive method of screening for dementia is yet to be discovered. This study aimed to examine whether artificial intelligence (AI) could distinguish between the faces of people with cognitive impairment and those without dementia.121 patients with cognitive impairment and 117 cognitively sound participants were recruited for the study. 5 deep learning models with 2 optimizers were tested. The binary differentiation of dementia / non-dementia facial image was expressed as a \"Face AI score\". Xception with Adam was the model that showed the best performance. Overall sensitivity, specificity, and accuracy by the Xception AI system and AUC of the ROC curve were 87.31%, 94.57%, 92.56%, and 0.9717, respectively. Close and significant correlations were found between Face AI score and MMSE (r = -0.599, p < 0.0001). Significant correlation between Face AI score and chronological age was also found (r = 0.321, p < 0.0001). However, MMSE score showed significantly stronger correlation with Face AI score than chronological age (p < 0.0001). The study showed that deep learning programs such as Xception have the ability to differentiate the faces of patients with mild dementia from that of patients without dementia, paving the way for future studies into the development of a facial biomarker for dementia.",
+  "doi": "10.18632/aging.202545",
+  "arxiv_id": null,
+  "venue": "Aging",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "33495415"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.18632/aging.202545"
+}

@@ -1,0 +1,23 @@
+{
+  "title": "AI-Based Angle Map Analysis of Facial Asymmetry in Peripheral Facial Palsy",
+  "authors": [
+    "Andreas Heinrich",
+    "Gerd Fabian Volk",
+    "Christian Dobel",
+    "Orlando Guntinas-Lichius"
+  ],
+  "year": 2026,
+  "abstract": "Peripheral facial palsy (PFP) causes pronounced facial asymmetry and functional impairment, highlighting the need for reliable, objective assessment. This study presents a novel, fully automated, reference-free method for quantifying facial symmetry using artificial intelligence (AI)-based facial landmark detection. A total of 405 datasets from 198 PFP patients were analyzed, each including nine standardized facial expressions covering both resting and dynamic movements. AI detected 478 landmarks per image, from which 225 paired landmarks were used to compute local asymmetry angles. Systematic evaluation identified 91 highly informative landmark pairs, primarily around the eyes, nose and mouth, which simplified the analysis and enhanced discriminatory power, while also enabling region-specific assessment of asymmetry. Statistical evaluation included Kruskal–Wallis H-tests across clinical scores and Spearman correlations, showing moderate to strong associations (0.32–0.73, p &lt; 0.001). The fully automated pipeline produced reproducible results and demonstrated robustness to head rotation. Intuitive full-face angle maps allowed direct assessment of asymmetry without a reference image. This AI-driven approach provides a robust, objective, and visually interpretable framework for clinical monitoring, severity classification, and treatment evaluation in PFP, combining quantitative precision with practical applicability.",
+  "doi": "10.3390/bioengineering13040426",
+  "arxiv_id": null,
+  "venue": "Bioengineering",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://www.mdpi.com/2306-5354/13/4/426/pdf?version=1775461405",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W7150841917"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.3390/bioengineering13040426"
+}

@@ -1,0 +1,1259 @@
+Auditing Demographic Bias in Facial Landmark Detection for Fair
+Human-Robot Interaction
+Pablo Parte1, Roberto Valle1, Jos´e M. Buenaposada2 and Luis Baumela1
+Abstract— Fairness in human-robot interaction critically depends on the reliability of the perceptual models that enable
+robots to interpret human behavior. While demographic biases
+have been widely studied in high-level facial analysis tasks, their
+presence in facial landmark detection remains unexplored. In
+this paper, we conduct a systematic audit of demographic bias
+in this task, analyzing the age, gender and race biases. To this
+end we introduce a controlled statistical methodology to disentangle demographic effects from confounding visual factors.
+Evaluations of a standard representative model demonstrate
+that confounding visual factors, particularly head pose and
+image resolution, heavily outweigh the impact of demographic
+attributes. Notably, after accounting for these confounders,
+we show that performance disparities across gender and race
+vanish. However, we identify a statistically significant agerelated effect, with higher biases observed for older individuals.
+This shows that fairness issues can emerge even in low-level
+vision components and can propagate through the HRI pipeline,
+disproportionately affecting vulnerable populations. We argue
+that auditing and correcting such biases is a necessary step
+toward trustworthy and equitable robot perception systems.
+I. INTRODUCTION
+As socially interactive and assistive robots are increasingly
+deployed in human-centered environments, ensuring that they
+behave appropriately and interpret human non-verbal cues
+accurately has become paramount [1], [2], [3]. To achieve
+socially compliant behavior, modern robots rely on deep
+learning (DL) pipelines to read facial expressions, gaze,
+and attention. Within the human-robot interaction (HRI)
+community, the extraction of facial landmarks has been
+established as a critical foundational step for these tasks, because they provide a robust geometric representation aligned
+with human psychology [4]. However, since these models
+learn from public datasets, they are inherently exposed to the
+biases present in them [2]. Identifying and preventing these
+biases is essential; uncontrolled biases can lead to unfair and
+discriminatory outcomes.
+As the HRI community moves toward the deployment of
+“Trustworthy AI” in sensitive applications such as clinical
+screening and mental health support, ensuring that these
+systems perform equitably across all user demographics is
+an urgent ethical mandate [5]. Recent meta-analyses of HRI
+have issued a clear call to action, urging roboticists to
+*This work was supported by project PID2022-137581OB-I00 funded
+by MICIU/AEI/10.13039/501100011033 and FEDER, UE. L. Baumela and
+Jos´e M. Buenaposada are members of ELLIS Unit Madrid funded by the
+Autonomous Community of Madrid .
+1Departamento de Inteligencia Artificial, Universidad Polit´ecnica de
+Madrid, Spain
+2Departamento de Inform´atica y Estad´ıstica, Universidad Rey Juan Carlos, Spain
+operationalize equity and justice in the design of robotic systems [6]. From a roboethics perspective, relying on flawed or
+biased perceptual systems can severely compromise human
+dignity and safety [7]. For example, if an assistive robot
+fails to accurately read the expressions of a vulnerable older
+adult, it may hinder essential communication or miss signs of
+distress, thus violating the principles of algorithmic justice.
+The danger of deploying biased perceptual models in
+physical robots is uniquely magnified by the psychological
+dynamics of HRI. When AI is embodied in a physical
+agent, it is often shielded by a “veil of objectivity”, a
+phenomenon where humans blindly trust the robot’s behavior
+and perceive its actions as impartial [1]. Consequently, if a
+robot fails to interact appropriately with a user due to a lowlevel algorithmic failure (e.g., misaligned facial landmarks),
+users and caregivers rarely blame the algorithm. Instead,
+they tend to rationalize the failure using human stereotypes,
+potentially misinterpreting the robot’s lack of responsiveness
+as cognitive decline or apathy on the part of the human
+user [1]. Therefore, mitigating bias is not merely a technical
+optimization; it is a prerequisite to prevent robots from inadvertently validating and perpetuating social discrimination.
+Despite the growing awareness of fairness in HRI design,
+the foundational computer vision models that drive robot
+perception are frequently treated as neutral black boxes.
+Although previous research has extensively audited face
+recognition and classification systems for gender and skintone biases [8], [9], [10], the structural fairness of one of
+the building blocks that make some of the most robust
+perception systems possible [4], namely facial landmarks,
+remains largely unexplored. To address this gap, we present
+an empirical audit of demographic biases in facial landmark
+detection. We evaluate a standard model trained and tested
+on some of the most widely adopted benchmark datasets in
+the field, aiming to uncover the biases inherently transferred
+from the data to the perception system. Because the difficulty
+of landmark localization is heavily influenced by physical
+and environmental factors, we propose a rigorous statistical
+methodology that allows us to isolate the true effect of
+demographic attributes (age, gender, and race) while strictly
+controlling for confounding variables such as head pose,
+facial expression, and image resolution.
+The main contributions of this work are:
+• We provide the first systematic analysis of demographic
+biases in facial landmark estimation and provide empirical evidence in models trained on popular facial
+landmark datasets.
+• We introduce a statistical framework that isolates the
+arXiv:2604.06961v1  [cs.CV]  8 Apr 2026
+
+true effect of demographic attributes by strictly controlling for confounding variables.
+• We show that while these models exhibit no significant
+gender or race bias once confounding variables are
+controlled, they are biased for older individuals.
+• We draw attention to how biases at the foundational
+computer vision level can translate into an inequitable
+human-robot interaction, particularly for elderly populations.
+II. RELATED WORK
+Recent advancements in artificial intelligence have intensified concerns about how human biases become embedded
+in algorithmic decision-making. The robotics community is
+increasingly recognizing that similar problems arise when
+robots rely on DL models trained on biased data [1], which
+can lead to the reproduction of demographic stereotypes
+in sensitive HRI applications [5]. Recent comprehensive
+surveys in the field emphasize that these biases can manifest
+at the data, model, and implementation levels, leading to
+indirect discrimination in human-robot interactions [2].
+There is broad consensus that face analysis models perform worse on children than on adults, with evaluations consistently reporting higher error rates in younger cohorts [8],
+[11]. When age groups are adequately represented in the
+training data, Bahmani et al. [12] show that the difficulty
+stems from the magnitude of appearance change between
+images of the same individual taken at different ages, rather
+than from absolute age. This points to temporal aging effects
+rather than an inherent bias against children.
+Similarly, previous literature agrees that facial analysis
+models exhibit demographic differentials by race and skin
+tone: evaluations consistently report higher accuracies for
+individuals with lighter skin and elevated error rates for
+people with darker skin tones [8], with multiple studies also
+finding better performance on European/Caucasian cohorts
+than on Asian or African cohorts [10]. Thus, the key driver
+is not racial identity per se, but skin reflectance (skin tone)
+and illumination acquisition conditions, though these often
+correlate with race in practice.
+Age estimation models have also been found to perform
+worse on women [13], a difference that persists even when
+controlling for confounding variables such as facial expression, head pose, forehead occlusion by hair, and makeup [9].
+It has been shown that gender classification models make
+larger errors for women [8], [14].
+In light of the substantial evidence of demographic bias in
+facial recognition, numerous mitigation techniques have been
+proposed, although none has proven to be a definitive solution, and the issue remains an active area of research [14].
+Models have also been found to perform worse on variables
+that are underrepresented in the training set.
+While fairness disparities have been documented in many
+facial analysis tasks, research on landmark detection focuses
+solely on clinical biases. Specifically, prior work [15] shows
+that landmark detectors perform worse in individuals with
+neurodegenerative conditions, such as dementia, as well as in
+those with facial impairments resulting from ALS or stroke.
+These findings capture variations driven by pathology rather
+than demographic differences, leaving unresolved whether
+facial shape varies consistently across demographic groups
+in ways that influence landmark detection outcomes.
+Overall, we are the first to show that demographic biases
+in facial landmark detection mainly stem from imbalanced
+training data, and that their effect is much smaller than that
+of other confounding factors, such as head pose, lighting,
+occlusion, or image resolution, which are the primary drivers
+of performance degradation. This indicates that demographic
+disparities in this task are induced rather than intrinsic to
+facial differences.
+III. METHODS
+A. Model architecture and implementation details
+A consistent backbone is required to meaningfully assess
+demographic bias in facial landmark detection. Therefore,
+we adopt a standard face alignment model from the public
+repository1, built on a U-Net architecture with a ResNet-34
+encoder pre-trained on ImageNet.
+To train our model, we shuffle the training set and split
+it into 90% training and 10% validation subsets. We always
+select the model parameters with the lowest validation error.
+The input images provided to the model correspond only to
+the region containing the face, according to the dimensions
+of the bounding box associated with each image. Since the
+bounding boxes may be rectangular, they are enlarged along
+their shorter dimension to make them squares. The bounding
+boxes are further expanded by 30% to avoid excessively tight
+framing around the face before being resized to 256 × 256
+pixels. During training, we perform data augmentation by
+applying random changes in hue, saturation, and brightness.
+B. Datasets
+Analyzing bias in facial landmark detection requires
+datasets that include facial landmark annotations, along with
+demographic attributes and potential confounding factors.
+For training, we use the original WFLW training split, and
+for evaluation, we consider the full RAF-DB and the WFLW
+test set.
+1) RAF-DB: The Real-world Affective Faces Dataset [16]
+is the standard dataset for demographic bias analysis in facerelated tasks. RAF-DB contains 19292 face images annotated
+with a bounding box, 5 manually defined facial landmarks
+(i.e., centers of the eyes, the tip of the nose, and the corners
+of the mouth), demographic attributes including gender, race,
+and age, as well as facial expression labels. Their values are:
+• Gender: male, female or unsure.
+• Race: Caucasian, African-American or Asian.
+• Age: 0–3, 4–19, 20–39, 40–69 or over 69 years.
+• Expression: anger, disgust, sadness, happiness, neutral,
+fear, surprise, or a compound emotion formed by a
+combination of two of the previous ones.
+1https://github.com/pcr-upm/students_landmarks
+
+In Table I, the number of RAF-DB images in each of the
+gender, race, and age categories is reported after removing
+the 1109 images with uncertain gender.
+TABLE I
+DEMOGRAPHIC DISTRIBUTION OF IMAGES IN RAF-DB.
+Asian
+African Caucasian
+Sum
+Age
+F
+M
+F
+M
+F
+M
+F
+M
+0-3
+64
+52
+15 212
+224
+357
+303
+621
+4-19
+342
+261
+200 200 1215 935
+1757 1396
+20-39 1029 550
+267 208 5362 3083
+6658 3841
+40-69 123
+127
+74
+99
+1046 1584
+1243 1810
+70+
+56
+49
+10
+13
+143
+283
+209
+345
+Sum
+1614 1039 566 732 7990 6242
+10170 8013
+2) WFLW: Wider Facial Landmarks in-the-Wild [17] consists of 7500 in-the-wild training images and 2500 testing
+images, each with a bounding box and 98 manually annotated
+facial landmarks. Additionally, WFLW includes annotations
+for six binary attributes:
+• Pose: small or large deviation from neutral.
+• Expression: neutral or exaggerated.
+• Illumination: normal or extreme.
+• Make-up: presence or absence of make-up.
+• Occlusion: presence or absence of occlusion.
+• Blur: clear or blurry image.
+C. Demographic variable annotation for WFLW
+Unlike RAF-DB, which provides demographic annotations
+such as gender, race, and age, the WFLW dataset does not
+include any demographic labels. For this reason, we annotate
+these attributes by employing an ensemble composed of three
+different pre-trained deep learning models. For consistency
+among the models, we adopt the demographic taxonomy
+introduced in FairFace [18], which was developed to ensure
+balanced representation across demographic groups:
+• Gender: male or female.
+• Race: White, Black, Asian or Indian.
+• Age: 0–2, 3–9, 10–19, 20–29, 30–39, 40–49, 50–59,
+60–69 or over 69 years.
+To make the age labels compatible with those used in the
+RAF-DB test set, we merge the 9 FairFace age categories into
+5 broader groups: 0–2, 3–19, 20–39, 40–69, and +69 years.
+This grouping matches the age intervals defined in RAF-DB,
+with the only difference being that age 3 is included in the
+second category rather than the first.
+To assign demographic labels to WFLW, we aggregate the
+predictions of three different models. The first model is a
+gender, race, and age classifier with a ResNet-34 architecture
+trained on FairFace. The second is a CLIP model with a
+ViT-L/14 architecture as its image encoder. The third model,
+is a transformer-based gender and age regressor whose
+continuous age outputs we discretize to match the categories
+used by the other models.
+Race estimation is obtained directly from the first model.
+Gender is determined by majority vote across the three
+models. For age, if two models agree on the same category,
+that category is selected as the ensemble output; if all three
+predictions differ, the final output is the middle category.
+Finally, in Tables II and III, we report the number of WFLW
+images in each gender, race, and age category.
+TABLE II
+DEMOGRAPHIC DISTRIBUTION IN THE WFLW TRAIN PARTITION.
+Asian
+Black
+White
+Indian
+Sum
+Age
+F
+M
+F
+M
+F
+M
+F
+M
+F
+M
+0-2
+4
+3
+2
+0
+37
+15
+1
+1
+44
+19
+3-9
+44
+23
+29
+3
+216
+76
+19
+7
+308
+109
+10-19 162 58
+73
+52
+403
+253
+56
+27
+694
+390
+20-29 213 143 124 166 923
+632
+102 53
+1362 994
+30-39 65 100
+56 179
+456
+695
+28
+89
+605 1063
+40-49 32
+57
+31
+77
+242
+376
+19
+68
+324
+578
+50-59 17
+29
+10
+40
+129
+322
+16
+33
+172
+424
+60-69 10
+24
+8
+22
+65
+219
+5
+18
+88
+283
+70+
+1
+4
+2
+5
+8
+17
+5
+1
+16
+27
+Sum
+548 441 335 544 2479 2605 251 297
+3613 3887
+TABLE III
+DEMOGRAPHIC DISTRIBUTION IN THE WFLW TEST PARTITION.
+Asian
+Black
+White
+Indian
+Sum
+Age
+F
+M
+F
+M
+F
+M
+F
+M
+F
+M
+0-2
+5
+2
+2
+0
+8
+2
+0
+0
+15
+4
+3-9
+15
+3
+6
+4
+56
+25
+7
+3
+84
+35
+10-19
+44
+27
+27
+22 119 101 20 12
+210
+162
+20-29
+69
+43
+50
+58 291 255 26 15
+436
+371
+30-39
+28
+31
+22
+68 146 244 10 19
+206
+362
+40-49
+11
+24
+8
+28
+91 121 5
+25
+115
+198
+50-59
+6
+13
+5
+18
+33
+86
+0
+12
+44
+129
+60-69
+5
+15
+5
+10
+26
+57
+1
+3
+37
+85
+70+
+0
+0
+1
+0
+0
+6
+0
+0
+1
+6
+Sum
+183 158 126 208 770 897 69 89
+1148 1352
+D. Confounding variable annotation for WFLW / RAF-DB
+Evaluating fairness in facial landmark detection can be
+challenging because observed performance gaps may arise
+not only from differences across demographic groups but
+also from differences in how visual factors are distributed
+in the data. In other words, standard fairness analysis can
+be confounded by variations in visual conditions rather than
+by genuine behavioral differences in the model. Real-world
+datasets include wide variability in head pose, illumination,
+occlusion, and face resolution, all of which affect the visibility of facial cues and thus influence recognition difficulty.
+In this work, we consider several visual factors as potential
+confounders. Among these factors, head pose is particularly
+important due to its strong influence on landmark detection
+performance. Head pose is represented as the rotation of the
+head relative to a frontal, camera-aligned orientation and is
+expressed using Euler angles, which decompose the global
+rotation into three sequential rotations around the axes of the
+camera coordinate system. The head pose estimation model
+outputs three values: pitch, yaw, and roll; corresponding to
+rotations around the X, Y, and Z axes, respectively. Denoting
+these angles as αp, αy, and αr, the overall rotation matrix R
+is obtained by rotating first around the X axis, then around
+the Y axis, and finally around the Z axis.
+Prior work [19] shows that landmark localization error
+increases substantially as the face deviates from the frontal
+
+pose. However, the WFLW dataset includes a single binary
+attribute to represent head pose, and RAF-DB does not
+contain any annotation for this attribute. For this reason, we
+annotate Euler angles using a head pose estimation model2,
+based on an EfficientNet-B4 architecture. The head pose
+estimation model outputs continuous yaw, pitch, and roll
+values, which we use directly for labeling.
+E. Evaluation metric
+The most widely used metric in the literature for evaluating
+the performance of landmark detection models is the normalized mean error (NME). The normalized error for a landmark
+is defined as the Euclidean distance between its true position
+and the predicted position, divided by a normalizing factor
+that scales the distance relative to the face size in the image,
+thus preventing the error magnitude from being influenced
+by this variable. Similar to [19], we use the height of the
+face bounding box as the normalizing factor. The NME of a
+single face image is calculated by averaging the normalized
+errors of all its landmarks.
+F. Linear regression analysis
+To examine the factors influencing NME, we fit a linear
+regression model where the NME produced by the landmark
+detector for each image is treated as the response variable.
+The main explanatory variables used to assess demographic
+bias are gender, race, and age. Additionally, for each evaluation dataset, we include a set of potential confounders, such
+as head pose and face resolution, that may also impact NME,
+incorporating them into the model to control for their effects.
+To study the effect of head pose on the localization error of
+the landmark detection model, the Euler angles predicted by
+the head pose estimator are condensed into a single measure
+quantifying the deviation from the frontal orientation. Specifically, we compute the geodesic distance [20] between the
+estimated rotation matrix and the reference frontal rotation.
+The height of the face bounding box, measured in pixels,
+is used as a proxy for image resolution. The remaining
+confounding variables vary by evaluation dataset: for RAF-
+DB, we include the expression label, while for WFLW, we
+incorporate binary attributes corresponding to expression,
+illumination, make-up, occlusion, and blur.
+In a preliminary analysis, we observed that the regression
+residuals did not satisfy the assumptions of normality and
+homoscedasticity, as the response variable showed a strong
+right skew in both datasets. To address this issue, we applied
+a Box–Cox transformation to the response variable [21].
+After transforming the response variable in both datasets,
+we examined the nature of the relationship between the
+transformed response NME and the confounding variables.
+The correlation coefficient between the transformed NME
+and the geodesic distance is around 0.4 in both datasets.
+In RAF-DB, the correlation coefficient between the transformed NME and bounding box height is -0.35, whereas with
+the inverse of bounding box height is 0.54. Consequently, in
+2https://github.com/pcr-upm/students_headpose
+all regression models, we apply the transformation f(x) =
+1/x to the bounding box height.
+IV. RESULTS
+A. Analysis in RAF-DB
+We compute 3 regression models on RAF-DB, where the
+response variable is the NME evaluated across 5 landmarks,
+after applying the Box-Cox transformation. In the first model,
+we include all demographic variables (i.e., gender, race, age)
+as explanatory variables. In the second model, we also add
+headpose, and the height of the bounding box. In the third
+model, we add the facial expression category to the previous
+variables. We restricted this analysis to 7 basic emotions;
+consequently, the third model was trained on 14388 images,
+compared to the 18183 (see Table I) used for the first two.
+Table IV shows the results of the Type III ANOVA tests for
+the explanatory variables included in each model.
+TABLE IV
+TYPE III ANOVA TESTS FOR EACH REGRESSION MODEL ON RAF-DB.
+Exp. Variable
+Df
+F-value
+P-value
+Significance
+Model 1 (All demographic factors)
+Gender
+1
+27.805
+1.357 ∗10−7
+***
+Race
+2
+20.549
+1.219 ∗10−9
+***
+Age
+4
+42.805
+< 2.2 ∗10−16
+***
+Model 2 (Demographic + Headpose + Resolution)
+Gender
+1
+23.7996
+1.078 ∗10−6
+***
+Race
+2
+1.6928
+0.184
+Age
+4
+22.9014
+< 2.2 ∗10−16
+***
+Headpose
+1
+4736.0806
+< 2.2 ∗10−16
+***
+(Bbox height)-1
+1
+9838.5799
+< 2.2 ∗10−16
+***
+Model 3 (Demographic + All confounding factors)
+Gender
+1
+1.4162
+0.23406
+Race
+2
+3.9706
+0.01888
+*
+Age
+4
+18.8431
+1.825 ∗10−15
+***
+Expression
+6
+156.6906
+< 2.2 ∗10−16
+***
+Headpose
+1
+4754.2584
+< 2.2 ∗10−16
+***
+(Bbox height)-1
+1
+9798.1750
+< 2.2 ∗10−16
+***
+Furthermore, it is important to identify which categories
+of these explanatory variables differ significantly from one
+another. To this end, we computed 95% confidence intervals
+(CI) for the marginal means of the response variable for each
+model. The marginal mean for each category is estimated by
+fixing the two numerical explanatory variables at their mean
+values and averaging the estimated value of the response
+variable for each possible combination of the remaining
+explanatory variables.
+We compute the CIs using the emmeans package3 in R
+and they are adjusted using the ˇSid´ak correction for multiple
+comparisons. In Tables V to VIII we show these CIs on
+the original NME scale, by inverting previous Box-Cox
+transformation. To aid interpretation, the CIs employ a colorcoding scheme, such that overlapping intervals are labeled
+with the same color.
+According to Table IV, the effect of gender is statistically
+significant at p < 0.001 in the first two models, whereas it
+is not in the third. These results are consistent with those
+3https://cran.r-project.org/web/packages/emmeans/index.html
+
+reported in Table V, where the estimated marginal mean
+NME is significantly higher for men than for women in the
+first model, while the difference gradually decreases in the
+second and third model and the CIs become increasingly
+overlapping.
+TABLE V
+95% CIS OF NME MARGINAL MEANS BY GENDER ON RAF-DB.
+Gender Emmean Lower CL Upper CL CIs
+Model 1
+Female
+2.2946
+2.2501
+2.3403
+Male
+2.3938
+2.3487
+2.4401
+Model 2
+Female
+1.9868
+1.9591
+2.015
+Male
+2.0417
+2.014
+2.0699
+Model 3
+Female
+2.1574
+2.1199
+2.1958
+Male
+2.1737
+2.1384
+2.2099
+These results do not provide evidence of gender bias in
+the landmark detection model under study. The fact that the
+gender effect disappears when the expression is added to
+the regression model suggests that this effect may be due
+to a correlation between gender and expression in RAF-
+DB. The joint distribution of gender and expression supports
+this hypothesis (see Figure 1). The most notable difference
+between the distribution of the expression variable in men
+and women is found in the “Anger” category. This category,
+which yields one of the highest estimated NME values
+(see Table VIII), is overrepresented in men (9.2%) compared
+to women (3.4%). A gender difference is also evident in
+the “Happiness” category, which has the lowest estimated
+NME and is more prevalent in women (43.1%) than in men
+(36.4%).
+43.1%
+19.5%
+15.9%
+9.6%
+6.2%
+3.4%
+2.3%
+Female
+36.4%
+24.0%
+11.5%
+10.7%
+5.7%
+9.2%
+2.6%
+Male
+Happiness
+Neutral
+Sadness
+Surprise
+Disgust
+Anger
+Fear
+Fig. 1.
+Images in each expression category by gender in RAF-DB.
+The effect of race is statistically significant at p < 0.001
+in the first model, but not in the second. The third model
+shows a significant effect at p < 0.05, meaning that it is
+a much weaker effect than in the first model. A similar
+pattern occurs with race in Table VI. The estimated marginal
+mean NME is significantly lower for the Caucasian group
+compared to the African/Asian group in the first model,
+whereas no significant differences are found in the other two
+models.
+Consistent with the previous observation, these results
+indicate that the apparent effect of race is largely due to
+differences in head pose and image resolution, and is therefore drastically reduced when controlling for these variables.
+In fact, there is a clear correlation between race and image
+resolution. In RAF-DB, the Caucasian group presents the
+largest median bounding box height (175 pixels), exceeding
+those observed in Asian (153 pixels) and African (159 pixels)
+groups respectively.
+TABLE VI
+95% CIS OF NME MARGINAL MEANS BY RACE ON RAF-DB.
+Race
+Emmean Lower CL Upper CL CIs
+Model 1
+African
+2.419
+2.3321
+2.5106
+Asian
+2.3697
+2.3063
+2.4356
+Caucasian
+2.2465
+2.2112
+2.2826
+Model 2
+African
+2.0401
+1.9886
+2.0936
+Asian
+1.9935
+1.9557
+2.0325
+Caucasian
+2.0086
+1.9855
+2.0322
+Model 3
+African
+2.2021
+2.1391
+2.2678
+Asian
+2.1602
+2.1122
+2.2098
+Caucasian
+2.135
+2.1037
+2.167
+The effect of age is statistically significant in all models
+at p < 0.001, so it cannot be attributed to any of the
+confounding variables considered in RAF-DB. Among all
+demographic variables, age exhibits the most consistent and
+pronounced effect across all results, as indicated by the
+ANOVA results. The results reveal the existence of a clear
+age bias. In Table VII the second and third models agree that
+the estimated marginal mean NME is significantly higher for
+people over 69 years of age than for any other age category,
+and this effect persists even after controlling for head pose,
+image resolution, and facial expression.
+TABLE VII
+95% CIS OF NME MARGINAL MEANS BY AGE ON RAF-DB.
+Age
+Emmean Lower CL Upper CL
+CIs
+Model 1
+0-3
+2.1764
+2.0843
+2.2744
+4-19
+2.1782
+2.1246
+2.2338
+20-39
+2.4688
+2.422
+2.5168
+40-69
+2.4445
+2.3758
+2.5161
+70+
+2.4803
+2.3372
+2.6363
+Model 2
+0-3
+1.9947
+1.9336
+2.0586
+4-19
+1.9057
+1.8718
+1.9404
+20-39
+2.0219
+1.9941
+2.0502
+40-69
+1.9915
+1.9521
+2.0321
+70+
+2.1689
+2.0796
+2.2637
+Model 3
+0-3
+2.1389
+2.0645
+2.2171
+4-19
+2.051
+2.0074
+2.096
+20-39
+2.1184
+2.0834
+2.1543
+40-69
+2.1398
+2.0898
+2.1915
+70+
+2.4024
+2.2906
+2.5222
+The causes of this bias cannot be determined with certainty, as regression analysis is not sufficient to establish
+causal relationships. One possible hypothesis is that it stems
+from the small number of images of older individuals in
+the training set. As shown in Table II, the WFLW training
+
+partition contains only 43 instances whose estimated age is
+over 69 years.
+Regarding the confounding factors, all exhibit statistically
+significant effects, with magnitudes substantially greater than
+those of the demographic variables. In particular, the height
+of the bounding box is the variable with the largest effect
+on NME, and by itself explains 29.3% of the variability
+of the response variable. The third regression model, which
+includes all variables, explains 51.5% of the variability.
+The CIs for each expression in Table VIII indicate that
+“Happiness” has the lowest estimated marginal mean NME,
+whereas “Fear” has the highest.
+TABLE VIII
+95% CIS OF NME MARGINAL MEANS BY EXPRESSION ON RAF-DB.
+Expression Emmean Lower CL Upper CL
+CIs
+Model 3
+Happiness
+1.8352
+1.8028
+1.8684
+Neutral
+1.9751
+1.9325
+2.0191
+Sadness
+2.0974
+2.0463
+2.1505
+Disgust
+2.089
+2.016
+2.1658
+Anger
+2.3265
+2.2388
+2.4192
+Surprise
+2.2935
+2.225
+2.3651
+Fear
+2.6887
+2.5355
+2.8556
+B. Analysis in WFLW
+We compute 4 regression models on the WFLW test
+partition, where the response variable is the NME evaluated
+across 98 landmarks, after applying the Box-Cox transformation. In the first three models, the explanatory variables were
+selected to remain consistent with previous RAF-DB models.
+In the fourth model, we add all additional confounding
+variables that are annotated in WFLW but not in RAF-DB.
+Table IX reports the results of the Type III ANOVA tests for
+the explanatory variables included in each model.
+The effect of gender is statistically significant at p <
+0.001 in the first model, at p < 0.01 in the second model,
+and at p < 0.05 in the third model. In the fourth model, the
+effect of gender is not significant. It can be seen that the influence of gender decreases as more confounding factors are
+included in the regression model. This observation supports
+the idea that the apparent effect of gender is attributable to
+correlations with other confounding variables.
+The effect of race is statistically significant at p < 0.001
+in the first model, at p < 0.01 in the second and third
+model, and at p < 0.05 in the fourth model. Despite using
+a different number of race categories, the results for this
+variable are consistent across the two datasets. In fact, the
+estimated effect of race on RAF-DB is of a very similar
+magnitude.
+In contrast, for age the results are different from those
+observed in RAF-DB, since none of the results show a
+statistically significant effect of age. The fact that this bias
+appears when evaluating in RAF-DB and not in WFLW may
+be explained by the small number of images available in the
+WFLW test partition for some age categories. As shown in
+Table III, there are only 19 images in the “0-2” category and
+7 in the “70+” category. Considering that age bias affects
+TABLE IX
+TYPE III ANOVA TESTS FOR EACH REGRESSION MODEL ON WFLW.
+Exp. Variable
+Df
+F-value
+P-value
+Significance
+Model 1 (All demographic factors)
+Gender
+1
+16.009
+6.487 ∗10−5
+***
+Race
+3
+5.720
+0.0006726
+***
+Age
+4
+2.088
+0.0798401
+Model 2 (Demographic + Headpose + Resolution)
+Gender
+1
+7.1670
+0.007474
+**
+Race
+3
+4.7709
+0.002554
+**
+Age
+4
+1.6311
+0.163632
+Headpose
+1
+430.1233
+< 2.2 ∗10−16
+***
+(Bbox height)-1
+1
+75.9855
+< 2.2 ∗10−16
+***
+Model 3 (Demographic + Headpose + Resolution + Expression)
+Gender
+1
+5.8705
+0.015468
+*
+Race
+3
+4.5147
+0.003654
+**
+Age
+4
+1.3988
+0.231840
+Expression
+1
+28.1471
+1.224 ∗10−7
+***
+Headpose
+1
+430.9612
+< 2.2 ∗10−16
+***
+(Bbox height)-1
+1
+81.6169
+< 2.2 ∗10−16
+***
+Model 4 (Demographic + All confounding factors)
+Gender
+1
+3.7670
+0.05239
+Race
+3
+3.5841
+0.01327
+*
+Age
+4
+0.8160
+0.51480
+Expression
+1
+52.0740
+7.068 ∗10−13
+***
+Illumination
+1
+1.4539
+0.22802
+Makeup
+1
+36.6529
+1.625 ∗10−9
+***
+Occlusion
+1
+280.5007
+< 2.2 ∗10−16
+***
+Blur
+1
+40.1777
+2.745 ∗10−10
+***
+Headpose
+1
+537.5023
+< 2.2 ∗10−16
+***
+(Bbox height)-1
+1
+39.2642
+4.350 ∗10−10
+***
+the latter category mainly, it is not surprising that the small
+sample size prevents its detection.
+Finally, most confounding variables, except for illumination, show a statistically significant effect on NME in all
+cases. The effect of bounding box height is smaller in WFLW
+than in RAF-DB, although it remains statistically significant
+at p < 0.001.
+As we did for RAF-DB, we computed 95% CIs for the
+marginal means of the response variable according to the
+four models. No analysis showed significant differences in
+the estimated NME marginal means between genders, races,
+or age groups. For this reason, and to accommodate space
+limitations, we have omitted these tables.
+C. Implications for Human-Robot Interaction
+The results presented above have direct implications for
+the design and deployment of perception systems in HRI.
+In many applications, facial landmark detection constitutes
+a foundational component upon which higher-level modules,
+such as facial expression recognition, gaze estimation, and
+intention inference—are built. Consequently, biases at this
+stage can propagate through the perception pipeline and
+lead to systematic misinterpretations of user behavior. Our
+findings indicate that variability in head pose and image
+resolution plays a dominant role in shaping these errors,
+underscoring the need for robust perception under realistic interaction conditions. At the same time, the observed
+age-related effect in models trained on WFLW suggests
+that underrepresentation of certain demographic groups can
+translate into degraded performance for specific user pop-
+
+ulations, particularly older adults. In assistive and socially
+interactive robotics, such disparities may affect the robot’s
+ability to correctly interpret affective cues or engagement
+signals, potentially leading to inappropriate or inequitable
+responses. These results highlight that fairness concerns in
+HRI cannot be addressed solely at the decision-making level,
+but must also consider the reliability and representativeness
+of low-level perceptual components to prevent upstream
+algorithmic flaws from propagating into discriminatory robot
+behaviors [2].
+V. CONCLUSIONS
+In this paper, we address a critical challenge for the
+Human-Robot Interaction (HRI) community: identifying and
+mitigating hidden biases in the perceptual models that drive
+human-robot interaction. Specifically, we investigate the demographic biases in facial landmark estimation, a general
+and highly representative facial analysis step that serves as
+a foundational building block for robust affective computing
+algorithms, yet its structural fairness has remained largely
+unexplored. To achieve this, we introduce a rigorous methodology built upon standard statistical tools to analyze the
+relevance of various demographic and confounding variables
+on this task. Unlike prior fairness analyses that rely on raw
+performance comparisons, our approach explicitly disentangles demographic effects from confounding visual factors.
+Our first and foremost finding is that the factors with the
+greatest influence on the accuracy of landmark estimation
+are the confounding variables associated with head pose
+and image resolution. The impact of these physical factors
+heavily outweighs the influence of any demographic variable.
+This highlights the absolute necessity of controlling for these
+confounders when conducting fairness audits; failing to do
+so can lead to deceptive conclusions about the true source
+of algorithmic errors.
+Secondly, we analyzed the demographic biases of a standard model trained on WFLW, one of the most popular
+landmark estimation datasets, and evaluated it on both RAF-
+DB and the WFLW test set. Our analysis demonstrates
+that, once confounding variables are properly accounted for,
+the model trained on this dataset exhibits no statistically
+significant gender or race biases at the 0.01 significance level.
+However, our results reveal a pronounced and persistent
+age bias. We show that the extremely small number of
+training samples for individuals aged 70 and older in WFLW
+systematically degrades the model’s performance, producing
+a significant bias against the elderly group.
+Ultimately, by unveiling these hidden biases, we aim
+to provide HRI practitioners and robot designers with the
+empirical evidence necessary to reconsider the uncritical reliance on vision models trained on standard, widely adopted
+datasets. Exposing these vulnerabilities is an essential prerequisite for Trustworthy AI in robotics, ensuring that the future
+of socially assistive robotics is built upon a foundation of
+equitable perception, particularly for vulnerable populations
+such as the elderly.
+REFERENCES
+[1] T. Hitron, B. Megidish, E. Todress, N. Morag, and H. Erel, “AI bias
+in human-robot interaction: An evaluation of the risk in gender biased
+robots,” in Proc. IEEE International Conference on Robot and Human
+Interactive Communication, 2022, pp. 1598–1605.
+[2] L. Londo˜no, J. V. Hurtado, N. Hertz, P. Kellmeyer, S. Voeneky, and
+A. Valada, “Fairness and bias in robot learning,” in Proc. IEEE, vol.
+112, no. 4, 2024, pp. 305–330.
+[3] E. Fosch-Villaronga, A. Mut-Pi˜na, M. R. Shaffique, and M. Schwed-
+Shenker, “Exploring fairness in service robotics,” Cambridge Forum
+on AI: Law and Governance, vol. 1, p. e28, 2025.
+[4] H. A. Shehu, W. N. Browne, and H. Eisenbarth, “An adversarial attacks
+resistance-based approach to emotion recognition from images using
+facial landmarks,” in Proc. IEEE International Conference on Robot
+and Human Interactive Communication, 2020, pp. 1307–1314.
+[5] L. Tanqueray, T. Paulsson, M. Zhong, S. Larsson, and G. Castellano,
+“Gender fairness in social robotics: Exploring a future care of peripartum depression,” in ACM/IEEE International Conference on Human-
+Robot Interaction, 2022, pp. 598–607.
+[6] A. K. Ostrowski, R. Walker, M. Das, M. Yang, C. Breazeal, H. W.
+Park, and A. Verma, “Ethics, equity, & justice in human-robot interaction: A review and future directions,” in Proc. IEEE International
+Conference on Robot and Human Interactive Communication, 2022,
+pp. 969–976.
+[7] C. Torras, “Ethics of social robotics: Individual and societal concerns and opportunities,” Annual Review of Control, Robotics and
+Autonomous Systems, vol. 7, pp. 1–18, 2024.
+[8] J. Buolamwini and T. Gebru, “Gender shades: Intersectional accuracy
+disparities in commercial gender classification,” in Proc. Conf. on
+Fairness, Accountability and Transparency, vol. 81, 2018, pp. 77–91.
+[9] V. Albiero, K. K. S, K. Vangara, K. Zhang, M. C. King, and K. W.
+Bowyer, “Analysis of gender inequality in face recognition accuracy,”
+in Proc. Winter Conference on Applications of Computer Vision
+Workshops, 2020, pp. 81–89.
+[10] K. K. S, K. Vangara, M. C. King, V. Albiero, and K. W. Bowyer,
+“Characterizing the variability in face recognition accuracy relative
+to race,” in Proc. IEEE Conference on Computer Vision and Pattern
+Recognition Workshops, 2019, pp. 2278–2285.
+[11] N. Srinivas, K. Ricanek, D. Michalski, D. S. Bolme, and M. King,
+“Face recognition algorithm bias: Performance differences on images
+of children and adults,” in Proc. IEEE Conference on Computer Vision
+and Pattern Recognition Workshops, 2019, pp. 2269–2277.
+[12] K. Bahmani and S. Schuckers, “Face recognition in children: A
+longitudinal study,” in International Workshop on Biometrics and
+Forensics, 2022, pp. 1–6.
+[13] S. Hiba and Y. Keller, “Hierarchical attention-based age estimation
+and bias analysis,” IEEE Trans. on Pattern Analysis and Machine
+Intelligence, vol. 45, no. 12, pp. 14 682–14 692, 2023.
+[14] P. Smith and K. Ricanek, “Mitigating algorithmic bias: Evolving an
+augmentation policy that is non-biasing,” in Proc. Winter Conference
+on Applications of Computer Vision Workshops, 2020, pp. 90–97.
+[15] B. Taati, S. Zhao, A. B. Ashraf, A. Asgarian, M. E. Browne, K. M.
+Prkachin, A. Mihailidis, and T. Hadjistavropoulos, “Algorithmic bias
+in clinical populations - evaluating and improving facial analysis
+technology in older adults with dementia,” IEEE Access, vol. 7, pp.
+25 527–25 534, 2019.
+[16] S. Li and W. Deng, “Reliable crowdsourcing and deep localitypreserving learning for unconstrained facial expression recognition,”
+IEEE Trans. on Image Processing, vol. 28, no. 1, pp. 356–370, 2019.
+[17] W. Wu, C. Qian, S. Yang, Q. Wang, Y. Cai, and Q. Zhou, “Look
+at boundary: A boundary-aware face alignment algorithm,” in Proc.
+IEEE Conference on Computer Vision and Pattern Recognition, 2018,
+pp. 2129–2138.
+[18] K. K¨arkk¨ainen and J. Joo, “Fairface: Face attribute dataset for balanced
+race, gender, and age for bias measurement and mitigation,” in Proc.
+Winter Conference on Applications of Computer Vision, 2021.
+[19] R. Valle, J. M. Buenaposada, and L. Baumela, “Multi-task head pose
+estimation in-the-wild,” IEEE Trans. on Pattern Analysis and Machine
+Intelligence, vol. 43, no. 8, pp. 2874–2881, 2021.
+[20] A. Cobo, R. Valle, J. M. Buenaposada, and L. Baumela, “On the
+representation and methodology for wide and short range head pose
+estimation,” Pattern Recognition, vol. 149, p. 110263, 2024.
+[21] G. E. P. Box and D. R. Cox, “An analysis of transformations,” Journal
+of the Royal Statistical Society: Series B (Methodological), vol. 26,
+no. 2, pp. 211–243, 1964.

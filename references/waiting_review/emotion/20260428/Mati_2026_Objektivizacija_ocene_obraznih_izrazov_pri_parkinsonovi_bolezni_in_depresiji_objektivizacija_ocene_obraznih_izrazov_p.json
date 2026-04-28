@@ -1,0 +1,20 @@
+{
+  "title": "Objektivizacija ocene obraznih izrazov pri parkinsonovi bolezni in depresiji",
+  "authors": [
+    "Teodora Matić"
+  ],
+  "year": 2026,
+  "abstract": "Background: Reduced facial expressiveness (hypomimia) is a cardinal sign of Parkinson’s disease (PD) that phenotypically overlaps with symptoms of depression, thus complicating differential diagnosis. This study investigated whether automated facial expression (FE) analysis could objectively discriminate between individuals with PD, depression, and healthy controls (HC). Methods: Eighty participants (30 PD, 25 depression, 25 HC) performed four FE tasks (Spontaneous emotional expression, Voluntary emotional expression, Mimicked emotional expression, Reading) while being recorded. High-level Emotion features and low-level Action Unit (AU) features were extracted using an automated engine. Random Forest classifiers with Leave-One-Out Cross-Validation (LOO-CV) were used to perform three-group (PD versus depression versus HC) and binary (PD versus depression) classification, and to predict hypomimia severity within the PD group. Results: The models successfully differentiated PD from depression with high classification accuracy, achieving a peak LOO-averaged classification accuracy of 0.89 in the binary classification task (Reading task, Emotion features). High-level Emotion features consistently outperformed low-level AU features across most tasks. The three-group classification was more challenging (peak accuracy 0.68), with models struggling to distinguish HCs from the clinical groups. In contrast, predicting clinically-rated hypomimia severity within the PD group using FE features was unsuccessful, with models performing at or below chance. A separate model using clinical scales to predict hypomimia did not perform well (0.60 classification accuracy), with cognitive status (ACE-III) and depression (GDS-15) being the most important predictors. Conclusion: Automated FE analysis is a viable tool for objectively differentiating PD from depression, providing a strong foundation for developing non-invasive digital biomarkers to aid clinical diagnosis. While group classification is promising, the challenge of predicting intra-group symptom severity like hypomimia highlights the need for future research using larger, independent cohorts and potentially integrating multimodal data.",
+  "doi": null,
+  "arxiv_id": null,
+  "venue": "Repository of the University of Ljubljana (University of Ljubljana)",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W7130286410"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "title:objektivizacija ocene obraznih izrazov pri parkinsonovi bolezni in depresiji"
+}

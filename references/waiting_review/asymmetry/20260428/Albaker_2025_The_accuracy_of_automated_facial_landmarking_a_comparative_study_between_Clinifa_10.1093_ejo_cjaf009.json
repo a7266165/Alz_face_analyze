@@ -1,0 +1,23 @@
+{
+  "title": "The accuracy of automated facial landmarking - a comparative study between Cliniface software and patch-based Convoluted Neural Network algorithm",
+  "authors": [
+    "Bodore Al-baker",
+    "Xiangyang Ju",
+    "Peter Mossey",
+    "Ashraf Ayoub"
+  ],
+  "year": 2025,
+  "abstract": "The patch-based CNN algorithm provided a satisfactory accuracy of automatic landmarks detection which is satisfactory for the clinical evaluation of the 3D facial images. Cliniface software is limited in its accuracy in detecting certain landmark which bounds its clinical application.",
+  "doi": "10.1093/ejo/cjaf009",
+  "arxiv_id": null,
+  "venue": "European Journal of Orthodontics",
+  "citation_count": 2,
+  "source": "openalex",
+  "pdf_url": "https://academic.oup.com/ejo/article-pdf/47/2/cjaf009/62486785/cjaf009.pdf",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4408649142"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.1093/ejo/cjaf009"
+}

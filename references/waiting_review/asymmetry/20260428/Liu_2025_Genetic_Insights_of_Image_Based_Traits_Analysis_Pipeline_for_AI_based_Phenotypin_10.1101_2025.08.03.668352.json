@@ -1,0 +1,26 @@
+{
+  "title": "Genetic Insights of Image-Based Traits: Analysis Pipeline for AI-based Phenotyping, Combined-GWAS, and Federated Learning with Application to the Human Face",
+  "authors": [
+    "Xianjing Liu",
+    "Ziyi Xiong",
+    "Fan Liu",
+    "Tamar Nijsten",
+    "Eppo B. Wolvius",
+    "Manfred Kayser",
+    "Gennady V. Roshchupkin"
+  ],
+  "year": 2025,
+  "abstract": "Abstract Image-derived phenotypes - traits extracted from biological images - capture rich morphological information and understanding their genetic basis is crucial for elucidating developmental mechanisms and linking genetic variation to complex visual traits, relevant in many areas of biomedical, evolutionary, and forensic research and applications. However, there are key limitations in the current methodology, such as in the degree of which the large image complexity is captured with the phenotyping methods and how the genetic analysis methods deal with the underlying large genetic complexity. Moreover, needed multi-cohort studies are constrained by privacy regulations often prohibit sharing individual image data across institutions. Here, we present a robust, scalable, privacy-preserving analysis pipeline for unveiling the genetic basis of image-based complex traits, integrating (i) AI-based phenotyping for automatically extracting large numbers of endophenotypes; (ii) Combined-GWAS (C-GWAS) for identifying genetic variants underlying the numerous endophenotypes; (iii) federated learning for training AI-based phenotyping models across multiple cohorts without sharing individual images; and (iv) explainable AI for image-based visualization of the identified genetic effects. In the first application, we analysed digital 3D facial images and genomic data from two European cohorts (N=7,309), extracted 200 image-derived facial endophenotypes, identified 43 significantly face associated genetic loci, including 12 novel ones, and replicated 70% of them in an independent European dataset (N=8,246). AI-based visualization of the identified genetic effects shows the involvement of many of these genetic loci in different parts of the face. Our study provides a generalizable, privacy-aware analysis framework for investigating the genetic basis of image-based complex traits implemented in a computationally efficient python package; its first application yielded new insights into the genetic architecture of facial shape variation.",
+  "doi": "10.1101/2025.08.03.668352",
+  "arxiv_id": null,
+  "venue": "bioRxiv (Cold Spring Harbor Laboratory)",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://www.biorxiv.org/content/biorxiv/early/2025/08/04/2025.08.03.668352.full.pdf",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4412882308"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.1101/2025.08.03.668352"
+}

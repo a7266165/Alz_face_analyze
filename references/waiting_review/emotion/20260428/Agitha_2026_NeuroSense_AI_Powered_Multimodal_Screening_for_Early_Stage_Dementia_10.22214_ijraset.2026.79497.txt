@@ -1,0 +1,401 @@
+14
+IV
+April 2026
+https://doi.org/10.22214/ijraset.2026.79497
+
+International Journal for Research in Applied Science & Engineering Technology (IJRASET)
+                                                                                           ISSN: 2321-9653; IC Value: 45.98; SJ Impact Factor: 7.538
+                                                                                                                Volume 14 Issue IV Apr 2026- Available at www.ijraset.com
+
+
+
+
+
+
+1387
+©IJRASET: All Rights are Reserved | SJ Impact Factor 7.538 | ISRA Journal Impact Factor 7.894 |
+NeuroSense: AI-Powered Multimodal Screening for
+Early-Stage Dementia
+
+Dr. T. Agitha1, Shalini S2, Sadha C3, Varsha S S4
+1Assistant Professor, Department of Biomedical Engineering, Vivekanandha College of Engineering for Women (Autonomous),
+Tiruchengode
+2, 3, 4UG Scholar, Department of Biomedical Engineering, Vivekanandha College of Engineering for Women (Autonomous),
+Tiruchengode
+
+Abstract: Dementia is a progressive neurological disorder that affects memory, cognition, behaviour, and daily functioning.
+Early detection is essential for effective intervention and improved patient outcomes. This paper proposes NeuroSense, an AIpowered multimodal system for early-stage dementia screening by integrating speech analysis, EEG signal processing,
+handwriting analysis, facial emotion recognition, and cognitive assessment. The system collects data from multiple modalities
+and processes it through preprocessing, feature extraction, and machine learning-based classification. Speech features such as
+MFCC, pitch, and pause duration, EEG frequency bands, handwriting patterns, and facial expressions are analysed
+independently and combined using a weighted decision fusion approach. The system is implemented using a React-based
+frontend and a Flask backend for real-time interaction and analysis. Experimental results show that the proposed model
+achieves an overall accuracy of 83%, with speech analysis contributing the highest performance among all modalities. The
+system provides a non-invasive, cost-effective, and interpretable solution for early dementia detection, supporting healthcare
+professionals in clinical decision-making.
+Keywords: Dementia Detection, Cognitive Assessment, EEG Analysis, Speech Analysis, Facial Recognition
+
+I.
+INTRODUCTION
+Dementia is a progressive neurological disorder that primarily affects memory, cognitive abilities, behaviour, language, and daily
+functioning. It is a major cause of disability and dependency among older adults, significantly impacting the quality of life of
+patients and their families. According to global health statistics, millions of people worldwide are affected by dementia, and the
+number is expected to increase steadily due to aging populations. Early diagnosis is critical to manage symptoms, provide timely
+medical interventions, and plan long-term care. However, conventional methods of dementia detection rely on clinical assessments,
+cognitive tests, and imaging techniques, which are time-consuming, expensive, and often require specialized healthcare
+professionals. Recent advances in artificial intelligence (AI) and machine learning (ML) have opened new avenues for intelligent
+healthcare systems. By analysing behavioral, neurological, and physiological data, AI-based systems can provide accurate and early
+predictions of cognitive impairments. In this project, an intelligent dementia detection system is developed that integrates multiple
+analysis modules, including facial emotion recognition, speech analysis, EEG signal classification, behavioral assessment, and
+handwriting analysis. Facial emotion recognition and speech analysis help identify early changes in communication and emotional
+expression, while EEG and handwriting analysis detect neurological and motor impairments. The system is designed with a Reactbased frontend and a Flask backend API for seamless interaction between the user interface and machine learning models. Data
+collected from patients is processed using trained AI models to generate prediction results indicating the likelihood of dementia. The
+system aims to provide a non-invasive, efficient, and cost-effective preliminary screening tool, assisting healthcare professionals in
+the early detection of dementia and enabling timely medical intervention. By combining multiple indicators, the proposed system
+enhances diagnostic accuracy of 83% and reliability, demonstrating the potential of AI in modern healthcare applications.
+
+II.
+LITERATURE SURVEY
+A. Related works
+1) Speech-Based Dementia Prediction Using Artificial Intelligence (2025)
+This study presents a non-invasive approach for early dementia detection using speech analysis. Speech data from the Pitt Corpus
+was analysed by extracting acoustic features such as MFCC, chroma, pitch, jitter, and shimmer using tools like Librosa,
+
+International Journal for Research in Applied Science & Engineering Technology (IJRASET)
+                                                                                           ISSN: 2321-9653; IC Value: 45.98; SJ Impact Factor: 7.538
+                                                                                                                Volume 14 Issue IV Apr 2026- Available at www.ijraset.com
+
+
+
+
+
+
+1388
+©IJRASET: All Rights are Reserved | SJ Impact Factor 7.538 | ISRA Journal Impact Factor 7.894 |
+Parselmouth, and OpenSMILE. Various classification models were applied, among which the Random Forest model achieved the
+highest accuracy of 93.48%. The study highlights that speech-based analysis is cost-effective and suitable for early screening;
+however, its performance is limited by small dataset size, sensitivity to noise, and lack of generalization across different languages.
+
+2) Personalized Dementia Prediction Using Machine Learning Techniques (2025)
+This work focuses on predicting dementia risk using personalized data including genetic, lifestyle, and health-related features. A
+dataset from Kaggle containing information on 1000 individuals was used, incorporating attributes such as age, cognitive scores,
+and medical history. Multiple classification models were implemented, with Random Forest achieving the highest accuracy of
+98.75%. The approach demonstrates high prediction capability, but limitations include possible overfitting, dependency on
+structured data quality, and limited diversity in the dataset.
+
+3) Multimodal Attention Network for Dementia Prediction (2024)
+This paper introduces a multimodal attention-based framework that utilizes large-scale healthcare data from Taiwan’s National
+Health Insurance database. The system integrates demographic and longitudinal medical records encoded using Word2Vec
+embeddings and processes them through multi-head attention mechanisms. The model achieved an AUC of 0.901, outperforming
+traditional methods. Despite its effectiveness, the approach requires complete medical history data and high computational
+resources, which may limit its practical implementation.
+
+4) Predicting Dementia Screening and Staging Scores from Semantic Verbal Fluency Performance (2017)
+This study investigates dementia detection using semantic verbal fluency tasks, where participants are asked to name items within a
+specific category. Linguistic and vocal features such as word count, pause duration, and semantic density were analysed using
+regression models. Support Vector Regression achieved the best performance in predicting clinical scores like MMSE. The method
+is simple and cost-effective but is constrained by moderate reliability, small dataset size, and dependence on language and
+transcription quality.
+
+5) Early Detection of Dementia using Machine Learning for Predictive Analysis (2024)
+This research proposes a hybrid approach combining multiple techniques for dementia detection using MRI data from the OASIS
+dataset. It includes demographic and neuroimaging features such as brain volume and cognitive scores. Various models were
+applied, with Ridge Classifier and CNN achieving the highest accuracy of 93%. While the approach provides high accuracy, it relies
+on expensive MRI data and involves high computational complexity, making it less suitable for large-scale screening.
+
+6) Dementia Assessment Using Mandarin Speech with an Attention-Based Speech Recognition Encoder (2024)
+This study presents a speech-based dementia assessment system designed for Mandarin-speaking individuals using an attentionbased speech recognition model. The system uses a VGG encoder and Bi-LSTM layers to process speech data and predict clinical
+scores. It achieved an accuracy of 92.04% and demonstrated strong performance in dementia detection. However, the model is
+language-dependent and sensitive to variations in recording quality, which may affect its general applicability.
+
+B. Research Gap
+Existing studies on dementia detection primarily focus on single-modality approaches such as speech analysis, MRI data, or
+linguistic tasks, which limit the overall reliability and generalization of results. Although some multimodal systems have been
+proposed, they often rely on large-scale clinical datasets, expensive imaging techniques, or complex computational models that are
+not suitable for real-time or low-cost screening. Additionally, many approaches are constrained by factors such as small dataset size,
+language dependency, noise sensitivity, and lack of integration between behavioral, physiological, and cognitive indicators. There is
+also a lack of user-friendly and accessible systems that can provide quick and non-invasive preliminary screening. Therefore, there
+is a need for a cost-effective, integrated, and scalable multimodal system that combines diverse data sources and provides accurate,
+interpretable, and early-stage dementia detection suitable for practical healthcare applications.
+III.
+PROPOSED SYSTEM
+The proposed system, NeuroSense, is a multimodal framework designed for early-stage dementia screening by analysing
+physiological, behavioral, and cognitive indicators. The system follows a structured pipeline consisting of data acquisition,
+preprocessing, feature extraction, analysis, decision fusion, and result generation to ensure accurate and reliable detection.
+
+International Journal for Research in Applied Science & Engineering Technology (IJRASET)
+                                                                                           ISSN: 2321-9653; IC Value: 45.98; SJ Impact Factor: 7.538
+                                                                                                                Volume 14 Issue IV Apr 2026- Available at www.ijraset.com
+
+
+
+
+
+
+1389
+©IJRASET: All Rights are Reserved | SJ Impact Factor 7.538 | ISRA Journal Impact Factor 7.894 |
+A. Data Acquisition
+In this stage, multimodal data is collected from various sources to capture different aspects of cognitive decline. Speech data is
+obtained from publicly available datasets , where participants describe a standard image, and also through real-time recordings using
+a microphone. EEG signals are collected from standard datasets or simulated data representing brain activity patterns. Handwriting
+samples are collected as images using a camera or touchscreen device, while facial expressions are captured through a webcam.
+Additionally, cognitive test responses are collected through structured questionnaires designed to evaluate memory, attention, and
+reasoning abilities.
+
+B. Data Preprocessing
+The collected raw data is processed to improve quality and remove noise and inconsistencies. EEG signals are filtered using
+bandpass filters and artifact removal techniques to eliminate unwanted interference. Speech signals undergo noise reduction, silence
+removal, and normalization to ensure consistency. Handwriting images are pre-processed through resizing, grayscale conversion,
+and binarization to enhance clarity. Facial images are processed using face detection and alignment techniques to extract relevant
+regions. Cognitive data is cleaned and normalized to maintain uniform scoring across users.
+
+C. Feature Extraction
+In this stage, meaningful features are extracted from each modality to represent patterns associated with cognitive decline. EEG data
+provides features such as power spectral density and frequency bands including delta, theta, alpha, and beta waves. Speech data
+yields features such as Mel-Frequency Cepstral Coefficients (MFCC), pitch, speech rate, jitter, shimmer, and pause duration.
+Handwriting analysis extracts features like stroke density, letter spacing, alignment, curvature, and texture patterns. Facial analysis
+captures facial landmarks, emotion probabilities, eye blink rate, and micro-expressions. Cognitive tests provide features such as
+accuracy, response time, and error rate.
+
+D. Individual Modality Analysis
+Each modality is analysed independently to evaluate its contribution to dementia detection. Speech analysis identifies hesitation,
+pauses, and vocal irregularities, while EEG analysis detects abnormal brain activity patterns. Handwriting analysis captures motor
+impairments and irregular writing patterns. Facial analysis evaluates emotional responses and expression changes, and cognitive
+tests assess functional performance. Each module generates a probability score ranging from 0 to 1, indicating the likelihood of
+dementia.
+
+E. Decision Fusion
+The outputs from all modalities are integrated using a weighted scoring mechanism to generate a final dementia risk score. Each
+modality contributes based on its reliability, with speech and cognitive analysis having higher weights compared to EEG and facial
+analysis. The final score is calculated using a weighted sum of individual modality scores, which improves overall accuracy and
+reduces false predictions by combining multiple indicators.
+
+F. Risk Classification
+The computed risk score is divided into three levels to simplify interpretation and support clinical decision-making. A score between
+0 and 0.3 indicates normal cognitive function, suggesting no significant signs of impairment. Scores between 0.3 and 0.6 represent
+mild cognitive impairment (MCI), reflecting early-stage cognitive decline that may require monitoring and preventive intervention.
+A score between 0.6 and 1.0 indicates a high risk of dementia, associated with more severe cognitive deficits and the need for
+immediate medical evaluation. This classification helps convert numerical outputs into meaningful categories, allowing easier
+identification of cognitive status, early detection of potential decline, and timely intervention for better patient management.
+IV.
+RESULT AND DISCUSSION
+The final results are presented through a user-friendly web interface developed using frontend and backend technologies. The
+performance of the proposed NeuroSense system is evaluated using standard classification metrics. The model achieved an overall
+accuracy of 83%, with a precision of 81%, recall of 82%, and F1-score of 81%. These results demonstrate that the multimodal
+approach improves detection reliability and reduces misclassification compared to single-modality methods. A detailed PDF report
+is generated automatically, summarizing all results, analysis, and recommendations, which can be used by healthcare professionals
+for further evaluation and decision-making.
+
+International Journal for Research in Applied Science & Engineering Technology (IJRASET)
+                                                                                           ISSN: 2321-9653; IC Value: 45.98; SJ Impact Factor: 7.538
+                                                                                                                Volume 14 Issue IV Apr 2026- Available at www.ijraset.com
+
+
+
+
+
+
+1390
+©IJRASET: All Rights are Reserved | SJ Impact Factor 7.538 | ISRA Journal Impact Factor 7.894 |
+
+Fig 1: Architecture Diagram
+
+A. Key Insights from Model Comparison
+The comparison of the three model combinations shows clear differences in performance across speech, handwriting, EEG, and
+facial modalities.
+
+Model 1 (Random Forest + MobileNet + XGBoost + CNN) achieves the best overall performance, with the highest accuracy in
+speech (90%) and strong results in other modalities, indicating high reliability and low error rates.
+
+Model 2 (SVM + Random Forest + SVM + MobileNet) performs the weakest, especially in EEG (45%) and speech (55%),
+showing higher error rates and poor consistency.
+
+Model 3 (XGBoost + SVM + Random Forest + ResNet) provides moderate and stable performance across all modalities but
+does not exceed Model 1.
+Overall, Model 1 is identified as the most effective approach, highlighting the advantage of combining ensemble and deep learning
+techniques for multimodal dementia detection.
+
+
+
+International Journal for Research in Applied Science & Engineering Technology (IJRASET)
+                                                                                           ISSN: 2321-9653; IC Value: 45.98; SJ Impact Factor: 7.538
+                                                                                                                Volume 14 Issue IV Apr 2026- Available at www.ijraset.com
+
+
+
+
+
+
+1391
+©IJRASET: All Rights are Reserved | SJ Impact Factor 7.538 | ISRA Journal Impact Factor 7.894 |
+Table: 1 Weighted Contribution of Multimodal Features in Dementia Detection
+
+
+
+
+
+
+
+
+
+
+
+
+
+B. Analysis of Results
+The results show that model performance varies across different modalities. Speech data achieves the highest accuracy, making it
+the most reliable for dementia detection. Handwriting and facial analysis provide moderate performance, while EEG shows lower
+accuracy due to signal complexity. Among the tested models, Model 1 performs best with higher accuracy and lower error rates,
+indicating better stability and generalization. The findings confirm that combining multiple modalities improves overall detection
+performance compared to using a single data source
+
+              Fig 2: Error rate variation
+
+C. Novel Insights in Dementia Detection
+This study highlights that multimodal approaches greatly improve dementia detection accuracy by combining speech, handwriting,
+EEG, and facial data. Using machine learning and deep learning models enhances feature extraction and classification, capturing
+subtle patterns of cognitive decline. Among all modalities, speech is the most effective for early detection, reflecting early cognitive
+changes. Integrating multiple data sources provides a comprehensive and reliable assessment, reducing the limitations of singlemodality approaches. This combination also improves prediction consistency and system robustness. Overall, the approach is
+suitable for real-world healthcare applications, supporting
+Modality
+Model
+Accuracy
+Weight
+(wᵢ)
+Speech
+RandomForest
+90%
+0.30
+Handwriting
+MobileNetV2
+(image-based)
+74%
+0.20
+EEG
+XGBoost
+65%
+0.15
+Facial
+CNN
+(TensorFlow)
+72%
+0.15
+Cognitive
+Rule-based
+scoring
+100%
+0.20
+
+International Journal for Research in Applied Science & Engineering Technology (IJRASET)
+                                                                                           ISSN: 2321-9653; IC Value: 45.98; SJ Impact Factor: 7.538
+                                                                                                                Volume 14 Issue IV Apr 2026- Available at www.ijraset.com
+
+
+
+
+
+
+1392
+©IJRASET: All Rights are Reserved | SJ Impact Factor 7.538 | ISRA Journal Impact Factor 7.894 |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+early diagnosis, continuous monitoring, and better clinical decision-making.
+
+V.
+CONCLUSION AND FUTURE WORK
+The NeuroSense multimodal dementia detection system demonstrates that integrating EEG, speech, handwriting, facial expressions,
+and cognitive assessments significantly enhances early-stage dementia screening compared to single-modality approaches. The use
+of XGBoost, MobileNet, CNN, along with a rule-based automated PDF reporting system, improves classification accuracy and
+supports practical clinical and remote monitoring applications.
+For future work, the system can be further enhanced by incorporating additional modalities such as eye- tracking and gait analysis,
+which may capture subtle cognitive and motor changes. Advanced deep learning techniques, including transformers, can be applied
+to improve feature extraction and predictive performance. Developing real-time wearable or mobile monitoring systems would
+enable continuous assessment, while personalized risk models could provide individualized insights. Finally, conducting large-scale
+clinical trials will help validate scalability, robustness, and real-world applicability, ensuring the system can support early detection
+and long-term cognitive health monitoring effectively.
+
+
+
+
+
+
+
+
+
+Fig 3: Overall comparison of my model
+
+International Journal for Research in Applied Science & Engineering Technology (IJRASET)
+                                                                                           ISSN: 2321-9653; IC Value: 45.98; SJ Impact Factor: 7.538
+                                                                                                                Volume 14 Issue IV Apr 2026- Available at www.ijraset.com
+
+
+
+
+
+
+1393
+©IJRASET: All Rights are Reserved | SJ Impact Factor 7.538 | ISRA Journal Impact Factor 7.894 |
+REFERENCES
+[1]
+Shunya Hanai ,Shohei Kato, Koichi Sakaguchi, Takuto Sakuma,Reiko Ohdake, Michihito Masudaand Hirohisa Watanabe. Easy Detection of Rare Dementia
+Based on Speech Analysis. 2020 IEEE 9th Global Conference on Consumer Electronics (GCCE). https://ieeexplore.ieee.org/document/9291793/
+[2]
+Chettiyar Vani Vivekanand ,Shamini Nayagam ,Sreena Rajeev. Speech-based Dementia Prediction using Artificial Intelligence. ISBN:979-8-3315-2139-4.
+https://ieeexplore.ieee.org/document/10961739
+[3]
+Mr. A. Balamurali Harish Kumar R , Haritheesathan S. Early Detection of Dementia: Machine Learning for Predictive Analysis. 2nd International Conference
+on Intelligent Data Communication Technologies and Internet of Things (IDCIoT-2024) IEEE Xplore Part Number: CFP24CV1-ART; ISBN: 979-8-3503-
+2753-3. https://ieeexplore.ieee.org/document/10467316/
+[4]
+Nellipudi Praneeth Kumar Reddy,Boggavarapu V B S Pavan Kumar,Battini Pavan Sri Sai,Chiluka Sathwik,Dr. M. Srinivas . Dementia Prediction Using Deep
+Learning Techniques. https://ieeexplore.ieee.org/document/10987342/
+[5]
+Mrs. Nageena Jani Shaik,Ruqayya Mohammad, Hemasri Mylavarapu, Harika Modukuru, Raghunath Reddy Mallireddy. Predicting the Stages of Dementia
+Using the OASIS Dataset. 2025 12th International Conference on Emerging Trends in Engineering & Technology - Signal and Information Processing
+(ICETET - SIP). https://ieeexplore.ieee.org/document/11156215/
+[6]
+Jayashree S,Livedha S,T Ragupathi ,Kumaran Hariharan,R. Sanjana,Dr Ginni Arora. Personalized Dementia Prediction Using Machine Learning Techniques.
+DOI:979-8-3315-0868-5/25. https://ieeexplore.ieee.org/document/10941155/
+[7]
+Hsinhan Tsai  , Ta-Wei Yang  , Kai-Hao Ou, Tung-Hung Su, Che Lin. Multimodal Attention Network for Dementia Prediction. IEEE JOURNAL OF
+BIOMEDICAL AND HEALTH INFORMATICS, VOL. 28, NO. 11, NOVEMBER 2024. https://ieeexplore.ieee.org/document/10447680/
+[8]
+Nicklas Linz, Johannes Troger and Jan Alexandersson,Maria Wolters,Alexandra Konig and Philippe Robert. Predicting Dementia Screening and Staging Scores
+From Semantic Verbal Fluency Performance. 2017 IEEE International Conference on Data Mining Workshops. https://ieeexplore.ieee.org/document/8215732/
+[9]
+Saurabh Bhaskarrao Kshirsagar,Harshita Dooja Poojary,Yuvraj Singh Rana,Avik Jain,Naga Sasank Bonda,Shikhar Saxena. System and Method for Early
+Detection and Post Disease Detection of Dementia Patients. ,(ICESC 2022) ,IEEE Xplore Part Number: CFP22V66-ART; ISBN: 978-1-6654-7971-4.
+https://ieeexplore.ieee.org/document/9885629/

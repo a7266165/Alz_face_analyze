@@ -1,0 +1,21 @@
+{
+  "title": "A multimodal approach for depression detection using semi-automatic data annotation and deterministic machine learning methods",
+  "authors": [
+    "A. N. Velichko",
+    "A. A. Karpov"
+  ],
+  "year": 2025,
+  "abstract": "A trending task of automatic psycho-emotional human state detection was studied in this work. A scientific interest to researches devoted to the automatic multimodal depression detection can arise out of the widespread of anxiety-depressive disorders and difficulties of their detection in primary health care. A specificity of the task was caused by its complexity, lack of data, imbalance of classes and inaccuracies in it. Comparative researches show that classification results on semi-automatic annotated data are higher than ones on automatic-annotated data. The proposed approach for depression detection combines a semi-automatic data annotation and deterministic machine learning methods with the utilization of several feature sets. To build our models, we utilized the multimodal Extended Distress Analysis Interview Corpus (E-DAIC) which consists of audio recordings, automatically extracted from these audio recordings texts and video feature sets extracted from video recordings as well as annotation including Patient Health Questionnaire (PHQ-8) scale for each recording. A semi-automatic annotation makes it possible to get the exact time stamps and speech texts to reduce the noisiness in the training data. In the proposed approach we use several feature sets, extracted from each modality (acoustic expert feature set eGeMAPS and neural acoustic feature set DenseNet, visual expert feature set OpenFace and text feature set Word2Vec). A complex processing of these features minimizes the effect of class imbalance in the data on classification results. Experimental researches with the use of mostly expert features (DenseNet, OpenFace, Word2Vec) and deterministic machine learning classification methods (Catboost) which have the property of interpretability of classification results yielded the experimental results on the E-DAIC corpus which are comparable with the existing ones in the field (68.0 % and 64.3 % for Weighted F1-measure (WF1) and Unweighted Average Recall (UAR) accordingly). The usage of a semi-automatic annotation approach and modalities fusion improved both quality of annotation and depression detection comparing to the unimodal approaches. More balanced classification results are achieved. The usage of deterministic machine learning classification methods based on decision trees allows us to provide an interpretability analysis of the classification results in the future due to their interpretability feature. Other methods of results interpretation like SHapley Additive exPlanations (SHAP) and Local Interpretable Model-agnostic Explanations (LIME) also can be used for this purpose.",
+  "doi": "10.17586/2226-1494-2025-25-6-1107-1116",
+  "arxiv_id": null,
+  "venue": "Scientific and technical journal of information technologies mechanics and optics",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://ntv.elpub.ru/jour/article/download/543/538",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W7117245038"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.17586/2226-1494-2025-25-6-1107-1116"
+}

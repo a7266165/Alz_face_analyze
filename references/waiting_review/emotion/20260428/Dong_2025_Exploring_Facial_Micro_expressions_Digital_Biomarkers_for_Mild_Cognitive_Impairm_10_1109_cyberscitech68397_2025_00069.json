@@ -1,0 +1,22 @@
+{
+  "title": "Exploring Facial Micro-expressions Digital Biomarkers for Mild Cognitive Impairment: Insights from the Clock Drawing Test",
+  "authors": [
+    "Yilei Dong",
+    "Lingjie Fan",
+    "Binyu Yan"
+  ],
+  "year": 2025,
+  "abstract": "Mild Cognitive Impairment (MCI) is a prevalent condition in older adults, associated with an elevated risk of progressing to dementia. With the advancement of digital technologies, non-invasive and accessible physiological signals have gained attention as potential tools for cognitive assessment. Facial expressions, reflecting both emotional and cognitive states, have emerged as a promising modality. This study explored facial micro-expressions exhibited during the Clock Drawing Test (CDT) and investigated their association with cognitive function. Facial expression videos were recorded from participants performing the CDT, who were grouped into MCI and Healthy Control (HC) based on neuropsychological evaluations. Using OpenFace, facial Action Units (AUs) were extracted and analyzed through differential testing, correlation analysis, and logistic regression. The results revealed that AU05 (eye action unit), AU17 (chin action unit) and AU20 (lip action unit) were significantly associated with cognitive impairment. These findings indicate notable differences in eye, lip, and chin micro-expressions between MCI and HC groups, suggesting their potential as digital biomarkers. This study offers novel insights into facial behavior patterns linked to cognitive impairment, providing a foundation for future multimodal assessment frameworks.",
+  "doi": "10.1109/cyberscitech68397.2025.00069",
+  "arxiv_id": null,
+  "venue": null,
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W7124164069"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.1109/cyberscitech68397.2025.00069"
+}

@@ -1,0 +1,3348 @@
+Development of digital technology to estimate
+standardized brain health from facial expressions
+and its application to neuroaesthetics research
+Keiko Abe
+Panasonic Holdings Corporation
+Takayuki Kurata
+Panasonic Holdings Corporation
+Yasuhito Sato
+Panasonic Holdings Corporation
+Yoshihiko Namba
+Panasonic Holdings Corporation
+Keisuke Kokubun
+Kyoto University
+Kiyotaka Nemoto
+University of Tsukuba
+Maya Okamoto
+Kyoto University
+Yoshinori Yamakawa
+Kyoto University
+Article
+Keywords: art, estimated gray matter volume, facial expressions, reading, triple network
+Posted Date: October 29th, 2025
+DOI: https://doi.org/10.21203/rs.3.rs-7677657/v1
+License:   This work is licensed under a Creative Commons Attribution 4.0 International License.
+Read Full License
+Additional Declarations: Competing interest reported. Authors Keiko Abe, Takayuki Kurata, Yasuhito Sato,
+and Yoshihiko Namba were employed by the company Panasonic Corporation. Author Yoshinori
+
+Yamakawa was employed by the company Brain Impact. The remaining authors declare that the
+research was conducted in the absence of any commercial or «nancial relationships that could be
+construed as a potential con¬ict of interest.
+
+
+
+
+
+
+
+1
+
+Development of digital technology to estimate standardized
+2
+
+brain health from facial expressions and its application to neu-
+3
+
+roaesthetics research
+4
+
+Keiko Abe 1, Takayuki Kurata 1, Yasuhito Sato 1, Yoshihiko Namba 1*, Keisuke Kokubun 2*, Kiyotaka Nemoto 3,
+5
+
+Maya Okamoto 2, and Yoshinori Yamakawa 2,4,5,6,7
+6
+
+1 Product Analysis Center, Panasonic Holdings Corporation, Osaka, 571-8686, Japan
+7
+
+2 Graduate School of Management, Kyoto University, Kyoto 606-8501, Kyoto, Japan
+8
+
+3  Department of Medical Informatics and Management and Psychiatry, Institute of Medicine, University of
+9
+
+Tsukuba, Tsukuba 305-8575, Ibaraki, Japan
+10
+
+4  Institute of Innovative Research, Institute of Science Tokyo, Meguro 152-8550, Tokyo, Japan
+11
+
+5  ImPACT Program of Council for Science, Technology and Innovation, Cabinet Office, Government of Japan,
+12
+
+Chiyoda 100-8914, Tokyo, Japan
+13
+
+6  Office for Academic and Industrial Innovation, Kobe University, Kobe 657-8501, Hyogo, Japan
+14
+
+7  Brain Impact, Kyoto 606-8501, Japan
+15
+
+* Correspondence: kokubun.keisuke.6x@kyoto-u.jp
+16
+
+Abstract: In recent years, the effects of reading and art on the human brain have been
+17
+
+attracting attention. However, it has not been clarified how they affect the brain structure
+18
+
+of healthy middle-aged people. This is due to the lack of technology to easily measure the
+19
+
+state of brain structure. Therefore, in Study I, by analyzing the correspondence between
+20
+
+gray matter volume (GMV) calculated from MRI images of the brain and facial expression
+21
+
+data when four types of facial expressions are made (happiness, anger, sadness, and sur-
+22
+
+prise), we constructed an algorithm to estimate brain health from facial expressions and
+23
+
+developed a digital application to estimate brain health. In study II, we conducted corre-
+24
+
+lation analysis between the estimated GMV and creative activities and reading habits
+25
+
+measured by questionnaire using 113 middle-aged men and women who considered
+26
+
+themselves healthy. It was revealed that GMV of the default mode network (DMN) and
+27
+
+central executive network (CEN) correlate with creative activity and reading habit, respec-
+28
+
+tively. This is the first study to show that art and reading can affect the brain structure of
+29
+
+more people than previously believed using the estimated GMV.
+30
+
+Keywords: art; estimated gray matter volume; facial expressions, reading; triple network.
+31
+
+
+32
+
+1. Study I: Development of digital technology to estimate standardized
+33
+
+brain health from facial expressions
+34
+
+1.1. Introduction
+35
+
+In recent years, in developed countries, the reduction of medical and nursing care
+36
+
+costs due to the decline in the working-age population and the aging of society has be-
+37
+
+come a social issue, and extending healthy life expectancy is considered to be an important
+38
+
+factor. In addition, lifestyle habits, aging, and mental and neurological diseases account
+39
+
+for a large portion of medical expenses, and there is a demand for the establishment of
+40
+
+health care services that improve lifestyle habits. In the healthcare field, inferring a pa-
+41
+
+tient's health through face-to-face meetings is common, but it is not necessarily scientific.
+42
+
+
+
+2 of 25
+
+
+A study by Cannavacciuolo et al. [1] compared facial emotional expressivity in pa-
+43
+
+tients with Parkinson's disease, Alzheimer's disease, and healthy controls, and found that
+44
+
+patients with Parkin-son's disease and Alzheimer's disease shared a common tendency to
+45
+
+have lower facial emotional expressivity compared to controls [1]. These symptoms are
+46
+
+associated with atrophy of cortical and subcortical areas in the limbic system [2]. Inability
+47
+
+to regulate emotional facial expressions can have a negative impact on an individual's
+48
+
+socio-emotional environment and has been linked to depression, schizophrenia [3], flat-
+49
+
+tened affect [4], and reduced levels of trait empathy in healthy adults [5]. Alterations in
+50
+
+socioemotional attitudes, including deficits in spontaneous emotion expression, empathy,
+51
+
+emotion reading, and expression of blunt emotion, are also found in patients with behav-
+52
+
+ioral variant frontotemporal dementia (bvFTD), right temporal frontotemporal dementia
+53
+
+(rtvFTD), semantic variant primary progressive aphasia (svPPA), and Alzheimer's disease
+54
+
+(AD) [6,7,8,9,10,11]. Impaired intentional emotion expression was predicted by general
+55
+
+expressiveness and emotion reading deficits across neurodegenerative patients, and imi-
+56
+
+tation abilities were significantly impaired in bvFTD and rtvFTD patients compared to
+57
+
+controls [12].
+58
+
+Blunted facial affect, or reduced facial ex-pression of emotion, is a transdiagnostic
+59
+
+com-ponent of serious mental illness [13,14,15,16,17]. Blunted facial affect is a key compo-
+60
+
+nent of blunted affect, which involves reduced facial expression through many channels,
+61
+
+including facial, vocal, and gestural expressions. Blunted affect is a symptom of schizo-
+62
+
+phrenia and is also commonly seen in mood disorders (e.g., psycho-motor retardation in
+63
+
+depression), autism spectrum, and neurodegenerative disorders [17,18]. Blunted facial af-
+64
+
+fect is associated with poorer social and occupational functioning [19,20,21] and increased
+65
+
+risk of suicide [22]. Therefore, in recent years, research has been conducted using AI tech-
+66
+
+nology to identify facial expression features characteristic of people with severe mental
+67
+
+illness [23], identify depression using facial expressions and images [24,25], and predict
+68
+
+neural networks from facial expressions [26].
+69
+
+On the other hand, there is a certain accumulation of research on predicting brain age
+70
+
+from GM images [27]. The difference between brain age and chronological age is quanti-
+71
+
+tatively associated with several age-related risk factors and general physical health, such
+72
+
+as reduced grip strength, reduced lung function, history of stroke, increased frequency of
+73
+
+alcohol consumption, and increased risk of death [28], as well as declines in cognitive
+74
+
+functions such as fluid intelligence, processing speed, semantic language fluency, visual
+75
+
+attention, and cognitive flexibility [29,30,31]. Brain age prediction models tend to perform
+76
+
+better using GMV than white matter volume [32]. Therefore, it is possible to predict the
+77
+
+relationship between facial expressions, which have been shown to be related to dementia
+78
+
+and mental illness, and brain age, as expressed by GMV. However, no algorithms have
+79
+
+been developed to predict GMV from facial expressions. Considering the cost and time
+80
+
+required to measure brain state using MRI, it is difficult to measure frequently, and the
+81
+
+development of technology to easily measure GMV from facial expressions could greatly
+82
+
+contribute to people's health and welfare.
+83
+
+ To date, the authors have been developing evaluation technologies to visualize and
+84
+
+quantify the state of the human mind and body, including human senses, emotions, and
+85
+
+physical strain, with the mission of contributing to society by creating better products and
+86
+
+services through the use of analytical technology to add new value to our customers' prod-
+87
+
+ucts and services. They also possess original facial expression analysis technology [33].   88
+
+On the other hand, focusing on the "brain" that controls the human mind and body, Yama-
+89
+
+kawa et al. [34] have proposed the Brain Healthcare Quotient (BHQ) as an index to meas-
+90
+
+ure brain health [35]. The BHQ was internationally standardized in 2018 [36] and is easy
+91
+
+to use even for non-experts, so it is expected to be used in a variety of solutions, such as
+92
+
+allowing users to understand their own brain health and take action to improve their
+93
+
+
+
+3 of 25
+
+
+lifestyle habits. However, the BHQ is an index calculated from Magnetic Resonance Im-
+94
+
+aging (MRI) images of the brain, and requires MRI imaging at a hospital or other facility,
+95
+
+so users cannot easily measure it.
+96
+
+ To solve this problem, we used our facial expression analysis technology to ana-
+97
+
+lyze the correspondence be-tween BHQ and facial expression data, and discovered the
+98
+
+relationship between the two. Using the results, we built an algorithm to estimate BHQ
+99
+
+from facial expression data, and developed a digital application that allows users to easily
+100
+
+and quickly learn about their standardized brain health.
+101
+
+1.2. Materials and Methods
+102
+
+Data was acquired to analyze the relationship between the BHQ calculated from
+103
+
+brain MRI images and facial expression measurement data.
+104
+
+1.2.1. Participants
+105
+
+A total of 58 healthy male and female subjects (47 males and 11 females) aged 25 to 63
+106
+
+years were randomly se-lected from employees of Panasonic Holdings Corporation.
+107
+
+Data acquisition was performed after obtaining informed consent from all subjects.
+108
+
+According to self-report, none of the recruited participants had a record of neurological,
+109
+
+psychiatric, or other medical conditions that could affect the central nervous system.
+110
+
+This study was approved by the Ethics Committee of the Institute of Science Tokyo
+111
+
+(approval numbers 2023137), and all methods were carried out in accordance with the
+112
+
+relevant guidelines, regulations, and principles of the Declaration of Helsinki. All
+113
+
+participants provided written informed consent before participation, and anonymity
+114
+
+was main-tained.
+115
+
+1.2.2. BHQ indicators
+116
+
+The BHQ mentioned above was used as an index of brain health. There are two types of
+117
+
+BHQ cal-culated from brain MRI images: GM-BHQ (Grey Matter-BHQ), which indexes
+118
+
+the amount of gray matter where many brain neurons are present, and FA-BHQ
+119
+
+(Fractional Anisotropy-BHQ), which in-dexes the quality of white matter where many
+120
+
+brain nerve fibers are present [37]. GM-BHQ represents the average of 116 regions in the
+121
+
+AAL atlas [38]. We also calculated the average values for regions associated with the
+122
+
+Default Mode Network (DMN), Central Executive Network (CEN), and Salience
+123
+
+Network (SN). The AAL atlas regions used for each network are shown in Table 1.
+124
+
+
+125
+
+Table 1. Network and region Name.
+126
+
+Network
+AAL Code
+Region Name
+DMN
+AAL023
+Superior Medial Frontal Gyrus (Left)
+
+AAL024
+Superior Medial Frontal Gyrus (Right)
+
+AAL035
+Posterior Cingulate Gyrus (Left)
+
+AAL036
+Posterior Cingulate Gyrus (Right)
+
+AAL061
+Inferior Parietal Lobule (Left)
+
+AAL062
+Inferior Parietal Lobule (Right)
+
+AAL067
+Precuneus (Left)
+
+AAL068
+Precuneus (Right)
+CEN
+AAL003
+Superior Frontal Gyrus (Left)
+
+
+4 of 25
+
+
+
+AAL004
+Superior Frontal Gyrus (Right)
+
+AAL059
+Superior Parietal Lobule (Left)
+
+AAL060
+Superior Parietal Lobule (Right)
+SN
+AAL029
+Insula (Left)
+
+AAL030
+Insula (Right)
+
+AAL031
+Anterior Cingulate Gyrus (Left)
+
+AAL032
+Anterior Cingulate Gyrus (Right)
+
+127
+
+1.2.3. MRI Data Acquisition
+128
+
+A 3 Tesla MRI scanner (MAGNETOM Prisma, Siemens, Munich, Germany) with a
+129
+
+32-channel head array coil, three-dimensional (3D) T1-weighted magnetization-prepared
+130
+
+rapid acquisition gradient echo pulse sequence, and spin-echo echo-planar imaging (SE-
+131
+
+EPI) with generalized autocalibrated partially parallel acquisition (GRAPPA) were used
+132
+
+for MRI data collection and structural imaging. The following parameters were used: rep-
+133
+
+etition time (TR) 1900 ms, echo time (TE) 2.52 ms, inversion time (TI) 900 ms, flip angle 9°,
+134
+
+matrix size 256 × 256, field of view (FOV) 256 mm, and slice thickness 1 mm.
+135
+
+1.2.4. MRI Data Analysis
+136
+
+T1-weighted images were segmented into gray matter (GM), white matter (WM), and
+137
+
+cerebrospinal fluid (CSF) using Statistical Parametric Mapping 12 (SPM12; Wellcome
+138
+
+Trust Center for Neuroimaging, London, UK) running on MATLAB R2022b (MathWorks
+139
+
+Inc., Sherborne, MA, USA). Segmented GM images were then spatially normal-ized using
+140
+
+diffeomorphic anatomical registration using the exponential lie algebra (DARTEL) algo-
+141
+
+rithm [39], which included incorporating a modulation step in-to the preprocessing model
+142
+
+and smoothing images using a Gaussian kernel with a full width at half maximum
+143
+
+(FWHM) of 8 mm. The smoothed GM images were then converted to proportional GM
+144
+
+images by dividing by the intracranial volume (ICV) and used to create mean and stand-
+145
+
+ard deviation (SD) images. By averaging these in-formation and the local GM quotients
+146
+
+using the automatic anatomical labeling (AAL) atlas [40], the GM-BHQ was created with
+147
+
+a mean of 100 and a SD of 15 points.
+148
+
+Previous research has confirmed that BHQ tends to decline with age and can be an
+149
+
+indicator of the youthfulness of the brain6). Research into GM-BHQ's relationship with
+150
+
+lifestyle has also been conducted; for example, resting and doing housework on weekdays
+151
+
+has a positive effect on GM-BHQ, while taking too much time off on weekends tends to
+152
+
+be bad for GM-BHQ. It has been shown that lifestyle is related to brain health, and it is
+153
+
+hoped that reviewing lifestyle habits will contribute to maintaining and improving brain
+154
+
+health6). In addition, in previous studies, the whole-brain GM-BHQ has been related to
+155
+
+dietary balance [41], lifestyle [42], social performance [43], curiosity and grit [44], and di-
+156
+
+versity understanding [45]. These studies were conducted in healthy middle-aged adults,
+157
+
+not elderly people or people with underlying diseases, so it is expected that using the
+158
+
+same index will add depth to the interpretation of the study. Our study, which focuses on
+159
+
+GMV, a function of surface area and cortical thickness, is more comprehensive than stud-
+160
+
+ies using other neural biomarkers such as functional MRI (fMRI), which is excel-lent for
+161
+
+examining brain responses [46], and cortical thickness, which is suitable for observing ge-
+162
+
+netic influences [47].
+163
+
+1.3. Analysis
+164
+
+Two types of measurements were performed: MRI brain imaging and facial expres-
+165
+
+sion measurement.
+166
+
+(a) MRI brain imaging
+167
+
+
+
+5 of 25
+
+
+With the cooperation of Brain Impact, a general incorporated association, brain MRI
+168
+
+imaging was performed twice, in July and December 2023.
+169
+
+(b) Facial expression measurement
+170
+
+For subjects who underwent brain MRI imaging, facial expression measurements
+171
+
+were also performed at the same time, with 37 subjects being measured twice, in July and
+172
+
+December, and 21 subjects being measured once, in July or December.
+173
+
+For facial expression measurement, an original PC ap-plication developed by the au-
+174
+
+thors was used. This application imitates facial expressions in photos displayed on a PC
+175
+
+screen in front of a camera, and as shown in Figure 1, there are four types of facial expres-
+176
+
+sions: joy, anger, sadness, and surprise. The photos were displayed randomly for each
+177
+
+subject, and facial expression data was obtained from the subjects when they continued
+178
+
+to imitate each facial expression for 5 seconds.
+179
+
+
+180
+
+
+181
+
+
+182
+
+Figure 1. Facial expression measurement application.
+183
+
+
+184
+
+A total of 95 sets of data from the same subject, each consisting of BHQ from MRI
+185
+
+brain images and facial expression data, were analyzed.
+186
+
+(a) BHQ from MRI brain images
+187
+
+With the cooperation of the Brain Impact Association, GM-BHQ values for the entire
+188
+
+brain and for each brain region, DMN, CEN, and SN, were calculated from MRI brain
+189
+
+images and used for analysis.
+190
+
+(b) Facial expression measurement data
+191
+
+468 facial landmarks were detected from the measured facial expression data (see
+192
+
+Figure 2), and the time when the landmark change was maximum for each facial expres-
+193
+
+sion when imitating four types of facial expressions, joy, anger, sadness, and surprise, was
+194
+
+used as the reaction time for analysis.
+195
+
+
+196
+
+Figure 2. Facial landmarks.
+197
+
+1.4. Results
+198
+
+1.4.1. Confirmation of the relationship between BHQ and age
+199
+
+
+
+6 of 25
+
+
+As mentioned above, previous research has confirmed that BHQ tends to decrease
+200
+
+with age. First, we used BHQ data from brain MRI images of 362 healthy men and
+201
+
+women aged 22 to 67 (262 men, 100 women) that we had obtained separately to confirm
+202
+
+the relationship between BHQ and age.
+203
+
+As an example, Figure 3 shows the relationship between whole-brain GM-BHQ and age.
+204
+
+The correlation coefficient between whole-brain GM-BHQ and age was 0.71, indicating a
+205
+
+strong correlation.
+206
+
+In analyzing the relationship between whole-brain GM-BHQ and facial expres-
+207
+
+sions, we therefore decided to eliminate the effect of age, that is, to use the difference of
+208
+
+GM-BHQ from the age average (approximation line) (hereinafter referred to as ΔGM-
+209
+
+BHQ) as the objective variable and to search for the facial expression parameters that are
+210
+
+optimal for explaining ΔGM-BHQ.
+211
+
+
+212
+
+Figure 3. Relationship between GM-BHQ and Age.
+213
+
+
+214
+
+We also checked the relationship between age and GM-BHQ in the DMN, CEN,
+215
+
+and SN brain regions, finding that the correlation coefficients between the two were
+216
+
+0.67, 0.61, and 0.67, respectively, confirming that there is a correlation between age and
+217
+
+GM-BHQ in the entire brain.
+218
+
+Based on these results, we used a similar approach to extract facial expression fea-
+219
+
+tures that estimate each Δ component for the DMN, CEN, and SN, using ΔDMN, ΔCEN,
+220
+
+and ΔSN as objective variables.
+221
+
+1.4.2. Building a BHQ estimation model
+222
+
+Using each Δ component as the objective variable and the reaction time in the X
+223
+
+and Y directions of each facial landmark as the variables, the analysis was carried out in
+224
+
+the following steps to extract facial expression features that can estimate each Δ compo-
+225
+
+nent.
+226
+
+Step 1: Extract variables correlated with the objective variable.
+227
+
+Step 2: In order to exclude variables with multicollinearity, variables with high cor-
+228
+
+relation coefficients were grouped together, and only the variable most correlated with
+229
+
+the objective variable for each group was extracted.
+230
+
+Step 3: Construct a linear multiple regression model using the forward variance
+231
+
+method.
+232
+
+In selecting the model, cross-validation was performed on linear regression models,
+233
+
+linear mixed models, and random forest models using the Leave One Group Out
+234
+
+
+
+7 of 25
+
+
+method, and it was decided to adopt the linear regression model with the highest accu-
+235
+
+racy.
+236
+
+1.4.3. Extracted features
+237
+
+As a result of the analysis, Figure. 4 shows an example of facial expression features
+238
+
+extracted to estimate ΔGM-BHQ. Figure 4 shows the facial landmarks that are key when
+239
+
+imitating the expression of "happiness," and it can be seen that the area around the eyes
+240
+
+is important.
+241
+
+Figure 5 also shows the percentage of people who showed a strong correlation with
+242
+
+the happiness scale, with a correlation coefficient of 0.7 or more, when imitating the ex-
+243
+
+pression of "happiness," with darker colors indicating a higher percentage showing a
+244
+
+stronger correlation. We can see that when imitating the expression of "happiness,"
+245
+
+many people make the expression with movements around the mouth, and the percent-
+246
+
+age of people who make the expression with movements around the eyes tends to be
+247
+
+lower. From the above, it can be assumed that people who are able to imitate facial ex-
+248
+
+pressions while moving parts of the face that are difficult for most people to move as
+249
+
+widely and quickly as possible, rather than parts of the face that are easy to move, have
+250
+
+a high ΔGM-BHQ.
+251
+
+
+252
+
+
+253
+
+Figure 4. Key facial landmarks when expressing happy.
+254
+
+
+255
+
+
+256
+
+Figure 5. Proportion of subjects showing strong correlation with scale of happy.
+257
+
+
+258
+
+As a result of the analysis, five items were extracted for ΔGM-BHQ, four items for
+259
+
+ΔDMN, eight items for ΔCEN, and six items for ΔSN as facial expression features for
+260
+
+estimating each Δ component, and a linear multiple regression model was constructed.
+261
+
+1.4.4. Accuracy of whole brain GMV estimation
+262
+
+Figure 6 shows the results of estimating the GM-BHQ of the entire brain using an
+263
+
+estimation model constructed using the extracted facial expression features. The correla-
+264
+
+tion coefficient between the GM-BHQ from brain MRI images and the GM-BHQ
+265
+
+
+
+8 of 25
+
+
+estimated from facial ex-pressions was 0.75, confirming a strong correlation. In addition,
+266
+
+the mean absolute error (MAE) for the GM-BHQ from brain MRI images was 3.12. For
+267
+
+the 95 data sets analyzed in this study, the correlation coefficient between the value
+268
+
+when the GM-BHQ of the entire brain was estimated from age alone and the GM-BHQ
+269
+
+from brain MRI images was 0.66, and the MAE was 3.54, so it is believed that adding
+270
+
+facial ex-pression features contributes to improving the estimation accuracy.
+271
+
+
+272
+
+Figure 6. Relationship between GM-BHQ from MRI and GM-BHQ estimated from
+273
+
+facial expressions.
+274
+
+1.4.5. Accuracy of DMN, CEN, and SN estimation
+275
+
+Similarly, the results of estimating the GM-BHQ of each brain region, DMN, CEN,
+276
+
+and SN, are shown in Figuers. 7 to 9. The correlation coefficients between the DMN,
+277
+
+CEN, and SN from brain MRI images and those estimated from facial expressions were
+278
+
+0.58, 0.63, and 0.74, respectively, confirming the existence of a correlation. In addition,
+279
+
+the MAE for the DMN, CEN, and SN from brain MRI images was 4.14, 3.87, and 4.05,
+280
+
+respectively. For the 95 data analyzed in this study, the correlation coefficients between
+281
+
+the values of DMN, CEN, and SN estimated from age alone and those from brain MRI
+282
+
+im-ages were 0.53, 0.50, and 0.68, respectively, and the MAE was 4.34, 4.25, and 4.53,
+283
+
+respectively. Compared to estimation based on age alone, the correlation coefficients
+284
+
+were higher and the MAE was also improved, so it is thought that adding facial expres-
+285
+
+sion features contributes to improving the estimation accuracy, as with the GM-BHQ of
+286
+
+the entire brain. The estimated accuracy results for GM-BHQ of the whole brain and the
+287
+
+DMN, CEN, and SN regions are summarized in Table 2.
+288
+
+
+
+9 of 25
+
+
+
+289
+
+Figure 7. Relationship between DMN from MRI and DMN
+290
+
+estimated from facial expressions.
+291
+
+
+292
+
+
+293
+
+
+294
+
+Figure 8. Relationship between CEN from MRI and CEN
+295
+
+estimated from facial expressions.
+296
+
+
+297
+
+
+298
+
+
+
+10 of 25
+
+
+Figure 9. Relationship between SN from MRI and SN
+299
+
+estimated from facial expressions.
+300
+
+
+301
+
+Table 2. Comparison of estimation results from facial
+302
+
+expressions and age.
+303
+
+
+304
+
+
+305
+
+1.4.6. Developing Applications
+306
+
+Using the estimation model described above, we developed a PC application called
+307
+
+"Estimated BHQ" that estimates brain health from facial expressions. With this applica-
+308
+
+tion, users simply follow the instructions on the screen in front of the camera and imitate
+309
+
+four types of facial expressions - happiness, anger, sad-ness, and surprise (see Figure 10)
+310
+
+- to easily and enjoyably find out the results of the GM-BHQ, which measures the health
+311
+
+of the entire brain, as well as the GM-BHQ results for the DMN, CEN, and SN regions
+312
+
+(see Figure 11). This allows users to easily and quickly measure their brain health and
+313
+
+brain characteristics.
+314
+
+
+315
+
+
+316
+
+
+317
+
+
+318
+
+Figure 10. “Estimated BHQ” application.
+319
+
+
+320
+
+
+
+11 of 25
+
+
+
+321
+
+
+322
+
+
+323
+
+
+324
+
+Figure 11. Measurement results.
+325
+
+
+326
+
+1.5. Discussion
+327
+
+By analyzing the correspondence between GM-BHQ, which indicates the state of
+328
+
+brain health, and facial ex-pression data when four types of facial expressions (happiness,
+329
+
+anger, sadness, and surprise) were made, we were able to extract facial expression features
+330
+
+that are important for estimating GM-BHQ. In addition, we constructed an estimation
+331
+
+model using these features to estimate the GM-BHQ of the entire brain, and the correlation
+332
+
+coefficient between the GM-BHQ from brain MRI images and the GM-BHQ estimated
+333
+
+from facial expressions was 0.75, and the MAE was 3.12. Similarly, when we estimated
+334
+
+the GM-BHQ of each brain region, the DMN, CEN, and SN, the correlation coefficients
+335
+
+between the DMN, CEN, and SN from brain MRI images and the DMN, CEN, and SN
+336
+
+estimated from facial expressions were 0.58, 0.63, and 0.74, respectively, and the MAE was
+337
+
+4.14, 3.87, and 4.05, respectively, although the estimation accuracy was lower than that of
+338
+
+the GM-BHQ of the whole brain.
+339
+
+ Furthermore, we developed a PC application called "Estimated BHQ" that esti-
+340
+
+mates brain health from facial expressions, and have conducted various demonstration
+341
+
+experiments to confirm user needs and acceptability for measuring brain health [48,49,50].
+342
+
+Through these demonstration experiments, we have demonstrated the possibility that by
+343
+
+providing unprecedented new value of being able to measure brain health in a fun and
+344
+
+easy way, we can arouse users' interest in brain health, and by visualizing brain health,
+345
+
+we can encourage them to try measuring it again. These results suggest that measuring
+346
+
+brain health can be a catalyst for encouraging behavioral changes in users.
+347
+
+Currently, it is possible to visualize brain health, but it is not yet possible to present
+348
+
+specific actions on how users can maintain and improve their brain health based on the
+349
+
+measurement results. In the future, we plan to explore measures to improve brain health
+350
+
+while also pro-posing improvement actions tailored to each user. This research is the first
+351
+
+to develop technology to predict whole-brain and triple network GMV from facial expres-
+352
+
+sions. We hope to continue developing brain health estimation technology and proposing
+353
+
+measures to improve brain health, thereby contributing to maintaining and improving
+354
+
+people's brain health and realizing well-being in their lives.
+355
+
+
+
+12 of 25
+
+
+1.6. Limitations
+356
+
+The current research has some limitations. The algorithm developed in this study is
+357
+
+intended to obtain an estimate of GMV, not an exact value. Therefore, it should be used
+358
+
+with caution in research that requires greater accuracy, such as in the medical field. In
+359
+
+addition, this study was conducted on Japanese people, so the results cannot be applied
+360
+
+directly to other countries. At the same time, as symbolized by the bias in the gender ratio
+361
+
+of the sample, the results of this study do not reflect the average image of Japanese people.
+362
+
+In the future, the results of this study should be verified using a sample with a larger
+363
+
+number of diverse backgrounds.
+364
+
+
+365
+
+2. Study II: An application of estimated GMV to neuroaesthetics re-
+366
+
+search
+367
+
+2.1. Introduction
+368
+
+In recent neuroscience, the effects of artistic activities and reading have been attract-
+369
+
+ing attention as a way to reduce the risk of dementia in the elderly. Sensing beauty acti-
+370
+
+vates the entire brain, including the brain's reward system, such as the frontal orbital cor-
+371
+
+tex and striatum [51,52]. Therefore, it has been reported that there is a relationship be-
+372
+
+tween high creativity and several brain regions. In particular, it has been revealed that
+373
+
+DMN cooperates with CEN to improve creativity and artistic performance [53,54]. Crea-
+374
+
+tive activities may have a positive effect on the brain not only by performing them yourself,
+375
+
+but also by watching and feeling the state of the creative activity. It has been reported that
+376
+
+the DMN is engaged when people are deeply moved by a work of art or when they feel it
+377
+
+is beautiful [55,56]. On the other hand, when learning something from literature, we con-
+378
+
+nect various events and imagine the mental scenes of people at that time. Such cognitive
+379
+
+acts are related to the activity and connectivity of the hippocampus and prefrontal cortex
+380
+
+[57,58]. Previous evidence suggests that there is a relationship between the retrieval of
+381
+
+autobiographical memories and CEN [59,60]. However, the effects of such artistic activi-
+382
+
+ties and reading on the brain structure of healthy middle-aged adults remain unclear. The
+383
+
+possibility that engaging in intellectual activities at a young age may prevent or delay the
+384
+
+onset of dementia has been asserted and supported by research on "cognitive reserve"
+385
+
+[61,62,63].
+386
+
+Therefore, in this study, we focus on the GMV of the Healthy adult brain. GMV was
+387
+
+determined as the GM-BHQ value originally based on MRI image analysis. This value can
+388
+
+be estimated by measuring facial expressions as shown in Study I. The representative
+389
+
+brain networks are three networks that control rational judgment, emotion control, other
+390
+
+recognition, self-recognition, and behavior evaluation. Of these, CEN, composed of the
+391
+
+dorsolateral prefrontal cortex and posterior parietal cortex, is critical for the active reten-
+392
+
+tion and manipulation of information in working memory, attention, problem solving,
+393
+
+decision-making, and self-awareness [64,65]. The SN is also a network that includes the
+394
+
+ventrolateral prefrontal cortex (VLPFC) and anterior insula (collectively referred to as the
+395
+
+fronto-insular cortex FIC), as well as the anterior cingulate cortex (ACC) [66], and re-
+396
+
+sponds to subjective salience, whether cognitive, homeostatic, or emotional [67]. The SN
+397
+
+also acts as a switch between the CEN and the DMN, inhibiting the latter and activating
+398
+
+the former when salient stimuli or cognitive tasks are at hand, a process essential for at-
+399
+
+tention and flexible cognitive control [68,69,70,71,72,73]. On the other hand, the DMN in-
+400
+
+cludes the medial posterior cortex, including the posterior cingulate cortex (PCC) and
+401
+
+parts of the frontal lobe, the medial prefrontal cortex (MPFC), and the posterior temporal
+402
+
+region around the temporoparietal junction (TPJ), including the inferior parietal lobe (IPL)
+403
+
+
+
+13 of 25
+
+
+[74,75,76]. The DMN is preferentially activated when individuals are not focused on the
+404
+
+external environment [75] and are engaged in various areas of cognitive and social pro-
+405
+
+cessing. That is, the medial prefrontal cortex (MPFC) plays a key role in the social under-
+406
+
+standing of others, and the connections between the medial prefrontal cortex (aMPFC)
+407
+
+and the posterior cingulate cortex and anterior cingulate cortex mainly contribute to self-
+408
+
+other discrimination. On the other hand, the connection between the dorsal MPFC
+409
+
+(dMPFC) and the temporoparietal junction (TPJ) is mainly related to the understanding
+410
+
+of others' mental states [77].
+411
+
+The interactions between these networks are related to daily self-regulation and em-
+412
+
+pathy for others [78,79,80,81,82,83]. However, to our knowledge, there have been no stud-
+413
+
+ies that have addressed the relationship between the brain structure centered on these
+414
+
+triple networks and artistic activities and reading habits. Therefore, in this study, we con-
+415
+
+tribute to the development of related research by clarifying the characteristics of the brain
+416
+
+structure centered on the triple network in healthy adults using information obtained
+417
+
+from questionnaire surveys and estimation of GMV using facial expressions.
+418
+
+2.2. Materials and Methods
+419
+
+2.2.1. Participants
+420
+
+The sample size required to perform correlation analysis at a significance level of 5%
+421
+
+and power of 80%, with an effect size of r = 0.3, which corresponds to a "moderate corre-
+422
+
+lation" according to Cohen’s criterion, was calculated as 109 samples using G*Power
+423
+
+3.1.9.7. A total of 113 people (58 men, 54 women, and 1 unknown) participated in the
+424
+
+study, with a mean age of 39.0 ± 10.1 years. Participants were randomly selected from
+425
+
+among employees of a single private company and asked to participate. Participants com-
+426
+
+pleted online questionnaires and facial expressions measurement from March to April
+427
+
+2025. According to self-report, none of the participants had a history of neurological, psy-
+428
+
+chiatric, or other medical conditions that could affect the central nervous system. All
+429
+
+methods were carried out in accordance with relevant guidelines and regulations, and all
+430
+
+participants provided written informed consent before participation, and anonymity was
+431
+
+maintained. This study was approved by the Institute of Science Tokyo's Brain Infor-
+432
+
+mation Cloud (Ethics Committee for Human Research: Permit Number 2023137) Ethics
+433
+
+Committee. Table 3 and Table 4 show information on various variables of participants.
+434
+
+
+435
+
+Table 3. Participant information (frequency).
+436
+
+
+N
+%
+Sex
+
+
+Male
+58
+51.3
+Female
+54
+47.8
+No answer
+1
+0.9
+Position
+
+
+Executives/executives
+6
+5.3
+Department head
+2
+1.8
+Manager/leader
+40
+35.4
+General/professional
+62
+54.9
+Contract/individual business
+3
+2.7
+Occupation
+
+
+
+
+14 of 25
+
+
+Administrative occupations
+17
+15
+Research/technical occupations
+9
+8
+Professional occupations such as legal
+affairs, management, culture/arts, etc.
+17
+15
+Administrative occupations
+26
+23
+Sales/sales occupations
+5
+4.4
+Service occupations
+39
+34.5
+
+437
+
+Table 4. Participant information (minimum, maximum, and average value).
+438
+
+
+Mean
+N
+SD
+Max
+Min
+Age
+39.0
+113
+10.1
+24
+68
+BMI
+22.8
+113
+4.5
+17.2
+55.2
+Years of
+education
+16.7
+113
+2.0
+6
+22
+Years of
+service
+3.5
+113
+1.7
+1
+6
+SD: standard deviation.
+439
+
+2.2.2. Estimating brain information using facial expression information
+440
+
+In this study, we used estimated GM-BHQ measured from facial expressions. To
+441
+
+measure facial expressions, we used an application developed in Study I. The reason for
+442
+
+using the estimated GM-BHQ is that GM-BHQ has been used primarily in studies of
+443
+
+healthy middle-aged adults, as in this study, rather than in elderly people or people with
+444
+
+underlying diseases, and correlations with various psychological indices have been con-
+445
+
+firmed. In our previous studies, whole-brain GM-BHQ was positively correlated with cog-
+446
+
+nitive ability [84], job satisfaction [85], dietary balance [41] and negatively with unhealthy
+447
+
+lifestyle [42], fatigue and stress [86], and polluted residential environment [87]. Further-
+448
+
+more, in a recent pilot study, the DMN, CEN and SN of GM-BHQ were positively corre-
+449
+
+lated with understanding of gender and origin diversity [45]. Also, consistent with neu-
+450
+
+roplasticity claims [88], GM-BHQ has been shown to change with certain interventions
+451
+
+[89,90].
+452
+
+2.3. Psychological Test
+453
+
+2.3.1. Creative Behavior
+454
+
+This study used the Aesthetic Responsiveness Assessment developed by Schlotz et
+455
+
+al. [91] and adapted by Magsamen and Ross [92]. The AReA originally is a short (14-item)
+456
+
+questionnaire for assessing how responsive a person is to aesthetic experiences, such as
+457
+
+with visual arts, music, dance and performance. Among the three subscales of AReA,
+458
+
+namely Aesthetic Appreciation (8 items), Intense Aesthetic Experience (3 items), and Cre-
+459
+
+ative Behavior (3 items including “I sculpt, paint, draw, direct films, or do design work”),
+460
+
+we used a revised creative behavior scale consisting of four items: original Creative Be-
+461
+
+havior three items plus one item from Aesthetic Appreciation, “I visit museums or go to
+462
+
+musical/dance performances.” This revision was made because the added item is an item
+463
+
+that represents behavior, like the three items in Creative Behavior, and a factor analysis
+464
+
+using test data from 80 people collected through general recruitment showed that the
+465
+
+
+
+15 of 25
+
+
+factor was more stable when it was included in Creative Behavior rather than Aesthetic
+466
+
+Appreciation, and also because an improvement was observed in the Cronbach's alpha
+467
+
+reliability coefficient of the factor (available upon request). Each item was answered on a
+468
+
+5-point Likert scale, and each response was assigned a score from 1 to 5. The creative be-
+469
+
+havior was calculated as the average of 4 items. Cronbach's alpha reliability coefficients
+470
+
+of creative behavior were 0.662.
+471
+
+2.3.2. Reading habits
+472
+
+The study used two items from the adult version of the OECD Programme for Inter-
+473
+
+national Student Assessment (PISA): “How often do you read books in your current job?”
+474
+
+and “How often do you read novels or non-fiction books outside of work?” [93]. Each item
+475
+
+was answered on a 5-point Likert scale, and each response was assigned a score from 1 to
+476
+
+5. The creative behavior was calculated as the average of 2 items.
+477
+
+2.3.3. Control variables
+478
+
+Sex (male = 1; female = 0), age (years old), educational background (years) and BMI
+479
+
+(kg/m2) were used as control variables.
+480
+
+2.4. Data Analysis
+481
+
+Correlation and partial correlation analyses were performed between the estimated
+482
+
+whole-brain and regional GMVs of the CEN, SN, and DMN, creative activities and read-
+483
+
+ing habits variables. The standard for statistical significance was 5% two-sided. All statis-
+484
+
+tical analyses were performed using IBM SPSS Statistics Version 28 (IBM Corp., Armonk,
+485
+
+NY, USA).
+486
+
+2.5. Results
+487
+
+The figures below the diagonal shows the Pearson correlation coefficient, and the
+488
+
+figures above the diagonal shows the Pearson partial correlation coefficient. The correla-
+489
+
+tion coefficients did not show any significant correlation between GMV and the creative
+490
+
+activities and reading habits variables. Therefore, the results of the partial correlation co-
+491
+
+efficients are shown below. DMN was positively and significantly correlated with creative
+492
+
+behavior (r = 0.231, p = 0.016) but was not significantly correlated with reading habits (r =
+493
+
+0.095, p = 0.329). CEN was positively and significantly correlated with reading habits (r
+494
+
+= 0.231, p = 0.016) but was not significantly correlated with creative behavior (r = -0.028, p
+495
+
+= 0.777). Figure 2 and Figure 3 show the results of these significant correlations in scatter
+496
+
+plots. There were no significant correlations between other GMV and creative behavior or
+497
+
+reading habits.
+498
+
+Table 3. Correlation coefficient.
+499
+
+
+
+1
+2
+3
+4
+5
+6
+1
+BHQ
+
+0.650***
+0.568***
+0.737***
+-0.012
+0.186
+2
+DMN
+0.923***
+
+0.643***
+0.610***
+0.095
+0.231*
+3
+CEN
+0.858***
+0.878***
+
+0.617***
+0.231*
+-0.028
+4
+SN
+0.940***
+0.910***
+0.872***
+
+0.076
+0.166
+5
+Reading habits
+-0.074
+-0.042
+0.060
+-0.044
+
+0.253**
+6
+Creative behavior
+0.164
+0.187*
+0.065
+0.167
+0.195*
+
+N = 113; * p < 0.05; ** p < 0.01; *** p < 0.001. The figures below the diagonal are Pearson’s correlation
+500
+
+coefficients. The figures above the diagonal are Pearson’s correlation coefficients controlling for
+501
+
+demographic variables.
+502
+
+
+
+16 of 25
+
+
+
+503
+
+
+504
+
+Figure 2. Creative Behavior and DMN (r = 0.231). Δ: Residuals from a regression with the control
+505
+
+variables as independent variables.
+506
+
+
+507
+
+
+508
+
+Figure 3. Reading Habits and CEN (r = 0.231). Δ: Residuals from a regression with the control var-
+509
+
+iables as independent variables.
+510
+
+
+
+17 of 25
+
+
+2.6. Discussion
+511
+
+The results of this study suggest that the brain GMV of healthy adults is related to
+512
+
+intellectual activities such as creative behavior and reading habits. The DMN and CEN
+513
+
+seem to play a major role in these activities. This result is consistent with previous studies
+514
+
+that have shown that the DMN is associated with artistic activities [53,54,55,56] and that
+515
+
+the CEN is associated with reading [57,58,59,60]. The participants in this study were male
+516
+
+and female workers who considered themselves healthy. Therefore, the results of this
+517
+
+study indicate that engaging in intellectual activities such as art and reading while young
+518
+
+and healthy may not only maintain their brain health and have a positive effect on their
+519
+
+daily work, but may also contribute to extending their future healthy lifespan. This idea
+520
+
+has been discovered or supported by previous studies as "cognitive reserve" [61,62], but
+521
+
+the results of this study add biological knowledge to this discussion.
+522
+
+In a previous study in which 16 young adults were tasked with rating images of art-
+523
+
+works, areas of the medial prefrontal cortex, measured in an fMRI scanner, were posi-
+524
+
+tively activated in the best-rated trials. This means that the rating-specific neural response
+525
+
+is attributable not to the characteristics of the particular artwork, but to the aesthetic ex-
+526
+
+perience. In other words, DMN activity is due to the fact that a particular artwork fits the
+527
+
+unique structure of the individual so well that it accesses neural substrates that are in-
+528
+
+volved in the self, leading to a feeling of being "moved." This explanation is consistent
+529
+
+with the contemporary idea that an individual's taste in art is linked to a sense of identity
+530
+
+[94,95]. The involvement of the DMN in painting appreciation is further supported by the
+531
+
+results of a recent meta-analysis [96].
+532
+
+On the other hand, an experimental study of the reading comprehension of 60 school-
+533
+
+age children showed that executive functions make a significant contribution to reading
+534
+
+comprehension [97]. Subsequent meta-analysis also supported a moderate positive asso-
+535
+
+ciation (r = 0.36) between executive function and reading comprehension [98]. Consistent
+536
+
+with these, a recent neuroscience study of 55 school-age children showed that the discrep-
+537
+
+ancy between the ability to convert printed words into sounds and reading comprehen-
+538
+
+sion of text was associated with a frontoparietal network including the GMV of the left
+539
+
+dorsolateral prefrontal cortex [99].
+540
+
+The results of this study showing that the DMN is involved in artistic activities and
+541
+
+the CEN in reading are highly suggestive. This is because, in light of the accumulation of
+542
+
+research showing that whole-brain GMV is involved in cognitive functions [100], it sug-
+543
+
+gests the importance of having a variety of hobbies. Normally, human memories are
+544
+
+stored in the hippocampus as short-term memories containing a lot of concrete infor-
+545
+
+mation. However, because the hippocampus has a capacity, it cannot store the details of
+546
+
+concrete information for long. Much of the information gradually loses concreteness and
+547
+
+is stored in the brain as abstract information over a long period of time. People will be-
+548
+
+come interested in information they saw on TV yesterday, such as health information, and
+549
+
+will search for books driven by the desire to know more about it in more detail. At this
+550
+
+time, people will search for books, read, and think while referring to the concrete infor-
+551
+
+mation in their brains that is still fresh, so they will rely on the executive function of the
+552
+
+CEN. However, for information that has been fragmented in the brain and does not rise
+553
+
+to the conscious mind, it may be difficult to search for it of their own volition and find
+554
+
+relevance in the book they picked up. At that time, people will feel a vague sense of dis-
+555
+
+satisfaction. However, that person may suddenly start a little artistic activity one day, per-
+556
+
+haps inspired by a view they saw casually. In the process of looking at art in a museum
+557
+
+or fumbling around to draw a picture by themselves, one day they suddenly come across
+558
+
+a piece that moves them in a way that they cannot put into words. At this time, the DMN
+559
+
+plays a central role. The DMN responds to aesthetic experiences that they are not aware
+560
+
+of and have forgotten. Artistic activities are a little more difficult to get into than books
+561
+
+
+
+18 of 25
+
+
+that can be easily picked up at a bookstore, and many people do not have the opportunity
+562
+
+to come into contact with the results of neuroaesthetics research, so at present, it is thought
+563
+
+that those who are lucky enough to come across them are involved in art and maintaining
+564
+
+their brain health. However, if more people could learn about their brain condition using
+565
+
+a machine that can be easily measured, the effect of casually engaging in art on the brain
+566
+
+would become clearer, and it may be possible to get more people involved in art and im-
+567
+
+prove their brain health. The results of this study have the potential to contribute to im-
+568
+
+proving the well-being of such people in the future. In particular, reliable information
+569
+
+based on abundant evidence is needed to encourage greater participation in artistic activ-
+570
+
+ities among elderly people, who are considered to be conservative and unwilling to
+571
+
+change their ways of thinking, and to prevent dementia.
+572
+
+Thus, the results of this study are consistent with this series of previous studies, de-
+573
+
+spite the use of a simplified method of facial expression recognition. Previous neurosci-
+574
+
+ence research has required expensive and heavy equipment such as MRI. This has made
+575
+
+it difficult for ordinary workers to easily measure their brains. On the other hand, by plac-
+576
+
+ing the simple measuring device used in this study in workplaces and commercial facili-
+577
+
+ties and measuring the state of the brain easily and on a daily basis, just as if measuring
+578
+
+weight or blood pressure, people may be motivated to pay more attention to their own
+579
+
+and others' brain states and maintain brain health. It is also clear from neurofeedback re-
+580
+
+search that knowing the state of the brain leads to maintaining and improving brain health
+581
+
+[101,102]. Therefore, the results of this study will make a meaningful contribution to the
+582
+
+social implementation of brain science.
+583
+
+2.7. Limitations
+584
+
+This study has some limitations. Firstly, it should be noted that the results of this
+585
+
+study were estimated from facial expressions, not GMV calculated from MRI images, so
+586
+
+the reproducibility of the results of this study needs to be tested using GMV. Secondly,
+587
+
+this study was conducted on Japanese people, and caution is required if the results are
+588
+
+applicable to other countries. Japanese people have a unique sense of beauty, such as
+589
+
+wabi-sabi and kawaii, and such peculiarities may have biased the results. They are also
+590
+
+known to be conservative and, compared to other developed countries, enjoy reading but are not
+591
+
+very active in artistic activities. Thirdly, because general measures of art and reading were
+592
+
+used, the results of this study cannot suggest specific activities. Fourthly, this study is a
+593
+
+cross-sectional analysis and does not show a causal relationship. For example, rather than
+594
+
+the arts and reading enhancing brain health, it may be that brain health drives people's
+595
+
+choices about the arts and reading. Fifthly, the small sample size limits the generalizability
+596
+
+of the results. Sixthly, in this study, sex, age, educational background and BMI were used
+597
+
+as control variables. However, background information not adopted in this study, such as
+598
+
+socioeconomic status such as income and differences in the community to which the par-
+599
+
+ticipants belong, may have influenced the results. Beauty is not a distinct, independent
+600
+
+element embedded in a color, food, nature, landscape, idea, or even a face, nor is it some-
+601
+
+thing an artist "puts" into a work as a distinct entity; it is a property that emerges in the
+602
+
+beholder's brain. That aesthetic response is shaped by the beholder's cultural experiences,
+603
+
+life events, education, genetic inheritance, and perhaps gender, age, and health. Individ-
+604
+
+ual variation in the intensity and extent of the response has not been systematically ex-
+605
+
+plored, and there remains much to be explored [103]. Seventhly, this study was unable to
+606
+
+clarify the relationship between SN and art and reading. This is an issue that remains for
+607
+
+future efforts to improve brain health at the whole-brain level. Eighth, even if art and reading
+608
+
+are good for the brain, this study does not allow us to infer the extent to which their effects are
+609
+
+compared to other activities. With the advancement of neuroscience, there are many activities that
+610
+
+are said to be good for the brain (exercise, diet, brain training, etc.). Since the general public has
+611
+
+
+
+19 of 25
+
+
+limited free time and money, the relative importance of neuroaesthetic-related activities, how often
+612
+
+and for how long they are effective, and above what level the incremental effect disappears, need
+613
+
+to be gradually clarified in the future. Ninth, the present study was limited to a triple network: a
+614
+
+recent meta-analysis showed that neural responses to artistic beauty recruit a broadly distributed
+615
+
+network in both hemispheres, including content-dependent brain regions in the ventral visual
+616
+
+stream [104]. Previous findings have also shown that the originality of a art is associated with the
+617
+
+DMN, while beauty is associated with a network of areas including the occipital and frontal lobes
+618
+
+[105]. As such, the latest findings in brain research indicate the possibility of a more diverse and
+619
+
+complex network of neural responses to beauty, leaving room for further development of the sim-
+620
+
+plified measuring device used in this study. Finally, most previous studies have used fMRI,
+621
+
+which differs from the data of this study, which is based on MRI. Although fMRI is excel-
+622
+
+lent for measuring brain responses, there is insufficient evidence as to whether the re-
+623
+
+sponses have a lasting effect on brain structure. As neuroaesthetics research using MRI
+624
+
+becomes more active and the relationship with brain structure becomes clearer, the value
+625
+
+of the simple measurement used in this study is expected to increase even further. Future
+626
+
+research should seek to verify the results of this study using other methods, such as MRI
+627
+
+and fMRI, in a longitudinal manner that includes a variety of intervention methods and
+628
+
+control variables, with a larger number of people in different cultures, in order to obtain
+629
+
+further new findings.
+630
+
+3. Conclusions
+631
+
+In Study I, by analyzing the correspondence between the BHQ calculated from MRI
+632
+
+images of the brain and the facial expression data when four types of facial expressions
+633
+
+(happiness, anger, sadness, and surprise) are made, an algorithm was constructed to esti-
+634
+
+mate brain health from facial expressions, and an application was developed to estimate
+635
+
+brain health. This allows users to easily find out the state of their brain health in a short
+636
+
+time by simply measuring their facial expressions.
+637
+
+In Study II, a survey was conducted on 113 healthy Japanese adults using GMV esti-
+638
+
+mated from facial expressions and questionnaires, and it was shown that there was a pos-
+639
+
+itive correlation between local DMN and CEN GMV and artistic activities and reading
+640
+
+habits, respectively. These results suggest that estimated GMV and art and reading habits
+641
+
+are effective in paying attention to, caring for, and intervening in the brains of healthy
+642
+
+people to maintain future brain health and reduce the risk of dementia.
+643
+
+
+644
+
+Author Contributions: Conceptualization, K.A., T.K., Y.S., and Y.N.; methodology, K.A., T.K., Y.S.,
+645
+
+and Y.N.; software, K.A., T.K., Y.S., and Y.N.; validation, K.K., K.N., M.O., and Y.Y.; formal analysis,
+646
+
+K.A., T.K., Y.S., and Y.N.; software, K.A., T.K., Y.S., and Y.N.; investigation, K.A., T.K., Y.S., and
+647
+
+Y.N.; resources, K.A., T.K., Y.S., and Y.N.; data curation, K.K., K.N., M.O., and Y.Y.; writing—origi-
+648
+
+nal draft preparation, K.A., T.K., Y.S., Y.N., and K.K.; writing—review and editing, K.N., M.O., and
+649
+
+Y.Y.; visualization, K.A., T.K., Y.S., and Y.N.; supervision, K.N., M.O., and Y.Y.; project administra-
+650
+
+tion, K.N., M.O., and Y.Y.; funding acquisition, Y.Y. All authors have read and agreed to the pub-
+651
+
+lished version of the manuscript.”
+652
+
+Funding: This work was funded by the ImPACT Program of Council for Science, Technology, and
+653
+
+Innovation (Cabinet Office, Government of Japan) and supported by JSPS KAKENHI (Grant Num-
+654
+
+ber JP17H06151; JP25K15384).
+655
+
+Institutional Review Board Statement: The study was conducted in accordance with the Declara-
+656
+
+tion of Helsinki and approved by the Institute of Science Tokyo’s ethical committee (Approval Num-
+657
+
+bers 2023137 approval on 29 October 2021).
+658
+
+
+
+20 of 25
+
+
+Informed Consent Statement: Informed consent was obtained from all subjects involved in the
+659
+
+study.
+660
+
+Data Availability Statement: The data presented in this study are available on request from the
+661
+
+corresponding author due to the need to protect the privacy of participants.
+662
+
+Conflicts of Interest: Authors Keiko Abe, Takayuki Kurata, Yasuhito Sato, and Yoshihiko Namba
+663
+
+were employed by the company Panasonic Corporation. Author Yoshinori Yamakawa was em-
+664
+
+ployed by the company Brain Impact. The remaining authors declare that the research was con-
+665
+
+ducted in the absence of any commercial or financial relationships that could be construed as a po-
+666
+
+tential conflict of interest.
+667
+
+Abbreviations
+668
+
+The following abbreviations are used in this manuscript:
+669
+
+GM-BHQ Gray Matter Brain Healthcare Quotient
+DMN
+Default Mode Network
+CEN
+Central Executive Network
+SN
+Salience Network
+
+
+670
+
+
+
+21 of 25
+
+
+References
+671
+
+1.
+Cannavacciuolo, A.; Paparella, G.; Salzillo, M.; Colella, D.; Canevelli, M.; Costa, D.; Birreci, D.; Angelini, L.; Guerra, A.;
+672
+
+Ricciardi, L.; Bruno, G.; Berardelli, A.; Bologna, M. Facial emotion expressivity in patients with Parkinson’s and Alzheimer’s
+673
+
+disease. J. Neural Transm. 2024, 131, 31–41. https://doi.org/10.1007/s00702-023-02699-
+674
+
+2.
+Matsumoto, D.; Lee, M. Consciousness, volition, and the neuropsychology of facial expressions of emotion. Conscious Cogn.
+675
+
+1993, 2(3), 237-254. https://doi.org/10.1006/ccog.1993.1022
+676
+
+3.
+Berenbaum, H.; Rotter, A. The relationship between spontaneous facial expressions of emotion and voluntary control of
+677
+
+facial muscles. J. Nonverbal Behav. 1992, 16, 179-190. https://doi.org/10.1007/BF00988033
+678
+
+4.
+Trémeau, F.; Malaspina, D.; Duval, F.; Corrêa, H.; Hager-Budny, M.; Coin-Bariou, L.; Macher, J.P.; Gorman, J.M. Facial
+679
+
+expressiveness in patients with schizophrenia compared to depressed patients and nonpatient comparison subjects. Am. J.
+680
+
+Psychiatry 2005, 162(1), 92-101. https://doi.org/10.1176/appi.ajp.162.1.92
+681
+
+5.
+Williams, J.H.; Nicolson, A.T.; Clephan, K.J.; Grauw, H.D.; Perrett, D.I. A novel method testing the ability to imitate com-
+682
+
+posite emotional expressions reveals an association with empathy. PLoS One 2013, 8(4), e61941. https://doi.org/10.1371/jour-
+683
+
+nal.pone.0061941
+684
+
+6.
+Fernandez-Duque, D.; Hodges, S.D.; Baird, J.A.; Black, S.E. Empathy in frontotemporal dementia and Alzheimer's disease.
+685
+
+J. Clin. Exp. Neuropsychol. 2010, 32(3), 289-298. https://doi.org/10.1080/13803390903002191
+686
+
+7.
+Kumfor, F.; Piguet, O. Disturbance of emotion processing in frontotemporal dementia: a synthesis of cognitive and neu-
+687
+
+roimaging findings. Neuropsychol. Rev. 2012, 22, 280-297. https://doi.org/10.1007/s11065-012-9201-6
+688
+
+8.
+Rosen, H.J.; Perry, R.J.; Murphy, J.; Kramer, J.H.; Mychack, P.; Schuff, N.; Weiner, M., Levenson, R.W.; Miller, B.L. Emotion
+689
+
+comprehension
+in
+the
+temporal
+variant
+of
+frontotemporal
+dementia.
+Brain
+2002,
+125(10),
+2286-2295.
+690
+
+https://doi.org/10.1093/brain/awf225
+691
+
+9.
+Irish, M.; Hodges, J.R.; Piguet, O. Right anterior temporal lobe dysfunction underlies theory of mind impairments in se-
+692
+
+mantic dementia. Brain 2014, 137(4), 1241-1253. https://doi.org/10.1093/brain/awu003
+693
+
+10.
+Kamminga, J.; Kumfor, F.; Burrell, J.R.; Piguet, O.; Hodges, J.R.; Irish, M. Differentiating between right-lateralised semantic
+694
+
+dementia and behavioural-variant frontotemporal dementia: an examination of clinical characteristics and emotion pro-
+695
+
+cessing. J. Neurol. Neurosurg. Psychiatry 2015, 86(10), 1082-1088. https://doi.org/10.1136/jnnp-2014-309120
+696
+
+11.
+Seeley, W.W.; Bauer, A.M.; Miller, B.L.; Gorno-Tempini, M.L.; Kramer, J.H.; Weiner, M.; Rosen, H.J. The natural history of
+697
+
+temporal
+variant
+frontotemporal
+dementia.
+Neurology
+2005,
+64(8),
+1384-1390.
+698
+
+https://doi.org/10.1212/01.WNL.0000158425.46019.5C
+699
+
+12.
+Gola, K.A.; Shany-Ur, T.; Pressman, P.; Sulman, I.; Galeana, E.; Paulsen, H.; Nguyen, L.; Wu, T.; Adhimoolam, B.; Poorzand,
+700
+
+P.; Miller, B.L.; Rankin, K.P. A neural network underlying intentional emotional facial expression in neurodegenerative
+701
+
+disease. NeuroImage Clin. 2017, 14, 672-678. https://doi.org/10.1016/j.nicl.2017.01.016
+702
+
+13.
+Cooper, S.E.; Miranda, R.; Mennin, D.S. Behavioral indicators of emotional avoidance and subsequent worry in generalized
+703
+
+anxiety disorder and depression. J. Exp. Psychopathol. 2013, 4(5), 566-583. https://doi.org/10.5127/jep.033512
+704
+
+14.
+Gaebel, W., Wölwer, W. Facial expressivity in the course of schizophrenia and depression. Eur. Arch. Psychiatry Clin. Neu-
+705
+
+rosci. 2004, 254, 335-342. https://doi.org/10.1007/s00406-004-0510-5
+706
+
+15.
+Harati, S.; Crowell, A.; Huang, Y.; Mayberg, H.; Nemati, S. Classifying depression severity in recovery from major depres-
+707
+
+sive
+disorder
+via
+dynamic
+facial
+features.
+IEEE
+J.
+Biomed.
+Health
+Inform.
+2019,
+24(3),
+815-824.
+708
+
+https://doi.org/10.1109/JBHI.2019.2930604
+709
+
+16.
+Renneberg, B.; Heyn, K.; Gebhard, R.; Bachmann, S. Facial expression of emotions in borderline personality disorder and
+710
+
+depression. J. Behav. Ther. Exp. Psychiatry 2005, 36(3), 183-196. https://doi.org/10.1016/j.jbtep.2005.05.002
+711
+
+17.
+Strauss, G.P.; Cohen, A.S. A transdiagnostic review of negative symptom phenomenology and etiology. Schizophr. Bull.
+712
+
+2017, 43(4), 712-719. https://doi.org/10.1093/schbul/sbx066
+713
+
+18.
+Levenson, R.W.; Sturm, V.E.; Haase, C.M. Emotional and behavioral symptoms in neurodegenerative disease: a model for
+714
+
+studying the neural bases of psychopathology. Annu. Rev. Clin. Psychol. 2014, 10(1), 581-606. https://doi.org/10.1146/an-
+715
+
+nurev-clinpsy-032813-153653
+716
+
+19.
+Cohen, A.S.; Cowan, T.; Le, T.P.; Schwartz, E.K.; Kirkpatrick, B.; Raugh, I.M., Chapman, H.C.; Strauss, G.P. Ambulatory
+717
+
+digital phenotyping of blunted affect and alogia using objective facial and vocal analysis: proof of concept. Schizophr. Res.
+718
+
+2020, 220, 141-146. https://doi.org/10.1016/j.schres.2020.03.043
+719
+
+20.
+Riehle, M.; Lincoln, T.M. Investigating the social costs of schizophrenia: Facial expressions in dyadic interactions of people
+720
+
+with and without schizophrenia. J. Abnorm. Psychol. 2018, 127(2), 202-215.
+721
+
+
+
+22 of 25
+
+
+21.
+Troisi, A.; Pompili, E.; Binello, L.; Sterpone, A. Facial expressivity during the clinical interview as a predictor functional
+722
+
+disability in schizophrenia. A pilot study. Prog. Neuro-Psychopharmacol. Biol. Psychiatry 2007, 31(2), 475-481.
+723
+
+https://doi.org/10.1016/j.pnpbp.2006.11.016
+724
+
+22.
+Grigoriou, M.; Upthegrove, R. Blunted affect and suicide in schizophrenia: A systematic review. Psychiatry Res. 2020, 293,
+725
+
+113355. https://doi.org/10.1016/j.psychres.2020.113355
+726
+
+23.
+Cowan, T.; Masucci, M.D.; Gupta, T.; Haase, C.M.; Strauss, G.P.; Cohen, A.S. Computerized analysis of facial expressions
+727
+
+in serious mental illness. Schizophr. Res. 2022, 241, 44-51. https://doi.org/10.1038/s41592-023-02154-w
+728
+
+24.
+Gavrilescu, M. Vizireanu, N. Predicting depression, anxiety, and stress levels from videos using the facial action coding
+729
+
+system. Sensors 2019, 19(17), 3693. https://doi.org/10.3390/s19173693
+730
+
+25.
+Kong, X.; Yao, Y.; Wang, C.; Wang, Y.; Teng, J.; Qi, X. Automatic identification of depression using facial images with deep
+731
+
+convolutional neural network. Med. Sci. Monit. 2022, 28, e936409-1. https://doi.org/10.12659/MSM.936409
+732
+
+26.
+Vogt, N. Predicting neural activity from facial expressions. Nat. Methods 2024, 21, 9.
+733
+
+27.
+More, S.; Antonopoulos, G.; Hoffstaedter, F.; Caspers, J.; Eickhoff, S.B.; Patil, K.R.; Alzheimer's Disease Neuroimaging Ini-
+734
+
+tiative. Brain-age prediction: A systematic comparison of machine learning workflows. NeuroImage 2023, 270, 119947.
+735
+
+https://doi.org/10.1016/j.neuroimage.2023.119947
+736
+
+28.
+Cole, J.H.; Raffel, J.; Friede, T.; Eshaghi, A.; Brownlee, W.J.; Chard, D.; ... & MAGNIMS Study Group. (2020). Longitudinal
+737
+
+assessment of multiple sclerosis with the brain-age paradigm. Ann. Neurol. 88(1), 93-105. https://doi.org/10.1002/ana.25746
+738
+
+29.
+Boyle, R.; Jollans, L.; Rueda-Delgado, L.M.; Rizzo, R.; Yener, G.G.; McMorrow, J.P.; ... & Whelan, R. Brain-predicted age
+739
+
+difference score is related to specific cognitive functions: a multi-site replication analysis. Brain Imaging Behav. 2021, 15,
+740
+
+327-345. https://doi.org/10.1007/s11682-020-00260-3
+741
+
+30.
+Richard, G.; Kolskår, K.; Sanders, A.M.; Kaufmann, T.; Petersen, A.; Doan, N.T.; ... & Westlye, L.T. Assessing distinct pat-
+742
+
+terns of cognitive aging using tissue-specific brain age prediction based on diffusion tensor imaging and brain morphom-
+743
+
+etry. PeerJ 2018, 6, e5908. https://doi.org/10.7717/peerj.5908
+744
+
+31.
+Gaser, C.; Franke, K.; Klöppel, S.; Koutsouleris, N.; Sauer, H.; Alzheimer's Disease Neuroimaging Initiative. BrainAGE in
+745
+
+mild cognitive impaired patients: predicting the conversion to Alzheimer’s disease. PloS one 2013, 8(6), e67346.
+746
+
+https://doi.org/10.1371/journal.pone.0067346
+747
+
+32.
+Monté-Rubio, G.C.; Falcón, C.; Pomarol-Clotet, E.; Ashburner, J. A comparison of various MRI feature types for character-
+748
+
+izing whole brain anatomical differences using linear pattern recognition methods. NeuroImage 2018, 178, 753-768.
+749
+
+https://doi.org/10.1016/j.neuroimage.2018.05.065
+750
+
+33.
+https://holdings.panasonic/jp/corporate/pac.html
+751
+
+34.
+Yamakawa, Y. Brain MRI index useful for dementia prevention - BHQ (Brain healthcare quotient), Journal of the Japanese
+752
+
+Society of Brain Dock 2019, 9, 23/27.
+753
+
+35.
+https://www.jst.go.jp/impact/hp_yamakawa/index.html
+754
+
+36.
+Requirements on establishing brain healthcare quotients，ITU-T H.861.1(2018)
+755
+
+37.
+Uddin, L.Q.; Supekar, K.S.; Ryali, S.; Menon, V. Dynamic reconfiguration of structural and functional connectivity across
+756
+
+core neurocognitive brain networks with development. J. Neurosci. 2011, 31(50), 18578-18589.
+757
+
+38.
+Nemoto, K.; Oka, H.; Fukuda, H.; Yamakawa, Y. MRI based Brain Healthcare Quotients: A bridge between neural and
+758
+
+behavioral analyses for keeping the brain healthy. PLoS ONE 2017, 12(10), e0187137.
+759
+
+39.
+Ashburner, J. A fast diffeomorphic image registration algorithm. Neuroimage 2007, 38, 95–113.
+760
+
+40.
+Tzourio-Mazoyer, N.; Landeau, B.; Papathanassiou, D.; Crivello, F.; Etard, O.; Delcroix, N.; Tzourio-Mazoyer, B.; Joliot, M.
+761
+
+Automated anatomical labeling of activations in SPM using a macroscopic anatomical parcellation of the MNI MRI single-
+762
+
+subject brain. Neuroimage 2002, 15, 273–289. https://doi.org/10.1006/nimg.2001.0978
+763
+
+41.
+Kokubun, K.; Yamakawa, Y. Association between food patterns and gray matter volume. Front. Hum. Neurosci. 2019, 13,
+764
+
+384. https://doi.org/10.3389/fnhum.2019.00384
+765
+
+42.
+Kokubun, K.; Pineda, J.C.D.; Yamakawa, Y. Unhealthy lifestyles and brain condition: Examining the relations of BMI, living
+766
+
+alone, alcohol intake, short sleep, smoking, and lack of exercise with gray matter volume. Plos One 2021, 16(7), e0255285.
+767
+
+https://doi.org/10.1371/journal.pone.0255285
+768
+
+43.
+Kokubun, K.; Yamakawa, Y.; Nemoto, K. The link between the brain volume derived index and the determinants of social
+769
+
+performance. Curr. Psychol. 2023, 42(15), 12309-12321. https://doi.org/10.1007/s12144-021-02544-3
+770
+
+44.
+Kokubun, K.; Yamakawa, Y.; Hiraki, K. Association between behavioral ambidexterity and brain health. Brain Sci. 2020,
+771
+
+10(3), 137. https://doi.org/10.3390/brainsci10030137
+772
+
+
+
+23 of 25
+
+
+45.
+Otsuka, T.; Kokubun, K.; Okamoto, M.; Yamakawa, Y. The Brain That Understands Diversity: A Pilot Study Focusing on
+773
+
+the Triple Network. Brain Sci. 2025, 15(3), 233. https://doi.org/10.3390/brainsci15030233
+774
+
+46.
+Logothetis, N.K. What we can do and what we cannot do with fMRI. Nature 2008, 453, 869–878. https://doi.org/10.1038/na-
+775
+
+ture06976.
+776
+
+47.
+Winkler, A.M.; Kochunov, P.; Blangero, J.; Almasy, L.; Zilles, K.; Fox, P.T.; Duggirala, R.; Glahn, D.C. Cortical thickness or
+777
+
+grey matter volume? The importance of selecting the phenotype for imaging genetics studies. Neuroimage 2010, 53, 1135–
+778
+
+1146. https://doi.org/10.1016/j.neuroimage.2009.12.028.
+779
+
+48.
+Panasonic Corporation. Developing an "Estimated BHQ" Measuring Device that Visualizes Brain Health from Facial Im-
+780
+
+ages: Contributing to Increasing Motivation of Fitness Club Users, Press Release, Panasonic Corporation, Osaka, Japan.
+781
+
+August 1, 2023. Available at: https://news.panasonic.com/jp/press/jn230801-2 (accessed: 2 May 2025).
+782
+
+49.
+https://news.panasonic.com/jp/topics/205281
+783
+
+50.
+https://news.panasonic.com/jp/topics/205423
+784
+
+51.
+Ishizu, T.; Zeki, S. The brain's specialized systems for aesthetic and perceptual judgment. Eur. J. Neurosci. 2013, 37(9),
+785
+
+1413-1420. https://doi.org/10.1111/ejn.12135.
+786
+
+52.
+Mastandrea, S.; Fagioli, S.; Biasi, V. Art and psychological well-being: Linking the brain to the aesthetic emotion. Front.
+787
+
+Psychol. 2019, 10, 739. https://doi.org/10.3389/fpsyg.2019.00739
+788
+
+53.
+Beaty, R.E.; Christensen, A.P.; Benedek, M.; Silvia, P.J.; Schacter, D.L. Creative constraints: Brain activity and network
+789
+
+dynamics underlying semantic interference during idea production. NeuroImage 2017, 148, 189-196.
+790
+
+https://doi.org/10.1016/j.neuroimage.2017.01.012
+791
+
+54.
+Khalil, R.; Godde, B.; Karim, A.A. The link between creativity, cognition, and creative drives and underlying neural
+792
+
+mechanisms. Frontiers Neural Circuits 2019, 13, 18. https://doi.org/10.3389/fncir.2019.00018
+793
+
+55.
+Cela-Conde, C.J.; García-Prieto, J., Ramasco, J.J.; Mirasso, C.R.; Bajo, R.; Munar, E.; ... Maestú, F. Dynamics of brain
+794
+
+networks in the aesthetic appreciation. Proc. Natl. Acad. Sci. 2013, 110(supplement_2), 10454-10461.
+795
+
+https://doi.org/10.1073/pnas.1302855110
+796
+
+56.
+van Leeuwen, J.E.; Boomgaard, J.; Bzdok, D.; Crutch, S.J.; Warren, J.D. More than meets the eye: Art engages the social
+797
+
+brain. Front. Neurosci. 2022, 16, 738865. https://doi.org/10.3389/fnins.2022.738865.
+798
+
+57.
+Clewett, D.; DuBrow, S.; Davachi, L. Transcending time in the brain: How event memories are constructed from
+799
+
+experience. Hippocampus 2019, 29(3), 162-183.
+800
+
+58.
+Lövdén, M.; Bodammer, N.C.; Kühn, S.; Kaufmann, J.; Schütze, H.; Tempelmann, C.; ... & Lindenberger, U. Experience-
+801
+
+dependent plasticity of white-matter microstructure extends into old age. Neuropsychologia 2010, 48(13), 3878-3883.
+802
+
+59.
+Yang, Z.; Wildschut, T.; Izuma, K.; Gu, R.; Luo, Y.L.; Cai, H.; Sedikides, C. Patterns of brain activity associated with
+803
+
+nostalgia: a social-cognitive neuroscience perspective. Soc. Cogn. Affect. Neurosci. 2022, 17(12), 1131-1144.
+804
+
+https://doi.org/10.1093/scan/nsac036.
+805
+
+60.
+Piolino, P.; Coste, C.; Martinelli, P.; Macé, A.L.; Quinette, P.; Guillery-Girard, B.; Belleville, S. Reduced specificity of
+806
+
+autobiographical memory and aging: Do the executive and feature binding functions of working memory have a role?.
+807
+
+Neuropsychologia 2010, 48(2), 429-440. https://doi.org/10.1016/j.neuropsychologia.2009.09.035.
+808
+
+61.
+Stern, Y. Cognitive reserve. Neuropsychologia 2009, 47(10), 2015-2028.
+809
+
+https://doi.org/10.1016/j.neuropsychologia.2009.03.004
+810
+
+62.
+Tucker,
+A.;
+Stern,
+Y.
+Cognitive
+reserve
+in
+aging.
+Curr.
+Alzheimer
+Res.
+2011,
+8(4),
+354-360.
+811
+
+https://doi.org/10.2174/156720511795745320.
+812
+
+63.
+Corbo, I.; Marselli, G.; Di Ciero, V.; Casagrande, M. The protective role of cognitive reserve in mild cognitive impairment:
+813
+
+A systematic review. J. Clin. Med. 2023, 12(5), 1759. https://doi.org/10.3390/jcm12051759
+814
+
+64.
+Smith, E.E.; Jonides, J. Neuroimaging analyses of human working memory. Proc. Natl. Acad. Sci. USA 1998, 95, 12061–12068.
+815
+
+https://doi.org/10.1073/pnas.95.20.12061.
+816
+
+65.
+Wager, T.D.; Smith, E.E. Neuroimaging studies of working memory: A meta-analysis. Cogn. Affect. Behav. Neurosci. 2003, 3,
+817
+
+255–274. https://doi.org/10.3758/CABN.3.4.255.
+818
+
+66.
+Seeley, W.W.; Menon, V.; Schatzberg, A.F.; Keller, J.; Glover, G.H.; Kenna, H.; Reiss, A.L.; Greicius, M.D. Dissociable
+819
+
+intrinsic connectivity networks for salience processing and executive control. J. Neurosci. 2007, 27, 2349–2356.
+820
+
+https://doi.org/10.1523/JNEUROSCI.5587-06.2007.
+821
+
+
+
+24 of 25
+
+
+67.
+Goulden, N.; Khusnulina, A.; Davis, N.J.; Bracewell, R.M.; Bokde, A.L.; McNulty, J.P.; Mullins, P.G. The salience network
+822
+
+is responsible for switching between the default mode network and the central executive network: Replication from DCM.
+823
+
+Neuroimage 2014, 99, 180–190. https://doi.org/10.1016/j.neuroimage.2014.05.052.
+824
+
+68.
+Cai, W.; Chen, T.; Ryali, S.; Kochalka, J.; Li, C.S.R.; Menon, V. Causal interactions within a frontal-cingulate-parietal network
+825
+
+during cognitive control: Convergent evidence from a multisite–multitask investigation. Cereb. Cortex 2016, 26, 2140–2153.
+826
+
+https://doi.org/10.1093/cercor/bhv046.
+827
+
+69.
+Chen, T.; Michels, L.; Supekar, K.; Kochalka, J.; Ryali, S.; Menon, V. Role of the anterior insular cortex in integrative causal
+828
+
+signaling
+during
+multisensory
+auditory–visual
+attention.
+Eur.
+J.
+Neurosci.
+2015,
+41,
+264–274.
+829
+
+https://doi.org/10.1111/ejn.12764.
+830
+
+70.
+Ham, T.; Leff, A.; de Boissezon, X.; Joffe, A.; Sharp, D.J. Cognitive control and the salience network: An investigation of
+831
+
+error processing and effective connectivity. J. Neurosci. 2013, 33, 7091–7098. https://doi.org/10.1523/JNEUROSCI.4692-
+832
+
+12.2013.
+833
+
+71.
+Menon, V.; Uddin, L.Q. Saliency, switching, attention and control: A network model of insula function. Brain Struct. Funct.
+834
+
+2010, 214, 655–667. https://doi.org/10.1007/s00429-010-0262-0.
+835
+
+72.
+Sridharan, D.; Levitin, D.J.; Menon, V. A critical role for the right fronto-insular cortex in switching between central-
+836
+
+executive
+and
+default-mode
+networks.
+Proc.
+Natl.
+Acad.
+Sci.
+USA
+2008,
+105,
+12569–12574.
+837
+
+https://doi.org/10.1073/pnas.0800005105.
+838
+
+73.
+Uddin, L.Q. Salience processing and insular cortical function and dysfunction. Nat. Rev. Neurosci. 2015, 16, 55–61.
+839
+
+https://doi.org/10.1038/nrn3857.
+840
+
+74.
+Andrews-Hanna, J.R.; Reidler, J.S.; Sepulcre, J.; Poulin, R.; Buckner, R.L. Functional-anatomic fractionation of the brain's
+841
+
+default network. Neuron 2010, 65, 550–562. https://doi.org/10.1016/j.neuron.2010.02.005.
+842
+
+75.
+Buckner, R.L.; Andrews-Hanna, J.R.; Schacter, D.L. The brain's default network—Anatomy, function, and relevance to
+843
+
+disease. Ann. N. Y. Acad. Sci. 2008, 1124, 1–38. https://doi.org/10.1196/annals.1440.011.
+844
+
+76.
+Shulman, G.L.; Fiez, J.A.; Corbetta, M.; Buckner, R.L.; Miezin, F.M.; Raichle, M.E.; Petersen, S.E. Common blood flow
+845
+
+changes
+across
+visual
+tasks.2.
+Decreases
+in
+cerebral
+cortex.
+J.
+Cogn.
+Neurosci.
+1997,
+9,
+648–663.
+846
+
+https://doi.org/10.1162/jocn.1997.9.5.648.
+847
+
+77.
+Li, W.; Mai, X.; Liu, C. The default mode network and social understanding of others: What do brain connectivity studies
+848
+
+tell us. Front. Hum. Neurosci. 2014, 8, 74. https://doi.org/10.3389/fnhum.2014.00074.
+849
+
+78.
+Krönke, K.M.; Wolff, M.; Shi, Y.; Kräplin, A.; Smolka, M.N.; Bühringer, G.; Goschke, T. Functional connectivity in a triple-
+850
+
+network
+saliency
+model
+is
+associated
+with
+real-life
+self-control.
+Neuropsychologia
+2020,
+149,
+107667.
+851
+
+https://doi.org/10.1016/j.neuropsychologia.2020.107667.
+852
+
+79.
+Acevedo, B.P.; Aron, E.N.; Aron, A.; Sangster, M.D.; Collins, N.; Brown, L.L. The highly sensitive brain: An fMRI study of
+853
+
+sensory
+processing
+sensitivity
+and
+response
+to
+others'
+emotions.
+Brain
+Behav.
+2014,
+4,
+580–594.
+854
+
+https://doi.org/10.1002/brb3.242.
+855
+
+80.
+Bilevicius, E.; Kolesar, T.A.; Smith, S.D.; Trapnell, P.D.; Kornelsen, J. Trait emotional empathy and resting state functional
+856
+
+connectivity
+in
+default
+mode,
+salience,
+and
+central
+executive
+networks.
+Brain
+Sci.
+2018,
+8,
+128.
+857
+
+https://doi.org/10.3390/brainsci8070128.
+858
+
+81.
+Kim, S.J.; Kim, S.E.; Kim, H.E.; Han, K.; Jeong, B.; Kim, J.J.; Namkoong, K.; Kim, J.W. Altered functional connectivity of the
+859
+
+default
+mode
+network
+in
+low-empathy
+subjects.
+Yonsei
+Med.
+J.
+2017,
+58,
+1061–1065.
+860
+
+https://doi.org/10.3349/ymj.2017.58.5.1061.
+861
+
+82.
+Nummenmaa, L.; Hirvonen, J.; Parkkola, R.; Hietanen, J.K. Is emotional contagion special? An fMRI study on neural
+862
+
+systems
+for
+affective
+and
+cognitive
+empathy.
+NeuroImage
+2008,
+43,
+571–580.
+863
+
+https://doi.org/10.1016/j.neuroimage.2008.08.014.
+864
+
+83.
+Shamay-Tsoory, S.G.; Aharon-Peretz, J.; Perry, D. Two systems for empathy: A double dissociation between emotional and
+865
+
+cognitive empathy in inferior frontal gyrus versus ventromedial prefrontal lesions. Brain 2009, 132, 617–627.
+866
+
+https://doi.org/10.1093/brain/awn279.
+867
+
+84.
+Watanabe, K.; Kakeda, S.; Nemoto, K.; Onoda, K.; Yamaguchi, S.; Kobayashi, S.; Yamakawa, Y. Grey-matter brain
+868
+
+healthcare quotient and cognitive function: A large cohort study of an MRI brain screening system in Japan. Cortex 2021,
+869
+
+145, 97–104. https://doi.org/10.1016/j.cortex.2021.09.009
+870
+
+85.
+Kokubun, K.; Nemoto, K.; Yamakawa, Y. Whole-brain gray matter volume mediates the relationship between psychological
+871
+
+
+
+25 of 25
+
+
+distress and job satisfaction. Acta Psychol. 2025, 256, 105059. https://doi.org/10.1016/j.actpsy.2025.105059
+872
+
+86.
+Kokubun, K.; Nemoto, K.; Oka, H.; Fukuda, H.; Yamakawa, Y.; Watanabe, Y. Association of fatigue and stress with gray
+873
+
+matter volume. Front. Behav. Neurosci. 2018, 12, 154. https://doi.org/10.3389/fnbeh.2018.00154
+874
+
+87.
+Kokubun, K.; Nemoto, K.; Ikaga, T.; Yamakawa, Y. Whole-brain gray matter volume and fractional anisotropy of the
+875
+
+posterior thalamic radiation and sagittal stratum in healthy adults correlate with the local environment. NeuroImage 2025,  876
+
+308, 121033. https://doi.org/10.1016/j.neuroimage.2025.121033
+877
+
+88.
+Innocenti, G.M. Defining neuroplasticity. Handbook of clinical neurology 2022, 184, 3-18. https://doi.org/10.1016/B978-0-
+878
+
+12-819410-2.00001-1
+879
+
+89.
+Nemoto, K.; Kokubun, K.; Ogata, Y.; Koike, Y.; Arai, T.; Yamakawa, Y. Dark chocolate intake may reduce fatigue and
+880
+
+mediate cognitive function and gray matter volume in healthy middle‐aged adults. Behav. Neurol. 2022, 2022(1), 6021811.
+881
+
+https://doi.org/10.1155/2022/6021811
+882
+
+90.
+Kokubun, K.; Nemoto, K.; Yamakawa, Y. Continuous inhalation of essential oil increases gray matter volume. Brain Res.
+883
+
+Bull. 2024, 208, 110896. https://doi.org/10.1016/j.brainresbull.2024.110896
+884
+
+91.
+Schlotz, W.; Wallot, S.; Omigie, D.; Masucci, M.D.; Hoelzmann, S.C.; Vessel, E.A. The Aesthetic Responsiveness Assessment
+885
+
+(AReA): A screening tool to assess individual differences in responsiveness to art in English and German. Psychol. Aesthet.
+886
+
+Creat. Arts. 2020, 15(4), 682–696. https://doi.org/10.1037/aca0000348
+887
+
+92.
+Magsamen, S., Ross, I. Your brain on art: How the arts transform us. Random House, New York, NY, 2024.
+888
+
+93.
+Organisation for Economic Co-operation and Development (OECD). Programme for International Student Assessment
+889
+
+(PISA), Organisation for Economic Co-operation and Development, Paris, 2024.
+890
+
+94.
+Vessel, E.A.; Starr, G. G.; Rubin, N. The brain on art: intense aesthetic experience activates the default mode network. Front.
+891
+
+Hum. Neurosci. 2012, 6, 66. https://doi.org/10.3389/fnhum.2012.00066
+892
+
+95.
+Vessel, E.A.; Starr, G. G.; Rubin, N. Art reaches within: aesthetic experience, the self and the default mode network. Front.
+893
+
+Neurosci. 2013, 7, 258. https://doi.org/10.3389/fnins.2013.00258
+894
+
+96.
+Vartanian, O.; Skov, M. Neural correlates of viewing paintings: Evidence from a quantitative meta-analysis of functional
+895
+
+magnetic resonance imaging data. Brain Cogn. 2014, 87, 52-56. https://doi.org/10.1016/j.bandc.2014.03.004
+896
+
+97.
+Sesma, H.W.; Mahone, E. M.; Levine, T.; Eason, S. H.; Cutting, L. E. The contribution of executive skills to reading
+897
+
+comprehension. Child Neuropsychol. 2009, 15(3), 232-246.https://doi.org/10.1080/09297040802220029
+898
+
+98.
+Follmer, D.J. Executive function and reading comprehension: A meta-analytic review. Educ. Psychol. 2018, 53(1), 42-60.
+899
+
+https://doi.org/10.1080/00461520.2017.1309295
+900
+
+99.
+Patael, S.Z.; Farris, E. A.; Black, J. M.; Hancock, R.; Gabrieli, J. D.; Cutting, L. E.; Hoeft, F. Brain basis of cognitive resilience:
+901
+
+Prefrontal cortex predicts better reading comprehension in relation to decoding. PloS One 2018, 13(6), e0198791.
+902
+
+https://doi.org/10.1371/journal.pone.0198791
+903
+
+100. Jaušovec, N. The neural code of intelligence: From correlation to causation. Phys. Life Rev. 2019, 31, 171-
+904
+
+187.https://doi.org/10.1016/j.plrev.2019.10.005
+905
+
+101. Hammond,
+D.C.
+What
+is
+neurofeedback:
+An
+update.
+J.
+Neurother.
+2011,
+15(4),
+305-336.
+906
+
+https://doi.org/10.1080/10874208.2011.623090
+907
+
+102. Marzbani, H.; Marateb, H.R.; Mansourian, M. Neurofeedback: a comprehensive review on system design, methodology
+908
+
+and clinical applications. Basic Clin. Neurosci. 2016, 7(2), 143–158. https://doi.org/10.15412/J.BCN.03070208.
+909
+
+103. Zaidel, D.W. Neuroesthetics is not just about art. Front. Hum. Neurosci. 2015, 9, 80. https://doi.org/10.3389/fnhum.2015.00080
+910
+
+104. Boccia, M.; Barbetti, S.; Piccardi, L.; Guariglia, C.; Ferlazzo, F.; Giannini, A.M.; Zaidel, D.W. Where does brain neural
+911
+
+activation in aesthetic responses to visual art occur? Meta-analytic evidence from neuroimaging studies. Neurosci. Biobehav.
+912
+
+Rev. 2016, 60, 65-71. https://doi.org/10.1016/j.neubiorev.2015.09.009
+913
+
+105. Cela-Conde, C.J., Ayala, F.J. Brain keys in the appreciation of beauty: A tale of two worlds. Rendiconti Lincei 2014, 25, 277-
+914
+
+284. https://doi.org/10.1016/j.neubiorev.2015.09.009
+915
+
+
+916

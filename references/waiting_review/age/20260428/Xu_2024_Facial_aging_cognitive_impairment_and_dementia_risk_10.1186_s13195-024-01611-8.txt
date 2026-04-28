@@ -1,0 +1,1239 @@
+RESEARCH
+Open Access
+© The Author(s) 2024. Open Access  This article is licensed under a Creative Commons Attribution-NonCommercial-NoDerivatives 4.0
+International License, which permits any non-commercial use, sharing, distribution and reproduction in any medium or format, as long as you
+give appropriate credit to the original author(s) and the source, provide a link to the Creative Commons licence, and indicate if you modified the
+licensed material. You do not have permission under this licence to share adapted material derived from this article or parts of it. The images or
+other third party material in this article are included in the article’s Creative Commons licence, unless indicated otherwise in a credit line to the
+material. If material is not included in the article’s Creative Commons licence and your intended use is not permitted by statutory regulation or
+exceeds the permitted use, you will need to obtain permission directly from the copyright holder. To view a copy of this licence, visit ​h​t​t​p​:​/​/​c​r​e​a​t​i​
+v​e​c​o​m​m​o​n​s​.​o​r​g​/​l​i​c​e​n​s​e​s​/​b​y​-​n​c​-​n​d​/​4​.​0​/​​.​​
+Xu et al. Alzheimer's Research & Therapy          (2024) 16:245
+https://doi.org/10.1186/s13195-024-01611-8
+Alzheimer's Research &
+Therapy
+†Xinming Xu and Guliyeerke Jigeer contributed equally to this work.
+*Correspondence:
+Liang Sun
+sun_liang@fudan.edu.cn
+Xu Lin
+xlin@sibs.ac.cn
+Xiang Gao
+xiang_gao@fudan.edu.cn
+Full list of author information is available at the end of the article
+Abstract
+Background  Facial aging, cognitive impairment, and dementia are all age-related conditions. However, the temporal
+relation between facial age and future risk of dementia was not systematically examined.
+Objectives  To investigate the relationship between facial age (both subjective/perceived and objective) and
+cognitive impairment and/or dementia risk.
+Methods  The study included 195,329 participants (age ≥ 60 y) from the UK Biobank (UKB) with self-perceived facial
+age and 612 participants from the Nutrition and Health of Aging Population in China Project (NHAPC) study (age ≥ 56
+y) with objective assessment of facial age. Cox proportional hazards model was used to prospectively examine the
+hazard ratios (HRs) and their 95% confidence intervals (CIs) of self-perceived facial age and dementia risk in the UKB,
+adjusting for age, sex, education, APOE ε4 allele, and other potential confounders. Linear and logistic regressions were
+performed to examine the cross-sectional association between facial age (perceived and objective) and cognitive
+impairment in the UKB and NHAPC, with potential confounders adjusted.
+Results  During a median follow-up of 12.3 years, 5659 dementia cases were identified in the UKB. The fully-adjusted
+HRs comparing high vs. low perceived facial age were 1.61 (95% CI, 1.33 ~ 1.96) for dementia (P-trend ≤ 0.001).
+Subjective facial age and cognitive impairment was also observed in the UKB. In the NHAPC, facial age, as assessed
+by three objective wrinkle parameters, was associated with higher odds of cognitive impairment (P-trend < 0.05).
+Specifically, the fully-adjusted OR for cognitive impairment comparing the highest versus the lowest quartiles of
+crow’s feet wrinkles number was 2.48 (95% CI, 1.06 ~ 5.78).
+Conclusions  High facial age was associated with cognitive impairment, dementia and its subtypes after adjusting for
+conventional risk factors for dementia. Facial aging may be an indicator of cognitive decline and dementia risk in older
+adults, which can aid in the early diagnosis and management of age-related conditions.
+Keywords  Facial age, Dementia, Cognitive impairment
+Facial aging, cognitive impairment,
+and dementia risk
+Xinming Xu1†
+, Guliyeerke Jigeer1†, David Andrew Gunn2, Yizhou Liu3, Xinrui Chen3, Yi Guo4, Yaqi Li1, Xuelan Gu5,
+Yanyun Ma2, Jiucun Wang3, Sijia Wang6, Liang Sun1*, Xu Lin7,8* and Xiang Gao1*
+
+Page 2 of 10
+Xu et al. Alzheimer's Research & Therapy          (2024) 16:245
+Introduction
+Aging is associated with a decrease in organ function
+across the body, potentially resulting in cognitive impair­
+ment and skin aging. The skin is an organ with a complex
+network of nerve endings, receptors, and immune cells.
+Facial aging, a prominent manifestation of this process,
+is characterized by features such as wrinkling, loss of
+elasticity, laxity, and a rough-textured appearance [1, 2].
+Previous studies indicated that the skin and neurodevel­
+opment shared a developmental origin and genetic sus­
+ceptibility variants [3], suggesting potential connections
+between the skin and nervous system. Further, facial skin
+is unique in its neural crest origin whereas skin at other
+body sites develops from mesoderm [4]. Some research
+also showed that lifestyle factors that contributed to skin
+aging, such as over-exposure to the sun and smoking,
+could also unfavorably impact cognitive function and
+dementia risk [5]. Consistent with this notion, previous
+studies observed the association between perceived age
+and cognitive functioning [6–8]. However, the temporal
+relation between facial age and dementia was not sys­
+tematically examined in these studies. Furthermore, due
+to the lack of follow-up data for dementia and objective
+facial measurements, and limited sample size of these
+studies, further evidence is needed.
+We thus examined whether self-perceived facial age
+was prospectively associated with dementia risk, inde­
+pendent of conventional dementia risk factors in a largescale UK cohort. We further took advantage of both
+perceived facial age assessed by a naïve panel of volun­
+teers and objective facial parameters in a Chinese popu­
+lation to study the cross-sectional association between
+facial age and cognitive impairment.
+Methods
+Study population
+The UK Biobank (UKB) obtained ethical approval from
+the North West Multi-centre Research Ethics Committee
+(REC reference: 16/NW/0274) to conduct a large, pro­
+spective cohort study with over 500,000 participants aged
+between 40 and 69 years at baseline, recruited during
+2006–2010. All participants provided informed consent
+through an electronic signature at the outset of the study.
+More information regarding the UKB can be found at
+https://www.ukbiobank.ac.uk. For this analysis, 195,329
+participants aged 60 y or older, free of dementia at base­
+line, were included, with exclusions made for those who
+withdrew from the study, had missing information on
+facial age, or chose Do not know or Prefer not to answer
+related to this question (Figure S1).
+We also included participants with objective facial
+age data from the Nutrition and Health of Aging Popu­
+lation in China Project (NHAPC), a community-based
+study designed to evaluate the effects of genetic and
+environmental factors and their interaction on agerelated chronic diseases [9]. Briefly, in 2011, 675 out of
+866 Shanghai participants, who had not undergone
+cosmetic surgery, took part in the DXA scan and con­
+sented to facial photographs and measurements [10].
+The current analysis further excluded 63 participants
+with unavailable skin measurements and missing data on
+perceived age, leaving 612 individuals (258 men and 354
+women; aged 63 years old on average) (Figure S2). The
+study protocol was approved by the Institutional Review
+Board of the Shanghai Institute for Nutritional Sciences,
+and all participants provided written informed consent.
+Assessment of facial age
+In the UKB, the definition of self-perceived facial age was
+derived from the single-choice question (field ID 1757) -
+Do people say that you look younger than you are, older
+than you are, about your age, do not know, and prefer
+not to answer? Participants were provided with choices
+of Younger than you are; Older than you are; About your
+age; Do not know; Prefer not to answer. Only those par­
+ticipants who chose Younger than you are, Older than you
+are, and About your age were included in the analysis.
+In the NHAPC, each participant had their photograph
+taken using a VISIA® CR booth (Canfield, OH, USA),
+which was connected to a computer system running the
+Canfield Mirror software, wich was validated previously
+[11, 12]. Photographs were taken from both the front
+and a side (45º angle) view. All participants underwent
+an equilibration period of a least one hour prior to the
+photograph, with makeup removed using a facial wipe at
+least 15–20 min prior to the measurements. The images
+were then presented to a panel of 50 naïve assessors from
+Shanghai, aged between 20 and 60 years old, who were
+asked: How old do you think this person looks. The mean
+age estimate for each participant was taken as their per­
+ceived age. Previous studies validated that naïve assessors
+could be used to generate reproducible age assessments,
+and that gender, age, and expertise of the assessors had
+little impact when large numbers of assessors were
+involved [11, 12]. We also included objective facial age
+indicators, including wrinkles and lines in certain areas
+(Crow’s feet area and cheek area) and instrumental mea­
+surements for skin (methods in Supplement 1). In brief,
+objective facial age was assessed through MATLABbased image analysis of wrinkles and hyperpigmentation,
+along with instrumental measurements of skin hydra­
+tion, transepidermal water loss (TEWL), and elasticity
+using devices like the Corneometer®, DermaLab®, and
+Cutometer®.
+Covariates assessment
+During the baseline assessment, covariates from UKB
+included demographic data such as age at baseline
+
+Page 3 of 10
+Xu et al. Alzheimer's Research & Therapy          (2024) 16:245
+(continuous), sex (men; women), ethnicity (white British;
+others), and education (College or University degree; A
+levels or equivalent; O levels or equivalent; none of the
+above); BMI category (< 25.0; 25.0-29.9; ≥30.0 kg/m2); at
+least one APOE ε4 allele (no, yes, missing); CRP (continu­
+ous); lifestyle factors including smoking status (current;
+former; never), alcohol drinker intake (current; previous;
+never), regular physical activity (no; yes; others), depres­
+sive symptoms (no; yes), time spent outdoors in the sum­
+mer (tertiles), use of sun/UV protection (never/rarely;
+sometimes; most of the time; always; do not go out in
+sunshine) and dietary intake; family history of AD (no;
+yes); and previous diseases, such as cancer at baseline
+(no; yes), CVD at baseline (no; yes), hypertension at base­
+line (no; yes), and type 2 diabetes at baseline (no; yes). We
+further derived chronic disease score and lifestyle score
+(methods in Supplement 1, Table S2). Details of covari­
+ates used in the UKB and NHAPC were shown in the
+methods in Supplement 1.
+Identification of primary outcome – dementia
+Dementia cases were detected from the UKB using
+mainly hospital inpatient records and death registry data
+for dementia, and classified based on the ICD coding sys­
+tem (Table S1). Our analysis also included the identifica­
+tion of dementia subtypes, including Alzheimer’s disease
+(AD), vascular dementia (VaD), and other and unspeci­
+fied dementia cases (Table S1). The accuracy of codes for
+identifying persons with dementia and dementia sub­
+types by hospital admissions and mortality data in com­
+bination was validated in a subset of participants (around
+17,000) through clinical expert adjudication according to
+full-text medical record, with positive predictive values
+of 84.5% for total dementia, 71.4% for AD, and 43.8% for
+VaD [13].
+Identification of secondary outcome – cognitive function
+Between 2014 and 2015, participants in the UKB who
+completed the baseline assessment (between 2006 and
+2010) were invited via e-mail to participate in a webbased questionnaire. The questionnaire included webbased versions of two widely recognized cognitive tasks:
+the Trail-Making Test A/B (TMTA and TMTB), which
+measured processing speed and speed/executive func­
+tion, respectively, and the Digit Symbol Substitution Test
+(DSST), which measured executive function. We used
+DSST, TMTA, and TMTB as the main endpoints, and
+further selected reaction time, and fluid intelligence as
+subordinate endpoints from the UKB cognitive battery
+validated by previous study [14, 15] (Table S3). Reaction
+time and fluid intelligence were measured at baseline
+(2006–2010), and then selectively reassessed in a sub­
+set of participants at subsequent intervals: during the
+first repeat assessment (2012-13), imaging visit (initiated
+in 2014), and the first repeat imaging visit (initiated in
+2019). The analytical samples for each cognitive outcome
+varied due to the availability of data from participants
+(methods in Supplement 1).
+For the NHAPC, cognitive function was measured in
+2011 with the Chinese version of the Mini-Mental State
+Examination (MMSE), validated and widely used in
+prior studies [16, 17]. The MMSE is a 30-point question­
+naire used extensively in clinical and research settings to
+measure global cognitive function and participants with
+a total score of ≤ 24 were defined as having cognitive
+impairment [16, 17].
+Statistical analysis
+Person-time was calculated from baseline to the occur­
+rence of study outcomes in the UKB, death from any nondementia cause, or the end of follow-up (September 30,
+2021 (England), July 31, 2021 (Scotland), and February
+28, 2018 (Wales))—whichever came first. Death from any
+non-dementia cause, as obtained from the death registry
+data, was treated as a censoring event. Cox proportional
+hazards models were applied to examine the associa­
+tions of facial age with risk of dementia. The results were
+reported as hazard ratios (HRs) with 95% confidence
+intervals (CIs), adjusting for the covariates in the full
+model: age at entry, sex, ethnicity, smoking status, BMI
+category, alcohol drinker status, education, regular physi­
+cal activity, family history of AD, at least one APOE ε4
+allele, cancer, CVD, hypertension, type 2 diabetes, CRP,
+depressive symptoms, time spent outdoors in the sum­
+mer, and use of sun/UV protection. Three variables (e.g.,
+regular physical activity, at least one APOE ε4 allele, and
+depressive symptoms; all categorial variable) had miss­
+ing rate ≥ 5%, we assigned missing data to an independent
+category for each variable; otherwise, missing data were
+coded with median values for continuous variables or
+mode values for categorical variables. Detailed informa­
+tion on missing covariates could be seen in Table S4.
+We assigned 1 for Younger than your age, 2 for About
+your age, and 3 for Older than your age within the cat­
+egory of facial age to test for linear trends. We assessed
+the proportional hazard assumption of all models and no
+significant violations were found by Schoenfeld residuals.
+Both linear regression model and mixed model were used
+to examine the association between facial age and cogni­
+tive function outcomes in UKB (methods in Supplement
+1).
+For the cognitive function outcome, we first examined
+the association between facial age and primary cognitive
+tests (DSST, TMTA, and TMTB) or secondary cognitive
+tests (reaction time and fluid intelligence score) from the
+UKB via linear regression model, adjusting for the afore­
+mentioned covariates in the full model. To take advan­
+tage of repeated assessment of subordinate cognitive
+
+Page 4 of 10
+Xu et al. Alzheimer's Research & Therapy          (2024) 16:245
+tests (reaction time and fluid intelligence score) among
+a subset (around 10%) of participants with correspond­
+ing cognitive test from the UKB, we further used a lin­
+ear mixed model with unstructured covariance by setting
+individual ID as a random intercept, a random slope for
+instance time (years), and facial age measures × instance
+time as an interaction term besides other covariates
+adjusted in the full model as fixed effect to examine the
+annual change of reaction time or fluid intelligence score
+according to baseline facial age.
+We used logistic regression models to calculate the
+adjusted odds ratios (ORs) and 95% CIs for cognitive
+impairment across perceived facial age and objective skin
+measurements in NHAPC. When examining the effect
+of perceived facial age, the independent variable was
+defined as the difference between perceived facial age
+and chronological age. The objective skin measurements
+were divided into categorical variables based on quartiles
+and P for trend tests were performed by treating quartiles
+as continuous variables in the regression models. All of
+the models adjusted for the same covariates in the full
+model (methods in Supplement 1).
+Stratified analyses were performed in the UKB for all
+the covariates in the full model. We employed a likeli­
+hood-ratio test to assess the statistical significance of
+interactions, comparing models with and without crossproduct terms between facial age and the stratifying
+variables. The false discovery rate (FDR) was applied in
+multiple testing in the stratified analysis [18].
+To test the robustness of our results, we conducted
+several sensitivity analyses: (1) a lag analysis by exclud­
+ing dementia cases with onset during the first 5 years of
+follow-up to account for the potential reverse causation;
+(2) exclusion of cancer and CVD at baseline to reduce the
+influence of chronic diseases on dementia risk; (3) exclu­
+sion of neurological conditions (ICD10, G00-G99; e.g.,
+Parkinson’s disease) at baseline to minimize diagnostic
+bias; (4) further adjustments for the overall health rating
+to minimize the confounding; (5) exclusion of partici­
+pants within the lowest 10th percentile of the two cogni­
+tive tests (reaction time and fluid intelligence score), who
+might be at risk of mild cognitive impairment, to mini­
+mize the potential reversal causality; (6) using the Fine
+and Gray competing risk model to account for the com­
+peting events regarding death from non-dementia causes;
+and (7) further adjustments for the traumatic brain injury
+and hearing impairment. We also employed multiple
+imputations with chained equations to estimate miss­
+ing values for covariates, thereby assessing the impact of
+missing data on our analysis. All statistical analyses were
+performed using R version 3.6.3. A two-sided P < 0.05 was
+considered to be statistically significant.
+Results
+Characteristics of the participants
+Among the UKB participants, the mean age was
+64.1 ± 2.86 y and 52.5% were women. Those who chose
+Older than your age tended to be men, current smok­
+ers, less likely to do regular physical activity, and had
+higher prevalence of depressive symptom and comor­
+bidities compared with those who chose Younger than
+your age (Table 1). The mean age of participants in the
+NHAPC was 63.0 ± 5.53 y (57.8% women) and 23.4% of
+participants were identified with cognitive impairment
+by MMSE. Demographic characteristics according to
+perceived age were shown in Table S5.
+Perceived facial age and dementia
+During a median follow-up of 12.3 years, 5659 dementia
+cases and 19,301 deaths from non-dementia cause were
+identified. Compared with those who chose Younger
+than your age regarding the facial age question, the
+fully-adjusted hazard ratios for participants who chose
+Older than your age were 1.61 (95% CI, 1.33 ~ 1.96) for
+dementia, 1.23 (95% CI, 0.87 ~ 1.75) for AD, 1.55 (95%
+CI, 1.06 ~ 2.28) for VaD, and 1.74 (95% CI, 1.40 ~ 2.18)
+for other and unspecified dementia in the full model (all
+P-trend ≤ 0.001) (Table  2). The associations persisted in
+the subgroup analysis by sex, education, lifestyle factors,
+comorbidities, APOE ε4 allele, and family history of AD
+(P-interaction > 0.05 for all after FDR correction), except
+for BMI, AD-PRS, and time spent in the summer (Table
+S6). Stratified analyses suggested that the associations
+were more pronounced in people whose BMI was over
+30 kg/m2, who spent more time outdoors in summer, and
+who had higher polygenic risk scores for AD (P-interac­
+tion < 0.05 after FDR correction). The sensitivity analyses
+showed consistent results (Table S7-S9).
+Perceived facial age and cognitive function in the UKB
+The primary cognitive measurement was the DSST,
+which was available for 42,639 participants. These par­
+ticipants were better educated than participants who did
+not complete the DSST (Table S10). The difference in the
+DSST score was − 0.69 (95% CI, -1.12 ~ -0.26) compar­
+ing two extreme perceived facial age groups, after adjust­
+ing for all covariates in the full model (P-trend < 0.001)
+(Table  3). Similar significant findings were found for
+the TMTA and TMTB outcomes (executive function/
+processing tests) (Table  3). The difference in the reac­
+tion time was 15.5 (95% CI, 10.5 ~ 20.6) comparing two
+extreme perceived facial age groups, after adjusting for
+all covariates in the full model (P-trend < 0.001) (Table 3).
+Among the participants with repeated information, peo­
+ple who chose About your age had 1.95 (95% CI, 0.50 to
+2.40) milliseconds longer per increasing year than people
+who chose Younger than your age (Table S11). We did not
+
+Page 5 of 10
+Xu et al. Alzheimer's Research & Therapy          (2024) 16:245
+Table 1  Baseline characteristics of participants according to facial age status
+Younger than your
+age (N = 147,835)
+About your age
+(N = 45,242)
+Older than your
+age (N = 2252)
+Overall (N = 195,329)
+P
+value
+Age
+  Mean (SD)
+64.1 (2.89)
+64.1 (2.76)
+63.7 (2.70)
+64.1 (2.86)
+< 0.001
+White British, n (%)
+134,979 (91.3)
+42,065 (93.0)
+1970 (87.5)
+179,014 (91.6)
+< 0.001
+Women, n (%)
+80,288 (54.3)
+21,621 (47.8)
+661 (29.4)
+102,570 (52.5)
+< 0.001
+Smoking
+< 0.001
+  Current
+11,255 (7.6)
+4148 (9.2)
+349 (15.5)
+15,752 (8.1)
+  Past
+61,164 (41.4)
+19,107 (42.2)
+1013 (45.0)
+81,284 (41.6)
+  Never
+75,416 (51.0)
+21,987 (48.6)
+890(39.5)
+98,293 (50.4)
+Education level
+< 0.001
+  College or University degree
+38,696 (26.2)
+11,283 (24.9)
+576 (25.6)
+50,555 (25.9)
+  A levels or equivalent
+34,496 (23.3)
+10,266 (22.7)
+485 (21.5)
+45,247 (23.2)
+  O levels or equivalent
+34,603 (23.4)
+9931 (22.0)
+427 (19.0)
+44,961 (23.0)
+  None of the above; NA
+40,040 (27.1)
+13,762 (30.4)
+764 (33.9)
+54,566 (27.9)
+Alcohol intake
+< 0.001
+  Current
+135,927 (91.9)
+40,986 (90.6)
+1910 (84.8)
+178,823 (91.5)
+  Previous
+5271 (3.6)
+1887 (4.2)
+161 (7.1)
+7319 (3.7)
+  Never
+6637 (4.5)
+2369 (5.2)
+181 (8.0)
+9187 (4.7%)
+Regular physical activitya
+< 0.001
+  No
+40,723 (27.5)
+14,102 (31.2)
+836 (37.1)
+55,661 (28.5)
+  Yes
+83,702 (56.6)
+23,951 (52.9)
+1009 (44.8)
+108,662 (55.6)
+  Missing
+23,410 (15.8)
+7189 (15.9)
+407 (18.1)
+31,006 (15.9)
+Positive family history of AD, n (%)
+22,271 (15.1)
+6849 (15.1)
+314 (13.9)
+29,434 (15.1)
+0.301
+Time spent outdoors summer, hour
+4.23 (2.30)
+4.18 (2.29)
+4.07 (2.52)
+4.21 (2.30)
+< 0.001
+Depressive symptomsb
+< 0.001
+  No
+133,690 (90.4)
+40,712 (90.0)
+1862 (82.7)
+176,264 (90.2)
+  Yes
+5613 (3.8)
+1722 (3.8)
+191 (8.5)
+7526 (3.9)
+  Missing
+8532 (5.8)
+2808 (6.2)
+199 (8.8)
+11,539 (5.9)
+At least one APOE ε4 allele
+< 0.001
+  No
+87,887 (59.4)
+26,465 (58.5)
+1258 (55.9)
+115,610 (59.2)
+  Yes
+34,532 (23.4)
+10,478 (23.2)
+531 (23.6)
+45,541 (23.3)
+  Missing
+25,416 (17.2)
+8299 (18.3)
+463 (20.6)
+34,178 (17.5)
+BMI, kg/m2
+27.5 (4.45)
+27.8 (4.65)
+28.3 (5.20)
+27.6 (4.51)
+< 0.001
+Cancer at baseline, n (%)
+15,179 (10.3)
+5991 (13.2)
+493 (21.9)
+21,663 (11.1)
+0.016
+CVD at baseline, n (%)
+20,408 (13.8)
+6467 (14.3)
+333 (14.8)
+27,208 (13.9)
+< 0.001
+T2DM at baseline, n (%)
+9340 (6.3)
+3191 (7.1)
+252 (11.2)
+12,783 (6.5)
+< 0.001
+Hypertension at baseline, n (%)
+58,362 (39.5)
+19,155 (42.3)
+1133 (50.3)
+78,650 (40.3)
+< 0.001
+CRP, mg/L
+2.69 (4.38)
+2.91 (4.92)
+3.18 (5.03)
+2.75 (4.52)
+< 0.001
+Use of sun/UV protection
+< 0.001
+  never/rarely
+15,005 (10.1)
+4981 (11.0)
+432 (19.2)
+20,418 (10.5)
+  sometimes
+49,651 (33.6)
+16,275 (36.0)
+792 (35.1)
+66,718 (34.2)
+  most of the time
+49,975 (33.8)
+15,225 (33.7)
+615 (27.3)
+65,815 (33.7)
+  always
+32,354 (21.9)
+8445 (18.7)
+378 (16.8)
+41,177 (21.1)
+  do not go out in sunshine
+850 (0.6)
+316 (0.7)
+35 (1.6)
+1201 (0.6)
+Abbreviations SD = standard deviation; NA = not applicable; BMI = body mass index; CVD = cardiovascular disease; T2DM = type 2 diabetes mellitus; CRP = C-reactive
+protein. Values are means (SD) for continuous variables or percentages for categorical variables (the sum may not equal 100 due to rounding)
+a Regular physical activity was identified as at least 150 min/week of moderate activity or 75 min/week of vigorous activity (or equivalent combination)
+b Depressive symptom was identified by the Patient Health Questionaire-2 (PHQ-2); a score of 3 or more was indicative of possible depressive symptoms
+
+Page 6 of 10
+Xu et al. Alzheimer's Research & Therapy          (2024) 16:245
+find the cross-sectional association between facial age
+and fluid intelligence score.
+Facial age and cognitive impairment in the NHAPC
+Consistent with the result of the UKB data, we observed
+a significant positive association of the difference
+between perceived facial age and chronologic age with
+odds of cognitive impairment (adjusted OR for 1 year
+difference = 1.10; 95% CI, 1.01 ~ 1.19) in the NHAPC
+population. Regarding objective skin measurements, the
+facial wrinkle in the crow’s feet area was significantly
+associated with cognitive impairment. The adjusted OR
+for cognitive impairment comparing the highest ver­
+sus the lowest quartiles of crow’s feet wrinkles number
+was 2.48 (95% CI, 1.06 ~ 5.78) (P-trend < 0.05) (Table 4).
+Higher intensity of crow’s feet wrinkles and higher con­
+trast of crow’s feet wrinkles were also significantly asso­
+ciated with higher odds of cognitive impairment (both
+P-trend < 0.05) (Table 4). We found the same result in the
+analysis stratified by sex (Table S12).
+Discussion
+We found that high perceived facial age was associated
+with high risk of cognitive impairment and incident
+dementia, including AD, VaD, and other and unspecified
+dementia, independent of conventional risk factors of
+dementia. We further used the NHAPC as our validation
+cohort which provided evidence to support this observa­
+tion by using objective measurement of facial age.
+Our findings on facial age and risk of cognitive impair­
+ment and dementia were consistent with previous stud­
+ies [7, 8]. The construct validity regarding perceived facial
+age assessed by a panel of assessors was substantiated in
+previous study [11]. Subsequent studies have extensively
+employed perceived facial age via this method to exam­
+ine its significant correlation with skin characteristics
+[12], health status, age-related morbidities (for example,
+osteoporosis, hearing loss, cataracts, and so on) [8], and
+mortality [6]. A systematic review suggested that per­
+ceived facial age, including evaluations of facial wrin­
+kling face-to-face, or photoaging alongside perceived
+age derived from standardized criteria or objective pho­
+tographic analyses, could be as a useful predictor for a
+range of functional and molecular aging phenotypes,
+overall mortality, and comorbidities such as cardiovas­
+cular, pulmonary, and osseous conditions [19]. How­
+ever, most studies were limited with follow-up time and
+sample size to identify dementia, and used perceived
+facial age, which was a crude measure and prone to mis­
+classification, especially in studies limited with sample
+size. Our result therefore prospectively examined the
+temporal relation between self-reported perceived facial
+age and future dementia risk, together with these earlier
+studies, further strengthening the notion that facial age
+Table 2  Hazard ratio and 95% confident intervals for dementia and its subtypes, according to the facial age status
+Cases/person years
+Model 1a
+P value
+Model 2b
+P value
+Dementia
+  younger than your age (ref.)
+4088/1,760,025
+1 (ref.)
+1 (ref.)
+  about age
+1466/530,949
+1.21(1.14 ~ 1.28)
+< 0.001
+1.16(1.09 ~ 1.23)
+< 0.001
+  older than your age
+105/25,424
+1.97(1.62 ~ 2.39)
+< 0.001
+1.61(1.33 ~ 1.96)
+< 0.001
+  P trend
+< 0.001
+< 0.001
+Alzheimer’s Disease
+  younger than your age (ref.)
+1762/1,765,141
+1 (ref.)
+1 (ref.)
+about age
+635/532,763
+1.22(1.11 ~ 1.34)
+< 0.001
+1.19(1.09 ~ 1.31)
+< 0.001
+  older than your age
+32/25,592
+1.43(1.01 ~ 2.04)
+0.04
+1.23(0.87 ~ 1.75)
+0.24
+  P trend
+< 0.001
+< 0.001
+Vascular Dementia
+  younger than your age (ref.)
+951/1,767,045
+1 (ref.)
+1 (ref.)
+  about age
+358/533,458
+1.26(1.11 ~ 1.42)
+< 0.001
+1.17(1.04 ~ 1.33)
+0.01
+  older than your age
+27/25,601
+2.12(1.45 ~ 3.12)
+< 0.001
+1.55(1.06 ~ 2.28)
+0.03
+  P trend
+< 0.001
+0.001
+Other and unspecified dementia
+  younger than your age (ref.)
+2862/1,763,301
+1 (ref.)
+1 (ref.)
+  about age
+1034/532,190
+1.21(1.13 ~ 1.30)
+< 0.001
+1.16(1.08 ~ 1.25)
+< 0.001
+  older than your age
+81/25,506
+2.16(1.73 ~ 2.69)
+< 0.001
+1.74(1.40 ~ 2.18)
+< 0.001
+  P trend
+< 0.001
+< 0.001
+a Model 1 was adjusted for age (years), and sex (women; men)
+b Model 2 was additionally adjusted for ethnicity (white British; others), smoking status (current; former; never), body mass index category (< 25.0; 25.0-29.9; ≥30.0 kg/
+m2), alcohol intake (current; previous; never), education (College or University degree; A levels or equivalent; O levels or equivalent; None of the above), regular
+physical activity (no; yes; others), family history of AD (no; yes), at least one APOE ε4 allele (no, yes, missing), cancer at baseline (no; yes), CVD at baseline (no; yes),
+hypertension at baseline (no; yes), type 2 diabetes at baseline (no; yes), C-reactive protein, depressive symptom (no; yes), time spent outdoors in the summer (tertiles)
+and use of sun/UV protection (never/rarely; sometimes; most of the time; always; do not go out in sunshine) on the basis of the covariates adjusted in the Model 1
+
+Page 7 of 10
+Xu et al. Alzheimer's Research & Therapy          (2024) 16:245
+Table 3  Association of facial age with cognitive test performance in the UK Biobank
+Full modela
+P value
+Main endpoints
+Digit symbol substitution test (No. correct) (n = 42,639)
+  younger than your age (ref.)
+1 (ref.)
+  about age
+-0.15(-0.26~-0.05)
+0.01
+  older than your age
+-0.69(-1.12~-0.26)
+< 0.001
+  P trend
+< 0.001
+Trail making test A (time, seconds) (n = 36,181)
+  younger than your age (ref.)
+1 (ref.)
+  about age
+1.12(0.71 ~ 1.52)
+< 0.001
+  older than your age
+0.83(-0.82 ~ 2.48)
+0.32
+  P trend
+< 0.001
+Trail making test B (time, seconds) (n = 42,639)
+  younger than your age (ref.)
+1 (ref.)
+  about age
+1.35(0.68 ~ 2.03)
+< 0.001
+  older than your age
+1.50(-1.25 ~ 4.25)
+0.29
+  P trend
+< 0.001
+Subordinate endpoints
+Reaction time (time, milliseconds) (n = 193,178)
+  younger than your age (ref.)
+0 (ref.)
+  about age
+8.15 (6.88 ~ 9.42)
+< 0.001
+  older than your age
+15.5 (10.5 ~ 20.6)
+< 0.001
+  P trend
+< 0.001
+Fluid Intelligence score (n = 16,068)
+  younger than your age (ref.)
+0 (ref.)
+  about age
+-0.01 (-0.08 ~ 0.06)
+0.28
+  older than your age
+-0.08 (-0.40 ~ 0.24)
+0.46
+  P trend
+0.71
+a Full model was adjusted for age (years), sex (women; men), smoking status (current; former; never), ethnicity (white British; others), body mass index category
+(< 25.0; 25.0-29.9; ≥30.0 kg/m2), alcohol intake (current; previous; never), education (College or University degree; A levels or equivalent; O levels or equivalent;
+None of the above), regular physical activity (no; yes; others), family history of AD (no; yes), at least one APOE ε4 allele (no, yes, missing), cancer at baseline (no; yes),
+cardiovascular diseases at baseline (no; yes), hypertension at baseline (no; yes), type 2 diabetes at baseline (no; yes), C-reactive protein, depressive symptom (no; yes),
+time spent outdoors in the summer (tertiles) and use of sun/UV protection (never/rarely; sometimes; most of the time; always; do not go out in sunshine)
+Table 4  Odds ratio and 95% confidence interval of cognitive impairment according to objective skin variables in the NHAPC studya
+Skin variables
+Odds ratio for cognitive impairment
+Q1
+Q2
+Q3
+Q4
+P-trend
+FDR Ptrend
+Crow’s feet
+area
+Wrinkle intensity
+1 (ref.)
+1.26 (0.61, 2.60)
+1.90 (0.90, 3.99)
+2.09 (0.91, 4.80)
+0.04
+0.15
+Total number of wrinkles and lines
+1 (ref.)
+1.43 (0.72, 2.86)
+2.07 (1.02, 4.19)
+2.48 (1.06, 5.78)
+0.02
+0.10
+Line wrinkle contrast weighted average
+1 (ref.)
+1.15 (0.56, 2.38)
+2.47 (1.23, 4.97)
+2.13 (0.97, 4.68)
+0.01
+0.10
+Cheek area
+Wrinkle intensity
+1 (ref.)
+0.69 (0.34, 1.39)
+1.35 (0.65, 2.75)
+0.88 (0.41, 1.88)
+0.75
+0.73
+Total number of wrinkles and lines
+1 (ref.)
+0.77 (0.39, 1.53)
+1.09 (0.54, 2.21)
+1.01 (0.47, 2.16)
+0.70
+0.73
+Line wrinkle contrast weighted average
+1 (ref.)
+0.82 (0.43, 1.55)
+1.09 (0.57, 2.09)
+0.70 (0.35, 1.42)
+0.53
+0.69
+Instrumental
+measure­
+ments b
+TEWL
+1 (ref.)
+1.23 (0.64, 2.34)
+0.91 (0.45, 1.86)
+1.75 (0.75, 4.06)
+0.39
+0.61
+R2
+1 (ref.)
+1.20 (0.57, 2.56)
+1.74 (0.84, 3.58)
+1.32 (0.63, 2.77)
+0.37
+0.61
+R6
+1 (ref.)
+1.16 (0.59, 2.27)
+0.73 (0.37, 1.45)
+0.89 (0.43, 1.83)
+0.42
+0.61
+Skin hydration and skin barrier function
+1 (ref.)
+0.95 (0.53, 1.70)
+0.51 (0.26, 1.00)
+0.66 (0.33, 1.32)
+0.09
+0.22
+Abbreviations TEWL = transepidermal water loss, R2: ratio of total reversible recovery, R6: ratio of elastic deformation and inelastic deformation
+a Adjusted for age, sex (men; women), education level (primary school or below; middle school; college or above), current smoker (no; yes), current drinker (no; yes),
+physical activity (high, moderate, or low), cardiovascular diseases history (no; yes), cancer history (no; yes), hypertension (no; yes), diabetes history (no; yes), body
+mass index (BMI, < 18.5;18.5–24.0; ≥24.0 kg/m2), C-reactive protein (CRP, quartiles), depressive symptom (no; yes), sun exposure (< 0.5; 0.5-2; 2–4; ≥ 4 h/d), and sun
+screen (never; occasionally; often)
+b TEWL was measured to assess the rate of water loss through the skin, an indication of barrier function, a lower value indicating better skin health. Skin hydration
+was the measurement of the outer layer of the epidermis (stratum corneum), a higher value is an indicator of better skin barrier function. Skin elasticity was measured
+by two parameters, and the ratio of total reversible recovery (R2) and the ratio of elastic deformation and inelastic deformation (R6) were the indicators of gross
+elasticity, the closer to 1 the more elastic
+
+Page 8 of 10
+Xu et al. Alzheimer's Research & Therapy          (2024) 16:245
+(both subjective/perceived or objective) could be a useful
+indicator or research tool that could uncover a significant
+aging-dementia link from the public health perspective,
+providing insight into the influence of biological mech­
+anisms and risk factors on tissue aging. Moreover, the
+associations between facial age and AD or VaD remained
+significantly, and were relatively comparable effect sizes
+with well-estiblished risk factors (e.g., hearing loss, air
+pollution, physical inactivity, and use of alcohol and
+smoking; HRs for dementia ranged from 1.1 to 1.9, based
+on a recently published review [20]. Given advances in
+artificial intelligence (AI) for predicting perceived facial
+age from images that was demonstrated to be the marker
+of biological age [21], the potential of perceived facial
+age as a diagnostic tool is noteworthy. The application
+of facial age could facilitate large-scale cohort study and
+early detection of dementia through mass screenings or
+health programs, although its clinical value remains to be
+established.
+GWAS studies on self-reported facial age within UKB
+identified variants related to cell signaling pathways (e.g.,
+NEK6 and SMAD2 subnetworks) and pigmentation (e.g.,
+MC1R gene), suggesting perceived age might be a proxy
+trait for age-related diseases [22, 23]. Previous study also
+reported genetic correlations with perceived facial age
+assessed from front and side facial images by a panel of
+assessors, revealing that MC1R gene variants, critical in
+pigmentation, are significantly linked to how old individ­
+uals appear, independent of wrinkling, skin color, or sun
+exposure, with the MC1R variant’s influence potentially
+aging individuals’ appearance by up to two years [24].
+Thus, although the self-perceived facial age in the UKB
+was subjective and likely a variable phenotype across par­
+ticipants, evidence emerged that analyzing a large num­
+ber of participants allowed for the detection of certain
+biological aspects of aging.
+Among specific objective measurements, we found that
+wrinkles in the crow’s feet area appeared to have stron­
+ger association, relative to other skin features (e.g., xero­
+sis and slackness), with cognitive impairment. Previous
+studies had reported that wrinkles in the crow’s feet area
+increased with chronological age, and this area was con­
+sidered the most representative site to evaluate wrinkles
+[12, 25]. Mayes AE et al., found stronger relationships of
+perceived facial age with wrinkles and hyperpigmenta­
+tion compared with skin hydration and TEWL in women,
+providing evidence that wrinkles may be an important
+indicator of facial aging for older adults [12]. However,
+Umeda-Kameyama et al., found that lower half of faces
+showed better discrimination in dementia by AI than
+upper half of faces with neutral expression in Japanese
+participants [26].
+Overall, facial aging and cognitive impairment are both
+complex processes influenced by a variety of biological,
+genetic, and environmental factors (smoking, sun expo­
+sure, and low socioeconomic status) [27, 28]. Participants
+from prior study exhibited a notably stronger correlation
+between MMSE and perceived age than with chronologi­
+cal age [7]. Previous animal studies suggested that skin
+aging induced by ultraviolet could affect neuroimmune
+system, microglial dysfunction and cognitive impairment
+[29]. Telomere status could be another underlying path­
+way in the association between facial age and dementia
+[30].
+Among stratified analysis, the association might be
+more pronounced in people who had high BMI, spent
+more time outdoors in summer and had higher AD poly­
+genic risk score. Unstable BMI and excess sunlight expo­
+sure are associated with a higher risk of facial aging [31]
+and dementia [32, 33]. The association between facial
+age and dementia was prominent in the participants who
+were more susceptible to AD risk. However, we cannot
+exclude the possibility of chance finding. Further stud­
+ies are needed to replicate our observations. Regarding
+different cognitive domains, we observed a significant
+association between facial age and poor executive func­
+tion, slow processing speed but not intelligence. This
+could be due to ceiling effects, considering participants
+in the UKB were more likely to be white British, welleducated, women, and from more affluent areas where
+rates of smoking and alcohol drinking were lower com­
+pared to the general UK population, which could cause
+healthy volunteer bias [34]. Participants who finished the
+DSST test tended to be higher-educated than those who
+did not.
+The main strengths of the analysis included large sam­
+ple size, considerate facial age features, both global and
+domain-specific cognitive function measurements and
+prospective design, and validation in an independent
+cohort with objective measurement. This study had sev­
+eral limitations. Firstly, the definition of facial age col­
+lected from the questionnaire was subjective which
+would introduce misclassification and might attenu­
+ate the association towards none, although the NHAPC
+study utilized both perceived facial age validated by pre­
+vious study [11] and objective facial morphology mea­
+surements and yielded similar results. Secondly, dementia
+and dementia subtypes identified through hospitaliza­
+tion and mortality data could be underestimated, though
+research confirmed high level of concordances between
+dementia or AD identified from hospital data and death
+registry and diagnosis from clinical expert adjudication
+of the medical record [13]. Notably, the majority of total
+dementia cases, which were non-AD and non-VaD (most
+were unspecified dementia), account for more than 50%,
+and together with the observed overlap among these sub­
+types (AD, VaD, and unspecified dementia), suggesting
+a misclassification bias concerning dementia subtypes.
+
+Page 9 of 10
+Xu et al. Alzheimer's Research & Therapy          (2024) 16:245
+This concern extended to the ascertainment of differ­
+ent subtypes of dementia and we should focuse on total
+dementia when interpreting the results. Thirdly, the
+reversal causality could not be ruled out because of the
+cross-sectional study design of the NHAPC study, and
+the fact that participants with mild cognitive dysfunc­
+tion in the UKB were not excluded. Furthermore, for the
+NHAPC, given the relatively small sample size (n = 612)
+and the nature of our study as a supplementary validation
+to the UKB, we opted not to apply rigorous multiple test­
+ing corrections to avoid overly conservative results; how­
+ever, we acknowledged that this decision might impact
+the interpretation of significance, and future research
+with larger sample sizes should implement such cor­
+rections to validate our findings. However, participants
+tended to be healthier and have higher health conscious­
+ness [34] and further adjustment for sunscreen use and
+the overall self-rating health score and excluding those
+with low cognitive test scores at the baseline did not
+change results materially, suggesting that the potential
+impact of reversal causality could be low-to-modest.
+Finally, although considerate confounders were adjusted
+in the model, there might still be other unmeasured fac­
+tors, such as aesthetic procedure or regular skin treat­
+ments, which could lead to residual confounding.
+Conclusions
+Among people at older ages, low self-perceived facial age
+was prospectively associated with lower risk of dementia
+in the UKB. Additionally, objective skin features and per­
+ceived age based on assessors were also cross-sectionally
+associated with cognitive impairment in the NHAPC.
+Facial age (both subjective/perceived and objective)
+could serve as an indicator and applied into screening
+strategies for identifying and treating risk population of
+cognitive decline or dementia in early intervention for
+older adults. Further investigations regarding objective
+facial age or facial skin parameters and dementia risk are
+warranted and new tools in early detection of dementia
+through faces should be developed.
+Supplementary Information
+The online version contains supplementary material available at ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​
+g​/​1​0​.​1​1​8​6​/​s​1​3​1​9​5​-​0​2​4​-​0​1​6​1​1​-​8​​.​
+Supplementary Material 1
+Acknowledgements
+The authors are thankful to the participants and staff of the UK Biobank and
+the Nutrition and Health of Aging Population in China study for their valuable
+contributions. This research has been conducted using the UK Biobank
+resource under application number 96083.
+Author contributions
+LS, XL, and XG had full access to all of the data in the study and take
+responsibility for the integrity of the data and the accuracy of the data
+analysis. XX and GJ contributed equally. LS, XL, and XG are joint corresponding
+authors. All authors reviewed and revised the manuscript and approved
+the final submitted version and had final responsibility for the decision of
+submission. LS, XL and XG were the guarantors. The corresponding author
+(XG) attests that all listed authors have met authorship criteria and that no
+others meeting the criteria have been omitted. Concept and design: All
+authors. Acquisition, analysis, or interpretation of data: XX and GJ Drafting the
+manuscript: XX Review: DAG, XG, YL, XC, YL, YG, YM, JW, SW Statistical analysis:
+XX Supervision: LS, XL, and XG.
+Funding
+This study was supported by grants from Strategic Priority CAS Project
+(XDB38010300), Shanghai Municipal Science and Technology Major Project
+(2017SHZDZX01), the National Natural Science Foundation of China
+(81970684), and the Startup grant at Fudan University (JIF201036Y).
+Data availability
+The NHAPC datasets used in the current study are not publicly available due
+to ethics restrictions, but are available from the corresponding author on
+reasonable request. UK Biobank data are available online at ​h​t​t​p​:​/​/​w​w​w​.​u​k​b​i​
+o​b​a​n​k​.​a​c​.​u​k​​. Local IRB approval was not necessary for analyzing data from UK
+Biobank study because the data were received de-identified.
+Declarations
+Ethical approval
+The North West Multi-centre Research Ethics Committee granted UK Biobank
+its ethical approval (REC reference: 11/NW/03820). Before being included in
+the study, all participants gave written informed consent before enrollment
+in the study, which was conducted in accordance with the principles of the
+Declaration of Helsinki. The NHAPC study was approved by the Institutional
+Review Board of the Institute for Nutritional Sciences, Chinese Academy of
+Sciences.
+Data sharing statement
+The NHAPC datasets used in the current study are not publicly available due
+to ethics restrictions, but are available from the corresponding author on
+reasonable request. UK Biobank data are available online at ​h​t​t​p​:​/​/​w​w​w​.​u​k​b​i​
+o​b​a​n​k​.​a​c​.​u​k​​. Local IRB approval was not necessary for analyzing data from UK
+Biobank study because the data were received de-identified.
+Role of the funders/sponsor
+The funding agencies had no role in study design, data collection and analysis,
+the decision to publish, or preparation of the manuscript.
+Competing interests
+Authors DAG and XLG are employed by Unilever and were involved in the
+design of NHAPC and reviewed this manuscript; they were not involved in the
+UK biobank design. All other authors declare no competing interests.
+Author details
+1Department of Nutrition and Food Hygiene, Ministry of Education Key
+Laboratory of Public Health Safety, School of Public Health, Institute of
+Nutrition, Fudan University, 130 Dongan Road, Shanghai 200030, China
+2Unilever R&D Colworth Science Part,
+Sharnbrook, Bedfordshire MK44 1LQ, UK
+3State Key Laboratory of Genetic Engineering, School of Life Sciences &
+Human Phenome Institute, Fudan University, Shanghai 200438, China
+4Department of Biostatistics, School of Public Health, Key Laboratory of
+Public Health Safety and Collaborative Innovation Center of Social Risks
+Governance in Health, Fudan University, Shanghai 200030, China
+5Unilever R&D Shanghai, Shanghai 200335, China
+6CAS Key Laboratory of Computational Biology, Shanghai Institute of
+Nutrition and Health, Shanghai Institute for Biological Sciences, CAS-
+MPG Partner Institute for Computational Biology, University of Chinese
+Academy of Sciences, Chinese Academy of Sciences, 320 Yue Yang Road,
+Shanghai 200031, China
+7Shanghai Institute of Nutrition and Health, University of Chinese
+Academy of Sciences, Chinese Academy of Sciences, Shanghai
+200031, China
+
+Page 10 of 10
+Xu et al. Alzheimer's Research & Therapy          (2024) 16:245
+8Key Laboratory of Systems Biology, Hangzhou Institute for Advanced
+Study, University of Chinese Academy of Sciences, Chinese Academy of
+Sciences, Hangzhou 310024, China
+Received: 11 July 2024 / Accepted: 28 October 2024
+References
+1.
+Shin J-W, Kwon S-H, Choi J-Y, Na J-I, Huh C-H, Choi H-R, et al. Molecular
+mechanisms of dermal aging and antiaging approaches. Int J Mol Sci.
+2019;20:2126.
+2.
+Fisher GJ, Kang S, Varani J, Bata-Csorgo Z, Wan Y, Datta S, et al. Mechanisms of
+photoaging and chronological skin aging. Arch Dermatol. 2002;138:1462–70.
+3.
+Jameson C, Boulton KA, Silove N, Nanan R, Guastella AJ. Ectodermal origins
+of the skin-brain axis: a novel model for the developing brain, inflammation,
+and neurodevelopmental conditions. Mol Psychiatry. 2023;28:108–17.
+4.
+Usansky I, Jaworska P, Asti L, Kenny FN, Hobbs C, Sofra V, et al. A developmen­
+tal basis for the anatomical diversity of dermis in homeostasis and wound
+repair. J Pathol. 2021;253:315–25.
+5.
+Hamer MA, Pardo LM, Jacobs LC, Ikram MA, Laven JS, Kayser M, et al. Lifestyle
+and Physiological Factors Associated with Facial Wrinkling in men and
+women. J Invest Dermatol. 2017;137:1692–9.
+6.
+Christensen K, Thinggaard M, McGue M, Rexbye H, Hjelmborg JvB, Aviv A, et
+al. Perceived age as clinically useful biomarker of ageing: cohort study. BMJ.
+2009;339:b5262–5262.
+7.
+Umeda-Kameyama Y, Kameyama M, Kojima T, Ishii M, Kidana K, Yakabe M, et
+al. Cognitive function has a stronger correlation with perceived age than with
+chronological age. Geriatr Gerontol Int. 2020;20:779–84.
+8.
+Mekić S, Pardo LM, Gunn DA, Jacobs LC, Hamer MA, Ikram MA, et al. Younger
+facial looks are associate with a lower likelihood of several age-related mor­
+bidities in the middle-aged to elderly. Br J Dermatol. 2023;188:390–5.
+9.
+Ye X, Yu Z, Li H, Franco OH, Liu Y, Lin X. Distributions of C-Reactive Protein and
+its Association with metabolic syndrome in Middle-aged and older Chinese
+people. J Am Coll Cardiol. 2007;49:1798–805. 20070416th ed.
+10.	 Liu G, Lu L, Sun Q, Ye X, Sun L, Liu X, et al. Poor vitamin D status is prospec­
+tively Associated with Greater muscle Mass loss in Middle-aged and Elderly
+Chinese individuals. J Acad Nutr Diet. 2014;114:1544–e15512. 20140716th ed.
+11.	 Gunn DA, Murray PG, Tomlin CC, Rexbye H, Christensen K, Mayes AE. Per­
+ceived age as a biomarker of ageing: a clinical methodology. Biogerontology.
+2008;9:357–64.
+12.	 Mayes A, Murray P, Gunn D, Tomlin C, Catt S, Wen Y, et al. Ageing appearance
+in China: biophysical profile of facial skin and its relationship to perceived
+age. J Eur Acad Dermatology Venereol. 2010;24:341–8.
+13.	 Wilkinson T, Schnier C, Bush K, Rannikmäe K, Henshall DE, Lerpiniere C, et al.
+Identifying dementia outcomes in UK Biobank: a validation study of primary
+care, hospital admissions and mortality data. Eur J Epidemiol. 2019;34:557–65.
+14.	 Lyall DM, Cullen B, Allerhand M, Smith DJ, Mackay D, Evans J, et al. Cognitive
+test scores in UK biobank: data reduction in 480,416 participants and longitu­
+dinal stability in 20,346 participants. PLoS ONE. 2016;11:1–10.
+15.	 Fawns-Ritchie C, Deary IJ. Reliability and validity of the UK Biobank cognitive
+tests. PLoS ONE. 2020;15:1–24.
+16.	 Katzman R, Zhang MY, Ouang Ya Q, Wang ZY, Liu WT, Yu E, et al. A Chinese
+version of the Mini-mental State examination; impact of illiteracy in a Shang­
+hai dementia survey. J Clin Epidemiol. 1988;41:971–8.
+17.	 Folstein MF, Folstein SE, McHugh PR. Mini-mental state. A practical method
+for grading the cognitive state of patients for the clinician. J Psychiatr Res.
+1975;12:189–98.
+18.	 Benjamini Y, Hochberg Y. Controlling the false Discovery Rate - a practical
+and powerful Approach to multiple testing. J R Stat Soc Ser B-Statistical
+Methodol. 1995;57:289–300.
+19.	 Avila FR, Torres-Guzman RA, Maita KC, Garcia JP, Haider CR, Ho OA, et al.
+Perceived age as a mortality and comorbidity predictor: a systematic review.
+Aesthetic Plast Surg. 2023;47:442–54.
+20.	 Livingston G, Huntley J, Sommerlad A, Ames D, Ballard C, Banerjee S, et al.
+Dementia prevention, intervention, and care: 2020 report of the Lancet Com­
+mission. Lancet. 2020;396:413–46.
+21.	 Xia X, Chen X, Wu G, Li F, Wang Y, Chen Y, et al. Three-dimensional facialimage analysis to predict heterogeneity of the human ageing rate and the
+impact of lifestyle. Nat Metab. 2020;2:946–57.
+22.	 Roberts V, Main B, Timpson NJ, Haworth S. Genome-Wide Association Study
+Identifies Genetic Associations with Perceived Age. J Invest Dermatol.
+2020;140:2380–5.
+23.	 Ingold N, Seviiri M, Ong J-S, Gordon S, Neale RE, Whiteman DC, et al. Genetic
+Analysis of Perceived Youthfulness Reveals Differences in How Men’s and
+Women’s Age Is Assessed. J Invest Dermatol. 2024;144:2230-2239.e10.
+24.	 Liu F, Hamer MA, Deelen J, Lall JS, Jacobs L, Van Heemst D, et al. The MC1R
+gene and Youthful looks. Curr Biol. 2016;26:1213–20.
+25.	 Tsukahara K, Sugata K, Osanai O, Ohuchi A, Miyauchi Y, Takizawa M, et al.
+Comparison of age-related changes in facial wrinkles and sagging in the
+skin of Japanese, Chinese and Thai women. J Dermatol Sci. 2007;47:19–28.
+20070511th ed.
+26.	 Umeda-Kameyama Y, Kameyama M, Tanaka T, Son B, Kojima T, Fukasawa M,
+et al. Screening of Alzheimer’s disease by facial complexion using artificial
+intelligence. Aging. 2021;13:1765–72.
+27.	 Wong QYA, Chew FT. Defining skin aging and its risk factors: a systematic
+review and meta-analysis. Sci Rep. 2021;11:22075.
+28.	 Yang HW, Bae J, Bin, Oh DJ, Moon DG, Lim E, Shin J, et al. Exploration of cogni­
+tive outcomes and risk factors for cognitive decline Shared by couples. JAMA
+Netw Open. 2021;4:1–13.
+29.	 Yoon K-N, Kim Y, Cui Y, Ji J, Park G, Chung JH, et al. Chronic skin ultraviolet
+irradiation induces transcriptomic changes associated with microglial dys­
+function in the hippocampus. Mol Brain. 2022;15:102.
+30.	 Zhan Y, Hägg S. Association between genetically predicted telomere length
+and facial skin aging in the UK Biobank: a mendelian randomization study.
+GeroScience. 2021;43:1519–25.
+31.	 Li J, Liu C, Ang TFA, Au R. BMI decline patterns and relation to dementia risk
+across four decades of follow-up in the Framingham Study. Alzheimer’s
+Dement. 2023;19:2520–7.
+32.	 Albanese E, Launer LJ, Egger M, Prince MJ, Giannakopoulos P, Wolters FJ, et
+al. Body mass index in midlife and dementia: Systematic review and meta‐
+regression analysis of 589,649 men and women followed in longitudinal
+studies. Alzheimer’s Dement Diagnosis, Assess Dis Monit. 2017;8:165–78.
+33.	 Ma L-Z, Ma Y-H, Ou Y-N, Chen S-D, Yang L, Dong Q, et al. Time spent in out­
+door light is associated with the risk of dementia: a prospective cohort study
+of 362094 participants. BMC Med. 2022;20:132.
+34.	 Fry A, Littlejohns TJ, Sudlow C, Doherty N, Adamska L, Sprosen T, et al.
+Comparison of Sociodemographic and Health-Related Characteristics of UK
+Biobank Participants with those of the General Population. Am J Epidemiol.
+2017;186:1026–34.
+Publisher’s note
+Springer Nature remains neutral with regard to jurisdictional claims in
+published maps and institutional affiliations.

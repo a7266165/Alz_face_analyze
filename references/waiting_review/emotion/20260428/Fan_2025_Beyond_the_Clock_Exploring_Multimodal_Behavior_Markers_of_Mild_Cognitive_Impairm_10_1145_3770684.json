@@ -1,0 +1,25 @@
+{
+  "title": "Beyond the Clock: Exploring Multimodal Behavior Markers of Mild Cognitive Impairment in Older Adults during Clock Drawing Test",
+  "authors": [
+    "Lingjie Fan",
+    "Junhan Zhao",
+    "Yongji Wu",
+    "Fengyi Wang",
+    "Xiyue Wang",
+    "Tao Lin"
+  ],
+  "year": 2025,
+  "abstract": "Early detection of Mild Cognitive Impairment (MCI) offers a critical window for intervention before progression to dementia. This study presents a novel approach to MCI screening through multimodal behavioral analysis during the Clock Drawing Test (CDT), implementing a comprehensive data collection system using standard tablet devices. Our approach analyzes three behavioral dimensions: drawing trajectories, facial expressions, and hand motion patterns. We developed an integrated framework combining Convolutional Neural Networks with multi-head attention mechanisms for drawing analysis, alongside specialized feature extraction methods for facial and motion data. To effectively integrate these behavioral markers, we proposed a Higher-order Canonical Correlation Analysis (HCCA) algorithm that models complex relationships between modalities. In our primary study with 69 MCI participants and 133 age-matched controls, we identified distinct behavioral patterns: temporal drawing anomalies, altered facial behaviors including increased gaze variability, and distinctive motion patterns reflecting changes in movement stability. Our multimodal approach achieved an AUC of 0.92 (accuracy: 92.68%, sensitivity: 90.91%), with HCCA further improving performance to an AUC of 0.97. External validation with 76 additional participants demonstrated good generalizability (AUC: 0.86). These findings reveal how cognitive impairment manifests across multiple behavioral channels offer clinicians precise, interpretable quantification of cognitive function for more accurate MCI screening.",
+  "doi": "10.1145/3770684",
+  "arxiv_id": null,
+  "venue": "Proceedings of the ACM on Interactive Mobile Wearable and Ubiquitous Technologies",
+  "citation_count": 1,
+  "source": "openalex",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4416926231"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.1145/3770684"
+}

@@ -1,0 +1,26 @@
+{
+  "title": "Optimized efficient attention-based network for facial expressions analysis in neurological health care.",
+  "authors": [
+    "Munsif M",
+    "Sajjad M",
+    "Ullah M",
+    "Tarekegn AN",
+    "Cheikh FA",
+    "Tsakanikas P",
+    "Muhammad K"
+  ],
+  "year": 2024,
+  "abstract": "Facial Expression Analysis (FEA) plays a vital role in diagnosing and treating early-stage neurological disorders (NDs) like Alzheimer's and Parkinson's. Manual FEA is hindered by expertise, time, and training requirements, while automatic methods confront difficulties with real patient data unavailability, high computations, and irrelevant feature extraction. To address these challenges, this paper proposes a novel approach: an efficient, lightweight convolutional block attention module (CBAM) based deep learning network (DLN) to aid doctors in diagnosing ND patients. The method comprises two stages: data collection of real ND patients, and pre-processing, involving face detection and an attention-enhanced DLN for feature extraction and refinement. Extensive experiments with validation on real patient data showcase compelling performance, achieving an accuracy of up to 73.2%. Despite its efficacy, the proposed model is lightweight, occupying only 3MB, making it suitable for deployment on resource-constrained mobile healthcare devices. Moreover, the method exhibits significant advancements over existing FEA approaches, holding tremendous promise in effectively diagnosing and treating ND patients. By accurately recognizing emotions and extracting relevant features, this approach empowers medical professionals in early ND detection and management, overcoming the challenges of manual analysis and heavy models. In conclusion, this research presents a significant leap in FEA, promising to enhance ND diagnosis and care.The code and data used in this work are available at: https://github.com/munsif200/Neurological-Health-Care.",
+  "doi": "10.1016/j.compbiomed.2024.108822",
+  "arxiv_id": null,
+  "venue": "Computers in biology and medicine",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "38986286"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.1016/j.compbiomed.2024.108822"
+}

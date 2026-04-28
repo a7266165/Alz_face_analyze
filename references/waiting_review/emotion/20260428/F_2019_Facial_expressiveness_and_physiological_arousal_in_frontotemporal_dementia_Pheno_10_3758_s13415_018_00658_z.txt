@@ -1,0 +1,1186 @@
+Facial expressiveness and physiological arousal in frontotemporal
+dementia: Phenotypic clinical profiles and neural correlates
+Fiona Kumfor1,2,3 & Jessica L. Hazelton1,2 & Jacqueline A. Rushby4 & John R. Hodges2,3,5 & Olivier Piguet1,2,3
+Published online: 28 November 2018
+Abstract
+Early theories of emotion processing propose an interplay between autonomic function and cognitive appraisal of emotions. Patients
+with frontotemporal dementia show profound social cognition deficits and atrophy in regions implicated in autonomic emotional
+responses (insula, amygdala, prefrontal cortex), yet objective measures of facial expressiveness and physiological arousal have been
+relatively unexplored. We investigated psychophysiological responses (surface facial electromyography (EMG); skin conductance
+level (SCL)) to emotional stimuli in 25 behavioural-variant frontotemporal dementia (bvFTD) patients, 14 semantic dementia (SD)
+patients, and 24 healthy older controls, while viewing emotionally positive, neutral, or negative video clips. Voxel-based morphometry was conducted to identify neural correlates of responses. Unlike controls, patients with bvFTD did not show differential facial
+EMG responses according to emotion condition, whereas SD patients showed increased zygomaticus responses to both positive and
+neutral videos. Controls showed greater arousal (SCL) when viewing positive and negative videos; however, both bvFTD and SD
+groups showed no change in SCL across conditions. Regardless of group membership, right insula damage was associated with
+dampened zygomaticus responses to positive film stimuli. Change in arousal (SCL) was associated with lower integrity of the
+caudate, amygdala, and temporal pole. Our results demonstrate that while bvFTD patients show an overall dampening of responses,
+SD patients appear to show incongruous facial emotional expressions. Abnormal responding is related to cortical and subcortical
+brain atrophy. These results identify potential mechanisms for the abnormal social behaviour in bvFTD and SD and demonstrate that
+psychophysiological responses are an important mechanism underpinning normal socioemotional functioning.
+Keywords Electromyography . Skin conductance . Semantic dementia . Imaging
+Introduction
+Early theories of emotion processing proposed that autonomic functioning and cognitive appraisal of emotions are
+closely interlinked (James, 1884; Lange, 1922). Specifically,
+perception of one’s own emotional state and recognition of
+emotion in others is thought to occur secondary to the experience of somatic sensations. Contemporary theories have
+built on these accounts (Damasio et al., 1996; Schachter &
+Singer, 1962) and explored the neurobiological basis for this
+convergence of internal physiology and the external milieu
+(Ibañez & Manes, 2012; Singer, Critchley, & Preuschoff,
+2009). The insula has emerged as a central structure for substantiating subjective feelings from the body (Craig, 2002,
+2009). Specifically, the insula is critically involved in
+interoception, that is, the capacity to perceive Bfeelings^
+from the body, which indicate one’s physical condition,
+and emotional and mood state (Craig, 2003).
+Predominantly, these internal physiological signals provide
+an index of one’s level of arousal (and are less sensitive to
+the valence or specific emotion experienced) (Bradley &
+Lang, 2000; Damasio et al., 2000; Levenson, 1988). From
+a network perspective, the insula, together with the anterior
+cingulate cortex and orbitofrontal cortex, has been
+recognised as an important hub of the Salience Network,
+Electronic supplementary material The online version of this article
+(https://doi.org/10.3758/s13415-018-00658-z) contains supplementary
+material, which is available to authorized users.
+* Fiona Kumfor
+fiona.kumfor@sydney.edu.au
+1
+School of Psychology, The University of Sydney, Sydney, Australia
+2
+Brain and Mind Centre, The University of Sydney, 94 Mallett St,
+Level 3 M02F, Camperdown, Sydney, NSW 2050, Australia
+3
+ARC Centre of Excellence in Cognition and its Disorders,
+Sydney, Australia
+4
+School of Psychology, The University of New South Wales,
+Sydney, Australia
+5
+Sydney Medical School, Faculty of Health Sciences, The University
+of Sydney, Sydney, Australia
+Cognitive, Affective, & Behavioral Neuroscience (2019) 19:197–210
+https://doi.org/10.3758/s13415-018-00658-z
+# Psychonomic Society, Inc. 2018
+
+which activates in response to emotionally relevant cues in
+the environment (Seeley et al., 2007).
+Individuals diagnosed with frontotemporal dementia
+(FTD) have profound deficits in their ability to understand
+social and emotional cues and behave inappropriately when
+placed in social situations (Hutchings, Hodges, Piguet, &
+Kumfor, 2015; Kumfor & Piguet, 2012). Mounting evidence
+has demonstrated that this impairment occurs both in patients presenting with the behavioural variant of FTD
+(bvFTD), which is characterised by early changes in behaviour and personality (Piguet, Hornberger, Mioshi, & Hodges,
+2011; Rascovsky et al., 2011) and with the semantic variant
+(semantic dementia; SD), which is characterized by early
+deficits in language and progressive loss of semantic knowledge (Gorno-Tempini et al., 2011; Hodges, Patterson,
+Oxbury, & Funnell, 1992). Despite this evidence, the mechanisms that give rise to these impairments in emotion processing and social behaviour are not well understood. This
+lack of knowledge has hampered the development of intervention strategies targeting these distressing symptoms
+(Hsieh, Irish, Daveson, Hodges, & Piguet, 2013a; Kumfor,
+Hodges, & Piguet, 2014a).
+Of relevance, brain atrophy in bvFTD is present in the
+anterior insula and ventromedial prefrontal cortices (Seeley
+et al., 2008), which extends into subcortical regions, including the striatum, with disease progression (Landin-Romero
+et al., 2017). In contrast, patients with SD show early atrophy
+in the anterior temporal lobe, which tends to be asymmetrical
+(Mion et al., 2010; Rosen et al., 2002) and extends into the
+contralateral temporal lobe and orbitofrontal regions with
+disease progression (Kumfor et al., 2016). Given these divergent patterns of brain atrophy early on, one would predict
+that distinct mechanisms give rise to emotion processing
+deficits in bvFTD and SD. While bvFTD patients may show
+changes reflective of emotional blunting, deficits in SD patients may be more reflective of semantic or conceptual
+knowledge loss.
+To date, few studies have employed psychophysiological
+techniques to objectively measure emotion processing in
+FTD, with mixed results. Some studies have reported attenuated skin conductance levels in response to aversive stimuli
+(loud noise) in bvFTD compared with Alzheimer’s disease
+patients and healthy controls (Hoefer et al., 2008; Joshi
+et al., 2014). However, others have found no difference in
+physiological responses to complex emotional film stimuli
+between healthy controls and a mixed group of bvFTD and
+SD patients, despite impaired explicit emotion recognition
+performance in these syndromes (Werner et al., 2007).
+Interestingly, lower skin conductance levels in bvFTD patients
+during a baseline rest period also have been reported in some
+studies (Joshi et al., 2014) but not others (Balconi et al., 2015;
+Guo et al., 2016). Notably, physiological signatures are likely
+to differ between bvFTD and SD considering their differences
+in clinical presentation and patterns of atrophy. Thus, mixed
+FTD samples may, in part, account for these varied findings.
+Moreover, some studies have used a composite score to assess
+physiological changes (including heart-rate, skin
+conductance, finger temperature, pulse amplitude, pulse
+transmission time, respiration, and blood pressure) (Werner
+et al., 2007), which may map onto different psychological
+processes.
+In healthy adults, skin conductance has been shown to be
+a surrogate marker of emotion processing, with viewing of
+emotional facial expressions associated with larger changes
+in skin conductance (Williams et al., 2005). Moreover,
+greater changes in skin conductance are observed in people
+who show greater prosocial behaviours (Hein, Lamm,
+Brodbeck, & Singer, 2011). Of note, a recent study that
+examined skin conductance in bvFTD, while viewing emotional images, found significantly lower skin conductance
+in bvFTD patients than in healthy controls. Furthermore,
+the skin conductance response was not related to subjective
+ratings of valence and arousal, as observed in healthy controls and Alzheimer’s disease patients (Balconi et al.,
+2015). Thus, the limited evidence available suggests that
+skin conductance responses may indeed be reduced in
+bvFTD. To our knowledge, no study has investigated skin
+conductance and emotion processing in SD. Thus, while
+concurrent measurement of skin conductance may provide
+insights into the changes in emotional behaviour in bvFTD
+and SD, few studies have examined this type of response
+systematically.
+Facial surface electromyography is another way to objectively measure individuals’ responses to emotional situations
+and has been successfully used in some clinical populations
+(e.g., traumatic brain injury) (McDonald et al., 2010; Rushby
+et al., 2013). Emotional blunting is one of the six core diagnostic criteria for bvFTD (Rascovsky et al., 2011); however,
+this technique has not been employed in FTD to date. Studies
+that have videotaped or photographed patients with FTD have
+reported mixed results in the range of facial expressions (Perry
+et al., 2001; Sturm, Rosen, Allison, Miller, & Levenson, 2006;
+Werner et al., 2007), with high variability in patient facial
+behaviour also reported (Sturm et al., 2013). Importantly,
+EMG recordings can detect minute changes in facial expressions and do not employ subjective ratings and thus are reliable measures of facial expressions in response to emotional
+stimuli in clinical syndromes.
+This study was designed to determine changes in arousal
+and facial expressiveness in patients with bvFTD and SD
+when exposed to emotional stimuli compared to healthy older
+control participants using psychophysiological measures of
+emotion processing. We hypothesised that skin conductance
+and facial EMG would be abnormal in both patient groups
+compared with controls when viewing emotional but not neutral stimuli. In addition, we investigated the neural correlates
+198
+Cogn Affect Behav Neurosci (2019) 19:197–210
+
+underlying changes in these objective physiological measures
+of emotion processing.
+Methods
+Participants
+Twenty-five bvFTD patients, 14 SD patients and 24 healthy
+controls were recruited from FRONTIER, the younger onset
+dementia clinic located in Sydney, Australia. All participants
+underwent neuropsychological assessment, had an MRI scan,
+and were assessed by an experienced behavioural neurologist.
+Diagnosis of bvFTD and SD was reached by the multidisciplinary team, based on current consensus diagnostic criteria
+(Gorno-Tempini et al., 2011; Rascovsky et al., 2011).1 All
+controls scored greater than 88/100 on the Addenbrooke’s
+Cognitive Examination-III (ACE-III) (Hsieh, Schubert,
+Hoon, Mioshi, & Hodges, 2013b). Patients and controls were
+excluded based on the presence of the following: current or
+prior history of psychiatric illness; significant head injury;
+alcohol or substance abuse; presence of neurological disorder;
+or limited proficiency in English.
+Based on a study investigating individuals with FTD, AD,
+and controls, effect size for the difference in arousal (i.e., skin
+conductance) between groups was f = 0.45 (Joshi et al., 2014).
+No studies have investigated facial EMG in FTD; however,
+studies in traumatic brain injury, have reported effect sizes
+between f = 0.48 and f = 0.54 (de Sousa et al., 2011). An a
+priori power analysis conducted in G*Power for an ANOVA in
+three groups indicated that a total sample size of 54 participants
+would provide 90% power to detect an effect size of f = 0.45.
+Approval for this study was granted by the South Eastern
+Sydney Local Health District ethics committee. Participants or
+their Person Responsible provided informed written consent in
+accordance with the Declaration of Helsinki. Participation was
+voluntary, and participants were reimbursed for travel costs.
+Neuropsychological assessment
+All participants completed the ACE (Revised or ACE-III) as a
+general screener of cognitive function (Hsieh, Schubert,
+Hoon, Mioshi, & Hodges, 2013b; Mioshi, Dawson,
+Mitchell, Arnold, & Hodges, 2006). All patients were
+assessed using the Frontotemporal Dementia Rating Scale
+(FRS), a dementia staging tool that assesses changes in everyday functioning and behaviours (Mioshi, Hsieh, Savage,
+Hornberger, & Hodges, 2010). The FRS provides an index
+of disease severity and an associated Rasch score, with higher
+Rasch scores reflecting less severe disease stage.
+To assess overt emotion recognition, we employed the
+Facial Affect Selection Test (Kumfor, Sapey-Triomphe et al.,
+2014b; Miller et al., 2012). Participants view an array of seven
+faces, each expressing a different emotion (anger, disgust,
+fear, sadness, surprise, happiness, or neutral) across 42 trials
+and are asked to BPoint to the ______ face.^ Responses are
+untimed, and no feedback is provided. Images were selected
+from the NimStim database (www.mac-brain.org), were
+cropped to remove nonfacial information (e.g., hair), and
+were converted to greyscale.
+Experimental procedure
+Participants were seated in a small room facing a computer
+screen. EMG and skin conductance electrodes were placed on
+the participant as detailed below. Participants were then asked
+to relax for 2 minutes, during which time the baseline physiological recordings were acquired.
+Next, participants viewed six excerpts from six movies (120
+sec each), with two positive (When Harry met Sally and Mr.
+Bean’s Christmas), two neutral (Birds and Stream documentaries), and two negative (My Bodyguard and Cry Freedom)
+films, which have been previously employed in traumatic brain
+injury (de Sousa, McDonald, & Rushby, 2012; Rushby et al.,
+2013). Movie clips were presented on a PC using Presentation
+software in a random order. Physiological measurements were
+recorded for the duration of the stimulus presentations.
+Following each excerpt, participants rated valence and arousal
+of the film clip via the computerised version of the Self-
+Assessment Manikin (SAM; Lang, 1980).
+Physiological recording
+Facial electromyography (EMG) and skin conductance level
+(SCL) were measured using an 8/35 Powerlab Data
+Acquisition System (ADInstruments, Castle Hill, Australia).
+The raw data were recorded using LabChart Pro for Windows
+(v. 7.3.7).
+EMG activity of the zygomaticus major (cheek, smiling),
+and the corrugator supercilii (left brow, frowning) were measured using the Fridlund and Cacioppo (1986) method. To
+reduce inter-electrode impedance, target sites of the skin were
+cleaned and abraded with NuPrep gel (Weaver & Co., Aurora,
+CO). Shielded 9-mm diameter, gold-plated surface electrodes
+were then filled with Ten 20 conductive paste (Weaver & Co.,
+Aurora, CO) and placed bipolarly. An additional ground electrode was positioned on the upper portion of the forehead.
+Facial EMG signals were digitized at a sampling rate of
+2,000 Hz/s and stored off-line for later quantification.
+SCL was measured using an ADInstruments Model GSR
+Amp (FE116), using two dry, bright-plated bipolar electrodes
+placed on the distal volar surface of digits II and IVof the left
+1 Five of the SD patients had greater right > left anterior temporal lobe atrophy
+at presentation (Chan et al., 2009; Kumfor et al., 2016).
+Cogn Affect Behav Neurosci (2019) 19:197–210
+199
+
+hand. Before each session, the signal was calibrated to detect
+activity in the range of 0-40 microsiemens (μS).
+Data reduction
+For SCL, outliers were identified using boxplots and participants were removed from subsequent analyses (2 controls, 2
+bvFTD). For EMG, eight participants were excluded due to
+equipment errors (channel saturation during recording) or excessive talking/movement during the task (4 controls, 1
+bvFTD, 3 left-SD). Participants were monitored during data
+acquisition to ensure that they were attending to the stimuli
+throughout the task.
+Mean EMG responses (zygomaticus and corrugator) and
+SCL signals were derived for the 2-minute baseline and from
+four time intervals during each of the six film clips presented
+(Time interval 1: 0-30s, Time interval 2: 31-60s, Time interval
+3: 61-90s, and Time interval 4: 91-120s). Data for each time
+interval were then averaged across films for each condition
+(i.e., positive, neutral, negative). This approach was taken given the different time courses of EMG and SCL responses.
+While SCL tends to increase or decrease linearly over time,
+EMG tends to measure faster changes, which may be considered as individual Bevents,^ although task demands and context also may lead to more tonic changes (de Sousa et al.,
+2011; Dimberg & Thunberg, 1998). In order to analyse the
+entire period of measurement (rather than focusing on the end
+of the clip for SCL or the Bmost emotional^ part of the video
+for EMG), we also included time as an independent variable in
+the relevant analyses. Bandpass filtering was applied to the
+raw EMG signals to reduce the amplitude of low- and highfrequency noise (20-400 Hz) and a 50-Hz notch filter was
+used to decrease electrical interference. EMG signals were
+then rectified and smoothed using a triangular window of
+500 ms. Data were expressed in microvolts/second. For both
+corrugator and zygomaticus muscles, EMG response magnitudes to the stimuli were expressed as a proportion of the
+individual’s baseline value. This method is preferred, because
+it considers individual differences in EMG activity, ensuring
+that EMG responses are comparable both at an individual
+level across different muscle groups and at a group level
+across different individuals (Van Boxtel, 2010). The difference between baseline and average SCL for each time interval
+was calculated for each condition (positive, neutral, negative).
+Statistical analyses
+Data were analysed using SPSS V. 24 (IBM, Inc., Chicago,
+IL). One-way analyses of variance (ANOVAs) were conducted to investigate demographics and background neuropsychological performance according to group. Where appropriate,
+chi-square analyses were conducted to investigate differences
+in categorical variables. To investigate differences in facial
+expressiveness during viewing the film clips, a repeated measures ANOVA was conducted with diagnosis (bvFTD, SD,
+controls) as the between-subjects measure and EMG
+(zygomaticus, corrugator), emotion (positive, neutral, negative), and time interval (30 sec, 60 sec, 90 sec, 120 sec) as
+the within-subjects variables. For the SCL analyses, a separate
+repeated measures ANOVA was conducted with diagnosis
+(bvFTD, SD, controls) as the between-subjects variable and
+emotional film type (positive, neutral, negative) and time interval (30 sec, 60 sec, 90 sec, 120 sec) as the within-subjects
+variables.
+SAM scores were averaged according to emotional film
+type (positive, neutral, negative), and separate repeated measures ANOVAs were conducted to investigate differences in
+film ratings for valence and arousal. All analyses were considered significant at p < 0.05. Sidak post-hoc corrections for
+multiple comparisons were employed where appropriate.
+Neuroimaging
+Participants underwent whole-brain structural magnetic resonance imaging (MRI) on a 3 T Phillips scanner. Highresolution T1 images were obtained using the following protocol: 256 x 256, 200 slices, 1-mm2 in-plane resolution, 1-mm
+slice thickness, echo time/repetition time = 2.6/5.8 ms, flip
+angle = 8°. Brain scans were available for 16 bvFTD, 11 SD
+(6 left-SD, 5 right-SD), and 20 controls.
+FSL voxel-based morphometry (VBM), part of the FMRIB
+software library package http://www.fmrib.ox.ac.uk/fsl/
+fslvbm/index.html (Smith et al., 2004) was used to analyse
+the MRI data (Ashburner & Friston, 2000; Mechelli, Price,
+Friston, & Ashburner, 2005; Woolrich et al., 2009). First,
+structural images were brain-extracted using BET and tissue
+segmentation was undertaken using automatic segmentation
+(FAST) (Zhang, Brady, & Smith, 2001). Then, grey matter
+partial volume maps were aligned to Montreal Neurological
+Institute standard space (MNI152) using nonlinear registration
+(FNIRT), which uses a b-spline representation of the registration warp field (Rueckert et al., 1999). A study-specific template was created and the native grey matter images were
+nonlinearly re-registered. Modulation of the registered partial
+volume maps was performed by dividing them by the
+Jacobian of the warp field. The modulated, segmented images
+were smoothed with an isotropic Gaussian kernel (sigma = 3
+mm, full-width at half maximum (FWHM) = 8 mm).
+A voxel-wise general linear model (GLM) was applied to
+investigate grey matter intensity differences using permutation-based, nonparametric statistics with 5,000 permutations
+per contrast (Nichols & Holmes, 2002). In the first set of
+analyses, differences in grey matter integrity between patient
+groups and controls were investigated using t-tests. Next, to
+examine neural correlates associated with facial EMG and
+SCL, irrespective of group membership, we created separate
+200
+Cogn Affect Behav Neurosci (2019) 19:197–210
+
+GLMs. For EMG, separate GLMs were created for positive,
+neutral, and negative films. Here, the difference between mean
+zygomaticus and mean corrugator response at Time Interval 4
+was computed and entered as covariates into the respective
+GLMs. For SCL, two GLMs were created: positive videos
+and negative videos. We subtracted the mean SCL at Time
+Interval 4 for positive and negative videos from the mean
+SCL when viewing neutral videos, as an index of emotional
+increase in SCL, which were entered into the respective
+GLMs. For atrophy analyses, we report threshold-free cluster
+enhanced results at p < 0.05, corrected for multiple comparisons. The analyses correlating grey matter integrity with physiological measures analyses are reported voxel-wise at p <
+0.001 uncorrected for multiple comparisons. In addition, to
+control for Type 1 error, we employed a conservative cluster
+extent threshold of 50 contiguous voxels.
+Results
+Demographic and cognitive characteristics
+Study groups did not differ in age or sex distribution (Table 1).
+Controls had more years of education than the bvFTD group
+(p = 0.003), but the two patient groups did not differ (p =
+0.552). No difference in disease stage on the FRS was observed between patient groups (p = 0.245), but disease duration was shorter in the bvFTD than in the SD group (p =
+0.007). Consistent with previous findings, both patient groups
+performed worse than controls on a measure of overall cognitive function (ACE: both p values < 0.001), and both groups
+showed worse facial emotion recognition than controls
+(bvFTD p < 0.001; SD p = 0.001).
+Psychophysiological data
+At baseline, no difference in EMG recordings of the
+zygomaticus or corrugator was observed across groups, and
+SCL was similar across groups (Table 2).
+Electromyography
+Analyses of EMG recordings of emotional facial expressions
+during the film clips revealed significant main effects of
+EMG location (F(1,52) = 18.677, p < 0.001, ηp
+2 = 0.264),
+Emotion (F(2,104) = 20.467, p < 0.001, ηp
+2 = 0.282) and
+Time (F(3,156) = 12.166, p < 0.001, ηp
+2 = 0.190), but not of
+Diagnosis (F(2,52) = 1.143, p = 0.327, ηp
+2 = 0.042; Fig. 1).
+Significant two-way interactions were observed between
+EMG and Emotion (F(2,104) = 26.976, p < 0.001, ηp
+2 =
+0.342), Emotion and Time (F(6,312) = 11.821, p < 0.001,
+ηp
+2 = 0.185), but not EMG and Time (F(3,156) = 1.839, p =
+0.164, ηp
+2 = 0.034). In addition, a significant three-way interaction between EMG x Emotion x Time (F(6,312) =
+14.537, p < 0.001, 0.218) and a trend level interaction between EMG x Emotion x Diagnosis (F(4,312) = 5.922, p =
+0.062, ηp
+2 = 0.098) was present. Finally, the four-way interaction between EMG x Emotion x Time x Diagnosis
+approached significance (F(12,312) = 2.251, p = 0.067, ηp
+2
+= 0.080).
+These interactions were further examined using withingroup pairwise comparisons. Controls showed significant
+differences between zygomaticus and corrugator responses
+across all time intervals when viewing positive films (pvalues < 0.001). For neutral videos, controls showed a
+trend for greater zygomaticus response at Time interval 1
+(p = 0.068); however, these attenuated for the remainder of
+Table 1
+Demographic characteristics of the study groups
+bvFTD n = 25
+SD n = 14
+Controls n = 24
+F
+p
+Post hoc
+Sex (M:F)
+13:12
+8:6
+12:12
+0.18
+.912
+-
+Age (years)
+60.7±6.6
+64.7±7.1
+65.2±6.8
+3.06
+.054
+-
+Education (years)
+11.2±2.5
+12.3±3.2
+13.8±2.6
+5.88
+.005
+bvFTD < controls
+Disease duration (months)
+55.7±31.6
+85.9±30.4
+-
+8.09
+.007
+bvFTD < SD
+FRS Rasch Score
+-0.45±1.5
+0.19±1.66
+-
+1.40
+.245
+-
+ACE Total (/100)
+71.8±17.9
+60.0±21.4
+95.5±2.4
+28.03
+<.001
+Patients < controls
+Facial Affect Selection Test (/42)
+29.5±7.7
+30.6±3.7
+38.8±2.5
+18.78
+<.001
+Patients < controls
+Note, values are mean ± standard deviation. ACE = Addenbrooke’s Cognitive Examination; FRS = Frontotemporal dementia Rating Scale.
+Table 2
+Baseline physiological measures
+bvFTD
+SD
+Controls
+F
+p
+EMG – Zygomaticus
+11.7
+±14.0
+8.4
+±10.7
+6.6±4.2
+1.31
+.28
+EMG – Corrugator
+9.8±3.6
+11.0±7.3
+7.3±3.8
+2.78
+.07
+SCL
+0.6±0.8
+0.4±0. 6
+0.1±0.6
+2.08
+.14
+Note, values are mean ± standard deviation. Scores available for: EMG
+data 20 controls, 24 bvFTD, 11 SD; SCL data 22 controls, 23 bvFTD, 14
+SD. EMG = electromyography; SCL = skin conductance level.
+Cogn Affect Behav Neurosci (2019) 19:197–210
+201
+
+time (Time interval 2: p = 0.236; Time interval 3: p = 0.338;
+Time interval 4: p = 0.475). For negative films, differentiation in EMG responses in controls was observed at Time
+interval 4 only, with significantly greater corrugator than
+zygomaticus activity present (p = 0.014). In bvFTD, patients
+showed no difference between zygomaticus and corrugator
+activity when viewing positive films (Time interval 1: p =
+0.096; Time interval 2: p = 0.110; Time interval 3: p = 0.060;
+Time interval 4: p = 0.110). Similarly, in both the neutral and
+negative conditions, no significant differences in
+zygomaticus vs. corrugator activity was observed at any
+time interval (Neutral, all p values > 0.2; Negative, all pvalues > 0.05). For the SD group, significantly greater
+zygomaticus than corrugator activity was evident on all time
+intervals of the positive films (Time interval 1: p = 0.006;
+Time interval 2: p = 0.007; Time interval 3: p = 0.016; Time
+interval 4: p = 0.054). Unlike controls, SD also showed
+significantly greater zygomaticus than corrugator activity
+for neutral films across all time intervals (all p values ≤
+0.001). Surprisingly, greater zygomaticus activity also was
+observed during Time interval 1 of the negative films (p =
+0.029), but no significant differences were found for the
+subsequent time intervals (Time interval 2: p = 0.693;
+Time interval 3: p = 0.461; Time interval 4: p = 0.496).
+Means and standard deviations are provided in the
+Supplementary Materials.
+Fig. 1 EMG responses in bvFTD, SD, and controls when viewing
+emotional films. Scores are corrected for baseline EMG response. Dots
+represent mean values and error bars represent standard error of the mean.
+*p < 0.05, comparing zygomaticus and corrugator response within groups
+at each time interval (Sidak corrected for multiple comparisons). Note,
+SD, positive videos, Time interval 4: p = .054
+202
+Cogn Affect Behav Neurosci (2019) 19:197–210
+
+Skin conductance level (difference between baseline
+and task)
+Analyses of SCL across groups revealed no main effect of
+Diagnosis (F(2,56) = 0.714, p = 0.494, ηp
+2 = 0.025), or
+Time (F(3,168) = 0.625, p = 0.505, ηp
+2 = 0.011) or Emotion
+(F(2,112) = 2.021, p = 0.137, ηp
+2 = 0.035; Fig. 2). However,
+the interaction between Emotion and Time was significant
+(F(6,336) = 14.142, p < 0.001, ηp
+2 = 0.202), and the interaction between Emotion, Time, and Diagnosis approached significance (F(12,336) = 1.889, p = 0.035 (sphericity assumed;
+Greenhouse-Geisser correction p = 0.099), ηp
+2 = 0.063).
+These interactions were explored further using withinsubjects pairwise comparisons, comparing SCL for positive
+and negative films with neutral films at each time interval.
+For controls, SCL was significantly higher at both Time interval 3 and 4 for the positive compared with the neutral film
+(Time interval 3: p = 0.017; Time interval 4: p < 0.001) and for
+the negative compared to the neutral conditions (Time interval
+3: p = 0.042; Time interval 4: p = 0.011). No significant differences in SCL between the positive and neutral or negative
+and neutral condition at any of the time intervals in the bvFTD
+or SD groups were observed (all p values > 0.05). No between
+group pairwise comparisons reached significance.
+Valence and arousal SAM ratings
+For valence ratings, a significant main effect of video condition was present (F(2,118) = 290.970, p < 0.001) but not of
+diagnosis (F(2,59) = 1.686, p = 0.194; Fig. 3). A significant
+interaction between video condition and diagnosis was also
+observed (F(4,118) = 5.932, p < 0.001). Post-hoc tests revealed that all groups rated the positive and neutral videos as
+more positive than negative videos (controls: positive vs. negative: p < 0.001; neutral vs. negative: p < 0.001; positive vs.
+neutral: p = 0.119; bvFTD: positive vs. negative: p < 0.001;
+neutral vs. negative: p < 0.001; positive vs. neutral: p = 1.000;
+SD: positive vs. negative: p < 0.001; neutral vs. negative: p <
+0.001; positive vs. neutral: p = 0.697). Post-hoc tests also
+revealed significant between-group differences in ratings.
+Specifically, both patient groups rated positive videos as less
+positive than controls (bvFTD: p = 0.034; SD: p = 0.001) and
+negative videos as less negative than controls (bvFTD: p =
+0.034; SD: p = 0.053). Ratings were similar across groups for
+neutral videos (bvFTD: p = 0.902; SD: p = 0.524).
+For arousal ratings, a significant main effect of video condition (F(2,118) = 145.855, p < 0.001), and a significant interaction between diagnosis and video condition was observed
+(F(4,118) = 2.747, p = 0.035), reflecting a trend for bvFTD
+Positive
+Neutral
+Negative
+0
+1
+2
+3
+4
+5
+Condition
+Valence
+*
+*
+*
+Positive
+Neutral
+Negative
+0
+1
+2
+3
+4
+5
+Condition
+Arousal
+Control
+bvFTD
+SD
+Fig. 3 Valence and arousal ratings across conditions in bvFTD, SD and controls. Bars represent mean SAM ratings. Error bars represent standard error of
+the mean. *p < 0.05 compared with controls, Sidak correction for multiple comparisons.
+Fig. 2 Skin conductance levels during positive, negative, and neutral film
+stimuli over time. Scores are corrected for baseline skin conductance
+level. Dots represent mean values. *p < 0.05, comparing positive vs.
+neutral and negative vs. neutral at each time interval (Sidak corrected
+for multiple comparisons)
+Cogn Affect Behav Neurosci (2019) 19:197–210
+203
+
+patients to rate neutral videos as more arousing than controls
+(p = 0.052). None of the other post hoc comparisons
+approached significance and no main effect of diagnosis was
+observed (F(2,59) = 0.012, p = 0.998).
+These results suggest that although the bvFTD and SD
+groups can categorise the video types as positive, neutral, or
+negative, the perceived emotional content of these video conditions is less intense than controls.
+Neuroimaging
+Group-wise comparisons
+The clinical groups showed the typical patterns of atrophy
+observed in these diseases (Supplementary Fig. 1;
+Supplementary Table 1). Compared with controls, bvFTD
+showed grey matter intensity decreases in frontal and temporal
+regions, including the orbitofrontal and medial prefrontal cortex, frontal pole, and anterior cingulate gyrus, together with
+the insular cortex, temporal fusiform, inferior temporal gyrus,
+and temporal pole, as well as subcortical regions, including
+the hippocampus and amygdala. In contrast, pronounced reduction was observed in SD in the temporal regions (but L >
+R), including the temporal fusiform cortex, inferior temporal
+gyrus, middle temporal gyrus, and temporal pole, as well as
+the insular cortex, hippocampus, and amygdala. Between patient group comparisons showed greater decrease in grey matter intensity in SD than in bvFTD in the parahippocampal
+gyrus, extending into the temporal fusiform cortex, temporal
+pole, and lingual gyrus. In contrast, bvFTD showed comparatively greater grey matter intensity decrease in the frontal
+pole extending into the orbitofrontal and medial prefrontal
+cortex than the SD group.
+Neural correlates of EMG
+VBM analyses revealed associations between EMG activity
+and brain integrity that were specific to the emotional valence
+of the films, regardless of group membership (Fig. 4; Table 3).
+For positive films, zygomaticus activity was associated with
+grey matter integrity of the right insula. In contrast, for negative films, corrugator activity was associated with grey matter
+integrity of the left subcallosal/orbitofrontal cortex, left middle
+frontal gyrus and left temporal fusiform. Finally, for neutral
+films, a reverse association was observed, whereby increased
+zygomaticus activity was associated with lower integrity of
+the left parahippocampal gyrus.
+Neural correlates of skin conductance levels
+With regards to skin conductance, response amplitude to positive films was associated exclusively with integrity of the left
+temporal pole, whereas response level to negative films was
+associated with integrity of the left amygdala extending into
+the left putamen, the left caudate, and the right superior frontal
+gyrus (Fig. 5; Table 4).
+Discussion
+Our systematic investigation demonstrated syndrome specific
+abnormal physiological responses to emotional film clips in
+the two most common presentations of FTD. Compared with
+healthy older adults, bvFTD patients showed an overall dampening of physiological responding, whereas SD patients
+showed abnormal facial expressiveness, which was discordant
+with the emotional content of the stimuli. In the following
+sections, we discuss how these results inform our understanding of these FTD syndromes in the context of contemporary
+theories of emotion processing.
+Profiles of facial expressiveness in bvFTD and SD
+Impaired ability to recognise emotions is well established in
+bvFTD (Bora, Velakoulis, & Walterfang, 2016; Kumfor &
+Piguet, 2012; Shany-Ur & Rankin, 2011); however, the
+mechanisms underpinning these deficits remain unresolved.
+We demonstrated that patients with bvFTD have blunted
+facial expressions in response to emotional film stimuli.
+While this concurs with clinical diagnostic criteria
+(Rascovsky et al., 2011), to our knowledge, this is the first
+time this symptom has been demonstrated objectively using
+EMG. In contrast, while SD patients also demonstrate limited changes in skin conductance, they tended to show increased zygomaticus activity in response to film stimuli, irrespective of the emotional content of the situation.
+Interestingly, early studies have suggested that decreased
+facial expressions is a hallmark of right but not left SD
+(Edwards-Lee et al., 1997; Perry et al., 2001).
+Indeed, our neuroimaging data analyses revealed that, regardless of group membership, damage to the right insula is
+associated with dampened zygomaticus responses to positive film stimuli, whereas increased zygomaticus activity to
+neutral films was associated with lower integrity of the left
+parahippocampal gyrus. Some theories have suggested that
+the right hemisphere may be specialised for Bsurvivalrelated^/energy-expenditure emotions, whereas the left
+hemisphere may be involved in Baffiliative^/energy-enrichment emotions (Craig, 2005). In contrast, others have proposed a general right hemisphere specialisation for emotion
+(Schwartz, Davidson, & Maer, 1975). Our results suggest a
+degree of lateralisation of function for facial expressiveness.
+Specifically, the right hemisphere damage led to a loss of
+emotional expression, and left hemisphere damage resulted
+in reduced facial emotion modulation leading to an increase
+in incongruous facial expressions. Indeed, this profile is
+204
+Cogn Affect Behav Neurosci (2019) 19:197–210
+
+Fig. 4 Clusters which significantly correlate with facial EMG responses
+to positive (MNI coordinates: x = 38, y = -16, z = 8), neutral (MNI
+coordinates: x = -30, y = -28, z = -12) and negative films (MNI
+coordinates: x = -22, y = 14, z = 48) in all participants combined. VBM
+analyses are voxel-wise reported at p < 0.001 uncorrected for family-wise
+error. Cluster extent threshold >50 contiguous voxels.
+Table 3
+Clusters associated with EMG responses to positive, neutral and negative films
+Regions
+Side
+MNI
+Voxels
+X
+Y
+Z
+Positive Films (Zygomaticus – Corrugator)
+Insula cortex, extending into Heschls’ gyrus
+Right
+36
+-10
+4
+384
+Neutral Films (Zygomaticus – Corrugator)
+Parahippocampal gyrus (posterior division), hippocampus, extending into lingual gyrus, temporal fusiform cortex
+Left
+-22
+-32
+-32
+447
+Postcentral gyrus
+Left
+-70
+-12
+14
+62
+Middle temporal gyrus, anterior division
+Left
+-54
+2
+-24
+55
+Negative Films (Corrugator – Zygomaticus)
+Middle frontal gyrus, extending into superior frontal gyrus
+Left
+-38
+32
+42
+306
+Temporal fusiform cortex (posterior division), extending into parahippocampal gyrus (anterior division)
+Left
+-28
+-14
+-48
+130
+Subcallosal cortex, orbitofrontal cortex
+Left
+-12
+12
+-18
+97
+Note. All clusters reported are voxelwise p < .001; cluster extent threshold 50 voxels.
+Cogn Affect Behav Neurosci (2019) 19:197–210
+205
+
+consistent with historical reports of decreased emotional expression and emotional indifference, together with emotional
+flattening of emotion and anosognosia in individuals with
+right-sided cerebral damage (Babinski, 1914; Mills, 1912).
+Notably, the posterior region of the insula, which was associated with zygomaticus activity in response to positive
+films, is highly interconnected with the primary and secondary somatosensory-motor cortices (Deen, Pitskel, &
+Pelphrey, 2010), likely reflecting a somatosensory/
+interoceptive role of this subregion of the insula (Craig,
+2002; Deen et al., 2010).
+Conversely, the increased zygomaticus activity in SD patients may reflect a loss of understanding of the emotional
+context, leading to inappropriate facial emotional displays.
+The parahippocampal cortex is proposed to play an important
+role in processing contextual associations (Aminoff, Kveraga,
+& Bar, 2013). Specifically, this region plays an important role
+in forming associations between conditions that have been
+linked over repeated exposures. Of relevance, these associations may be temporal, behavioural, or emotional (Aminoff
+et al., 2013). Thus, the disintegration of these contextual associations may explain the inappropriate emotional responses
+observed in the left SD group. Studies that examine the role of
+context in emotion processing in these patient groups will be
+essential to explore this hypothesis further (Kumfor et al.,
+2018).
+Dampened physiological arousal in bvFTD and SD
+Our skin conductance data revealed that, unlike healthy older
+adults, both bvFTD and SD patients show dampened autonomic responses to emotional situations. While previously
+Fig. 5 Clusters that significantly correlate with skin conductance levels
+when viewing positive compared with neutral films (MNI coordinates: x
+= -53, y = 13, z = -18) and negative compared with neutral films (MNI
+coordinates: x = -18, y = 4, y = 26) in all participants combined. VBM
+analyses are voxel-wise reported at p < 0.001 uncorrected for family wise
+error. Cluster extent threshold >50 contiguous voxels.
+Table 4
+Clusters associated with skin conductance level responses to
+positive and negative films
+Regions
+Side
+MNI
+Voxels
+X
+Y
+Z
+Positive Films (SCL Positive – SCL Neutral)
+Temporal pole
+Left
+-52
+14
+-24
+179
+Negative Films (SCL Negative – SCL Neutral)
+Caudate
+Left
+-20
+-12
+22
+163
+Amygdala, extending into putamen
+Left
+-18
+0
+-12
+104
+Superior frontal gyrus
+Right
+24
+26
+48
+61
+Note. All clusters reported are voxelwise p < .001; cluster extent threshold
+50 voxels.
+206
+Cogn Affect Behav Neurosci (2019) 19:197–210
+
+reported in bvFTD (Joshi et al., 2014), to our knowledge, this
+study is the first to demonstrate reduced autonomic arousal to
+emotional stimuli in a pure SD group. These results contrast
+with a previous study, which found change in skin conductance levels in SD patients during discussion of conflict with
+their partner (Sturm et al., 2011). It is possible that our
+standardised exposure to the emotional stimuli enabled the
+detection of these previously unrecognised abnormalities.
+Autonomic arousal and emotional experience are intimately
+linked (Damasio et al., 1996; James, 1884; Lange, 1922;
+Schachter & Singer, 1962). Our data demonstrate that the
+impaired performance on emotion recognition tests found in
+bvFTD and SD is compounded by a dampening of emotional
+experience and arousal when exposed to situations, which
+typically provoke increased skin conductance in healthy
+adults.
+Importantly, this reduced arousal in response to emotional
+stimuli is associated with divergent neural correlates, depending on the emotional valence of the stimuli. For negative films,
+reduced autonomic arousal was associated with loss of integrity of predominantly subcortical brain regions including the
+caudate and amygdala, as well as a small region in the right
+superior frontal gyrus. In healthy adults, changes in skin conductance levels during affective tasks have been associated
+with increased activity in a number of cortical (insula, somatosensory, cingulate, prefrontal, and parietal cortices) and subcortical (thalamus, amygdala, thalamus, putamen) brain regions (Beissner, Meissner, Bär, & Napadow, 2013). We saw
+some degree of overlap with our results, suggesting that the
+reduction in sympathetic responses to emotional stimuli as
+measured via skin conductance reflects a pathological disturbance in the autonomic brain in bvFTD and SD. The relationship between abnormal skin conductance and integrity of the
+caudate was somewhat unexpected, as previous studies have
+suggested that the caudate is predominantly (but not always)
+involved in parasympathetic as opposed to sympathetic regulation (Beissner et al., 2013). Atrophy of the caudate is found
+in bvFTD (and to a lesser degree in SD) and has been associated with increased apathy, disinhibition, and aberrant motor
+behaviours (Halabi et al., 2013). Thus, our neuroimaging results indicate that subcortical striatal atrophy in FTD is associated with abnormal arousal responses to emotionally evocative stimuli. Whether reduced arousal is a mediating factor in
+the emergence of abnormal behaviours, such as disinhibition
+and apathy, in these clinical syndromes is an avenue which
+warrants future investigation.
+In contrast, reduced skin conductance in response to positive films was associated with integrity of the left temporal
+pole. The regions associated with abnormal skin conductance
+response in our study were largely left-lateralised (except for
+the right superior frontal gyrus). Craig (2005) has proposed
+that the right forebrain is predominantly associated with sympathetic activity, i.e., withdrawal behaviour, arousal, danger,
+and negative affect. Conversely, the left forebrain is thought to
+be predominantly associated with parasympathetic activity,
+i.e., affiliative emotions such as approach, nourishment, safety, and positive affect (Craig, 2005). Thus, the finding that
+lower skin conductance in response to negative videos was
+associated with integrity of the right superior frontal gyrus,
+largely concurs with this theory. However, associations between the left temporal pole and response to positive videos,
+are more difficult to reconcile. The temporal pole is known to
+be the hub for semantic processing (Patterson, Nestor, &
+Rogers, 2007) and is one of the earliest regions undergoing
+atrophy in SD (Kumfor et al., 2016; Mion et al., 2010). Our
+neuroimaging results suggest that while abnormal arousal to
+negative films reflects a disturbance of the autonomic brain,
+disrupted autonomic responses to positive films appears to
+reflect a degree of semantic knowledge loss. Importantly,
+much of the previous work investigating lateralisation of function has been based on functional imaging studies and patterns
+of activation in healthy adults. Here, the use of a lesion model
+demonstrates that damage beyond regions typically associated
+with emotional arousal can lead to inappropriate physiological
+responding. That is, if an individual is no longer able to understand the semantic meaning of emotional information, then
+the associated physiological response appears to be compromised. These results demonstrate the multifactorial aetiology
+of disrupted emotion processing in FTD. From a broader perspective, our results demonstrate the complementary nature of
+lesion models and functional imaging in healthy adults to
+uncover the implications of damage to components of this
+complex brain network. Future studies which directly compare right- and left-lateralised SD (e.g., Kumfor et al., 2016)
+will be important to shed further light on the potential
+lateralisation of function, with respect to emotion processing.
+Decoupling between cognitive appraisal
+and emotional experience
+Finally, our investigations revealed that bvFTD and SD patients subjectively interpret emotional stimuli as less intense
+than healthy older adults, although their ability to determine
+whether stimuli are generally positive or negative is maintained, which concurs with our previous research (Kumfor,
+Irish, Hodges, & Piguet, 2013). We suggest that in patients
+with bvFTD and SD, a decoupling between the emotional
+(physiological) experience and cognitive appraisal of a stimulus occurs. That is, while patients may retain the capacity to
+cognitively appraise that a person being shot is Bnegative^ and
+Barousing,^ they do not seem to experience the equivalent
+increase in physiological arousal. Considering the dampening
+of arousal demonstrated, it is plausible that this reduction in
+emotional intensity reflects a change in the emotional experience of these patients. We propose that this decoupling underpins the social symptoms observed in bvFTD and SD.
+Cogn Affect Behav Neurosci (2019) 19:197–210
+207
+
+Limitations and future directions
+One of the strengths of this study was that we examined
+bvFTD and SD as separate groups and examined our physiological measures of interest independently. However, it is now
+well recognised that the clinical syndrome of semantic
+dementia—due to anterior temporal lobe atrophy—can present differently depending on whether the atrophy is more left
+or right lateralised (Chan et al., 2009; Kumfor et al., 2016),
+with patients with more right lateralised atrophy showing
+more behavioural and social changes, as well as
+prosopagnosia (Irish, Kumfor, Hodges, & Piguet, 2013;
+Josephs et al., 2009; Kamminga et al., 2015). It will be interesting for future studies to examine the physiological profile
+of these different SD subtypes to better understand the potential role of hemispheric lateralisation of the autonomic brain.
+In addition, the stimuli used here, while emotionally provocative, have relatively little social demands (Schilbach et al.,
+2013). Future studies that measure physiological arousal while
+these patients engage in social situations will help to enhance
+our understanding of how changes in physiological arousal
+contribute to the social and behavioural changes observed in
+these clinical syndromes. It should be noted that disease duration differed between bvFTD and SD, reflecting the differences in survival in these clinical syndromes (which is almost
+twice as long in SD as in bvFTD) (Hodges, Davies, Xuereb,
+Kril, & Halliday, 2003; Hodges et al., 2010). Importantly, no
+differences were seen on the FRS, indicating that both bvFTD
+and SD groups were at a similar disease stage. Thus, we are
+confident that the different profiles seen in bvFTD and SD are
+unlikely to be accounted for by differences in disease severity.
+Conclusions
+This study demonstrates that the emotion processing impairments that are now well recognised in bvFTD and SD also can
+be detected using objective, noninvasive, psychophysiological measures, which are not confounded by cognitive impairments or task demands. This represents an important advancement in the capacity to detect emotion processing impairments
+early in the disease process and potentially before onset of
+obvious clinical symptoms (Borroni et al., 2017). In addition,
+our results provide support for the integration between internal
+body states, the autonomic brain, and emotion processing,
+which will help to refine theoretical models of human emotion
+and behaviour.
+Acknowledgements The authors are grateful to their patients and families for supporting this research. This work was supported in part by
+funding to ForeFront, a collaborative research group dedicated to the
+study of frontotemporal dementia and motor neuron disease, from the
+National Health and Medical Research Council (NHMRC)
+(APP1037746) and the Australian Research Council (ARC) Centre of
+Excellence in Cognition and its Disorders Memory Program
+(CE11000102). FK is supported by a NHMRC-ARC Dementia
+Research Development Fellowship (APP1097026). OP is supported by
+an NHMRC Senior Research Fellowship (APP1103258). The authors
+acknowledge the Sydney Informatics Hub at the University of Sydney
+for providing access to High Performance Computing resources.
+Compliance with ethical standards
+Conflicts of interest
+None to declare.
+Publisher’s Note Springer Nature remains neutral with regard to jurisdictional claims in published maps and institutional affiliations.
+References
+Aminoff, E. M., Kveraga, K., & Bar, M. (2013). The role of the
+parahippocampal cortex in cognition. Trends in Cognitive
+Sciences, 17(8), 379–390.
+Ashburner, J., & Friston, K. J. (2000). Voxel-based morphometry - the
+methods. Neuroimage, 11, 805–821.
+Babinski, J. (1914). Contributions of cerebral hemispheric organisation in
+the study of mental troubles. Revue Neurologique, 27, 845–848.
+Balconi, M., Cotelli, M., Brambilla, M., Manenti, R., Cosseddu, M.,
+Premi, E., . . . Borroni, B. (2015). Understanding emotions in
+frontotemporal dementia: the explicit and implicit emotional cue
+mismatch. Journal of Alzheimer's Disease, 46(1), 211–225.
+Beissner, F., Meissner, K., Bär, K.-J., & Napadow, V. (2013). The autonomic brain: An activation likelihood estimation meta-analysis for
+central processing of autonomic function. Journal of Neuroscience,
+33(25), 10503–10511.
+Bora, E., Velakoulis, D., & Walterfang, M. (2016). Meta-analysis of facial
+emotion recognition in behavioral variant frontotemporal dementia:
+Comparison with Alzheimer disease and healthy controls. Journal
+of Geriatric Psychiatry and Neurology, 29(4), 205–211.
+Borroni, B., Benussi, A., Premi, E., Alberici, A., Marcello, E., Gardoni,
+F., . . . Padovani, A. (2017). Biological, neuroimaging, and neurophysiological markers in frontotemporal dementia: Three faces of
+the same coin. Journal of Alzheimer's Disease(Preprint), 1–11.
+Bradley, M. M., & Lang, P. J. (2000). Measuring emotion: Behavior,
+feeling, and physiology. Cognitive neuroscience of emotion, 25,
+49–59.
+Chan, D., Anderson, V., Pijenburg, Y., Whitwell, J. L., Barnes, J., Scahill,
+R., . . . Fox, N. C. (2009). The clinical profile of right temporal lobe
+atrophy. Brain, 132, 1287–1298.
+Craig, A. D. (2003). Interoception: The sense of the physiological condition of the body. Current Opinion in Neurobiology, 13(4), 500–505.
+Craig, A. D. (2002). Opinion: How do you feel? Interoception: The sense
+of the physiological condition of the body. Nature reviews.
+Neuroscience, 3(8), 655.
+Craig, A. D. (2005). Forebrain emotional asymmetry: A neuroanatomical
+basis? Trends in Cognitive Sciences, 9(12), 566–571.
+Craig, A. D. (2009). How do you feel - now? The anterior insula and
+human awareness. Nature Reviews Neuroscience, 10(1), 59–70.
+Damasio, A. R., Everitt, B., Bishop, D., Damasio, A. R., Everitt, B., &
+Bishop, D. (1996). The somatic marker hypothesis and the possible
+functions of the prefrontal cortex. Philosophical Transactions of the
+Royal Society of London Series B: Biological Sciences, 351(1346),
+1413–1420.
+Damasio, A. R., Grabowski, T. J., Bechara, A., Damasio, H., Ponto, L. L.
+B., Parvizi, J., & Hichwa, R. D. (2000). Subcortical and cortical
+brain activity during the feeling of self-generated emotions. Nature
+Neuroscience, 3(10), 1049–1056.
+208
+Cogn Affect Behav Neurosci (2019) 19:197–210
+
+de Sousa, A., McDonald, S., & Rushby, J. (2012). Changes in emotional
+empathy, affective responsivity, and behavior following severe traumatic brain injury. Journal of Clinical and Experimental
+Neuropsychology, 34(6), 606–623.
+de Sousa, A., McDonald, S., Rushby, J., Li, S., Dimoska, A., & James, C.
+(2011). Understanding deficits in empathy after traumatic brain injury: The role of affective responsivity. Cortex, 47(5), 526–535.
+Deen, B., Pitskel, N. B., & Pelphrey, K. A. (2010). Three systems of
+insular functional connectivity identified with cluster analysis.
+Cerebral Cortex, 21(7), 1498–1506.
+Dimberg, U., & Thunberg, M. (1998). Rapid facial reactions to emotional
+facial expressions. Scandinavian Journal of Psychology, 39(1), 39–
+45.
+Edwards-Lee, T., Miller, B. L., Benson, D. F., Cummings, J. L., Russell,
+G. L., Boone, K., & Mena, I. (1997). The temporal variant of
+frontotemporal dementia. Brain, 120(6), 1027–1040.
+Fridlund, A. J., & Cacioppo, J. T. (1986). Guidelines for human electromyographic research. Psychophysiology, 23(5), 567–589.
+Gorno-Tempini, M. L., Hillis, A., Weintraub, S., Kertesz, A., Mendez,
+M., Cappa, S. F., . . . Grossman, M. (2011). Classification of primary
+progressive aphasia and its variants. Neurology, 76(11), 1006–1014.
+Guo, C. C., Sturm, V. E., Zhou, J., Gennatas, E. D., Trujillo, A. J., Hua, A.
+Y., . . . Rankin, K. (2016). Dominant hemisphere lateralization of
+cortical parasympathetic control as revealed by frontotemporal dementia. Proceedings of the National Academy of Sciences, 113(17),
+E2430–E2439.
+Halabi, C., Halabi, A., Dean, D. L., Wang, P.-N., Boxer, A. L.,
+Trojanowski, J. Q., . . . Seeley, W. W. (2013). Patterns of striatal
+degeneration in frontotemporal dementia. Alzheimer Disease and
+Associated Disorders, 27(1), 74–83.
+Hein, G., Lamm, C., Brodbeck, C., & Singer, T. (2011). Skin conductance
+response to the pain of others predicts later costly helping. PloS One,
+6(8), e22759.
+Hodges, J. R., Davies, R. R., Xuereb, J. H., Kril, J. J., & Halliday, G.
+(2003). Survival in frontotemporal dementia. Neurology, 61(3),
+349–354.
+Hodges, J. R., Mitchell, J., Dawson, K., Spillantini, M. G., Xuereb, J. H.,
+McMonagle, P., . . . Patterson, K. (2010). Semantic dementia:
+Demography, familial factors and survival in a consecutive series
+of 100 cases. Brain, 133(Pt 1), 300–306.
+Hodges, J. R., Patterson, K., Oxbury, S., & Funnell, E. (1992). Semantic
+dementia: Progressive fluent aphasia with temporal lobe atrophy.
+Brain, 115(6), 1783–1806.
+Hoefer, M., Allison, S. C., Schauer, G. F., Neuhaus, J. M., Hall, J., Dang,
+J. N., . . . Rosen, H. J. (2008). Fear conditioning in frontotemporal
+lobar degeneration and Alzheimer's disease. Brain, 131(6), 1646–
+1657.
+Hsieh, S., Irish, M., Daveson, N., Hodges, J. R., & Piguet, O. (2013a).
+When one loses empathy: Its effect on carers of patients with dementia. Journal of Geriatric Psychiatry and Neurology, 26(3), 174–
+184.
+Hsieh, S., Schubert, S., Hoon, C., Mioshi, E., & Hodges, J. R. (2013b).
+Validation of the Addenbrooke's Cognitive Examination III in
+frontotemporal dementia and Alzheimer's disease. Dement Geriatr
+Cogn Disord, 36(3-4), 242–250.
+Hutchings, R., Hodges, J. R., Piguet, O., & Kumfor, F. (2015). Why
+SHOULD I CARE? DIMENSIONS OF SOCIO-EMOTIONAL
+COGNITION IN YOUNGER-ONSET DEMENTIa. Journal of
+Alzheimer's Disease, 48(1), 135–147.
+Ibañez, A., & Manes, F. (2012). Contextual social cognition and the
+behavioral variant of frontotemporal dementia. Neurology, 78(17),
+1354–1362.
+Irish, M., Kumfor, F., Hodges, J. R., & Piguet, O. (2013). A tale of two
+hemispheres: Contrasting patterns of socioemotional dysfunction in
+left- versus right-lateralised semantic dementia. Dementia and
+Neuropsychologia, 7(1), 88–95.
+James, W. (1884). What is an emotion? Mind, 9(34), 188–205.
+Josephs, K. A., Whitwell, J. L., Knopman, D. S., Boeve, B. F., Vemuri, P.,
+Senjem, M. L., . . . Jack Jr, C. R. (2009). Two distinct subtypes of
+right temporal variant frontotemporal dementia. Neurology, 73(18),
+1443–1450.
+Joshi, A., Mendez, M. F., Kaiser, N., Jimenez, E., Mather, M., & Shapira,
+J. S. (2014). Skin conductance levels may reflect emotional blunting
+in behavioral variant frontotemporal dementia. Journal of
+Neuropsychiatry and Clinical Neurosciences, 26(3), 227–232.
+Kamminga, J., Kumfor, F., Burrell, J. R., Piguet, O., Hodges, J. R., &
+Irish, M. (2015). Differentiating between right-lateralised semantic
+dementia and behavioural-variant frontotemporal dementia: An examination of clinical characteristics and emotion processing.
+Journal of Neurology, Neurosurgery and Psychiatry, 86, 1082–
+1088.
+Kumfor, F., Hodges, J. R., & Piguet, O. (2014a). Ecologically valid assessment of emotional enhancement of memory in progressive
+nonfluent aphasia and Alzheimer's disease. Journal of Alzheimer's
+Disease, 42(1), 201–210.
+Kumfor, F., Ibanez, A., Hutchings, R., Hazelton, J. L., Hodges, J. R., &
+Piguet, O. (2018). Beyond the face: How context modulates emotion
+processing in frontotemporal dementia subtypes. Brain,
+Kumfor, F., Irish, M., Hodges, J. R., & Piguet, O. (2013). The
+orbitofrontal cortex is involved in emotional enhancement of memory: Evidence from the dementias. Brain, 136, 2992–3003.
+Kumfor, F., Landin-Romero, R., Devenney, E., Hutchings, R., Grasso, R.,
+Hodges, J. R., & Piguet, O. (2016). On the right side? A longitudinal
+study of left- versus right-lateralized semantic dementia. Brain,
+139(Pt 3), 986–998.
+Kumfor, F., & Piguet, O. (2012). Disturbance of emotion processing in
+frontotemporal dementia: A synthesis of cognitive and neuroimaging findings. Neuropsychology Review, 22(3), 280–297.
+Kumfor, F., Sapey-Triomphe, L.-A., Leyton, C. E., Burrell, J. R., Hodges,
+J. R., & Piguet, O. (2014b). Degradation of emotion processing
+ability in corticobasal syndrome and Alzheimer's disease. Brain,
+137(Pt 11), 3061–3072.
+Landin-Romero, R., Kumfor, F., Leyton, C. E., Irish, M., Hodges, J. R., &
+Piguet, O. (2017). Disease-specific patterns of cortical and subcortical degeneration in a longitudinal study of Alzheimer's disease and
+behavioural-variant frontotemporal dementia. Neuroimage, 151,
+72–80.
+Lang, P. J. (1980). Behavioral treatment and bio-behavioral assessment.
+In J. B. Sidowski, J. H. Johnson, & T. A. Williams (Eds.),
+Technology in mental health care delivery system (pp. 119–137).
+Norwood, NJ: Ablex.
+Lange, C. (1922). The emotions (I. A. Haupt, Trans.). In K. Dunlap (Ed.),
+(pp. 33–90). Baltimore: Williams & Wilkins.
+Levenson, R. W. (1988). Emotion and the autonomic nervous system: A
+prospectus for research on autonomic specificity. Social psychophysiology: Theory and clinical applications.
+McDonald, S., Li, S., De Sousa, A., Rushby, J., Dimoska, A., James, C.,
+& Tate, R. L. (2010). Impaired mimicry response to angry faces
+following severe traumatic brain injury. Journal of Clinical and
+Experimental Neuropsychology, 33(1), 17–29.
+Mechelli, A., Price, C. J., Friston, K. J., & Ashburner, J. (2005). Voxelbased morphometry of the human brain: Methods and applications.
+Current Medical Imaging Reviews, 1(2), 105–113.
+Miller, L., Hsieh, S., Lah, S., Savage, S., Hodges, J. R., & Piguet, O.
+(2012). One size does not fit all: Face emotion processing impairments in semantic dementia, behavioural-variant frontotemporal dementia and Alzheimer's disease are mediated by distinct cognitive
+deficits. Behavioural Neurology, 25, 53–60.
+Mills, C. K. (1912). The cerebral mechanisms of emotional expression.
+Transactions of the College of Physicians of Philadelphia, 34, 381–
+390.
+Cogn Affect Behav Neurosci (2019) 19:197–210
+209
+
+Mion, M., Patterson, K., Acosta-Cabronero, J., Pengas, G., Izquierdo-
+Garcia, D., Hong, Y. T., . . . Nestor, P. J. (2010). What the left and
+right anterior fusiform gyri tell us about semantic memory. Brain,
+133(11), 3256–3268.
+Mioshi, E., Dawson, K., Mitchell, J., Arnold, R., & Hodges, J. R. (2006).
+The Addenbrooke's Cognitive Examination Revised (ACE-R): A
+brief cognitive test battery for dementia screening. International
+Journal of Geriatric Psychiatry, 21(11), 1078–1085.
+Mioshi, E., Hsieh, S., Savage, S., Hornberger, M., & Hodges, J. R.
+(2010). Clinical staging and disease progression in frontotemporal
+dementia. Neurology, 74(20), 1591–1597.
+Nichols, T. E., & Holmes, A. P. (2002). Nonparametric permutation tests
+for functional neuroimaging: A primer with examples. Human Brain
+Mapping, 15, 1–25.
+Patterson, K., Nestor, P. J., & Rogers, T. T. (2007). Where do you know
+what you know? The representation of semantic knowledge in the
+human brain. Nature Reviews: Neuroscience, 8(12), 976–987.
+Perry, R. J., Rosen, H. J., Kramer, J. H., Beer, J. S., Levenson, R. L., &
+Miller, B. L. (2001). Hemispheric dominance for emotions, empathy
+and social behaviour: Evidence from right and left handers with
+frontotemporal dementia. Neurocase, 7(2), 145–160.
+Piguet, O., Hornberger, M., Mioshi, E., & Hodges, J. R. (2011).
+Behavioural-variant frontotemporal dementia: Diagnosis, clinical
+staging, and management. The Lancet Neurology, 10(2), 162–172.
+Rascovsky, K., Hodges, J. R., Knopman, D. S., Mendez, M. F., Kramer, J.
+H., Neuhaus, J. M., . . . Miller, B. L. (2011). Sensitivity of revised
+diagnostic criteria for the behavioural variant of frontotemporal dementia. Brain, 134(9), 2456–2477.
+Rosen, H. J., Gorno-Tempini, M. L., Goldman, W. P., Perry, R. J., Schuff,
+N., Weiner, M., . . . Miller, B. L. (2002). Patterns of brain atrophy in
+frontotemporal dementia and semantic dementia. Neurology, 58(2),
+198–208.
+Rueckert, D., Sonoda, L. I., Hayes, C., Hill, D. L., Leach, M. O., &
+Hawkes, D. J. (1999). Nonrigid registration using free-form deformations: Application to breast MR images. IEEE Transactions on
+Medical Imaging, 18, 712–721.
+Rushby, J. A., McDonald, S., Randall, R., de Sousa, A., Trimmer, E., &
+Fisher, A. (2013). Impaired emotional contagion following severe
+traumatic brain injury. International Journal of Psychophysiology,
+89(3), 466–474.
+Schachter, S., & Singer, J. (1962). Cognitive, social, and physiological
+determinants of emotional state. Psychological Review, 69(5), 379.
+Schilbach, L., Timmermans, B., Reddy, V., Costall, A., Bente, G.,
+Schlicht, T., & Vogeley, K. (2013). A second-person neuroscience
+in interaction. Behavioral and Brain Sciences, 36(4), 441–462.
+Schwartz, G. E., Davidson, R. J., & Maer, F. (1975). Right hemisphere
+lateralization for emotion in the human brain: Interactions with cognition. Science, 190(4211), 286–288.
+Seeley, W. W., Crawford, R., Rascovsky, K., Kramer, J. H., Weiner, M.,
+Miller, B. L., & Gorno-Tempini, M. L. (2008). Frontal paralimbic
+network atrophy in very mild behavioural variant frontotemporal
+dementia. Archives of Neurology, 65(2), 249–255.
+Seeley, W. W., Menon, V., Schatzberg, A. F., Keller, J., Glover, G. H.,
+Kenna, H., . . . Greicius, M. D. (2007). Dissociable intrinsic connectivity networks for salience processing and executive control. The
+Journal of Neuroscience, 27(9), 2349–2356.
+Shany-Ur, T., & Rankin, K. P. (2011). Personality and social cognition in
+neurodegenerative disease. Current Opinion in Neurology, 24(6),
+550–555.
+Singer, T., Critchley, H. D., & Preuschoff, K. (2009). A common role of
+insula in feelings, empathy and uncertainty. Trends in Cognitive
+Sciences, 13(8), 334–340.
+Smith, S. M., Jenkinson, M., Woolrich, M. W., Beckmann, C. F.,
+Behrens, T. E. J., Johansen-Berg, H., . . . Matthews, P. M. (2004).
+Advances in functional and structural MR image analysis and implementation as FSL. Neuroimage, 23(S1), 208–219.
+Sturm, V. E., McCarthy, M. E., Yun, I., Madan, A., Yuan, J. W., Holley, S.
+R., . . . Levenson, R. W. (2011). Mutual gaze in Alzheimer's disease,
+frontotemporal and semantic dementia couples. Social Cognition
+and Affective Neuroscience, 6(3), 359–367.
+Sturm, V. E., Rosen, H. J., Allison, S., Miller, B. L., & Levenson, R. W.
+(2006). Self-conscious emotion deficits in frontotemporal lobar degeneration. Brain, 129(9), 2508–2516.
+Sturm, V. E., Sollberger, M., Seeley, W. W., Rankin, K. P., Ascher, E. A.,
+Rosen, H. J., . . . Levenson, R. W. (2013). Role of right pregenual
+anterior cingulate cortex in self-conscious emotional reactivity.
+Social Cognitive and Affective Neuroscience, 8(4), 468–474.
+Van Boxtel, A. (2010). Facial EMG as a tool for inferring affective states.
+Paper presented at the Proceedings of measuring behavior.
+Werner, K. H., Roberts, N. A., Rosen, H. J., Dean, D. L., Kramer, J. H.,
+Weiner, M. W., . . . Levenson, R. W. (2007). Emotional reactivity
+and emotion recognition in frontotemporal lobar degeneration.
+Neurology, 69(2), 148–155.
+Williams, L. M., Das, P., Liddell, B., Olivieri, G., Peduto, A., Brammer,
+M. J., & Gordon, E. (2005). BOLD, sweat and fears: fMRI and skin
+conductance distinguish facial fear signals. Neuroreport, 16(1), 49–
+52.
+Woolrich, M. W., Jbabdi, S., Patenaude, B., Chappell, M., Makni, S.,
+Behren, T., . . . Smith, S. M. (2009). Bayesian analysis of neuroimaging data in FSL. Neuroimage, 45, S173–186.
+Zhang, Y., Brady, M., & Smith, S. (2001). Segmentation of brain MR
+images though a hidden Markov random field model and the
+expectation-maximisation algorithm. IEEE Transactions on
+Medical Imaging, 20(1), 45–57.
+210
+Cogn Affect Behav Neurosci (2019) 19:197–210

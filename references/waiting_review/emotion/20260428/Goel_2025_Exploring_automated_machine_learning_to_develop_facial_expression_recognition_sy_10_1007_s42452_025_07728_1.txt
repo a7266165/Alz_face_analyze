@@ -1,0 +1,1581 @@
+RESEARCH
+Open Access
+© The Author(s) 2025. Open Access  This article is licensed under a Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International
+License, which permits any non-commercial use, sharing, distribution and reproduction in any medium or format, as long as you give appropriate
+credit to the original author(s) and the source, provide a link to the Creative Commons licence, and indicate if you modified the licensed material.
+You do not have permission under this licence to share adapted material derived from this article or parts of it. The images or other third party
+material in this article are included in the article’s Creative Commons licence, unless indicated otherwise in a credit line to the material. If material
+is not included in the article’s Creative Commons licence and your intended use is not permitted by statutory regulation or exceeds the permitted
+use, you will need to obtain permission directly from the copyright holder. To view a copy of this licence, visit ​h​t​t​p​:​/​/​c​r​e​a​t​i​v​e​c​o​m​m​o​n​s​.​o​r​g​/​l​i​c​e​n​s​
+e​s​/​b​y​-​n​c​-​n​d​/​4​.​0​/.
+Goel et al. Discover Applied Sciences          (2025) 7:1165
+https://doi.org/10.1007/s42452-025-07728-1
+*Correspondence:
+Praneet Saurabh
+praneet.saurabh@jaipur.manipal.
+edu
+1Manipal University Jaipur, Jaipur,
+Rajasthan, India
+2Madhav Institute of Technology
+and Science, Gwalior, M.P, India
+Exploring automated machine learning
+to develop facial expression recognition
+systems
+Atharv Goel1, Praneet Saurabh1*, Dhananjay Bisen2, Rishav Dubey1 and Prathap Somu1
+Discover Applied Sciences
+Abstract
+With human-computer interactions on the rise, in use for even the most mundane
+things like shopping, making travel arrangements and ordering food as well as
+matters of national importance such as healthcare and security, Facial Expression
+Recognition has become crucial to our lives. Currently used traditional facial
+expression recognition systems rely on manual tuning by experts to get optimised
+results, face challenges such as the demand of resources and expert-level knowledge
+of a plethora of neural network architectures which prevents the technology
+from being widely adopted. This paper demonstrates a practical application of
+Automated Machine Learning using a framework known as AutoGluon to automate
+model selection and hyperparameter tuning for Facial Expression Recognition,
+achieving competitive accuracy (76.4%) on the challenging FER2013 dataset. It
+also provides a comprehensive analysis of four model configurations (Default, Low
+Resource, Balanced, High Quality), enabling users to balance computational cost
+and performance. These models outperform several state-of-the-art manually tuned
+models (RMN, ViT, MLFCC etc.) and highlight AutoML’s potential to democratize
+FER development for non-experts. This paper also includes the use of metrics such
+as precision, recall and f1-score along with accuracy to provide a more holistic
+understanding of the models’ strengths and limitations, and includes ethical
+considerations and future directions, addressing critical issues like bias mitigation
+and real-world deployment challenges. This work confirms the potential of AutoML
+to revolutionize facial expression recognition, making advanced facial expression
+analysis more accessible and effective.
+Article highlights
+	•
+A novel model with automated model selection, hyperparameter tuning and
+ensembling achieves state-of-the-art accuracy of 76.4% on the FER2013 dataset,
+surpassing several manually tuned models.
+	•
+Evaluates four model configurations, namely Default, Low Resource, Balanced,
+and High Quality, allowing users to balance computational cost and accuracy
+based on available resources.
+
+Page 2 of 23
+Goel et al. Discover Applied Sciences          (2025) 7:1165
+1  Introduction
+Facial expressions have always been an elemental aspect of communication, conveying a
+wealth of emotional and social information. From joy and sadness to anger and surprise,
+facial expressions are a major aspect of interpersonal interactions, affective computing,
+and human-computer interaction. Accurately interpreting facial expressions is crucial
+to various domains, including psychology, medicine, marketing, security, and entertain­
+ment. Recent advances in machine learning (ML) have transformed the field of facial
+expression recognition (FER), enabling effective real-world applications, particularly in
+the context of big data [1, 2]. Some of these applications are:
+(i)	Emotion analysis in large-scale market research.
+(ii)	Monitoring patients in healthcare department.
+(iii)	 Real-time surveillance of public areas for suspicious behaviour.
+(iv)	 Assessment of student engagement in online learning.
+(v)	Detecting driver drowsiness to improve road safety.
+More specifically, FER in healthcare [3] is of utmost importance as demonstrated
+through the revolutionary company PainChek, which uses AI-driven facial analysis to
+assess pain levels in patients who cannot communicate (such as those with dementia),
+where the AI analyses micro-expressions associated with pain and generates an objec­
+tive pain score. This allows for timely pain relief in residents who might otherwise suffer
+silently [4]. Another application of FER systems in healthcare was at the Yokohama City
+University Hospital, which developed an AI system to watch over sedated intensive care
+patients by looking for subtle signs of discomfort in the patients’ faces and eyes [5].
+FER, once solely a human domain, has been revolutionized by artificial intelligence
+(AI), enabling machines to process vast image and video data to detect and interpret
+expressions. As technology advances, FER plays a vital role in enhancing human-com­
+puter interaction by enabling systems to recognize emotions and intentions. Given that
+facial expressions convey 55% of the information being passed, with actual language
+constituting only 7% [6], FER offers powerful insights into a person’s emotional and
+mental state. Its applications span virtual assistants, emotion aware gaming, personal­
+ized e-commerce experiences and more- making interfaces more intuitive, responsive
+and human centric.
+With the rise of the internet, abundant image data is now available to train models for
+emotion recognition. Despite advances in FER technology [7], its real-world adoption
+remains limited due to persistent challenges. These include cultural differences in inter­
+preting expressions [8], and inconsistencies in image quality, such as variations in light­
+ing, occlusions, and resolution—common issues in Big Data. Overcoming these requires
+robust machine learning algorithms capable of generalizing across diverse conditions.
+Another key obstacle is the substantial resource demand—time, expertise, and compu­
+tation—needed to design and optimize high-performing FER models. Even skilled data
+	•
+Discusses potential ethical challenges in FER applications and proposes future
+research directions, including cross-dataset generalization, model interpretability,
+and bias mitigation.
+Keywords  Facial expression recognition, Automated machine learning, AutoGluon,
+FER2013
+
+Page 3 of 23
+Goel et al. Discover Applied Sciences          (2025) 7:1165
+scientists must invest significant effort in model selection, hyperparameter tuning, and
+training. This is where Automated Machine Learning (AutoML) becomes valuable [9]
+AutoML automates the end-to-end ML pipeline from raw data to model deployment
+using frameworks like AutoGluon, Google Cloud AutoML, and TPOT [10]. These tools
+simplify tasks such as model selection, hyperparameter optimization, feature engineer­
+ing, and ensembling, making advanced model development accessible to non-experts.
+By automating complex and time-consuming processes, AutoML enables researchers to
+focus on higher-level insights, while efficiently identifying optimal model configurations
+through sophisticated search strategies.
+In the context of FER, AutoML offers several advantages and opportunities for
+advancing the current state-of-the-art. Firstly, AutoML enables researchers to explore a
+plethora of ML models and architectures, including many foundational FER algorithms
+as well as convolutional neural networks (CNNs), recurrent neural networks (RNNs)
+and ensemble methods, without requiring specialized expertise in each algorithm. This
+flexibility allows for the identification of the most suitable model architecture for the
+given task and dataset, potentially leading to improved performance and generalization.
+Furthermore, AutoML frameworks facilitate efficient hyperparameter optimization,
+enabling the fine-tuning of model parameters to enhance performance and robustness.
+Hyperparameters play a critical role in determining a model’s effectiveness, and AutoML
+techniques automate the process of searching for optimal hyperparameter configura­
+tions, significantly reducing the need for manual experimentation and tuning. This is
+done by employing optimization algorithms like Bayesian optimization and evolutionary
+algorithms.
+In this paper, AutoGluon is employed to bridge the gap between experts and nonexperts in the creation of models for FER. AutoGluon is used to automate the complex
+tasks of selecting models, adjusting the layers in the neural networks and optimizing
+hyperparameters and help the user create state-of-the-art models which are competitive
+to those created by experts. The proposed AutoGluon-driven method attempts to cover
+the underexplored area of AutoML in FER and succeeds in creating several models,
+which outperform the conventional state-of-the-art in accuracy on the FER2013 data­
+set [11]. The proposed AutoGluon model reported an accuracy of 76.4% on FER2013
+dataset, higher than the traditional manually tuned models, which also shows its effi­
+ciency when processing Big Data. This work demonstrates that AutoML has the poten­
+tial to improve FER systems, making advanced facial expression analysis ubiquitous and
+easy-to-use.
+This paper is organised in the following way: Sect. 2 covers related work while Sect. 3
+discusses the proposed work. Section 4 presents results, and its subsequent discussion
+and Sect. 5 concludes the paper.
+2  Related work
+Facial Expression Recognition (FER) is a computer vision function aimed at categoriz­
+ing emotional expressions. The focus of this task is to automate the detection of facial
+expressions and thus the underlying emotional state by analysing various features and
+mapping them to emotions like anger, happiness, and fear.
+Artificial Intelligence (AI) is a computer program which can compute or “think” in the
+way a human mind does. It is the ability of a program to transcend the limitations of
+
+Page 4 of 23
+Goel et al. Discover Applied Sciences          (2025) 7:1165
+a regular program which is limited to computing exactly according to what the devel­
+oper instructed it to, and instead creating its own mathematical structures and functions
+to provide an output based on prior information given to it [12, 13]. Machine learning
+(ML) [14] is a subset of AI, the ability given to a machine to learn and improve its perfor­
+mance without the need for a human to explain how to accomplish the task [15]. It does
+this by creating its own mathematical model based on patterns it identifies in data. In
+this field, there have been recent innovations to use ML for skin cancer lesion analysis,
+thus making ML an important part of the healthcare industry [16]. Deep learning (DL)
+[2] is a subset of ML where computer scientists create “neural networks,” essentially lay­
+ers of interconnected nodes or “neurons” to mimic the way the human mind processes
+information. A neural network consists of such a web of neurons, each of which has a
+mathematical algorithm (known as an activation function) to compute the information
+passed to it by the previous layer and its own weights and biases to provide an output.
+DL is thus the most efficient and intricate model, and it has the capability to work with
+tabular data, images and recreate human language in the form of text and even speech.
+Continuing the example, DL has also been used to further enhance the work of skin can­
+cer diagnosis to improve the accuracy of the system [17].
+FER systems cannot be handled by regular ML algorithms like Decision Trees and
+Regression because of the difficulties in identifying relevant features in images. These
+traditional ML algorithms are effective when the input features are explicitly defined
+and inherently meaningful, like in the case of numerical data, so for them to be of effec­
+tive, the attributes of the image (edges and shapes) must be manually engineered and
+extracted into numerical representations before the algorithms can work with them. Raw
+image data alone do not carry such meaningful information. However, DL algorithms
+learn the hierarchical representations of images, with each layer extracting increasing
+abstract features from the input images. This allows the algorithm to capture complex
+patterns and relationships in the data, leading to superior classification performance.
+Therefore, DL is the best way to perform facial expression recognition.
+2.1  Review of literature
+This subsection discusses the various models designed by researchers to automate
+FER which build the expansive state-of-the-art which include CNNs, Attention-Based
+Models, and Vision transformers. Saeed et al. [6] developed an automated framework
+for facial detection, which they termed FD-CNN. The architecture consists of four con­
+volutional layers and two hidden layers. The model is comprised of three processes;
+preprocessing, feature extraction, and classification. The CK + dataset is applied for
+both training and testing. Zhang et al. [18] introduced a novel approach dubbed Dual-
+Direction Attention Mixed Feature Network (DDAMFN). The model enhances accuracy
+with the use of dual-direction attention mechanisms (which enables attention to both
+fine details and broader context) alongside mixed feature fusion. The model maintained
+67.03% accuracy with the AffectNet dataset, 90.74% with FER+, and 91.35% overall in
+RAF-DB. Later, Pham et al. [19] introduced a new approach for FER based on a Residual
+Masking Network (RMN) which enhances the performance of CNN. The architecture
+aims to achieve global and local feature capture. The architecture of the network com­
+prises of residual blocks which capture image details on an intricate level. Moreover, it
+utilizes masking layers to both suppress irrelevant and enhance crucial discriminating
+
+Page 5 of 23
+Goel et al. Discover Applied Sciences          (2025) 7:1165
+features. The RMN captures relevant information from the input image through the use
+of a segmentation network that partitions an image into several parts depending on the
+class to which they belong. On the FER2013 dataset, RMN was able to surpass the previ­
+ous benchmark with a dipatched accuracy of 74.14% and VEMO’s private dataset yield­
+ing a 65.94%. Later, Krizhevsky et al. [20] devised a Deep Convolutional Neural Network
+aimed for classifying the ImageNet database which harbours 1.2 million images parti­
+tioned into 1000 distinct categories. Their final model comprises 5 convolutional layers
+alongside 3 fully connected ones, employing a regularization technique known as ‘drop­
+out’ to mitigate overfitting. This model was presented at the ImageNet ILSVRC-2012
+contest, winning first place with 15.3% error rate against the runner up’s 26.2%. Later,
+Jain et al. [21] introduced a model relying on a single Deep Convolutional Neural Net­
+work (DNN) featuring convolutional layers and deep residual blocks. The authors argue
+that incorporating residual blocks with CNN improves the results. The model was
+trained on the CK + and JAFFE datasets, achieving an accuracy of 93.24% and 95.23%,
+respectively.
+On the other hand, Lopes et al. [22] 2022 developed a convolutional neural network
+(CNN)-based model for facial expression recognition (FER) with specific image preprocessing techniques. It is claimed that these methods are competitive against other
+approaches in the field of FER. These methods include the following: rotation correc­
+tion, cropping, down-sampling, and intensity normalization. The model was evaluated
+using the CK + and JAFFE and BV-3DFE datasets and achieved the highest accuracy of
+96.76% on CK+. Wang et al. [23] suggested a novel approach to FER based on the use
+of auxiliary models. The hypothesis is that using the entire face as input would result
+in a wealth of extraneous data which would lead to the loss of important features. This
+issue is mitigated through the use of multiple subregions of the face which are weighted
+relative to the rest of the image. The model was tested on four datasets: JAFFE, CK+,
+FER2013, and SFEW. Li et al. [24] proposed a new approach of FER aimed at enhancing
+human-robot interaction by using a CNN for information extraction, long short-term
+memory recurrent neural networks (LSTMs) for modelling the relation of facial expres­
+sion changes over time with expressions in an image sequence and improved the mod­
+el’s performance with transfer learning. The model in question was evaluated using the
+JAFFE, CK+, FER2013, and SFEW datasets, obtaining accuracy values of 95.9%, 99.09%,
+67.7%, and 59.97%, respectively. Later, Thacker [25] introduced three approaches to FER:
+Multi-Layer Feature Fusion based Classification (MLFFC), Multi-Model Feature Fusion
+based Classification (MMFFC), and a new model, EfficientNetB7, based on Normalized
+CNN. For MLFFC, internal layer fusion is employed while in MMFFC, fusion is per­
+formed using two models. EfficientNetB7 is implemented with Compound Scaling that
+increases the scale of a CNN. The results are as follows: MLFFC achieved 99.69% accu­
+racy on CK + and 70.29% on FER2013, MMFFC reached 92.04% on KDEF and 68.14%
+on FER2013, and EfficientNetB7 achieved 57.5% on FER2013. Later, Cheng et al. [26]
+presented two approaches that utilize ensembles of CNN classifiers for multiple-stage
+classification. The first approach assigns different training sets to each CNN, while the
+second changes the image size of the original data to create multiple training sets. Merg­
+ing the results of the individual CNNs is done by majority voting. The two approaches
+are tested using the ORL database, which includes ten images of forty different sub­
+jects for a total of four hundred images. The first two models achieved 90.0% and 99.5%
+
+Page 6 of 23
+Goel et al. Discover Applied Sciences          (2025) 7:1165
+accuracies respectively. Later Chantrapornchai et al. [27] assigned a model leveraging
+an AutoML framework which integrates SqueezeNet (a CNN design meant to mini­
+mize parameter count) and SE blocks with residual block merges. The authors suggest
+such combinations can outperform traditional models without tuning outperform tradi­
+tional models lacking hand tuning. The datasets used are CIFAR-10 and Tsinghua Facial
+Expression. For FER, the proposed method attains up to 71% accuracy (with proper SE
+block insertion, correct fire module quantity, and appropriate input merging) compared
+to less than 20% accuracy achieved by traditional models. Also, Abdulrahman et al. [28]
+introduced a Vision transformer model integrated with an SE block. With this approach,
+novel attention mechanisms were provided while alleviating the lack of available training
+data. This model achieved 99.8% accuracy for CK + dataset, 92.92% for JAFFE, 87.22%
+for RAF-DB, and 54.29% for SFEW, thereby surpassing or meeting the SOTA on these
+datasets.
+Additionally, the Swin-Fer network was proposed by Mei et al. in [29], built upon the
+Swin transformer which captures global contextual information by using a fusion strat­
+egy in the middle to deeper layers, and adopting data dimension conversion techniques
+to obtain more spatial information. Amid the innovation, they also implemented a new
+method with which they accomplished 100% accuracy on the CK + dataset and 71.11%
+accuracy on FER2013. Also, Feng et al. [30] in their work advanced further by proposing
+another method of fine-tuning the Swin transformer alongside Multiple Weights Opti­
+mality-seeking. This model surpassed the state-of-the-art results for RAF-DB, FERPlus,
+and AffectNet datasets. Tao and Duan [31] used hierarchical attention networks with
+progressive feature fusion for FER. A range of studies showed that the introduced model
+performed better than all the other FER methods. Naveen [32] used a combination of
+Hopfield Networks, Deep Belief Network (DBN) architecture, and Lanczos interpola­
+tion to identify obscured facial expressions. This paper greatly contributes the theory,
+practice, and future research on facial expression recognition by providing a robust and
+effective methodology. Zhang et al. [33] proposed the spatial channel cross-fusion dualattention network. The spatial channel focuses the features while the channel dimen­
+sion offers a wider receptive field. Mehendale [34] advanced facial emotion recognition
+(FER) using convolutional neural networks (CNN) by considering deep network and tra­
+ditional machine learning approaches. The FERC obtains facial feature vectors by back­
+ground extraction through a two-stage CNN. To address demographic biases in affective
+computing AI systems, Singhal et al. [35] put forth the Demographic Biased Mitigating
+Framework (DBMF). The criticism of AI-based automated FER systems for not consid­
+ering multi-modal signals gave birth to Li et al. [36] FER-former, a transformer network
+for FER in unconstrained settings with supervision from other modalities. To tackle
+the issue of restricted receptive fields, a hybrid feature extraction pipeline that com­
+bines cascaded CNNs and transformers is employed. Ge et al. [37] later developed an
+occluded expression recognition model with a countermeasure network. The model
+consists of two modules: face recognition and restoration of the obstructed face image.
+Table 1 presents the comparison of different methods using FER 2023.
+2.2  Limitations of literature
+There are several limitations to the state-of-the-art, including that most of the pro­
+posed models are hand-tuned by professionals, which requires cutting-edge technology,
+
+Page 7 of 23
+Goel et al. Discover Applied Sciences          (2025) 7:1165
+specific expertise in the subject matter and substantial resources. Even with these meth­
+ods, most models perform poorly on in-the-wild datasets, which are the closest to rep­
+licating real-life scenarios. This creates a restriction which prevents the widespread
+adoption of FER models. AutoML can be used to overcome this barrier, as it takes away a
+significant portion of the work by automating model selection and tuning.
+3  Proposed work
+3.1  Dataset
+There are two broad categories of datasets, the first of which are the controlled or lab
+datasets. These datasets are created in well-controlled environments like laboratories,
+with attention to lighting, the actors’ posture, camera angles and the background. Exam­
+ples include JAFFE, MMI, KDEF and CK+ [38]. The second type of dataset is known as
+in-the-wild datasets. These consist of images captured in real-world scenarios and are
+inherently challenging due to issues such as obstructions in the image, and variations in
+lighting, background and poses. Some well-known datasets which fall into this category
+are: FER2013, FER + and AffectNet [38–40]. These are harder to classify and will have
+a lower accuracy as compared to the controlled ones due to the challenges mentioned
+but are of great importance in the context of Big Data, as they most closely resemble the
+data which real-world FER models aim to predict by virtue of being created by gathering
+results on the internet.
+FER2013 [11] is a widely used dataset, which consists of 35,887 greyscale (48 × 48
+pixel) images divided into seven broad expressions: anger, disgust, fear, happy, neutral,
+sad and surprise. FER2013 dataset was originally used in the ICML 2013 Challenges in
+Representation Learning and included uncontrolled images. Figure 1 reflects an instance
+of the FER 2013 dataset. It is divided into two parts, training data (consisting of 28,709
+Table 1  Comparison of existing methods and limitations using FER2023
+Author
+Method
+Description
+Ac­
+curacy
+(%)
+Limitation
+Pham et al.
+[19]
+RMN
+CNN-based model with residual, mask­
+ing layers
+74.14
+Hand-tuned; dataset
+specific; performance
+drop on unseen data
+Li [24]
+FER using CNN
+CNNs for spatial features, LSTMs for
+temporal modelling, transfer learning to
+improve performance
+67.7
+Lower accuracy;
+complex architecture;
+resource intensive
+Thacker [25]
+MLFCC
+Multi-layer feature fusion approach,
+internal CNN layers fused.
+70.29
+Less effective on in-thewild datasets
+MMFFC
+Feature fusion to combine outputs from
+multiple models
+68.14
+Complexity increases;
+not generalizable
+EfficientNetB7
+Lightweight CNN with compound
+scaling
+57.5
+Low performance on
+FER2013; overfitting risk
+Mei et al. [29] Swin-FER
+Transformer-based architecture using
+Swin Transformer blocks and fusion
+strategies
+71.11
+Requires high compu­
+tation; may not perform
+well on small datasets
+Fig. 1  Examples from the FER2013 dataset, left to right: Anger, Disgust, Fear, Happy, Neutral, Sad, Surprise
+
+
+Page 8 of 23
+Goel et al. Discover Applied Sciences          (2025) 7:1165
+images) and test data (7,178 images). This allows for an unbiased evaluation of the
+proposed models. The test set was separated before training to ensure that no leakage
+occurs, which would affect the metrics during evaluation. The images in the FER2013
+dataset have been pre-processed (by the authors of the dataset) in the following ways:
+(i)	Grayscale Conversion: The images are in grayscale, which reduces the computational
+complexity by eliminating the colour channels (RGB) and leaving a single intensity
+channel.
+(ii)	Resizing and Scaling: All the images are standardized to 48 × 48 pixels, which ensures
+uniformity across the dataset and reduces the computational burden during training.
+(iii)	 Feature Extraction: The images have all been cropped such that only the relevant
+features remain.
+FER2013 is well-known for its difficulty, being an in-the-wild dataset. Another reason
+for its difficulty is that it contains low resolution images in addition to those which may
+have occlusions. This creates a difficulty for the model during training but helps it adapt
+for the challenges faced when sorting through Big Data. Table 2 introduces the details of
+the dataset.
+The “Percentage of the dataset (%)” column indicates the proportion of each emotion
+category relative to the entire FER2013 dataset (i.e., out of 35,887 images). This high­
+lights the inherent class imbalance, with some classes like “Happy” comprising over
+25% of the data, while others like “Disgust” make up less than 2%. Such imbalances can
+impact model training and evaluation, making metrics beyond accuracy, such as preci­
+sion, recall, and F1-score, particularly important.
+3.2  Models
+To ensure a comprehensive and rigorous analysis, four distinct models were employed,
+each utilizing varied configurations tailored to address specific elements of the problem.
+The Default Model (Sect. 4.1) utilized a medium-quality preset, along with a dynamic
+selection of learning rate and batch size, using the Adam optimizer and a 10% valida­
+tion holdout. The Low Resource Model (Sect. 4.2), optimized for CPU usage, employed a
+medium-quality preset with a higher learning rate for faster training. The Balanced Con­
+figuration Model (Sect.  4.3) sought to achieve a compromise between computational
+speed and output quality by using a high-quality preset, a moderate learning rate (0.001),
+a batch size of 32, and the Adam optimizer. Finally, the High-Quality Model (Sect. 4.4)
+prioritized accuracy, employing the highest quality preset, a low learning rate (0.0005), a
+batch size of 16, and the AdamW optimizer.
+Table 2  Breakdown of datapoints in the dataset
+Expression label
+No. of images in training set
+No. of images in testing set
+Percentage
+of the da­
+taset (%)
+Anger
+3995
+958
+13.80
+Disgust
+436
+111
+1.52
+Fear
+4097
+1024
+14.26
+Happy
+7215
+1774
+25.04
+Neutral
+4965
+1233
+17.27
+Sad
+4830
+1247
+16.93
+Surprise
+3171
+958
+11.50
+Total: 28,709
+Total: 7178
+Total: 100
+
+Page 9 of 23
+Goel et al. Discover Applied Sciences          (2025) 7:1165
+3.3  Flowchart and process diagram
+AutoGluon, the AutoML library used to create the model, uses a series of steps to find
+the model with the best results. The sequence is illustrated in the flowchart, Fig. 2 below,
+followed by a process diagram in Fig. 3 and the algorithm.
+(i)	Search Space Exploration: In this step, AutoGluon makes use of different base
+models from the PyTorch Image Models library like EfficientNet [41], ResNet [42],
+NFNet [43], ResNeXT [44], Vision Transformer (ViT) [45] and MobileNet [46] and
+Fig. 3  Process diagram
+
+Fig. 2  Flowchart
+
+
+Page 10 of 23
+Goel et al. Discover Applied Sciences          (2025) 7:1165
+trains them on the dataset. This exploration phase ensures that the model considers
+diverse neural architectures for better coverage of learning patterns in the data.
+(ii)	Hyperparameter Optimization: Once the initial models are selected, AutoGluon
+employs optimization algorithms such as Bayesian optimization or random search
+algorithms, to search for the best configurations such as learning rate, number of
+layers, regularization strength etc. This step reduces the need for manual tuning and
+improves the model’s ability to generalize well across varied input data.
+(iii)	 Train Models: In this step, multiple models are trained using the prepared training
+data. During this phase, model weights are updated through multiple epochs. Each
+model is trained independently with its corresponding configuration derived from
+earlier steps.
+(iv)	 Validate Models: After each epoch, the models are validated on a subset of the
+training data. This internal validation helps monitor the models’ performance on
+unseen data and ensures the learning process creates a generalized model which is
+not overfitted.
+(v)	Evaluate Models: Once the models are trained, they are evaluated on a test set, which
+remains untouched during training to ensure no leakage of data. This final evaluation
+is used to assess the models’ true generalization ability.
+(vi)	 Select Best Model: The three best models are selected based on their evaluation
+performance.
+(vii)	 Ensemble Models: In this step, the best fitted models are fused to further improve
+the accuracy of the final model using the formula presented in Eq. (1).
+ˆy = g (f1 (x) , f2 (x) , f3 (x))
+(1)
+
+where x is the input image, f1(x), f2(x), f3(x) are the predicted probabilities from the
+top three individual models and g(x) is the meta-model (or ensemble function), which
+combines the individual predictions to produce the final output ŷ.
+3.4  Algorithm
+The following steps outline the process for training and evaluating models using Auto­
+Gluon, which includes converting datasets, initializing models, training, evaluating, and
+ensembling multiple models.
+Algorithm: Training and Evaluation of Models in AutoGluon
+Step 1: Convert raw training dataset into a dataframe with two columns: one for image locations and
+another for labels.
+Step 2: Convert the test dataset into a dataframe in a similar format.
+Step 3: Initialize MultiModalPredictor in AutoGluon, setting the label column to label.
+Step 4: Start the model creation process by calling the fit() function with appropriate arguments for
+custom model configuration.
+while Epoch limit not reached do
+Step 5: Train the model on the training dataset.
+end while
+Step 6: Evaluate the trained model using the test dataframe.
+if model accuracy is greater than the top 3 models then
+Step 7: Save the model and discard the model with the lowest accuracy.
+else
+Discard the model being evaluated and re-run the training process with modified hyperparameters.
+end if
+Step 8: Ensemble the top three models to reduce overfitting and improve generalization
+
+Page 11 of 23
+Goel et al. Discover Applied Sciences          (2025) 7:1165
+The raw data is converted into a structured dataframe that organizes image paths and
+corresponding labels. This is done for both training and test datasets. AutoGluon’s Mul­
+tiModalPredictor is initialized, focusing on the label column, which contains the class
+labels for classification tasks. In the training process, the model is trained iteratively,
+with each epoch updating model parameters. After training, the model is evaluated on
+the test dataset, and only models with performance higher than the top three models are
+retained. Thereafter, top-performing models are combined to mitigate overfitting and
+improve prediction performance.
+3.5  Evaluation metrics
+The proposed model is evaluated on different metrics like Accuracy, Precision, Recall
+and F-1 score. Accuracy is the main metric for measuring the efficacy of the proposed
+model, but it alone cannot provide an unbiased evaluation since FER2013 dataset is
+inherently unbalanced. It is apparent that there is a significant difference in the number
+of images in each class. For example, class “Disgust” has only 436 images in the training
+set while “Happy” has 7,215. Thus, using just accuracy to measure the efficacy of the
+resulting models may be misleading, so, for the purpose of this research, several metrics
+are used:
+(i)	Accuracy
+
+Accuracy is the ratio of correctly identified instances (both true positives and true
+negatives) to the total number of instances (total images in the class). It is determined
+by the using the formula presented in Eq. (2). It is useful as it gives a quick overview
+of the how well the models perform across all classes and provides insights into
+the overall effectiveness of the models. However, it can be misleading due to the
+imbalanced nature of the FER2013 dataset, so a drawback of using just accuracy as a
+metric is that the model may predict the majority classes well and ignore the minority
+ones while still maintaining a high accuracy score.
+
+Accuracy = Number of correct predictions
+Total number of predictions 
+(2)
+(ii)	Precision
+
+It is the ratio of true positives to the sum of the true positives and false positives. It is
+determined by the formula illustrated in Eq. (3). This metric is useful in determining
+how often a model is correct when it predicts an image to be in a certain class, for
+example, if it classifies an image to “Anger,” how likely is it to be correct. This is
+important in situations where false positives are costly, for example in security where
+a model might misclassify “Neutral” as “Anger,” thus creating suspicion and distrust.
+
+Precision =
+Number of true positives
+Sum of true positives and false positives
+(3)
+(iii)	 Recall
+
+It measures of the model’s ability to correctly identify all relevant instances of the given
+class as represented in Eq. (4). This metric helps identify the blind spots of a model,
+where it is failing to recognize an emotion reliably which is important for high-stakes
+
+Page 12 of 23
+Goel et al. Discover Applied Sciences          (2025) 7:1165
+situations. For example, in healthcare, having a model with low recall for “Fear” or
+“Disgust” might mean that the system fails to recognize signs of genuine distress.
+
+Recall =
+Number of true positives
+Sum of true positives and false negatives
+(4)
+(iv)	 F1 score
+
+It is the harmonic mean of precision and recall, determined by the formula presented in
+Eq. (5). This metric provides a single, balanced metric that recognizes a model’s ability
+to avoid false positives (precision) and catch true positives (recall). It is especially
+useful in imbalanced datasets such as FER2013, where accuracy is deceptive.
+
+1
+F1 score =
+1
+Precision +
+1
+Recall
+(5)
+4  Experiments and discussion
+This section covers the experimentation and their subsequent analysis and discussion.
+Python version 3.12.2 and Autogluon version 1.2.0 are used for implementation. Experi­
+mentations are done using different models on FER 2013 dataset.
+During training, after each epoch, the model was cross validated to ensure that the
+model performed well on unseen data. The cross-validation error formula is presented
+in Eq. (6).
+CV Error = 1
+k
+∑
+Errori
+(6)
+where k is the number of folds the training set is divided into for validation and Errori is
+the error measured on the ith validation fold. In this case, the training dataset is divided
+into ten folds, such that nine are used for training and one for validation. Since every
+fold is used at least once as both training and validation during the learning phase, the
+performance is averaged across the divisions to account for the randomness of the split.
+It is to be noted that no explicit feature selection or dimensionality reduction was per­
+formed by the authors during the training and preparation phase. However, AutoGluon
+performs implicit feature selection and dimensionality reduction through deep learn­
+ing models like CNNs and ViTs via operations like convolution, pooling and attention,
+which enable the system to focus on the most relevant spatial features in the image data.
+Explicit parameters such as number of layers in the models or activation functions used
+were also not programmed in order to maintain the core objective of this work, which is
+to evaluate the performance of AutoGluon’s automated configuration capabilities.
+4.1  Default model
+Since this is the baseline model for evaluation, no modifications are made to the param­
+eters. For the default model, the medium-quality preset was employed, which balances
+between quality and speed, a dynamic learning rate (determined based on the gradient),
+automatically selected batch size (according to available resources ranging between 32
+and 64), the Adam optimizer and a holdout of 10%, selected on the basis of the data­
+set. The medium quality preset is a hyperparameter optimization technique which
+defines the complexity of the model. In the case of the medium quality preset in the
+
+Page 13 of 23
+Goel et al. Discover Applied Sciences          (2025) 7:1165
+default configuration, relatively fewer parameters were initialized, in this case 95.7 mil­
+lion. The model was trained to completion. In the default configuration, there is a Limit
+of 20 epochs. However, there was no improvement in the last five epochs, so the model
+terminated at epoch 19, also presented in Fig. 4. The training time was 4 h and the best
+accuracy during training was 76.12% while the test accuracy stood at 76.4%. Cases of the
+test accuracy being significantly lower than training accuracy are deemed to be a sign of
+overfitting. In this case, there was no overfitting. The model was also tested on precision,
+recall and F1-score and the respective values are presented in Table 3. Table 4 refers
+to the confusion matrix of default model. These results show that the default model
+Table 3  Result of default model
+Class
+Precision
+Recall
+F1-score
+Support
+Angry
+0.73
+0.67
+0.70
+958
+Disgust
+0.74
+0.80
+0.77
+111
+Fear
+0.66
+0.59
+0.62
+1024
+Happy
+0.92
+0.93
+0.93
+1774
+Neutral
+0.72
+0.75
+0.74
+1233
+Sad
+0.63
+0.68
+0.65
+1247
+Surprise
+0.87
+0.87
+0.87
+831
+Total
+7178
+Table 4  Confusion matrix for default model
+Class
+Angry
+Disgust
+Fear
+Happy
+Neutral
+Sad
+Surprise
+Angry
+616
+16
+94
+28
+71
+115
+18
+Disgust
+12
+90
+4
+1
+0
+4
+0
+Fear
+80
+6
+575
+28
+72
+200
+63
+Happy
+15
+0
+22
+1612
+76
+21
+28
+Neutral
+34
+3
+40
+66
+898
+182
+10
+Sad
+98
+3
+122
+42
+157
+815
+10
+Surprise
+18
+0
+44
+30
+17
+15
+707
+Fig. 4  Improvement in accuracy for proposed model through the epochs
+
+
+Page 14 of 23
+Goel et al. Discover Applied Sciences          (2025) 7:1165
+Generalizes well and reports an accuracy of 76.4%. It also showcases strong performance
+across most emotions except for “Fear” and “Sad” and does exceptionally well in “Happy.”
+4.2  Low resource model
+This configuration was designed to evaluate how a model trained on a computer with
+Limited computing resources performs. Some people may not have access to high end
+GPUs required for traditional FER models and thus this model predicts how AutoGluon
+will perform when used on a CPU with low resources. The parameters selected for
+this model were a medium preset which is the lowest configuration possible to reduce
+the computational complexity, a relatively high learning rate of 0.01 to reduce training
+time, a batch size of 32 to reduce the number of batches per epoch and a Limit of 20
+epochs. With the medium preset and low configuration settings, a model of only 4.2 mil­
+lion parameters was initialized. The holdout is 10%. This configuration prioritizes speed
+over performance, but the higher learning rate means the algorithm may overshoot the
+optimal solution and lead to a suboptimal model. Experimental results and confusion
+matrix are presented in Tables 5 and 6, respectively. These results revealed that the train­
+ing time was approximately 40 min and at the end of 20 epochs, the best accuracy was
+72.59%. After evaluation on the test set, the accuracy was 70.0%, lower than the other
+models. Similar accuracies on both sets indicate there was no overfitting. It’s perfor­
+mance, remained like the default model, weakest in “Fear” and “Sad” emotions while
+doing well in predicting “Happy.”
+4.3  Balanced configuration model
+This configuration was created to balance speed as well as quality. It offers better accu­
+racy than the low resource configuration while demanding less resources than a model
+with emphasis on quality. For this purpose, it used the high-quality preset and has a
+moderate learning rate of 0.001, both which are between those of the low resource and
+high-quality models. The high-quality preset ensures that the model has an increased
+Table 5  Result for low resource model
+Class
+Precision
+Recall
+F1-score
+Support
+Angry
+0.63
+0.64
+0.63
+958
+Disgust
+0.73
+0.67
+0.70
+111
+Fear
+0.58
+0.56
+0.57
+1024
+Happy
+0.90
+0.90
+0.90
+1774
+Neutral
+0.65
+0.67
+0.66
+1233
+Sad
+0.59
+0.59
+0.59
+1247
+Surprise
+0.84
+0.82
+0.83
+831
+Total
+7178
+Table 6  Confusion matrix for low resource model
+Class
+Angry
+Disgust
+Fear
+Happy
+Neutral
+Sad
+Surprise
+Angry
+586
+14
+92
+46
+77
+131
+12
+Disgust
+23
+77
+8
+1
+0
+2
+0
+Fear
+101
+6
+544
+29
+96
+186
+62
+Happy
+33
+0
+26
+1552
+88
+34
+41
+Neutral
+82
+2
+77
+78
+794
+182
+18
+Sad
+121
+4
+156
+47
+195
+707
+17
+Surprise
+28
+0
+80
+32
+15
+11
+665
+
+Page 15 of 23
+Goel et al. Discover Applied Sciences          (2025) 7:1165
+complexity and can make deeper correlations in the data. In this case, with the highquality preset and balanced configuration, it had a model size of 95.7 million parameters,
+the same as that of the default model. Thus, it is inferred that a medium quality preset
+with default configuration makes up for a high-quality preset. It has a batch size of 32
+and uses the Adam optimizer. The holdout for cross-validation is 10%. The experimental
+results are illustrated in Table 7 while Table 8 presented the confusion matrix. The train­
+ing time was 3 h, and accuracy during training was 74.33% while during testing it was
+74.4% with no overfitting. The model did moderately well, performing close to the highquality model and better than the low resource model. It too had difficulty differentiat­
+ing between “Fear” and “Sad,” thus the low precision scores but performed very well on
+“Happy.”
+4.4  High quality configuration
+This configuration was optimized for quality over speed and used all the parameters
+necessary to reduce over-fitting and increase accuracy. It requires a high-end GPU and
+ample computing power to run. It used the best quality preset which prioritizes qual­
+ity at the cost of speed, a low learning rate of 0.0005 which adjusts the model by small
+variations which helps it reach the optimal solution. Since this model used the best
+quality preset and highly optimized configurations for training, the model size was
+more than double any other model, with 195 million parameters. The batch size of 16
+allowed for improved regularization by introducing more noise. Also, a smaller batch
+meant for more iterations per epoch, allowing the model to see more variations in the
+data sooner. Finally, the Adamw optimizer was used to keep the model from overfitting
+with its weight decay regularization. The training time was just over 7 h. The accuracy
+after 20 epochs in training was 75.97%, and in testing was 75.1%, trailing slightly behind
+the default model despite being fine-tuned for performance. The precision, recall and
+F1-scores are presented in Tables 9 and 10 shows the confusion matrix. The high-quality
+Table 7  Results for balanced configuration model
+Class
+Precision
+Recall
+F1-score
+Support
+Angry
+0.67
+0.69
+0.68
+958
+Disgust
+0.73
+0.73
+0.73
+111
+Fear
+0.63
+0.59
+0.61
+1024
+Happy
+0.92
+0.92
+0.92
+1774
+Neutral
+0.69
+0.70
+0.70
+1233
+Sad
+0.63
+0.63
+0.63
+1247
+Surprise
+0.85
+0.87
+0.86
+831
+Total
+7178
+Table 8  Confusion matrix for balanced configuration model
+Class
+Angry
+Disgust
+Fear
+Happy
+Neutral
+Sad
+Surprise
+Angry
+639
+17
+89
+27
+61
+107
+18
+Disgust
+20
+85
+2
+1
+0
+5
+0
+Fear
+93
+1
+574
+21
+83
+189
+62
+Happy
+23
+3
+20
+1588
+82
+22
+36
+Neutral
+71
+3
+58
+64
+837
+181
+19
+Sad
+128
+3
+148
+36
+179
+740
+13
+Surprise
+19
+0
+57
+34
+11
+9
+701
+
+Page 16 of 23
+Goel et al. Discover Applied Sciences          (2025) 7:1165
+model did not perform noticeably better than the default model despite its highly tuned
+configuration. It performed slightly better only in the minority class “Disgust.”
+4.5  Comparison between different automl models
+Table 11, compares the learning rate, batch size, optimizer, and presets for all the dif­
+ferent models and broadly presents the comparison of hyperparameters among all the
+models.
+There are some observations that are common to all the models. The prediction for
+“Happy” consistently performed well for all the models. This can be due to the large
+number of images (25% of the dataset) in that category as well as the uniqueness of the
+expression as compared to the others. The models show an above-average score for pre­
+cision for “Disgust” despite it only comprising 1.52% of the dataset which is most likely
+due to the uniqueness of the emotion (Tables 3, 5, 7 and 9). Critically reviewing the con­
+fusion matrices (Tables 4, 6, 8 and 10) shows that the models mainly misattribute “Dis­
+gust” to “Anger” and vice versa owing to similar traits in the expressions. Similarly, “Fear,”
+“Anger” and “Sad” share similar traits in their expressions and thus can be misattributed
+consistently as seen in Tables 4, 6 and 8, and 10. This can only be remedied by changing
+the way the foundational models distinguish one expression from another. The relatively
+lower performance in precision as compared to the state-of-the-art accuracy highlights
+the importance of the addition of other metrics in the evaluation criteria for the models.
+Table 9  Results for high quality model
+Class
+Precision
+Recall
+F1-score
+Support
+Angry
+0.67
+0.69
+0.68
+958
+Disgust
+0.73
+0.73
+0.73
+111
+Fear
+0.63
+0.59
+0.61
+1024
+Happy
+0.92
+0.92
+0.92
+1774
+Neutral
+0.69
+0.70
+0.70
+1233
+Sad
+0.63
+0.63
+0.63
+1247
+Surprise
+0.85
+0.87
+0.86
+831
+Total
+7178
+Table 10  Confusion matrix for high quality model
+Class
+Angry
+Disgust
+Fear
+Happy
+Neutral
+Sad
+Surprise
+Angry
+645
+9
+97
+26
+72
+97
+12
+Disgust
+16
+85
+3
+0
+2
+5
+0
+Fear
+112
+4
+573
+16
+76
+162
+81
+Happy
+30
+0
+17
+1578
+90
+24
+35
+Neutral
+54
+0
+54
+65
+883
+164
+13
+Sad
+125
+3
+125
+39
+184
+749
+22
+Surprise
+17
+0
+53
+30
+13
+15
+703
+Table 11  Comparison of the hyperparameters between automl models
+Model
+Learning rate
+Batch size
+Optimizer
+Preset
+Default
+Dynamic
+Auto (32)
+Adam
+Medium
+Low resource
+0.01
+32
+Adam
+Medium
+Balanced
+0.001
+32
+Adam
+High quality
+High quality
+0.0005
+16
+Adamw
+Best quality
+
+Page 17 of 23
+Goel et al. Discover Applied Sciences          (2025) 7:1165
+Since “Happy” has such a high weightage in the dataset, it is correctly predicted much
+more often than the others and tends to skew the accuracy to provide a biased answer.
+It is also interesting to note that despite the significantly higher training time and
+computational complexity, the higher quality model did not outperform the baseline
+default model presented in Fig. 4. It took 42% longer to train yet could not provide bet­
+ter results. However, where the default model stopped improving, the higher quality
+model showed small yet consistent improvements, which, given sufficient training time
+might lead to it outperforming the baseline. Experimental results presented in Table 12,
+it is apparent that the default model is better suited for Facial Expression Recognition
+tasks even compared to the more finely tuned models. The high-quality model provides
+slightly better performance in minority classes, but the value is minimal when compared
+to the increase in training time and complexity. So, the default model is best suited when
+resources are available. The balanced model is a good compromise for users who need a
+faster training time without sacrificing too much performance. The low-resource model
+can be used when computing power is limited but accuracy is not critical.
+Figure  4 shows the difference the learning rates and batch sizes make. The low
+resource model, having the highest learning rate, began with a very low accuracy score,
+then showed considerable improvement after each epoch. The default model achieves
+the best performance across all epochs, reaching an accuracy of over 75% by the sev­
+enth epoch. This shows that the default configuration is well-tuned for FER tasks, bal­
+ancing efficiency with high performance. The balanced model achieved a final accuracy
+only slightly behind the default model while taking less time and resources to train. This
+shows that it is the optimal model for non-critical FER tasks.
+4.6  Comparison of different state-of-the-art with automl models
+The performance of various state-of-the-art FER models was evaluated against the
+proposed models in terms of accuracy and the results are presented in Table 13. The
+Table 12  Comparison of automl models
+Auto ML models
+Training time
+(hours)
+Accuracy
+Precision (macro
+average)
+Recall (macro
+average)
+F1-score
+(macro
+average)
+Default
+4
+76.4%
+75%
+76%
+75%
+Low resource
+0.66
+70%
+69%
+68%
+69%
+Balanced
+3
+74.4%
+73%
+73%
+73%
+High quality
+7
+75.1%
+75%
+74%
+74%
+Table 13  Comparison of state-of-the-art (SOTA) with different proposed models
+Author
+Method
+Accuracy (%)
+Pham et al. [19]
+RMN
+74.14
+Li [24]
+FER using CNN
+67.7
+Thacker [25]
+MLFCC
+70.29
+MMFFC
+68.14
+EfficientNetB7
+57.5
+Mei et al. [29]
+Swin-FER
+71.11
+Proposed model
+Default model
+76.4
+High quality model
+75.1
+Balanced model
+74.4
+Low resource model
+70.0
+
+Page 18 of 23
+Goel et al. Discover Applied Sciences          (2025) 7:1165
+proposed models, particularly default model, demonstrate improved accuracy over con­
+ventional models.
+The experimental results illustrated in Table  13 clearly states that RMN method,
+achieving an accuracy of 74.14%, is the highest among the SOTA, but was outperformed
+by the default, high quality and balanced models in the proposed approach. Li [24] used
+CNNs for FER, resulting in a lower accuracy of 67.7%, which was outperformed by all
+the models in the proposed approach. This shows that CNN by itself is not ideal for this
+dataset. Thacker [25] explored three different techniques, among which MLFCC had
+the highest accuracy at 70.29%, followed by MMFFC at 68.14% and EfficientNetB7 at
+57.5%. Swin-FER [29] had an accuracy of 71.11%, outperformed by the default, balanced
+and high-quality model. Overall, the proposed approach delivered the highest accu­
+racy. The default model achieved 76.4%, outperforming all SOTA methods, while the
+high-quality model reached 75.1%, also surpassing previous benchmarks. The balanced
+model showed a solid performance at 74.4%, matching the RMN method [19]. The lowresource model, designed for environments with Limited computational power, reached
+70.0%, demonstrating competitive performance against the MLFCC method [25].
+4.7  Comparative analysis with other automl frameworks
+In comparison to other AutoML frameworks, AutoGluon is specifically designed for
+multimodal problems and supports deep learning frameworks, making it well-suited for
+computer vision tasks like FER. In contrast, other frameworks primarily focus on tabu­
+lar data using genetic programming and are not optimized for image-based tasks unless
+pre-processed into numerical features. Similarly, Google Cloud AutoML Vision provides
+a no-code interface for image classification but offers limited transparency and control
+over model architecture, hyperparameters, and training strategy.
+In terms of accuracy, AutoGluon’s default configuration achieved 76.4% on the
+FER2013 dataset, outperforming state-of-the-art manually tuned models. While com­
+parative FER results from TPOT are limited due to its focus on structured data, Google
+AutoML Vision has shown competitive performance in general image classification but
+lacks published FER benchmarks on FER2013. In terms of training time and resource
+requirements, AutoGluon provides flexibility through different presets (e.g., Low
+Resource, Balanced, High Quality), allowing users to balance performance with com­
+putational cost. Google Cloud AutoML abstracts away resource configuration but often
+requires longer cloud-based training cycles and incurs usage costs. TPOT, although
+lightweight, is less suited for deep image models and typically requires external feature
+engineering for FER. Overall, AutoGluon strikes a strong balance between performance,
+control, and automation—making it particularly advantageous for FER tasks that require
+deep image model customization and rapid experimentation.
+4.8  Discussion
+This paper demonstrated the practical and technical viability of using AutoML, par­
+ticularly AutoGluon, for facial expression recognition (FER). Among the four proposed
+configurations, the Default Model achieved the highest test accuracy (76.4%), outper­
+forming both traditional FER methods and more complex AutoML configurations. This
+suggests that AutoML can autonomously discover efficient architectures and hyperpa­
+rameters without manual tuning.
+
+Page 19 of 23
+Goel et al. Discover Applied Sciences          (2025) 7:1165
+Interestingly, the High-Quality Model, despite having significantly more parameters
+and longer training time, did not outperform the Default Model. This can be attributed
+to over-parameterization and slower convergence. These findings highlight the AutoML
+system’s ability to prioritize practical, efficient configurations over sheer complexity. The
+results also affirm the ability of AutoGluon to manage imbalanced and noisy datasets
+like FER2013, which are notoriously difficult for many manually tuned models. By using
+automated hyperparameter optimization and ensembling, AutoGluon was able to gener­
+alize well across emotion categories.
+4.9  Limitations
+Despite its promising outcomes, this research has several limitations mentioned below:
+(i)	Computational Demand: AutoML still requires substantial computational resources,
+particularly for high-quality configurations. The high-quality model took over 7 h to
+train and may not be feasible for users with limited hardware.
+(ii)	Dataset Specificity: The models were trained and evaluated on FER2013. While it is
+a widely used benchmark, the generalizability of the results to other datasets such as
+AffectNet or SFEW remains untested in this paper.
+(iii)	 Black-Box Nature of AutoML: While AutoGluon simplifies the pipeline for nonexperts, it also abstracts internal processes, which may be a drawback for researchers
+who wish to understand or manually modify specific layers or operations.
+(iv)	 Bias in Imbalanced Data: Despite the use of advanced metrics (precision, recall,
+F1-score), the performance remained weak for minority classes such as “Disgust,”
+which constituted only 1.52% of the dataset. This imbalance could lead to biased
+predictions in real-world applications.
+(v)	Bias in Foundational Models: Due to the ensembling of pre-trained models, there
+is a high probability of perpetuation of inherent biases which may be present in the
+foundational models, which will lead to those same biases appearing in models created
+by AutoGluon.
+(vi)	 Inability of Ablation Studies: Due to the automation of model selection and
+ensembling, it is not possible to do ablation studies on the proposed models which
+might reduce transparency of the model.
+(vii)	 Absence of statistical validation: The proposed work is unable to conduct significance
+tests and obtaining confidence intervals due to resource constraints.
+4.10  Future work
+Future work can build on this research in the following ways:
+(i)	Cross-Dataset Generalization: To validate robustness, the trained models should be
+tested or fine-tuned on other FER datasets like AffectNet, FER+, or SFEW. This would
+help assess generalizability.
+(ii)	Model Interpretability: Incorporating explainable AI (XAI) methods can help interpret
+the decision-making of AutoML-generated models, increasing their trustworthiness
+in sensitive applications like healthcare or security.
+(iii)	 Hybrid AutoML Strategies: Exploring hybrid pipelines that combine AutoML for
+model exploration with expert-guided fine-tuning could yield both accessible and
+highly optimized FER systems.
+
+Page 20 of 23
+Goel et al. Discover Applied Sciences          (2025) 7:1165
+(iv)	 Deployment Optimization: Investigating lightweight AutoML models for mobile
+or embedded systems would expand the applicability of FER systems to edge devices
+where computational resources are limited.
+(v)	Bias Mitigation Techniques: Future work should address the dataset imbalance by
+integrating synthetic data augmentation, re-sampling techniques, or cost-sensitive
+learning to improve performance on underrepresented emotion classes.
+(vi)	 Statistical validation: With the availability of high-end computing facility,
+significance tests can be conducted to obtain confidence intervals.
+4.11  Ethical considerations in FER applications
+The deployment of FER systems, particularly in sensitive domains such as healthcare,
+security, and education, raises critical ethical concerns. These include risks of misclas­
+sification, bias, privacy invasion, and over-reliance on automated decisions. To mitigate
+these issues, it is essential to ensure transparency, apply bias mitigation strategies, obtain
+informed consent, and position FER tools as assistive rather than authoritative systems.
+Addressing these ethical challenges is key to ensuring the responsible and equitable use
+of FER technologies in real-world applications.
+4.12  Real-World applicability
+The increasing demand for affective computing systems across domains such as health­
+care, transportation, education, and public safety necessitates FER systems that are not
+only accurate but also deployable under real-world constraints. The proposed AutoMLbased framework offers practical advantages, enabling its use across a range of deploy­
+ment environments.
+(i)	Deployment Scenarios: The models can be deployed in the fields of healthcare
+monitoring, driver drowsiness detection, online education engagement and public
+surveillance.
+(ii)	Computational Complexity: The current work includes four configurations, (Default,
+Low Resource, Balanced and High Quality), each designed to work in different
+environments with different computational resources.
+(iii)	 Real World Efficiency: A comparative analysis between the models in terms of
+training time, accuracy and performance metrics is shown in Sect. 4.5 and Table 12,
+which allows users to choose a model which fits their deployment constraints.
+(iv)	 Deployment using AutoGluon: AutoGluon automates pipeline creation, thereby
+reducing the need for deep technical expertise and making the models suitable for
+non-expert deployment.
+5  Conclusion
+In this paper, AutoML was explored to find the best model for facial expression detec­
+tion to overcome the challenges of traditional methods. Experimental results dem­
+onstrated that AutoML could effectively automate model selection, hyperparameter
+optimization and ensemble learning, significantly reducing the manual effort tradition­
+ally required for FER model development. These results also revealed that AutoML is a
+viable alternative to traditional methods of model creation, as it outperformed the con­
+ventional state-of-the-art during evaluation. It is also an effective method when deal­
+ing with the large volume and variety of images inherent in Big Data. This can have
+
+Page 21 of 23
+Goel et al. Discover Applied Sciences          (2025) 7:1165
+significant implications for real-world applications of FER, including emotion analysis in
+large-scale market research, healthcare monitoring, real-time security and surveillance,
+educational engagement assessment and driver drowsiness detection. Experiments on
+the FER2013 dataset showed encouraging results, with the AutoML-generated models
+achieving SOTA accuracies of 76.4%, 70.0%, 74.4% and 75.1%.
+Employing AutoGluon in FER offers transformative benefits that directly address longstanding challenges in model development. Traditional FER systems require extensive
+manual effort in model architecture design, hyperparameter tuning, and performance
+optimization—processes that are time-consuming, resource-intensive and demand
+expert knowledge. AutoGluon simplifies and accelerates these processes through auto­
+mation, enabling non-experts to build high-performing models with minimal interven­
+tion. Specifically, AutoGluon enhances FER by dynamically exploring a diverse set of
+deep learning architectures (such as ResNet, ViT, and EfficientNet), fine-tuning them
+using advanced techniques like Bayesian optimization, and ensembling top-performing
+models to maximize generalization and accuracy. This not only reduces the risk of over­
+fitting but also boosts performance on challenging, in-the-wild datasets like FER2013.
+As demonstrated in the paper, AutoGluon achieved state-of-the-art accuracy of 76.4%,
+outperforming several manually tuned models while significantly cutting down devel­
+opment time and computational cost. By democratizing access to robust FER systems,
+AutoGluon has the potential to accelerate real-world deployment in domains like health­
+care, security, and emotion-aware applications, making intelligent emotion recognition
+more scalable, adaptable, and inclusive.
+However, there were also certain limitations revealed during the research, includ­
+ing the dependency on the quality and diversity of the training data, the need for high
+computational power and the possibility of perpetuation of bias which may be present
+in foundational models. Future research could focus on addressing these limitations by
+exploring data augmentation techniques, using multi-modal data and distributed com­
+puting resources as well as making sure that the underlying data is scrutinized to prevent
+the reinforcement of inherent biases in the models. In the current times, where artificial
+intelligence and machine learning are being applied to every domain and have use cases
+in almost every application, there is an urgent need to allow non-experts the path to
+implement their own ML systems, a path that once remained blocked due to the skills
+and knowledge required to build these systems. AutoML is the key to enabling the ubiq­
+uitous use of ML technology and further integrate it into everyday applications, while
+also furthering the state-of-the-art.
+Acknowledgements
+Authors, thank the reviewers for their suggestions that have helped in improving this manuscript substantially. Authors
+also acknowledge Manipal University Jaipur for covering the APC under University agreement.
+Author contributions
+Atharv Goel: Conceptualizing, methodology, implementation, writing original draft.Praneet Saurabh: Conceptualizing,
+reviewing the manuscript and final drafting.Dhananjay Bisen: Conceptualizing, implementation and reviewing the final
+draft.Rishav Dubey: Conceptualizing, Supervising, Reviewing & final drafting.Prathap Somu: Reviewing & final drafting.
+Funding
+Open access funding provided by Manipal University Jaipur. The authors did not receive any funding to carry out the
+research presented in this manuscript.
+Data availability
+No datasets were generated or analysed during the current study.
+
+Page 22 of 23
+Goel et al. Discover Applied Sciences          (2025) 7:1165
+Declarations
+Ethical approval
+This manuscript has followed all the ethical standards.
+Consent for publish
+Informed consents were obtained from all participants.
+Consent to participate
+Not applicable.
+Competing interests
+The authors declare that they have no known competing financial interests or personal relationships that could have
+appeared to influence the work reported in this manuscript.
+Clinical trial number
+Not applicable.
+Received: 13 February 2025 / Accepted: 3 September 2025
+References
+1.
+Zhang HL, Lee S, Lu Y, Yu Xin, Lu Huanda. A survey on big data technologies and their applications to the metaverse: past,
+current and future. Mathematics. 2022;11:96. https://doi.org/10.3390/math11010096.
+2.
+Kaur H, Kaur T, Bhardwaj V, et al. An ensemble deep learning model for classification of students as weak and strong learn­
+ers via multiparametric analysis. Discov Appl Sci. 2024;6:595. https://doi.org/10.1007/s42452-024-06274-6.
+3.
+Özbeyaz A, Yıldırım M, Tufaner F. Prediction of asthma outpatients using cumulative particulate matter and machine learn­
+ing algorithms: a case study in adiyaman, Turkey. Discov Appl Sci. 2025;7:19. https://doi.org/10.1007/s42452-024-06407-x.
+4.
+Atee M, Hoti K, Parsons R, Hughes J. Pain assessment in dementia: evaluation of a point-of-care technological solution. J
+Alzheimers Dis. 2017. https://doi.org/10.3233/JAD-170375.
+5.
+Scientists use facial. recognition technology to develop tool for monitoring ICU patients’ safety. News-Medical Life Sci­
+ences. [Internet]. 2019 [cited 2025 Jan 20]. Available from: ​h​t​t​p​s​:​/​/​w​w​w​.​n​e​w​s​-​m​e​d​i​c​a​l​.​n​e​t​/​n​e​w​s​/​2​0​1​9​0​6​0​3​/​S​c​i​e​n​t​i​s​t​s​-​u​s​e​-​f​
+a​c​i​a​l​-​r​e​c​o​g​n​i​t​i​o​n​-​t​e​c​h​n​o​l​o​g​y​-​t​o​-​d​e​v​e​l​o​p​-​t​o​o​l​-​f​o​r​-​m​o​n​i​t​o​r​i​n​g​-​I​C​U​-​p​a​t​i​e​n​t​s​-​s​a​f​e​t​y​.​a​s​p​x
+6.
+Saeed S, Shah AA, Ehsan MK, Amirzada MR, Mahmood A, Mezgebo T. Automated Facial Expression Recognition Frame­
+work using Deep learning. J Healthc Eng 2022. 2022. https://doi.org/10.1155/2022/5707930.
+7.
+Wang Y, Shaoqi Y, Yang L, Wei S , Jing L, Yang C, Xinji M, Xiping H, Wenqiang Z, Zhongxue G. A Survey on Facial Expression
+Recognition of Static and Dynamic Emotions. 2024. 10.48550/arXiv.2408.15777.
+8.
+Jack RE, Sun W, Delis I, Garrod OG. Four not six: revealing culturally common facial expressions of emotion. J Exp Psychol
+Gen. 2016;145(6):708–30. https://doi.org/10.1037/xge0000162.
+9.
+Orlando F, Salehin M, He A, Wang J et al. Apr., Automated Machine Learning: Past, Present and Future, Eng. Appl. Artif.
+Intell., 2024.
+10.	 Tang Z, Fang H, Zhou S, Yang T, Zhong Z, Hu T et al. AutoGluon-Multimodal (AutoMM): supercharging multimodal automl
+with foundation models. Proceedings of the Third International Conference on Automated Machine Learning, PMLR
+2024;256(15):1–35.
+11.	 Sambare M. FER-2013 dataset [Internet]. Kaggle; 2025 [cited 2025 Jan 20]. Available from: ​h​t​t​p​s​:​/​/​w​w​w​.​k​a​g​g​l​e​.​c​o​m​/​d​a​t​a​s​e​
+t​s​/​m​s​a​m​b​a​r​e​/​f​e​r​2​0​1​3
+12.	 Almazrouei M, Dweiri F, Aydin R, et al. A review on the advancements and challenges of artificial intelligence-based mod­
+els for predictive maintenance of water injection pumps in the oil and gas industry. SN Appl Sci. 2023;5:391. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​
+g​/​1​0​.​1​0​0​7​/​s​4​2​4​5​2​-​0​2​3​-​0​5​6​1​8​-​y​​.​
+13.	 Ramos L, Rivas-Echeverría F, Pérez AG, et al. Artificial intelligence and sustainability in the fashion industry: a review from
+2010 to 2022. SN Appl Sci. 2023;5:387. https://doi.org/10.1007/s42452-023-05587-2.
+14.	 Ortega-Martorell S, Bellfield RAA, Harrison S, et al. Mapping the global free expression landscape using machine learning.
+SN Appl Sci. 2023;5:354. https://doi.org/10.1007/s42452-023-05554-x.
+15.	 Brynjolfsson E, McAfee A. The business of artificial intelligence. Harv Bus Rev. 2017;7:1–31.
+16.	 Zareen SS, Hossain MS, Wang J, Kang Y. Recent innovations in machine learning for skin cancer lesion analysis and clas­
+sification: a comprehensive analysis of computer-aided diagnosis. Precis Med Sci. 2025;14(1):15–40. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​0​0​
+2​/​p​r​m​2​.​1​2​1​5​6​​.​
+17.	 Zareen SS, Sun G, Kundi M, Qadri SF, Qadri S. Enhancing skin cancer diagnosis with deep learning: a hybrid CNN-RNN
+approach. Comput Mater Continua. 2024;79(1):1497–519. https://doi.org/10.32604/cmc.2024.047418.
+18.	 Zhang S, Zhang Y, Zhang Y, Wang Y, Song Z. A dual-direction attention mixed feature network for facial expression recog­
+nition. Electronics. 2023;12(17):3595.
+19.	 Pham L, Vu TH, Tran TA. Facial expression recognition using residual masking network. 2020 25th int Conf on pattern
+recognition (ICPR). IEEE; 2021. pp. 4513–9. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​1​0​9​/​I​C​P​R​4​8​8​0​6​.​2​0​2​1​.​9​4​1​1​9​1​9.
+20.	 Krizhevsky A, Sutskever I, Hinton GE. Imagenet classification with deep convolutional neural networks. Commun ACM.
+2017;60(6):84–90. https://doi.org/10.1145/3065386.
+21.	 Jain DK, Shamsolmoali P, Sehdev P. Extended deep neural network for facial emotion recognition. Pattern Recognit Lett.
+2019;120:69–74. https://doi.org/10.1016/j.patrec.2018.12.002.
+22.	 Lopes AT, Aguiar E, DeSouza AF, Oliveira-Santos T. Facial expression recognition with convolutional neural networks: cop­
+ing with few data and the training sample order. Pattern Recognit. 2017;61:610–21. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​0​1​6​/​j​.​p​a​t​c​o​g​.​2​0​1​6​.​
+0​7​.​0​2​6​​.​
+
+Page 23 of 23
+Goel et al. Discover Applied Sciences          (2025) 7:1165
+23.	 Wang Y, Lee Y, Song Y, Rong X. Facial expression recognition based on auxiliary models. Algorithms. 2019;12(11):227.
+https://doi.org/10.3390/a12110227.
+24.	 Li T-HS, Kuo P-H, Tsai T-N, Luan P-C. CNN and LSTM based facial expression analysis model for a humanoid robot. IEEE
+Access. 2019;7:93998–4011. https://doi.org/10.1109/ACCESS.2019.2928364.
+25.	 Thacker C. Ensemble of multi features for facial expression recognition using deep learning techniques [dissertation].
+Shodhganga; 2021.
+26.	 Cheng WC, Wu TY, Li DW. Ensemble convolutional neural networks for face recognition. In: Proceedings of the Interna­
+tional Conference on Algorithms, Computing and Artificial Intelligence. ACM; 2018. pp. 1–6.
+27.	 Chantrapornchai C, Kajkamhaeng S, Romphet P. Micro-architecture design exploration template for automl case study on
+SqueezeSEMAuto. Sci Rep. 2023;13:10642.
+28.	 Abdulrahman M, Hammami W, Souici C, Khoudour K, Sebe R. Learning vision transformer with squeeze and excitation for
+facial expression recognition. ArXiv. 2021. https://doi.org/10.48550/ArXiv.2107.03107.
+29.	 Mei B, Huan X, Yan G, Kai S, Xiangjiu C. Swin-FER: Swin transformer for facial expression recognition. Appl Sci.
+2024;14(14):6125. https://doi.org/10.3390/app14146125.
+30.	 Feng H, Huang W, Zhang D, Zhang B. Fine-tuning Swin transformer and multiple weights optimality-seeking for facial
+expression recognition. IEEE Access. 2023;11:9995–10003. https://doi.org/10.1109/ACCESS.2023.3237817.
+31.	 Tao H, Duan Q. Hierarchical attention network with progressive feature fusion for facial expression recognition. Neural
+Netw. 2023. https://doi.org/10.1016/j.neunet.2023.11.033.
+32.	 Naveen P. Occlusion-aware facial expression recognition: a deep learning approach. Multimed Tools Appl. 2024;83:32895–
+921. https://doi.org/10.1007/s11042-023-17013-1.
+33.	 Zhang F, Chen G, Wang H, et al. Cf-dan: facial-expression recognition based on cross-fusion dual-attention network. Com­
+putational Visual Media. 2024;10:593–608. https://doi.org/10.1007/s41095-023-0369-x.
+34.	 Mehendale N. Facial emotion recognition using convolutional neural networks (FERC). SN Appl Sci. 2020;2:446. ​h​t​t​p​s​:​/​/​d​o​i​.​
+o​r​g​/​1​0​.​1​0​0​7​/​s​4​2​4​5​2​-​0​2​0​-​2​2​3​4​-​1​​.​
+35.	 Singhal P, Gokhale S, Shah A, et al. Domain adaptation for bias mitigation in affective computing: use cases for facial emo­
+tion recognition and sentiment analysis systems. Discov Appl Sci. 2025;7:229. https://doi.org/10.1007/s42452-025-06659-1
+36.	 Li Y, Wang M, Gong M, Lu Y, Liu L. FER-former: multimodal transformer for facial expression recognition. IEEE Trans Multi­
+media. 2024. https://doi.org/10.1109/TMM.2024.3521788.
+37.	 Ge H, Zhu Z, Dai Y, Wang B, Wu X. Facial expression recognition based on deep learning. Comput Methods Programs
+Biomed. 2022;215:106728.
+38.	 Li S, Deng W. Deep facial expression recognition: a survey. IEEE Trans Affect Comput. 2022;13(3):1195–215. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​
+1​0​.​1​1​0​9​/​T​A​F​F​C​.​2​0​2​0​.​2​9​8​1​4​4​6​​.​
+39.	 Kopalidis T, Solachidis V, Vretos N, Daras P. Advances in facial expression recognition: a survey of methods, benchmarks,
+models, and datasets. Information. 2024;15(3):135.
+40.	 Guo X, Zhang Y, Lu S, et al. Facial expression recognition: A review. Multimed Tools Appl. 2024;83:23689–735. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​
+g​/​1​0​.​1​0​0​7​/​s​1​1​0​4​2​-​0​2​3​-​1​5​9​8​2​-​x​​.​
+41.	 Koonce B. EfficientNet. Convolutional neural networks with swift for tensorflow. Berkeley, CA: A; 2021. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​
+0​0​7​/​9​7​8​-​1​-​4​8​4​2​-​6​1​6​8​-​2​_​1​0​​.​
+42.	 Shafiq M, Gu Z. Deep residual learning for image recognition: A survey. Appl Sci. 2022;12(18);1–43.
+43.	 Brock A, De S, Smith S, Simonyan K. High-performance large-scale image recognition without normalization. ArXiv. 2021.
+https://doi.org/10.48550/ArXiv.2102.06171.
+44.	 Mekruksavanich S, Jitpattanakul A. A deep learning network with aggregation residual transformation for human activity
+recognition using inertial and stretch sensors. Computers. 2023;12(7):Art. 141.
+45.	 Dosovitskiy A, Beyer L, Kolesnikov A, et al. An image is worth 16x16 words: Transformers for image recognition at scale.
+ArXiv. 2020. https://doi.org/10.48550/ArXiv.2010.11929.
+46.	 Mehta S, Agrawal R, Sharma V. An improved mobilenet architecture for real-time image classification on edge devices.
+Sensors (Basel). 2023;23(3):1265.
+Publisher’s note
+Springer Nature remains neutral with regard to jurisdictional claims in published maps and institutional affiliations.

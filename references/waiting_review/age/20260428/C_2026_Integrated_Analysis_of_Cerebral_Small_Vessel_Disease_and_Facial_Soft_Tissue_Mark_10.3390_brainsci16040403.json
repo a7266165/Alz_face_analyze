@@ -1,0 +1,31 @@
+{
+  "title": "Integrated Analysis of Cerebral Small Vessel Disease and Facial Soft-Tissue Markers in the Alzheimer's Disease Continuum.",
+  "authors": [
+    "Bernetti C",
+    "Di Gennaro G",
+    "Roberti R",
+    "Ricci M",
+    "Pipitone F",
+    "Profilo M",
+    "Motolese F",
+    "Calandrelli R",
+    "Pilato F",
+    "Di Lazzaro V",
+    "Beomonte Zobel B",
+    "Mallio CA"
+  ],
+  "year": 2026,
+  "abstract": "Objective: To investigate the integrated relationship between Cerebral Small Vessel Disease (CSVD) markers and quantitative facial soft-tissue measurements in Alzheimer's disease (AD) continuum, utilizing peripheral muscle health as a potential biomarker for systemic frailty and neurodegeneration. Methods: Retrospective analysis of 3T brain MRI data from 67 patients (AD, N = 45; Mild Cognitive Impairment [MCI], N = 22). CSVD markers were assessed using STRIVE and standardized scales (Fazekas, Potter). Facial soft-tissue metrics, including masseter and tongue volume, temporal muscle thickness (TMT), and fat infiltration (Mercuri Scale), were quantified via semi-automatic segmentation on T1-weighted sequences. Group comparisons (AD vs. MCI) used regression models adjusted for age and sex. The overall central-peripheral relationship was explored via Canonical Correlation Analysis (CCA). Results: The AD group showed a highly significant cognitive decline (MMSE: 23.2 ± 4.1 vs. 28.2 ± 1.4, p < 0.0001). Centrally, the presence of PVSs in the mesencephalic region was the most robust predictor for AD (p = 0.003). Peripherally, average masseter muscle volume was significantly lower in the AD group (p = 0.0273), and masseter fat infiltration was significantly higher (p = 0.025), supporting localized sarcopenia. The CCA demonstrated a statistically significant positive multivariate relationship (r = 0.51, Roy's Largest Root p = 0.015) between a higher combined CSVD burden and a worse soft tissue profile across the cohort. Conclusions: Quantitative indices of facial soft tissues, particularly masseter muscle volume and quality, reflect systemic frailty and cognitive deterioration along the AD continuum. The strong central-peripheral correlation suggests that sarcopenia and CSVD are interconnected manifestations of a shared pathobiological process. These easily measurable facial markers could serve as valuable, non-invasive peripheral biomarkers, complementing traditional neuroimaging risk stratification in AD.",
+  "doi": "10.3390/brainsci16040403",
+  "arxiv_id": null,
+  "venue": "Brain sciences",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "42041811"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.3390/brainsci16040403"
+}

@@ -1,0 +1,22 @@
+{
+  "title": "Comparison and Implementation of CNN Facial Emotion Recognition Model with Hyperparameter Analysis on Multiple Datasets",
+  "authors": [
+    "Xaviera Valentina Tandianto",
+    "Dwi Hosanna Bangkalang",
+    "Nina Setiyawati"
+  ],
+  "year": 2026,
+  "abstract": "This study presents a systematic comparison and implementation of a Convolutional Neural Network (CNN) for Facial Emotion Recognition (FER) across multiple public datasets, namely FER-2013, FER+, RAF-DB, and AffectNet. Unlike previous studies that focused on a single dataset or different model architectures, The main contributions of this research consist of three aspects. First, a five-layer integrated CNN architecture is used to enable fair cross-dataset evaluation within a consistent training and testing framework. Second, structured hyperparameter tuning is performed, including variations in learning rate, batch size, filter configuration, and dropout rate, resulting in a stable and reproducible model configuration. Third, an in-depth analysis was conducted to explore the impact of annotation quality and dataset complexity on model performance. The experimental results show that FER+ achieved the highest accuracy and weighted F1 score thanks to better label consistency, followed by RAF-DB, while FER-2013 and AffectNet experienced a decline in performance due to label noise and higher pose and lighting variations. Further confusion matrix analysis shows that happy and neutral expressions are classified more reliably, while negative emotions such as anger, fear, and disgust remain challenging. To validate practical application, the best-performing model was implemented in a webcam-based facial expression recognition prototype using Python and OpenCV, demonstrating reliable frame-level emotion inference under controlled real-time conditions.",
+  "doi": "10.34148/teknika.v15i1.1445",
+  "arxiv_id": null,
+  "venue": "Teknika",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://ejournal.ikado.ac.id/index.php/teknika/article/download/1445/494",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W7146975873"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.34148/teknika.v15i1.1445"
+}

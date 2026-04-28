@@ -1,0 +1,21 @@
+{
+  "title": "Machine Learning Approaches for Biological Age Estimation: Narrative Review of Non-Invasive and Cost-Effective Methodologies",
+  "authors": [
+    "Tomasz Rymaszewski",
+    "Joanna Michalina Jurek"
+  ],
+  "year": 2025,
+  "abstract": "Biological age (BA) has proven to be a more accurate predictor of longevity and health span than chronological age, offering a dynamic measure of physiological integrity influenced by genetics, environment, and lifestyle. This narrative literature review critically examines recent advances in machine learning (ML) methodologies designed to estimate BA from minimally invasive data sources, including facial imaging, chest X-rays, brain MRIs, blood-based biomarkers, electrocardiograms, and psychological surveys. As interest grows in personalized medicine and early prevention of age-related diseases, the demand for scalable, affordable, and non-invasive BA estimation tools is increasing. Unlike previous reviews limited to a single modality, this review uniquely compares biological age (BA) prediction models based on their invasiveness, cost-effectiveness, and mean absolute error (MAE), offering a clinically oriented synthesis for non-invasive ageing diagnostics. This paper provides a needed, comprehensive, and up-to-date synthesis of these disparate approaches. Our analysis organizes these diverse methods into a unified comparative framework, systematically evaluating them on the trade-offs between predictive accuracy (MAE), invasiveness, and translational feasibility. While DNA methylation-based epigenetic clocks remain the reference standard, emerging ML-based models utilizing routine clinical or digital health data demonstrate comparable predictive performance with significantly lower cost and invasiveness. Nevertheless, emerging challenges, including variability in data quality, lack of external validation, issues of interpretability, and ethical considerations, still exist and need to be addressed in further studies. Advancing these technologies may ultimately enable the integration of non-invasive ageing biomarkers into routine healthcare, transforming risk assessment, intervention planning, and the promotion of longevity.",
+  "doi": "10.47855/jal9020-2025-3-7",
+  "arxiv_id": null,
+  "venue": "Ageing & Longevity",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://aging-longevity.org.ua/index.php/journal-description/article/download/197/182",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4413131849"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.47855/jal9020-2025-3-7"
+}

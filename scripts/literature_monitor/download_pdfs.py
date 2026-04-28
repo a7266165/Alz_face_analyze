@@ -60,6 +60,8 @@ def main() -> int:
                         default="all")
     parser.add_argument("--limit", type=int, default=None,
                         help="only attempt N downloads (for testing)")
+    parser.add_argument("--retry-no-oa", action="store_true",
+                        help="retry papers previously marked no_oa")
     args = parser.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 
@@ -77,7 +79,8 @@ def main() -> int:
                 meta = json.loads(json_path.read_text(encoding="utf-8"))
             except Exception:
                 continue
-            if meta.get("pdf_status") == "no_oa":
+            status = meta.get("pdf_status")
+            if status == "no_oa" and not args.retry_no_oa:
                 # Already known to have no OA — skip unless user wants retry
                 continue
             targets.append((json_path, meta))

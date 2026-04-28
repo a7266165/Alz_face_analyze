@@ -1,0 +1,21 @@
+{
+  "title": "Facial Expressions as a Nexus for Health Assessment",
+  "authors": [
+    "Jinani Sooriyaarachchi",
+    "Di Jiang"
+  ],
+  "year": 2026,
+  "abstract": "Facial expressions are crucial in conveying emotions and for engaging in social interactions. The facial musculature activations and their pattern of movements under emotions are similar in all humans; hence, facial expressions are considered a behavioral phenotype. Facial features related to the expression of various emotions change under different health impairments, including cognitive decline and pain experience. Hence, evaluating these facial expression deviations in comparison to healthy baseline conditions can help in the early detection of health impairments. Recent advances in machine learning and computer vision have introduced a multitude of tools for extracting human facial features, and researchers have explored the application of these tools in early screening and detection of different health conditions. Advances in these studies can especially help in telemedicine applications and in remote patient monitoring, potentially reducing the current excessive demand on the healthcare system. In addition, once developed, these technologies can assist healthcare professionals in emergency room triage, early diagnosis, and treatment. The aim of the present review is to discuss the available tools that can objectively measure facial features and to record the studies that use these tools in various health assessments. Our findings indicate that analyzing facial expressions for the detection of multiple health impairments is indeed feasible. However, for these technologies to achieve reliable real-world deployment, they must incorporate disease-specific facial features and address existing limitations, including concerns related to patient privacy.",
+  "doi": "10.3390/bioengineering13020208",
+  "arxiv_id": null,
+  "venue": "Bioengineering",
+  "citation_count": 1,
+  "source": "openalex",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W7128743306"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.3390/bioengineering13020208"
+}

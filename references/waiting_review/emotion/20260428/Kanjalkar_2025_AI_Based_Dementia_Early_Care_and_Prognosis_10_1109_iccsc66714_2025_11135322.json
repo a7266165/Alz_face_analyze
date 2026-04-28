@@ -1,0 +1,27 @@
+{
+  "title": "AI-Based Dementia Early Care and Prognosis",
+  "authors": [
+    "Jyoti Kanjalkar",
+    "Chaitrali Ghule",
+    "Shreya Mantri",
+    "Ramkumar Kumawat",
+    "Adithya Umare",
+    "Madhur Bhutada",
+    "Prakash Chand Sharma",
+    "Pramod Kanjalkar"
+  ],
+  "year": 2025,
+  "abstract": "Dementia, a neurodegenerative disorder, severely affects cognitive and affective functioning, so early diagnosis is imperative for enhancing patient outcomes. This work provides a holistic, AI-based framework for detecting dementia with three essential methodologies:(1) a Large Language Model (LLM) that is used to evaluate cognitive functioning through chatbot-based interactions, (2) a Convolutional Neural Network (CNN) model for interpreting patient facial expressions, and (3) an MRI-based deep learning model for precise clinical classification of dementia severity. By integrating these methodologies, the study aims to develop an accessible, scalable, and reliable early detection system for dementia, hosted on a convenient cloud platform. The system incorporates a dualinterface design: one to enable patients to self-assess and interact with a chatbot, and the other for clinicians to upload MRI data and analyse emotional or behavioural signals through video analysis. This paper addresses the development process, dataset preparation, model training, and integration challenges, together with clinical implications of the proposed multimodal system.",
+  "doi": "10.1109/iccsc66714.2025.11135322",
+  "arxiv_id": null,
+  "venue": null,
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4414010006"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.1109/iccsc66714.2025.11135322"
+}

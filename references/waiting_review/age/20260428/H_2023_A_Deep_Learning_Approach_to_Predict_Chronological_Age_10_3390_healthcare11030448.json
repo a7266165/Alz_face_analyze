@@ -1,0 +1,23 @@
+{
+  "title": "A Deep Learning Approach to Predict Chronological Age.",
+  "authors": [
+    "Lahza H",
+    "Alsheikhy AA",
+    "Said Y",
+    "Shawly T"
+  ],
+  "year": 2023,
+  "abstract": "Recently, researchers have turned their focus to predicting the age of people since numerous applications depend on facial recognition approaches. In the medical field, Alzheimer's disease mainly depends on patients' ages. Multiple methods have been implemented and developed to predict age. However, these approaches lack accuracy because every image has unique features, such as shape, pose, and scale. In Saudi Arabia, Vision 2030, concerning the quality of life, is one of the twelve initiatives that were launched recently. The health sector has gained increasing attention as the government has introduced age-based policies to improve the health of its elderly residents. These residents are urgently advised to vaccinate against COVID-19 based on their age. In this paper, proposing a practical, consistent, and trustworthy method to predict age is presented. This method uses the color intensity of eyes and a Convolutional Neural Network (CNN) to predict age in real time based on the ensemble of CNN. A segmentation algorithm is engaged since the approach takes its input from a video stream or an image. This algorithm extracts data from one of the essential parts of the face: the eyes. This part is also informative. Several experiments have been conducted on MATLAB to verify and validate results and relative errors. A Kaggle website dataset is utilized for ages 4 to 59. This dataset includes over 270,000 images, and its size is roughly 2 GB. Consequently, the proposed approach produces ±8.69 years of Mean Square Error (MSE) for the predicted ages. Lastly, a comparative evaluation of relevant studies and the presented algorithm in terms of accuracy, MSE, and Mean Absolute Error (MAE) is also provided. This evaluation shows that the approach developed in the current study outperforms all considered performance metrics since its accuracy is 97.29%. This study found that the color intensity of eyes is highly effective in predicting age, given the high accuracy and acceptable MSE and MAE results. This indicates that it is helpful to utilize this methodology in real-life applications.",
+  "doi": "10.3390/healthcare11030448",
+  "arxiv_id": null,
+  "venue": "Healthcare (Basel, Switzerland)",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "36767023"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.3390/healthcare11030448"
+}

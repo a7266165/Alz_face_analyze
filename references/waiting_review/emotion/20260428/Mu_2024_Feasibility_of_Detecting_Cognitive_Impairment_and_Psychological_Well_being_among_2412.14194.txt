@@ -1,0 +1,3609 @@
+Feasibility of Detecting Cognitive Impairment and
+Psychological Well-being among Older Adults Using
+Facial, Acoustic, Linguistic, and Cardiovascular
+Patterns Derived from Remote Conversations
+Xiaofan Mu1†, Merna Bibars2,3†, Salman Seyedi4†, Iris Zheng1,
+Zifan Jiang4, Liu Chen5, Bolaji Omofojoye4, Rachel
+Hershenberg6, Allan I. Levey7, Gari D. Clifford2,4, Hiroko H.
+Dodge5‡, Hyeokhyen Kwon2,4‡
+1 Department of Computer Science, Emory University, Atlanta, GA, 30322, USA
+2 The Wallace H. Coulter Department of Biomedical Engineering, Emory University
+and Georgia Institute of Technology, Atlanta, GA, 30332, USA
+3 Department of Systems and Biomedical Engineering, Cairo University, Giza, Egypt
+4 Department of Biomedical Informatics, Emory University, Atlanta, GA, 30322,
+USA
+5 Department of Neurology, Massachusetts General Hospital, Harvard Medical
+School, Boston, Massachusetts, USA
+6 Department of Psychiatry and Behavioral Sciences, Emory University, Atlanta,
+GA, 30322, USA
+7 Department of Neurology, Emory University, Atlanta, GA, 30322, USA
+E-mail: hyeokhyen.kwon@emory.edu
+†Equally contributing authors.
+‡Joint senior authors.
+Abstract.
+The aging society urgently requires scalable methods to monitor cognitive
+decline and identify social and psychological factors indicative of dementia risk in older
+adults. Our machine learning (ML) models captured facial, acoustic, linguistic, and
+cardiovascular features from 39 older adults with normal cognition or Mild Cognitive
+Impairment (MCI), derived from remote video conversations and quantified their
+cognitive status, social isolation, neuroticism, and psychological well-being.
+Our
+model could distinguish Clinical Dementia Rating Scale (CDR) of 0.5 (vs. 0) with
+0.77 area under the receiver operating characteristic curve (AUC), social isolation
+with 0.74 AUC, social satisfaction with 0.75 AUC, psychological well-being with 0.72
+AUC, and negative affect with 0.74 AUC. Our feature importance analysis showed
+that speech and language patterns were useful for quantifying cognitive impairment,
+whereas facial expressions and cardiovascular patterns were useful for quantifying social
+and psychological well-being.
+Our bias analysis showed that the best-performing
+models for quantifying psychological well-being and cognitive states in older adults
+exhibited significant biases concerning their age, sex, disease condition, and education
+levels. Our comprehensive analysis shows the feasibility of monitoring the cognitive
+and psychological health of older adults, as well as the need for collecting largescale interview datasets of older adults to benefit from the latest advances in deep
+arXiv:2412.14194v4  [cs.HC]  7 Nov 2025
+
+Detecting Cognitive Impairment and Psychological Well-being among Older Adults
+2
+learning technologies to develop generalizable models across older adults with diverse
+demographic backgrounds and disease conditions.
+1. Introduction
+The number of older adults living with Alzheimer’s disease and related dementias
+(ADRD) is expected to rise by nearly 13 million in the U.S. by the year 2060
+[1, 2].
+Mild Cognitive Impairment (MCI) often precedes ADRD. It is characterized
+by cognitive decline that is greater than expected for an individual’s age and education
+level, while the person remains capable of performing daily activities independently.
+Along with cognition, emotional well-being, such as anxiety, loneliness, or depressive
+symptoms, may have bidirectional relationships with cognitive impairments through
+shared neurobiological and behavioral mechanisms [3, 4, 5].
+Additionally, mood
+disorders, social isolation, and negative emotions often co-occur with or even precede
+MCI and can further accelerate cognitive decline [6, 7, 8]. Cognitive impairment and
+psychological well-being significantly impact the lives of elderly individuals, highlighting
+the importance of early detection, monitoring, and intervention of these symptoms to
+maintain their quality of life.
+Clinical tools, such as the Montreal Cognitive Assessment (MoCA) and Clinical
+Dementia Rating (CDR), have become widely accepted as standardized methods for
+evaluating and monitoring cognitive impairment, which assess a range of cognitive
+functions [9, 10]. However, traditional cognitive assessments are not sensitive enough
+to identify MCI or monitor the progression during the early MCI stage [11, 12, 13]. In
+standard geriatric care, subtle behavioral changes related to psychological well-being,
+such as reduced social engagement and declining mental health, are often overlooked.
+These factors, however, may signal early dementia risk and could offer opportunities for
+timely intervention [14, 4], underscoring the need for innovative approaches to monitor
+them [15, 16]. The expected shortage of care services further exacerbates this situation.
+It is expected that over 1 million additional direct care workers will be needed by 2031,
+and the U.S. must nearly triple its geriatricians by 2050 [1]. The current global shortage
+of mental health professionals and geriatricians further complicates disparities in care,
+especially in underserved regions [17, 18]. Even developed countries are facing such
+challenges, with twenty states in the U.S. identified as “dementia neurology deserts”
+[19], let alone developing countries.
+The recent widespread adoption of video conferencing platforms for telehealth [20]
+presents an opportunity to use these tools to prescreen cognitive impairment and
+to assess associated factors, such as social isolation and psychological well-being, in
+older adults remotely [21, 22]. Recent advancements in artificial intelligence (AI) have
+spurred research into using telehealth platforms to quantify psychologically-relevant
+behaviors in individuals with MCI through facial, audio, and text analysis [23, 24, 25].
+Despite active research in computerized interview analysis [26, 27, 22], there are still
+
+Detecting Cognitive Impairment and Psychological Well-being among Older Adults
+3
+relatively few publications that focus on quantifying cognitive abilities, social isolation,
+and psychological well-being in older adults automatically through remote interviews.
+Furthermore, with the recent emergence of generative AI models, so-called foundation AI
+models trained on vast amounts of video, audio, and text data from internet sources, it is
+imperative to explore whether these innovations can be effectively leveraged to quantify
+behaviors in older adults [28, 29, 30]. Advances in ML in video analysis also enable noncontact assessments of cardiovascular features, such as remote Photoplethysmography
+(rPPG) from facial videos [31], which could serve as another valuable modality for
+assessing cognitive impairment and psychological well-being in older adults.
+For
+example, rPPG allows the extraction of heart rate variability (HRV) features that are
+found to be linked with anxiety and other negative emotions [32, 33].
+This work aims to investigate the feasibility of quantifying the psychological
+well-being, social network, and cognitive ability of individuals living with normal
+cognition or MCI, utilizing digital markers extracted from facial, acoustic, linguistic,
+and cardiovascular patterns detected by foundation AI models pretrained from largescale datasets available from the internet. By objectively quantifying various modalities
+associated with cognitive decline through a scalable, remote, and automated assessment
+system, we expect this work to provide a step toward enhancing accessibility, reducing
+disparities in mental health and dementia services [34], and promoting evidence-based
+therapeutics [35]. Our systematic analysis of multimodal AI systems on bias, feature
+importances, and performances of various models, including the latest advances in deep
+learning techniques, is also expected to provide important insights on future research
+directions in developing generalizable ML systems for monitoring cognitive impairment
+and psychological well-being in older adults with normal cognition or MCI from various
+demographic groups and disease conditions.
+2. Methods and Materials
+2.1. Ethics Statement
+The Internet-Based Conversational Engagement Clinical Trial (I-CONECT) study
+received approval from the Institutional Review Board (IRB) at Oregon Health &
+Science University (OHSU) (IRB STUDY00015937) through a single IRB process.
+The participants provided their written informed consent to participate in this study,
+which also allowed for secondary data analysis. The I-CONECT trial began recruiting
+participants and collecting data in July 2018.
+In the second year of recruitment,
+the COVID-19 pandemic struck the USA. The trial ran for approximately 19 months
+before the pandemic, from July 2018 to March 2020. The secondary analysis of the
+dataset from the I-CONECT study was approved by the IRB at Emory University (IRB
+STUDY00007231), as the dataset included identifiable information, such as videos and
+audio. The IRB was approved on January 8th, 2024, when the study team at Emory
+University started accessing the dataset for the proposed work.
+
+Detecting Cognitive Impairment and Psychological Well-being among Older Adults
+4
+Table 1: Demographics and Clinical Characteristics of the Participants. For
+sex, “M” stands for male, and “F” is for female. For race, “C” denotes Caucasians, “A”
+denotes African Americans, and “O” denotes other. The years of education reflect the
+total number of academic years completed in formal education. The CDR categories
+include no (impairment) (CDR=0) and questionable dementia (CDR=0.5).
+Type
+Clinical
+Diagnosis
+Normal
+Cognition
+(NC)
+MCI
+Combined
+(NC+MCI)
+Demographics
+Counts
+17
+22
+39
+Sex (F/M)
+15/2
+14/8
+29/10
+Race
+(C/A/O)
+16/1/0
+18/3/1
+34/4/1
+Age
+79.85 ± 4.39
+81.53 ± 4.81
+80.69 ± 4.6
+Education
+(years)
+15.47 ± 2.12
+15.41 ± 2.54
+15.44 ± 2.34
+Cognitive
+Ability
+MoCA
+26.58 ± 2.51
+22.96 ± 3.57
+24.54 ± 3.61
+CDR (no /
+questionable
+dementia)
+14/3
+6/16
+20/19
+Social Network,
+Personality,
+Psychological
+Well-being
+LSNS-6
+15.12 ± 6.08
+13.36 ± 5.71
+14.13 ± 5.86
+Neuroticism
+15.35 ± 9.16
+17.27 ± 7.89
+16.44 ± 8.41
+Negative
+affect
+46.06 ± 8.29
+51.08 ± 12.82
+48.57 ± 10.93
+Social
+satisfaction
+49.64 ± 10.70
+48.35 ± 13.12
+49.02 ± 11.77
+Psychological
+well-being
+54.66 ± 7.17
+47.08 ± 11.12
+50.87 ± 9.99
+2.2. Participants and Interview Protocol
+The data source for this project was the I-CONECT (NCT02871921) study [36, 37]. This
+behavioral intervention study aimed to enhance cognitive functions by providing social
+interactions (conversational interactions) to older subjects living in social isolation.
+The study was based on the accumulating evidence that social isolation is a risk
+factor for dementia [38].
+The study recruited older adults (> 75 years old) with
+MCI or normal cognition from two sites:
+Portland, Oregon, which focused on
+Caucasian participants, and Detroit, Michigan, which focused on African American
+participants. The experimental group participated in 30-minute video chats with trained
+conversational specialists four times a week, along with weekly 10-minute phone checkins for six months.
+In contrast, the control group only received weekly 10-minute
+
+Detecting Cognitive Impairment and Psychological Well-being among Older Adults
+5
+phone check-ins. Conversations were semi-structured with predetermined themes each
+day, ranging from historical events to leisure activities, and using pictures to promote
+conversations. The participants with severe depressive symptoms (GDS-15 ≥7) [39] were
+excluded. Exclusion criteria included a clinical diagnosis of dementia. Clinical diagnoses
+were made through a consensus process involving neurologists and neuropsychologists,
+using the National Alzheimer’s Coordinating Center (NACC) Uniform Data Set Version
+3 (UDS-3) [40, 41].
+Inclusion criteria required participants to be socially isolated
+according to at least one of the following: (1) a score of 12 or less on the 6-item Lubben
+Social Network Scale (LSNS-6) [42], (2) engaging in conversations lasting 30 minutes or
+more, no more than twice a week, based on self-report, or (3) responding “often” to at
+least one question on the 3-item UCLA Loneliness Scale [43]. The intervention results
+showed that global cognitive functions improved significantly among the intervention
+group (i.e., the video-chats engaged group) compared with the control group after six
+months of intervention, with a Cohen’s d of 0.73. The topline results of this behavioral
+intervention were published earlier [37, 44].
+Cognitive tests were administered by telephone to participants engaging in the
+study during the COVID-19 pandemic. MoCA was changed to Telephone MoCA during
+this period. Out of 94 subjects randomized into the intervention group, 52 subjects
+had in-person MoCA (as opposed to Telephone MoCA). Among them, 39 participants
+with all the available data, including transcribed data, personality, and NIH-Toolbox
+emotional battery assessment (discussed later), were used in this work. The demographic
+characteristics of these participants are shown in Table 1.
+For this feasibility study, we opted to use the data from the first week of interviews
+to capture the participants’ baseline state of cognitive function and psychological wellbeing at the time of the gold-standard cognitive and psychological assessments. The
+I-CONECT intervention study indicated that participants experienced improvements
+in both cognitive functions and emotional well-being over the six months of study
+participation [37, 44]. Consequently, the behaviors observed after the first week were
+likely influenced by the intervention, which is why we focused on the recordings from
+the enrollment week for studying the feasibility of quantifying baseline conditions of
+cognitive impairment and psychological well-being of older adults, including both those
+with normal cognition and MCI.
+2.3. Outcomes and Clinical Assessment
+In this study, we aimed to classify participants with cognitive assessments derived from
+various scales. Following previous work for quantifying MCI [45], the MoCA scores were
+dichotomized into ‘high’ and ‘low’ categories using a cutoff of 24, which was based on the
+median score of our participants. A high score indicated better cognitive function. The
+Normal Cognition (vs. MCI) assessment is the binary encoding of clinician evaluations
+(NACC UDS V3, Form D1: Clinical Diagnosis Section 1).
+This encoding assigned
+a value of 1 to indicate normal cognition and 0 to indicate MCI. Regarding the CDR,
+
+Detecting Cognitive Impairment and Psychological Well-being among Older Adults
+6
+participants had scores of either 0, indicating no cognitive impairment, or 0.5, indicating
+questionable or very mild dementia. These scores were dichotomized accordingly.
+Social network and psychological well-being assessments included LSNS-6 [42] for
+the amount of social interaction, neuroticism from the NEO Five-Factor Inventory
+(Neuro) [46], and NIH Toolbox Emotional Battery (NIHTB-EB) [47]. The NIHTB-EB
+has three composite scores: negative affect, social satisfaction, and psychological wellbeing [48]. For the LSNS-6, the cutoff score of 12 is the suggested threshold to define
+social isolation [49]. For neuroticism, our participants’ median score of 16 was used to
+dichotomize our participants into groups that have higher or lower negative emotional
+reactivity to stressful stimuli. From NIHTB-EB, negative affect, social satisfaction, and
+psychological well-being composite scores [48] were dichotomized with medians of 44.10,
+48.66, and 53.70, respectively, to group our participants into high and low-score groups.
+The distribution following dichotomization was approximately balanced across all tasks,
+as shown in Figure 1.
+2.4. Predictors and Multimodal Analysis System for Remote Interview
+Overall Pipeline
+Our proposed multimodal analysis framework used facial, acoustic,
+linguistic,
+and cardiovascular patterns to quantify the cognitive function and
+psychological well-being of the participants during remote interviews (i.e., semistructured conversations). All multimodal patterns were systematically extracted from
+the participant segment of the video, each represented as a time series.
+These
+multimodal patterns were then analyzed using binary shallow ML and deep learning
+classifiers to predict the dichotomized (high or low) rating of the cognitive, social
+network, personality, and psychological well-being assessments.
+The overall pipeline
+is shown in Figure 2.
+Preprocessing
+Our video data recorded both the participant’s and moderator’s
+activities during the remote interview, which required segmenting the participant
+portion of the recording for analysis.
+Our video recording showed the indicator of
+the speaker on the screen, either as a moderator or participant ID (starting with “C”
+followed by 4 digits). We used optical character recognition (OCR), namely EasyOCR
+[50, 51, 52], and only the frames indicating participant ID were kept for further analysis.
+From participant video segments, we used RetinaFace [53], a facial detection model, for
+detecting, tracking, and segmenting participants’ faces. For the language analysis, the
+participants’ speeches were transcribed with the transcription models [54] specifically
+developed for older adults.
+
+Detecting Cognitive Impairment and Psychological Well-being among Older Adults
+7
+Low
+High
+0.0
+2.5
+5.0
+7.5
+10.0
+12.5
+15.0
+17.5
+20.0
+Number of Participants
+19
+20
+(a) LSNS-6
+Low
+High
+0
+5
+10
+15
+20
+Number of Participants
+18
+21
+(b) MoCA
+Questionable Dementia
+No Dementia
+0.0
+2.5
+5.0
+7.5
+10.0
+12.5
+15.0
+17.5
+20.0
+Number of Participants
+19
+20
+(c) CDR
+MCI
+Normal Cognition
+0
+5
+10
+15
+20
+Number of Participants
+22
+17
+(d) Clinical Diagnosis of MCI
+Low
+High
+0.0
+2.5
+5.0
+7.5
+10.0
+12.5
+15.0
+17.5
+20.0
+Number of Participants
+18
+16
+(e) Negative Affect
+Low
+High
+0.0
+2.5
+5.0
+7.5
+10.0
+12.5
+15.0
+17.5
+20.0
+Number of Participants
+19
+20
+(f) Neuroticism
+Low
+High
+0.0
+2.5
+5.0
+7.5
+10.0
+12.5
+15.0
+17.5
+Number of Participants
+17
+17
+(g) Psychological Well-being
+Low
+High
+0.0
+2.5
+5.0
+7.5
+10.0
+12.5
+15.0
+17.5
+Number of Participants
+16
+17
+(h) Social Satisfaction
+Figure 1: Distribution of participants’ labels across the different outcomes and clinical
+assessments after dichotomization.
+
+Detecting Cognitive Impairment and Psychological Well-being among Older Adults
+8
+Figure 2: Overview of the processing pipeline illustrating the extraction and analysis
+of language, audio, facial, and cardiovascular patterns from conversational video
+data. The pipeline integrated state-of-the-art feature representation models for each
+modality, including LLaMA-65B [30] for language feature embedding, RoBERTa [55]
+and WavLM [29] for sentiment and audio processing, DINOv2 [28] for facial feature
+extraction, and rPPG [56] for cardiovascular signal estimation.
+Facial Biomarkers
+We extracted generic facial expression features using DINOv2 [28],
+a foundation model for facial representation with 1024-dimensional visual embeddings.
+We also extracted facial emotion, landmarks, and action units (AUs) with facial analysis
+pipelines used for previous mental health studies [57, 58, 59]. Facial emotion included
+seven categories: neutral, happy, sad, surprised, fearful, disgusted, and angry [58].
+Overall, our facial features were extracted at a sampling rate of 1 Hz.
+Cardiovascular Biomarkers
+rPPG signals capture subtle variations in skin color that
+result from blood volume changes in peripheral blood vessels. These signals are extracted
+from video recordings of a person’s face. We extracted rPPG signals using the pyVHR
+package [56]. To estimate heart rate from rPPG signals, we analyzed the power spectral
+density of rPPG signals at six-second intervals, advancing one second at a time. The
+
+Detecting Cognitive Impairment and Psychological Well-being among Older Adults
+9
+final HRV features were derived by calculating the 5th, 25th, 50th, 75th, and 95th
+quantiles of the estimated beats per minute, representing the statistical properties of
+HRV during the interview, using the pyVHR package.
+Acoustic Biomarkers
+We first downsampled the audio to 16 kHz for the acoustic
+features extraction. Then, we extracted generic acoustic features from vocal tones using
+the WavLM [29] model, a foundation model for human speech analysis, at a rate of 20
+ms. We also extracted hand-crafted statistical acoustic features every 100 ms using the
+PyAudioAnalysis package [60], such as spectral energy and entropy, which were shown
+to be effective for depression and anxiety analysis [57].
+Linguistic Biomarkers
+We encoded the entire interview transcript for participants
+using LLaMA-65B [30] to capture the high-level context of text representations in an
+8192-dimensional vector. We also extracted seven emotions (neutral, happiness, sadness,
+surprise, fear, disgust, and anger) and positive and negative sentiments at the utterance
+level using RoBERTa models [55, 61, 62]. Both models are large language foundation
+models (LLMs).
+Participant-level Feature Aggregation
+The extracted feature time series were processed
+differently for the shallow ML and deep learning models. Table 2 shows a summary of
+the features extracted for each biomarker group.
+Shallow ML Models
+The temporal features were aggregated over the entire video
+sequence by extracting statistical features, such as mean and standard deviation, as
+shown in Figure 2, as well as summarized by a four-state Hidden Markov Model (HMM)
+with Gaussian observation models, using the SSM package [63]. The four states were
+chosen based on Jiang et al.’s study [57], where they were effective in modeling depression
+and anxiety in psychiatric populations. HMMs were also successfully used in modeling
+emotional states with behavioral wearable data [64]. For HMM, we applied the following
+standard processes to capture the temporal dynamics of the multimodal (facial, vocal,
+linguistic, and cardiovascular) feature time series:
+(1) each subject’s sequence was
+padded to the maximum temporal length in our training dataset, Tmax, calculated from
+the participant with the longest video length; (2) a four-state HMM was fit to all training
+subjects’ data, which was then used to infer each subject’s most likely hidden states
+(Tmax × 4); (3) the temporal dynamics of the four hidden states were then summarized
+by calculating the duration and frequency of each state. We later used the HMM-based
+features to further train a shallow ML classifier (high vs. low outcome) for each feature
+and task.
+Deep Learning Models
+We directly processed the raw feature time series using
+sequential analysis models, like Long Short-Term Memory (LSTM) networks and
+Transformers [65, 66].
+The multimodal feature time series extracted from each
+participant’s video data had different lengths, as the interview duration differed for each
+
+Detecting Cognitive Impairment and Psychological Well-being among Older Adults
+10
+Table 2: Biomarker modality and the corresponding feature sets extracted. ‘X+HMM’
+means the HMM-based feature extracted from the ‘X’ feature time series.
+Biomarker
+Modality
+Features
+Demographics
+Age+Sex+Years of education
+Age
+Facial
+DINOv2
+Emotion+AUs
+Emotion+AUs+HMM
+Cardiovascular
+rPPG
+rPPG+HMM
+Audio
+WavLM
+Acoustic
+Acoustic+HMM
+Language
+LLaMA-65B
+RoBERTa Sentiment
+RoBERTa Sentiment+HMM
+participant, ranging from 25 to 47 minutes. To model the overall temporal dynamics
+equally for all participants’ video data, we temporally uniformly sampled the multimodal
+feature time series to a fixed length for each modality feature across all participants.
+For uniform sampling, we used the minimum sequence length for each modality feature
+across our participants’ data as follows: rPPG at 1510; Emotion+AUs at 587; DINOv2
+at 587; RoBERTa Sentiment at 93; and for WavLM and Acoustic features, the length
+was set to 1500.
+Multimodal Fusion and Classification
+We applied a late fusion approach, which
+aggregated the classification outcomes from each modality feature based on Table 2,
+which was more effective than the early fusion approaches in previous studies, especially
+with a small sample size (N=39) [57]. Table 3 shows the combinations of models and
+corresponding features used in our experiments to study the effectiveness of variants of
+ML models, including both shallow ML and deep learning models.
+Shallow ML Models
+We studied the effect of shallow ML models popularly used in
+previous mental health and human behavior analysis studies, including logistic regression
+classifier with L2 regularization (LR), gradient-boosting decision tree (GBDT) classifier,
+Support Vector Machines (SVM), and Random Forest (RF) [67, 68, 57]. For SVM and
+RF, we used all the features from each biomarker modality. But, for LR and GBDT, we
+used feature sets from each modality that were low- (<100) and high (≥100)-dimensional
+features, respectively, following Jiang et al.
+[57], which was effective in quantifying
+depression and anxiety in the psychiatric population.
+Deep Learning Models
+Following previous work in mental health screening [65, 66],
+we used LSTM and Transformers directly on the raw feature time series data, rather than
+
+Detecting Cognitive Impairment and Psychological Well-being among Older Adults
+11
+Table 3: Classifiers and corresponding features used in our experiments, including the
+HMM-processed variants (entries ending with “+ HMM”).
+Model
+Features
+LR
+Emotion & AUs; Demographics; RoBERTa sentiment;
+Acoustic; Emotion & AUs + HMM; RoBERTa sentiment
++ HMM; Acoustic + HMM
+GBDT
+DINOv2; rPPG; LLaMA-65B; WavLM; rPPG + HMM
+SVM
+All features
+RF
+All features
+LSTM
+Emotion & AUs; DINOv2; Acoustic; WavLM; RoBERTa
+sentiment; rPPG;
+Transformer
+Emotion & AUs; DINOv2; Acoustic; WavLM; RoBERTa
+sentiment; rPPG;
+MLP
+Demographics; LLaMA-65B
+the aggregated statistical and HMM-based features. For the non-temporal feature sets,
+including LLaMA text embeddings and demographics, we used a multilayer perceptron
+(MLP).
+Late Fusion from Per-feature Classification
+Final decisions were obtained by
+fusing per-feature classification outputs using a late fusion approach.
+We employed
+three different aggregation rules for fusion: (i) majority voting over hard class predictions
+produced by the per-feature models, (ii) average-probability fusion that averaged class
+probabilities produced by the per-feature models and selected the class with the highest
+probability, and (iii) selective voting, which first selected features whose AUC exceeded
+0.5 for validation sets in a nested cross-validation to exclude classifiers performing poorly
+due to irrelevant modality features for a classification task. The selected classifiers were
+then used for majority voting on the left-out test sets.
+2.5. Experiment
+2.5.1. Quantifying Cognitive Impairment and Psychological Well-being
+For evaluating
+our multimodal analysis system, we used participant-wise 5-fold nested cross-validation
+with 100 runs. For each fold, we split 64%, 16%, and 20% of our participants into
+training, validation, and testing splits, respectively. This evaluation aimed to assess the
+generalizability of our trained model for unseen test subjects not included in the training
+sets, which is important in clinical applications. For the evaluation metrics, we used
+area under the receiver operating characteristic curve (AUROC or AUC), accuracy, and
+macro-F1 score, following previous work in human behavior analysis [57]. For statistical
+significance analysis, we also report their 95% confidence intervals (CI), aggregated from
+100 runs of 5-fold nested cross-validation.
+We evaluated unimodal and multimodal fusion models in various combinations to
+
+Detecting Cognitive Impairment and Psychological Well-being among Older Adults
+12
+understand the relevance of each modality and the interplay between the modalities for
+assessing cognitive function and psychological well-being in older adults. For multimodal
+fusion, we explored 1) acoustic and language fusion, 2) face and cardiovascular fusion,
+and 3) all modalities combined.
+We also evaluated the classification performance
+using demographic variables (years of education, gender, and age), shown in Table 2,
+to understand their predictability in cognitive impairment and other outcomes.
+All
+demographic variables were one-hot encoded (treating age as categorical via one-hot
+encoding of unique values) and then standardized using a z-score transformation to
+ensure comparability across variables. We separately evaluated the age-only classifier
+in addition to the demographic classifier, according to previous work using age for
+prescreening MCI [69].
+We also included demographic variables for all multimodal
+fusion analyses, assuming this information is usually available from participants’ input
+in real-world deployment scenarios.
+2.5.2. Feature Importance Analysis
+Quantifying the relevance of each feature for model
+predictions is important to build clinicians’ trust in clinical decision support [70]. We
+applied feature importance analysis for modality feature-level for the best-performing
+multimodal fusion model for each classification task to quantify cognitive impairment
+and psychological well-being. Specifically, we adapted the MM-SHAP technique [71],
+which was developed for multimodal classification models. MM-SHAP first computed
+per-sample per-modality (feature set) scores from the per-sample per-feature SHAP
+(SHapley Additive Explanations) values, ϕj(xi), which were then normalized across the
+modality features. We divided the per-sample per-modality (feature set) scores by the
+modality feature dimension to normalize the modality feature SHAP value to account
+for the different dimension sizes of each modality feature:
+sm(xi) =
+1
+|Fm|
+P
+j∈Fm
+
+
+ϕj(xi)
+
+
+
+M
+P
+m′=1
+1
+|Fm′|
+P
+j∈Fm′
+
+
+ϕj(xi)
+
+
+
+,
+M
+X
+m=1
+sm(xi) = 1.
+(1)
+where, we index modality feature sets by m ∈{1, . . . , M = 12}, shown in Table 2, with
+feature index sets {Fm}, and each modality feature m has dimensionality = |Fm|.
+The
+final per-modality feature global contribution was calculated by averaging sm(xi) over
+all samples:
+¯sm =
+1
+N
+N
+X
+i=1
+sm(xi).
+(2)
+This yielded per-modality feature contributions that sum to one, giving equal weight
+to each sample and mitigating dominance by high-dimensional features. For statistical
+significance of feature importance, we report the average MM-SHAP values from 100
+runs of participant-wise nested 5-fold cross-validation.
+
+Detecting Cognitive Impairment and Psychological Well-being among Older Adults
+13
+2.5.3.
+Fairness and Bias Analysis Fairness in ML concerns whether models make
+equitable predictions across participant sub-groups, based on sensitive attributes, such
+as age, sex, disease conditions, etc [72, 73]. We evaluated the bias of our multimodal
+classification pipeline for quantifying psychological well-being and cognitive impairment
+and studied the effect of the bias mitigation technique on the trade-off between model
+bias and performance.
+Bias Evaluation
+We evaluated the bias of our multimodal classification model with
+respect to four sensitive attributes: sex, age, years of education (YOE), and clinical
+diagnosis of MCI (MCI vs. normal cognition), shown in Table 1. Age was categorized
+into two groups based on the median value, with ≤78.9 and > 78.9. YOE was divided
+into three groups: ≤15 years (“Below college”), 16 years (“College graduate”), and ≥17
+years (“Graduate+”). For each sensitive attribute, we calculated two metrics to quantify
+the bias of our model [72, 73] using the Fairlearn library [74]: Equalized Odds Ratio
+(EOR) [75], which captures the balance of True Positive Rate (TPR) and False Positive
+Rate (FPR) across all groups, and Demographic Parity Ratio (DPR), which is the leastfavored group’s selection rate divided by the most-favored group’s selection rate. For the
+statistical significance of model biases, we report the average DPR and EOR, along with
+the 95% confidence interval, aggregated from 100 runs of nested 5-fold participant-wise
+cross-validation for the best-performing models for each classification task.
+The Four-fifths Rule
+There is no existing threshold of fairness specific to AI for
+cognitive impairment and psychological well-being in the aging population.
+To
+determine the fairness of the model, we applied the four-fifths rule (threshold = 0.8)
+from the U.S. Equal Employment Opportunity Commission [76] to our bias metrics,
+following the standard practice in Fair ML research. The model is considered perfectly
+fair when DPR = 1 and EOR = 1.
+Bias Mitigation
+For the classification tasks with significant bias (DPR<0.8 or
+EOR<0.8), we studied the effect of Equalized Odds (EO) post-processing [75] using
+Fairlearn’s ThresholdOptimizer [74] for bias mitigation.
+During the 100 runs of
+participant-wise 5-fold nested cross-validation, this method learned group-specific
+thresholds on the validation set to align TPR and FPR across groups while maximizing
+the balanced accuracy. We then applied these adjusted decision threshold rules on the
+left-out test folds for evaluation. After applying bias mitigation, we also report average
+DPR and EOR, as well as the F1 score of the classification performance, along with the
+95% CI, aggregated from 100 runs of participant-wise 5-fold nested cross-validation for
+statistical significance. We compared the F1 scores before and after applying mitigation,
+considering bias mitigation for each sensitive attribute, as the EO post-processing [75]
+learned group-specific thresholds per attribute.
+F1 scores before and after applying
+mitigation were calculated by averaging the F1 scores for each sub-group concerning the
+sensitive attributes of interest.
+
+Detecting Cognitive Impairment and Psychological Well-being among Older Adults
+14
+2.5.4.
+Hyperparameters and Software Here, we detail the software environment,
+random
+seeds,
+model
+hyperparameters,
+and
+training
+protocol
+used
+across
+all
+experiments.
+All models shared the exact same training, validation, and testing subject
+splits in each fold for fair comparison during 100 runs of participant-wise 5-fold nested
+cross-validation.
+HMMs (per feature)
+We used Gaussian 4-state HMMs, implemented using the
+SSM package [63], with K-means initialization and 20 EM iterations, following our
+participant-wise nested cross-validation setting.
+Shallow ML Models
+We used default parameters specified in scikit-learn [77],
+otherwise stated below.
+For random seed,
+all classifiers used random_state=
+42+run_number.
+• LR: penalty=L2, max_iter=1000.
+• GBDT: n_estimators=100, learning_rate=1.0, max_depth=3.
+• SVM: RBF kernel; probability=True.
+• RF: n_estimators=100.
+Deep Learning Models
+Deep learning models were implemented by PyTorch [78].
+Across all folds, we trained the models for 10 epochs with cross-entropy loss for
+binary classifications, which was generally sufficient to fit the models before overfitting
+significantly. For a fair comparison, we tried to maintain a similar number of parameters
+across models and used standard hyperparameter optimizations, including model size,
+learning rate, weight decay, and batch size. Our final models with the best performances
+were as follows:
+• LSTM: hidden size = 128; one layer.
+• Transformer (ViT-style encoder) [79]: embedding dim = 128; MLP hidden
+dim = 32; 4 heads; 2 encoder layers; dropout = 0.1; CLS token for classification.
+• MLP (non-temporal features): one hidden layer (64 units), ReLU, dropout =
+0.3.
+3. Results
+3.1. Quantifying Cognitive Impairment and Psychological Well-being
+Table 4 shows the best-performing classification approaches for all the classification
+tasks, including both unimodal and multimodal fusion, as well as the second-best
+approach (or runner-up) with absolute differences in AUC from the best model (AUROC
+∆). Figure 3 reports AUROC values for the three shallow models (LR/GBDT, SVM,
+and RF) across all tasks (rows) and feature modalities (columns). Each cell shows the
+AUROC with the corresponding best unimodal feature or multimodal fusion strategy.
+
+Detecting Cognitive Impairment and Psychological Well-being among Older Adults
+15
+Table 4: Best pipelines per task with AUROC/F1 (± 95% CI) and runner-up AUROC
+deltas ∆.
+Task
+Pipeline
+Metrics
+Runner-Up
+/ AUROC ∆
+AUROC
+F1
+CDR
+RF
+(Audio+Language+Demo)
+0.77 ± 0.008
+0.72 ± 0.008
+RF (All)
+∆= −0.01
+MoCA
+LR
+(Demographics)
+0.65 ± 0.01
+0.60 ± 0.012
+LR (Acoustic)
+∆= −0.03
+Clinical Diagnosis
+of MCI
+(NACC UDS)
+SVM
+(Audio+Language+Demo)
+0.69 ± 0.008
+0.64 ± 0.01
+RF (WavLM)
+∆= −0
+LSNS
+LR
+(RoBERTa Sentiment)
+0.74 ± 0.006
+0.71 ± 0.008
+RF (RoBERTa Sentiment)
+∆= −0.08
+Neuroticism
+LR
+(RoBERTa Sentiment+HMM)
+0.66 ± 0.012
+0.60 ± 0.012
+RF (Emotion & AUs)
+∆= −0.01
+Negative Affect
+LR
+(Acoustic+HMM)
+0.74 ± 0.006
+0.70 ± 0.006
+LR (Sentiment HMM)
+∆= −0.03
+Social
+Satisfaction
+LR/GBDT
+(Facial+Cardio+Demo)
+0.75 ± 0.014
+0.60 ± 0.016
+RF (Emotion & AUs)
+∆= −0.11
+Psychological
+Well-being
+SVM
+(Facial+Cardio+Demo)
+0.72 ± 0.014
+0.67 ± 0.014
+RF (Facial+Cardio+Demo)
+∆= −0.08
+A darker color indicates higher classification performance. In our experiment, all the
+deep learning models (LSTM and Transformers) showed lower classification performance
+compared to the best shallow ML models. The detailed experiment results of the deep
+learning models are shown in Appendix A in Table A1 and Figure A1.
+3.2. Feature Importance Analysis
+Figure 4, Figure 5, and Figure 6 show the modality feature importance from MM-SHAP
+[71] for the best-performing multimodal model for each classification task. For CDR
+(Figure 4a) and clinical diagnosis of MCI (Figure 4c), we only show the importance of
+audio, language, and demographic modalities, as classification performance decreased
+when adding facial expression and cardiovascular features. Likewise, for neuroticism
+(Figure 5b), social satisfaction (Figure 6b), and psychological well-being (Figure 6c),
+we only show the importance of facial expression and cardiovascular features, as
+classification performance decreased when adding audio and language features.
+3.3. Fairness and Bias Analysis
+Figure 7, Figure 8, and Figure 9 show the bias and fairness analysis (EOR and DPR)
+before (BLUE) and after (ORANGE) applying bias mitigation for the best-performing
+models from Table 4 concerning each sensitive attribute. Figure 7 shows the results
+for quantifying cognitive impairments (CDR, MoCA, and clinical diagnosis of MCI).
+
+Detecting Cognitive Impairment and Psychological Well-being among Older Adults
+16
+Figure 8 shows the results for quantifying LSNS and neuroticism, and Figure 9 shows
+the results for quantifying negative affect, social satisfaction, and psychological wellbeing from NIHTB-EB. Figure 10 and Figure 11 show the F1 score comparisons for
+before (BLUE) and after applying bias mitigation (ORANGE) for each attribute for all
+the classification tasks for the best-performing models from Table 4. Figure 10 shows the
+results for CDR, MoCA, clinical diagnosis of MCI, and LSNS, and Figure 11 shows the
+results for neuroticism, negative affect, social satisfaction, and psychological well-being.
+4. Discussion
+Here, we first provide an overview of the experiment results across all the classification
+tasks, followed by a detailed discussion of each task. Then, we discuss the limitations
+and future research directions.
+4.1. Classification Performance
+4.1.1. Shallow ML Models
+Overall, from Table 4 and Figure 3, LR/GBDT models
+dominated five tasks: LSNS (0.74 AUC), neuroticism (0.66 AUC), negative affect (0.74
+AUC), social satisfaction (0.75 AUC), and MoCA (0.65 AUC). RF performed best
+in CDR (0.77 AUC), while SVM outperformed all models in psychological well-being
+(0.72 AUC), and tied with RF for the clinical diagnosis of MCI (0.69 AUC). SVM
+underperformed relative to LR/GBDT and RF. Across tasks, the best models tended
+to rely on the HMM-based features over the statistical features.
+4.1.2. Deep Learning Models
+We also demonstrated that deep learning models (even
+with regularization and hyperparameter tuning) overfit due to the limited dataset size
+(N=39), having difficulty capturing behavioral patterns related to cognitive impairment
+and psychological well-being that are generalizable across different subjects.
+From
+Figure A1 in Appendix A, compared to the best-performing shallow ML models,
+when using LSTM, absolute AUC values decreased by 21% for classifying CDR, 15%
+for classifying MoCA, and 6% for predicting the clinical diagnosis of MCI, 20% for
+classifying LSNS, 13% for classifying neuroticism, 10% for classifying negative affect,
+21% for classifying social satisfaction, and 15% for classifying psychological well-being,
+with a median drop of 15%. When using Transformer, absolute AUC values decreased
+by 21% for classifying CDR, 11% for classifying MoCA, 4% for predicting the clinical
+diagnosis of MCI, 17% for classifying LSNS, 9% for classifying neuroticism, 13% for
+classifying negative affect, 23% for classifying social satisfaction, and 18% for classifying
+psychological well-being, with a median drop of 15%. While our successful classification
+results with shallow ML models in Table 4 demonstrate the feasibility of our analysis,
+the deep learning models’ results suggest that future work should focus on collecting
+larger datasets to effectively train deep learning-based methods, to further improve on
+our feasibility study.
+
+Detecting Cognitive Impairment and Psychological Well-being among Older Adults
+17
+CDR
+MoCA
+Clin. Diag. of MCI
+LSNS
+Neuro
+Neg. Aff.
+Soc. Sat.
+Psych. Well.
+0.59
+All
+0.65
+HMM
+0.50
+HMM
+0.71
+Acoustic
+0.57
+Sentiment
+0.61
+Majority
+0.69
+Majority
+0.69
+Majority
+0.65
+All
+0.54
+Emotion
+0.56
+HMM
+0.62
+Acoustic
+0.55
+LLaMA
+0.55
+Majority
+0.59
+Select
+0.56
+Select
+0.50
+All
+0.43
+DINOv2
+0.55
+HMM
+0.58
+Acoustic
+0.59
+Sentiment
+0.50
+Select
+0.59
+Majority
+0.56
+Select
+0.53
+All
+0.55
+Emotion
+0.60
+HMM
+0.54
+HMM
+0.74
+Sentiment
+0.56
+Majority
+0.58
+Majority
+0.62
+Select
+0.52
+All
+0.62
+Emotion
+0.59
+HMM
+0.56
+WavLM
+0.66
+HMM
+0.61
+Average
+0.57
+Select
+0.61
+Average
+0.51
+Age
+0.70
+HMM
+0.53
+rPPG
+0.74
+HMM
+0.71
+HMM
+0.63
+Majority
+0.67
+Majority
+0.70
+Majority
+0.51
+All
+0.62
+Emotion
+0.64
+HMM
+0.61
+HMM
+0.52
+HMM
+0.75
+Majority
+0.58
+Majority
+0.57
+Average
+0.64
+All
+0.61
+HMM
+0.62
+HMM
+0.49
+WavLM
+0.48
+HMM
+0.64
+Majority
+0.52
+Select
+0.57
+Select
+LR/GBDT
+CDR
+MoCA
+Clin. Diag. of MCI
+LSNS
+Neuro
+Neg. Aff.
+Soc. Sat.
+Psych. Well.
+0.57
+Age
+0.58
+HMM
+0.59
+HMM
+0.54
+WavLM
+0.45
+Sentiment
+0.66
+Majority
+0.73
+Majority
+0.75
+Majority
+0.45
+Age
+0.57
+DINOv2
+0.62
+rPPG
+0.55
+HMM
+0.56
+Sentiment
+0.54
+Select
+0.52
+Select
+0.50
+Average
+0.47
+All
+0.48
+HMM
+0.50
+rPPG
+0.40
+Acoustic
+0.43
+HMM
+0.52
+Majority
+0.69
+Majority
+0.63
+Majority
+0.49
+All
+0.53
+Emotion
+0.44
+HMM
+0.50
+WavLM
+0.63
+HMM
+0.51
+Majority
+0.55
+Majority
+0.55
+Majority
+0.48
+All
+0.51
+Emotion
+0.57
+rPPG
+0.54
+Acoustic
+0.49
+Sentiment
+0.55
+Majority
+0.53
+Majority
+0.57
+Majority
+0.53
+All
+0.50
+DINOv2
+0.50
+HMM
+0.50
+WavLM
+0.44
+LLaMA
+0.59
+Majority
+0.63
+Majority
+0.64
+Majority
+0.41
+Age
+0.45
+DINOv2
+0.48
+rPPG
+0.57
+WavLM
+0.55
+LLaMA
+0.61
+Majority
+0.49
+Majority
+0.55
+Majority
+0.44
+Age
+0.47
+Emotion
+0.46
+rPPG
+0.49
+WavLM
+0.47
+Sentiment
+0.72
+Majority
+0.52
+Majority
+0.64
+Majority
+SVM
+Demographics
+Facial
+Cardio
+Audio
+Language
+Facial+Cardio+Demo
+Aud+Lang+Demo
+All
+CDR
+MoCA
+Clin. Diag. of MCI
+LSNS
+Neuro
+Neg. Aff.
+Soc. Sat.
+Psych. Well.
+0.66
+All
+0.71
+HMM
+0.50
+rPPG
+0.75
+HMM
+0.57
+Sentiment
+0.70
+Select
+0.77
+Average
+0.76
+Select
+0.61
+All
+0.53
+Emotion
+0.52
+HMM
+0.52
+Acoustic
+0.53
+Sentiment
+0.53
+Select
+0.55
+Select
+0.54
+Select
+0.48
+All
+0.47
+HMM
+0.54
+HMM
+0.69
+WavLM
+0.62
+LLaMA
+0.45
+Select
+0.67
+Majority
+0.61
+Select
+0.55
+All
+0.52
+HMM
+0.60
+HMM
+0.53
+HMM
+0.66
+Sentiment
+0.55
+Average
+0.56
+Select
+0.54
+Select
+0.50
+All
+0.65
+Emotion
+0.55
+HMM
+0.64
+HMM
+0.55
+LLaMA
+0.64
+Average
+0.56
+Select
+0.63
+Average
+0.51
+Age
+0.64
+HMM
+0.58
+rPPG
+0.67
+HMM
+0.67
+HMM
+0.63
+Average
+0.65
+Select
+0.69
+Average
+0.51
+Age
+0.64
+Emotion
+0.59
+HMM
+0.57
+HMM
+0.42
+HMM
+0.59
+Majority
+0.44
+Select
+0.53
+Select
+0.64
+All
+0.59
+HMM
+0.60
+rPPG
+0.56
+HMM
+0.48
+HMM
+0.64
+Average
+0.53
+Select
+0.58
+Select
+RF
+0.40
+0.45
+0.50
+0.55
+0.60
+0.65
+0.70
+0.75
+0.77
+AUROC
+Figure 3: AUROC for the shallow ML models across tasks (rows) and feature modalities
+(columns). Each cell shows the AUROC (best) and the best-performing feature or fusion
+method (bottom). For example, Aud+Lang+Demo denotes fusion of audio, language,
+and demographics, and All denotes fusion of all available modalities. The color scale is
+shared across panels and the darker color indicates higher performance.
+
+Detecting Cognitive Impairment and Psychological Well-being among Older Adults
+18
+0.00
+0.05
+0.10
+0.15
+0.20
+0.25
+0.30
+0.35
+SHAP: Mean Contribution Share
+Acoustic+HMM
+RoBERTa Sentiment+HMM
+RoBERTa Sentiment
+Demographics
+Acoustic
+WavLM
+LLaMA
+34.8%
+29.8%
+17.8%
+11.4%
+5.7%
+0.4%
+0.1%
+SHAP Per-Modality Contribution
+(a) CDR — RF (Aud+Lang+Demo)
+0.000
+0.025
+0.050
+0.075
+0.100
+0.125
+0.150
+0.175
+0.200
+SHAP: Mean Contribution Share
+Acoustic+HMM
+RoBERTa Sentiment+HMM
+Emotion+AUs+HMM
+rPPG+HMM
+Acoustic
+WavLM
+rPPG
+LLaMA
+DINOv2
+Emotion+AUs
+RoBERTa Sentiment
+Demographics
+19.2%
+17.4%
+11.7%
+9.6%
+7.0%
+6.4%
+6.3%
+6.3%
+6.0%
+5.5%
+2.7%
+1.9%
+SHAP Per-Modality Contribution
+(b) MoCA — LR/GBDT (All)
+0.00
+0.05
+0.10
+0.15
+0.20
+0.25
+0.30
+0.35
+0.40
+SHAP: Mean Contribution Share
+RoBERTa Sentiment+HMM
+Acoustic+HMM
+Demographics
+LLaMA
+RoBERTa Sentiment
+WavLM
+Acoustic
+40.7%
+30.6%
+17.9%
+4.4%
+2.9%
+2.7%
+0.8%
+SHAP Per-Modality Contribution
+(c) Clinical Diagnosis of MCI — SVM (Aud+Lang+Demo)
+Figure 4: MM-SHAP bar plots for best-performing multimodal models: CDR, MoCA, and clinical
+diagnosis of MCI.
+
+Detecting Cognitive Impairment and Psychological Well-being among Older Adults
+19
+0.00
+0.05
+0.10
+0.15
+0.20
+SHAP: Mean Contribution Share
+Acoustic+HMM
+rPPG+HMM
+Emotion+AUs+HMM
+RoBERTa Sentiment
+rPPG
+RoBERTa Sentiment+HMM
+Acoustic
+Demographics
+DINOv2
+Emotion+AUs
+LLaMA
+WavLM
+21.5%
+20.4%
+18.0%
+11.7%
+7.4%
+6.8%
+4.8%
+2.9%
+2.4%
+1.6%
+1.4%
+1.3%
+SHAP Per-Modality Contribution
+(a) LSNS — LR/GBDT (All)
+0.00
+0.05
+0.10
+0.15
+0.20
+0.25
+0.30
+SHAP: Mean Contribution Share
+rPPG+HMM
+Emotion+AUs+HMM
+rPPG
+Demographics
+Emotion+AUs
+DINOv2
+31.5%
+31.5%
+25.5%
+10.5%
+0.5%
+0.4%
+SHAP Per-Modality Contribution
+(b) Neuroticism — RF (Facial+Card+Demo)
+Figure 5: MM-SHAP bar plots: LSNS and Neuroticism.
+4.2. Feature Importance Analysis
+Our findings show that facial, acoustic, and linguistic features from foundation models
+(DINOv2, WavLM, and LLaMA-65B) significantly underperformed, with an average
+absolute decrease of 11% AUC compared to the best models using handcrafted and
+HMM-based features from facial expression, acoustic, and linguistic-based emotion
+signals. This was further confirmed via MM-SHAP analysis, where Figure 4, Figure 5,
+and Figure 6 showed that DINOv2, WavLM, and LLaMA-65B features ranked near
+the bottom in terms of contributions to model predictions. In contrast, HMM-derived
+features consistently ranked among the top contributors, highlighting HMM’s ability to
+capture temporal dynamics effectively when having a small sample size.
+
+Detecting Cognitive Impairment and Psychological Well-being among Older Adults
+20
+The used foundation models were trained to capture generic facial appearance,
+acoustic waveforms, and language embeddings by training the models with a large-scale
+database available from the internet that contains individuals with various demographics
+and contexts. We suspect such features, when directly used, are not designed to capture
+specific behavior patterns in cognitive impairments or psychological well-being in older
+adults, especially in the MCI population. In future work, we will study the effect of
+transfer learning for fine-tuning those foundation models with our dataset to capture
+behavior patterns in older subjects with MCI [80].
+4.3. Fairness and Bias Analysis
+Across tasks, all the best-performing models had both EOR and DPR < 0.6 across
+attributes before applying bias mitigation, indicating severe bias, except for quantifying
+the clinical diagnosis of MCI (Figure 7f) and psychological well-being (Figure 9f), which
+showed DPRdiag = 0.82±0.03 and DPRpsych = 0.75±0.09.
+Years of education (YOE)
+suffered from the most disparities across models, with an average EOR of 0.15 and an
+average DPR of 0.38. After applying bias mitigation, the fairness of quantifying cognitive
+impairment improved for all attributes and tasks, but with a significant absolute drop
+in utility (∆F1 score > 0.15). Applying bias mitigation improved the absolute EOR
+by 0.41-0.65 for quantifying psychological well-being, but with a significant drop in F1
+score by as much as 0.26-0.36 points.
+After applying bias mitigation, quantifying the clinical diagnosis of MCI and MoCA
+had the largest absolute EOR gains (+0.76). Regardless, several tasks remained heavily
+biased after applying bias mitigation (e.g., CDR, LSNS, neuroticism, negative affect)
+with EOR < 0.6 and DPR < 0.7. These persistent biases across sensitive attributes for
+all tasks suggest that the disparities are systematic across tasks.
+We consider that biases can arise from two sources: (1) imbalanced demographic
+distributions, such as sex and age, shown in Table 1, and (2) biases inherited from pretrained models for extracting multimodal features in our classification pipeline (DINOv2,
+LLaMA-65B, and WavLM), potentially encoding historic biases in facial and speech
+datasets available from the internet [81, 82]. Based on this feasibility study, future work
+needs to recruit participants with diverse demographic and cultural backgrounds, as
+well as explore state-of-the-art bias mitigation methods, such as adversarial debiasing
+[83, 84], for developing a robust, generalizable, and fair model.
+
+Detecting Cognitive Impairment and Psychological Well-being among Older Adults
+21
+0.000
+0.025
+0.050
+0.075
+0.100
+0.125
+0.150
+0.175
+0.200
+SHAP: Mean Contribution Share
+Emotion+AUs+HMM
+rPPG+HMM
+rPPG
+Acoustic+HMM
+RoBERTa Sentiment+HMM
+Acoustic
+DINOv2
+WavLM
+LLaMA
+Emotion+AUs
+RoBERTa Sentiment
+Demographics
+19.3%
+13.7%
+12.4%
+11.4%
+8.8%
+7.6%
+5.8%
+5.7%
+5.3%
+4.5%
+3.1%
+2.4%
+SHAP Per-Modality Contribution
+(a) Negative Affect — LR/GBDT (All)
+0.00
+0.05
+0.10
+0.15
+0.20
+0.25
+0.30
+0.35
+SHAP: Mean Contribution Share
+rPPG+HMM
+Emotion+AUs+HMM
+rPPG
+Demographics
+DINOv2
+Emotion+AUs
+34.9%
+32.6%
+28.4%
+3.7%
+0.3%
+0.2%
+SHAP Per-Modality Contribution
+(b) Social Satisfaction — LR/GBDT (Facial+Card+Demo)
+0.00
+0.05
+0.10
+0.15
+0.20
+0.25
+0.30
+0.35
+SHAP: Mean Contribution Share
+Emotion+AUs+HMM
+rPPG+HMM
+rPPG
+Demographics
+Emotion+AUs
+DINOv2
+36.8%
+31.1%
+15.7%
+12.8%
+1.8%
+1.8%
+SHAP Per-Modality Contribution
+(c) Psychological Well-being — SVM (Facial+Card+Demo)
+Figure 6: MM-SHAP bar plots: negative affect, social satisfaction, and psychological well-being
+
+Detecting Cognitive Impairment and Psychological Well-being among Older Adults
+22
+Age
+Education
+Sex
+Clinical
+Diagnosis of MCI
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+Mean Value
+0.24 (±0.04)
+0.37 (±0.05)
+0.04 (±0.04)
+0.51 (±0.12)
+0.01 (±0.02)
+0.32 (±0.08)
+0.11 (±0.04)
+0.51 (±0.08)
+(a) EOR of CDR
+Age
+Education
+Sex
+Clinical
+Diagnosis of MCI
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+Mean Value
+0.57 (±0.03)
+0.61 (±0.04)
+0.26 (±0.06)
+0.56 (±0.11)
+0.18 (±0.06)
+0.61 (±0.07)
+0.45 (±0.05)
+0.66 (±0.07)
+Pre
+Post
+(b) DPR of CDR
+Age
+Education
+Sex
+Clinical
+Diagnosis of MCI
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+Mean Value
+0.14 (±0.03)
+0.54 (±0.05)
+0.01 (±0.03)
+0.77 (±0.10)
+0.17 (±0.05)
+0.55 (±0.07)
+0.06 (±0.03)
+0.42 (±0.07)
+(c) EOR of MoCA
+Age
+Education
+Sex
+Clinical
+Diagnosis of MCI
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+Mean Value
+0.44 (±0.04)
+0.71 (±0.04)
+0.08 (±0.05)
+0.78 (±0.09)
+0.35 (±0.05)
+0.71 (±0.05)
+0.46 (±0.05)
+0.66 (±0.06)
+(d) DPR of MoCA
+Age
+Education
+Sex
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+Mean Value
+0.49 (±0.05)
+0.90 (±0.03)
+0.21 (±0.08)
+0.95 (±0.05)
+0.14 (±0.06)
+0.90 (±0.05)
+(e) EOR of Clinical Diagnosis of MCI
+Age
+Education
+Sex
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+Mean Value
+0.85 (±0.03)
+0.94 (±0.02)
+0.80 (±0.06)
+0.95 (±0.05)
+0.79 (±0.06)
+0.93 (±0.04)
+(f) DPR of Clinical Diagnosis of MCI
+Figure 7: Fairness and bias analysis for quantifying cognitive impairments before and
+after applying bias mitigation.
+
+Detecting Cognitive Impairment and Psychological Well-being among Older Adults
+23
+Age
+Education
+Sex
+Clinical
+Diagnosis of MCI
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+Mean Value
+0.18 (±0.03)
+0.32 (±0.04)
+0.06 (±0.04)
+0.33 (±0.09)
+0.09 (±0.03)
+0.19 (±0.05)0.21 (±0.04)
+0.34 (±0.05)
+(a) EOR of LSNS
+Age
+Education
+Sex
+Clinical
+Diagnosis of MCI
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+Mean Value
+0.49 (±0.03)
+0.60 (±0.04)
+0.29 (±0.06)
+0.39 (±0.09)
+0.48 (±0.05)
+0.57 (±0.05)
+0.52 (±0.04)
+0.63 (±0.04)
+Pre
+Post
+(b) DPR of LSNS
+Age
+Education
+Sex
+Clinical
+Diagnosis of MCI
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+Mean Value
+0.17 (±0.03)
+0.50 (±0.05)
+0.08 (±0.05)
+0.54 (±0.10)
+0.11 (±0.04)
+0.37 (±0.06)
+0.15 (±0.03)
+0.47 (±0.05)
+(c) EOR of Neuroticism
+Age
+Education
+Sex
+Clinical
+Diagnosis of MCI
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+Mean Value
+0.52 (±0.03)
+0.69 (±0.04)
+0.23 (±0.06)
+0.56 (±0.10)
+0.49 (±0.05)
+0.59 (±0.05)
+0.51 (±0.03)
+0.65 (±0.04)
+(d) DPR of Neuroticism
+Figure 8: Fairness and bias analysis for quantifying social network and neuroticism
+assessments before and after applying bias mitigation.
+4.4. Quantifying Cognitive Assessment
+Quantifying MoCA scores and clinical diagnosis of MCI was challenging with our
+multimodal analysis system, showing 0.65 and 0.69 AUCs, respectively. This is possibly
+due to the narrow range of MoCA scores in this group. The majority (68%) of our
+subjects had MoCA scores between 21 and 28, with a median score of 24, having limited
+variability of scores to detect distinguishable features associated with MoCA ≤24 vs.
+> 24. Conversely, quantifying CDR (0 vs. 0.5) proved more effective, achieving an
+AUC of 0.77. The CDR assesses functional outcomes in daily life (e.g., forgetfulness of
+events, shopping functionality, and participation in volunteer or social groups), reflecting
+cognitive performance that’s not necessarily linked to cognitive testing scores. These
+functional aspects were likely better captured by acoustic and linguistic features from
+remote interviews compared to measures like MoCA.
+It is also worth noting that, while age has been a significant factor for predicting
+MoCA scores [85, 86] in the general population, it did not show a strong predictive
+capacity in our analysis (AUC = 0.53). This discrepancy may be due to the participants’
+
+Detecting Cognitive Impairment and Psychological Well-being among Older Adults
+24
+Age
+Education
+Sex
+Clinical
+Diagnosis of MCI
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+Mean Value
+0.19 (±0.04)
+0.32 (±0.05)
+0.08 (±0.05)
+0.40 (±0.10)
+0.11 (±0.05)
+0.29 (±0.08)
+0.19 (±0.04)
+0.35 (±0.05)
+(a) EOR of Negative Affect
+Age
+Education
+Sex
+Clinical
+Diagnosis of MCI
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+Mean Value
+0.51 (±0.04)
+0.57 (±0.05)
+0.35 (±0.07)
+0.45 (±0.10)
+0.39 (±0.07)
+0.59 (±0.07)
+0.46 (±0.04)
+0.59 (±0.04)
+Pre
+Post
+(b) DPR of Negative Affect
+Age
+Education
+Sex
+Clinical
+Diagnosis of MCI
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+Mean Value
+0.23 (±0.05)
+0.63 (±0.05)
+0.20 (±0.07)
+0.74 (±0.08)
+0.25 (±0.07)
+0.65 (±0.09)
+0.23 (±0.05)
+0.76 (±0.05)
+(c) EOR of Social Satisfaction
+Age
+Education
+Sex
+Clinical
+Diagnosis of MCI
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+Mean Value
+0.39 (±0.05)
+0.76 (±0.04)
+0.22 (±0.07)
+0.75 (±0.08)
+0.49 (±0.07)
+0.78 (±0.06)
+0.37 (±0.05)
+0.84 (±0.04)
+(d) DPR of Social Satisfaction
+Age
+Education
+Sex
+Clinical
+Diagnosis of MCI
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+Mean Value
+0.35 (±0.10)
+1.00 (±0.00)
+0.50 (±0.12)
+0.91 (±0.07)
+0.47 (±0.09)
+0.99 (±0.02)
+0.56 (±0.06)
+0.97 (±0.02)
+(e) EOR of Psych. Well-being
+Age
+Education
+Sex
+Clinical
+Diagnosis of MCI
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+Mean Value
+0.66 (±0.08)
+1.00 (±0.00)
+0.78 (±0.08)
+0.91 (±0.07)
+0.84 (±0.05)
+0.99 (±0.02)
+0.78 (±0.04)
+0.98 (±0.02)
+(f) DPR of Psych. Well-being
+Figure 9: Fairness and bias analysis for quantifying negative affect, social satisfaction,
+and psychological well-being before and after applying bias mitigation.
+narrow age range (Overall, 80.69 ± 4.6) as shown in Table 1.
+
+Detecting Cognitive Impairment and Psychological Well-being among Older Adults
+25
+Age
+Education
+Sex
+Clinical
+Diagnosis of MCI
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+F1 Score
+0.75 ± 0.01
+0.75 ± 0.01
+0.74 ± 0.03
+0.74 ± 0.03
+0.75 ± 0.03
+0.75 ± 0.03
+0.76 ± 0.03
+0.76 ± 0.03
+0.51 ± 0.04
+0.51 ± 0.04
+0.30 ± 0.09
+0.30 ± 0.09
+0.39 ± 0.07
+0.39 ± 0.07
+0.52 ± 0.06
+0.52 ± 0.06
+(a) CDR
+Age
+Education
+Sex
+Clinical
+Diagnosis of MCI
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+F1 Score
+0.55 ± 0.02
+0.55 ± 0.02
+0.58 ± 0.06
+0.58 ± 0.06
+0.55 ± 0.04
+0.55 ± 0.04
+0.55 ± 0.03
+0.55 ± 0.03
+0.31 ± 0.04
+0.31 ± 0.04
+0.12 ± 0.06
+0.12 ± 0.06
+0.40 ± 0.06
+0.40 ± 0.06
+0.31 ± 0.05
+0.31 ± 0.05
+Pre
+Post
+(b) MoCA
+Age
+Education
+Sex
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+F1 Score
+0.62 ± 0.02
+0.62 ± 0.02
+0.64 ± 0.02
+0.64 ± 0.02
+0.61 ± 0.03
+0.61 ± 0.03
+0.08 ± 0.03
+0.08 ± 0.03
+0.03 ± 0.03
+0.03 ± 0.03
+0.06 ± 0.03
+0.06 ± 0.03
+(c) Clinical Diagnosis of MCI
+Age
+Education
+Sex
+Clinical
+Diagnosis of MCI
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+F1 Score
+0.71 ± 0.01
+0.71 ± 0.01
+0.70 ± 0.04
+0.70 ± 0.04
+0.73 ± 0.02
+0.73 ± 0.02
+0.70 ± 0.02
+0.70 ± 0.02
+0.57 ± 0.03
+0.57 ± 0.03
+0.43 ± 0.08
+0.43 ± 0.08
+0.58 ± 0.03
+0.58 ± 0.03
+0.60 ± 0.04
+0.60 ± 0.04
+(d) LSNS
+Figure 10: F1 scores before and after applying bias mitigation for CDR, MoCA, clinical
+diagnosis of MCI, and LSNS.
+Our analysis indicated that language- and audio-based approaches were effective
+for quantifying cognitive impairment, compared to facial and HRV features.
+From
+MM-SHAP analysis of multimodal models for CDR, MoCA, and clinical diagnosis
+of MCI (Figure 4), HMM-processed acoustic features and RoBERTa text sentiment
+consistently emerged as the leading contributors.
+This finding aligns with previous
+studies demonstrating the potential of speech and text analysis for quantifying cognitive
+impairment [87, 88, 89].
+The proposed pipeline can potentially serve marginalized
+communities without internet connectivity for video transmission, such as rural areas
+or low- and middle-income countries [90, 91, 92], for prescreening older adults with high
+risk of cognitive impairment, using only acoustic and linguistic features.
+Regarding
+the facial analysis, previous work reported that facial expressions are significantly
+different and heterogeneous among individuals with MCI [93, 94]. We consider that
+this heterogeneity made the model underperform through facial features.
+Still, future
+work needs to further evaluate our model with large-scale participant recruitment with
+
+Detecting Cognitive Impairment and Psychological Well-being among Older Adults
+26
+Age
+Education
+Sex
+Clinical
+Diagnosis of MCI
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+F1 Score
+0.59 ± 0.02
+0.59 ± 0.02
+0.54 ± 0.05
+0.54 ± 0.05
+0.58 ± 0.02
+0.58 ± 0.02
+0.55 ± 0.03
+0.55 ± 0.03
+0.37 ± 0.04
+0.37 ± 0.04
+0.19 ± 0.05
+0.19 ± 0.05
+0.39 ± 0.04
+0.39 ± 0.04
+0.41 ± 0.05
+0.41 ± 0.05
+(a) Neuroticism
+Age
+Education
+Sex
+Clinical
+Diagnosis of MCI
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+F1 Score
+0.73 ± 0.02
+0.73 ± 0.02
+0.73 ± 0.04
+0.73 ± 0.04
+0.73 ± 0.02
+0.73 ± 0.02
+0.75 ± 0.03
+0.75 ± 0.03
+0.56 ± 0.04
+0.56 ± 0.04
+0.37 ± 0.08
+0.37 ± 0.08
+0.52 ± 0.04
+0.52 ± 0.04
+0.56 ± 0.06
+0.56 ± 0.06
+Pre
+Post
+(b) Negative Affect
+Age
+Education
+Sex
+Clinical
+Diagnosis of MCI
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+F1 Score
+0.37 ± 0.03
+0.37 ± 0.03
+0.41 ± 0.06
+0.41 ± 0.06
+0.41 ± 0.03
+0.41 ± 0.03
+0.36 ± 0.06
+0.36 ± 0.06
+0.25 ± 0.04
+0.25 ± 0.04
+0.13 ± 0.06
+0.13 ± 0.06
+0.19 ± 0.04
+0.19 ± 0.04
+0.22 ± 0.06
+0.22 ± 0.06
+(c) Social Satisfaction
+Age
+Education
+Sex
+Clinical
+Diagnosis of MCI
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+F1 Score
+0.32 ± 0.06
+0.32 ± 0.06
+0.28 ± 0.07
+0.28 ± 0.07
+0.34 ± 0.04
+0.34 ± 0.04
+0.37 ± 0.06
+0.37 ± 0.06
+0.00 ± 0.00
+0.00 ± 0.00
+0.02 ± 0.02
+0.02 ± 0.02
+0.02 ± 0.02
+0.02 ± 0.02
+0.01 ± 0.02
+0.01 ± 0.02
+(d) Psychological Well-being
+Figure 11: F1 scores before and after applying bias mitigation for neuroticism, and
+NIHTB-EB (negative affect, social satisfaction, and psychological well-being.
+various demographic and disease conditions, as our fairness and bias analysis showed
+significant biases before applying bias mitigation, with EOR < 0.5 across attributes.
+4.4.1. CDR
+Classification Performance
+For CDR (1st row in Table 4 & Figure 3), the acoustic
+and language fusion model performed the best (0.77 AUC). Overall, multimodal
+pipelines outperformed all unimodal models, with best performance using either
+Audio+Language+Demographics (A+L+D) or All-modalities configurations across RF,
+LR/GBDT, and SVM. We can see that both A+L+D and All-modalities followed the
+audio-only model by 0.02 difference in absolute AUC points in LR/GBDT. While in SVM
+and RF, they outperformed all other configurations. The best-performing unimodal
+model was audio in RF (0.75 AUC) and LR/GBDT (0.71 AUC).
+Feature Importance Analysis
+For
+the
+best-performing
+multimodal
+model
+(RF-
+A+L+D), HMM-processed acoustic and RoBERTa text sentiment features were the
+
+Detecting Cognitive Impairment and Psychological Well-being among Older Adults
+27
+strongest contributors (each > 0.25), followed by the non-HMM RoBERTa sentiment
+feature Figure 4a. Foundation model embeddings (WavLM and LLaMA) contributed
+the least (each < 0.025).
+Fairness and Bias Analysis
+The best-performing model showed significant bias before
+applying bias mitigation, with EOR clustered around 0.125 ± 0.115, and DPR clustered
+around 0.4 ± 0.2 across all attributes (Figure 7a, Figure 7b). Sex exhibited the greatest
+disparity (EOR = 0.01, DPR = 0.18), followed by YOE (EOR = 0.04, DPR = 0.26). Age
+was the least biased (EOR = 0.24, DPR = 0.57), comparable to the clinical diagnosis of
+MCI. After applying bias mitigation, EOR and DPR improved across all attributes to
+0.415 ± 0.095 and 0.61 ± 0.05, respectively, with each of YOE and the clinical diagnosis
+of MCI reaching an EOR of 0.51. The largest absolute DPR gain was exhibited by
+sex (+0.43), and the smallest by age (+0.04). YOE experienced the largest absolute
+EOR gain (+0.47), but age showed the smallest EOR gain (+0.13).
+Yet, as shown
+in Figure 10a, these shifts in EOR followed with large absolute F1 score drops of
+∆F1 scoreYOE = −0.44 and ∆F1 scoreage = −0.24.
+4.4.2. MoCA
+Classification Performance
+Our results show that differentiating those with high vs.
+low MoCA scores (2nd row in Figure 3 & Table 4 was best when using demographics
+for LR/GBDT and RF models (0.65 AUC). SVM performed best with rPPG (0.62
+AUC). The second-best modalities were audio for LR/GBDT (0.62 AUC), facial features
+for SVM (0.57 AUC), and Audio+Language+Demographics fusion (0.55 AUC) in RF.
+Facial features and HRV features derived from rPPG were not useful indicators of
+quantifying MoCA for RF and LR/GBDT, but were more informative for SVM. All
+multimodal fusion approaches in Figure 3 showed statistically similar performance
+compared to the best unimodal approach using demographics across all models.
+Feature Importance Analysis
+Figure 4b shows the top contributing modality features
+for the LR/GBDT All-modalities fusion model.
+Notably, all the HMM-processed
+variants occupied the top four positions, with Acoustic and RoBERTa text sentiment
+ranking first and second, followed by Emotion+AUs and rPPG. In contrast, foundation
+models’ embeddings (DINOv2, LLaMA, and WavLM) contributed little (each < 0.07),
+and demographics had the smallest overall impact on the model output (<0.02).
+Fairness and Bias Analysis
+Figure 7c and Figure 7d report EOR and DPR, before and
+after applying bias mitigation, for classifying MoCA. Before applying bias mitigation,
+EOR was less than 0.2 and DPR was less than 0.5 for all attributes. YOE exhibited
+the greatest bias before applying bias mitigation (EOR = 0.01 and DPR = 0.08). Sex
+showed the least disparity in EOR (0.17), whereas clinical diagnosis of MCI had the
+least disparity in DPR (0.46). After applying bias mitigation, all attributes’ EOR and
+
+Detecting Cognitive Impairment and Psychological Well-being among Older Adults
+28
+DPR improved, with YOE increasing the most, reaching 0.77 in EOR and 0.78 in DPR.
+As shown in Figure 10b, this gain coincided with the largest absolute F1 score decrease
+(∆F1 score = −0.46). All attributes experienced lower F1 scores after bias mitigation
+was applied. The smallest drop (∆F1 score = −0.15) occurred for clinical diagnosis of
+MCI, which also had the lowest EOR (0.42), and was most biased after applying bias
+mitigation.
+4.4.3. Clinical Diagnosis of MCI
+Classification Performance.
+Quantifying clinical diagnosis of MCI (3rd row in
+Table
+4
+&
+Figure
+3)
+was
+effective
+(0.69
+AUC)
+when
+using
+either
+Audio+Language+Demographics fusion with SVM or WavLM (Audio) with RF. Among
+unimodal models, audio and language had the highest performance in RF (0.69 AUC and
+0.62 AUC, respectively) and LR/GBDT (0.58 AUC and 0.59 AUC, respectively). Fusing audio and language yielded the best multimodal AUC scores (SVM: 0.69, RF: 0.67,
+LR/GBDT: 0.59). The fusion model outperformed the unimodals in both LR/GBDT
+and SVM, while for RF, it trailed unimodal WavLM by an absolute difference of 0.02
+AUC points.
+Feature Importance Analysis
+The best-performing fusion model (SVM - Audio +
+Language + Demographics) showed that the HMM-processed acoustic and RoBERTa
+text-sentiment features ranked as the most influential contributors (audio and language),
+similar to the pattern observed in the MoCA fusion model.
+Foundation model
+embeddings (LLaMA and WavLM) ranked low (each contributing < 0.05), and the
+non-HMM processed acoustic features had the smallest overall contribution Figure 4c.
+Fairness and Bias Analysis
+Figure 7e and Figure 7f show that the best-performing
+model (Audio+Language+Demographics) exhibited significant bias across all attributes
+according to its EOR values (<0.5) before applying bias mitigation.
+DPR showed
+opposing results with 0.82 ± 0.03 before applying bias mitigation.
+This highlights
+the importance of using multiple metrics to analyze the bias of models from varying
+perspectives. EOR is considered to be a stricter measure of bias compared to DPR,
+as it is based on TPR and FPR [73].
+Sex showed the greatest disparity (EOR =
+0.14, DPR = 0.79), whereas age was the least biased (EOR = 0.49, DPR = 0.85).
+After applying bias mitigation, EOR and DPR improved significantly for all attributes,
+reaching EOR and DPR ≥0.9 . The most significant absolute gains were observed for sex
+(∆EOR = +0.76, ∆DPR = +0.14) and YOE (∆EOR = +0.74, ∆DPR = +0.15). As
+shown in Figure 10c, these gains coincided with notable utility losses. YOE experienced
+the largest absolute F1 score decrease (∆F1 score = −0.61, final F1 score=0.03).
+Overall, after applying bias mitigation, F1 scores clustered around 0.055 ±0.025, which
+demonstrated the significant trade-off between bias and performance.
+
+Detecting Cognitive Impairment and Psychological Well-being among Older Adults
+29
+4.5. Quantifying Social Network and Psychological Well-being Assessment
+When quantifying social engagement (LSNS), the fusion model’s SHAP analysis in
+Figure 5a showed the strongest contributions from the HMM-processed acoustic and
+rPPG features, with text sentiment also among the top four. This is consistent with our
+classification results for the unimodal text-sentiment model from Table 4, achieving a
+0.74 AUC, supporting that text sentiment analysis is most informative for social health
+[95, 96, 89]. Neuroticism had the HMM-processed variants of rPPG and Emotions+AUs
+as the top SHAP contributors in Figure 5b, with an AUC of 0.64. Yet, the best overall
+model was the unimodal text-HMM (AUC 0.66), whose performance was statistically
+similar to when using the emotion features (an absolute difference of 0.01 in AUC). This
+finding is consistent with neuroticism capturing tendencies toward emotional distress,
+which can be reflected in cardiovascular signals [97] and facial expressions [98]. This
+demonstrates that contactless cardiovascular measures have the potential to quantify
+behavioral symptoms often accompanied by MCI, which calls for further exploration.
+Across the NIHTB-EB tasks (negative affect, social satisfaction, and psychological
+well-being), multimodal models generally outperformed unimodal models. Consistent
+with the classification results, multimodal SHAP analysis from Figure 6 indicates
+heavier reliance on the HMM-processed emotion (facial) and rPPG features, suggesting
+that quantification of NIHTB-EB benefits from both facial video and cardiovascular
+measures [99, 100, 101].
+For negative affect, the best unimodal model (HMMacoustic) outperformed the multimodal model with an absolute AUC difference of 0.04,
+shown in Figure 3. Negative affect, encompassing unpleasant mood states like sadness,
+fear/anxiety, and anger [48], and related emotional changes often precede noticeable
+cognitive decline. They may be linked to neurodegenerative processes in the brain [102].
+Cardiovascular measures were reported to be effective in quantifying such emotions in
+mental health studies using wearables [99, 100, 101].
+Before applying bias mitigation, all the best-performing models had EOR ≤
+0.56 across attributes, indicating severe bias in quantifying social engagement and
+psychological well-being. LSNS (text sentiment) and negative affect (Acoustic+HMM)
+were especially skewed, with EOR ≤0.4 across attributes both before and after applying
+bias mitigation, suggesting that threshold post-processing was insufficient. The model
+for quantifying psychological well-being showed the least disparities overall, with its
+worst attribute at EORage = 0.35. The EOR of all models improved after applying
+bias mitigation, with quantifying psychological well-being achieving a high EOR (0.955
+±0.045), but at the cost of significant F1 score drops, as shown in Figure 11. Notably,
+it had the highest EOR after applying bias mitigation (1.00 for age), but with its F1
+score dropping to 0, entirely losing the utility of the model.
+4.5.1. LSNS
+
+Detecting Cognitive Impairment and Psychological Well-being among Older Adults
+30
+Classification Performance
+Our results showed that language-based emotion and
+sentiment features were most effective for quantifying social engagement, LSNS (4th row
+in Table 4 & Figure 3), across all models and modality configurations, having RoBERTa
+sentiment as the best-performing (LR:0.74 AUC, RF: 0.66 AUC) or its HMM-variant
+(SVM: 0.63 AUC). Cardiovascular features showed the second-best performance for RF,
+while All-modality fusion was the second-best for SVM (0.63 AUC) and LR/GBDT
+(0.62 AUC).
+Feature Importance Analysis
+For the best-performing multimodal model (LR/GBDT
+- All modalities), HMM-processed variants of acoustic, rPPG, and emotion features
+dominated the contributions, with acoustic and rPPG showing the largest impacts
+(each > 0.25), as shown in Figure 5a.
+In contrast, foundation model embeddings
+(WavLM, LLaMA, and DINOv2), as well as the non-HMM versions of emotion and
+acoustic features, and demographics, contributed the least (each < 0.025).
+Fairness and Bias Analysis
+The best-performing text model (LR-RoBERTa text
+sentiment) was biased across all attributes before applying bias mitigation, with EOR
+≤0.21 and DPR ≤0.52 across all attributes (Figure 8a and Figure 8b). YOE showed
+the greatest bias (EOR= 0.06, DPR= 0.29), whereas the clinical diagnosis of MCI
+was the least biased (EOR = 0.21, DPR=0.52).
+Sex also displayed significant bias
+(EOR = 0.09, DPR=0.48). After applying bias mitigation, EOR and DPR improved
+for all attributes (EOR ≥0.19, DPR ≥0.39). YOE had the largest absolute EOR
+gain (∆EOR = +0.27, ∆DPR = +0.1), while sex had the smallest EOR and DPR gain
+(∆EOR = +0.10, ∆DPR = +0.09). As shown in Figure 10d, these improvements were
+accompanied by utility losses: F1 scores declined across all attributes, with the largest
+absolute decline for YOE (∆F1 score = −0.27) and the smallest absolute decline for sex
+(∆F1 score = −0.10).
+4.5.2. Neuroticism
+Classification Performance
+For quantifying neuroticism (5th row in Table 4 &
+Figure 3), the best single pipeline was LR with RoBERTa Sentiment+HMM (0.66
+AUC), followed by RF with unimodal (facial emotion/landmarks/AUs) features
+with a 0.01 difference (0.65 AUC). Among multimodal fusion-based approaches,
+the
+Facial+Cardiovascular+Demographic
+(F+C+D)
+setting
+showed
+the
+highest
+performance (RF: 0.64 AUC, LR/GBDT: 0.61 AUC), matching the All-modalities fusion
+for both. For SVM, F+C+D ranked second (0.55 AUC) behind All-modalities fusion
+(0.57 AUC). Overall, F+C+D and All-modality fusion methods consistently ranked as
+the best two multimodal options.
+Feature Importance Analysis
+The multimodal RF (F+C+D) model had the HMMprocessed rPPG and facial emotion, landmarks, and AUs as the top contributing features
+
+Detecting Cognitive Impairment and Psychological Well-being among Older Adults
+31
+(each with a value greater than 0.3), shown in Figure 5b. DINOv2 features and the non-
+HMM processed facial, emotion, and AUs had the lowest contributions (each < 0.025).
+Fairness and Bias Analysis
+The best model (LR-HMM text sentiment) exhibited
+significant biases across all attributes (EOR ≤0.17 and DPR ≤0.52) as shown in
+Figure 8c and Figure 8d before applying bias mitigation. YOE had the largest bias
+(EOR = 0.08 and DPR = 0.23), while age had the smallest (EOR=0.17 and DPR=0.52).
+After applying bias mitigation, all attributes exhibited decreased biases, with an EOR
+clustered around 0.455 ± 0.085 and a DPR around 0.6 ± 0.065. YOE and sex had the
+highest and smallest absolute gains in EOR (+0.46, +0.26) and DPR (+0.33, +0.1).
+This coincided with the largest and smallest absolute drops in F1 scores (-0.35, -0.14
+respectively). All other attributes also showed drops in F1 scores as shown in Figure 11a.
+4.5.3. Negative Affect
+Classification Performance
+The Acoustic HMM-based unimodal approach showed the
+best performance overall (0.74 AUC). Then, models trained on all modalities performed
+strongly (LR/GBDT: 0.70 AUC, SVM: 0.64 AUC, RF: 0.69 AUC) when quantifying
+negative affect (6th row in Table 4 & Figure 3).
+Feature Importance Analysis
+The best-performing multimodal model (LR/GBDT all modalities) exhibited heavier dependence on the HMM-processed emotion (facial
+emotion, landmarks, and AUs) and rPPG features as shown in Figure 6a.
+With
+Emotion+HMM features contributing the most (>0.19), followed by rPPG+HMM and
+the non-HMM rPPG features. All the HMM-processed features ranked in the top five
+(each having a contribution > 0.08), while demographics showed the least contribution
+(<0.025).
+Foundation models’ (WavLM, DINOv2, and LLaMA) embeddings also
+showed low contributions (<0.06).
+Fairness
+and
+Bias
+Analysis
+The
+best-performing
+model
+(LR-Acoustic+HMM)
+exhibited strong bias across all attributes before applying mitigation (EOR ≤0.19
+and DPR ≤0.51), as shown in Figure 9a and Figure 9b. YOE showed the greatest bias
+(EOR = 0.08, DPR=0.35), followed by sex (EOR = 0.11, DPR=0.39). After applying
+bias mitigation, EOR and DPR improved for all attributes, with EOR clustering around
+0.345 ± 0.055 and DPR clustering around 0.52 ± 0.07. YOE had the largest absolute
+EOR and DPR gains (∆EOR = +0.32, ∆DPR = +0.1), whereas age had the smallest
+EOR and DPR gains (+0.13, +0.06). As shown in Figure 11b, these fairness gains came
+with utility losses. F1 scores decreased across attributes, with the largest decrease for
+YOE (∆F1 score = −0.36) and the smallest for age (∆F1 score = −0.17).
+
+Detecting Cognitive Impairment and Psychological Well-being among Older Adults
+32
+4.5.4. Social Satisfaction
+Classification Performance
+When quantifying social satisfaction (7th row in Table 4 &
+Figure 3), facial (emotion, landmarks, and AUs) and cardiovascular features consistently
+ranked as the best two unimodal modalities in RF and LR/GBDT in terms of
+performance. Fusing them yielded the best multimodal performance in all three models
+(LR/GBDT: 0.75 AUC, RF: 0.59 AUC, SVM: 0.61 AUC).
+Feature Importance Analysis
+For the best-performing multimodal model (LR/GBDT-
+Facial + Cardiovascular + Demographics), HMM-processed features dominated the
+feature importances (Figure 6b).
+rPPG+HMM ranked first with a contribution >
+0.30, followed by the HMM-processed facial emotion, landmarks, and AUs. The non-
+HMM rPPG modality ranked third overall (contribution > 0.25). All the remaining
+features contributed minimally (each contributing < 0.04), showing the importance of
+capturing the temporal dynamics of facial and cardiovascular measures for quantifying
+social satisfaction. Foundation model embeddings (DINOv2) and the non-HMM variants
+of facial emotion, landmarks, and AUs had near-zero influence.
+Fairness and Bias Analysis
+The best-performing model exhibited bias across all
+attributes before applying mitigation, with EOR clustered around 0.225±0.025 and DPR
+clustered around 0.355±0.135 as shown in Figure 9c and Figure 9d. YOE exhibited the
+largest bias overall (EOR =0.2, DPR=0.22), while sex showed the smallest (EOR=0.25,
+DPR=0.49).
+Following bias mitigation, EOR and DPR of all attributes increased
+significantly.
+The clinical diagnosis of MCI exhibited the least bias after applying
+mitigation with EOR/DPR of 0.76/0.84. YOE had the highest absolute gain in EOR
+and DPR (∆EOR = +0.54, ∆DPR = +0.53), while age and sex had the smallest gains
+(∆EORage,sex = +0.4, ∆DPRage = 0.37, ∆DPRsex = 0.29). This matched the highest
+and lowest absolute declines in F1 scores (∆F1 scoreY OE = −0.28, ∆F1 scoreage =
+−0.12), as shown in Figure 11c. All other attributes also showed declines in F1 scores
+after applying bias mitigation, with F1 scores clustered around 0.19 ± 0.06.
+4.5.5. Psychological Well-being
+Classification Performance
+For overall results for psychological well-being (8th row in
+Table 4 & Figure 3), the Facial+Cardiovascular+Demographic fusion performed the
+best (LR/GBDT: 0.64 AUC, SVM: 0.72 AUC, RF: 0.64 AUC). For unimodal models,
+the cardiovascular feature ranked second in both RF (0.60 AUC) and LR/GBDT (0.62
+AUC).
+Feature Importance Analysis
+The best-performing multimodal model (SVM- Facial +
+Cardiovascular + Demographics) displayed heavy dependence on the HMM-processed
+variants of facial emotion, landmarks, and AUs (contribution > 0.35), and rPPG
+
+Detecting Cognitive Impairment and Psychological Well-being among Older Adults
+33
+(contribution > 0.3), as shown in Figure 6c. The non-HMM rPPG feature ranked third
+overall (contribution > 0.15). In contrast, the non-HMM facial emotion, landmarks, and
+AUs, as well as the DINOv2 embeddings, contributed minimally to the model predictions
+(each < 0.02).
+Fairness and Bias Analysis
+The best-performing model exhibited biases before
+applying mitigation with EOR clustering around 0.455±0.105 and DPR clustering
+around 0.75±0.09, as shown in Figure 9e and Figure 9f. Age had the largest bias (EOR
+= 0.35, DPR = 0.66), whereas clinical diagnosis of MCI was the least biased in EOR
+(0.56), followed by YOE (EOR = 0.50). Sex was the least biased in DPR (0.84), followed
+by YOE and clinical diagnosis of MCI (DPR = 0.78). After applying bias mitigation,
+EOR and DPR increased across all attributes (EOR and DPR ≈0.955±0.045). Age
+and YOE showed the largest and smallest absolute gains in EOR/DPR, respectively
+(∆EOR/DPRAge = +0.65/ + 0.34, ∆EOR/DPRY OE = +0.41/ + 0.13). Similar to the
+other classification tasks, utility losses accompanied these gains in fairness. As shown
+in Figure 11d, the age attribute’s F1 score fell to 0, and the remaining attributes also
+yielded very low F1 scores (≤0.02).
+4.6. Limitations & Future work
+The proposed work studied the association of facial,
+acoustic,
+linguistic,
+and
+cardiovascular patterns with cognitive impairment and social and psychological wellbeing in older adults with normal cognition or MCI. Our feasibility study demonstrated
+that features extracted from remotely conducted video conversations could detect a
+broad range of symptoms linked to cognitive decline, including social engagement and
+emotional well-being.
+This remote assessment approach holds promise for the early
+identification of individuals at risk of cognitive decline, ultimately creating opportunities
+for timely interventions to slow or prevent further deterioration. Yet, our feasibility
+study had several limitations.
+Limited Sample Size and Varying Disease Conditions
+This study included subjects
+with normal cognition and MCI, which helped to quantify and contrast the behavioral
+characteristics related to the early detection of MCI. However, the proposed method was
+evaluated on a small number of participants (N=39). Due to the small dataset size, using
+participant-wise nested cross-validation may have hindered the model’s ability to learn
+patterns that are generalizable for the classification tasks, instead, being overly focused
+on participant-specific variations. Nevertheless, our models demonstrated the feasibility
+of generalization, achieving AUCs of 0.77 for distinguishing CDR, 0.75 for social
+satisfaction, and 0.74 for the negative affect scales and LSNS. Running 100 runs of the
+participant-independent nested cross-validation also improved the statistical significance
+of these estimates. In future studies, comprehensively quantifying cognitive impairment
+requires including various subtypes of MCI, such as amnestic or non-amnestic and single-
+
+Detecting Cognitive Impairment and Psychological Well-being among Older Adults
+34
+domain or multi-domain MCI [103, 104, 105]. We also excluded individuals diagnosed
+with ADRD, as their behavioral patterns could differ significantly from those examined
+in this study [106, 107]. Individuals also experience various co-morbidities that influence
+behaviors or progression in cognitive impairments [108, 109, 110]. This requires our
+future studies to expand to a larger and more diverse cohort with varying conditions
+associated with aging, MCI, and ADRD to develop a robust and fair model and to test
+the generalizability of our findings.
+Limited Demographic Diversity and Bias Mitigation
+Our findings may not fully
+generalize to larger populations with diverse gender, race, and ethnic backgrounds, as
+shown in our fairness and bias analysis. Our fairness and bias analysis found substantial
+biases across the best-performing models in quantifying cognitive states and overall
+well-being in older adults. In order to mitigate these biases, we mainly studied postprocessing (group-specific threshold adjustments) as part of our feasibility study, which
+reduced disparities but resulted in significant F1 score declines.
+Furthermore, our
+fairness analysis focused on sex, age, years of education, and clinical diagnosis of
+MCI. We did not include race due to the racial imbalance in the dataset, which was
+predominantly white, as shown in Table 1, limiting our understanding of the impact
+of skin color on our facial analysis pipeline for the aging population.
+Future work
+should focus on recruiting the aging population with various cultural and demographic
+backgrounds and studying state-of-the-art techniques in bias mitigation to develop
+robust and fair AI models for monitoring cognitive impairment and psychological wellbeing in the aging population [83, 84].
+Extension to Longitudinal Monitoring and Personalized Models
+The model was
+validated on the conversations captured during the 1st week out of 48 weeks of
+intervention to remove confounding factors due to the behavioral intervention designed
+in the I-CONECT (NCT02871921) study [36, 37], as discussed in subsection 2.2.
+With cognitive decline, older adults can also manifest behavioral changes over time
+[111, 112].
+Our next exploration will take advantage of all the data and aim to
+identify longitudinal changes in outcomes using the features examined here. For this,
+we will explore model adaptation methods to tackle potential model degradation due
+to behavioral changes over time [113]. This approach will allow us to assess cognitive
+function and psychological well-being adaptively over time, taking into account changes
+induced by external factors, such as interventions or disease progression.
+Moreover,
+model personalization needs to be studied, as each patient’s rate of cognitive decline
+and behavioral changes could depend on their personality, disease condition, and
+demographic background [114, 115].
+Impact of Data Quality
+A few video recordings had significantly low quality with low
+resolutions or pixelation due to weak internet connectivity. The effect of those internet
+connectivity issues on model bias and performance degradation needs to be quantified,
+
+Detecting Cognitive Impairment and Psychological Well-being among Older Adults
+35
+as internet connectivity can be less than ideal when the system is deployed in lowresource communities.
+As mentioned above, we utilized the baseline interview data
+recorded during the first week of the trial to capture behaviors closest to the time of
+assessments on our subjects’ cognitive function and psychological well-being. However,
+it is important to note that participants were still becoming familiar with the study
+procedures during the initial sessions.
+As a result, participants may have exhibited
+heightened levels of nervousness or unfamiliarity, potentially influencing their behavior
+and responses in ways that do not fully represent their typical cognitive or emotional
+state. This consideration was not factored into our analysis. Future studies will explore
+data from later sessions to understand and mitigate these potential data quality issues.
+Multimodal Fusion and Transfer Learning Techniques
+In this feasibility study, we
+mainly applied late fusion of multimodal features, as it demonstrated superior
+performance compared to early fusion and mid fusion in previous mental health
+research, especially when only a small sample size was available [57].
+With larger
+recruitment and longitudinal data collection, future work needs to explore advanced
+multimodal timeseries methods [116] for modeling complex temporal relationships in
+facial, cardiovascular, audio, and language features related to cognitive impairment
+and psychological well-being in aging populations. Furthermore, our findings showed
+that existing state-of-the-art foundation models for extracting facial, audio, and
+language features had minimal contributions for quantifying cognitive impairment and
+psychological well-being in aging populations. This calls for further study on the impact
+of transfer learning the pre-trained models with few-shot learning techniques [117] to
+finetune those models for aging populations living with mental health problems. We
+anticipate that these future research directions will unlock the potential of deep learning
+models for developing generalizable and robust models for aging populations.
+5. Conclusions
+With the increasing prevalence of Alzheimer’s disease in an aging society, it is important
+to quantify the cognitive impairment and psychological well-being, such as neuroticism
+or negative affect linked to various mental health problems, of older adults, which helps
+to facilitate appropriate interventions to slow down cognitive decline [118, 119]. The
+disparity and the lack of supply in dementia care services significantly challenge the
+early detection and monitoring of MCI [18, 19]. To tackle this challenge, recent studies
+proposed a remote interview video analysis that can potentially transform telehealth
+platforms into behavioral monitoring systems for MCI in resource-limited communities
+[120, 121]. This study made further innovations and demonstrated for the first time,
+to the best of our knowledge, that it was feasible to quantify various gold-standard
+measures of cognitive impairment and psychological well-being in aging populations
+through a multimodal analysis pipeline integrating facial, acoustic, linguistic, and
+cardiovascular patterns observed in daily conversations.
+Our models could quantify
+
+REFERENCES
+36
+CDR (0.77 AUC), social satisfaction (0.75 AUC), negative affect (0.74 AUC), LSNS
+(0.74 AUC), and psychological well-being (0.72 AUC). Our feature importance analysis
+showed that acoustic and language patterns were most useful for quantifying cognitive
+impairments and social isolation, indicating the use of telephone-based monitoring for
+communities with limited internet connectivity.
+Psychological measures were most
+associated with facial patterns and cardiovascular measures from videos.
+We also
+found that all models exhibited significant bias. While post-processing bias mitigation
+improved disparity, it significantly reduced F1 scores, leading to a lack of utility in the
+models. Our comprehensive analysis of feature importance and fairness in our models
+provides practical insights and calls for urgent future research by the machine learning
+and clinical research communities to develop clinically relevant, robust, and generalizable
+models for cognitive and psychological health in aging populations.
+6. Acknowledgements
+Hyeokhyen Kwon, Salman Seyedi, Bolaji Omofojoye, and Gari Clifford are partially
+funded by the National Institute on Deafness and Other Communication Disorders
+(grant 1R21DC021029-01A1).
+Hyeokhyen Kwon and Gari Clifford are also partially
+supported by the James M. Cox Foundation and Cox Enterprises, Inc., in support of
+Emory’s Brain Health Center and Georgia Institute of Technology.
+Gari Clifford is
+partially supported by the National Center for Advancing Translational Sciences of the
+National Institutes of Health (NIH) under Award Number UL1TR002378. Gari Clifford
+and Allen Levey are partially funded by NIH grant R56AG083845 from the National
+Institute on Aging. Hirko Dodge is funded by NIH grants and serves as the CEO of the
+I-CONNECT Foundation, a 501(c)(3) non-profit organization. The I-CONECT study
+received funding from the NIH: R01AG051628 and R01AG056102. The authors extend
+their gratitude to the participants of the I-CONECT study.
+References
+[1] Alzheimer’s Disease Facts and Figures. Alzheimer’s & Dementia, 19(4):1598–1695,
+2023.
+[2] K. G. Kinsella and D. R. Phillips.
+Global Aging: The Challenge of Success.
+Population Reference Bureau, Washington, D.C., 2005.
+[3] S. Gauthier, B. Reisberg, M. Zaudig, R. Petersen, K. Ritchie, K. Broich, et al.
+Mild Cognitive Impairment. The Lancet, 367, 2006.
+[4] H. Hikichi, K. Kondo, T. Takeda, and I. Kawachi. Social Interaction and Cognitive
+Decline: Results of a 7-Year Community Intervention. Alzheimer’s & Dementia:
+Translational Research & Clinical Interventions, 3(1):23–32, 2017.
+[5] R. Fernández Fernández, J. Ibias Martín, and M. A. Maciá Antón. Depression as
+a Risk Factor for Dementia: A Meta-Analysis. Journal of Neuropsychiatry and
+Clinical Neurosciences, 36(2):101–109, 2024.
+
+REFERENCES
+37
+[6] H. Gardener, B. Levin, J. DeRosa, T. Rundek, C. B. Wright, M. S. Elkind, and
+R. L. Sacco. Social Connectivity is Related to Mild Cognitive Impairment and
+Dementia. Journal of Alzheimer’s Disease, 84(4):1811–1820, 2021.
+[7] K. Steenland, C. Karnes, R. Seals, C. Carnevale, A. Hermida, and A. Levey. Late-
+Life Depression as a Risk Factor for Mild Cognitive Impairment or Alzheimer’s
+Disease in 30 U.S. Alzheimer’s Disease Centers. Journal of Alzheimer’s Disease,
+31(2):265–275, 2012.
+[8] R. J. Mourao, G. Mansur, L. F. Malloy-Diniz, E. Castro Costa, and B. S.
+Diniz.
+Depressive Symptoms Increase the Risk of Progression to Dementia in
+Subjects with Mild Cognitive Impairment: Systematic Review and Meta-Analysis.
+International Journal of Geriatric Psychiatry, 31(8):905–911, 2016.
+[9] Z. S. Nasreddine, N. A. Phillips, V. Bédirian, S. Charbonneau, V. Whitehead,
+I. Collin, J. L. Cummings, and H. Chertkow. The Montreal Cognitive Assessment,
+MoCA: A Brief Screening Tool for Mild Cognitive Impairment. Journal of the
+American Geriatrics Society, 53(4):695–699, 2005.
+[10] J. C. Morris. The Clinical Dementia Rating (CDR): Current Version and Scoring
+Rules. Neurology, 43(11):2412–2414, Nov 1993.
+[11] S. Mora-Simon, R. Garcia-Garcia, M. Perea-Bartolome, V. Ladera-Fernandez,
+J. Unzueta-Arce, M. C. Patino-Alonso, and E. Rodriguez-Sanchez. Mild Cognitive
+Impairment: Early Detection and New Perspectives.
+Revista De NeurologíA,
+54(5):303–310, 2012.
+[12] T. C. Pinto, L. Machado, T. M. Bulgacov, A. L. Rodrigues-Júnior, M. L. G.
+Costa, R. C. C. Ximenes, and E. B. Sougey. Is the Montreal Cognitive Assessment
+(MoCA) Screening Superior to the Mini-Mental State Examination (MMSE) in
+the Detection of Mild Cognitive Impairment (MCI) and Alzheimer’s Disease (AD)
+in the Elderly? International Psychogeriatrics, 31(4):491–504, 2019.
+[13] N. Chehrehnegar, V. Nejati, M. Shati, V. Rashedi, M. Lotfi, F. Adelirad, and
+M. Foroughan.
+Early Detection of Cognitive Disturbances in Mild Cognitive
+Impairment: A Systematic Review of Observational Studies. Psychogeriatrics,
+20(2):212–228, 2020.
+[14] R. Zhaoyang, M. J. Sliwinski, L. M. Martire, M. J. Katz, and S. B. Scott. Features
+of Daily Social Interactions that Discriminate between Older Adults with and
+without Mild Cognitive Impairment.
+The Journals of Gerontology, Series B:
+Psychological Sciences and Social Sciences, 79(4):gbab019, 2024.
+[15] R. F. Baumeister and M. R. Leary. The Need to Belong: Desire for Interpersonal
+Attachments as a Fundamental Human Motivation.
+Psychological Bulletin,
+117(3):497–529, May 1995.
+[16] A. John, R. Saunders, R. Desai, G. Bell, C. Fearn, J. E. Buckman, B. Brown,
+S. Nurock, S. Michael, P. Ware, et al. Associations between Psychological Therapy
+Outcomes for Depression and Incidence of Dementia.
+Psychological Medicine,
+53(11):4869–4879, 2023.
+
+REFERENCES
+38
+[17] J. R. Cummings, X. Zhang, C. Gandré, A. Morsella, L. Shields-Zeeman,
+J. Winkelmann, S. Allin, G. F. Augusto, F. Cascini, Z. Cserháti, et al. Challenges
+Facing Mental Health Systems Arising from the COVID-19 Pandemic: Evidence
+from 14 European and North American Countries.
+Health Policy, 136:104878,
+2023.
+[18] Y. Liu, H. Jun, A. Becker, C. Wallick, and S. Mattke. Detection Rates of Mild
+Cognitive Impairment in Primary Care for the United States Medicare Population.
+The Journal of Prevention of Alzheimer’s Disease, 11, 2024.
+[19] A. Rao, M. Manteau-Rao, and N. T. Aggarwal. Dementia Neurology Deserts:
+What are they and Where are they Located in the U.S.? Alzheimer’s & Dementia,
+2017.
+[20] B. Worster, L. Waldman, G. Garber, T. Zhan, A. Lopez, O. Trachtenberg,
+N. Handley, K. L. Rising, V. Csik, and A. Leader. Increasing Equitable Access to
+Telehealth Oncology Care in the COVID-19 National Emergency: Creation of a
+Telehealth Task Force. Cancer Medicine, 12(3):2842–2849, 2023.
+[21] L. Griffiths, I. Blignault, and P. Yellowlees. Telemedicine as a Means of Delivering
+Cognitive-Behavioural Therapy to Rural and Remote Mental Health Clients.
+Journal of Telemedicine and Telecare, 12(3):136–140, 2006.
+[22] E. Garcia-Ceja, M. Riegler, T. Nordgreen, P. Jakobsen, K. J. Oedegaard, and
+J. Tørresen. Mental Health Monitoring with Multimodal Sensing and Machine
+Learning: A Survey. Pervasive and Mobile Computing, 51:1–26, 2018.
+[23] Y. Zhou, W. Han, X. Yao, J. Xue, Z. Li, and Y. Li. Developing a Machine Learning
+Model for Detecting Depression, Anxiety, and Apathy in Older Adults with Mild
+Cognitive Impairment using Speech and Facial Expressions: A Cross-Sectional
+Observational Study. International Journal of Nursing Studies, 2023.
+[24] J. Cohen, V. Richter, M. Neumann, D. Black, A. Haq, J. Wright-Berryman,
+and V. Ramanarayanan.
+A Multimodal Dialog Approach to Mental State
+Characterization in Clinically Depressed, Anxious, and Suicidal Populations.
+Frontiers in Psychology, 2023.
+[25] Z. Jiang, S. Harati, A. Crowell, H. S. Mayberg, S. Nemati, and G. D. Clifford.
+Classifying Major Depressive Disorder and Response to Deep Brain Stimulation
+over Time by Analyzing Facial Expressions. IEEE Transactions on Biomedical
+Engineering, 68(2):664–672, 2020.
+[26] S. D’Alfonso. AI in Mental Health. Current Opinion in Psychology, 36:112–117,
+2020.
+[27] S. Graham, C. Depp, E. E. Lee, C. Nebeker, X. Tu, H.-C. Kim, and D. V.
+Jeste. Artificial Intelligence for Mental Health and Mental Illnesses: An Overview.
+Current Psychiatry Reports, 21:1–18, 2019.
+[28] M. Oquab, T. Darcet, T. Moutakanni, H. V. Vo, M. Szafraniec, V. Khalidov, et al.
+DINOv2: Learning Robust Visual Features without Supervision. arXiv, 2023.
+
+REFERENCES
+39
+[29] S. Chen, C. Wang, Z. Chen, Y. Wu, S. Liu, Z. Chen, J. Li, N. Kanda, T. Yoshioka,
+X. Xiao, et al.
+WavLM: Large-Scale Self-Supervised Pre-Training for Full-
+Stack Speech Processing. IEEE Journal of Selected Topics in Signal Processing,
+16(6):1505–1518, 2022.
+[30] H. Touvron, T. Lavril, G. Izacard, X. Martinet, M.-A. Lachaux, T. Lacroix,
+B. Rozière, N. Goyal, E. Hambro, F. Azhar, et al. LLaMA: Open and Efficient
+Foundation Language Models. arXiv, 2023.
+[31] C. A. Casado Álvarez and M. Bordallo López.
+Face2PPG: An Unsupervised
+Pipeline for Blood Volume Pulse Extraction from Faces.
+IEEE Journal of
+Biomedical and Health Informatics, 27(11):5530–5541, 2023.
+[32] H. Jung, H. J. Yoo, P. Choi, K. Nashiro, J. Min, C. Cho, J. F. Thayer,
+P. Lehrer, and M. Mather. Changes in Negative Emotions Across Five Weeks
+of HRV Biofeedback Intervention were Mediated by Changes in Resting Heart
+Rate Variability. Applied Psychophysiology and Biofeedback, pages 1–24, 2024.
+[33] J. A. Chalmers, D. S. Quintana, M. J.-A. Abbott, and A. H. Kemp. Anxiety
+Disorders are Associated with Reduced Heart Rate Variability: A Meta-Analysis.
+Frontiers in Psychiatry, 5:80, 2014.
+[34] B. R. Viers, D. J. Lightner, M. E. Rivera, M. K. Tollefson, S. A. Boorjian, R. J.
+Karnes, R. H. Thompson, D. A. O’Neil, R. L. Hamilton, M. R. Gardner, et al.
+Efficiency, Satisfaction, and Costs for Remote Video Visits Following Radical
+Prostatectomy: A Randomized Controlled Trial. European Urology, 68(4):729–
+735, 2015.
+[35] S. Cook,
+A. Schwartz,
+and N. Kaslow.
+Evidence-Based Psychotherapy:
+Advantages and Challenges. Neurotherapeutics, 2017.
+[36] K. Yu, K. Wild, K. Potempa, B. M. Hampstead, P. A. Lichtenberg, L. M. Struble,
+P. Pruitt, E. L. Alfaro, J. Lindsley, M. MacDonald, J. A. Kaye, L. C. Silbert,
+and H. H. Dodge. The Internet-Based Conversational Engagement Clinical Trial
+(I-CONECT) in Socially Isolated Adults 75+ Years Old: Randomized Controlled
+Trial Protocol and COVID-19-Related Study Modifications. Frontiers in Digital
+Health, 3:714813, 2021.
+[37] H. H. Dodge, K. Yu, C.-Y. Wu, P. J. Pruitt, M. Asgari, J. A. Kaye, B. M.
+Hampstead, L. Struble, K. Potempa, P. Lichtenberg, et al.
+Internet-Based
+Conversational Engagement Randomized Controlled Clinical Trial (I-CONECT)
+Among Socially Isolated Adults 75+ Years Old with Normal Cognition or Mild
+Cognitive Impairment: Topline Results. The Gerontologist, 64(4):gnad147, 2024.
+[38] G. Livingston, J. Huntley, K. Y. Liu, S. G. Costafreda, G. Selbæk, S. Alladi,
+D. Ames, S. Banerjee, A. Burns, C. Brayne, et al.
+Dementia Prevention,
+Intervention, and Care: 2024 Report of the Lancet Standing Commission. The
+Lancet, 404(10452):572–628, 2024.
+[39] J. A. Yesavage, T. L. Brink, T. L. Rose, O. Lum, V. Huang, M. Adey, and V. O.
+
+REFERENCES
+40
+Leirer. Development and Validation of a Geriatric Depression Screening Scale: A
+Preliminary Report. Journal of Psychiatric Research, 17(1):37–49, 1982.
+[40] S. Weintraub, L. Besser, H. H. Dodge, M. Teylan, S. Ferris, F. C. Goldstein,
+B. Giordani, J. Kramer, D. Loewenstein, D. Marson, D. Mungas, D. Salmon,
+K. Welsh-Bohmer, X.-H. Zhou, S. D. Shirk, A. Atri, W. A. Kukull, C. Phelps,
+and J. C. Morris. Version 3 of the Alzheimer Disease Centers’ Neuropsychological
+Test Battery in the Uniform Data Set (UDS). Alzheimer Disease and Associated
+Disorders, 32(1):10–17, 2018.
+[41] H. H. Dodge, F. C. Goldstein, N. I. Wakim, T. Gefen, M. Teylan, W. A. Kukull,
+L. L. Barnes, B. Giordani, T. M. Hughes, J. H. Kramer, et al. Differentiating
+Among Stages of Cognitive Impairment:
+Comparisons of Versions Two and
+Three of the National Alzheimer’s Coordinating Center (NACC) Uniform Data
+Set (UDS) Neuropsychological Test Battery: Health Services Research / Cost-
+Effectiveness of Treatment/Prevention and Diagnosis. Alzheimer’s & Dementia,
+16:e040648, 2020.
+[42] J. Lubben, E. Blozik, G. Gillmann, S. Iliffe, W. von Renteln Kruse, J. C. Beck, and
+A. E. Stuck. Performance of an Abbreviated Version of the Lubben Social Network
+Scale Among Three European Community-Dwelling Older Adult Populations. The
+Gerontologist, 46(4):503–513, 2006.
+[43] M. E. Hughes, L. J. Waite, L. C. Hawkley, and J. T. Cacioppo. A Short Scale
+for Measuring Loneliness in Large Surveys: Results from Two Population-Based
+Studies. Research on Aging, 26(6):655–672, 2004.
+[44] C.-Y. Wu, K. Yu, S. E. Arnold, S. Das, and H. H. Dodge.
+Who Benefited
+Most from the Internet-Based Conversational Engagement RCT (I-CONECT)?
+Application of the Personalized Medicine Approach to a Behavioral Intervention
+Study. Journal of Prevention of Alzheimer’s Disease, pages 1–10, 2024.
+[45] C. Hegde, Y. Kiarashi, A. I. Levey, A. D. Rodriguez, H. Kwon, and G. D. Clifford.
+Feasibility of Assessing Cognitive Impairment via Distributed Camera Network
+and Privacy-Preserving Edge Computing. Alzheimer’s & Dementia: Diagnosis,
+Assessment & Disease Monitoring, 17(1):e70085, 2025.
+[46] R. R. McCrae, P. T. J. Costa, and T. A. Martin.
+The NEO-PI-3: A More
+Readable Revised NEO Personality Inventory. Journal of Personality Assessment,
+84(3):261–270, Jun 2005.
+[47] HealthMeasures. NIH Toolbox. HealthMeasures Website, 2024. Accessed: August
+6, 2024.
+[48] I. Babakhanyan, B. S. McKenna, K. B. Casaletto, C. J. Nowinski, and R. K.
+Heaton. National Institutes of Health Toolbox Emotion Battery for English- and
+Spanish-Speaking Adults: Normative Data and Factor-Based Summary Scores.
+Patient Related Outcome Measures, 9:115–127, Mar 2018.
+[49] J. E. Lubben. Lubben Social Network Scale (LSNS). APA PsycTests, 1984.
+
+REFERENCES
+41
+[50] Jaided AI. EasyOCR.
+[51] J. Baek, G. Kim, J. Lee, S. Park, D. Han, S. Yun, S. J. Oh, and H. Lee. What
+is Wrong with Scene Text Recognition Model Comparisons? Dataset and Model
+Analysis. In Proceedings of the IEEE/CVF International Conference on Computer
+Vision (CVPR), pages 4715–4723, 2019.
+[52] B. Shi, X. Bai, and C. Yao. An End-to-End Trainable Neural Network for Image-
+Based Sequence Recognition and its Application to Scene Text Recognition. IEEE
+Transactions on Pattern Analysis and Machine Intelligence, 39(11):2298–2304,
+2016.
+[53] S. Serengil and A. Ozpinar. A Benchmark of Facial Recognition Pipelines and
+Co-Usability Performances of Modules.
+Journal of Information Technologies,
+17(2):95–107, 2024.
+[54] L. Chen and M. Asgari. Refining Automatic Speech Recognition System for Older
+Adults. In 2021 IEEE International Conference on Acoustics, Speech and Signal
+Processing (ICASSP), pages 7003–7007. IEEE, Jun 2021.
+[55] Y. Liu, M. Ott, N. Goyal, J. du, M. Joshi, D. Chen, O. Levy, M. Lewis,
+L. Zettlemoyer, and V. Stoyanov.
+RoBERTa: A Robustly Optimized BERT
+Pretraining Approach. arXiv, 2019.
+[56] G. Boccignone, D. Conte, V. Cuculo, A. D’Amelio, G. Grossi, R. Lanzarotti, and
+E. Mortara. pyVHR: A Python Framework for Remote Photoplethysmography.
+PeerJ Computer Science, 8:e929, 2022.
+[57] Z. Jiang, S. Seyedi, E. Griner, A. Abbasi, A. B. Rad, H. Kwon, R. O. Cotes,
+and G. D. Clifford. Multimodal Mental Health Digital Biomarker Analysis from
+Remote Interviews using Facial, Vocal, Linguistic, and Cardiovascular Patterns.
+IEEE Journal of Biomedical and Health Informatics, 2024.
+[58] P. Ekman. Universal Facial Expressions of Emotion. California Mental Health
+Research Digest, 1970.
+[59] Z. Shao, Z. Liu, J. Cai, and L. Ma. Deep Adaptive Attention for Joint Facial
+Action Unit Detection and Face Alignment. In European Conference on Computer
+Vision, pages 725–740. Springer, 2018.
+[60] T. Giannakopoulos. pyAudioAnalysis: An Open-Source Python Library for Audio
+Signal Analysis. PLOS ONE, 10(12):e0144610, 2015.
+[61] J. Hartmann. Emotion English DistilRoBERTa-base, 2022.
+[62] J. Hartmann, M. Heitmann, C. Siebert, and C. Schamp. More than a Feeling:
+Accuracy and Application of Sentiment Analysis.
+International Journal of
+Research in Marketing, 40(1):75–87, 2023.
+[63] Linderman Lab. SSM: Bayesian Learning and Inference for State Space Models,
+2020.
+[64] E. Sükei, A. Norbury, M. M. Pérez-Rodríguez, P. M. Olmos, and A. Artés.
+Predicting Emotional States using Behavioral Markers Derived from Passively
+
+REFERENCES
+42
+Sensed Data: A Data-Driven Machine Learning Approach. JMIR mHealth and
+uHealth, 9(3):e24465, Mar 2021.
+[65] B. Zou, J. Han, Y. Wang, R. Liu, S. Zhao, L. Feng, X. Lyu, and H. Ma.
+Semi-Structural Interview-Based Chinese Multimodal Depression Corpus Towards
+Automatic Preliminary Screening of Depressive Disorders. IEEE Transactions on
+Affective Computing, 14(4):2823–2838, Oct 2023.
+[66] J. Aina, O. Akinniyi, M. M. Rahman, V. Odero-Marah, and F. Khalifa. A Hybrid
+Learning-Architecture for Mental Disorder Detection Using Emotion Recognition.
+IEEE Access, 12:91410–91425, 2024.
+[67] E. S. Mohamed, T. A. Naqishbandi, S. A. C. Bukhari, I. Rauf, V. Sawrikar, and
+A. Hussain.
+A Hybrid Mental Health Prediction Model using Support Vector
+Machine, Multilayer Perceptron, and Random Forest Algorithms.
+Healthcare
+Analytics, 3:100185, May 2023.
+[68] M. Saad, S. Hefner, S. Donovan, D. Bernhard, R. Tripathi, S. A. Factor, J. M.
+Powell, H. Kwon, R. Sameni, C. D. Esper, and J. L. McKay. Development of a
+Tremor Detection Algorithm for Use in an Academic Movement Disorders Center.
+Sensors (Basel, Switzerland), 24(15):4960, Jul 2024.
+[69] P. Celsis.
+Age-Related Cognitive Decline, Mild Cognitive Impairment or
+Preclinical Alzheimer’s Disease? Annals of Medicine, 32(1):6–14, 2000.
+[70] M. A. Ahmad, C. Eckert, and A. Teredesai.
+Interpretable Machine Learning
+in Healthcare.
+In Proceedings of the 2018 ACM International Conference On
+Bioinformatics, Computational Biology, and Health Informatics, pages 559–560,
+Washington, D.C., USA, Aug 2018. ACM.
+[71] L. Parcalabescu and A. Frank. MM-SHAP: A Performance-Agnostic Metric for
+Measuring Multimodal Contributions in Vision and Language Models and Tasks.
+In Anna Rogers, Jordan Boyd-Graber, and Naoaki Okazaki, editors, Proceedings of
+the 61st Annual Meeting of the Association for Computational Linguistics (volume
+1: Long Papers), pages 4032–4059, Toronto, Canada, Jul 2023. Association for
+Computational Linguistics.
+[72] C. Yuan, K. A. Linn, and R. A. Hubbard.
+Algorithmic Fairness of Machine
+Learning Models for Alzheimer Disease Progression.
+JAMA Network Open,
+6(11):e2342203–e2342203, Nov 2023.
+[73] Z. Jiang, S. Seyedi, E. Griner, A. Abbasi, A. B. Rad, H. Kwon, R. O. Cotes,
+and G. D. Clifford. Evaluating and Mitigating Unfairness in Multimodal Remote
+Mental Health Assessments. PLOS Digital Health, 3(7):e0000413, 2024.
+[74] H. Weerts, M. Dudík, R. Edgar, A. Jalali, R. Lutz, and M. Madaio. FairLearn:
+Assessing and Improving Fairness of AI Systems. Journal of Machine Learning
+Research, 24(257):1–8, 2023.
+[75] M. Hardt, E. Price, and N. Srebro.
+Equality of Opportunity in Supervised
+Learning.
+In Proceedings of the 30th International Conference on Neural
+
+REFERENCES
+43
+Information Processing Systems, NIPS’16, pages 3323–3331, Red Hook, NY, USA,
+2016. Curran Associates Inc.
+[76] U.S. Equal Employment Opportunity Commission.
+Select Issues:
+Assessing
+Adverse Impact in Software, Algorithms, and Artificial Intelligence Used in
+Employment Selection Procedures Under Title VII of the Civil Rights Act of
+1964, 2023.
+[77] F. Pedregosa, G. Varoquaux, A. Gramfort, V. Michel, B. Thirion, O. Grisel,
+M. Blondel, P. Prettenhofer, R. Weiss, V. Dubourg, J. Vanderplas, A. Passos,
+D. Cournapeau, M. Brucher, M. Perrot, and E. Duchesnay. Scikit-learn: Machine
+Learning in Python. Journal of Machine Learning Research, 12:2825–2830, 2011.
+[78] A. Paszke, S. Gross, F. Massa, A. Lerer, J. Bradbury, G. Chanan, T. Killeen,
+Z. Lin, N. Gimelshein, L. Antiga, A. Desmaison, A. Köpf, E. Yang, Z. DeVito,
+M. Raison, A. Tejani, S. Chilamkurthy, B. Steiner, L. Fang, J. Bai, and
+S. Chintala. PyTorch: An Imperative Style, High-Performance Deep Learning
+Library.
+In Advances in Neural Information Processing Systems 32 (NeurIPS
+2019), page 721, Red Hook, NY, USA, 2019. Curran Associates, Inc.
+[79] A. Dosovitskiy, L. Beyer, A. Kolesnikov, D. Weissenborn, X. Zhai, T. Unterthiner,
+M. Dehghani, M. Minderer, G. Heigold, S. Gelly, et al. An Image is Worth 16x16
+Words: Transformers for Image Recognition at Scale. arXiv, 2020.
+[80] F. Zhuang, Z. Qi, K. Duan, D. Xi, Y. Zhu, H. Zhu, H. Xiong, and Q. He. A
+Comprehensive Survey on Transfer Learning. arXiv, 2019.
+[81] I. Straw and C. Callison-Burch. Artificial intelligence in mental health and the
+biases of language-based models. PLOS ONE, 15(12):e0240376, 2020.
+[82] M. Georgopoulos, J. Oldfield, M. A. Nicolaou, Y. Panagakis, and M. Pantic.
+Mitigating demographic bias in facial datasets with style-based multi-attribute
+transfer. International Journal of Computer Vision, 129(7):2288–2307, 2021.
+[83] S. Yan, D. Huang, and M. Soleymani. Mitigating Biases in Multimodal Personality
+Assessment. In Proceedings of the 2020 International Conference on Multimodal
+Interaction, ICMI ’20, pages 361–369, New York, NY, USA, 2020. Association for
+Computing Machinery.
+[84] A. Seth, M. Hemani, and C. Agarwal.
+DEAR: Debiasing Vision-Language
+Models with Additive Residuals. In Proceedings of the IEEE/CVF Conference
+on Computer Vision and Pattern Recognition (CVPR), pages 6820–6829. IEEE,
+2023.
+[85] Z. S. Nasreddine, N. A. Phillips, V. Bédirian, S. Charbonneau, V. Whitehead,
+I. Collin, J. L. Cummings, and H. Chertkow. The Montreal Cognitive Assessment,
+MoCA: A Brief Screening Tool for Mild Cognitive Impairment. Journal of the
+American Geriatrics Society, 53(4):695–699, 2005.
+[86] N. Ciesielska, R. Sokołowski, E. Mazur, M. Podhorecka, A. Polak-Szabela, and
+K. Kędziora-Kornatowska. Is the Montreal Cognitive Assessment (MoCA) Test
+
+REFERENCES
+44
+Better Suited than the Mini-Mental State Examination (MMSE) in Mild Cognitive
+Impairment (MCI) Detection Among People Aged over 60?
+Meta-Analysis.
+Psychiatria Polska, 50(5):1039–1052, Oct 2016.
+[87] C. Themistocleous, M. Eckerström, and D. Kokkinakis. Voice Quality and Speech
+Fluency Distinguish Individuals with Mild Cognitive Impairment from Healthy
+Controls. PLOS ONE, 15(7):e0236009, 2020.
+[88] J. Laguarta and B. Subirana. Longitudinal Speech Biomarkers for Automated
+Alzheimer’s Detection. Frontiers in Computer Science, 3:624694, 2021.
+[89] M. Asgari, J. Kaye, and H. Dodge. Predicting Mild Cognitive Impairment from
+Spontaneous Spoken Utterances. Alzheimer’s & Dementia: Translational Research
+& Clinical Interventions, 3(2):219–228, 2017.
+[90] J. M. Graves, D. A. Abshire, S. Amiri, and J. L. MacKelprang. Disparities in
+Technology and Broadband Internet Access Across Rurality: Implications for
+Health and Education. Family & Community Health, 44(4):257–265, 2021.
+[91] J. E. Dodoo, H. Al-Samarraie, and A. I. Alzahrani. Telemedicine Use in Sub-
+Saharan Africa: Barriers and Policy Recommendations for COVID-19 and Beyond.
+International Journal of Medical Informatics, 151:104467, 2021.
+[92] K. A. Kyei, G. N. Onajah, and J. Daniels. The Emergence of Telemedicine in
+a Low-Middle-Income Country:
+Challenges and Opportunities.
+Ecancermedicalscience, 18, 2024.
+[93] Z. Jiang, S. Seyedi, R. U. Haque, A. L. Pongos, K. L. Vickers, C. M. Manzanares,
+J. J. Lah, A. I. Levey, and G. D. Clifford. Automated Analysis of Facial Emotions
+in Subjects with Cognitive Impairment. PLOS ONE, 17(1):e0262527, 2022.
+[94] L. Morellini, A. Izzo, S. Rossi, G. Zerboni, L. Rege-Colet, M. Ceroni, E. Biglia, and
+L. Sacco. Emotion Recognition and Processing in Patients with Mild Cognitive
+Impairment: A Systematic Review. Frontiers in Psychology, 13:1044385, 2022.
+[95] T. Liu, J. Meyerhoff, J. C. Eichstaedt, C. J. Karr, S. M. Kaiser, K. P. Kording,
+D. C. Mohr, and L. H. Ungar. The Relationship between Text Message Sentiment
+and Self-Reported Depression. Journal of Affective Disorders, 302:7–14, 2022.
+[96] Y. Zhou, X. Yao, W. Han, Y. Wang, Z. Li, and Y. Li. Distinguishing Apathy and
+Depression in Older Adults with Mild Cognitive Impairment using Text, Audio,
+and Video Based on Multiclass Classification and Shapely Additive Explanations.
+International Journal of Geriatric Psychiatry, 37(11), 2022.
+[97] M. Yin, H. Yu, M. Zou, Y. He, and X. Wang. The relationship between neuroticism
+and the acute psychological stress response: Evidence from the autonomic nervous
+system. Current Psychology, 43(22):20153–20164, 2024.
+[98] M. Gavrilescu. Study on determining the big-five personality traits of an individual
+based on facial esxpressions. In 2015 E-Health and Bioengineering Conference
+(EHB), pages 1–6, 2015.
+
+REFERENCES
+45
+[99] P. di Campli San Vito, G. Shakeri, J. Ross, X. Yang, and S. Brewster. Development
+of a Real-Time Stress Detection System for Older Adults with Heart Rate Data.
+In Proceedings of the 16th International Conference on Pervasive Technologies
+Related to Assistive Environments (PETRA ’23), PETRA ’23, pages 226–236,
+New York, NY, USA, 2023. Association for Computing Machinery.
+[100] L. Shu, Y. Yu, W. Chen, H. Hua, Q. Li, J. Jin, and X. Xu. Wearable Emotion
+Recognition using Heart Rate Data from a Smart Bracelet. Sensors, 20(3):718,
+2020.
+[101] Y.-C. Chen, C.-C. Hsiao, W.-D. Zheng, R.-G. Lee, and R. Lin. Artificial Neural
+Networks-Based Classification of Emotions using Wristband Heart Rate Monitor
+Data. Medicine, 98(33):e16863, Aug 2019.
+[102] Z. Ismail, L. Agüera-Ortiz, H. Brodaty, A. Cieslak, J. Cummings, C. E. Fischer,
+S. Gauthier, Y. E. Geda, N. Herrmann, J. Kanji, et al. The Mild Behavioral
+Impairment Checklist (MBI-C): A Rating Scale for Neuropsychiatric Symptoms in
+Pre-Dementia Populations. Journal of Alzheimer’s Disease, 56(3):929–938, 2017.
+[103] A. Busse, A. Hensel, U. Guhne, M. Angermeyer, and S. Riedel-Heller.
+Mild
+Cognitive Impairment: Long-Term Course of Four Clinical Subtypes. Neurology,
+67(12):2176–2185, 2006.
+[104] S. R. Rapp, C. Legault, V. W. Henderson, R. L. Brunner, K. Masaki,
+B. Jones, J. Absher, and L. Thal. Subtypes of Mild Cognitive Impairment in
+Older Postmenopausal Women: The Women’s Health Initiative Memory Study.
+Alzheimer Disease & Associated Disorders, 24(3):248–255, 2010.
+[105] N. I. Bradfield. Mild Cognitive Impairment: Diagnosis and Subtypes. Clinical
+Eeg and Neuroscience, 54(1):4–11, 2023.
+[106] M. Davis, T. O’Connell, S. Johnson, S. Cline, E. Merikle, F. Martenyi, and
+K. Simpson.
+Estimating Alzheimer’s Disease Progression Rates from Normal
+Cognition through Mild Cognitive Impairment and Stages of Dementia. Current
+Alzheimer Research, 15(8):777–788, 2018.
+[107] F. de Oliveira Silva, J. V. Ferreira, J. Placido, D. Chagas, J. Praxedes,
+C. Guimaraes, L. A. Batista, V. Marinho, J. Laks, and A. C. Deslandes. Stages
+of Mild Cognitive Impairment and Alzheimer’s Disease Can Be Differentiated by
+Declines in Timed Up and Go Test: A Systematic Review and Meta-Analysis.
+Archives of Gerontology and Geriatrics, 85:103941, 2019.
+[108] H. Makizako, H. Shimada, K. Tsutsumimoto, R. Hotta, S. Nakakubo, K. Makino,
+T. Suzuki, et al. Comorbid Mild Cognitive Impairment and Depressive Symptoms
+Predict Future Dementia in Community Older Adults: A 24-Month Follow-Up
+Longitudinal Study. Journal of Alzheimer’s Disease, 54(4):1473–1482, 2016.
+[109] B. C. Stephan, C. Brayne, G. M. Savva, and F. E. Matthews.
+Occurrence
+of Medical Co-Morbidity in Mild Cognitive Impairment:
+Implications for
+Generalisation of MCI Research. Age and Ageing, 40(4):501–507, 2011.
+
+REFERENCES
+46
+[110] F. Menegon, F. de Marchi, D. Aprile, I. Zanelli, G. Decaroli, C. Comi, and
+G. Tondo.
+From Mild Cognitive Impairment to Dementia:
+The Impact of
+Comorbid Conditions on Disease Conversion. Biomedicines, 12(8):1675, 2024.
+[111] E. Schwertner, J. B. Pereira, H. Xu, J. Secnik, B. Winblad, M. Eriksdotter,
+K. Nägga, and D. Religa. Behavioral and Psychological Symptoms of Dementia in
+Different Dementia Disorders: A Large-Scale Study of 10,000 Individuals. Journal
+of Alzheimer’s Disease, 87(3):1307–1318, May 2022.
+[112] M. Islam, M. Mazumder, D. Schwabe-Warf, Y. Stephan, A. R. Sutin, and
+A. Terracciano.
+Personality Changes with Dementia from the Informant
+Perspective: New Data and Meta-Analysis.
+Journal of the American Medical
+Directors Association, 20(2):131–137, Feb 2019.
+[113] J. Liang, R. He, and T. Tan. A Comprehensive Survey on Test-Time Adaptation
+Under Distribution Shifts. arXiv, 2023.
+[114] A. Ferrari, D. Micucci, M. Mobilio, and P. Napoletano. Deep Learning and Model
+Personalization in Sensor-Based Human Activity Recognition. Journal of Reliable
+Intelligent Environments, 9(1):27–39, Jan 2022.
+[115] J. Li and P. Washington.
+A Comparison of Personalized and Generalized
+Approaches to Emotion Recognition using Consumer Wearable Devices: Machine
+Learning Study. JMIR AI, 3:e52171, May 2024.
+[116] Y. Jiang, K. Ning, Z. Pan, X. Shen, J. Ni, W. Yu, A. Schneider, H. Chen,
+Y. Nevmyvaka, and D. Song. Multi-modal time series analysis: A tutorial and
+survey.
+In Proceedings of the 31st ACM SIGKDD Conference on Knowledge
+Discovery and Data Mining V. 2, pages 6043–6053, 2025.
+[117] C. Li, T. Denison, and T. Zhu. A survey of few-shot learning for biomedical time
+series. IEEE Reviews in Biomedical Engineering, 2024.
+[118] N. Anderson. State of the Science on Mild Cognitive Impairment (MCI). CNS
+Spectrums, 2019.
+[119] S. Kasper, C. Bancher, A. Eckert, H. Förstl, L. Frölich, J. Hort, A. Korczyn,
+R. Kressig, O. Levin, and M. Palomo. Management of Mild Cognitive Impairment
+(MCI): The Need for National and International Guidelines. The World Journal
+of Biological Psychiatry, 2020.
+[120] F. F. Poor, H. H. Dodge, and M. H. Mahoor. A Multimodal Cross-Transformer-
+Based Model to Predict Mild Cognitive Impairment using Speech, Language, and
+Vision. Computers in Biology and Medicine, 182:109199, 2024.
+[121] J. Sun, H. H. Dodge, and M. H. Mahoor. MC-ViViT: Multi-Branch Classifier-
+ViViT to Detect Mild Cognitive Impairment in Older Adults using Facial Videos.
+Expert Systems with Applications, 238:121929, 2024.
+
+REFERENCES
+47
+Appendix A. Classification Performance of Deep Learning Models
+Table A1 shows the best-performing classification approaches (LSTM, Transformer, or
+MLP) for all classification tasks, including both unimodal and multimodal fusion, as well
+as the 2nd best approach (or runner-up) with differences in AUC from the best model
+(AUROC ∆).
+Figure A1 reports AUROC values for the two deep learning models
+(Transformer and LSTM) across all tasks (rows) and feature modalities (columns). The
+non-temporal features (LLaMA and demographic variables) were used to train an MLP
+model. Each cell shows the AUROC with the corresponding best unimodal feature or
+multimodal fusion strategy. A darker color indicates higher classification performance.
+In our experiment, all deep learning models (LSTM and Transformer) showed lower
+classification performance compared to the best shallow ML models.
+Table A1: Best pipelines per task with AUROC/F1 (± 95% CI) and runner-up AUROC
+deltas (∆) for the deep learning models.
+Task
+Pipeline
+Metrics
+Runner-Up
+/ AUROC ∆
+AUROC
+F1
+CDR
+Transformer
+(Audio+Language+Demo)
+0.55 ± 0.016
+0.54 ± 0.024
+LSTM (Demographics)
+∆= −0
+MoCA
+Transformer
+(Acoustic)
+0.54 ± 0.006
+0.41 ± 0.01
+Transformer
+(Audio+Language+Demo)
+∆= −0.02
+Clinical
+Diagnosis of
+MCI
+(NACC UDS)
+Transformer
+(All)
+0.65 ± 0.014
+0.56 ± 0.018
+Transformer
+(Audio+Language+Demo)
+∆= −0.01
+LSNS
+Transformer
+(DINOv2)
+0.57 ± 0.012
+0.53 ± 0.014
+Transformer (Acoustic)
+∆= −0.01
+Neuro
+Transformer
+(Facial+Card+Demo)
+0.57 ± 0.008
+0.55 ± 0.014
+Transformer (All)
+∆= −0.02
+Negative Affect
+MLP
+(LLaMA)
+0.66 ± 0.014
+0.60 ± 0.018
+LSTM
+(Audio+Language+Demo)
+∆= −0.02
+Social
+Satisfaction
+LSTM
+(Facial+Card+Demo)
+0.54 ± 0.014
+0.45 ± 0.018
+LSTM
+(Demographics)
+∆= −0
+Psychological
+Well-being
+MLP
+(Demographics)
+0.6 ± 0.027
+0.54 ± 0.022
+LSTM
+(All)
+∆= −0.03
+
+REFERENCES
+48
+CDR
+MoCA
+Clin. Diag. of MCI
+LSNS
+Neuro
+Neg. Aff.
+Soc. Sat.
+Psych. Well.
+0.47
+All
+0.52
+DINOv2
+0.51
+rPPG
+0.54
+WavLM
+0.52
+Sentiment
+0.54
+Select
+0.56
+Select
+0.55
+Select
+0.52
+All
+0.49
+Emotion
+0.45
+rPPG
+0.54
+Acoustic
+0.47
+LLaMA
+0.50
+Majority
+0.52
+Select
+0.50
+Majority
+0.48
+All
+0.49
+Emotion
+0.48
+rPPG
+0.56
+WavLM
+0.63
+LLaMA
+0.50
+Majority
+0.64
+Select
+0.65
+Select
+0.47
+All
+0.57
+DINOv2
+0.51
+rPPG
+0.56
+Acoustic
+0.54
+LLaMA
+0.55
+Average
+0.54
+Majority
+0.54
+Average
+0.48
+All
+0.48
+Emotion
+0.53
+rPPG
+0.50
+Acoustic
+0.52
+LLaMA
+0.57
+Average
+0.55
+Select
+0.55
+Select
+0.49
+All
+0.53
+DINOv2
+0.48
+rPPG
+0.52
+Acoustic
+0.64
+LLaMA
+0.50
+Majority
+0.61
+Select
+0.58
+Select
+0.52
+All
+0.52
+DINOv2
+0.50
+rPPG
+0.51
+WavLM
+0.47
+Sentiment
+0.52
+Average
+0.45
+Majority
+0.44
+Majority
+0.51
+All
+0.52
+DINOv
+0.50
+rPPG
+0.53
+WavLM
+0.51
+Sentiment
+0.50
+Select
+0.54
+Average
+0.54
+Average
+Transformer
+Demographics
+Facial
+Cardio
+Audio
+Language
+Facial+Cardio+Demo
+Aud+Lang+Demo
+All
+CDR
+MoCA
+Clin. Diag. of MCI
+LSNS
+Neuro
+Neg. Aff.
+Soc. Sat.
+Psych. Well.
+0.56
+All
+0.51
+Emotion
+0.49
+rPPG
+0.51
+Acoustic
+0.51
+Sentiment
+0.51
+Majority
+0.54
+Majority
+0.53
+Majority
+0.46
+All
+0.48
+Emotion
+0.50
+rPPG
+0.50
+WavLM
+0.49
+LLaMA
+0.48
+Majority
+0.50
+Select
+0.48
+Average
+0.49
+All
+0.53
+DINOv2
+0.43
+rPPG
+0.44
+WavLM
+0.63
+LLaMA
+0.55
+Majority
+0.58
+Average
+0.58
+Select
+0.45
+All
+0.53
+DINOv2
+0.51
+rPPG
+0.48
+WavLM
+0.50
+LLaMA
+0.52
+Average
+0.48
+Select
+0.54
+Select
+0.51
+All
+0.52
+Emotion
+0.47
+rPPG
+0.46
+Acoustic
+0.50
+LLaMA
+0.49
+Average
+0.52
+Select
+0.51
+Average
+0.47
+All
+0.55
+DINOv2
+0.48
+rPPG
+0.51
+Acoustic
+0.66
+LLaMA
+0.55
+Select
+0.64
+Select
+0.63
+Select
+0.54
+All
+0.48
+DINOv2
+0.45
+rPPG
+0.50
+WavLM
+0.47
+Sentiment
+0.54
+Select
+0.47
+Majority
+0.46
+Majority
+0.60
+All
+0.54
+DINOv
+0.43
+rPPG
+0.53
+WavLM
+0.51
+LLaMA
+0.55
+Average
+0.54
+Select
+0.57
+Average
+LSTM
+0.43
+0.45
+0.50
+0.55
+0.60
+0.65
+0.66
+AUROC
+Figure A1:
+AUROC for the deep learning models across tasks (rows) and feature
+modalities (columns).
+Each cell shows the AUROC (best) and the best-performing
+feature or fusion method (bottom). For example, Aud+Lang+Demo denotes fusion of
+audio, language, and demographics, and All denotes fusion of all available modalities.
+The color scale is shared across panels and the darker color indicates higher performance.

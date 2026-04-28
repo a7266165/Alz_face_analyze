@@ -1,0 +1,1410 @@
+| LITERATURE REVIEW |
+| ISSN 2709-0205 |
+| https://doi.org/10.47855/jal9020-2025-3-7 |
+| https://doi.org/10.47855/jal9020-2025-3|
+
+| AGEING AND LONGEVITY
+ | (2025)6:3
+
+246
+
+Machine Learning Approaches for Biological Age
+Estimation: Narrative Review of Non-Invasive and Cost-
+Effective Methodologies
+
+Tomasz Rymaszewski1
+ 
+, Joanna Michalina Jurek 1, 2
+ 
+
+
+1 Akademeia High School, Św. Urszuli Ledóchowskiej 2, 02-972 Warsaw, Poland
+2 Unit of Research in Myalgic Encephalomyelitis/Chronic Fatigue Syndrome and Long COVID, Rheumatology Research
+Division, Vall d’Hebron Research Institute, Universitat Autònoma de Barcelona, 08035 Barcelona, Spain
+
+Correspondence
+
+To Joanna Michalina Jurek, Unit of
+Research
+in
+Myalgic
+Encephalo-
+myelitis/Chronic Fatigue Syndrome
+and
+Long
+COVID,
+Rheumatology
+Research
+Division,
+Vall
+d’Hebron
+Research
+Institute,
+Universitat
+Autònoma
+de
+Barcelona,
+08035
+Barcelona, Spain
+
+To Tomasz Rymaszewski, Akademeia
+High School, Św. Urszuli Ledóchowskiej
+2, 02-972 Warsaw, Poland
+
+
+Email:
+joanna.michalina.jurek@gmail.com
+t.rymasz@outlook.com
+
+
+Received: 07 July 2025
+Accepted: 09 July 2025
+Published: 07 August 2025
+
+Biological age (BA) has proven to be a more accurate predictor of longevity
+and health span than chronological age, offering a dynamic measure of
+physiological integrity influenced by genetics, environment, and lifestyle.
+This narrative literature review critically examines recent advances in
+machine learning (ML) methodologies designed to estimate BA from
+minimally invasive data sources, including facial imaging, chest X-rays, brain
+MRIs, blood-based biomarkers, electrocardiograms, and psychological
+surveys. As interest grows in personalized medicine and early prevention of
+age-related diseases, the demand for scalable, affordable, and non-invasive
+BA estimation tools is increasing. Unlike previous reviews limited to a single
+modality, this review uniquely compares biological age (BA) prediction
+models based on their invasiveness, cost-effectiveness, and mean absolute
+error (MAE), offering a clinically oriented synthesis for non-invasive ageing
+diagnostics. This paper provides a needed, comprehensive, and up-to-date
+synthesis of these disparate approaches. Our analysis organizes these
+diverse methods into a unified comparative framework, systematically
+evaluating them on the trade-offs between predictive accuracy (MAE),
+invasiveness, and translational feasibility. While DNA methylation-based
+epigenetic clocks remain the reference standard, emerging ML-based
+models utilizing routine clinical or digital health data demonstrate
+comparable predictive performance with significantly lower cost and
+invasiveness. Nevertheless, emerging challenges, including variability in data
+quality, lack of external validation, issues of interpretability, and ethical
+considerations, still exist and need to be addressed in further studies.
+Advancing these technologies may ultimately enable the integration of noninvasive ageing biomarkers into routine healthcare, transforming risk
+assessment, intervention planning, and the promotion of longevity.
+
+| Keywords: Machine Learning, Biological Age, Diagnostics, Biomarker, Artificial Intelligence, Personalized Medicine, Ageing
+
+
+
+| LITERATURE REVIEW |
+| MACHINE LEARNING APPROACHES FOR BIOLOGICAL AGE ESTIMATION |
+
+| AGEING AND LONGEVITY
+ | (2025)6:3
+
+247
+
+| Introduction
+
+Ageing is characterized by the progressive decline of an
+organism’s
+physiological
+function
+and
+increased
+vulnerability to death overtime (López-Otín et al., 2013).
+An organism as a system or part of it may age faster or
+slower than the “normal” rate of ageing. In humans, the
+rate of progressive ageing can be influenced by internal or
+external factors, and certain genetic alterations and
+lifestyle habits can accelerate, decelerate, or reverse the
+ageing process in time.
+The concept of biological age was first introduced in
+1969 and gained importance when Alex Comfort
+introduced the theory of the 'Test-Battery' as a method for
+measuring the rate at which humans age over short
+periods (Comfort, 1969). Then, chronological age (CA) was
+described as the amount of time that has passed since a
+person’s birth, whereas the biological age reflects an
+individual’s overall state of health and condition at a given
+point in their life (Ries et al., 1984). These early concepts
+have evolved since their introduction and today with
+modern methods that allow for microscopic analysis of
+cells. BA is most efficiently measured by epigenome
+studies including the methylation at certain CpG sites, such
+as GrimAge2 (Lu et al., 2022). Briefly, the GrimAge2
+concept stems from the notion of 9 hallmarks of ageing,
+epigenetic alteration being one of the hallmarks (López-
+Otín et al., 2013) extend of introduction of altered cellular
+communication, genomic instability, telomere attrition,
+loss of proteostasis, deregulated nutrient sensing,
+mitochondrial dysfunction, cellular senescence, and stem
+cell exhaustion.
+Some of these hallmarks may influence one another
+(e.g., cellular senescence is now known to be caused by
+telomere shortening but could also be caused by other
+factors). To date, many alternatives were developed to
+Horvath’s method, such as those which rely on machine
+learning (ML) approaches, as GrimAge and other similar
+epigenetic tests, might be limited to use some sort of ML
+or statistical methods to process the large data samples. In
+Horvath’s GrimAge2 test, the use of Cox regression with an
+elastic net penalty, as a model often used to assess the
+effect of various factors on the time until an event of
+interest occurs, to process data from 10,065 subjects and
+13,399 samples. The data included chronological age,
+gender, ten epigenetic markers estimating smoking packyears (1 pack/day for 1 year = 1 pack-year), and levels of
+the
+following
+biomarkers:
+adrenomedullin,
+beta-2
+microglobulin, cystatin C, growth differentiation factor 15,
+leptin, log-transformed high-sensitivity C-reactive protein,
+log-transformed haemoglobin A1C, plasminogen activator
+inhibitor 1, and tissue inhibitor of metalloproteinases 1 (Lu
+et al., 2022).
+Epigenetic tests, due to their high accuracy, are now
+the standard way for measuring BA. At first glance, they
+might seem ideal. They provide valuable insights into
+overall health and can encourage individuals to adopt
+healthier habits or pursue targeted treatments if the
+results are concerning. However, while these tests hold
+promise, their broader adoption and currently, their
+popularity is comparable to that of genealogy genetic tests
+and reveals certain limitations that warrant further
+consideration, such as cost. While not prohibitively
+expensive, this cost may deter some individuals if the test
+is not necessary. These tests are considered as invasive and
+require an additional effort to perform in safe manner.
+Even though services like myDNAge offer an easier athome sampling experience, they aren't necessarily cheap.
+The process still requires users to collect a sample — either
+blood from a skin prick or urine — and then return the kit
+for analysis. This lack of true convenience remains a turnoff for many, significantly reducing their motivation to find
+out their biological age.
+With
+the
+recent
+advancements
+in
+artificial
+intelligence (AI) and machine learning (ML), new methods
+arise to fill in the gaps that epigenetic tests cannot. ML
+algorithms can process images, written text, and numerical
+values and find patterns within them. This ability opens up
+new ways in which BA can be measured. AI can help make
+biological age testing more efficient, less costly, and
+minimally invasive, thus popularizing its assessment. Apart
+from that, they allow doctors to measure the BA of their
+patients without needing a dedicated test (like in the case
+of epigenetic clock tests).
+With ML, factors that not only cause ageing, but also
+the ones influenced by it can be analysed: wrinkling of the
+skin, changes in blood biochemistry, senescence of brain
+and lung cells, or decline in heart function, just to name a
+few. While previous reviews have provided valuable
+insights into specific modalities, such as neuroimaging or
+blood-based biomarkers, the rapid pace of innovation
+across
+multiple
+disciplines
+necessitates
+a
+more
+comprehensive and updated synthesis. The primary
+contribution of this review is its breadth and currency. By
+structuring our analysis around a direct comparison of
+predictive accuracy (MAE), invasiveness, and accessibility,
+we create a practical, holistic framework for researchers
+and clinicians. This approach allows us to map the current
+state-of-the-art, identify the most promising strategies for
+clinical translation, and highlight the shared challenges
+that must be addressed to integrate BA estimation into
+personalized medicine.
+
+| LITERATURE REVIEW |
+| MACHINE LEARNING APPROACHES FOR BIOLOGICAL AGE ESTIMATION |
+
+| AGEING AND LONGEVITY
+ | (2025)6:3
+
+248
+
+The world's record population which in 2022 reached
+8 billion people was driven predominantly by enlargement
+of elderly people due to life span increasing (The Lancet
+Healthy Longevity, 2022). The share of the oldest adults in
+the age structure of populations is progressively enlarged.
+While 20 years ago the fastest growing age group was the
+80+ years, now it is the 85+ year: according to prognosis in
+the USA their number will double by 2036 and triple by
+2049 compared to 2010 (Arias, 2010). At the same time,
+healthy life expectancy, which is a global indicator of
+population health, will not change significantly (WHO,
+2016). The discrepancy between life expectancy and
+healthy life expectancy led to the fact that Europeans
+spend 20–25% of their lives in poor health (Jagger et al.,
+2013; Rezaei, 2024).
+The well-known decline in physical capacity with
+aging is a focus of attention for geriatricians. Maintaining
+muscle strength, endurance and other parameters of
+physical health is crucial for preserving the functionality of
+older adults, ensuring their independence (Santos et al.,
+2016). There were elaborated a lot of questionnaires and
+objective tests to obtain characteristics of physical activity
+limitation: in a systematic review thirty-one assessment
+tests for mobility evaluation in elderly were identificated
+(Soubra et al., 2019). Various tests can assess body
+composition, cardiorespiratory endurance, muscular
+strength and endurance, and flexibility and balance
+separately or in combination such as The Vitality Test
+Battery (Mack-Inocentio et al., 2020).
+Although numerous mobility assessment tools exist,
+evidence regarding their relative diagnostic value in
+functionally independent older adults with essential
+hypertension remains limited. This study aims to fill this
+gap by ranking widely used mobility tests according to their
+association with age and screening results for frailty,
+sarcopenia risk, and fall risk in middle-aged and older
+hypertensive patients.
+
+| 1. Biomarkers used in biological age assessment
+
+BA assessment relies on identifying and quantifying
+biomarkers that reflect the functional state of tissues,
+organs, and systems more accurately than CA alone. As
+ageing affects nearly every organ and cellular system,
+researchers should turn to ML approaches of determining
+BA instead of the costly and invasive epigenetic testing:
+analyzing blood samples (markers other than epigenetic),
+MRIs, X-Rays, images of faces and skin, as well as
+psychological profiling. These shift toward multidimensional, integrative biomarkers would mark a critical
+step in making this sort of diagnosis more accessible. This
+section focuses on how different areas of the body display
+accelerated ageing.
+
+1.1 Systemic biomarkers of ageing
+
+Systemic biomarkers of ageing, particularly those derived
+from blood biochemistry, offer a dynamic and integrative
+perspective on the molecular and physiological changes
+that accumulate over time. Blood-based markers reflect
+ongoing processes such as chronic inflammation, oxidative
+stress, metabolic dysregulation, and organ system decline,
+all key hallmarks of biological ageing. Routine clinical
+parameters, including levels of glucose, lipids, creatinine,
+C-reactive protein (CRP), albumin, and liver enzymes, have
+shown consistent associations with age-related morbidity
+and mortality, as well as offer the good accessibility and
+cost-effectiveness
+of
+blood
+tests
+make
+systemic
+biomarkers being scalable for ageing research and
+personalized health monitoring.
+Ageing is marked by progressive declines in hepatic,
+renal, and endocrine function, which alter blood biomarker
+profiles. For instance, albumin levels drop due to reduced
+hepatic synthesis and increased capillary permeability,
+glucose
+rises
+reflecting
+insulin
+resistance
+and
+mitochondrial inefficiency, and urea and creatinine
+increase with reduced glomerular filtration rate (GFR)
+(Putin et al., 2016; Wang et al., 2024).
+Oxidative stress amplifies these changes. Elevated γglutamyltransferase (GGT) and uric acid mediate 17.1% of
+the association between cardiovascular health (Life’s
+Essential 8 score) and accelerated phenotypic ageing (Liu
+et al., 2018). With age, the amount of inflammation and
+immunosenescent cells increases. C-reactive protein (CRP)
+increases by 0.2 mg/L per decade, driven by senescent cell
+accumulation and inflammation. In NHANES cohorts, proinflammatory diets elevated white matter hyperintensity
+volume.
+
+1.2 Biomarkers of facial and skin ageing
+
+Ageing of the skin and facial structures involves molecular,
+structural, and functional changes driven by mitochondrial
+dysfunction, oxidative stress, hormonal shifts, and
+cumulative DNA damage. These processes manifest as
+wrinkles, volume loss, pigmentation irregularities, and
+altered facial contours. The human face and skin offer a
+visually accessible and biologically informative source of
+ageing biomarkers, making them increasingly valuable in
+the development of machine learning models aimed at
+estimating biological age. Facial morphology, skin texture,
+wrinkle formation, pigmentation changes, and loss of
+
+| LITERATURE REVIEW |
+| MACHINE LEARNING APPROACHES FOR BIOLOGICAL AGE ESTIMATION |
+
+| AGEING AND LONGEVITY
+ | (2025)6:3
+
+249
+
+elasticity are among the most recognizable hallmarks of
+ageing and reflect underlying physiological and molecular
+alterations, including collagen degradation, oxidative
+stress, and reduced cellular turnover. Advances in
+computer vision and deep learning have enabled the
+quantification of subtle facial features and skin attributes
+from digital images, allowing for the construction of
+predictive models that can estimate biological or perceived
+age with high accuracy. These models not only capture
+visible signs of chronological ageing but also integrate cues
+associated with lifestyle, environmental exposures, and
+systemic health, positioning the face and skin as noninvasive, real-world biomarkers with growing clinical and
+consumer relevance.
+Intrinsic ageing arises from genetically programmed
+processes that impair cellular repair and regeneration.
+Over time, fibroblasts in the dermis produce less collagen
+and elastin, leading to reduced skin elasticity and tensile
+strength (Guinot et al., 2002). The decline in collagen
+synthesis is exacerbated by the accumulation of senescent
+cells, which secrete pro-inflammatory cytokines that
+degrade the extracellular matrix (ECM) (P. Chevalier et al.,
+2020). Hormonal changes further modulate ageing
+trajectories. Postmenopausal estrogen depletion reduces
+skin thickness and hydration, while androgens in males
+contribute to sebaceous gland hyperactivity and thicker,
+more resilient skin (Keaney et al., 2016).
+Extrinsic ageing is predominantly driven by ultraviolet
+(UV) radiation, which accounts for up to 80% of visible
+facial ageing. UVB rays penetrate the epidermis, inducing
+DNA crosslinks and thymine dimer formation. UVA rays,
+however, generate reactive oxygen species (ROS) in the
+dermis, activating matrix metalloproteinases that degrade
+collagen (Krutmann et al., 2003). Chronic sun exposure also
+disrupts
+melanocyte
+function,
+leading
+to
+hyperpigmentation and lentigines. Smoking compounds
+these effects by constricting dermal blood vessels,
+reducing oxygen delivery, and inhibiting collagen synthesis
+(Guinot et al., 2002).
+Over time, structural changes also arise. The medial
+cheek fat pad, which provides midface support, diminishes
+with age, leading to nasolabial fold prominence and jowl
+formation (Bravo et al., 2020) while repetitive facial
+expressions induce wrinkles that become permanent over
+time (Rohrich et al., 2021).
+
+
+
+
+
+1.3 Biomarkers of the cardio-respiratory system
+ageing
+
+The cardio-respiratory system undergoes significant agerelated remodelling, offering valuable biomarkers for the
+estimation of biological age. In the respiratory system,
+ageing induces both structural and functional changes,
+which can all be visualized through subtle radiographic
+alterations in chest imaging. The cardiovascular system
+also
+exhibits
+hallmark
+features
+of
+ageing.
+The
+electrocardiogram (ECG), a widely available and noninvasive tool, reflects many of these age-related cardiac
+alterations.
+The aortic knob widens laterally, with calcifications
+frequently outlining the arch. In longitudinal studies, 79%
+of healthy men exhibited aortic enlargement over 16 years
+(independent of hypertension). While the cardiac
+silhouette may slightly enlarge due to pericardial fat
+accumulation, the cardiothoracic ratio rarely exceeds 0.5
+in healthy ageing.
+Flattened diaphragms and increased retrosternal
+airspace are common, reflecting loss of elastic recoil.
+Hyperinflation prevalence doubles from 27% to 54%
+between the sixth and ninth decades, even in
+asymptomatic individuals. Costophrenic angle blunting
+occurs in 30% of individuals over 70, related to subpleural
+fibrosis rather than prior inflammation (Ensor et al., 1983).
+Fibrosis (scarring) of the sinoatrial node and His-
+Purkinje system prolongs P-wave and QRS durations.
+Interatrial conduction block, present in 23% of elderly
+atrial flutter patients, correlates with a 175 ms P-wave
+duration, 16 ms longer than in younger cohorts (Ślimak et
+al., 2022).
+A study on guinea pigs across their lifespan revealed
+that sinoatrial node (SAN) dysfunction with age is linked to
+a progressive loss of connexin 43 (Cx43) protein (Jones et
+al., 2004). This manifests as QT interval prolongation,
+which increases by 10 ms per decade in adults without
+hypertension (Zhang et al., 2021).
+Resting heart rate also tends to rise with age,
+especially in those with schizophrenia, partly due to
+antipsychotic-induced sodium channel blockade (Blom et
+al., 2014). Structurally, changes like prolonged P-waves
+suggest right atrial enlargement, while fragmented QRS
+complexes are signs of conduction issues common in older
+adults with increased heart mass (Ślimak et al., 2022;
+Piccirillo et al., 2022).
+
+
+
+
+| LITERATURE REVIEW |
+| MACHINE LEARNING APPROACHES FOR BIOLOGICAL AGE ESTIMATION |
+
+| AGEING AND LONGEVITY
+ | (2025)6:3
+
+250
+
+1.4 Biomarkers of neurological and psychological
+ageing
+
+Ageing induces a complex of structural, metabolic, and
+molecular changes in the brain, which manifest as distinct
+neuroimaging and electrophysiological signatures. It is
+accompanied
+by
+psychological
+and
+cognitive
+transformations that reflect both neurobiological changes
+and psychosocial adaptations.
+Progressive cortical thinning and subcortical volume
+loss represent hallmarks of brain ageing. The hippocampus
+exhibits an annual atrophy rate of 1–2% after age 50,
+correlating with episodic memory decline. Expansion of the
+lateral ventricles by 2–3% per decade reflects parenchymal
+volume loss and disrupted cerebrospinal fluid dynamics
+(Dartora et al., 2024).
+Quantitative susceptibility mapping reveals agerelated iron accumulation in the substantia nigra and
+subthalamic nucleus, increasing by 0.8–1.2 ppb/year
+(Falahati et al., 2024). This iron dysregulation contributes
+to oxidative stress, accelerating neuronal loss in
+Parkinson’s disease.
+White matter hyperintensities increase by 1.5–3.0
+cm³ per decade, reflecting small vessel disease and bloodbrain barrier leakage (Melo Van Lent et al., 2023).
+Recently, studies have shown that microplastics
+(MPs)
+introduce
+many
+complications,
+including
+accelerated ageing. MPs induce chronic activation of
+microglia, leading to elevated interleukin-6 and tumour
+necrosis factor-alpha levels, as demonstrated in rodent
+models of global cerebral ischemia (Kim et al., 2025).
+Prolonged inflammation accelerates neuronal death and
+synaptic loss, processes detectable via MRI as reduced grey
+matter
+volume
+and
+increased
+white
+matter
+hyperintensities.
+Subjective age — the discrepancy between felt and
+chronological age — serves as a robust predictor of health
+outcomes. Individuals who perceive themselves as older
+than their actual age exhibit higher all-cause mortality risk
+and accelerated epigenetic ageing (Zhavoronkov et al.,
+2020; Stephan et al., 2015). For example, rheumatoid
+arthritis patients report 18% older subjective ages than
+healthy peers, mediated by chronic pain and mobility
+limitations
+(Schönstein
+et
+al.,
+2020).
+Conversely,
+centenarians in Sardinia demonstrate psychological
+resilience linked to social desirability and community
+engagement, which buffer against age-related stress
+(Fastame MC, 2020). Observed deviations between
+predicted brain age and chronological age, defined as the
+brain age gap, are gaining increasing recognition as a
+clinically relevant index of neurological health and
+biological ageing.
+Self-reflection and lifelong learning build cognitive
+reserve, delaying dementia onset by 5–7 years. Older
+adults with high reserve maintain intact memory despite
+amyloid positivity, likely through enhanced default mode
+network connectivity (Bartrés-Faz et al., 2023).
+Alzheimer’s disease (AD), the most common form of
+dementia, can be diagnosed and is a strong marker for BA.
+It is characterized by amyloid-β plaques, neurofibrillary tau
+tangles, and synaptic loss, which correlate with progressive
+cognitive decline. Epigenetic ageing accelerates in AD
+patients and shows strong associations with neuritic
+plaque burden and amyloid load (Thrush et al., 2022;
+Levine et al., 2015). Vascular contributions to dementia,
+particularly cerebral small vessel disease, further
+complicate the ageing-neurodegeneration link (Inoue et
+al., 2023).
+
+| 2. Predicting biological ageing with machine
+learning
+
+Ageing involves numerous factors, causing quantifiable
+and previously unquantifiable changes throughout the
+body. ML and AI are now enabling us to measure these agerelated deteriorations, particularly in tissues that can be
+photographed or scanned. This section will explore various
+cutting-edge ML models that leverage different biological
+data sources to predict biological age.
+
+2.1 Face image analysis
+
+The look of a face is one of the most prominent markers of
+how well an individual age. It’s how humans tend to assess
+BA every day (e.g., someone ages well when their face
+doesn’t change much over a long period).
+PhotoAgeClock (Bobrov et al., 2018) primarily focuses
+on predicting CA, not BA. It does so use high-resolution
+images of human skin around the eyes. The image and
+label data used to train the model were sourced from
+public facial image datasets: FG-NET, MORPH, Adience,
+and IMDb-WIKI. To benchmark the model's performance
+against other existing methods of determining BA (like the
+already mentioned GrimAge DNA methylation test and
+blood biochemistry age estimators).
+Using eye-corner images, the team trained Xception
+NNs and then added skip connections to increase accuracy.
+The study sought to determine how important the eyecorner area is for making an accurate age prediction.
+Wrinkles, pigmentation, and fine skin details around the
+eye corner were hypothesized to be strong indicators of
+
+| LITERATURE REVIEW |
+| MACHINE LEARNING APPROACHES FOR BIOLOGICAL AGE ESTIMATION |
+
+| AGEING AND LONGEVITY
+ | (2025)6:3
+
+251
+
+ageing. Portions of the image were gradually blacked out
+or replaced with zero tensors, beginning with small areas
+(e.g., just the eye) and progressing to larger areas (e.g., half
+the image). The occluded images were passed through the
+trained NN to observe changes in prediction error.
+Accuracy dropped significantly when key eye areas were
+occluded, especially for older individuals, signifying a
+correlation to CA.
+Overall, PhotoAgeClock can predict chronological age
+with high accuracy. The study displayed a mean absolute
+error (MAE) of 2.38 years for Xception without skip
+connections and 2.30 years with skip connections. The test
+‘outperformed’ a DNA-methylation model (MAE = 2.70);
+however, that may be because the DNAm model was
+trained to predict BA, and the results of the models were
+validated on CA.
+Another model, FaceAge, sourced its training data
+from the IMDb-Wiki database, which included 174,195
+labelled images (Dennis B, 2025). The researchers filtered
+out the unusable data, leaving them with a dataset of
+57,304 people. The dataset for ages 60+ underwent
+manual curation to ensure image quality and reduce noise
+in labels, given the clinical relevance of this age group. The
+team compared the results of FaceAge to data derived
+from the UTK dataset.
+Unlike
+PhotoAgeClock,
+FaceAge
+focuses
+on
+estimating BA, prioritizing clinical relevance over strict
+chronological accuracy. The pipeline uses face localization
+through MTCNN and age estimation via an adapted
+Inception-ResNet v1 architecture. By emphasizing older
+age groups (60+ years) and avoiding overfitting during finetuning, the model aligns with its goal of predicting BA
+processes, which are more relevant to clinical oncology
+outcomes. While capable of predicting chronological age,
+the model’s design is tailored to capture markers of BA.
+This is reflected in the results. For the entire dataset,
+MAE = 5.87 years; however, in the curated dataset for the
+60+ age range (which was prioritized): 4.09 years. Finetuned models showed lower MAE (<3 years) for healthy
+controls but reduced prognostic power in clinical datasets.
+
+2.2 Chest X-ray analysis
+
+X-ray imagery gives insight into the internal structures of
+the body of an individual. This is useful for BA prediction,
+as not all health features are visible on the outside. The
+chest area is highly potent in degrading over time
+(Hockhegger et al., 2012). Hence, using chest radiography
+as a parameter for determining BA could be a promising
+method.
+Raghu V.K. et al. developed CXR-Age, a deep learning
+model designed to estimate biological age from chest Xrays (CXR) (Raghu et al., 2021). The model was trained on
+data from 116,035 individuals and validated on two
+separate testing sets: 75% of the CXR dataset of 40,967
+from the PLCO (Prostate, Lung, Colorectal, and Ovarian
+Cancer Screening Trial) and the CXR dataset of 5,414 from
+the NLST (National Lung Screening Trial).
+The development of CXR-Age consisted of two stages.
+In Stage 1, a pre-training model was provided with a CXR
+image to give an estimate of chronological age. The Stage
+1 model was the starting point for a second model trained
+to estimate BA from a CXR image. To train the model, it was
+necessary to assign a BA label to each training dataset
+participant, as opposed to the CA label linked to each
+participant in the Stage 1 model. Biological age labels were
+calculated using actuarial life tables and survival models.
+For those who had died, labels were based on differences
+between expected and actual age at death, while for
+others, time-to-death was estimated using statistical
+models. These labels were solely for model training and
+were not reported in the results.
+Overall, CXR-Age outperformed chronological age
+and traditional radiographic findings in predicting all-cause
+and cardiovascular mortality. Most individuals had a CXR-
+Age within five years of their chronological age (PLCO: 73%;
+NLST: 68%). However, a subset showed significant
+deviation, with CXR-Age at least five years older or
+younger, more prevalent in NLST due to heavier smoking
+histories.
+
+2.3 Brain MRI analysis
+
+The degradation of the brain over time is likely the most
+detrimental effect of ageing. It is the primary risk factor for
+Alzheimer’s
+disease,
+memory
+loss,
+and
+other
+neurodegenerative disorders (Yankner et al., 2008).
+Analyzing brain MRIs would not only help estimate the BA
+of the whole body but also assess the BA of the brain with
+greater accuracy (which is likely more important).
+Age-Net is a deep learning (DL) model that analyses
+brain MRIs to predict the age of a subject (Armanious et al.,
+2021). The model used the open-source IXI dataset of brain
+MRI scans from 562 healthy subjects. From the 562 scans,
+420 were used for training, 92 for validation, and 50 for
+testing.
+A custom deep convolutional neural network (CNN)
+architecture was used. It's a hybrid design incorporating
+Inception v1 and SqueezeNet architectures. Two input
+strategies were tested: 1) feeding the entire 3D GM
+volume to the network, and 2) dividing the volume into
+
+| LITERATURE REVIEW |
+| MACHINE LEARNING APPROACHES FOR BIOLOGICAL AGE ESTIMATION |
+
+| AGEING AND LONGEVITY
+ | (2025)6:3
+
+252
+
+smaller 3D chunks and feeding each chunk separately.
+Gender information was also incorporated in some
+models.
+Age-Net was compared to other existing methods for
+brain age estimation using MRI: 2D-Huang (MAE = 3.529),
+3D-Ueda (MAE = 3.705), and 3D-Peng (MAE = 2.741). The
+team determined the MAE for each of the tested models:
+Age-Net-Volume (MAE = 2.658), Age-Net-Chunk (MAE =
+2.283), Age-Net-Gender (MAE = 1.955).
+
+2.4 Blood biomarkers analysis
+
+Mamoshina et al. developed a blood marker-based model
+to determine the age of an individual (Mamoshina et al.,
+2018). The team used four datasets containing 20,699
+samples for the Canadian population, 65,760 samples for
+the South Korean population, and 55,920 samples for the
+Eastern European population. Each sample contained, 15
+biochemistry
+markers,
+including
+albumin,
+glucose,
+haemoglobin, cholesterol, sodium, urea, LDL cholesterol,
+triglycerides, hematocrit, HDL cholesterol, total protein,
+calcium, creatinine, potassium, and total bilirubin, and four
+cell count markers, including erythrocytes, and platelet
+count (19 features in total). The data was split into an
+80/20 train-test ratio.
+The model takes a vector of blood test values and
+returns a single value of patient age. The performance of
+three separate DNNs were trained and tested on four
+distinctive datasets: The South Korean, Canadian, Eastern
+European, and the combined dataset (all three) with either
+19, 20, or 21 input features.
+For the Canadian-trained model, the MAE validated
+on Canadian patients was 6.36 years. For the South
+Korean-trained model, the MAE validated on S. Korean
+patients was 5.59 years. For the Eastern-European-trained
+model, the MAE was validated on E. European patients
+were 6.25 years. When the model trained on the combined
+datasets was compared to the combined populations, the
+MAE was 5.94 years; however, when the same model was
+compared to an independent NHANES (National Health
+and Nutrition Examination Survey) dataset (so US
+patients), the MAE was 9.93 years. The Canadian-trained
+model performed even worse with the NHANES test, with
+an MAE of 12.65.
+Another study developed by Sagers L. et. al. also
+makes an age prediction from lab data (Sagers et al., 2020).
+The study aimed to predict chronological age using 356
+blood biomarkers (e.g., serum glucose, creatinine) across
+67,563 individuals. Data were obtained from the CDC
+NHANES datasets spanning the years 1999-2016. This
+dataset includes a representative sample of the noninstitutionalized U.S. population.
+The team used the random forest technique to train
+their models. Models trained on one age group generally
+performed poorly when applied to others, demonstrating
+the need for age-specific models. Hence, separate models
+were trained and validated for four age groups.
+The study identified nonlinear trajectories for 28.4%
+of analytes, with significant slope changes around the 16-
+17-year mark, suggesting a critical biological transition in
+late adolescence. The four models trained on the four age
+groups displayed the following MAEs: 0.87 years (1-18),
+5.15 years (18-45), 2.20 years (45-65), and 4.30 years (65+).
+Mamoshina et al. and Sagers et al. differ in their
+approaches to age prediction from blood markers.
+Mamoshina's DNNs, using 19 features across diverse
+populations, struggle with cross-population applicability.
+Sagers' random forest models, with 356 biomarkers,
+achieve better accuracy using age-specific models,
+highlighting
+nonlinear
+trajectories
+around
+late
+adolescence.
+
+2.5 ECG analysis
+
+Heart activity is impacted by age (Craft et al., 1995). Older
+individuals exhibit slower heart rates, reduced heart rate
+variability (HRV), as indicated by smaller deviations in R-R
+intervals, slower electrical signal transmission from the
+atria to the ventricles, and prolonged signal conduction
+times, just to name a few.
+One of the most insightful markers for heart activity
+is the ECG. Baek Y. et. al. developed an AI model that
+sought to analyze this marker to predict the mortality of a
+given patient. ECG-heart age was estimated using standard
+12-lead ECGs (Baek et al., 2023). Data from 522,109 ECGs
+from a sample of 226,476 adults aged over 18 years was
+used. An 80/20 train-test split was used.
+The deep neural network, incorporating multi-head
+attention and bi-directional LSTM blocks, processed data
+from eight ECG leads (I, II, V1–V6) sampled at 500 Hz over
+10 seconds, excluding derived leads (III, aVR, aVL, aVF). The
+study evaluated biological heart age predictions against
+various
+outcomes,
+including
+all-cause
+mortality,
+cardiovascular-related
+mortality,
+major
+adverse
+cardiovascular
+events
+(MACE),
+and
+cardiovascular
+hospitalizations, based on ECG features such as PR interval,
+QRS duration, and QT interval.
+A holdout test of 97,058 ECGs (34,317 patients) was
+used to validate the model. The team reported the heart
+age prediction of their model to have an MAE of 5.8 ± 3.9
+years.
+
+| LITERATURE REVIEW |
+| MACHINE LEARNING APPROACHES FOR BIOLOGICAL AGE ESTIMATION |
+
+| AGEING AND LONGEVITY
+ | (2025)6:3
+
+253
+
+ 2.6 Psychological and cognitive analysis
+
+Psychological and cognitive function-based tests are not as
+developed yet as other ways of determining BA, however,
+they deserve further investigation due to their particularly
+non-invasive nature (Erema et al., 2022). There are a few
+ways of testing for BA using psychological and cognitive
+markers. The most common category would rely on
+marking behavioral features (this would be similar to tests
+for dyslexia).
+Zhavoronkov A. et. al. developed PsychoAge and
+SubjAge in 2020 to predict chronological age based on
+these parameters in a cohort of mentally healthy
+individuals (Zhavoronkov et al., 2020). PsychoAge was
+trained to approximate chronological age, and SubjAge –
+subjective or biological age. The models were trained using
+data from the MIDUS study (6071 individuals in total). 50
+psychosocial features were selected as input variables for
+the models. These features were categorized based on
+their MIDUS descriptions, including aspects of health,
+relationships, life changes, occupation, community
+involvement,
+personality,
+psychological
+beliefs,
+demographics, and well-being.
+Deep neural networks (DNNs) were used for both
+PsychoAge and SubjAge. Five-fold cross-validation was
+employed during training. Cross-validation helps to assess
+the model's ability to generalize to unseen data and
+prevent overfitting.
+In the end, the models achieved an MAE of 6.7 years
+for PsychoAge and 7.3 years for SubjAge. The subsequent
+feature importance analysis allowed for the ranking of the
+features and the selection of the most potent markers of
+ageing among them. For both models, sex life, vigorous
+activity (like being out of breath), taking prescription blood
+pressure medication, and marital status were the most
+important features, both physically and mentally.
+A schematic representation of various cutting-edge
+ML models that leverage different biological data sources
+to predict biological age is shown in Figure 1.
+
+
+
+
+
+Figure 1. Various ML models that leverage different biological data sources to predict biological age.
+
+
+
+
+| LITERATURE REVIEW |
+| MACHINE LEARNING APPROACHES FOR BIOLOGICAL AGE ESTIMATION |
+
+| AGEING AND LONGEVITY
+ | (2025)6:3
+
+254
+
+| 3. Evaluation of the models
+
+The models presented above are primarily designed to
+determine an individual's age from data that is either easily
+accessible or obtained while testing for something else.
+While some models display low MAE, others do not. The
+survey in Section 2 reveals a consistent, defining pattern: a
+fundamental trade-off between predictive accuracy,
+invasiveness, and accessibility. No single method is
+superior on all fronts. When assessing the accuracy of each
+model, there are a few things to consider:
+First, the purpose of the model. There have been
+multiple attempts at determining BA, which is a lot harder
+to estimate than CA. While the majority of the models
+presented do predict BA or have a BA-predicting
+counterpart, some do not. For now, CA models tend to be
+more accurate simply because data with truthful labels is
+easier to obtain. The exception is the most accurate model
+— Age-Net, which uses brain scans from which a lot more
+data can be extracted per subject than, for example, from
+a face image. It is the only model presented that surpassed
+the 2-year MAE; however, this precision comes at the
+highest cost and lowest scalability, restricting its utility. On
+the other end of the spectrum lie the most scalable and
+accessible methods. Models using facial images (FaceAge)
+or psychological surveys (PsychoAge) offer unparalleled
+ease of deployment but with currently lower accuracy
+(MAE > 4 years).
+Some models just use markers whose changes have a
+lower correlation to the ageing of a subject. Changes in the
+psychological markers and ECGs, for example, may very
+likely have a weaker correlation to the BA of a subject
+when compared to, e.g., brain scans or face images.
+The quality and often complexity of the model also
+contribute to its accuracy. This may be influenced by the
+novelty of the particular markers. Newer, less developed
+markers will likely have lower-quality models. This may be
+the cause for the low accuracy in PsychoAge and SubjAge.
+One of the most challenging obstacles to overcome
+with BA prediction is acquiring large amounts of accurate
+training and testing data. Most of the models presented
+either have a lot of mediocre data, sourced from opensource databases, solely to gather as much data as
+possible, or little, very high-quality, accurate data, which
+was often manually curated. For a valid prediction, the
+model should be trained on a lot of high-quality data,
+which is difficult to acquire, especially for BA prediction.
+For accurate BA prediction models, data points need
+to be labelled with the biological ages of the subjects.
+There are a few ways of achieving this:
+Using the time of natural death of a subject to
+determine their BA, as done by e.g., Fekrazad A., where the
+data was taken from deceased individuals whose images
+were found on the internet [Fekrazad, 2023]. This
+approach, however, requires all the subjects to be
+deceased, which would either yield data points with
+insufficient parameters from the subjects (when data was
+sourced from past studies) or only data on older individuals
+who are not fully representative and wouldn’t produce a
+good model for younger age groups. Raghu et. al. used a
+hybrid with CXR-Age (Raghu et al., 2021). In this study, the
+researchers defined BA as the age at which an individual's
+risk of mortality matched the risk of an average person of
+that age, according to actuarial life tables. For participants
+who died during follow-up, their BA was calculated using
+Figure 2.
+
+Figure 2. Biological age is calculated by adding the difference between the expected age at death and actual chronological age at
+death to the chronological age at the time of measurement (and estimation of predicted age at death) Adapted from (Raghu et al.,
+2021).
+
+The expected age at death was derived from 2015
+actuarial life tables published by the U.S. Social Security
+Administration. So, if an individual died exactly and their
+expected age of death (expected age at death = CA at
+death), their BA is the same as their CA.
+For participants who did not die during follow-up,
+their BA was estimated using sex-specific Gaussian survival
+models. These models 1) were trained on data from the
+control arm of the PLCO trial; 2) predicted each
+participant's time-to-death based on their sex and other
+survival-related variables; 3) used the newly predicted age
+at death for the CA at death in the formula above.
+Armanious et. al addressed the lack of “ground-truth
+labels” by developing an iterative data-cleaning strategy to
+find correct BA labels in a dataset with CA labels
+(Armanious et al., 2021). The process aimed to refine a
+"typical-ageing dataset" where BA ≈ CA by systematically
+removing outliers. The researchers used the Age-Net-
+
+| LITERATURE REVIEW |
+| MACHINE LEARNING APPROACHES FOR BIOLOGICAL AGE ESTIMATION |
+
+| AGEING AND LONGEVITY
+ | (2025)6:3
+
+255
+
+Gender framework (proven effective for CA estimation) as
+the baseline model. For each patient, a threshold BA was
+calculated to flag outliers exhibiting accelerated ageing (BA
+> CA) or delayed ageing (BA < CA). Patients falling outside
+the typical ageing range were flagged as outliers and
+removed. The process was repeated with a reshuffled
+dataset, and the model was retrained from the beginning.
+To prevent removing typically ageing individuals, only
+those flagged in multiple iterations were excluded.
+Iterations continued until no outliers were detected in
+three consecutive runs, and all atypically ageing patients
+were assumed to be removed. Hence, the model was
+trained on individuals whose CA was very similar to their
+BA, so their calendar ages could be used as labels. This
+could yield inaccurate results for individuals whose BA
+deviates a lot from their CA, as the models were not
+trained on such cases.
+The method of validation also differs from one model
+to another. The models use different data as a validation
+set. For models that predict BA, the labels in the validation
+set were often derived in the same way as the training set,
+leaving room for error in the label prediction process itself.
+It can have a decent inaccuracy without being detected.
+Hence, establishing labels cheaply and easily remains the
+greatest obstacle in determining BA with ML and AI.
+A summary of all models mentioned in Section 3 is
+presented in Table 1.
+
+Table 1. Summary of all presented models. Some estimate the chronological age (CA), while others – the biological age
+(BA).
+
+Model
+Input type
+Best MAE (years)
+Purpose
+(BA/CA)
+Key Insights
+PhotoAgeClock
+(Bobrov et al., 2018)
+Eye corner
+images
+2.30 years (with
+skip connections)
+CA
+High accuracy for CA prediction; focuses on
+fine skin details like wrinkles and
+pigmentation.
+FaceAge (Dennis,
+2025)
+Whole-face
+images
+5.87 years (entire
+dataset), 4.09
+years (60+
+curated dataset)
+BA
+Prioritizes BA prediction for clinical
+relevance, especially for the older age group.
+CXR-Age (Raghu et
+al., 2021)
+Chest X-rays
+Not directly
+reported (73%
+predictions within
+5 years of CA)
+BA
+Strong in predicting all-cause and
+cardiovascular mortality, leveraging
+deviations from CA.
+Age-Net (Armanious,
+2021)
+Brain MRIs
+1.96 years (Age-
+Net-Gender)
+BA
+Highly accurate in BA prediction,
+outperforming previous MRI-based
+methods.
+Mamoshina et al.,
+2018
+Blood
+biomarkers
+5.59 years (S.
+Korean model on
+S. Korean
+population)
+CA
+Performance varies significantly by
+population, suggesting strong population
+specificity.
+Sagers et. al., 2020
+Blood
+biomarkers
+(356)
+2.20 years (45-65
+age group)
+CA
+Requires age-specific models for optimal
+performance. Nonlinear trajectories of
+biomarkers provide deeper biological insight.
+Baek et al., 2023
+12-lead ECGs
+5.8 ± 3.9 years
+BA
+Strong in mortality prediction; aligns ECG
+markers with BA indicators.
+PsychoAge
+(Zhavoronkov et al.,
+2020)
+Psychosocial
+data
+6.7 years
+CA
+Relatively high MAE but offers non-invasive
+BA estimation.
+SubjAge
+(Zhavoronkov et al.,
+2020)
+Psychosocial
+data
+7.3 years
+BA
+Focuses on BA and mental health indicators.
+
+
+| LITERATURE REVIEW |
+| MACHINE LEARNING APPROACHES FOR BIOLOGICAL AGE ESTIMATION |
+
+| AGEING AND LONGEVITY
+ | (2025)6:3
+
+256
+
+| Conclusions
+
+Promoting the measurement of BA is important due to its
+significant health benefits in enhancing the overall wellbeing of a population or individual. As one of the most
+reliable indicators of overall health, a BA lower than CA
+suggests opportunities for individuals to intervene more
+effectively and can even serve as motivation to take
+proactive health measures.
+CA predictors discussed in this article lack direct
+medical applications but can be useful for statistical
+purposes, such as recording the age groups frequenting
+certain locations with tools like PhotoAgeClock.
+The biggest challenge in determining BA is
+assigning accurate BA labels to individuals cost-effectively
+and efficiently. Most of the studies reviewed rely on
+workarounds such as statistical models, probabilities, and
+outlier elimination. However, there remains a significant
+shortage of high-quality, reliable, and validated BA data to
+serve as robust labels for these models.  The most accurate
+BA prediction model identified was Age-Net, achieving an
+MAE of less than two years. It might even prove useful in
+some medical scenarios (for example, as a preliminary age
+test). Discussing the least accurate models is less
+meaningful, as new, less effective models may continually
+emerge.  Studies that trained multiple models, one for
+each age group, often demonstrated higher accuracy when
+tested on the respective age groups than the
+corresponding general model. This demonstrates a need
+for multiple models.
+
+
+| Future perspectives
+
+In making models less invasive, privacy concerns must be
+addressed. For instance, models accessible via a web app
+that requires users to share potentially sensitive
+information with the app can raise privacy issues,
+particularly as public awareness of data security grows.
+Some of the models discussed are open source, allowing
+them to be downloaded, run locally without server
+dependence, and even modified or improved by others as
+enhancing an existing model may often be more practical
+than creating one from scratch. For example, models such
+as FaceAge or ECG-Age may soon aid in clinical triage or
+preventative screenings by highlighting patients whose BA
+significantly deviates from their CA, prompting further
+evaluation.
+The comprehensive, cross-modal analysis conducted
+in this review not only maps the current state of the art but
+also illuminates the most critical directions for future
+research. Based on our comparison of accuracy,
+invasiveness, and accessibility, an ideal BA model must:
+1. use a marker that highly correlates with BA;
+2. be trained on data with real or highly accurate BA labels;
+3. consist of age-group-specific models to improve
+accuracy;
+4. use validation data with accurate BA labels, ideally
+derived from an independent method if the training data’s
+accuracy is uncertain;
+5. be open source to potentially address privacy concerns
+and encourage collaborative improvement;
+6. if released via a website, employ proper data safety
+precautions and anonymize users.
+
+| Author Contributions
+
+Concept and design: Tomasz Rymaszewski,
+Analysis and interpretation: Tomasz Rymaszewski, Joanna Michalina Jurek
+Data collection: Tomasz Rymaszewski, Joanna Michalina Jurek
+Writing the article: Tomasz Rymaszewski
+Critical revision of the article: Joanna Michalina Jurek
+Final approval of the article: Tomasz Rymaszewski, Joanna Michalina Jurek
+Statistical analysis: Not applicable
+Obtained funding: Not applicable
+Overall responsibility: Joanna Michalina Jurek
+
+All authors have read and agreed to the published version of the manuscript.
+
+| Funding
+
+None.
+
+| LITERATURE REVIEW |
+| MACHINE LEARNING APPROACHES FOR BIOLOGICAL AGE ESTIMATION |
+
+| AGEING AND LONGEVITY
+ | (2025)6:3
+
+257
+
+| Institutional Review Board Statement
+
+Not Applicable.
+
+| Informed Consent Statement
+
+Not Applicable.
+
+| Data Availability Statement
+
+Not Applicable.
+
+| Acknowledgments
+
+Authors of this paper would like to thank Miss Maria Glowacka (Akademeia High School staff member) for facilitating
+collaboration on this work.
+
+| Conflicts of Interest
+
+The authors declare no conflicts of interest.
+
+| References
+
+Armanious K, Abdulatif S, Shi W, Salian S, Kustner T, Weiskopf D, et al. Age-Net: An MRI-Based Iterative Framework for Brain Biological
+Age Estimation. IEEE Trans Med Imaging 2021;40:1778–91. https://doi.org/10.1109/TMI.2021.3066857.
+Baek Y-S, Lee D-H, Jo Y, Lee S-C, Choi W, Kim D-H. Artificial intelligence-estimated biological heart age using a 12-lead electrocardiogram
+predicts
+mortality
+and
+cardiovascular
+outcomes.
+Front
+Cardiovasc
+Med
+2023;10:1137892.
+https://doi.org/10.3389/fcvm.2023.1137892.
+Bartrés-Faz D, Solé-Padullés C, Marchant NL. Cognitive aging and dementia prevention: the time for psychology? Aging 2023.
+https://doi.org/10.18632/aging.204562.
+Blom MT, Cohen D, Seldenrijk A, Penninx BWJH, Nijpels G, Stehouwer CDA, et al. Brugada Syndrome ECG Is Highly Prevalent in
+Schizophrenia. Circ: Arrhythmia and Electrophysiology 2014;7:384–91. https://doi.org/10.1161/CIRCEP.113.000927.
+Bobrov E, Georgievskaya A, Kiselev K, Sevastopolsky A, Zhavoronkov A, Gurov S, et al. PhotoAgeClock: deep learning algorithms for
+development of non-invasive visual biomarkers of aging. Aging 2018;10:3249–59. https://doi.org/10.18632/aging.101629.
+Bravo BSF, Carvalho RDM, Iggnacio CA, Bianco S, Bravo LG. Effect of the aging process on columella‐labial, naso‐mental and facial angles
+and how to apply it in clinical practice. J of Cosmetic Dermatology 2020;19:3383–8. https://doi.org/10.1111/jocd.13405.
+Comfort A. TEST-BATTERY TO MEASURE AGEING-RATE IN MAN. The Lancet 1969;294:1411–5. https://doi.org/10.1016/S0140-
+6736(69)90950-7.
+Craft N, Schwartz JB. Effects of age on intrinsic heart rate, heart rate variability, and AV conduction in healthy humans. American Journal
+of Physiology-Heart and Circulatory Physiology 1995;268:H1441–52. https://doi.org/10.1152/ajpheart.1995.268.4.H1441.
+Dartora C, Marseglia A, Mårtensson G, Rukh G, Dang J, Muehlboeck J-S, et al. A deep learning model for brain age prediction using
+minimally
+preprocessed
+T1w
+images
+as
+input.
+Front
+Aging
+Neurosci
+2024;15:1303036.
+https://doi.org/10.3389/fnagi.2023.1303036.
+Dennis B. AIM-Harvard/FaceAge 2025.
+Ensor RE, Fleg JL, Kim YC, De Leon EF, Goldman SM. Longitudinal Chest X-ray Changes in Normal Men. Journal of Gerontology
+1983;38:307–14. https://doi.org/10.1093/geronj/38.3.307.
+Erema VV, Yakovchik AY, Kashtanova DA, Bochkaeva ZV, Ivanov MV, Sosin DV, et al. Biological Age Predictors: The Status Quo and
+Future Trends. IJMS 2022;23:15103. https://doi.org/10.3390/ijms232315103.
+Falahati F, Gustavsson J, Kalpouzos G. Automated segmentation of midbrain nuclei using deep learning and multisequence MRI: A
+longitudinal study on iron accumulation with age. Imaging Neuroscience 2024;2:1–20. https://doi.org/10.1162/imag_a_00304.
+Fastame MC, Penna MP, Hitchcott PK. Psychological markers of longevity in Sardinian centenarians: the impact of developmental
+factors and social desirability. Aging Clin Exp Res 2020;32:107–14. https://doi.org/10.1007/s40520-019-01157-y.
+Fekrazad A. Estimating Remaining Lifespan from the Face 2023. https://doi.org/10.48550/ARXIV.2301.08229.
+
+| LITERATURE REVIEW |
+| MACHINE LEARNING APPROACHES FOR BIOLOGICAL AGE ESTIMATION |
+
+| AGEING AND LONGEVITY
+ | (2025)6:3
+
+258
+
+Guinot C, Malvy DJ-M, Ambroisine L, Latreille J, Mauger E, Tenenhaus M, et al. Relative Contribution of Intrinsic vs Extrinsic Factors to
+Skin
+Aging
+as
+Determined
+by
+a
+Validated
+Skin
+Age
+Score.
+Arch
+Dermatol
+2002;138.
+https://doi.org/10.1001/archderm.138.11.1454.
+Hochhegger B, Meireles GS, Irion K, Zanetti G, Garcia E, Moreira J, et al. O tórax e o envelhecimento: manifestações radiológicas. J Bras
+Pneumol 2012;38:656–65. https://doi.org/10.1590/S1806-37132012000500016.
+Inoue Y, Shue F, Bu G, Kanekiyo T. Pathophysiology and probable etiology of cerebral small vessel disease in vascular dementia and
+Alzheimer’s disease. Mol Neurodegeneration 2023;18:46. https://doi.org/10.1186/s13024-023-00640-5.
+Jones SA, Lancaster MK, Boyett MR. Ageing‐related changes of connexins and conduction within the sinoatrial node. The Journal of
+Physiology 2004;560:429–37. https://doi.org/10.1113/jphysiol.2004.072108.
+Keaney
+TC.
+Aging
+in
+the
+Male
+Face:
+Intrinsic
+and
+Extrinsic
+Factors.
+Dermatol
+Surg
+2016;42:797–803.
+https://doi.org/10.1097/DSS.0000000000000505.
+Kim DY, Park MK, Yang HW, Woo SY, Jung HH, Son D-S, et al. Effects of Microplastic Accumulation on Neuronal Death After Global
+Cerebral Ischemia. Cells 2025;14:241. https://doi.org/10.3390/cells14040241.
+Krutmann J. Vorzeitige Hautalterung durch ultraviolette Strahlung und andere Umweltnoxen. Der Hautarzt 2003;54:809–17.
+https://doi.org/10.1007/s00105-003-0575-5.
+Levine ME, Lu AT, Bennett DA, Horvath S. Epigenetic age of the pre-frontal cortex is associated with neuritic plaques, amyloid load, and
+Alzheimer’s disease related cognitive functioning. Aging 2015;7:1198–211. https://doi.org/10.18632/aging.100864.
+Liu W, Wang J, Wang M, Hou H, Ding X, Ma L, et al. Oxidative Stress Factors Mediate the Association Between Life’s Essential 8 and
+Accelerated Phenotypic Aging: NHANES 2005–2018. The Journals of Gerontology: Series A 2024;79:glad240.
+https://doi.org/10.1093/gerona/glad240.
+López-Otín C, Blasco MA, Partridge L, Serrano M, Kroemer G. The Hallmarks of Aging. Cell 2013;153:1194–217.
+https://doi.org/10.1016/j.cell.2013.05.039.
+Lu AT, Binder AM, Zhang J, Yan Q, Reiner AP, Cox SR, et al. DNA methylation GrimAge version 2. Aging 2022.
+https://doi.org/10.18632/aging.204434.
+Mamoshina P, Kochetov K, Putin E, Cortese F, Aliper A, Lee W-S, et al. Population Specific Biomarkers of Human Aging: A Big Data Study
+Using South Korean, Canadian, and Eastern European Patient Populations. The Journals of Gerontology: Series A 2018;73:1482–
+90. https://doi.org/10.1093/gerona/gly005.
+Melo Van Lent D, Gokingco H, Short MI, Yuan C, Jacques PF, Romero JR, et al. Higher Dietary Inflammatory Index scores are associated
+with brain MRI markers of brain aging: Results from the Framingham Heart Study Offspring cohort*. Alzheimer’s & Dementia
+2023;19:621–31. https://doi.org/10.1002/alz.12685.
+P. Chevalier F, Rorteau J, Lamartine J. MicroRNAs in the Functional Defects of Skin Aging. In: Tutar L, Aras S, Tutar E, editors. Non-Coding
+RNAs, IntechOpen; 2020. https://doi.org/10.5772/intechopen.89689.
+Piccirillo G, Moscucci F, Carnovale M. Short-Period Temporal Dispersion Repolarization Markers in Elderly Patients with Decompensated
+Heart Failure. LA CLINICA TERAPEUTICA 2022:356–61. https://doi.org/10.7417/CT.2022.2446.
+Putin E, Mamoshina P, Aliper A, Korzinkin M, Moskalev A, Kolosov A, et al. Deep biomarkers of human aging: Application of deep neural
+networks to biomarker development. Aging 2016;8:1021–33. https://doi.org/10.18632/aging.100968.
+Raghu VK, Weiss J, Hoffmann U, Aerts HJWL, Lu MT. Deep Learning to Estimate Biological Age From Chest Radiographs. JACC:
+Cardiovascular Imaging 2021;14:2226–36. https://doi.org/10.1016/j.jcmg.2021.01.008.
+Ries W, Pöthig D. Chronological and biological age. Experimental Gerontology 1984;19:211–6. https://doi.org/10.1016/0531-
+5565(84)90041-X.
+Rohrich RJ, Avashia YJ, Savetsky IL. Prediction of Facial Aging Using the Facial Fat Compartments. Plastic & Reconstructive Surgery
+2021;147:38S-42S. https://doi.org/10.1097/PRS.0000000000007624.
+Sagers L, Melas-Kyriazi L, Patel CJ, Manrai AK. Prediction of chronological and biological age from laboratory data. Aging 2020;12:7626–
+38. https://doi.org/10.18632/aging.102900.
+Schönstein A, Wahl H-W, Denkinger M, Dallmeier D, Rothenbacher D, Klenk J, et al. Are Different Diseases in Old Age Connected With
+Different
+Attitudes
+Toward
+Own
+Aging
+and
+Subjective
+Age?
+Innovation
+in
+Aging
+2020;4:589–589.
+https://doi.org/10.1093/geroni/igaa057.1972.
+Ślimak J, Mercik J, Unkell M, Zawadzki G, Radziejewska J, Gajek J. P-Wave Duration and Interatrial Conduction Abnormalities in
+Paroxysmal and Persistent Typical Atrial Flutter. Physiol Res 2022:597–606. https://doi.org/10.33549/physiolres.934731.
+Stephan Y, Sutin AR, Terracciano A. How Old Do You Feel? The Role of Age Discrimination and Biological Aging in Subjective Age. PLoS
+ONE 2015;10:e0119293. https://doi.org/10.1371/journal.pone.0119293.
+Thrush KL, Bennett DA, Gaiteri C, Horvath S, Dyck CHV, Higgins-Chen AT, et al. Aging the brain: multi-region methylation principal
+component based clock in the context of Alzheimer’s disease. Aging 2022;14:5641–68. https://doi.org/10.18632/aging.204196.
+Wang X, Yan X, Zhang J, Pan S, Li R, Cheng L, et al. Associations of healthy eating patterns with biological aging: national health and
+nutrition examination survey (NHANES) 1999–2018. Nutr J 2024;23:112. https://doi.org/10.1186/s12937-024-01017-0.
+
+| LITERATURE REVIEW |
+| MACHINE LEARNING APPROACHES FOR BIOLOGICAL AGE ESTIMATION |
+
+| AGEING AND LONGEVITY
+ | (2025)6:3
+
+259
+
+Yankner
+BA,
+Lu
+T,
+Loerch
+P.
+The
+Aging
+Brain.
+Annu
+Rev
+Pathol
+Mech
+Dis
+2008;3:41–66.
+https://doi.org/10.1146/annurev.pathmechdis.2.010506.092044.
+Zhang S, Zhuang X, Lv Q, Du Z, Zhou H, Zhong X, et al. Six-Year Change in QT Interval Duration and Risk of Incident Heart Failure ― A
+Secondary Analysis of the Atherosclerosis Risk in Communities Study ―. Circ J 2021;85:640–6. https://doi.org/10.1253/circj.CJ-
+20-0719.
+Zhavoronkov A, Kochetov K, Diamandis P, Mitina M. PsychoAge and SubjAge: development of deep markers of psychological and
+subjective age using artificial intelligence. Aging 2020;12:23548–77. https://doi.org/10.18632/aging.202344.

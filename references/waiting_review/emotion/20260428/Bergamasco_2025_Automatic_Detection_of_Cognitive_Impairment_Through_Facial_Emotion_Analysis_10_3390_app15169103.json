@@ -1,0 +1,26 @@
+{
+  "title": "Automatic Detection of Cognitive Impairment Through Facial Emotion Analysis",
+  "authors": [
+    "Letizia Bergamasco",
+    "Francesco Di Lorenzo",
+    "Anita Coletta",
+    "Gabriella Olmo",
+    "Aurora Cermelli",
+    "Elisa Rubino",
+    "Innocenzo Rainero"
+  ],
+  "year": 2025,
+  "abstract": "Altered facial expressivity is frequently recognized in cognitively impaired individuals. This makes facial emotion identification a promising tool with which to support the diagnostic process. We propose a novel, non-invasive approach for detecting cognitive impairment based on facial emotion analysis. We design a protocol for emotion elicitation using visual and auditory standardized stimuli. We collect facial emotion video recordings from 32 cognitively impaired and 28 healthy control subjects. To track the evolution of emotions during the experiment, we train a deep convolutional neural network on the AffectNet dataset for emotion recognition from facial images. Emotions are described using a dimensional affect model, namely the continuous dimensions of valence and arousal, rather than discrete categories, enabling a more nuanced analysis. The collected facial emotion data are used to train a classifier to distinguish cognitively impaired and healthy subjects. Our k-nearest neighbors model achieves a cross-validation accuracy of 76.7%, demonstrating the feasibility of automatic cognitive impairment detection from facial expressions. These results highlight the potential of facial expressions as early markers of cognitive impairment, which could enhance non-invasive screening methods for early diagnosis.",
+  "doi": "10.3390/app15169103",
+  "arxiv_id": null,
+  "venue": "Applied Sciences",
+  "citation_count": 2,
+  "source": "openalex",
+  "pdf_url": "https://www.mdpi.com/2076-3417/15/16/9103/pdf?version=1755584804",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4413331057"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.3390/app15169103"
+}

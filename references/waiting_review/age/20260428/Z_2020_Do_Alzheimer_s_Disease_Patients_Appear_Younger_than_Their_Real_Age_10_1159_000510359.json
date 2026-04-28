@@ -1,0 +1,25 @@
+{
+  "title": "Do Alzheimer's Disease Patients Appear Younger than Their Real Age?",
+  "authors": [
+    "Tufekcioglu Z",
+    "Bilgic B",
+    "Zeylan AE",
+    "Salah AA",
+    "Dibeklioglu H",
+    "Emre M"
+  ],
+  "year": 2020,
+  "abstract": "INTRODUCTION: The most prominent risk factor of Alzheimer's disease (AD) is aging. Aging also influences the physical appearance. Our clinical experience suggests that patients with AD may appear younger than their actual age. Based on this empirical observation, we set forth to test the hypothesis with human and computer-based estimation systems. METHOD: We compared 50 early-stage AD patients with 50 age and sex-matched controls. Facial images of all subjects were recorded using a video camera with high resolution, frontal view, and clear lighting. Subjects were recorded during natural conversations while performing Mini-Mental State Examination, including spontaneous smiles in addition to static images. The images were used for age estimation by 2 methods: (1) computer-based age estimation; (2) human-based age estimation. Computer-based system used a state-of-the-art deep convolutional neural network classifier to process the facial images contained in a single-video session and performed frame-based age estimation. Individuals who estimated the age by visual inspection of video sequences were chosen following a pilot selection phase. The mean error (ME) of estimations was the main end point of this study. RESULTS: There was no statistically significant difference between the ME scores for AD patients and healthy controls (p = 0.33); however, the difference was in favor of younger estimation of the AD group. The average ME score for AD patients was lower than that for healthy controls in computer-based estimation system, indicating that AD patients were on average estimated to be younger than their actual age as compared to controls. This difference was statistically significant (p = 0.007). CONCLUSION: There was a tendency for humans to estimate AD patients younger, and computer-based estimations showed that AD patients were estimated to be younger than their real age as compared to controls. The underlying mechanisms for this observation are unclear.",
+  "doi": "10.1159/000510359",
+  "arxiv_id": null,
+  "venue": "Dementia and geriatric cognitive disorders",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "33080614"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.1159/000510359"
+}

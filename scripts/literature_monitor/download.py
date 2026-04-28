@@ -39,7 +39,8 @@ def filename_for(rec: PaperRecord) -> str:
     last = re.sub(r"[^A-Za-z]", "", last) or "Anon"
     year = str(rec.year or "0000")
     title = re.sub(r"[^A-Za-z0-9]+", "_", rec.title)[:80].strip("_") or "untitled"
-    pid = rec.primary_id().split(":", 1)[-1].replace("/", "_").replace(":", "_")[:40]
+    pid_raw = rec.primary_id().split(":", 1)[-1]
+    pid = re.sub(r"[^A-Za-z0-9]+", "_", pid_raw)[:40].strip("_") or "noid"
     return f"{last}_{year}_{title}_{pid}"
 
 
@@ -129,7 +130,12 @@ def save_record(
 
     # Always write JSON sidecar
     payload = rec.to_dict()
-    payload["pdf_status"] = "ok" if pdf_path else "no_oa"
+    if not download_pdf:
+        payload["pdf_status"] = "deferred"
+    elif pdf_path:
+        payload["pdf_status"] = "ok"
+    else:
+        payload["pdf_status"] = "no_oa"
     payload["primary_id"] = rec.primary_id()
     json_path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
     return pdf_path, json_path

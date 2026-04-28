@@ -1,0 +1,20 @@
+{
+  "title": "3D Video Tracking Technology in the Assessment of Orofacial Impairments in Neurological Disorders",
+  "authors": [
+    "Deniz Jafari"
+  ],
+  "year": 2022,
+  "abstract": "Changes to the orofacial muscles’ movement and speech are often among the earliest signs perceived in Neurological disorders. Detection of subtle changes in speech and facial movements can help with the diagnosis and prognosis of neurological disorders. Deep artificial intelligent video-based facial analysis models have the potential to be used as objective and non-invasive clinical tools. This thesis used the V3 framework for evaluation of digital biomarkers and their adoption into clinical settings to evaluate an automatic video-based facial analysis system as an objective assessment tool for accessing orofacial movements. The proposed system consists of a 3D camera and Artificial Intelligent-based algorithms that automatically extract objective clinically interpretable kinematic features from video recordings of individuals performing standard orofacial tasks. This work investigates the analytical and clinical validation of the proposed system to assess the severity of orofacial impairment in clinical groups.",
+  "doi": null,
+  "arxiv_id": null,
+  "venue": "TSpace",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://utoronto.scholaris.ca/bitstreams/1625bbb6-0296-4ca2-909e-7f40adfb729f/download",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W7132897035"
+  },
+  "pdf_status": "ok",
+  "primary_id": "title:3d video tracking technology in the assessment of orofacial impairments in neurological disorders"
+}

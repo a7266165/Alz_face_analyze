@@ -1,0 +1,7387 @@
+University of Dundee
+Accuracy and reliability of automated three-dimensional facial landmarking in medical
+and biological studies
+Al-Baker, Bodore; Alkalaly, Abdullah; Ayoub, Ashraf; Ju, Xiangyang; Mossey, Peter
+Published in:
+European Journal of Orthodontics
+DOI:
+10.1093/ejo/cjac077
+Publication date:
+2023
+Document Version
+Peer reviewed version
+Link to publication in Discovery Research Portal
+Citation for published version (APA):
+Al-Baker, B., Alkalaly, A., Ayoub, A., Ju, X., & Mossey, P. (2023). Accuracy and reliability of automated threedimensional facial landmarking in medical and biological studies: A systematic review. European Journal of
+Orthodontics, 45(4), 382–395. https://doi.org/10.1093/ejo/cjac077
+General rights
+Copyright and moral rights for the publications made accessible in Discovery Research Portal are retained by the authors and/or other
+copyright owners and it is a condition of accessing publications that users recognise and abide by the legal requirements associated with
+these rights.
+Take down policy
+If you believe that this document breaches copyright please contact us providing details, and we will remove access to the work immediately
+and investigate your claim.
+Download date: 28. Apr. 2026
+
+Accuracy and reliability of automated three-dimensional
+facial landmarking in medical and biological studies. A
+systematic review
+Journal: European Journal of Orthodontics
+Manuscript ID EJO-2022-SR-0414.R1
+Manuscript Type: Systematic review
+Research Topics: Imaging, morphing, Orthognathic surgery
+This is a pre-copyedited, author-produced version of an article accepted for publication in European Journal of Orthodontics following peer review. The version of
+record Al-baker, A., et al. (2023) 'Accuracy and reliability of automated three-dimensional facial landmarking in medical and biological studies. A systematic
+review', European Journal of Orthodontics 45(4), pp. 382-395 is available online at: https://doi.org/10.1093/ejo/cjac077.
+
+For Peer Review
+15
+19
+30
+41
+49
+Page 1 of 51
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+Title: Accuracy and reliability of automated three-
+11
+dimensional facial landmarking in medical and biological
+12
+13
+studies. : A systematic review
+14
+Abstract
+16
+Background
+17
+3D facial landmarking is becoming a fundamental part of clinical and biological
+18
+applications. Manual landmarking is time-consuming and prone to cumulative
+errors. A, so attempts were have been made to automate 3D facial landmarking, h.
+However, data in the literature is are sparse.
+20
+Objectives
+21
+To The objectives of this study are to investigate the current evidence of for the
+
+accuracy and reliability of various 3D facial automated landmarking methods used in
+23
+medical or and biological studies and evaluate their performance against the
+24
+manual annotation method.
+25
+Search methods
+26
+Electronic and manual searches of the literature were performed in April 2021.
+27
+28
+Selection criteria
+29
+Only studies that were published in English and evaluated the accuracy of
+automated landmarking algorithms in 3D facial images for medical or biological
+settings were included.
+31
+Data collection and analysis
+32
+Two authors independently screened the articles for eligibility. The QUADAS-2 tool
+was used for the quality analysis of the included studies. Due to the heterogeneity of
+34
+the selected studies, a meta-analysis was not possible, and so a narrative synthesis
+35
+of the findings was performed.
+36
+Results
+37
+From 1002 identified records, and after applying the inclusion and exclusion criteria,
+38
+14 articles were finally ultimately selected, read, and critically analysed. Different
+39
+algorithms were used for the automated 3D landmarking of various numbers of
+40
+facial landmarks ranging from 10 to 29 landmarks. The average difference between
+the manual and automated methods ranged from 0.67 to 4.73 mm, and the best
+performance was achieved by uusing deep learning models. Poor study design and
+42
+inadequate reporting were found in the implementation of the reference standards
+43
+and population selection for the intended studies, and this which could have led to
+44
+overfitting of the tested algorithm.
+45
+Conclusion
+46
+Compared to manual landmarking, automated Landmark localisation of individual
+47
+facial landmarks reported in the literature is not accurate enough to allow their use
+48
+for clinical purposes. This result indicates that automatic facial landmarking is still
+developing, and further studies are required to develop a system that could match
+or exceed the performance of the current gold standard.
+50
+Registration
+51
+52
+PROSPERO: CRD42021241531.
+53
+Conflict of interest
+54
+55
+56
+57
+58
+59
+60
+22
+33
+
+For Peer Review
+
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+Page 2 of 51
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+None to declare.
+11
+12
+Background:
+13
+Three-dimensional (3D) facial images are routinely used to measure soft tissue
+14
+characteristics in medical settings and biological research to accurately and
+15
+comprehensively quantify facial morphology (1, 2). In medicine, the use of 3D
+16
+17
+imaging provides planning and outcome measures of orthognathic surgery, by
+18
+evaluating the soft tissue changes following the surgery (3).
+19
+In genetic and developmental studies of facial morphology, using large datasets, 3D
+20
+21
+facial images integrated with genomics can unravel the genetics of facial
+22
+morphological shape variation. This technology has enabled deep phenotyping,
+23
+which allows for studyingone to study the genomic architecture of facial shape (4,
+24
+5). Provided the level of accuracy is acceptable, the objectivity, consistency, and
+
+25
+efficiency of digital computation is represent a significant advancement, mainly
+26
+27
+when dealing with large data sets.
+28
+Well-defined anatomical landmarks over the face allow the shapes to be
+29
+30
+characterised in a manner that corresponds across subjects and, therefore, provide
+31
+the basis of subsequent statistical analysis. Accurate placement of these landmarks
+32
+on the 3D facial scans is essential, and the results of any further analysis depend on
+33
+the accuracy of the identification and localisation of those such landmarks. Manual
+34
+landmark identification is time-consuming and prone to cumulative errors and time-
+35
+36
+consuming, especially when carried out on large datasets; therefore, robust and
+37
+accurate automated 3D facial landmarking tools are highly desirable.
+38
+Various automated techniques for detecting anatomical facial landmarks have been
+39
+40
+reported (6-8). To our knowledge, there have been no systematic reviews of the
+41
+automated 3D facial landmark technique performance compared to the manual
+42
+method in medical and biological settings.
+43
+44
+The purpose of this systematic review is to examine the current evidence regarding
+45
+the accuracy and reliability of various 3D facial automated landmarking methods
+46
+used in medical or and biological studies and evaluate their performance against the
+47
+gold standard expert manual annotation method. This review will pprovides a
+48
+comprehensive and contemporary overview, identify identifies gaps in the literature,
+49
+50
+and establishes a baseline for future research.
+51
+The This systematic review aims to answer the following questions:
+52
+53
+54
+55
+56
+57
+58
+59
+60
+
+For Peer Review
+
+25
+Page 3 of 51
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+1) How accurate is automated 3D facial landmarking compared to manual
+11
+landmarking, and which facial landmarks are more or less reliable?.
+12
+13
+2) What is the reliability of the soft tissue facial analysis obtained through automated
+14
+landmarking compared to those analysis based on manual landmarking?.
+15
+16
+3) What are the possible gaps in automated 3D facial landmarking in clinical and
+17
+biological research?.
+18
+19
+In essence, it is highly desirable that, in this field of digital imaging, we succeed in
+20
+producing an accurate automated alternative to manual facial landmarking that is
+21
+also feasible, practical, and user-friendly, and that can, through a user interface, can
+22
+be rolled out across the world for clinical governance and research purposes.
+23
+24
+Materials and methods
+26
+This systematic review was conducted based on the PRISMA extension for
+27
+Diagnostic Test Accuracy (DTA) guidelines. A research protocol was prospectively
+28
+29
+prepared and registered. (PROSPERO: CRD42021241531, March 29, 2021).
+30
+Eligibility criteria
+31
+32
+Inclusion criteria:
+33
+34
+• Clinical trials, prospective and retrospective cohort studies, comparative
+35
+studies, validation or evaluation studies, and epidemiologic studies.
+36
+•  Medical and biological studies based on the an automated approach for
+37
+detecting facial landmarks in 3D facial images.
+38
+39
+• Studies that compare the accuracy of automated landmark algorithms to for
+40
+manual identification and landmarking.
+41
+• Studies with clear outcome measures regarding the accuracy or reliability of
+42
+3D automated facial landmarking.
+43
+•    Original articles published in English.
+44
+45
+46
+47
+Exclusion criteria:
+48
+49
+• Studies that include 3D facial landmarking for facial recognition (e.g.,
+50
+forensics, and security), computer vision tasks. and other non-medically or
+51
+biologically related purposes.
+52
+• Full text is not available or inaccessible.
+53
+54
+55
+56
+57
+58
+59
+60
+
+For Peer Review
+
+39
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+Page 4 of 51
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+Information sources and search:
+11
+12
+Literature search strategies were developed using medical subject headings (MeSh)
+13
+and keywords related to automated 3D facial landmarking. An electronic search of
+14
+several databases including PubMed, EMBASE (OVID), Scopus, and Cochrane
+15
+Central Register of Controlled Clinical Trials (CENTRAL) was performed in April
+16
+2021. There was no restriction in on the search period, but the search was limited to
+17
+18
+articles in on humans and published in English. Citations and cross-references from
+19
+relevant key articles were manually searched to identify additional publications. This
+20
+search was based on the PICO elements listed in Table 1. The search strategy is
+21
+presented in Supplementary table 1.
+22
+23
+Study Selection
+24
+Two reviewers (BA, AA), independently screened the titles and abstracts of the
+25
+eligible studies using the Rayyan software (9). They The reviewers were not blinded
+26
+27
+to the authors' names, their affiliations, or the results of the eligible studies. The
+28
+publication was considered relevant if one of the reviewers approved its inclusion.
+29
+30
+Full texts of potentially relevant studies were retrieved and assessed by one
+31
+reviewer (BA), ) and then checked and approved by a second reviewer (AA). For
+32
+each paper, inclusion criteria were assessed, and a final decision on eligibility was
+33
+made. The dDisagreements between the reviewers, or areas where information was
+34
+unclear, was were resolved by discussion. In cases where the same research group
+35
+36
+have had several articles on the refinement of an automated model, the latest
+37
+publication was selected.
+38
+Data Extraction
+40
+One reviewer extracted the data from the selected studies and tabulated this
+41
+information into a standardised form that was checked assessed by the second
+42
+reviewer with respect to Study study design, Imaging imaging technique,
+43
+Samplesample, Study study methodology, Algorithm algorithm description,
+44
+45
+Reference reference Method method (manual landmarking), Automated automated
+46
+algorithm evaluation, and outcomes.
+47
+48
+Quality assessment
+49
+The two reviewers assessed the risk of bias and applicability of the included studies
+50
+using a modified version of the Quality Assessment Tool for Diagnostic Accuracy
+51
+Studies-2 (QUADAS-2) (10). Domains included patient selection, index test,
+52
+53
+54
+55
+56
+57
+58
+59
+60
+reference standard, flow, and timing, with the first three domains also considered.
+
+For Peer Review
+
+Page 5 of 51
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+applicability Applicability was rated on a 3-point scale: low (+), high (−), or unclear
+11
+(?).
+12
+13
+Synthesis of results
+14
+Given the considerable heterogeneity in of methodology within between the
+15
+16
+selected studies in terms of study design, sample, acquisition techniques, reference
+17
+standards, and measured outcomes, a narrative synthesis was performed to identify
+18
+and summarise the main findings of the included studiesarticles.
+19
+20
+21
+22
+Results
+23
+24
+Study selection
+25
+Figure 1 presents the a PRISMA ﬂow-chart for the articles selection process in this
+26
+study. From the 1002 manuscripts identified via the four databases, 549 studies
+27
+remained after duplicate removal, 473 were excluded following title/abstract
+28
+29
+assessment and following ffull-text review of the remaining 76 articles, and 10
+30
+studies met the inclusion criteria. An additional 4 studies were found through a
+31
+manual search making for a total of 14 studies that were eventually included in this
+32
+systematic review. Among them, seven studies (11-17) were related to research
+33
+question one1, five studies (7, 8, 18-20) were related to both research questions
+34
+35
+one1 and two2, and two studies (21, 22) were related to research question two2. A
+36
+quantitative synthesis (meta-analysis) was not possible due to their the studies’
+37
+methodological heterogeneity and different outcomes.
+38
+39
+Study quality assessment
+40
+41
+All the iincluded studies were critically assessed by using a tailored QUADAS-2
+42
+assessment tool (table 2). Regarding patient selection, twelve studies were rated as
+43
+having a “high” or an “unclear” risk of bias (8, 11-21), and seven showed
+44
+45
+applicability concerns (8, 14-18, 21). This result was due to the absence of testing
+46
+on consecutive or random subjects and an insufficient description of the population
+47
+sample. Moreover, thirteen studies were found to be at an unclear or high risk of
+48
+bias regarding implementing the reference standard due to the lack of an
+49
+appropriate reference standard or the failure in reporting the results of inter- and
+50
+51
+intra-observer reproducibility assessments (6, 8, 11-17, 20-22).
+52
+53
+54
+55
+56
+57
+58
+59
+60
+
+For Peer Review
+
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+Page 6 of 51
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+Study characteristics:
+11
+12
+The studies included in this review were published in English between 2012 and
+13
+2021, and most of them were based on retrospective studies based on using 3D
+14
+facial images (table Table 3). Supplementary Figure 1 shows the research topics
+15
+of the included studies. The sources of 3D images used in the included studies
+16
+varied. Two studies used data from a genetic cohort (8, 19); (8, 19), three studies
+17
+18
+used data from clinical settings (7, 14, 22); (7, 14, 22), one used the FaceBase
+19
+Consortium (11); (11), one study used a dataset collected by the Collaborative
+20
+Initiative on Fetal Alcohol Spectrum Disorders (CIFASD) (12); (12), one study used
+21
+a dataset from the Prenatal Alcohol and SIDS and Stillbirth (PASS) Network in
+22
+South Africa (20) (20), and six studies failed to report details on the source of the
+23
+24
+dataset (13, 15-18, 21).
+25
+Most studies omitted details of the sample characteristics (e. g., gender, age,
+26
+inclusion and exclusion criteria, and main facial characteristics), one reported a
+27
+28
+prespecified sample size calculation (7), and two reported the use of randomization
+29
+for population selection (7, 19), neither of which reported the randomisation details.
+30
+31
+Table 4 shows the characteristics of the included studies from both test and
+32
+reference perspectives. Different types of algorithms were used for automated 3D
+33
+landmarking. The included studies were grouped according to the method used for
+34
+the automated landmarking algorithm.
+35
+36
+All the studies defined the reference standard (ground truth) by using the indirect
+37
+anthropometry method, where landmarks and/or measurements were manually
+38
+performed on 3D facial images by an observer, except for two studies (21, 22),
+39
+where the ground truth was established by an experienced assessor taking the
+40
+41
+measurements directly of from the participants’ faces by an experienced assessor.
+42
+Various numbers of facial landmarks were localised, ranging from 10 to 29
+43
+landmarks (Figure 2). The sample size of the training dataset ranged from 30 to 943
+44
+45
+images and from 8 to 1000 images for the test dataset.
+46
+For interpretation purposes, the results were grouped based on the systematic
+47
+48
+review research questions: (Q1 and Q2).
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+
+For Peer Review
+
+Page 7 of 51
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+Description of individual studies
+11
+12
+Research question one1: Accuracy of automatic 3D facial landmarking
+13
+versus manual landmarking (n=9 studies)
+14
+For research question one1, landmarking accuracy was evaluated by comparing the
+15
+16
+mean distance between the automatically and manually detected landmarks ( test
+17
+versus reference standard). The overall mean errors and standard deviations were
+18
+collected, when applicable, for all the of the included studies, which were grouped
+19
+according to the method used for the landmarking, as follows.:
+20
+21
+Atlas (template)- based method:
+22
+A template with pre-defined landmarks is usually required for template template-
+23
+based methods. Through the application of the estimated deformation field via
+24
+registration, the landmarks for a testing image can be directly transferred from the
+25
+26
+corresponding landmarks in the template image. Two studies followed this method.:
+27
+Li et al. (8) developed an automated landmarking method to identify 29 facial
+28
+29
+landmarks by morphing a 29- landmarka template face to an individual face
+30
+through the guidance of anchor points. To validate their this method, a centroid
+31
+size (CS) comparison was carried out to compare estimates of size across manual
+32
+and automatic methods. CS estimates were found to be consistent between the two
+33
+methods. The mean difference between the two methods was <1 mm, with a few
+34
+35
+landmarks showing mean differences of 1–2 mm.
+36
+Baksi et al. (7) combined template and texture-based methods to localise 21 facial
+
+37
+38
+landmarks. Their This approach required manual standardization of the reference
+39
+position, and the average difference and standard deviation between the manual
+40
+and automated methods for all landmarks was 3.20 +/- 1.64 mm. The points with a
+41
+discrepancy of ≥2 mm were: Exocanthions, Glabella, Endocanthion (left), Alare
+42
+(right and left), and Gnathion.
+43
+44
+Knowledge Knowledge-based method
+45
+This method is based on geometric information and prior knowledge of the typical
+46
+shape of the craniofacial structure of the face and locates landmarks based on pre-
+47
+48
+agreed established definitions.
+49
+Vezzetti et al. (17) proposed a new automatic method for localizing 13 facial
+50
+landmarks based on geometric descriptors and a thresholding methodology to
+51
+52
+extract each landmark. The results showed a mean error of 4.7 mm, with the worst
+53
+result obtained for subnasale, and the best result was achieved for the pronasale.
+54
+55
+56
+57
+58
+59
+60
+
+For Peer Review
+
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+Page 8 of 51
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+Abu et al. (18) used an automatic facial landmark model to locate 10 craniofacial
+11
+landmarks using via information on geometry geometric characteristics information.
+12
+13
+The automated landmark locations were compared with the manually located
+14
+landmarks, and the results showed that the average difference in location of the
+15
+landmarks was 2.23 mm.
+16
+17
+Combination and other approaches
+18
+Wang et al. (13) utilised visual facial pattern learning to identify each landmark’s
+19
+local geometric pattern and parameters utilising a small training set to localise 23
+20
+anthropological facial landmarks. A randomly selected 3D face, together with its
+21
+manually placed landmarks, was chosen as a template face, to align all other 3D
+22
+faces and gto generate the positions of the initial landmarks. Then, a Visual
+
+23
+Analytical Approach algorithm was employed to refine the projected landmarks. The
+24
+25
+overall mean error of the automated landmarking method was 2.23 mm with midline
+26
+points exhibiting less errors.
+27
+28
+Guo et al. (15) predicted 17 landmarks using a principal component analysis (PCA)
+29
+)-based method to localise 6 landmarks on the sample surfaces. Then, 11 additional
+30
+landmarks are were identified heuristically using geometric and texture relations.
+31
+The average root mean square error of the manual landmark localisation method
+32
+was ∼1.7 mm, with most SD values below 1mm.
+
+33
+34
+Liang et al. (16) developed a combined geometric and template method to
+35
+automatically locate 20 facial landmarks. Compared to landmarks manually
+36
+identiﬁed by medical experts, the results showed an average difference of 2.64 mm.
+37
+38
+De Jong et al. (6) used the Elastic Bunch Graph Matching-based (EBGM) algorithm
+39
+to identify 21 facial landmarks. Using cross-validations (leave-one-out experiments),
+40
+41
+they the authors reported an average accuracy of 1.7 mm, which showed a 22%
+42
+improvement over their previous algorithm . (23).
+43
+Sukno et al. (14) used a regression algorithm to generate candidate points from
+44
+45
+geometric cues extracted by using asymmetricy pattern s shape contexts (APSC)
+46
+descriptors. The localisation accuracy was evaluated on a clinical dataset of 144
+47
+facial scans, and the results showed an average error of 2.3 mm, with errors
+
+48
+reported to be below 2 mm for more than half of the targeted landmarks.
+49
+50
+Deep learning-based model
+51
+When cCompared with the to more classical methods of automated landmarking,
+52
+deep learning-based methods are learnt hierarchically through the multiple layers of
+53
+54
+55
+56
+57
+58
+59
+60
+
+For Peer Review
+
+39
+Page 9 of 51
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+an artiﬁcial neural network (ANN). Convolutional Neural Networks (CNNs) are by far
+11
+the most widely used type of ANN.
+12
+13
+Bannister et al. (11) applied a pretrained automatic 3D facial landmarking algorithm
+14
+on a test sample of 444 facial images based on an ensemble of regression trees
+15
+cascade trained on large databases of normal facial images .(24). Ground Truth
+16
+17
+landmarks were localized by two individuals, and the average distance between the
+18
+positions of manually located landmarks and those automatically generated was 2.5
+19
+mm. The largest errors were reported at the eye landmarks (en, ex), the nasion
+20
+landmark (n), and the gnathion landmark (gn).
+
+21
+22
+Fu et al. (12) proposed utilising limited training samples through a cross-task
+23
+representation learning approach to produce a deep learning framework for
+24
+anatomical landmark detection. The results showed the that eﬀectiveness of the
+25
+26
+proposed approach has outperformed other compared solutions with a mean error
+27
+and standard deviation value of 0.830 ± 0.2545, respectively.
+28
+Huang et al. (20) used a pre-trained CNN model that integrated a novel layer to
+29
+30
+extract landmarks coordinates from 3D facial images. Their dataset was randomly
+31
+assigned to training (n = 622) and test (n = 155) sets. They An expert manually
+32
+annotated 20 reliable landmarks on each 3D facial image by an expert., and the
+33
+landmarks were then manually projected to each corresponding 2D texture map as
+34
+training labels for the CNN models. The localisation accuracy was assessed by
+35
+36
+measuring the Euclidean distance between the gold standard reference and the
+37
+predictions in 2D. The mean error was 0.67 mm (standard deviation 0.63 mm).
+38
+Research question two2: Reliability of further analysis obtained through
+40
+automated landmarking versus manual landmarking (n= 6 studies)
+41
+Research question two2 assessed the reliability of measurements and analysis
+42
+analyses usingobtained by automated landmarking compared to manual
+43
+landmarking. The type of measurements and analysis analyses varied according to
+44
+45
+the research area of the included study, either genetic or clinical.
+46
+Genetic studies
+47
+48
+Two studies evaluated the performance of automated landmarking based on
+49
+analysis that is relevant to genetic and developmental studies.
+50
+In Li et al. (8), both manual and automated landmarking of 79 scans were was
+51
+52
+performed, and a comparison of and variation in shape structure was carried
+53
+compared out using PLS regression. It was found that the two methods yielded
+54
+55
+56
+57
+58
+59
+60
+
+For Peer Review
+
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+Page 10 of 51
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+variance–covariance matrices that were highly correlated (P <0.001 based on 1000
+11
+permutations); thus, automated data produced covariation structures that closely
+12
+13
+resembled manual landmarks.
+14
+De Jong et al. (6) used heritability as a benchmark to evaluate landmarking
+
+15
+performance and found that the estimated heritability was improved compared to
+16
+17
+their the authors’ previous algorithm, which was based on 2D Gabor wavelets (23).
+18
+Twin-based heritability information was estimated for several features derived from
+19
+landmark coordinates. The results showed that distances were the most heritable
+20
+traits and were concentrated in the mid-face region.
+21
+22
+Clinical studies
+23
+Five studies used linear facial anthropometric measurements that are relevant for
+24
+clinical use to evaluate the performance of their automated landmarking method.
+25
+26
+Huang et al. (20) reported the accuracy of the automatically generated palpebral
+27
+ﬁssure length (PFL) measurements , derived from 3D facial images, which could be
+
+28
+used in assisting to assist the diagnosis of fetalfoetal alcohol spectrum disorder.
+29
+30
+Their model showed a mean error of 1.2 mm ± 0.8 mm, when compared to the
+31
+manual annotation, which and was the lowest in comparison tolower than two
+32
+different CNN models (regression-based and synthetic heatmap matching models).
+33
+34
+Lippold et al. (22) reported a substantial agreement between digital and manual
+35
+measurements for 4 out of 7 evaluated distances, the. f The former being:
+36
+intercanthal distance, the distance between outer eye corners, the subnasale
+37
+distance subnasale to the mentolabial point, and subnasale to soft tissue pogonion.
+
+38
+39
+Baksi et al. (7) found a moderate to good agreement (ICC > 0.5) between the
+40
+manual and automated landmark identification processes in 5 out of 10 linear
+41
+measurements, which only included only which were: nasal width, labial fissure,
+42
+43
+upper vermilion, and upper and lower facial height.
+44
+Abu et al. (18) evaluated 8 linear measurements extracted by both automated and
+
+45
+manual methods. The and the average difference was 2.16 mm ± 2.25 mm.
+46
+47
+Palmer et al. (21) incorporated the MeshMonk (25) tool-box into a platform,the
+48
+Cliniface software platform that wasthat has been designed to support facial
+49
+50
+anthropometric analysis. Ten linear facial measurements were compared against
+51
+the expert’s manual measurements, and 3 out of 4 were found to be at a level of o
+52
+provide a level of accuracy comparable to that of the manual expert.
+53
+54
+55
+56
+57
+58
+59
+60
+
+For Peer Review
+
+Page 11 of 51
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+Accuracy of individual landmarks
+11
+12
+The mean errors and standard deviations (where applicable) for the 23 most
+13
+commonly -reported landmarks were collected from 9 studies. The and the results
+14
+are is presented in table 5.
+15
+16
+Discussion
+17
+18
+The present systematic review evaluated the performance of automated
+19
+landmarking on 3D facial images by looking intexaminingo two different metrics:
+20
+ground truth-based localisation errors (Research Question one) and task-oriented
+21
+performance (Research Question two). For ground truth-based localisation errors, a
+22
+manually annotated ground truth (reference standard) was used to assess the
+23
+24
+landmarking performance. For task-oriented performance, we looked into explored
+25
+studies that measure the impact of landmarking accuracy on the performance score
+26
+of a the task.
+27
+28
+Accuracy of the automated model
+29
+Concerning research question one, the best localisation results were found in the
+30
+two studies that used a deep deep-learning learning-based 3D landmark detection
+31
+32
+method .(12, 20). Although these results could be argued to indeed supported the
+33
+claim that automated algorithms can match “ground truth” accuracy, however
+34
+several methodological shortcomings were common in most of the included studies
+35
+and should be considered before accepting these results.
+36
+37
+The majority of the included studies showed a range of risks of bias and applicability
+38
+concerns. Data selection produced small and possibly non-representative
+39
+populations. Additionally, tThe training and test sets was were not clear in most of
+40
+the studies, and precautionary measurements to avoid overlap between the groups
+41
+42
+were not mentioned. However, inadequate reporting in a study does not
+43
+automatically mean that the study was poorly designed, and a poor study design
+44
+does not necessarily indicate a poor quality automated landmarking algorithm.
+45
+Nonetheless, both of these deficiencies affected the comparison between studies
+46
+and whether or not meta-analyses are were possible.
+47
+48
+49
+50
+Reference standard
+51
+Validating the accuracy of the automatic landmarking algorithms against expert
+52
+manual landmarking (reference standard) is essential as i validationt would provides
+53
+54
+55
+56
+57
+58
+59
+60
+
+For Peer Review
+
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+Page 12 of 51
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+a more objective measurement tool. Also,Additionally, understanding the error and
+11
+variation introduced by manual landmarking is important as some learning learning-
+12
+13
+based automated landmarking approaches are influenced by manual annotation
+14
+errors, and their performance may vary depending on the annotator. Yet However,
+15
+most of the studies showed a high risk of bias regarding the implementation of the
+16
+reference standard due to inadequate detail on in the assessment, interpretation,
+17
+and reproducibility, andy. This result this i is in line with other recent systematic
+18
+19
+reviews on automated cephalometric landmarking .(26, 27).
+20
+Therefore, extensive quality quality-control procedures for establishing the ground
+21
+truth in future automated 3D landmarking studies should include a clear definitions
+22
+23
+of the tested landmarks, understanding by for each annotator, and training plus
+24
+calibration before engaging in landmarking. It has beenwas also suggested that
+25
+every study should include an assessment of the inter- and intra intra-observer
+26
+reproducibility of manual landmarking even where when standard measurements
+27
+are used .(28).
+28
+29
+Type of landmarking techniques
+30
+31
+32
+landmarking, including knowledge, atlas, learning, and hybrid hybridbased methods,
+33
+each of which has its own limitations. The results of the classical learning
+34
+approach is are always dependent on the training data, and errors increase if
+35
+36
+the variability of testing data is comparatively higher than that of training
+37
+data. Knowledge- based approaches involve thes detection of geometric
+38
+features, typically associated with local curvature,  that match the shape
+
+39
+properties of the landmark. However, this method cannot detect all kind
+40
+41
+types of landmarks, especially those which are not located on any significant
+42
+edge. The main problem of atlas atlas-based methods is that they largely rely
+43
+their reliance on the accuracy of cross-subject registration. Although multi-
+44
+45
+atlas registration can improve the robustness and accuracy, it is very time
+46
+intensive to perform multiple registrations for each testing subject. The
+47
+majority of studies used combined approaches by considering 3D geometry of the
+48
+face surface and the associated texture images. Deep learning-based methods
+49
+50
+have shown were found to be superiority in identifying anatomical landmarks in
+51
+medical images, and this which was also supported in the this review, but only 3
+52
+three studies followed this approach (11, 12, 20). This result is, perhaps, not
+53
+surprising , since the deep learning approach usually requires a large number of of
+
+54
+55
+56
+57
+58
+59
+60
+The studies included in this review used various approaches for automatic
+
+For Peer Review
+
+Page 13 of 51
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+training 3D facial images to be trained with manually annotated landmarks and
+11
+given that . Additionally, expert landmarking is often expensive and time-consuming,
+12
+13
+therefore making it difficult to generate large high-quality datasets suitable to train
+14
+such models.
+15
+Many 3D data acquisition technologies enabled the direct collection of 3D surface
+16
+17
+images of human faces, along with their high-resolution matching 2D texture
+18
+images. Literature resources are more abundant in studies carried out for detecting
+19
+landmarks in 2D images, given that 3D imaging is more recent. Consequently, many
+20
+studies in this review utilised 2D landmarking algorithms to detect landmarks in 3D
+21
+by using projection transformation (12, 15, 19, 20). Once detected, the 2D
+22
+23
+landmarks can be projected back onto the 3D image. The advantage of using 2D
+24
+data of 3D images, rather than using the 3D images directly, is reducing the
+25
+computational cost of processing of 3D data. This computational cost is high and
+26
+also requires a large amount of memory. By contrast, the 2D data can alleviate the
+27
+memory limitations since the landmarking is conducted in a set of 2D images.
+28
+29
+However, 2D algorithm is known to be sensitive to pose variation and facial
+30
+expression which could lead to poor localization performance with this technique.
+31
+This can be avoided by following a standardized methods of data acquisition and
+32
+collection that is usually followed in the clinical and biological settings.
+33
+34
+35
+36
+37
+Selection of landmarks and Individual landmark error s
+38
+39
+The number of landmarks in this review ranged from 10 to 29, depending on the
+40
+application of the intended analysis. The most commonly selected landmarks
+41
+captured the facial soft tissue units (eyes, nose, and mouth). Table 5 shows the 23
+42
+most most commonly reported landmarks and their localisation errors.
+43
+44
+The magnitude of error for the individual landmarks varied among the included
+45
+studies . This is due to the heterogeneity in the methods used to detect the same
+46
+landmark. There was a general agreement that midline landmarks are more
+47
+48
+accurate when localised automatically compared to laterally localised landmarks.
+49
+Gnathion and Glabella were difficult to automatically identify in some of the included
+50
+studies, which could be due to the anatomical differences between the subjects.
+51
+This pattern of errors is similar to that found with manual landmarking in previous
+52
+studies .(29-31).
+53
+54
+55
+56
+57
+58
+59
+60
+
+For Peer Review
+
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+Page 14 of 51
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+Although endocanthion and exocanthion (inner and outer eye corners) are
+11
+considered as to be reliable landmarks in manual landmarking techniques, as
+12
+13
+reported by previous studies (32, 33), some of the included studies found those
+14
+these landmarks among the most difficult points to be located by t locate using the
+15
+automated method .(11, 14, 16). Bannister et al. (11) visually checked assessed
+16
+images with the highest errors in the automated landmarking group and found that
+17
+closed eyes were common among those groups. Guo et al. (15) found pogonion
+18
+19
+and earlobes to be among the worst landmarks to be located automatically, and
+20
+those landmarks were highly influenced by the presence of facial and head hair,
+21
+which could contribute to the relatively larger errors and standard deviations. It has
+22
+beenwas suggested previously that any loose hair should be pulled away from the
+23
+face and ears during when capturing of the face, if these landmarks are to be used
+24
+25
+26
+data acquisition phase to ensure the quality of the captured 3D images.
+27
+Anatomical facial landmarks are essential for various clinical applications like such
+28
+29
+as image analysis and diagnosis that , which support the clinical decision-making
+30
+process. This factor was reflected in the presentis review, as most of the studies
+31
+were based on clinical or medical settings. Yet However, only three3 studies
+32
+included a clinical population cohort for in their datasets (7, 12, 20). Having
+33
+representative data from the clinical population is essential, especially in learning
+34
+35
+algorithms, as otherwise, selection bias is likely otherwise (35).
+36
+In clinical use, landmark accuracy is important, as there is a need to detect subtle
+37
+shape differences or growth changes. Depending on the research group,
+38
+39
+localisation and reproducibility errors are considered clinically relevant when thesey
+40
+exceed 0.5 mm(31), 1 mm(30) or 2 mm (36). Hajeer et al. (31) considered a
+41
+landmark to be highly reproducible when the standard deviation (SD) from the
+42
+centroid was 0.5 mm or less. Toma et al. (37) set a reproducibility threshold of less
+
+43
+than a 1 mm difference the for the landmarks to be clinically acceptable. The clinical
+44
+45
+signiﬁcance of the extent of landmark identiﬁcation errors relies on the level of
+46
+accuracy required. If the 3D images are used for surgical planning, sufficient
+47
+accuracy is needed to allow the clinician to plan treatment accurately and evaluate
+48
+surgical outcomes. In this review, most studies did not report a cut-off value for
+49
+acceptable errors for in clinical and biological use. Table 5 Shows the landmark
+50
+51
+identification errors for 23 of the most commonly reported landmarks in the included
+52
+studies. Assuming that a mean error within 2 mm is acceptable, 68% of the
+53
+estimated landmarks in the included studies will fallfall within anthe acceptable
+54
+55
+56
+57
+58
+59
+60
+in the analysis (34). This result emphasised the importance of quality control in the
+
+For Peer Review
+
+Page 15 of 51
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+range. By reducing the acceptable mean error to be within 1 mm and 0.5 mm, only
+11
+5% and 0% of the detected landmarks, respectively, will fall fall within the an
+12
+13
+acceptable range, respectively. (Supplementary tables 2,3,4).
+14
+Compared with to the number of published articles on the development of
+15
+automated landmarking on in 3D cephalometrics, the development of automated
+16
+17
+landmarking in 3D facial images is lagging considerably lagging and requires
+18
+greater attention.
+19
+20
+Limitations of the current literature and future directions
+21
+22
+(Research question three)
+23
+This review found that, with the current error levels reported in the literature, the
+
+24
+automatic landmark localisation of individual landmarks is not sufficiently accurate
+25
+26
+enough to allow their the use of this technique for clinical purposes. This is ,
+27
+asbecause the errors in landmarks detection were remain higher than those
+28
+obtained with via manual landmarking. This result indicates that automatic facial
+29
+landmarking is still developing, and further studies are required to createdevelop a
+30
+system that could can match or outperform the accuracy of the current gold
+31
+32
+standard. this This systematic review was limited by the quality of the included
+33
+studies and uncovered several methodological limitations evident in this the
+34
+corresponding literature. The most significant source of bias found was related to
+35
+the potentially selective and incomplete reporting of results. This factor could have
+36
+impacted the outcomes of the included studies and could lead to overfitting of the
+37
+38
+tested algorithms. Other key issues of related to inadequate study design and
+39
+reporting were found within the included studies in when implementing the reference
+40
+standards and population selection for the included studies. Evaluation of the
+41
+performance metrics of the included studies was also limited by the variation of the
+42
+statistical methods applied. (supplementary table 5,6).
+43
+44
+A common limitation of the current automated approaches in the included studies
+45
+was having amanually carrying out the pre-processing stage of for 3D facial images
+46
+47
+carried out manually. This process includeds placing the image in the correct pose
+48
+and orientation or cropping the face by removing hair, clothing, and background in
+49
+from the image before locating the tested landmarks (7, 8). Advancements in pre-
+50
+processing steps are highly recommended, and f. Future studies should aim to
+51
+avoid the manual pre-processing step and develop models that can localize facial
+52
+landmarks regardless of their orientation.
+53
+54
+55
+56
+57
+58
+59
+60
+
+For Peer Review
+
+26
+48
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+Page 16 of 51
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+This systematic review identified some areas for future research. Large studies with
+11
+adequate power are essential for achieving a more robust and reliable evaluation of
+12
+13
+the automated landmarking algorithm. Convolutional Neural Networks (CNNs) have
+14
+recently emerged as the mainstream approach for facial landmarking and have
+15
+demonstrated superior performance in medical tasks (38-40). By utilising the CNN
+16
+approach, significantly less time-intensive and more adequatemore accurate
+17
+accuracy of automated 3D facial landmarking in clinical settings could beis
+18
+19
+expected compared to manual landmarking. However, researchers should
+20
+remember that when using deep learning models, the high-performance results of
+21
+any newly developed model can only be accepted in the research and clinical
+22
+communities through well-designed and well-conducted studies that reduce bias
+23
+and report results thoroughly and transparently.
+24
+25
+Conclusion
+27
+This systematic review has highlighted a few crucially important points as we aspire
+28
+to achieve automated landmark annotation in 3-D facial imaging.
+29
+30
+1- The overall performance of the automated 3D facial landmarking models
+31
+varies varied among between the different algorithms used, and the best
+32
+performance was achieved by using deep learning models. Yet However, it
+33
+34
+is still necessary to verify the generalisability and reliability of these models
+35
+by using adequate images for a representative population and conducting a
+36
+well-designed study that minimises bias and is transparently reported.
+37
+2- Automated landmarking models of 3D facial images in clinical and biological
+38
+settings at present are unable to compete with manual landmarking in terms
+39
+of the accuracy of landmark detection.
+40
+41
+3- Future studies should focus on implementing the recent advancements of
+42
+the deep learning models in developing automated 3D facial landmarking for
+43
+clinical and biological purposes. Researchers should bear in mind that to be
+44
+robust, deep learning techniques are heavily influenced by the quality and
+
+45
+quantity of the training data.
+46
+47
+Acknowledgements
+49
+Not applicable.
+50
+51
+Funding
+52
+53
+This study did not receive any specific funding.
+
+54
+55
+56
+57
+58
+59
+60
+
+For Peer Review
+
+24
+29
+35
+40
+46
+51
+Page 17 of 51
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+Ethics approval information
+11
+12
+Not applicable.
+
+13
+14
+Data availability
+15
+16
+The data underlying this article are available in the article and in its online
+17
+supplementary material
+18
+19
+References:
+20
+1.
+Yu J, Hu Y, Huang M, Chen J, Ding X, Zheng L. A three-dimensional analysis of
+21
+skeletal and dental characteristics in skeletal class III patients with facial asymmetry. J Xray
+22
+Sci Technol. 2018;26(3):449-62.
+23
+2.
+Claes P, Roosenboom J, White JD, Swigut T, Sero D, Li J, et al. Genome-wide
+mapping of global-to-local genetic effects on human facial shape. Nat Genet.
+2018;50(3):414-23.
+25
+3.
+Hajeer MY, Ayoub AF, Millett DT. Three-dimensional assessment of facial soft-
+26
+tissue asymmetry before and after orthognathic surgery. Br J Oral Maxillofac Surg.
+27
+2004;42(5):396-404.
+28
+4.
+Cole JB, Manyama M, Larson JR, Liberton DK, Ferrara TM, Riccardi SL, et al. Human
+Facial Shape and Size Heritability and Genetic Correlations. Genetics. 2017;205(2):967-78.
+5.
+Weinberg SM, Roosenboom J, Shaffer JR, Shriver MD, Wysocka J, Claes P. Hunting
+30
+for genes that shape human faces: Initial successes and challenges for the future. Orthod
+31
+Craniofac Res. 2019;22 Suppl 1:207-12.
+32
+6.
+De Jong MA, Hysi P, Spector T, Niessen W, Koudstaal MJ, Wolvius EB, et al.
+33
+Ensemble landmarking of 3D facial surface scans. Scientific reports. 2018;8(1):1-11.
+34
+7.
+Baksi S, Freezer S, Matsumoto T, Dreyer C. Accuracy of an automated method of 3D
+soft tissue landmark detection. Eur J Orthod. 2020.
+8.
+Li M, Cole JB, Manyama M, Larson JR, Liberton DK, Riccardi SL, et al. Rapid
+36
+automated landmarking for morphometric analysis of three-dimensional facial scans.
+37
+Journal of anatomy. 2017;230(4):607-18.
+38
+9.
+Elmagarmid A, Fedorowicz Z, Hammady H, Ilyas I, Khabsa M, Ouzzani M, editors.
+39
+Rayyan: a systematic reviews web app for exploring and filtering searches for eligible
+studies for Cochrane Reviews. Evidence-Informed public health: opportunities and
+challenges Abstracts of the 22nd Cochrane Colloquium; 2014.
+41
+10.
+Whiting PF, Rutjes AW, Westwood ME, Mallett S, Deeks JJ, Reitsma JB, et al.
+42
+QUADAS-2: a revised tool for the quality assessment of diagnostic accuracy studies. Annals
+43
+of internal medicine. 2011;155(8):529-36.
+44
+11.
+Bannister JJ, Crites SR, Aponte JD, Katz DC, Wilms M, Klein OD, et al. Fully
+45
+automatic landmarking of syndromic 3D facial surface scans using 2D images. Sensors.
+2020;20(11):3171.
+12.
+Fu Z, Jiao J, Suttie M, Noble JA, editors. Cross-Task Representation Learning for
+47
+Anatomical Landmark Detection. International Workshop on Machine Learning in Medical
+48
+Imaging; 2020: Springer.
+49
+13.
+Wang J, Fang S, Fang M, Wilson J, Herrick N, Walsh S, editors. Automatic Landmark
+50
+Placement for Large 3D Facial Image Dataset. 2019 IEEE International Conference on Big
+Data (Big Data); 2019: IEEE.
+14.
+Sukno FM, Waddington JL, Whelan PF. 3-D facial landmark localization with
+52
+asymmetry patterns and shape regression from incomplete local features. IEEE transactions
+53
+on cybernetics. 2014;45(9):1717-30.
+54
+55
+56
+57
+58
+59
+60
+
+For Peer Review
+
+15
+20
+26
+31
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+Page 18 of 51
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+15.
+Guo J, Mei X, Tang K. Automatic landmark annotation and dense correspondence
+11
+registration for 3D human facial images. BMC bioinformatics. 2013;14(1):1-12.
+12
+16.
+Liang S, Wu J, Weinberg SM, Shapiro LG. Improved detection of landmarks on 3D
+13
+human face data. Annu Int Conf IEEE Eng Med Biol Soc. 2013;2013:6482-5.
+14
+17.
+Vezzetti E, Marcolin F, Tornincasa S, Ulrich L, Dagnes N. 3D geometry-based
+automatic landmark localization in presence of facial occlusions. Multimedia Tools and
+Applications. 2018;77(11):14177-205.
+16
+18.
+Abu A, Ngo CG, Abu-Hassan NIA, Othman SA. Automated craniofacial landmarks
+17
+detection on 3D image using geometry characteristics information. BMC bioinformatics.
+18
+2019;19(13):65-80.
+19
+19.
+de Jong MA, Hysi P, Spector T, Niessen W, Koudstaal MJ, Wolvius EB, et al.
+Ensemble landmarking of 3D facial surface scans. Sci Rep. 2018;8(1):12.
+20.
+Huang R, Suttie M, Noble JA. An automated CNN-based 3D anatomical landmark
+21
+detection method to facilitate surface-based 3D facial shape analysis. Uncertainty for Safe
+22
+Utilization of Machine Learning in Medical Imaging and Clinical Image-Based Procedures:
+23
+Springer; 2019. p. 163-71.
+24
+21.
+Palmer R, Helmholz P, Baynam G. Cliniface: Phenotypic Visualisation and Analysis
+25
+Using Non-Rigid Registration of 3d Facial Images. The International Archives of
+Photogrammetry, Remote Sensing and Spatial Information Sciences. 2020;43:301-8.
+22.
+Lippold C, Liu X, Wangdo K, Drerup B, Schreiber K, Kirschneck C, et al. Facial
+27
+landmark localization by curvature maps and profile analysis. Head & face medicine.
+28
+2014;10(1):1-7.
+29
+23.
+de Jong MA, Wollstein A, Ruff C, Dunaway D, Hysi P, Spector T, et al. An automatic
+30
+3D facial landmarking algorithm using 2D gabor wavelets. IEEE Transactions on Image
+Processing. 2015;25(2):580-8.
+24.
+Kazemi V, Sullivan J, editors. One millisecond face alignment with an ensemble of
+32
+regression trees. Proceedings of the IEEE conference on computer vision and pattern
+33
+recognition; 2014.
+34
+25.
+White JD, Ortega-Castrillón A, Matthews H, Zaidi AA, Ekrami O, Snyders J, et al.
+35
+MeshMonk: Open-source large-scale intensive 3D phenotyping. Scientific reports.
+36
+2019;9(1):1-11.
+26.
+Schwendicke F, Chaurasia A, Arsiwala L, Lee J-H, Elhennawy K, Jost-Brinkmann P-G,
+et al. Deep learning for cephalometric landmark detection: systematic review and meta-
+38
+analysis. Clinical oral investigations. 2021;25(7):4299-309.
+39
+27.
+Dot G, Rafflenbeul F, Arbotto M, Gajny L, Rouch P, Schouman T. Accuracy and
+40
+reliability of automatic three-dimensional cephalometric landmarking. International Journal
+41
+of Oral and Maxillofacial Surgery. 2020;49(10):1367-78.
+28.
+Houston W. The analysis of errors in orthodontic measurements. American journal
+of orthodontics. 1983;83(5):382-90.
+43
+29.
+Plooij J, Swennen G, Rangel F, Maal T, Schutyser F, Bronkhorst E, et al. Evaluation of
+44
+reproducibility and reliability of 3D soft tissue analysis using 3D stereophotogrammetry.
+45
+International journal of oral and maxillofacial surgery. 2009;38(3):267-73.
+46
+30.
+Gwilliam JR, Cunningham SJ, Hutton T. Reproducibility of soft tissue landmarks on
+47
+three-dimensional facial scans. The European Journal of Orthodontics. 2006;28(5):408-15.
+31.
+Hajeer MY, Ayoub AF, Millett DT, Bock M, Siebert JP. Three-dimensional imaging in
+orthognathic surgery: the clinical application of a new method. The International journal of
+49
+adult orthodontics and orthognathic surgery. 2002;17(4):318-30.
+50
+32.
+Düppe K, Becker M, Schönmeyr B. Evaluation of facial anthropometry using three-
+51
+dimensional photogrammetry and direct measuring techniques. Journal of Craniofacial
+52
+Surgery. 2018;29(5):1245-51.
+53
+54
+55
+56
+57
+58
+59
+60
+37
+42
+48
+
+For Peer Review
+
+15
+20
+40
+Page 19 of 51
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+33.
+Baysal A, Sahan AO, Ozturk MA, Uysal T. Reproducibility and reliability of three-
+11
+dimensional soft tissue landmark identification using three-dimensional
+12
+stereophotogrammetry. The Angle Orthodontist. 2016;86(6):1004-9.
+13
+34.
+Aldridge K, Boyadjiev SA, Capone GT, DeLeon VB, Richtsmeier JT. Precision and
+14
+error of three-dimensional phenotypic measures acquired from 3dMD photogrammetric
+images. American journal of medical genetics Part A. 2005;138(3):247-53.
+35.
+Taati B, Zhao S, Ashraf AB, Asgarian A, Browne ME, Prkachin KM, et al. Algorithmic
+16
+bias in clinical populations—evaluating and improving facial analysis technology in older
+17
+adults with dementia. IEEE Access. 2019;7:25527-34.
+18
+36.
+Aynechi N, Larson BE, Leon-Salazar V, Beiraghi S. Accuracy and precision of a 3D
+19
+anthropometric facial analysis with and without landmark labeling before image
+acquisition. The Angle Orthodontist. 2011;81(2):245-52.
+37.
+Toma AM, Zhurov A, Playle R, Ong E, Richmond S. Reproducibility of facial soft
+21
+tissue landmarks on 3D laser-scanned facial images. Orthod Craniofac Res. 2009;12(1):33-
+22
+42.
+23
+38.
+Chen X, Lian C, Deng HH, Kuang T, Lin H-Y, Xiao D, et al. Fast and Accurate
+24
+Craniomaxillofacial Landmark Detection via 3D Faster R-CNN. IEEE Transactions on Medical
+25
+Imaging. 2021;40(12):3867-78.
+39.
+Liu Q, Deng H, Lian C, Chen X, Xiao D, Ma L, et al., editors. SkullEngine: A Multi-
+Stage CNN Framework for Collaborative CBCT Image Segmentation and Landmark
+27
+Detection. International Workshop on Machine Learning in Medical Imaging; 2021:
+28
+Springer.
+29
+40.
+Qian J, Cheng M, Tao Y, Lin J, Lin H, editors. CephaNet: An improved faster R-CNN
+30
+for cephalometric landmark detection. 2019 IEEE 16th International Symposium on
+31
+Biomedical Imaging (ISBI 2019); 2019: IEEE.
+32
+33
+34
+Figures and Tables captions
+35
+Figure 1: PRISMA Flow chart illustrating the study selection process.
+36
+37
+Figure 2: The 3D facial landmarks that have been used in the included studies.
+38
+Midline landmarks: g=glabella, n=nasion, prn=pronasale, sn=subnasale,
+39
+ls=labialesuperius, st=stomion, li=labialeinferius, sl=sublabiale, po=pogonion,
+g=gnathion, me=menton. Bilateral landmarks: en=endocanthion, ex=xocanthion,
+mso= mid-supraorbital, mio=mid-infraorbital, da=dacryon, al=alare, ac= alar
+41
+curvature, sag=superior alar groove, sa=subalare, ect=ectoconchion,
+42
+ss=subspinale, cp= crista philtri, ch=chelion, sl=sublabiale z= zygion. (Tragion and
+43
+earlobe tip landmarks are not illustrated as the ears area is not shown in this 3D
+44
+model).
+45
+Table 1: Description of PICO (P=Population, I=Intervention, C=Comparison,
+46
+O=Outcome) elements and keywords.
+47
+48
+Table 2: Bias and applicability assessment of included studies using tailored
+49
+QUADAS-2 tool.
+50
+51
+Table 3: Overview of the characteristics of all the included studies.
+52
+53
+Table 4: Characteristic of the included studies from test and reference perspectives.
+54
+55
+56
+57
+58
+59
+60
+26
+
+For Peer Review
+
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+Page 20 of 51
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+Table 5: Landmark identification error for 23 of the most reported landmarks in the
+11
+included studies.
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+For Peer Review
+
+Page 21 of 51
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+134x157mm (300 x 300 DPI)
+47
+
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+For Peer Review
+
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+Page 22 of 51
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+Table 1: Description of PICO (P=Population, I=Intervention, C=Comparison, O=Outcome) elements and
+46
+keywords.
+47
+114x147mm (300 x 300 DPI)
+
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+For Peer Review
+
+Page 23 of 51
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+Table 2: Bias and applicability assessment of included studies using tailored QUADAS-2 tool.
+33
+143x112mm (300 x 300 DPI)
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+Page 24 of 51
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+Table 3: Overview of the characteristics of all the included studies.
+29
+30
+151x99mm (300 x 300 DPI)
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+For Peer Review
+
+Page 25 of 51
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+Table 3: Overview of the characteristics of all the included studies.
+27
+28
+145x87mm (300 x 300 DPI)
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+For Peer Review
+
+42
+43
+44
+45
+46
+For Peer Review
+
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+Page 26 of 51
+
+
+1
+2
+3
+4
+5
+6Author
+7 / Year
+8
+9 10
+
+
+3D
+AS
+
+
+No
+of
+LM
+Index Test – Automatic 3D
+Facial Landmarking
+Reference Standard – Manual Annotation
+
+The
+Performance
+Evaluation
+Method
+Main Results:
+Total Mean
+Difference and SD
+Between Index Test
+and Reference
+Standard
+
+Landmar
+ks with
+Good
+Localizati
+on
+
+
+Landmarks
+with Poor
+Localization
+
+Algorithm
+Used
+Traini
+ng
+Datase
+t
+
+Test
+dataset
+
+Number of
+Observers
+Observer'
+s
+Experienc
+e Level
+
+Observers
+Repetition
+Intra-
+Observer
+/Inter-
+Observer
+Results
+11
+12
+13
+14
+15
+16Baksi
+17 et al
+18
+192021
+20
+21
+22
+23
+24
+
+
+
+
+
+3dMD
+
+
+
+
+
+21
+
+
+
+
+
+Template
+based
+
+
+
+
+
+N/A
+
+
+
+
+
+30
+
+
+
+
+
+2 observers
+
+
+
+Experienc
+ed
+orthodonti
+st +
+orthodonti
+c resident
+
+
+
+observer
+1 /2
+weeks
+interval/fo
+r all 30
+facial
+scans
+
+
+Intra-class
+correlation
+coefficient
+for intra-
+observer
+reliability
+and inter-
+observer
+variability
+was >0.9
+Direct
+comparison
+of manual vs
+automatic
+landmark
+placements.
+M ± SD 3.2 ±
+1.64 mm. 16 out of
+21 landmarks had a
+mean difference <
+4 mm.
+The
+points
+with the
+greatest
+agreement
+(≤2 mm)
+were
+mainly
+located in
+the
+midline:
+prn, sn,
+ss, ls
+
+
+Glabella
+showed the
+largest
+discrepancy.
+LM with
+discrepancy
+≥4 mm were ex
+(right), al
+(right), sl
+(right), and gn.
+
+
+10 linear
+measurement
+s
+Only five had a
+moderate to good
+agreement (ICC >
+0.5) between
+manual vs
+automated
+identification
+processes
+25
+26
+27
+28
+29
+30Bannis
+31ter et
+32 al.
+332020
+34
+35
+36
+37
+38
+
+
+
+
+
+3dMD
+
+
+
+
+
+12
+
+Deep
+convoluti
+onal
+regression
+network
+(pretraine
+d
+algorithm
+)
+
+
+
+
+
+N/A
+
+
+
+
+
+444
+
+
+
+2 observers
+(no
+specificatio
+n of their
+background
+)
+
+
+
+
+
+NR
+
+
+2 times
+for
+one
+observer
+(subset of
+100 sans)
+One day
+interval
+Slightly
+lower overall
+average
+intra-
+observer
+landmark
+distance than
+that of inter-
+observer
+distance with
+values of 1.1
+and 1.5 mm,
+respectively
+
+Direct
+comparison
+of manual,
+automatic
+and semi-
+automatic
+(NICP)
+landmark
+placements.
+
+
+
+
+Automatic
+algorithm= 2.5 mm
+NICP= 3.1 mm
+
+
+
+Mouth
+landmarks
+(ch, ls, li),
+nose
+landmarks
+(prn, sn)
+
+
+
+
+eye
+landmark(en,ex)
+, n, gn
+39
+40
+41
+
+42
+43
+44
+45
+46
+For Peer Review
+
+Page 27 of 51
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+
+
+1
+2
+3 Fu et
+4 al
+5 2020
+6
+7
+8
+
+
+3dMD
+
+
+NR
+Cross-
+task
+representa
+tion
+learning
+(dep
+learning)
+
+
+80%
+
+
+20%
+
+
+1 (expert)
+
+
+Expert
+
+
+NR
+
+
+NR
+Mean error +
+Failure Rate
+(FR) > 1.2+
+Area-Under-
+the-Curve
+(AUC)
+
+M ±SD: 0.830 ±
+0.245 FR: 7.74%
+AUC: 0.32
+
+
+NR
+
+
+NR
+9
+10
+11
+12
+13
+14
+1P5almer
+16 et al
+172020
+18
+19
+20
+21
+22
+23
+
+
+
+3dMD
++
+Vectra
+H1
+(handh
+eld)
+
+
+
+
+
+N/
+A
+
+
+
+
+
+Template
+based
+
+
+
+
+
+N/A
+
+
+
+
+
+50
+
+1 Expert
+(direct
+manual
+measureme
+nt on
+participants
+face) + 4
+non expert
+(indirect
+measureme
+nts)
+
+
+
+
+
+Experienc
+ed clinical
+geneticist
+
+
+
+
+
+NR
+
+
+
+
+
+NR
+Direct
+comparison
+of linear
+measurement
+s from
+manual
+(ground
+truth),
+indirect
+(non-expert
+assessor) and
+automated
+(cliniface)
+methods
+
+
+
+
+RMSE of
+Cliniface’s
+measurements was
+4.87 mm.
+
+
+
+
+
+N/A
+
+
+
+
+
+N/A
+24
+25
+26
+27
+28
+29
+30
+31Abu et
+32 al
+332019
+34
+35
+36
+37
+38
+39
+40
+41
+
+
+
+
+
+
+Vectra
+-M5
+360
+
+
+
+
+
+
+
+10
+
+
+
+
+
+
+Geometri
+c based
+
+
+
+
+
+
+
+N/A
+
+
+
+
+
+
+
+60
+
+
+
+
+
+
+
+1
+
+
+
+
+
+
+
+NR
+
+
+
+
+
+
+
+NR
+
+The ICC test
+was
+performed to
+check the
+reliability of
+the linear
+measurement
+s data taken
+manually.
+ICC is 0.99,
+with a 95%
+confidence
+interval, CI
+(0.98, 0.99)
+Direct
+comparison
+of manual
+and
+automatic
+landmark
+placements.
+
+
+2.23 mm
+
+
+
+
+
+
+
+Ch and A.
+
+
+
+
+
+
+
+Sn, sto, ls and li
+8 linear
+measurement
+s and 5
+proportional
+indices
+extracted
+from the
+nose and
+orolabial
+region
+
+
+
+
+2.16 mm ± 2.71
+
+39
+40
+41
+42
+43
+44
+45
+46
+For Peer Review
+
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+Page 28 of 51
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+37
+38
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10Huang
+11 et al
+122019
+13
+14
+15
+16
+17
+18
+19
+20
+
+
+
+
+
+
+
+
+3dMD
+
+
+
+
+
+
+
+
+20
+
+
+
+
+
+
+
+CNN
+model
+
+
+
+
+
+
+
+
+622
+
+
+
+
+
+
+
+
+155
+
+
+
+
+
+
+
+
+1 (expert)
+
+
+
+
+
+
+
+
+Expert
+
+
+
+
+
+
+
+
+NR
+
+
+
+
+
+
+
+
+NR
+The
+localization
+accuracy was
+evaluated by
+calculating
+the
+Euclidean
+distance
+between the
+ground truth
+(GT) and the
+predictions
+in 2D
+
+
+
+
+
+0.67 mm ± 0.63
+
+
+
+
+
+
+
+
+NR
+
+
+
+
+
+
+
+
+NR
+Normalizatio
+n mean error
+3D
+
+4.3 ± 3.9
+palpebral
+ﬁssure length
+(PFL) error
+
+1.2 ± 0.8
+21
+22
+23
+24
+25Wang
+26 et al
+272019
+28
+29
+30
+31
+
+
+
+Vectra
+H1
+handh
+eld
+
+
+
+
+23
+
+Combined
+approach
+(template
+based +
+visual
+analytics
+approach)
+(VAA)
+Traini
+ng
+set:30,
+one
+image
+was
+used
+as
+templa
+te face
+
+
+
+
+8
+
+
+
+
+2 observers
+
+
+
+expert+
+student
+
+
+
+
+I time
+
+
+
+
+NR
+
+Direct
+comparison
+of manual
+and
+automatic
+landmark
+placements.
+
+
+
+
+2.23 mm
+
+the
+midline
+LM, tend
+to exhibit
+less error
+than the
+bi-lateral
+LM.
+
+
+
+mio, z, go (R),
+Ect (L) and, n
+32 De
+33
+3J4ong et
+35 al
+362018
+
+3dMD
+
+21
+Combined
+approach
+(Statistica
+l
+ensemble)
+
+40
+Used
+the
+same
+set of
+trainin
+1 the
+ground
+truth
+consisted of
+a single
+
+NR
+
+Unclear
+
+NR
+cross-
+validation
+(leave-one-
+out
+experiments)
+
+1.7 mm +/- 0.4
+Landmark
+7 and 13
+(Nose
+landmarks
+)
+
+Landmark 9.
+(upper eyelid)
+
+
+39
+40
+41
+42
+43
+44
+45
+46
+For Peer Review
+
+Page 29 of 51
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+
+
+
+
+g set
+(cross
+validat
+ion)
+manual
+labelling of
+the entire
+data set.
+
+
+
+
+
+
+
+
+
+Heritability
+estimate
+The highest
+observed
+heritability was
+87% for the area of
+the triangle defined
+by landmarks 10,
+12, and 18. The
+best distance had
+heritability of 72%.
+Angles and
+coordinates had
+best heritabilities of
+69% and 64%,
+respectively.
+Heritabilities
+improved by ~5%
+
+
+18
+19
+20Vezzet
+21ti et al
+22
+232018
+24
+25
+
+
+NR
+
+
+13
+
+
+Geometri
+c based
+
+
+N/A
+
+
+230
+
+
+NR
+
+
+NR
+
+
+NR
+
+
+NR
+Direct
+comparison
+of manual
+and
+automatic
+landmark
+placements.
+
+
+4.73 mm
+
+
+prn
+
+The worst
+results were
+obtained for sn
+26
+27
+28
+29
+30
+31
+3L2 i et al
+332017
+34
+35
+36
+37
+38
+
+Creafo
+rm
+Megac
+apturo
+r and
+Gemin
+i 3D
+camera
+system
+s.
+
+
+
+
+
+29
+
+
+
+
+
+Template
+based
+
+
+50 (to
+create
+averag
+e face
+as a
+templa
+te)
+
+
+
+
+Exp1:
+30
+
+
+
+
+
+2 observers
+
+
+
+
+
+NR
+
+
+4 times.
+
+Different
+days
+(interval
+not
+specified)
+MANOVA
+showed that
+observer
+error
+accounted for
+(7%) despite
+signiﬁcant
+attempts to
+standardize
+landmark
+placement.
+Measurement
+and inter-
+
+Centroid size
+(CS)
+comparison
+to estimates
+of size across
+manual and
+automatic
+methods
+CS estimates were
+consistent between
+the two
+methods (r =0.97, P
+<0.0001).
+The differences
+between the manual
+and automated
+methods average
+<1 mm, with a few
+landmarks showing
+mean differences of
+1–2 mm
+
+
+
+
+
+Sn, li, and
+ls
+
+
+
+
+
+Tr and Z
+
+43
+44
+45
+46
+For Peer Review
+
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+Page 30 of 51
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+
+
+
+
+
+
+
+
+
+
+
+Exp2:
+79
+
+
+
+observer
+error for
+manual
+landmarking
+differ among
+landmarks.
+The results
+demonstrated
+that manual
+landmarking,
+particularly
+by multiple
+observers,
+was
+associated
+with
+signiﬁcant
+measurement
+error.
+
+
+
+
+
+Overall
+shape
+variation
+(multivariate
+analysis of
+variance-
+MANOVA)
+
+
+
+The PLS analysis
+showed that the two
+methods yield
+variance–
+covariance matrices
+that are highly
+correlated.
+Landmarking errors
+occurred in about
+5% of the
+Tanzanian sample
+
+
+21
+22
+23
+24Sukno
+25et al.
+262015
+27
+28
+
+Handh
+eld
+laser
+scanne
+r
+
+
+14
+
+Asymmet
+ry pattern
+and shape
+regression
+based
+
+
+943
+
+Clinica
+l data
+set:
+144
+
+
+NR
+
+
+Expert
+
+
+NR
+
+
+NR
+Direct
+comparison
+of manual
+and
+automatic
+landmark
+placements.
+overall accuracy of
+2.3 mm, with
+typical errors below
+2 mm for more than
+half of the targeted
+landmarks
+
+
+N, en and
+sn
+
+
+Po and ex
+29Lippol
+30d et al
+312014
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+
+FastS
+CAN
+™
+laser-
+scanni
+ng
+system
+NR
+Geometri
+c based
+(Cervatur
+e map and
+profile
+analysis)
+N/A
+15
+1
+experienc
+ed
+orthodonti
+st
+3 times
+for one
+image by
+same
+observer.
+The three
+facial scans
+of a single
+patient on
+three
+consecutive
+days yielded
+almost
+identical
+values for all
+seven
+distances
+evaluated in
+11 linear
+facial
+measurement
+s
+Lin’s CCC showed
+substantial
+agreement between
+digital and manual
+measurements for 4
+of the 7 distances
+evaluated.
+N/A
+N/A
+
+42
+43
+44
+45
+46
+For Peer Review
+
+Page 31 of 51
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+
+
+1
+2
+
+
+
+
+
+
+
+
+this study.
+
+
+
+
+3
+
+4
+
+5
+
+6
+
+7
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+3dMD
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+17
+
+
+
+
+
+
+
+
+
+
+
+Combined
+approach
+(geometri
+c and
+texture
+based)
+
+
+
+
+
+
+
+
+
+
+
+
+80
+Han
+Chines
+e
+Landm
+arking
+accura
+cy:
+239=1
+15
+Han
+Chines
+e+ 124
+Uyghu
+r
+Chines
+e.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+NR
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+NR
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+NR
+
+
+Direct
+comparison
+of manual
+and
+automatic
+landmark
+placements.
+
+mean errors
+between 1mm and
+1.5mm, indicating
+rather high
+accuracy. Most of
+the SD values are
+below 1mm,
+suggesting good
+consistency of the
+annotation across
+different samples.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+prn and ch
+
+
+
+
+
+
+
+
+
+
+
+
+
+Po and earlobe
+tips
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+
+
+Robust
+ness of
+registr
+ation:1
+000=
+684
+Han
+Chines
+e +
+316
+Uyghu
+rs
+Chines
+e
+The mean
+and standard
+deviation
+(SD) of the
+annotation
+errors
+measured in
+Euclidean
+distance and
+root mean
+square
+(RMS) errors
+were
+calculated
+
+21
+
+22
+
+23Guo et
+
+24 al
+
+252013
+
+26
+27
+28
+29
+RMS error is within
+the mean range 1.1-
+2mm
+30
+
+31
+
+32
+
+33
+
+34
+
+35
+
+Robustness
+of the
+registration
+method
+Most parts have
+point-wise errors
+much less than 0.9
+mm, indicating
+robustness of
+registration method
+36
+37
+38
+39
+40
+41
+
+42
+43
+44
+45
+46
+For Peer Review
+
+15
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+Page 32 of 51
+
+
+
+
+
+
+
+
+
+
+
+
+12
+NR=Not reported; N/A=Not applicable, AS= acquisition system, R= right, L= left, g= glabella, ex= exocanthion, en=endocanthion, n=nasion, prn=pronasale, sn=subnasale,
+13
+al=alare, sa=subalare, ss=subspinale, ls=labiale superius, li= Labiale inferius, ch= chelion, sto=stomion, sl=sublabiale gn=gnathion, ,go=gonion, z=zygion, mio=mid-
+14
+infraorbital, tr=tragion ect=ectoconchion,
+16
+Q1 studies
+Q2 studies
+Q1+Q2 studies.
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+1
+2
+3
+4
+
+
+
+
+
+
+
+
+
+
+with varying
+references.
+
+
+5
+6
+7 Liang
+8 et al
+9 2013
+10
+11
+
+
+3dMD
+
+
+20
+
+Geometri
+c and
+Template
+based
+N/A
+(only
+one
+templa
+te
+mesh
+used)
+
+
+115
+
+
+1
+
+
+Medical
+expert
+
+
+NR
+
+
+NR
+Direct
+comparison
+of manual
+and
+automatic
+landmark
+placements.
+
+
+2.64 mm
+
+
+Prn and sa
+
+
+Gn and ex
+
+
+Page 33 of 51
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+Table 5: Landmark identification error for 23 of the most reported landmarks in the included studies.
+29
+30
+155x105mm (300 x 300 DPI)
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+For Peer Review
+
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+Page 34 of 51
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+Table 5: Landmark identification error for 23 of the most reported landmarks in the included studies.
+29
+30
+155x105mm (300 x 300 DPI)
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+For Peer Review
+
+32
+Page 35 of 51
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+Figure 2: The 3D facial landmarks that have been used in the included studies. Midline landmarks:
+31
+g=glabella, n=nasion, prn=pronasale, sn=subnasale, ls=labialesuperius, st=stomion, li=labialeinferius,
+sl=sublabiale, po=pogonion, g=gnathion, me=menton. Bilateral landmarks: en=endocanthion,
+ex=xocanthion, mso= mid-supraorbital, mio=mid-infraorbital, da=dacryon, al=alare, ac= alar curvature,
+33
+sag=superior alar groove, sa=subalare, ect=ectoconchion, ss=subspinale, cp= crista philtri, ch=chelion,
+34
+sl=sublabiale z= zygion. (Tragion and earlobe tip landmarks are not illustrated as the ears area is not shown
+35
+in this 3D model).
+36
+37
+104x74mm (300 x 300 DPI)
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+For Peer Review
+
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+1
+             PRISMA 2020 Checklist
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+Page 36 of 51
+Section and
+Topic
+Item
+#
+
+Checklist item
+Location
+where item
+is reported
+TITLE
+
+Title
+1
+Identify the report as a systematic review.
+Main file:
+P 1
+ABSTRACT
+
+Abstract
+2
+See the PRISMA 2020 for Abstracts checklist.
+Main file:
+P1
+INTRODUCTION
+
+Rationale
+3
+Describe the rationale for the review in the context of existing knowledge.
+Main file:
+P2
+Objectives
+4
+Provide an explicit statement of the objective(s) or question(s) the review addresses.
+Main file:
+P2,3
+METHODS
+
+Eligibility criteria
+5
+Specify the inclusion and exclusion criteria for the review and how studies were grouped for the syntheses.
+Main file:
+P3
+Information
+sources
+6
+Specify all databases, registers, websites, organisations, reference lists and other sources searched or consulted to identify studies. Specify the
+date when each source was last searched or consulted.
+Main file:
+P4
+Search strategy
+7
+Present the full search strategies for all databases, registers and websites, including any filters and limits used.
+Sup file:
+table 1
+Selection process
+8
+Specify the methods used to decide whether a study met the inclusion criteria of the review, including how many reviewers screened each record
+and each report retrieved, whether they worked independently, and if applicable, details of automation tools used in the process.
+Main file:
+P4
+Data collection
+process
+9
+Specify the methods used to collect data from reports, including how many reviewers collected data from each report, whether they worked
+independently, any processes for obtaining or confirming data from study investigators, and if applicable, details of automation tools used in the
+process.
+Main file:
+P4
+Data items
+10a
+List and define all outcomes for which data were sought. Specify whether all results that were compatible with each outcome domain in each
+study were sought (e.g. for all measures, time points, analyses), and if not, the methods used to decide which results to collect.
+Main file:
+P4,5
+Table3,4
+10b
+List and define all other variables for which data were sought (e.g. participant and intervention characteristics, funding sources). Describe any
+assumptions made about any missing or unclear information.
+Main file:
+P4,5
+Table3,4
+Study risk of bias
+assessment
+11
+Specify the methods used to assess risk of bias in the included studies, including details of the tool(s) used, how many reviewers assessed each
+study and whether they worked independently, and if applicable, details of automation tools used in the process.
+Main file:
+P5
+Effect measures
+12
+Specify for each outcome the effect measure(s) (e.g. risk ratio, mean difference) used in the synthesis or presentation of results.
+
+Synthesis
+methods
+13a
+Describe the processes used to decide which studies were eligible for each synthesis (e.g. tabulating the study intervention characteristics and
+comparing against the planned groups for each synthesiFso(ritePmee#r 5R)e).view
+Main file:
+P5
+
+
+Page 37 of 51
+1
+
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+
+PRISMA 2020 Checklist
+Section and
+Topic
+Item
+#
+
+Checklist item
+Location
+where item
+is reported
+
+13b
+Describe any methods required to prepare the data for presentation or synthesis, such as handling of missing summary statistics, or data
+conversions.
+
+13c
+Describe any methods used to tabulate or visually display results of individual studies and syntheses.
+Main file:
+P5
+13d
+Describe any methods used to synthesize results and provide a rationale for the choice(s). If meta-analysis was performed, describe the
+model(s), method(s) to identify the presence and extent of statistical heterogeneity, and software package(s) used.
+Main file:
+P5
+13e
+Describe any methods used to explore possible causes of heterogeneity among study results (e.g. subgroup analysis, meta-regression).
+
+13f
+Describe any sensitivity analyses conducted to assess robustness of the synthesized results.
+
+Reporting bias
+assessment
+14
+Describe any methods used to assess risk of bias due to missing results in a synthesis (arising from reporting biases).
+
+Certainty
+assessment
+15
+Describe any methods used to assess certainty (or confidence) in the body of evidence for an outcome.
+
+RESULTS
+
+Study selection
+16a
+Describe the results of the search and selection process, from the number of records identified in the search to the number of studies included in
+the review, ideally using a flow diagram.
+Main file:
+P5,6
+16b
+Cite studies that might appear to meet the inclusion criteria, but which were excluded, and explain why they were excluded.
+
+Study
+characteristics
+17
+Cite each included study and present its characteristics.
+Main file:
+P 7-11
+Risk of bias in
+studies
+18
+Present assessments of risk of bias for each included study.
+Main file:
+P5
+Results of
+individual studies
+19
+For all outcomes, present, for each study: (a) summary statistics for each group (where appropriate) and (b) an effect estimate and its precision
+(e.g. confidence/credible interval), ideally using structured tables or plots.
+Table 4,5
+Results of
+syntheses
+20a
+For each synthesis, briefly summarise the characteristics and risk of bias among contributing studies.
+
+20b
+Present results of all statistical syntheses conducted. If meta-analysis was done, present for each the summary estimate and its precision (e.g.
+confidence/credible interval) and measures of statistical heterogeneity. If comparing groups, describe the direction of the effect.
+
+20c
+Present results of all investigations of possible causes of heterogeneity among study results.
+Table 3,4
+20d
+Present results of all sensitivity analyses conducted to assess the robustness of the synthesized results.
+
+Reporting biases
+21
+Present assessments of risk of bias due to missing results (arising from reporting biases) for each synthesis assessed.
+
+Certainty of
+evidence
+22
+Present assessments of certainty (or confidence) in the body of evidence for each outcome assessed.
+
+DISCUSSION
+
+Discussion
+23a
+Provide a general interpretation of the results in the context of other evidence.
+Main file:
+P11-14
+23b
+Discuss any limitations of the evidence included in the reFvoier wP.eer Review
+Main file:
+
+
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+1
+             PRISMA 2020 Checklist
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+Page 38 of 51
+27 From: Page MJ, McKenzie JE, Bossuyt PM, Boutron I, Hoffmann TC, Mulrow CD, et al. The PRISMA 2020 statement: an updated guideline for reporting systematic reviews. BMJ 2021;372:n71. doi: 10.1136/bmj.n71
+28
+For more information, visit: http://www.prisma-statement.org/
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+For Peer Review
+46
+47
+Section and
+Topic
+Item
+#
+
+Checklist item
+Location
+where item
+is reported
+
+
+
+P14-15
+23c
+Discuss any limitations of the review processes used.
+
+23d
+Discuss implications of the results for practice, policy, and future research.
+Main file:
+P15
+OTHER INFORMATION
+
+Registration and
+protocol
+24a
+Provide registration information for the review, including register name and registration number, or state that the review was not registered.
+Main file:
+P3
+24b
+Indicate where the review protocol can be accessed, or state that a protocol was not prepared.
+Main file:
+P3
+24c
+Describe and explain any amendments to information provided at registration or in the protocol.
+
+Support
+25
+Describe sources of financial or non-financial support for the review, and the role of the funders or sponsors in the review.
+Main file:
+P16
+Competing
+interests
+26
+Declare any competing interests of review authors.
+Main file:
+P16
+Availability of
+data, code and
+other materials
+27
+Report which of the following are publicly available and where they can be found: template data collection forms; data extracted from included
+studies; data used for all analyses; analytic code; any other materials used in the review.
+
+
+
+For Peer Review
+
+Page 39 of 51
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+
+
+1
+2
+3
+Supplementary table 1: Search strategy used in this study.
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+1.
+Landmarking
+2.
+Landmarks
+3.
+Anatomic landmarks (MeSH)
+4.
+1 OR 2 OR 3
+5.
+Face / diagnostic imaging (MeSH)
+6.
+Face
+7.
+Facial
+8.
+5 OR 6 OR 7
+9.
+3D
+10.
+Three dimensional
+11.
+Three-dimensional
+12.
+Imaging/Three-dimensional (MeSH)
+13.
+9 OR 10 OR 11 OR 12
+14.
+Valid*
+15.
+Accuracy
+16.
+Accurate
+17.
+Repeatability
+18.
+Agreement
+19.
+Concordance
+20.
+Reproducibility
+21.
+Reliability
+22.
+Compar*
+23.
+Performance
+24.
+Error
+25.
+Reproducibility of results (MeSH)
+26.
+Observer variation (MeSH)
+27.
+14 OR 15 OR 16 OR 17 OR 18 OR 19 OR 20 OR 21 OR 22 OR 23 OR 24 OR 25
+OR 26
+28.
+Automat*
+29.
+Detection
+30.
+Identification
+31.
+Localisation
+32.
+Algorithm
+33.
+28 OR 29 or 30 or 31 or 32
+
+
+For Peer Review
+
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+Page 40 of 51
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+Supplementary Figure 1: Research topic area of the included studies.
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+Supplementary Figure 2: Number of included studies by year of publication.
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+29%
+21%
+
+7%
+
+14%
+29%
+Orthodontics
+Facial syndrome
+Fetal Alcohol Spectrum
+Disorders
+Genetic
+
+Clinical/ Medical
+Number of articles
+5
+
+4
+
+3
+
+2
+
+1
+
+0
+2012
+2013
+2014
+2015
+2017
+2018
+2019
+2020
+34.
+Humans (MeSH)
+35.
+Human*
+36.
+Male*
+37.
+Female*
+38.
+34 OR 35 OR 36 OR 37
+39.
+4 AND 8 AND 13 AND 27 AND 33 AND 38
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+For Peer Review
+
+3
+Page 41 of 51
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+
+
+1
+2
+Supplementary table 2: 2mm threshold of landmark identification error.
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+
+
+2mm
+thershold
+
+
+
+Guo et
+al 2013
+
+
+Liang et
+al 2013
+Sukno
+et al
+2015
+(clinical
+dataset
+group)
+
+De Jong
+et al
+2018
+
+
+Vezzetti
+et al 2018
+
+
+Abu et
+al 2019
+
+Wang
+et al
+2019
+
+
+Baksi et
+al 2020
+
+
+Bannister
+et al 2020
+
+No of LM
+17
+20
+14
+21
+13
+10
+23
+21
+12
+1
+Nasion
+≤2mm
+>2mm
+≤2mm
+≤2mm
+>2mm
+≤2mm
+>2mm
+>2mm
+>2mm
+2
+Pronasale
+≤2mm
+≤2mm
+≤2mm
+≤2mm
+>2mm
+≤2mm
+≤2mm
+≤2mm
+3
+Subnasale
+≤2mm
+>2mm
+≤2mm
+≤2mm
+>2mm
+>2mm
+>2mm
+≤2mm
+>2mm
+4
+Labiale superius
+≤2mm
+>2mm
+>2mm
+≤2mm
+>2mm
+>2mm
+≤2mm
+>2mm
+5
+Stomion
+≤2mm
+≤2mm
+
+
+
+>2mm
+
+≤2mm
+
+6
+Labiale inferius
+≤2mm
+>2mm
+>2mm
+>2mm
+>2mm
+≤2mm
+>2mm
+>2mm
+
+7
+Endocanthion
+(right)
+
+≤2mm
+
+>2mm
+
+≤2mm
+
+≤2mm
+
+>2mm
+
+
+
+>2mm
+
+>2mm
+8
+Endocanthion
+(left)
+≤2mm
+>2mm
+≤2mm
+≤2mm
+>2mm
+
+
+>2mm
+>2mm
+9
+Exocanthion
+(right)
+≤2mm
+>2mm
+>2mm
+≤2mm
+>2mm
+
+
+>2mm
+>2mm
+10
+Exocanthion
+(left)
+≤2mm
+>2mm
+>2mm
+≤2mm
+>2mm
+
+
+>2mm
+≤2mm
+11
+Alare(R)
+≤2mm
+≤2mm
+
+
+>2mm
+≤2mm
+
+>2mm
+
+12
+Alare(L)
+≤2mm
+>2mm
+
+
+>2mm
+
+>2mm
+
+
+13
+Alar curvature
+point (right)
+
+
+
+>2mm
+
+≤2mm
+
+
+
+>2mm
+
+
+
+14
+Alar curvature
+point (left)
+
+
+
+>2mm
+
+≤2mm
+
+
+
+>2mm
+
+
+15
+Subalare (right)
+>2mm
+≤2mm
+
+
+
+
+16
+Subalare (left)
+
+≤2mm
+≤2mm
+
+
+
+
+17
+Crista philtri
+(right)
+
+>2mm
+
+
+
+
+>2mm
+18
+Crista philtri
+(left)
+
+≤2mm
+
+
+
+
+>2mm
+19
+Chelion (right)
+≤2mm
+>2mm
+>2mm
+≤2mm
+
+≤2mm
+
+≤2mm
+>2mm
+20
+Chelion (left)
+≤2mm
+>2mm
+>2mm
+≤2mm
+
+>2mm
+>2mm
+21
+Pogonion
+≤2mm
+>2mm
+≤2mm
+
+≤2mm
+>2mm
+22
+Gnathion
+
+>2mm
+
+
+
+
+≤2mm
+>2mm
+>2mm
+23
+Glabella
+
+
+
+>2mm
+
+
+>2mm
+>2mm
+
+
+
+For Peer Review
+
+3
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+Page 42 of 51
+
+
+1
+2
+Supplementary table 3: 1mm threshold of landmark identification error.
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+
+
+1mm
+threshold
+
+
+
+Guo et
+al 2013
+
+
+Liang et
+al 2013
+Sukno
+et al
+2015
+(clinical
+dataset
+group)
+
+De Jong
+et al
+2018
+
+Vezzetti
+et al
+2018
+
+
+Abu et al
+2019
+
+Wang
+et al
+2019
+
+
+Baksi et
+al 2020
+
+
+Bannister
+et al 2020
+
+No of LM
+17
+20
+14
+21
+13
+10
+23
+21
+12
+1
+Nasion
+>1mm
+>1mm
+>1mm
+>1mm
+>1mm
+>1mm
+>1mm
+>1mm
+>1mm
+2
+Pronasale
+≤1mm
+>1mm
+>1mm
+>1mm
+>1mm
+>1mm
+
+>1mm
+>1mm
+3
+Subnasale
+>1mm
+>1mm
+>1mm
+>1mm
+>1mm
+>1mm
+>1mm
+>1mm
+>1mm
+4
+Labiale superius
+>1mm
+>1mm
+>1mm
+>1mm
+
+>1mm
+>1mm
+>1mm
+>1mm
+5
+Stomion
+>1mm
+>1mm
+
+
+
+>1mm
+
+>1mm
+
+6
+Labiale inferius
+>1mm
+>1mm
+>1mm
+>1mm
+
+>1mm
+>1mm
+>1mm
+>1mm
+
+7
+Endocanthion
+(right)
+
+>1mm
+
+>1mm
+
+>1mm
+
+>1mm
+
+>1mm
+
+
+
+>1mm
+
+>1mm
+8
+Endocanthion
+(left)
+>1mm
+>1mm
+>1mm
+>1mm
+>1mm
+
+
+>1mm
+>1mm
+9
+Exocanthion
+(right)
+>1mm
+>1mm
+>1mm
+>1mm
+>1mm
+
+
+>1mm
+>1mm
+10
+Exocanthion
+(left)
+>1mm
+>1mm
+>1mm
+>1mm
+>1mm
+
+
+>1mm
+>1mm
+11
+Alare(R)
+>1mm
+>1mm
+
+
+>1mm
+≤1mm
+
+>1mm
+
+12
+Alare(L)
+>1mm
+>1mm
+
+
+>1mm
+
+>1mm
+
+
+13
+Alar curvature
+point (right)
+
+
+
+>1mm
+
+>1mm
+
+
+
+>1mm
+
+
+
+14
+Alar curvature
+point (left)
+
+
+
+>1mm
+
+>1mm
+
+
+
+>1mm
+
+
+15
+Subalare (right)
+>1mm
+>1mm
+
+
+
+
+
+16
+Subalare (left)
+
+>1mm
+>1mm
+
+
+
+
+
+17
+Crista philtri
+(right)
+
+>1mm
+
+
+
+
+>1mm
+18
+Crista philtri
+(left)
+
+>1mm
+
+
+
+
+>1mm
+19
+Chelion (right)
+≤1mm
+>1mm
+>1mm
+>1mm
+
+
+≤1mm
+
+>1mm
+>1mm
+20
+Chelion (left)
+>1mm
+>1mm
+>1mm
+>1mm
+
+
+>1mm
+>1mm
+21
+Pogonion
+>1mm
+>1mm
+>1mm
+
+
+>1mm
+>1mm
+22
+Gnathion
+
+>1mm
+
+
+
+
+>1mm
+>1mm
+>1mm
+23
+Glabella
+
+
+
+>1mm
+
+
+>1mm
+>1mm
+
+
+
+For Peer Review
+
+3
+Page 43 of 51
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+
+
+1
+2
+Supplementary table 4: 0.5mm threshold of landmark identification error.
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+
+
+0.5mm
+threshold
+
+
+
+Guo et al
+2013
+
+
+Liang et
+al 2013
+Sukno
+et al
+2015
+(clinical
+dataset
+group)
+
+De Jong
+et al
+2018
+
+Vezzetti
+et al
+2018
+
+
+Abu et
+al 2019
+
+
+Wang et
+al 2019
+
+
+Baksi et
+al 2020
+
+
+Bannister
+et al 2020
+
+No of LM
+17
+20
+14
+21
+13
+10
+23
+21
+12
+1
+Nasion
+>0.5mm
+>0.5mm
+>0.5mm
+>0.5mm
+>0.5mm
+>0.5mm
+>0.5mm
+>0.5mm
+>0.5mm
+2
+Pronasale
+>0.5mm
+>0.5mm
+>0.5mm
+>0.5mm
+>0.5mm
+>0.5mm
+>0.5mm
+>0.5mm
+3
+Subnasale
+>0.5mm
+>0.5mm
+>0.5mm
+>0.5mm
+>0.5mm
+>0.5mm
+>0.5mm
+>0.5mm
+>0.5mm
+4
+Labiale
+superius
+>0.5mm
+>0.5mm
+>0.5mm
+>0.5mm
+>0.5mm
+>0.5mm
+>0.5mm
+>0.5mm
+5
+Stomion
+>0.5mm
+>0.5mm
+
+
+>0.5mm
+>0.5mm
+>0.5mm
+6
+Labiale
+inferius
+>0.5mm
+>0.5mm
+>0.5mm
+>0.5mm
+>0.5mm
+>0.5mm
+>0.5mm
+>0.5mm
+>0.5mm
+
+7
+
+Endocanthion
+(right)
+
+>0.5mm
+
+>0.5mm
+
+>0.5mm
+
+>0.5mm
+
+>0.5mm
+
+
+
+>0.5mm
+
+>0.5mm
+8
+Endocanthion
+(left)
+>0.5mm
+>0.5mm
+>0.5mm
+>0.5mm
+>0.5mm
+
+>0.5mm
+>0.5mm
+9
+Exocanthion
+(right)
+>0.5mm
+>0.5mm
+>0.5mm
+>0.5mm
+>0.5mm
+
+>0.5mm
+>0.5mm
+10
+Exocanthion
+(left)
+>0.5mm
+>0.5mm
+>0.5mm
+>0.5mm
+>0.5mm
+
+>0.5mm
+>0.5mm
+11
+Alare(R)
+>0.5mm
+>0.5mm
+
+>0.5mm
+>0.5mm
+>0.5mm
+12
+Alare(L)
+>0.5mm
+>0.5mm
+
+>0.5mm
+>0.5mm
+>0.5mm
+
+13
+Alar
+curvature
+point (right)
+
+
+
+>0.5mm
+
+>0.5mm
+
+
+
+>0.5mm
+
+
+
+14
+Alar
+curvature
+point (left)
+
+
+
+>0.5mm
+
+>0.5mm
+
+
+
+>0.5mm
+
+
+15
+Subalare
+(right)
+
+>0.5mm
+>0.5mm
+
+
+
+
+16
+Subalare
+(left)
+
+>0.5mm
+>0.5mm
+
+
+
+
+17
+Crista philtri
+(right)
+
+>0.5mm
+
+
+
+
+>0.5mm
+18
+Crista philtri
+(left)
+
+>0.5mm
+
+
+
+
+>0.5mm
+19
+Chelion
+(right)
+>0.5mm
+>0.5mm
+>0.5mm
+>0.5mm
+
+>0.5mm
+
+>0.5mm
+>0.5mm
+20
+Chelion (left)
+>0.5mm
+>0.5mm
+>0.5mm
+>0.5mm
+
+>0.5mm
+>0.5mm
+21
+Pogonion
+>0.5mm
+
+>0.5mm
+>0.5mm
+
+>0.5mm
+>0.5mm
+22
+Gnathion
+
+>0.5mm
+
+
+
+>0.5mm
+>0.5mm
+>0.5mm
+23
+Glabella
+
+
+
+>0.5mm
+
+>0.5mm
+>0.5mm
+
+
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+Page 44 of 51
+
+Supplementary table 5: Performance metrics used for the evaluation of the reference standard and the index test (Research Q:.accuracy of automated 3D facial
+1
+2
+landmarking when compared to manual landmarking).
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+For Peer Review
+44
+45
+46
+
+Author/
+year
+
+Metrics used for evaluation of reference
+standard (ground truth)
+evaluation of automated landmarking method
+
+performance metrics used for evaluation
+individually assessment in
+each of the three
+dimensions—x-axis, y-
+axis, and z-axis
+
+overall v induvial landmark
+evaluation
+Baksi et
+al 2020
+Intraclass correlation (ICC) was used to assess
+intra and inter-observer reliability.
+Difference in landmarks identified manually compared with those identified by the
+automated algorithm.
+(Mean± SD)
+
+Yes
+Overall+ individual
+landmark evaluation
+Bannister
+et al.
+2020
+Inter and intra-observer error evaluation. The
+mean and standard deviation of the Euclidean
+distances between different sets of landmarks.
+The mean and standard deviation of the Euclidean distances between different sets
+of landmarks.
+(Mean± SD)
+
+No
+Overall+ individual
+landmark evaluation
+Fu et al
+2020
+
+No
+1- Mean error (overall only)
+2- Area-Under-the-Curve (AUC)
+3- Failure Rate (FR) > 1.2
+
+No
+
+only overall evaluation.
+Wang et
+al. 2019
+
+No
+Direct comparison of manual and automatic landmark placements.
+(Mean only)
+
+Yes (plots only)
+Overall+ individual
+landmark evaluation
+Abu et al
+2019
+The ICC test was performed to check the
+reliability of the linear measurements data
+taken manually.
+Difference in landmarks identified manually compared with those identified by the
+automated algorithm.
+(Mean± SD)
+
+No
+Overall+ individual
+landmark evaluation
+
+Huang et
+al 2019
+
+No
+1- The localization accuracy was evaluated by calculating the Euclidean distance
+between the ground truth (GT) and the predictions in 2D.
+2- Normalization mean error 3D
+(Mean± SD)
+
+No
+
+only overall evaluation.
+De Jong
+et al
+2018
+
+No
+Cross-validation (leave-one-out experiments). The localization accuracy was
+evaluated by calculating the Euclidean distance between the ground truth (training
+data) in mm and the predicted automated points.
+
+No
+Overall+ individual
+landmark evaluation
+
+Li et al.
+2017
+The analysis of measurement error and
+observer error for manual landmarking was
+done by comparing the overall shape variation
+among groups by using a multivariate analysis
+of variance (MANOVA).
+Analyses of morphological variation were performed using geometric
+morphometric methods, and direct comparisons of methods followed the Bland–
+Altman approach. Comparison of mean shape variation among groups by using
+multivariate analysis of variance (MANOVA) and permutation of the Procrustes
+distances.
+
+
+No
+No clear figure was
+reported. Mean error of
+individual LM was only
+presented in plots.
+Sukno et
+al. 2015
+
+No
+Direct comparison of manual and automatic landmark placements.
+(Mean± SD)
+
+No
+Overall+ individual
+landmark evaluation
+Guo et al
+2013
+
+No
+Direct comparison of manual and automatic landmark placements. The mean and
+standard deviation (SD) of the annotation errors measured in Euclidean distance, as
+well as the root mean square (RMS) errors.
+
+No
+Overall+ individual
+landmark evaluation
+Liang et
+al 2013
+No
+Direct comparison of manual and automatic landmark placements.
+(Mean± SD)
+No
+Overall+ individual
+landmark evaluation
+Vezzetti
+et al.
+2012
+
+No
+Direct comparison of manual and automatic landmark placements.
+(Mean only)
+
+No
+Overall+ individual
+landmark evaluation
+
+
+Page 45 of 51
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+
+Supplementary table 6: Performance metrics used for the evaluation of the reliability of clinical or genetic facial analysis. (research Q2).
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+For Peer Review
+44
+45
+46
+Author/
+year
+The reliability of further analysis (genetic or clinical) obtained through automatic landmarking when compared to those based on manual landmarking.
+Type of analysis
+Statistical test used for the analysis
+
+
+Baksi et
+al 2020
+
+
+Evaluation of the reliability of ten anthropometric linear
+measurements for clinical use.
+ICC was also applied to compare agreement between manual and automated
+landmarks for the 10 anthropometric linear measurements. ICC values less than 0.5
+were deemed indicative of poor reliability, values between 0.5 and 0.75 of
+moderate reliability, values between 0.75 and 0.9 indicative of good reliability, and
+values greater than 0.90 to be excellent reliability.
+Palmer
+et al
+2020
+Direct comparison of eight linear measurements obtained by manual
+(ground truth), indirect (non-expert assessor) and automated
+(cliniface) methods.
+Paired samples t-testing with α = 0.05 was used to evaluate that the automatically
+generated measurements of Cliniface are not signiﬁcantly different in accuracy to
+those taken by the expert.
+Abu et
+al 2019
+evaluation of the validity of the automated methods against the
+manual landmarking by comparing the average distance of all the
+eight linear measurements extracted by both methods
+2-tailed paired t-test with the mean difference, μ> 0 and significance value, p =
+0.05.
+Huang
+et al
+2019
+Evaluation of the accuracy of the automated generated palpebral
+ﬁssure length (PFL) measurements derived from 3D facial images
+which can be used in assisting the diagnosis of fetal alcohol spectrum
+disorder
+
+Palpebral ﬁssure length (PFL) mean error.
+De Jong
+et al
+2018
+Study used twin-based heritability information to perform heritability
+analysis for landmarking accuracy.
+A narrow sense heritability estimate for a number of features derived from
+landmark coordinates.
+
+Li et al.
+2017
+The automated method was validated by performing variation
+patterns in large dataset of automated and manual landmark data to
+determine if the variance structure produced by the two methods
+was similar.
+
+variation structure between the manual and the automated landmark was assessed
+by using partial least squares (PLS) regression to compare covariation structure
+between the two methods.
+
+
+Lippold
+et al
+2014
+
+
+
+Validate the performance of the automated method by determining
+the difference of each of seven linear facial measurements.
+
+
+
+Lin’s concordance correlation coefficient CCC was used for the evaluation of
+equivalence between methods and concordance of continuous data.
+
+
+3
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+Page 46 of 51
+
+
+1
+2
+Supplementary Table7: List of excluded studies at full-text review with reasons for exclusion.
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+For Peer Review
+44
+45
+46
+Reference
+Reason for exclusion
+Ferrario et al. 1994 (1)
+Study is not relevant to the review topic (Evaluation of automated 3D facial landmarking in human)
+Ferrario et al. 1995(2)
+Study is not relevant to the review topic (Evaluation of automated 3D facial landmarking in human)
+Mishima et al. 1996 (3)
+Study is not relevant to the review topic (Evaluation of automated 3D facial landmarking in human)
+Ferrario et al. 1998(4)
+Study is not relevant to the review topic (Evaluation of automated 3D facial landmarking in human)
+Yamada et al. 1999(5)
+No comparison to reference
+Yamada et al. 1999(6)
+Study is not relevant to the review topic (Evaluation of automated 3D facial landmarking in human)
+Xu et al. 1999(7)
+Study is not relevant to the review topic (Evaluation of automated 3D facial landmarking in human)
+Ferrario et al. 1999(8)
+Study is not relevant to the review topic (Evaluation of automated 3D facial landmarking in human)
+Hajeer et al. 2002(9)
+Study is not relevant to the review topic (Evaluation of automated 3D facial landmarking in human)
+Yamada et al. 2002(10)
+Study is not relevant to the review topic (Evaluation of automated 3D facial landmarking in human)
+Naftel et al. 2004(11)
+Study is not relevant to the review topic (Evaluation of automated 3D facial landmarking in human)
+Akakin and Sankur 2007(12)
+Not a medical or biological study
+Zhang et al.(13)
+Article is not in English
+Sattae and Seguier 2009(14)
+Not a medical or biological study
+Galantucci et al. 2009(15)
+Study is not relevant to the review topic (Evaluation of automated 3D facial landmarking in human)
+Deli et al. 2010(16)
+Study is not relevant to the review topic (Evaluation of automated 3D facial landmarking in human)
+Wu and Chen 2010(17)
+Not a medical or biological study
+Claes et al. 2011(18)
+Study is not relevant to the review topic (Evaluation of automated 3D facial landmarking in human)
+Calignano and Vezzetti 2011(19)
+more recent algorithm by the same research team
+Zaho et al. 2011(20)
+Not a medical or biological study
+Liberton et al. 2011
+No access to full article
+Wei et al 2011(21)
+Study is not relevant to the review topic (Evaluation of automated 3D facial landmarking in human)
+Kung et al. 2012 (22)
+Study is not relevant to the review topic (Evaluation of automated 3D facial landmarking in human)
+
+
+43
+44
+45
+46
+For Peer Review
+
+Page 47 of 51
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+Loconsole et al. 2012(23)
+Study is not relevant to the review topic (Evaluation of automated 3D facial landmarking in human)
+Vezzetti et al. 2012(24)
+more recent algorithm by the same research team
+Peng et al. 2013(25)
+Study is not relevant to the review topic (Evaluation of automated 3D facial landmarking in human)
+Mercan et al. 2013(26)
+Study is not relevant to the review topic (Evaluation of automated 3D facial landmarking in human)
+Berssenbrügge et al 2014(27)
+Study is not relevant to the review topic (Evaluation of automated 3D facial landmarking in human)
+Xiong et al. 2015 (28)
+Article is not in English
+Tse et al. 2015
+No access to full article
+Feng et al. 2015(29)
+Not a medical or biological study
+Chendab et al. 2015(30)
+No quantitative analysis for the clinical set.
+Zhao et al. 2016(31)
+Not a medical or biological study
+Liu et al. 2015(32)
+Not a medical or biological study
+Guo et al. 2016(33)
+Study is not relevant to the review topic (Evaluation of automated 3D facial landmarking in human)
+Jurda and Urbanova 2016(34)
+Study is not relevant to the review topic (Evaluation of automated 3D facial landmarking in human)
+Danelakis et al. 2016(35)
+Not a medical or biological study
+Caple et al. 2016(36)
+Study is not relevant to the review topic (Evaluation of automated 3D facial landmarking in human)
+De Jong et al. 2015(37)
+more recent algorithm by the same research team
+Liu and Cohen 2017(38)
+Not a medical or biological study
+Liu et al 2017(39)
+Not a medical or biological study
+Liu et al. 2017(40)
+Not a medical or biological study
+Tsagkrasoulis et al. 2017(41)
+Study is not relevant to the review topic (Evaluation of automated 3D facial landmarking in human)
+Bannister et al 2017
+No access to full article
+Gilani et al. 2017(42)
+Study is not relevant to the review topic (Evaluation of automated 3D facial landmarking in human)
+Hoskens et al. 2018(43)
+Study is not relevant to the review topic (Evaluation of automated 3D facial landmarking in human)
+Ekrami et al. 2018(44)
+Study is not relevant to the review topic (Evaluation of automated 3D facial landmarking in human)
+Tuin et al. 2019(45)
+Study is not relevant to the review topic (Evaluation of automated 3D facial landmarking in human)
+Yasuda et al. 2019(46)
+Study is not relevant to the review topic (Evaluation of automated 3D facial landmarking in human)
+Gul et al 2019(47)
+Study is not relevant to the review topic (Evaluation of automated 3D facial landmarking in human)
+
+
+43
+44
+45
+46
+For Peer Review
+
+28
+36
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+Page 48 of 51
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+List of excluded articles related to table 7:
+29
+30
+1.
+Ferrario V, Sforza C, Serrao G, Puletto S, Bignotto M, Tartaglia G. Comparison of soft tissue facial morphometry in children with Class I and Class II occlusions. The
+31
+International Journal of Adult Orthodontics and Orthognathic Surgery. 1994;9(3):187-94.
+32
+2.
+Ferrario VF, Sforza C, Serrao G, Miani Jr A. A computerized non-invasive method for the assessment of human facial volume. Journal of Cranio-Maxillofacial Surgery.
+33
+1995;23(5):280-6.
+34
+3.
+Mishima K, Sugahara T, Mori Y, Sakuda M. Application of a new method for anthropometric analysis of the nose. Plastic and reconstructive surgery. 1996;98(4):637-
+35
+44.
+37
+4.
+Ferrario VF, Sforza C, Schmitz JH, Miani Jr A, Serrao G. A three-dimensional computerized mesh diagram analysis and its application in soft tissue facial
+38
+morphometry. American Journal of Orthodontics and Dentofacial Orthopedics. 1998;114(4):404-13.
+39
+5.
+Yamada T, Mori Y, Minami K, Mishima K, Sugahara T, Sakuda M. Computer aided three-dimensional analysis of nostril forms: application in normal and operated
+40
+cleft lip patients. Journal of Cranio-Maxillofacial Surgery. 1999;27(6):345-53.
+41
+6.
+Yamada T, Sugahara T, Mori Y, Minami K, Sakuda M. Development of a 3-D measurement and evaluation system for facial forms with a liquid crystal range finder.
+42
+Computer methods and programs in biomedicine. 1999;58(2):159-73.
+Ahmedt-Aristizabal et al. 2019(48)
+Study is not relevant to the review topic (Evaluation of automated 3D facial landmarking in human)
+Macedo et al 2019(49)
+Study is not relevant to the review topic (Evaluation of automated 3D facial landmarking in human)
+Quintana et al. 2019(50)
+Not a medical or biological study
+Akbarian et al. 2019(51)
+Study is not relevant to the review topic (Evaluation of automated 3D facial landmarking in human)
+Abbas et al. 2019(52)
+Study is not relevant to the review topic (Evaluation of automated 3D facial landmarking in human)
+Suttie et al. 2019.
+No access to full article
+Tuin et al. 2020(53)
+Study is not relevant to the review topic (Evaluation of automated 3D facial landmarking in human)
+Agbolade et al. 2020(54)
+Study is not relevant to the review topic (Evaluation of automated 3D facial landmarking in human)
+Zhu et al 2020(55)
+Article is not in English
+Guo et al 2020(56)
+Article is not in English
+Lum et al. 2020(57)
+Study is not relevant to the review topic (Evaluation of automated 3D facial landmarking in human)
+Lv et al. 2020(58)
+Not a medical or biological study
+Hong et al. 2020(59)
+Not a medical or biological study
+Dai et al. 2020(60)
+Study is not relevant to the review topic (Evaluation of automated 3D facial landmarking in human)
+Nazri et al. 2020(61)
+Study is not relevant to the review topic (Evaluation of automated 3D facial landmarking in human)
+Zhu et al 2020(62)
+Study is not relevant to the review topic (Evaluation of automated 3D facial landmarking in human)
+
+
+43
+44
+45
+46
+For Peer Review
+
+3
+12
+31
+Page 49 of 51
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+
+7.
+Xu C, Wu J, Ma S, editors. A visual processing system for facial prediction. International Conference on Advances in Visual Information Systems; 1999: Springer.
+1
+8.
+Ferrario VF, Sforza C, Serrao G, Colombo A, Ciusa V. Soft tissue facial growth and development as assessed by the three-dimensional computerized mesh diagram
+2
+analysis. American journal of orthodontics and dentofacial orthopedics. 1999;116(2):215-26.
+4
+9.
+Hajeer MY, Ayoub AF, Millett DT, Bock M, Siebert JP. Three-dimensional imaging in orthognathic surgery: the clinical application of a new method. The International
+5
+journal of adult orthodontics and orthognathic surgery. 2002;17(4):318-30.
+6
+10.
+Yamada T, Mori Y, Minami K, Mishima K, Tsukamoto Y. Three-dimensional analysis of facial morphology in normal Japanese children as control data for cleft
+7
+surgery. The Cleft palate-craniofacial journal. 2002;39(5):517-26.
+8
+11.
+Naftel A, Trenouth M. Stereo-assisted landmark detection for the analysis of changes in 3-D facial shape. Medical informatics and the Internet in medicine.
+9
+2004;29(2):137-55.
+10
+12.
+Akakin HC, Sankur B. Automatic and Robust 2D/3D Human Face Landmarking. 2007 IEEE 15th Signal Processing and Communications Applications.
+11
+13.
+Zhang Y, Da F, Li X, Gai S, editors. New Method for Locating the 3D Facial Landmark Points. 2009 Chinese Conference on Pattern Recognition; 2009: IEEE.
+13
+14.
+Sattar A, Seguier R. HGOAAM: facial analysis by active appearance model optimized by hybrid genetic algorithm. Journal of Digital Information Management.
+14
+2009;7(4):pp. 193-201.
+15
+15.
+Galantucci L, Lavecchia F, Percoco G. A simple photogrammetric system for automatic capture and measurement of facial soft tissues during movement. Innovative
+16
+Developments in Design and Manufacturing: CRC Press; 2009. p. 169-74.
+17
+16.
+Deli R, Di Gioia E, Galantucci LM, Percoco G. Automated landmark extraction for orthodontic measurement of faces using the 3-camera photogrammetry
+18
+methodology. Journal of Craniofacial Surgery. 2010;21(1):87-93.
+19
+17.
+Wu HS, Chen YQ. Robust facial landmark detection for three-dimensional face segmentation and alignment. Journal of Electronic Imaging. 2010;19(3):033006.
+20
+18.
+Claes P, Walters M, Vandermeulen D, Clement JG. Spatially-dense 3D facial asymmetry assessment in both typical and disordered growth. Journal of anatomy.
+21
+22
+2011;219(4):444-55.
+23
+19.
+Calignano F, Vezzetti E. A morphological methodology for three-dimensional human face soft-tissue landmarks extraction: a preliminary study. Aesthetic plastic
+24
+surgery. 2011;35(3):289-302.
+25
+20.
+Zhao X, Dellandréa E, Chen L, Kakadiaris IA. Accurate landmarking of three-dimensional facial data in the presence of facial expressions and occlusions using a three-
+26
+dimensional statistical facial feature model. IEEE Transactions on Systems, Man, and Cybernetics, Part B (Cybernetics). 2011;41(5):1417-28.
+27
+21.
+Wei R, Claes P, Walters M, Wholley C, Clement J. Augmentation of linear facial anthropometrics through modern morphometrics: a facial convexity example.
+28
+Australian Dental Journal. 2011;56(2):141-7.
+29
+22.
+Kung S, Walters M, Claes P, Goldblatt J, Souef PL, Baynam G. A dysmorphometric analysis to investigate facial phenotypic signatures as a foundation for non-
+30
+invasive monitoring of lysosomal storage disorders. JIMD Reports-Case and Research Reports, 2012/5: Springer; 2012. p. 31-9.
+32
+23.
+Loconsole C, Barbosa N, Frisoli A, Costa Orvalho V, editors. A new marker-less 3D Kinect-based system for facial anthropometric measurements. International
+33
+Conference on Articulated Motion and Deformable Objects; 2012: Springer.
+34
+24.
+Vezzetti E, Moos S, Marcolin F, Stola V. A pose-independent method for 3D face landmark formalization. Computer methods and programs in biomedicine.
+35
+2012;108(3):1078-96.
+36
+25.
+Peng S, Tan J, Hu S, Zhou H, Guo J, Jin L, et al. Detecting genetic association of common human facial morphological variation using high density 3D image
+37
+registration. PLoS Comput Biol. 2013;9(12):e1003375.
+38
+26.
+Mercan E, Shapiro LG, Weinberg SM, Lee S-I, editors. The use of pseudo-landmarks for craniofacial analysis: A comparative study with l 1-regularized logistic
+39
+regression. 2013 35th Annual International Conference of the IEEE Engineering in Medicine and Biology Society (EMBC); 2013: IEEE.
+40
+41
+27.
+Berssenbrügge P, Berlin NF, Kebeck G, Runte C, Jung S, Kleinheinz J, et al. 2D and 3D analysis methods of facial asymmetry in comparison. Journal of Cranio-
+42
+Maxillofacial Surgery. 2014;42(6):e327-e34.
+
+43
+44
+45
+46
+For Peer Review
+
+3
+12
+31
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+Page 50 of 51
+
+28.
+Xiong Y, Yang H, Zhao Y, Wang Y. Comparison of two kinds of methods evaluating the degree of facial asymmetry by three-dimensional data. Beijing da xue xue bao
+1
+Yi xue ban= Journal of Peking University Health Sciences. 2015;47(2):340-3.
+2
+29.
+Feng Z-H, Hu G, Kittler J, Christmas W, Wu X-J. Cascaded collaborative regression for robust facial landmark detection trained using a mixture of synthetic and real
+4
+images with dynamic weighting. IEEE Transactions on Image Processing. 2015;24(11):3425-40.
+5
+30.
+Chendeb M, Tortorici C, AlMuhairi H, AlSafar H, Linguraru M, Werghi N, editors. Landmark detection from 3d mesh facial models for image-based analysis of
+6
+dysmorphology. 2015 37th Annual International Conference of the IEEE Engineering in Medicine and Biology Society (EMBC); 2015: IEEE.
+7
+31.
+Zhao X, Zou J, Li H, Dellandréa E, Kakadiaris IA, Chen L. Automatic 2.5-D facial landmarking and emotion annotation for social interaction assistance. IEEE
+8
+transactions on cybernetics. 2015;46(9):2042-55.
+9
+32.
+Liu J, Zhang Q, Tang C, editors. Automatic landmark detection for high resolution non-rigid 3D faces based on geometric information. 2015 IEEE Advanced
+10
+Information Technology, Electronic and Automation Control Conference (IAEAC); 2015: IEEE.
+11
+33.
+Gerós A, Horta R, Aguiar P. Facegram–Objective quantitative analysis in facial reconstructive surgery. Journal of biomedical informatics. 2016;61:1-9.
+13
+34.
+Jurda M, Urbanová P. Sex and ancestry assessment of Brazilian crania using semi-automatic mesh processing tools. Legal medicine. 2016;23:34-43.
+14
+35.
+Danelakis A, Theoharis T, Pratikakis I. A spatio-temporal wavelet-based descriptor for dynamic 3D facial expression retrieval and recognition. The visual computer.
+15
+2016;32(6):1001-11.
+16
+36.
+Caple J, Stephan CN. A standardized nomenclature for craniofacial and facial anthropometry. International journal of legal medicine. 2016;130(3):863-79.
+17
+37.
+de Jong MA, Wollstein A, Ruff C, Dunaway D, Hysi P, Spector T, et al. An automatic 3D facial landmarking algorithm using 2D gabor wavelets. IEEE Transactions on
+18
+Image Processing. 2015;25(2):580-8.
+19
+38.
+Liu Z, Cohen F. Synthesis and identification of three-dimensional faces from image (s) and three-dimensional generic models. Journal of Electronic Imaging.
+20
+2017;26(6):063005.
+21
+22
+39.
+Liu S, Fan Y-Y, Guo Z, Samal A, Ali A. A landmark-based data-driven approach on 2.5 D facial attractiveness computation. Neurocomputing. 2017;238:168-78.
+23
+40.
+Liu J, Zhang L, Chen X, Niu J. Facial landmark automatic identification from three dimensional (3D) data by using Hidden Markov Model (HMM). International
+24
+Journal of Industrial Ergonomics. 2017;57:10-22.
+25
+41.
+Tsagkrasoulis D, Hysi P, Spector T, Montana G. Heritability maps of human face morphology through large-scale automated three-dimensional phenotyping.
+26
+Scientific reports. 2017;7(1):1-18.
+27
+42.
+Gilani SZ, Mian A, Shafait F, Reid I. Dense 3D face correspondence. IEEE transactions on pattern analysis and machine intelligence. 2017;40(7):1584-98.
+28
+43.
+Hoskens H, Li J, Indencleef K, Gors D, Larmuseau MH, Richmond S, et al. Spatially dense 3D facial heritability and modules of co-heritability in a father-offspring
+29
+design. Frontiers in genetics. 2018;9:554.
+30
+44.
+Ekrami O, Claes P, White JD, Zaidi AA, Shriver MD, Van Dongen S. Measuring asymmetry from high-density 3D surface scans: An application to human faces. PLoS
+32
+One. 2018;13(12):e0207895.
+33
+45.
+Tuin A, Meulstee J, Loonen T, Kraeima J, Spijkervet F, Vissink A, et al. 3D Facial Volume Analysis Using Algorithm Based Personalized Templates. Journal of Oral and
+34
+Maxillofacial Surgery. 2019;77(9):e1.
+35
+46.
+Yasuda K, Nakano H, Yamada T, Albougha S, Inoue K, Nakashima A, et al. Identifying differences between a straight face and a posed smile using the homologous
+36
+modeling technique and the principal component analysis. Journal of Craniofacial Surgery. 2019;30(8):2378-80.
+37
+47.
+Gül A, de Jong M, de Gijt J, Wolvius E, Kayser M, Böhringer S, et al. Three-dimensional soft tissue effects of mandibular midline distraction and surgically assisted
+38
+rapid maxillary expansion: an automatic stereophotogrammetry landmarking analysis. International journal of oral and maxillofacial surgery. 2019;48(5):629-34.
+39
+48.
+Ahmedt-Aristizabal D, Nguyen K, Denman S, Sarfraz MS, Sridharan S, Dionisio S, et al., editors. Vision-based mouth motion analysis in epilepsy: A 3d perspective.
+40
+41
+2019 41st Annual International Conference of the IEEE Engineering in Medicine and Biology Society (EMBC); 2019: IEEE.
+42
+
+40
+41
+42
+43
+44
+45
+46
+For Peer Review
+3
+12
+Page 51 of 51
+Manuscripts submitted to European Journal of Orthodontics, http://mc.manuscriptcentral.com/ejo
+49.
+Macedo M, Candeias A, Marques M, editors. Motion analysis for people with cerebral palsy: A vision based approach. 2019 IEEE 16th International Conference on
+1
+Rehabilitation Robotics (ICORR); 2019: IEEE.
+2
+50.
+Quintana M, Karaoglu S, Alvarez F, Menendez JM, Gevers T. Three-d wide faces (3dwf): Facial landmark detection and 3d reconstruction over a new rgb–d multi-
+4
+camera dataset. Sensors. 2019;19(5):1103.
+5
+51.
+Akbarian S, Delfi G, Zhu K, Yadollahi A, Taati B. Automated non-contact detection of head and body positions during sleep. IEEE Access. 2019;7:72826-34.
+6
+52.
+Abbas HH, Hicks Y, Zhurov A, Marshall D, Claes P, Wilson-Nagrani C, et al. An automatic approach for classification and categorisation of lip morphological traits.
+7
+Plos one. 2019;14(10):e0221197.
+8
+53.
+Tuin AJ, Meulstee JW, Loonen TG, Kraeima J, Spijkervet FK, Vissink A, et al. Three-dimensional facial volume analysis using algorithm-based personalized aesthetic
+9
+templates. International Journal of Oral and Maxillofacial Surgery. 2020;49(10):1379-84.
+10
+54.
+Agbolade O, Nazri A, Yaakob R, Ghani AA, Cheah YK. Morphometric Analysis of 3D Soft-Tissue for Sexual Dimorphism in Human Face. International Journal of
+11
+Morphology. 2020;38(2).
+13
+55.
+Zhu Y, Zhao Y, Zheng S, Wen A, Fu X, Wang Y. A method for constructing three-dimensional face symmetry reference plane based on weighted shape analysis
+14
+algorithm. Beijing da xue xue bao Yi xue ban= Journal of Peking University Health Sciences. 2020;53(1):220-6.
+15
+56.
+Guo D, Pan S, Heng M, Qu J, Wei X, Zhou Y. Comparison of the registration methods for the three-dimensional facial scans applied to the design of full-arch implant
+16
+supported restoration. Beijing da xue xue bao Yi xue ban= Journal of Peking University Health Sciences. 2020;53(1):83-7.
+17
+57.
+Lum V, Goonewardene MS, Mian A, Eastwood P. Three-dimensional assessment of facial asymmetry using dense correspondence, symmetry, and midline analysis.
+18
+American Journal of Orthodontics and Dentofacial Orthopedics. 2020;158(1):134-46.
+19
+58.
+Lv C, Wu Z, Wang X, Dan Z, Zhou M. Ethnicity classification by the 3D discrete landmarks model measure in Kendall shape space. Pattern Recognition Letters.
+20
+2020;129:26-32.
+21
+22
+59.
+Hong Y-J, Choi SE, Nam GP, Choi H, Cho J, Kim I-J. Adaptive 3D model-based facial expression synthesis and pose frontalization. Sensors. 2020;20(9):2578.
+23
+60.
+Dai H, Pears N, Smith W, Duncan C. Statistical modeling of craniofacial shape and texture. International Journal of Computer Vision. 2020;128(2):547-71.
+24
+61.
+Nazri A, Agbolade O, Yaakob R, Ghani AA, Cheah YK. A novel investigation of the effect of iterations in sliding semi-landmarks for 3D human facial images. BMC
+25
+bioinformatics. 2020;21(1):1-10.
+26
+62.
+Zhu Y, Zheng S, Yang G, Fu X, Xiao N, Wen A, et al. A novel method for 3D face symmetry reference plane based on weighted Procrustes analysis algorithm. BMC
+27
+Oral Health. 2020;20(1):1-11.
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39

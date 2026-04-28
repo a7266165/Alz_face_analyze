@@ -1,0 +1,26 @@
+{
+  "title": "MECO: A Multimodal Dataset for Emotion and Cognitive Understanding in Older Adults",
+  "authors": [
+    "Hongbin Chen",
+    "Jie Li",
+    "Wei Wang",
+    "Siyang Song",
+    "Xiao Gu",
+    "Jianqing Li",
+    "Wentao Xiang"
+  ],
+  "year": 2026,
+  "abstract": "While affective computing has advanced considerably, multimodal emotion prediction in aging populations remains underexplored, largely due to the scarcity of dedicated datasets. Existing multimodal benchmarks predominantly target young, cognitively healthy subjects, neglecting the influence of cognitive decline on emotional expression and physiological responses. To bridge this gap, we present MECO, a Multimodal dataset for Emotion and Cognitive understanding in Older adults. MECO includes 42 participants and provides approximately 38 hours of multimodal signals, yielding 30,592 synchronized samples. To maximize ecological validity, data collection followed standardized protocols within community-based settings. The modalities cover video, audio, electroencephalography (EEG), and electrocardiography (ECG). In addition, the dataset offers comprehensive annotations of emotional and cognitive states, including self-assessed valence, arousal, six basic emotions, and Mini-Mental State Examination cognitive scores. We further establish baseline benchmarks for both emotion and cognitive prediction. MECO serves as a foundational resource for multimodal modeling of affect and cognition in aging populations, facilitating downstream applications such as personalized emotion recognition and early detection of mild cognitive impairment (MCI) in real-world settings. The complete dataset and supplementary materials are available at https://maitrechen.github.io/meco-page/.",
+  "doi": null,
+  "arxiv_id": null,
+  "venue": "arXiv (Cornell University)",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://arxiv.org/pdf/2604.03050",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W7151672896"
+  },
+  "pdf_status": "ok",
+  "primary_id": "title:meco: a multimodal dataset for emotion and cognitive understanding in older adults"
+}

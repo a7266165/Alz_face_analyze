@@ -1,0 +1,25 @@
+{
+  "title": "Weighted Late Fusion based Deep Attention Neural Network for Detecting Multi-Modal Emotion",
+  "authors": [
+    "Srinivas P. V. V. S.",
+    "Shaik Nazeera Khamar",
+    "Nohith Borusu",
+    "Mohan Guru Raghavendra Kota",
+    "Harika Vuyyuru",
+    "Sampath Patchigolla"
+  ],
+  "year": 2026,
+  "abstract": "In the field of affective computing research, multi-modal emotion detection has gained popularity as a way to boost recognition robustness and get around the constraints of processing a multiple type of data.Human emotions are utilized for defining a variety of methodologies, including physiological indicators, facial expressions, as well as neuroimaging tactics.Here, a novel deep attention mechanism is used for detecting multi-modal emotions.Initially, the data are collected from audio and video features.For dimensionality reduction, the audio features are extracted using Constant-Q chromagram and Mel-Frequency Cepstral Coefficients (MM-FC 2 ).After extraction, the audio generation is carried out by a Convolutional Dense Capsule Network (Conv_DCN) is used.Next is video data; the key frame extraction is carried out using Enhanced spatial-temporal and Second-Order Gaussian kernels.Here, Second-Order Gaussian kernels are a powerful tool for extracting features from video data and converting it into a format suitable for image-based analysis.Next, for video generation, DenseNet-169 is used.At last, all the extracted features are fused, and Weighted Late Fusion based Deep Attention Neural Network for Detecting Multi-Modal Emotion Volume 18 (2026), Issue 1 107 emotions are detected using a Weighted Late Fusion Deep Attention Neural Network (WLF_DAttNN).Python tool is used for implementation, and the performance measure achieved an accuracy of 97% for RAVDESS and 96% for CREMA-D dataset.",
+  "doi": "10.5815/ijigsp.2026.01.07",
+  "arxiv_id": null,
+  "venue": "International Journal of Image Graphics and Signal Processing",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://www.mecs-press.org/ijigsp/ijigsp-v18-n1/IJIGSP-V18-N1-7.pdf",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W7128071234"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.5815/ijigsp.2026.01.07"
+}

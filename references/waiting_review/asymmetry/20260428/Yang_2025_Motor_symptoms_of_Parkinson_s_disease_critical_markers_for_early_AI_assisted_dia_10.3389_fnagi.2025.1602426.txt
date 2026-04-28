@@ -1,0 +1,2120 @@
+TYPE Review
+PUBLISHED 18 July 2025
+DOI 10.3389/fnagi.2025.1602426
+OPEN ACCESS
+EDITED BY
+Liane Kaufmann,
+Ernst von Bergmann Clinic, Germany
+REVIEWED BY
+Rohan Gupta,
+University of South Carolina, United States
+Ali Amouzandeh,
+Ernst von Bergmann Clinic, Germany
+*CORRESPONDENCE
+Wei Yan
+sdweirui2018@163.com
+RECEIVED 29 March 2025
+ACCEPTED 26 June 2025
+PUBLISHED 18 July 2025
+CITATION
+Yang N, Liu J, Sun D, Ding J, Sun L, Qi X and
+Yan W (2025) Motor symptoms of
+Parkinson’s disease: critical markers for early
+AI-assisted diagnosis.
+Front. Aging Neurosci. 17:1602426.
+doi: 10.3389/fnagi.2025.1602426
+COPYRIGHT
+© 2025 Yang, Liu, Sun, Ding, Sun, Qi and Yan.
+This is an open-access article distributed
+under the terms of the Creative Commons
+Attribution License (CC BY). The use,
+distribution or reproduction in other forums
+is permitted, provided the original author(s)
+and the copyright owner(s) are credited and
+that the original publication in this journal is
+cited, in accordance with accepted academic
+practice. No use, distribution or reproduction
+is permitted which does not comply with
+these terms.
+Motor symptoms of Parkinson’s
+disease: critical markers for early
+AI-assisted diagnosis
+Ni Yang1, Jing Liu2, Dan Sun3, Jiajun Ding4, Lingzhi Sun5,
+Xianghua Qi5 and Wei Yan5*
+1Department of First Clinical Medical College, Shandong University of Traditional Chinese Medicine,
+Jinan, China, 2College of Rehabilitation Medicine, Shandong University of Traditional Chinese
+Medicine, Jinan, China, 3Extravascular Department, Qingdao Traditional Chinese Medicine Hospital,
+Qingdao Hiser Hospital Afﬁliated of Qingdao University, Qingdao, China, 4School of Design, Shanghai
+Jiao Tong University, Shanghai, China, 5Neurology Department, Afﬁliated Hospital of Shandong
+University of Traditional Chinese Medicine, Jinan, China
+Parkinson’s disease is a prevalent neurodegenerative disorder, where early
+diagnosis is essential for slowing disease progression and optimizing treatment
+strategies. The latest developments in artiﬁcial intelligence (AI) have introduced
+new opportunities for early detection. Studies have demonstrated that before
+obvious motor symptoms appear, PD patients exhibit a range of subtle but
+quantiﬁable motor abnormalities. This article provides an overview of AI-driven
+early detection approaches based on various motor symptoms of PD, including
+eye movement, facial expression, speech, handwriting, ﬁnger tapping, and gait.
+Speciﬁcally, we summarized the characteristic manifestations of these motor
+symptoms, analyzed the features of the data currently collected for AI-assisted
+diagnosis, collected the publicly available datasets, evaluated the performance
+of existing diagnostic models, and discussed their limitations. By scrutinizing
+the existing research methodologies, this review summarizes the application
+progress of motor symptom-based AI technology in the early detection of PD,
+explores the key challenges from experimental techniques to clinical translation
+applications, and proposes future research directions to promote the clinical
+practice of AI technology in PD diagnosis.
+KEYWORDS
+Parkinson’s disease, motor symptoms, artiﬁcial intelligence, diagnosis, markers
+1 Introduction
+Parkinson’s disease is the second most common neurodegenerative disease worldwide
+(Elbaz et al., 2016). It is distinguished by motor symptoms such as bradykinesia, resting
+tremor, rigidity, and postural instability, along with those non-motor symptoms such as
+decreased sense of smell, sleep disturbances, and cognitive decline (Bloem et al., 2021).
+According to the Global Burden of Disease study, the prevalence and incidence rates of PD
+have increased signiﬁcantly in recent decades. It is estimated that there will be more than
+12 million cases worldwide by 2040, representing a huge burden on public health systems
+(Zhang et al., 2024). Despite the typical clinical manifestations of PD, early diagnosis
+remains a major challenge. Current diagnostic criteria, such as the UK Brain Bank criteria
+(Clarke et al., 2016) and the MDS clinical diagnostic criteria (Postuma et al., 2015), rely
+heavily on subjective clinical assessment. Patients are typically discovered only after the
+Frontiers in Aging Neuroscience
+01
+frontiersin.org
+
+Yang et al.
+10.3389/fnagi.2025.1602426
+onset of overt motor symptoms. By this time more than 50% of
+dopaminergic neurons in the substantia nigra may have been lost,
+missing the best opportunity for early intervention (Lee et al.,
+2022). Traditional biomarkers, such as cerebrospinal ﬂuid alphasynuclein assays and dopamine transporter imaging, can improve
+diagnostic accuracy but are limited by high cost, invasiveness,
+and accessibility, making them unsuitable for large-scale screening
+(Bernhardt et al., 2025). Therefore, seeking rapid, objective, noninvasive, and scalable early diagnostic methods is critical.
+Recent advances in artiﬁcial intelligence (AI), particularly
+Machine learning (ML) and deep learning (DL), have shown
+tremendous potential for early detection of PD. Research has
+shown that subtle and quantiﬁable preclinical movement disorders
+occur before the clinical onset of PD, including abnormal eye
+movements, reduced facial expressions, speech changes, diﬃculty
+writing, irregular ﬁnger-tapping rhythms, and gait disturbances
+(Rana et al., 2022a). These features can be captured through
+computer vision, speech signal processing, and motion sensor
+analysis, enabling AI-driven automatic detection and classiﬁcation
+(Rana et al., 2022b). Compared with traditional diagnostic
+methods, AI-based recognition has high sensitivity, repeatability,
+and non-invasive nature, which is helpful for objective screening
+and remote diagnosis (Gupta et al., 2023). However, there
+are still some challenges, including data heterogeneity, model
+interpretability, cross-population generalizability, and clinical
+feasibility (Voigtlaender et al., 2024).
+This review covers early detection of PD using AI in the ﬁeld of
+motor symptom-related areas: eye movements, facial expressions,
+speech, handwriting or ﬁnger tapping, and gait analysis. We
+discussed the speciﬁc manifestations of these symptoms, the
+workﬂow of AI-assisted diagnosis, data collection methods, feature
+extraction techniques, available public datasets, and the current
+performance and limitations of diagnostic models. By evaluating
+existing research methods, we explored the opportunities and
+challenges of integrating AI into early PD diagnosis and provided
+insights for future research to advance the use of AI and precisiondriven PD diagnostic systems in clinical practice.
+2 Motor symptoms and
+manifestations of PD
+Due to factors such as the loss of dopaminergic neurons
+in the substantia nigra, abnormalities in the basal ganglia
+circuit,
+pathological
+aggregation
+of
+alpha-synuclein,
+and
+neuroinﬂammation, PD patients often experience a variety of
+motor symptoms (Balestrino and Schapira, 2020). Bradykinesia
+is the core motor symptom and is deﬁned as a decrease in the
+speed, amplitude, and ﬂexibility of voluntary movement (Xu et al.,
+2025). Speciﬁc manifestations include diﬃculty starting, decreased
+speed (hypokinesia), amplitude reduction, impaired rhythm and
+coordination, and prolonged duration of movement (Bologna et al.,
+2016). Aﬀects facial expression (Bologna et al., 2013), writing and
+other ﬁne hand movements (Matejicka et al., 2024), speech status,
+and expression (Cavallieri et al., 2023) in activities of daily living.
+Tremors are generally categorized into static tremors, postural
+tremors, and action tremors (Abusrair et al., 2022). Among these,
+static tremor is the hallmark symptom of PD, characterized by
+regular, rhythmic oscillations that occur when the patient is at rest,
+such as while sitting or standing (Gironell et al., 2018). This type of
+tremor commonly begins in the hands, most commonly aﬀecting
+the index ﬁnger and thumb, but it can also involve the chin and
+mouth (Fabbri et al., 2017). Patients may also experience postural
+tremors, which occur due to muscle tension while maintaining
+speciﬁc postures. These tremors primarily aﬀect the limbs and
+head, especially when the patient maintains an upright posture
+or extends their arms (Dirkx and Bologna, 2022). In addition,
+tremors related to movements are also quite common, presenting
+with a slightly higher frequency, typically ranging from 4 to 8 Hz,
+and smaller amplitudes (Wenzelburger et al., 2000). This type
+of tremor often occurs at the beginning of the movement and
+may progressively intensify with continuing, particularly during
+ﬁne activities such as writing or grasping objects (Kraus et al.,
+2006). Rigidity is characterized by increased involuntary tension
+in limb muscles that cannot be fully relaxed even at rest. The
+patient’s limbs exhibit sustained resistance during passive activity,
+similar to bending a “lead pipe” (Guayacán et al., 2025). As the
+examiner slowly and passively bends or extends the patient’s limbs,
+an intermittent, cogwheel-like resistance is felt (Ghiglione et al.,
+2005). Due to the continuous increase in muscle tone, patients
+may hold on to a ﬂexed posture, which includes a forward tilt of
+the head, forward ﬂexion of the trunk, and slight ﬂexion of the
+elbows and knees (Xu et al., 2025). Therefore, patients often feel
+pain or muscle fatigue, which aﬀects their daily living abilities such
+as walking, writing, dressing, and ﬁne motor skills (Kumar et al.,
+2025). Figure 1 shows the motor symptoms and corresponding
+characteristic manifestations of PD.
+3 AI and its role in auxiliary diagnosis
+Machine learning is a subﬁeld of AI that enables computer
+systems to automatically learn and make predictions or decisions
+through data-driven approaches (Sarker, 2021a). In recent years,
+for instance, ML-based methods have demonstrated promising
+outcomes in medical diagnosis research (Izonin et al., 2023).
+DL is a specialized area within ML that utilizes artiﬁcial neural
+networks, particularly deep neural networks, to simulate the
+functioning of the human brain (Sarker, 2021b). DL has the
+ability to automatically learn intricate patterns within data and
+shows excellent performance when dealing with large-scale data,
+making it particularly suitable for tasks like natural language
+processing, image or speech recognition (Deng, 2015; Su and
+Li, 2020). In medical diagnosis ML techniques are eﬀectively
+employed to identify diseases based on datasets derived from
+patient symptoms. In this process, doctors play a crucial role in
+augmenting or validating the decision-making of AI to ensure
+appropriate decisions about diseases with reasonable accuracy
+(Richens et al., 2020). Over the past few years, ML algorithms have
+assisted in resolving more complex problems and have emerged
+as valuable supplementary tools for doctors (Gagliano et al., 2017;
+Zhou et al., 2019). By uncovering hidden information in data that
+was previously overlooked in PD clinical diagnosis (Kononenko,
+2001), these algorithms have signiﬁcantly enhanced diagnostic
+accuracy in the healthcare industry. Due to the exponential changes
+brought about by the digital revolution, the collection, utilization,
+Frontiers in Aging Neuroscience
+02
+frontiersin.org
+
+Yang et al.
+10.3389/fnagi.2025.1602426
+FIGURE 1
+Motor symptoms and corresponding characteristic manifestations of Parkinson’s disease.
+storage, and sharing of medical data have become a reality. The
+progress of technology has spurred the increasing sophistication of
+algorithms, enabling more accurate and eﬃcient data applications.
+As a result, AI technology is playing an even greater role in medical
+diagnosis. Based on this, we summarized the clinical manifestations
+of PD motor symptoms and their application in auxiliary diagnosis.
+Figure 2 shows the application process of artiﬁcial intelligence
+technology in PD adjunctive diagnosis.
+4 Eye movement
+The eye movement functions of patients with PD exhibit
+signiﬁcant abnormalities, primarily aﬀecting fundamental tasks
+such as saccades, ﬁxation, and smooth pursuit. Saccadic movement
+in PD patients is usually slow and uncoordinated, with a prolonged
+scanning latency, reduced velocity, and decreased movement
+amplitude compared to healthy individuals (Lohnes and Earhart,
+2011). In short-distance saccade tasks, both the accuracy and
+speed of eye movements are notably impaired, which is closely
+associated with dysfunction in the basal ganglia (Jung and
+Kim, 2019; Armstrong, 2015). Furthermore, PD patients often
+experience frequent gaze instability, manifesting as nystagmus and
+micro-saccades. These disturbances, with an average fundamental
+frequency of 5.7 Hz, disrupt the stability of visual ﬁxation on
+targets (Gitchel et al., 2012). Deﬁcits in smooth pursuit are also
+pronounced in PD patients, particularly during low-frequency
+tracking tasks. Patients frequently struggle to maintain smooth
+tracking of moving targets and exhibit frequent saccadic intrusions
+(Li et al., 2023). To elicit these abnormal movements, clinicians
+commonly use a pen or something with a point for the patient to
+focus on, then move the point in various directions. These tasks
+typically involve holding the object still and asking the patient to
+maintain ﬁxation (ﬁxation) or moving the object back and forth or
+up and down (smooth pursuit). Physicians observe abnormalities
+in patients’ eye movements as they perform tasks. However, subtle
+movements such as nystagmus can be missed by the naked eye, even
+by experienced clinicians. These eye movement abnormalities may
+serve as valuable biological markers for early diagnosis and clinical
+assessment of PD.
+With the advent of AI, capturing these delicate abnormal
+eye movements through video and analyzing them with software
+has become feasible. Usually, various eye movement tasks induce
+pupil responses and are then recorded as videos. The ﬁrst step in
+video analysis involves pupils detecting, boundary reﬁning, and
+accurately locating (Kassner et al., 2014). Given the subtle nature
+of abnormal eye movements in PD patients, it is essential to
+employ visualization techniques that magnify the eye movements
+and ﬁlter out interferences, such as those caused by head tremors.
+Techniques like virtual overlay of the pupil center and contour
+ellipse, background subtraction (Bustos et al., 2023), and Eulerian
+Video Magniﬁcation (EVM) are commonly used to enhance the
+visibility of the movements (Wu et al., 2012; Williams et al.,
+2020a). After processing, algorithms are applied to track and
+Frontiers in Aging Neuroscience
+03
+frontiersin.org
+
+Yang et al.
+10.3389/fnagi.2025.1602426
+FIGURE 2
+The application process of artiﬁcial intelligence technology in Parkinson’s disease adjunctive diagnosis.
+quantify the eye movements, thus providing objective data on
+abnormalities. Finally, based on the extracted objective data, a
+recognition model is constructed to achieve the identiﬁcation
+and detection of PD. For instance, Brien et al. (2023) gathered
+video-recorded eye-tracking measurements from 104 PD patients
+and 106 healthy individuals participating in an alternating pro/antisaccade protocol. By analyzing features such as saccades, pupil
+behavior, and blink patterns, they trained an ML classiﬁer to
+Frontiers in Aging Neuroscience
+04
+frontiersin.org
+
+Yang et al.
+10.3389/fnagi.2025.1602426
+predict conﬁdence scores for diagnoses. Using a Linear Mixed
+Model, they determined disease probabilities based on eye-tracking
+biomarkers. The classiﬁer achieved a sensitivity of 0.83, a speciﬁcity
+of 0.78, and a Receiver Operating Characteristic Area Under
+the Curve (ROC-AUC) of 0.88. The predicted conﬁdence scores
+correlated with motor and cognitive performance in PD patients,
+demonstrating that eye-tracking markers can reﬂect these clinical
+scores dependably. This ﬁnding highlights the potential of eyetracking technology as a non-invasive method for prodromal
+screening of PD. Similarly, Bejani et al. (2022) employed the
+same technology to analyze smooth tracking eye movements.
+They measured various parameters, including complexity based on
+entropy and regularity, which describe the dynamic characteristics
+of the system and assess self-similarity. Using a Support Vector
+Machine (SVM) for classiﬁcation, they achieved an accuracy of
+0.74 (sensitivity: 0.73, speciﬁcity: 0.74) in PD diagnosis. This
+further supports the utility of eye-tracking data, particularly the
+dynamic system features, in diﬀerentiating PD patients from
+healthy subjects.
+Eye tracking also shows great potential in the clinical and
+social application of PD. A study validated the use of consumergrade eye-tracking systems like Eye Tribe to detect PD-relevant
+biomarkers with comparable accuracy to clinical-grade devices,
+demonstrating the feasibility of accessible and cost-eﬀective eyetracking tools in real-world settings (Szyma´nski et al., 2017).
+Virtual reality (VR) environments integrated with machine
+learning have also shown potential. A study using VR-based
+eye-tracking and SVM algorithms achieved high classiﬁcation
+performance between PD and control groups, highlighting the
+beneﬁts of immersive, standardized testing platforms for inducing
+and measuring disease-relevant visual behaviors (Jiang et al.,
+2024). Moreover, deep transcranial magnetic stimulation studies
+have linked eye-tracking metrics (e.g., saccade rate, ﬁxation
+duration) to neuropsychological assessments, suggesting that eye
+movement parameters could serve as sensitive markers not only
+for motor but also for cognitive symptom monitoring (Cont
+et al., 2025). Beyond diagnosis, machine learning models have
+also been used to predict disease severity based on eye movement
+data, aiding in personalized treatment planning and progression
+tracking (Chudzik et al., 2020). Beyond conventional eye-tracking,
+mixed reality environments oﬀer innovative ways to record eyegaze behaviors under naturalistic conditions. A study proposed
+an MR-based system to assess eye movements in PD patients,
+demonstrating that wearable and wireless MR glasses could
+facilitate home-based, real-time diagnosis, providing a scalable
+and user-friendly solution for continuous monitoring (Daniol
+et al., 2024). In terms of technical innovation, researchers are
+also exploring Human-in-the-Loop systems, where clinician gaze
+data improves ML model selection of diagnosis-relevant features
+in eye images. This hybrid approach enhances both accuracy and
+interpretability, highlighting the synergy between human expertise
+and algorithmic eﬃciency (Fong et al., 2016). In recent years, the
+availability of wearable sensors has been increasing, and the ability
+of machine learning algorithms to process multimodal and highfrequency gaze data has been enhanced (Zhao et al., 2024). With the
+increasing popularity of eye-tracking data as a digital biomarker, it
+is conducive to promoting early detection and personalized disease
+tracking (Sekar et al., 2024).
+While ML-based eye movement tracking technology has made
+notable improvement in recognizing PD, there are still several
+challenges that need to be addressed. Head movements, especially
+head tremors, can interfere with eye movement tracking, making
+it diﬃcult to diﬀerentiate between vestibular reﬂexes and the
+eye response characteristics of the disease (Gitchel et al., 2012).
+Although some studies have attempted to reduce this impact by
+isolating head tracking from eye tracking (similar to a 2D user
+interface element) (Orlosky et al., 2017), further technological
+advancements are needed to reduce the impact of head tremors on
+eye movement analysis. Additionally, using VR glasses and similar
+devices to record eye movements may cause adverse reactions
+such as dizziness in some patients (Hu et al., 2023), highlighting
+the need for new, more comfortable devices for eye movement
+tracking. Many elderly patients also suﬀer from presbyopia or other
+refractive errors (Loh and Ogle, 2004), which can aﬀect the accuracy
+of visual tracking tasks. Moreover, large-scale studies are still
+needed to widely validate the automatic prediction capabilities of
+this technology. Furthermore, diﬀerences in pupil dilation during
+eye movement tracking remain a topic for future investigation,
+as this phenomenon may also have diagnostic signiﬁcance
+(Orlosky et al., 2017).
+5 Facial expression
+A hallmark feature of PD is “hypomimia,” characterized by the
+reduction or absence of facial expressions (Goetz, 2011). Patients
+typically exhibit a decreased blinking rate and a rigid, unnatural
+facial appearance, even during voluntary attempts to express
+emotions (Wu et al., 2014). Facial muscle dysfunction contributes
+to this phenomenon, leading to a signiﬁcant reduction in the
+intensity and duration of spontaneous expressions. Additionally,
+the ability to mimic facial expressions, particularly those associated
+with emotions like happiness or anger, is severely impaired
+(Kang et al., 2019). Moreover, patients show a pronounced
+delay in the speed of emotional responses (Bowers et al., 2006).
+Upper facial dyskinesia is most evident in the reduced frequency
+of spontaneous blinking and prolonged pauses between eyelid
+closure and reopening (Agostino et al., 2008). Lower facial motor
+abnormalities are primarily reﬂected in expressive movements such
+as smiling. For instance, the peak velocity and amplitude of lip
+corner movements during postural or voluntary smiles are notably
+reduced, with these kinematic deﬁcits strongly correlating with
+the severity of bradykinesia in the limbs (Marsili et al., 2014).
+Furthermore, patients frequently struggle to initiate expressions
+that align with their actual emotional states (Simons et al., 2004).
+In contrast to the typically asymmetric motor symptoms of
+PD, facial expression deﬁcits are generally bilaterally symmetrical
+(Bologna et al., 2013). However, isolated cases of asymmetrical
+facial hypoexpression have been documented (Phillips et al., 2020;
+Panichelli and Spitz, 2021; Kurtis et al., 2019). Studies employing
+facial electromyography and action unit analysis have revealed
+signiﬁcantly reduced muscle activity in the periocular region and
+at the corners of the mouth in PD patients compared to healthy
+controls (Priebe et al., 2015; Smith et al., 1996). These muscular
+deﬁcits further exacerbate limitations in expressive capacity. The
+severity of facial expression impairment in PD varies widely. While
+Frontiers in Aging Neuroscience
+05
+frontiersin.org
+
+Yang et al.
+10.3389/fnagi.2025.1602426
+mild cases may present with a slightly dull expression, severe cases
+can result in a complete loss of facial expressivity (Gunnery et al.,
+2017). This deﬁcit not only hampers emotional expression and
+social interaction but also serves as a valuable clinical indicator for
+assessing the severity of motor dysfunction in PD.
+The implementation of facial recognition for PD using AI
+involves several key steps. The ﬁrst step is to record the subject’s
+facial expressions under appropriate lighting conditions, typically
+using video or photographs. These recordings are then analyzed
+frame-by-frame, followed by standardized processing of the facial
+images (Jabberi et al., 2023), such as alignment using the OpenCV
+library. In terms of ML, facial key features, such as texture
+characteristics and facial landmarks, need to be extracted (Krithika
+and Priya, 2021). Finally, an AI recognition model is constructed
+for facial identiﬁcation, which is optimized through iterative
+training to enhance accuracy. Image-based facial expression
+recognition is typically 60%–90% accurate (Grammatikopoulou
+et al., 2019; Rajnoha et al., 2018), while frame-by-frame video
+analysis can achieve 85%–95% accuracy (Bandini et al., 2017;
+Gómez-Gómez et al., 2022; Hou et al., 2021; Hou et al., 2022; Jin
+et al., 2020). With the advancement of AI technology, the generative
+neural network model on a small dataset has even achieved a 100%
+recognition rate (Huang et al., 2024).
+Facial analysis technologies have demonstrated considerable
+potential in diagnosing PD by detecting micro-expressions, facial
+asymmetry, and reduced action unit activation. Action Unit
+detection and transfer learning are central to many studies, such
+as the Facial Region Awareness framework, which improved the
+consistency of facial region representation across tasks, enhancing
+downstream classiﬁcation performance (Gao and Patras, 2024).
+For instance, Ali et al. (2021) developed a facial micro-expression
+classiﬁer achieving 95.6% accuracy using Support Vector Machines,
+identifying lower variance in action units (e.g., AU6, AU12, AU4)
+in PD patients compared to controls. Similarly, Gómez-Gómez
+et al. (2022) used facial expression sequences with aﬀective-domain
+adaptation and deep learning to model hypomimia, improving
+detection accuracy up to 87.3%. Emerging multimodal models
+have been particularly eﬀective. For example, Kyprakis et al. used
+3D CNN-LSTM and Swin Transformer models on facial video
+data to predict depressive symptoms–a non-motor symptom of
+PD–with over 94% accuracy, providing a non-invasive method
+for comprehensive assessment (Kyprakis et al., 2025). Adnan
+et al. (2023) proposed an AI framework using smile videos from
+over 1,000 participants to distinguish PD patients with over 87%
+accuracy and noted generalizability across diverse populations.
+Privacy and accessibility have also been addressed. Jiang et al.
+(2022) proposed a privacy-preserving AIoT edge framework using
+encrypted facial data to monitor PD patients undergoing deep
+brain stimulation (DBS), showing facial features could reﬂect
+treatment eﬃcacy. Due to the limited dataset, enhancing the
+training accuracy and generalization capacity of the model poses a
+signiﬁcant challenge. Therefore, Huang et al. (2024) used StarGAN
+to synthesize facial expressions of PD patients and combined
+these with a Swin Transformer to integrate multi-modal features.
+Their model achieved 100% diagnostic accuracy on data from 95
+PD patients. A particularly notable direction is the use of selfadministered or home-based diagnostic tools. Mishra, for example,
+developed an application based on the Facial Action Coding System
+and neural networks, allowing users to assess Parkinson’s symptoms
+remotely (Mishra, 2021). Facial expression analysis, powered by
+deep learning and computer vision, is emerging as a powerful
+and non-invasive biomarker for PD diagnosis and monitoring.
+These systems, especially when combined with privacy-aware
+frameworks and large-scale video datasets, show promise in
+supporting clinicians and enabling remote health assessments.
+However, there are still several issues that warrant attention.
+AI models rely heavily on large, high-quality datasets for training
+and validation. However, existing PD facial recognition datasets
+are generally small and lack suﬃcient diversity to capture all
+possible facial variations. PD patients exhibit signiﬁcant individual
+diﬀerences in facial expression changes (Xu et al., 2022), which
+are closely related to the progression of the disease, individual
+characteristics (e.g., gender, age, disease duration), and treatment
+approaches (e.g., medication or deep brain stimulation) (Palmeri
+et al., 2020). AI models may have limitations when addressing
+these individual diﬀerences, potentially aﬀecting their accuracy
+and generalizability. This issue is particularly pronounced in
+early-stage patients, where facial feature changes are minor.
+Currently, there is a lack of targeted research on early-stage PD
+patients, and traditional AI techniques may struggle to capture
+suﬃcient features. Additionally, PD patients often experience
+comorbid emotional disorders such as depression or anxiety,
+which signiﬁcantly impact their facial expressions. These emotional
+disorders, combined with the disease’s characteristic “masked face,”
+complicate the accurate expression of emotions (Jin et al., 2017).
+Consequently, AI models may struggle to accurately capture the
+patient’s emotional state, leading to incorrect emotion recognition.
+Furthermore, the expression of emotions is inﬂuenced by social,
+cultural, contextual, and individual diﬀerences, all of which
+increase the diﬃculty of emotion recognition.
+6 Speech features
+Pathological changes in PD signiﬁcantly aﬀect the control
+of speech muscles, drawing widespread attention to the speech
+characteristics associated with the condition. Patients often exhibit
+abnormalities across multiple dimensions, including intonation,
+articulation, ﬂuency, and rhythm of language expression, which
+serve as key diagnostic criteria (Karan et al., 2020a; Azadi
+et al., 2021). In the early stages of PD, monotonic pitch
+and volume are common, which may gradually progress into
+hypophonia (Jankovic, 2008; Kursun et al., 2012). Increased
+breathiness, hoarseness, and nasality are particularly noticeable
+during phonation in the early to mid-stage PD. These symptoms are
+likely attributed to laryngeal rigidity or bradykinesia (Shahbakhti
+et al., 2013). Compared with healthy individuals, PD patients
+show signiﬁcant alterations such as increased frequency jitter and
+intensity shimmer, alongside a reduced harmonic-to-noise ratio
+(Azadi et al., 2021). These ﬁndings suggest incomplete vocal
+cord closure and weakened motor function of the vocal cords,
+especially in individuals with advanced disease (Rusz et al., 2015;
+Holmes et al., 2000). Acoustic analyses further reveal imprecise
+consonant production, asymmetric articulation, and abnormal
+formant frequency distributions, underscoring the pronounced
+motor control deﬁcits in the vocal organs caused by PD (Arias-
+Vergara et al., 2017; Mawdsley and Gamsu, 1971). Dynamic
+Frontiers in Aging Neuroscience
+06
+frontiersin.org
+
+Yang et al.
+10.3389/fnagi.2025.1602426
+analyses highlight signiﬁcant deviations in the transition from
+sound to silence, including delays in onset and oﬀset (Laganas et al.,
+2022). Additionally, irregular speech rates, unwarranted pauses,
+and disruptions in speech ﬂuency reﬂect the impact of bradykinesia
+on pronunciation control (Arias-Vergara et al., 2017; Holmes et al.,
+2000; Laganas et al., 2022). The severity and manifestation of
+these speech characteristics vary with disease progression. While
+early-stage patients exhibit mild speech suppression, late-stage
+patients are more likely to experience unclear articulation, impaired
+respiratory control, and vocal cord lesions (Kovac et al., 2021;
+Shahbakhti et al., 2013). In addition to vocal impairments, patients
+with PD often exhibit signiﬁcant linguistic abnormalities. In terms
+of morphology, unsupervised morphological segmentation reveals
+abnormal distributions of morpheme categories (preﬁxes, stems,
+suﬃxes) (Eyigoz et al., 2018). Cross-linguistic studies conducted
+in Spanish, German, and Czech have identiﬁed speciﬁc verbal
+markers. PD patients display distinct morphological patterns,
+lexically, there is a noticeable decline in lexical diversity. Patients
+frequently repeat words and use fewer common and proper nouns
+(Yokoi et al., 2023). While the total number of verbs may increase,
+there is a marked reduction in the use of action verbs (e.g., “play,”
+“take”) (Escobar-Grisales et al., 2023a). Semantically, patients have
+deﬁcits in processing action verbs (e.g., “run,” “jump”) (García
+et al., 2022). Latent semantic analysis shows weaker associations
+between these verbs and action concepts, and patients rely more
+on non-action domains (e.g., “read,” “say”) (García et al., 2016).
+Grammatically, patients tend to produce syntactically simpliﬁed
+utterances, characterized by shorter sentence lengths, reduced
+dependency distances, and fewer noun, verb, and prepositional
+phrases. The frequent use of repetitive ﬁllers (e.g., the Spanish ﬁller
+“pues”) is also observed (Pérez-Toro et al., 2019). Additionally,
+PD patients exhibit an increased rate of grammatical errors and
+a higher frequency of subordinate clauses (e.g., those beginning
+with “because” or “although”) (García et al., 2016). They also tend
+to overuse negation markers, produce fewer segmented sentences,
+and rely more heavily on digressive syntactic constructions (García
+et al., 2016). Sometimes, a skewed distribution of verb tenses (e.g.,
+a preference for the present tense), and inconsistent case/gender
+marking in determiners and pronouns can also occur (Eyigoz et al.,
+2020). At the discourse level, impairments include disorganized
+narratives, a decrease in informational content (fewer correct units
+in picture descriptions), and incoherent structures (e.g., overused
+digressions, fewer full stops) (Favaro et al., 2023b). In addition,
+patients also exhibit impairments in syntactic processing and
+emotional language processing. Joint assessment of grammatical
+comprehension and social emotional processing can serve as a
+multidimensional linguistic marker for early diagnosis (Baez et al.,
+2020). The summary of the three aspects of speech characteristics
+in PD is shown in Figure 3.
+Speech analysis encompasses several key aspects, including
+phonation, articulation, prosody, and cognitive-linguistic elements.
+Phonation refers to the physiological processes involved in speech
+production, primarily focusing on the vibration of the vocal
+cords and the generation of sound. This process includes the
+initiation, maintenance, and cessation of sound, as well as the
+regulation of pitch and volume (Dromey et al., 1995). Articulation
+involves the movement and positioning of the articulatory organs,
+particularly the mouth, tongue, lips, and other related structures.
+Articulation ensures speech clarity and accuracy, enabling sounds
+to be eﬀectively transformed into intelligible language (Kuruvilla-
+Dugdale et al., 2020). Prosody primarily examines paralinguistic
+features, such as variations in pitch, syllable rate, and the
+expression of emotions within the speech signal (Beier et al.,
+2025). Cognitive-linguistic approaches, on the other hand, focus on
+analyzing cognitive behavior deviations by assessing factors such
+as vocabulary usage, sentence complexity, phrase construction,
+and the occurrence of word repetitions, among other indicators
+(Miller, 2017). The process of classifying speech recognition
+with the assistance of AI involves several key steps. Initially, a
+pronunciation task is assigned, typically comprising long vowels
+and standard sentences, followed by the collection of high-quality
+audio recordings using a high-deﬁnition recorder (Asci et al., 2020).
+Next, the recorded speech samples undergo preprocessing, which
+includes speech signal classiﬁcation and ﬁltering techniques to
+remove potential noise. Subsequently, relevant speech features are
+extracted, and a recognition model is developed (Eyben et al., 2013).
+Finally, the constructed model is tested to evaluate its performance.
+Parkinson’s disease-related speech datasets are designed to
+help diagnose and assess the symptoms and progression of PD
+by collecting articulatory features from patients. The currently
+commonly used datasets listed in Table 1, which contain diﬀerent
+numbers of patients and healthy controls, cover various languages
+(e.g., Spanish, Italian, Czech, English, etc.) and various speech tasks.
+For example, the PD Classiﬁcation dataset (Sakar et al., 2018)
+from the University of Istanbul classiﬁes patients using repeated
+vowel articulations, while the Parkinson’s Telemonitoring dataset
+(Tsanas et al., 2010) uses 16 phonological features to predict a
+patient’s motor and global UPDRS scores. The PC-GITA (Orozco-
+Arroyave et al., 2014) and Neurovoz datasets (Mendes-Laureano
+et al., 2014) provide rich articulatory tasks to analyze articulatory
+dynamics and dysarthria in native Spanish-speaking patients. The
+Johns Hopkins Medicine dataset (Favaro et al., 2023a) focuses on
+spontaneous speech and read-aloud tasks in English to investigate
+the relationship between language ﬂuency and PD. The Italian PVS
+dataset in Italy focuses on vowel articulation and read-aloud tasks
+in Italian (Dimauro et al., 2017). The dataset from the UC Irvine
+ML Repository also comprises a series of voice recordings of PD
+patients (Carlos, 2016; Hlavnika et al., 2017; Little, 2007; Olcay et al.,
+2013; Sakar et al., 2018; Tsanas et al., 2010).
+Research on AI-driven speech recognition for PD has reached
+a relatively mature stage, with signiﬁcant advancements in
+methodologies ranging from traditional ML to DL. A key
+transition has been made from manual extraction of voiceprint
+features to fully automated extraction processes (Escobar-Grisales
+et al., 2023b). Current studies primarily focus on DL techniques,
+including deep acoustic feature extraction (DAFE) (Khojasteh
+et al., 2018), end-to-end (E2E) learning (Quan et al., 2022; Rios-
+Urrego et al., 2022), and transfer learning (TL) (Reddy et al.,
+2024). Among these, convolutional neural networks (CNNs) (Er
+et al., 2021) are widely utilized in E2E models, while Transformerbased architectures are gaining increasing popularity (Malekroodi
+et al., 2024). DAFE enhances the interpretability of results by
+examining how deep phonetic features inﬂuence ML and other
+DL methods. The recognition accuracy of the DAFE method is
+usually above 85% (Favaro et al., 2023b; Karan et al., 2020b; Mallela
+et al., 2020b). Wav2Vec2.0, VGGish, and Soundnet extraction
+of deep acoustic features (Ferrante and Scotti, 2023) as well as
+autoencoders combined with deep bilateral learning (Ma et al.,
+Frontiers in Aging Neuroscience
+07
+frontiersin.org
+
+Yang et al.
+10.3389/fnagi.2025.1602426
+FIGURE 3
+Speech impairment in Parkinson’s disease.
+TABLE 1 Summary of the publicly available speech datasets related to Parkinson’s disease.
+Dataset name
+Number of participants
+Task(s) involved
+Cite
+Parkinson’s disease classiﬁcation
+(Istanbul)
+188 PD, 64 HC
+Sustained pronunciation of three repeated
+vowels (/a/)
+Sakar et al., 2018
+Parkinson’s telemonitoring
+42 PD
+Sustained vowel phonations ranging from one
+to 36 s in length
+Tsanas et al., 2010
+PC-GITA
+50 PD, 50 HC
+Continuous pronunciation, 45 words, 10
+sentences, 1 reading text, 1 monologue task in
+Spanish
+Orozco-Arroyave et al., 2014
+Neurovoz
+54 PD, 58 HC
+Continuous vowel pronunciation, DDK testing,
+16 structured listening, repeated persuasion,
+monologues in Spanish
+Mendes-Laureano et al., 2014
+Johns Hopkins medicine (JHM)
+dataset
+23 PD, 27 HC
+Spontaneous speech task for image description,
+two short text reading tasks in English
+Favaro et al., 2023a
+Italian PVS
+22 elderly HC, 28 young HC, 28 PD
+Balanced pronunciation of 5 long vowels,
+reading short texts, phrases, and words in
+Italian
+Dimauro et al., 2017
+Czech PD
+20 PD, 15 HC
+Sustained phonation, sentence repetition,
+passage reading, monologues in Czech
+Dimauro et al., 2017
+2021) can achieve more than 90% accuracy and even up to 99.6%.
+E2E and TL typically have better presentation performance (van
+Gelderen and Tejedor-García, 2024). E2E models, especially those
+using the Transformer architecture, require relatively larger clinical
+datasets and computational resources, with more applications
+currently (Hemmerling et al., 2023). It typically achieves more
+than 95% accuracy (Hireš et al., 2022; Hireš et al., 2023;
+Mallela et al., 2020a; Reddy et al., 2024), and even 100%
+in models combining CNNs and LSTMs (Boualoulou et al.,
+2023). In contrast, TL enables the transfer of pre-trained models
+across various linguistic datasets, reducing computational costs
+while improving multilingual adaptability (Hireš et al., 2023;
+Vásquez-Correa et al., 2021).
+Speech features have been widely used in the diagnosis of PD
+for example, a study introduced the PPINtonus system, which
+integrates tonal analysis with a GAN-augmented deep neural
+network trained on phonetic data collected under real-world
+conditions. Utilizing PRAAT software to extract acoustic features,
+such as Mel-Frequency Cepstral Coeﬃcients and Shimmer,
+from 120-s voice samples, the system achieved an impressive
+classiﬁcation accuracy of 92.5% (Reddy, 2024). García-Ordás
+et al. (2024) proposed a multitask multilayer perceptron model
+Frontiers in Aging Neuroscience
+08
+frontiersin.org
+
+Yang et al.
+10.3389/fnagi.2025.1602426
+capable of performing both classiﬁcation and regression tasks
+based on voice data. Their approach attained over 99% accuracy
+in distinguishing between severe and non-severe PD cases by
+leveraging features such as jitter, harmonic-to-noise ratio, and
+articulation rate. Verbal biomarkers such as increased pause
+duration, word retrieval delays, and reduced speech ﬂuency are
+commonly assessed using both theory-driven psycholinguistic
+models and data-driven embedding techniques. For instance,
+Padhee et al. (2020) showed that these features can eﬀectively
+distinguish PD from other cognitive disorders with high diagnostic
+accuracy. Mir et al. (2024) developed an LSTM-based framework,
+demonstrating that the temporal dynamics of speech and
+movement can be informative for diagnosis, even in the absence of
+overt motor symptoms. However, its recognition accuracy is usually
+between 70 and 90% (Karaman et al., 2021; Vásquez-Correa et al.,
+2021). Despite these technological breakthroughs, most existing
+studies rely on voiceprint features extracted from limited public
+datasets. These datasets vary in terms of geographical and linguistic
+diversity, as well as in the content of the original audio recordings.
+Consequently, a standardized approach for collecting acoustic
+features has not been established. Further research is required
+to develop standardized voiceprint acquisition protocols and to
+explore PD speech characteristics across diﬀerent ethnic subgroups
+within various language regions.
+7 Handwriting and tapping
+Handwriting and tapping tasks serve as valuable means
+for assessing the ﬁne motor skills of the upper limbs in
+PD patients. In handwriting, PD patients often demonstrate
+progressively smaller writing (micrographia), along with irregular
+character shapes and reduced legibility (Letanneux et al., 2014).
+Due to bradykinesia and tremor, maintaining consistent stroke
+speed and pressure becomes challenging, leading to slower
+writing and non-standardized strokes (Zham et al., 2019).
+In ﬁnger-tapping tests, PD patients typically show a marked
+reduction in tapping speed, diminished amplitude, and diﬃculty
+maintaining rhythmic consistency, attributed to bradykinesia and
+muscle rigidity (Giovannoni et al., 1999). This impairment is
+particularly evident during complex tasks requiring synchronized
+multi-ﬁnger movements or alternating repetitive tapping, where
+movement accuracy and coordination decline markedly (Agostino
+et al., 1998). In more intricate hand tasks, such as coin
+rotation or manipulating small objects, PD patients often
+exhibit reduced independence of ﬁnger movements, a condition
+known as limb-kinetic apraxia (Syeda et al., 2022). As the
+frequency of hand movements increases, their amplitude and
+coordination deteriorate further, highlighting movement frequency
+as a critical factor inﬂuencing motor performance in PD patients
+(Stamatakis et al., 2010).
+The most commonly used devices for diagnosing PD through
+handwriting analysis are drawing tablets (Jackson, 2015) and/or
+biometric smart pens (Bashir and Kempf, 2012). These devices
+typically provide parameters such as the X and Y coordinates of
+the trajectories drawn by the subject on a tablet or in the air,
+sampling time, pen orientation angles (azimuth and elevation),
+and the pressure applied by the pen during writing. With these
+devices, subjects are asked to perform simple drawing tasks (e.g.,
+spirals, meandering shapes, and circles), basic writing tasks (such
+as writing one or more cursive letters, or continuous and repeated
+letters like “lll” or “lele”), as well as more complex writing tasks
+(e.g., copying detailed, intricate text) (Aouraghe et al., 2023). The
+collected data is ﬁrst preprocessed by ﬁltering to reduce noise
+and smoothing the signals (e.g., normalizing signal duration)
+(Impedovo and Pirlo, 2008). Subsequently, relevant kinematic
+features, mechanical properties, spatiotemporal features, entropy,
+and energy characteristics are extracted (Afonso et al., 2019; Drotár
+et al., 2015; Drotár et al., 2016), and ﬁnally, recognition models
+are built based on the data types. There are currently several PD
+handwriting or drawing datasets available to the public (Table 2).
+Those contain handwriting samples from PD patients and healthy
+individuals, with task types including Archimedean spiral, repeated
+letters and words, drawing circles, winding lines, and static and
+dynamic spirals. These tasks aim to detect changes in ﬁne motor
+control, stability, and ﬂuency in PD patients to assess their motor
+coordination and handwriting ability. Multiple datasets provide
+valuable resources for early diagnostic tools and monitoring models
+by comparing diﬀerences in writing behavior between healthy
+individuals and PD patients.
+Before 2020, the recognition accuracy based on handwriting in
+ML and DL typically ranged from 80 to 90% (Cascarano et al., 2019;
+Drotár et al., 2016; Gupta et al., 2018; Kotsavasiloglou et al., 2017;
+Mucha et al., 2018; Mucha et al., 2019; Xu and Pan, 2020; Zham
+et al., 2018). However, since 2022, due to advancements in neural
+networks, ML has seen signiﬁcant improvements. Speciﬁcally,
+KNN, XGBOOST, and ChiGa-Net models can now achieve an
+accuracy rate of 92%–99% (Abdullah et al., 2023; Diaz et al., 2019;
+Shrivastava et al., 2024). Meanwhile, in DL, multiple deep CNN
+models and deep transfer learning have achieved an accuracy rate
+exceeding 98% (Kamran et al., 2021; Naz et al., 2023; Pereira
+et al., 2016). Remarkably, in RNN-LSTM and RNN-BLSTM, as
+well as VGG16 and VGG19, the accuracy has reached 100%
+(Kumar and Ghosh, 2024; Zemmar et al., 2025). Studies have shown
+that AI can eﬀectively extract features from dynamic handwriting
+signals (e.g., pen pressure, speed, acceleration, stroke patterns) to
+distinguish between healthy individuals and PD patients. Models
+like Convolutional Autoencoders (CAE), Transformers, Recurrent
+Neural
+Networks,
+and
+Multilayer
+Perceptrons
+(MLPs),
+are
+commonly used to analyze these spatiotemporal data modalities,
+demonstrating high classiﬁcation accuracy ranging from 85% to
+over 95% in certain datasets (Aldujaili et al., 2025). For instance,
+Kansizoglou et al. (2025) proposed a hierarchical DL model to
+detect PD from online handwriting, focusing on drawing-aware
+features. Kasab et al. (2024) demonstrated how CAE can classify
+spiral and wave drawings with high sensitivity, while Arasavali
+et al. (2024) used an MLP-based framework to dynamically assess
+handwriting traits for PD classiﬁcation.
+The use of GAN-augmented datasets and transformer-based
+models further enhances the generalization and robustness of PD
+classiﬁers, particularly in early detection stages when symptoms are
+subtle (Darkhal and Sedaghat, 2025). Saha et al. (2024) leveraged
+multimodal handwriting signals, including micrographia, spiral,
+and meander patterns, integrated with ML for high-precision
+diagnosis. Kamireddy et al. also emphasized the value of such noninvasive digital biomarkers through spiral and wave test analysis
+using deep learning pipelines (Kamireddy et al., 2025). Notably,
+Frontiers in Aging Neuroscience
+09
+frontiersin.org
+
+Yang et al.
+10.3389/fnagi.2025.1602426
+TABLE 2 Summary of the publicly available handwriting or drawing datasets related to Parkinson’s disease.
+Dataset name
+Number of participants
+Task(s) involved
+Cite
+Parkinson’s disease handwriting
+(PaHaW)
+37 PD, 37 HC
+Archimedean spirals, repetitive loops, the letter
+“l,” syllable “le,” Czech words, Czech sentence
+Drotár et al., 2016
+PD multi MC
+16 PD, 16 HC
+Repetitive longitudinal letters, triangular waves,
+rectangular waves, repetitive English words
+“Monday” and “Tuesday,” repetitive subject
+names
+Taleb et al., 2017
+Hand PD
+74 PD, 18 HC
+Spiral drawing
+Pereira, 2021
+New hand PD
+31 PD, 35 HC
+Circles, spiral, meander, and signals
+handwriting
+Xu and Pan, 2020
+Parkinson disease spiral drawings
+using digitized graphics tablet
+62 PD, 15 HC
+Spirals and stability test on certain point
+Isenkul and Betul, 2017
+these models are often integrated into portable digital platforms,
+such as tablets or smart pens, enabling remote and cost-eﬀective PD
+screening. This democratizes access to neurological assessments,
+especially in underserved regions or for elderly populations unable
+to access specialized centers. Its integration into telemedicine tools
+could revolutionize how we screen and monitor neurodegenerative
+diseases. However, the majority of these studies rely on existing
+datasets. Even in the widely recognized largest PD handwriting
+dataset, the number of patients is limited to just 74. Additionally,
+most of the populations studied are from countries with alphabetic
+languages. Consequently, these subjects may perform better in
+tasks such as drawing curves, circles, and waves compared to
+populations using stroke-based languages like Chinese. Therefore,
+it is essential to expand the sample size and include individuals
+from diverse linguistic backgrounds. Furthermore, cognitive
+impairment levels vary signiﬁcantly among patients, leading to
+considerable diﬀerences in drawing performance. For instance,
+some patients may struggle to complete handwriting or drawing
+tasks due to inattention or memory loss. Future research must focus
+on increasing both the size and diversity of datasets by collecting
+handwriting and drawing data from various populations and
+disease stages, thereby improving the generalizability of AI models.
+Additionally, it is crucial to account for emotional and cognitive
+factors. Speciﬁcally, when analyzing handwriting and drawing
+data, a comprehensive consideration of the patient’s emotional
+and cognitive state is necessary to enhance diagnostic accuracy.
+Furthermore, the development of user-friendly, low-cost devices
+for data collection, along with the establishment of standardized
+protocols and operating procedures, will be critical in facilitating
+the clinical application of these technologies.
+For ﬁnger-tapping, some existing work suggests the use of
+wearable sensors (Pasluosta et al., 2015). A recognition model
+was built using parameters such as speed and acceleration of the
+tapping, and the accuracy of the X-ception and SVM models
+was 71.3% (Singh et al., 2023) and 87.0% (Shin et al., 2024),
+respectively. However, these sensors inevitably come into physical
+contact with PD patients, which may aﬀect the patient’s movement
+due to the weight and contact of the sensors. In addition, the
+data collected by the sensors are aﬀected by gravity, thus complex
+procedures are required for calibration (Shima et al., 2019). Some
+studies use colored markers or gloves (Buongiorno et al., 2019;
+Krupicka et al., 2017) to facilitate visual capture, catch subtle
+movements by using video cameras, especially the depth camera
+in recent years (House et al., 2017), and measure the relative
+direction and pixel-level distances of ﬁnger movements (Khan
+et al., 2014; Liu et al., 2019; Williams et al., 2020b). It is capable
+of detecting and estimating hand joint positions and postures,
+thereby extracting 3D hand kinematic features. Notably, 2D or 3D
+vision can not only achieve an accuracy of over 85% in binary
+models (identifying PD and healthy individuals) (Amprimo et al.,
+2023; Buongiorno et al., 2019; Kajan et al., 2024; Khan et al., 2014;
+Monje et al., 2021), but also evaluate the classiﬁcation of patients’
+movement disorders in multi-class models, but the accuracy is
+usually lower than that of binary models, between 70 and 90%
+(Guarín et al., 2024; Guo et al., 2022; Li et al., 2021; Li et al., 2022;
+Park et al., 2021; Yang et al., 2022; Yu et al., 2023). The use of
+smartphone applications (Lee et al., 2016; Surangsrirat et al., 2022)
+for self-management of PD assessment is becoming increasingly
+popular. For instance, participants were instructed to use their
+index ﬁnger to rapidly and repeatedly click on both sides of a
+rectangle displayed on the touchscreen. Subsequently, indicators
+such as click accuracy and movement distance are used for disease
+assessment (Lee et al., 2016). PDGs is one such application that has
+achieved over 94.5% recognition accuracy on various smartphones
+(Teng et al., 2023). It is noteworthy that one system employed
+a k-nearest neighbor classiﬁer to rapidly facilitate the diﬀerential
+diagnosis of repetitive ﬁnger-tapping features captured by the
+gyroscope within a wearable system equipped with inertial sensors
+(Beli´c et al., 2023). This system can eﬀectively distinguish among
+patients with PD, those with atypical Parkinson’s syndromes such
+as progressive supranuclear palsy and multiple system atrophy, and
+healthy controls (HC). In multi-classiﬁcation tasks, it achieved an
+overall classiﬁcation accuracy of 85.18%.
+8 Gait
+Gait abnormalities in PD are crucial indicators for diagnosis
+and monitoring, reﬂecting multiple impairments in the patient’s
+motor system. Dynamic feature analysis shows that PD patients
+exhibit signiﬁcant decreases in stride length, step duration,
+stance time, swing time, and support time, with shortened stride
+length, reduced walking speed, and decreased gait rhythm being
+particularly substantial (Mirelman et al., 2019; Wahid et al., 2015;
+Wang et al., 2016; Zhao et al., 2021). It is worth noting that although
+gait rhythmicity is reduced, PD patients can improve gait to some
+Frontiers in Aging Neuroscience
+10
+frontiersin.org
+
+Yang et al.
+10.3389/fnagi.2025.1602426
+extent by adjusting step frequency under external prompts, which
+provides a new direction for gait treatment (Sarbaz et al., 2012;
+Wu and Krishnan, 2010). Regarding spatial characteristics, PD
+patients tend toward reduced forward displacement and increased
+vertical displacement when walking forward, with these changes
+becoming more pronounced as the disease progresses (Hausdorﬀ,
+2009; Ogata et al., 2022). Furthermore, gait freezing (FoG) is a
+hallmark symptom of PD, characterized by a sudden cessation of
+movement or an inability to continue walking (Jankovic, 2008).
+This condition compromises gait stability and typically occurs
+during gait transitions, turning, navigating narrow spaces, or while
+performing dual tasks (Rahimpour et al., 2021). These various
+gait changes can also lead to asymmetric gait of both lower
+limbs, thereby aﬀecting the balance of the body during walking
+(Rahimpour et al., 2021).
+In PD AI gait recognition research, patients typically perform
+a series of gait tasks designed to assess the severity, progression,
+and mobility of the disease by analyzing the dynamic features
+of gait. The Regular Walking Task helps to capture the patient’s
+basic gait pattern, requiring the patient to walk at a normal pace
+on a ﬂat surface (Ahmadi et al., 2021). This aims to assess the
+patient’s gait characteristics, such as step length, step frequency,
+stride length, swing, and support time, without any disturbances
+or obstacles. The gait acceleration or deceleration task requires
+patients to increase their speed to their maximum sustained speed
+or deliberately slow. These can be used to evaluate patients’
+adjustment of gait when facing challenges, observing whether there
+is a phenomenon of shortened or unstable gait. In gait freezing
+tasks, patients are usually guided through certain situations, such
+as conﬁned spaces (Almeida and Lebold, 2010), to observe whether
+the patient experiences freezing and to analyze the conditions and
+characteristics of its occurrence. Turning tasks typically require
+patients to walk along a particular curve or make turns in diﬀerent
+directions within a deﬁned area (King et al., 2022), while obstaclecrossing tasks require patients to cross an obstacle placed on the
+ground, such as a small step or an obstacle bar (Vitório et al., 2014).
+This task simulates scenarios that patients may encounter in their
+daily lives, estimating their gait stability and ﬂexibility in dealing
+with obstacles. In dual-task-walking, patients need to perform
+other cognitive tasks (such as memorizing numbers, solving simple
+arithmetic problems, etc.) while walking (Kelly et al., 2012).
+Typically, patients show more pronounced gait abnormalities,
+particularly reduced stride length and unstable gait rhythm, when
+performing dual tasks (Salazar et al., 2017). These gait tasks play
+an important role in research into AI recognition of gait in
+PD. By collecting gait data from patients performing these tasks,
+researchers can use sensor technologies (e.g., inertial measurement
+units, accelerometers, gyroscopes, etc.) (Hubble et al., 2015) and
+AI algorithms to extract gait features, including spatiotemporal,
+kinematic, dynamic, electromyographic, sensor-based, and visualbased standing intervals, swing time, stride time, number of steps,
+gait velocity, stride length, walking speed, power spectral density,
+hip ﬂexion, and plantar ﬂexion oﬀset (Sharma et al., 2022). These
+features provide the basis for building models to identify and
+predict gait abnormalities and assist clinicians in early diagnosis
+and monitoring of disease progression.
+At present, there are datasets available for public use regarding
+the gait of PD. The “Gait in PD” (Hausdorﬀ, 2008) database
+contains gait measurements, demographic information and disease
+severity from 93 patients and 73 healthy participants. The dataset
+includes recordings of the vertical ground reaction force of the
+participants, those who walked on a ﬂat surface at their self-chosen
+pace for around 2 min. This information reﬂects the changes in
+pressure over time, as well as the activity time of each foot (such
+as stride time and swing time). The Gait in Neurodegenerative
+Disease Database (Hausdorﬀ, 2000) records stride interval, swing
+interval, stance interval, double support interval information, and
+clinical information for each subject, including age, sex, height,
+weight, walking speed, and Hohn and Yahr scores for disease
+severity. Parkinson’s Freezing of Gait Prediction (The Michael J Fox
+Foundation, 2023) consists of three sub-datasets, each containing
+sensor and video recordings of patients’ frozen gait before and after
+medication, as well as their daily gait.
+Machine learning and DL techniques have demonstrated
+substantial promise in leveraging gait analysis for the diagnosis
+and early detection of PD. These computational methods can
+detect subtle motor impairments by analyzing spatiotemporal
+gait parameters, often imperceptible to clinicians during routine
+examinations. The synergy of wearable sensor data, advanced
+signal processing, and AI models enables robust classiﬁcation
+and staging of PD, including early-stage detection and symptom
+monitoring. For instance, the application of the support vector
+machine with linear decision boundaries has led to an overall
+classiﬁcation accuracy of 95% (Alkhatib et al., 2020). Moreover,
+the reinforcement ﬁne-tuning method not only facilitates binary
+classiﬁcation for PD diagnosis but also attains an average accuracy
+of 96.4% ± 2.3% when assessing the severity of the disease
+(Varrecchia et al., 2021). In addition, there are speciﬁc tests for
+gait freezing in patients that play a role in helping to diagnose
+PD and can also predict gait freezing in time to prevent falls.
+Wearable inertial measurement units placed on limbs or embedded
+in smart insoles have been eﬀectively used to collect gait data
+for input into AI models, achieving high sensitivity in identifying
+FoG episodes (Cluzel et al., 2025). The accuracy, sensitivity, and
+speciﬁcity of FOG prediction were all around 85% in patients
+receiving dopaminergic therapy (1 h after levodopa ingestion) and
+in those not receiving dopaminergic therapy (at least 12 h after
+levodopa discontinuation) (Borzì et al., 2021). Beyond detection,
+DL models also support disease monitoring and risk prediction.
+Multidomain analysis including gait, voice, and tapping through
+smartphones oﬀers a scalable, non-invasive tool for PD screening,
+particularly in remote or resource-limited settings (Lim et al., 2025).
+Gait abnormalities, such as asymmetry, reduced stride length,
+and variability in cadence, have been eﬀectively quantiﬁed using
+AI to track disease progression or response to medication or
+Deep Brain Stimulation (Priya et al., 2025). Furthermore, gait
+analysis has been proposed not just for diagnosis but also as a
+digital biomarker for fall prediction, severity scoring, and even
+to diﬀerentiate PD from atypical Parkinsonian syndromes (Terry
+and Alvarez-Vazquez, 2025). Based on postural instability and gait
+analysis, the application of an enhanced weighted voting ensemble
+method demonstrates high sensitivity but relatively low speciﬁcity
+when diﬀerentiating atypical parkinsonism from PD (Song et al.,
+2022). These advancements illustrate a shift toward personalized
+and continuous neurology, where machine intelligence enhances
+clinical decision-making. In summary, the integration of gait
+analysis with AI oﬀers a promising frontier for improving the
+accuracy, objectivity, and timeliness of PD diagnosis. However,
+Frontiers in Aging Neuroscience
+11
+frontiersin.org
+
+Yang et al.
+10.3389/fnagi.2025.1602426
+the biggest problem with gait analysis is that a complete standard
+collection procedure has not yet been established. Since most of
+the technicians are scientiﬁc researchers rather than experts with
+clinical experience, the methods of collecting patient gait vary from
+study to study. Moreover, the lack of data volume in the dataset
+is also an important aspect that aﬀects the classiﬁcation decision
+model (Sharma et al., 2022).
+9 Discussion
+This review primarily aims to explore the roles of motor
+symptoms and their corresponding characteristic manifestations
+of PD in AI-assisted diagnosis. We summarized the speciﬁc
+manifestations of facial expressions, eye movements, speech,
+handwriting, ﬁnger - tapping, and gait in PD, their applications
+in AI-assisted diagnosis, publicly accessible datasets, current
+limitations, and future development directions.
+Generally
+speaking,
+research
+on
+PD
+recognition
+based
+on speech, handwriting, ﬁnger-tapping, and gait is relatively
+comprehensive, and the model recognition accuracy is quite
+high. In the realm of speech analysis, for instance, several studies
+delved into the unique pitch, rhythm, and articulation patterns
+associated with Parkinson’s patients (Faragó et al., 2023; Favaro
+et al., 2023b; Ma et al., 2021). Various publicly available datasets
+greatly facilitated the development of AI-based diagnostic models.
+Similarly, in handwriting, tremors, micrographia (abnormally
+small handwriting), and irregularities in stroke formation have
+been well-documented. These datasets have enabled the training of
+models to accurately identify signs of the disease from handwritten
+samples. In ﬁnger-tapping and gait analysis, a multi-class
+assessment of the disease progression degree can be accomplished,
+its speed, rhythm, and force exerted during the tapping motion
+can provide valuable insights into the progression of the disease
+(Kim et al., 2011; Rose et al., 2020). Gait analysis, on the other
+hand, focuses on parameters such as stride length, walking
+speed, and balance. However, despite these achievements, the
+accuracy of these assessment methods still requires improvement.
+There are still challenges in accounting for individual variations
+among patients, as well as the inﬂuence of external factors such
+as fatigue and environment. Regarding facial expression and
+eye movement recognition, perhaps due to the dynamic visual
+changes involved, the overall recognition accuracy still needs to
+be enhanced through further technological advancements when
+compared with other motor symptoms. Detecting these subtle
+changes in real time is a complex task, as facial expressions can
+be aﬀected by emotional states and social context. Eye movement
+analysis, which includes saccades (rapid eye movements) and
+smooth pursuit, also presents challenges due to the high-speed
+and ﬁne-grained nature of these movements. In the future, more
+in-depth studies are required to develop more accurate and
+robust AI-assisted diagnostic models. Additionally, the research
+of more advanced algorithms that can better handle the dynamic
+and complex nature of facial expressions and eye movements
+will be crucial for enhancing the recognition accuracy in these
+areas.
+There remain numerous common issues that demand further
+attention. When it comes to raw data, a signiﬁcant portion of
+studies is concentrated within a limited number of datasets, and
+the evaluation of the included patients and the recording of
+related information are incomplete. The quantity, quality, type,
+and representativeness of data play essential parts in model
+construction. For diﬀerent types of motor symptoms, collecting
+raw data requires establishing a comprehensive standardized
+process to improve data quality and representativeness of typical
+features. When recruiting patients, a comprehensive evaluation
+should be carried out under the guidance of specialized doctors.
+It is necessary to make action tasks that can trigger speciﬁc
+manifestations and form expert consensus. Speciﬁc details such
+as the patient’s race, disease duration, and severity should be
+annotated to establish a large-scale, high-quality uniﬁed dataset,
+ensuring that the models are trained on a diverse and representative
+set of data, thus improving their generalization ability. In the
+aspect of visualizing dynamic information like eye movements
+and facial expression changes, technological advancements are still
+required to support the high-quality extraction and utilization of
+the necessary features. With the complexity of PD manifestations
+and the diversity of data sources, it is diﬃcult to accurately extract
+valuable information from the raw data. Traditional data analysis
+methods may not be suﬃcient to handle the large-scale and highdimensional data generated in modern research. Therefore, more
+advanced ML and AI algorithms should be introduced to dig out
+hidden patterns and relationships in the data. Moreover, there
+are certain challenges for AI to diﬀerentiating PD from atypical
+Parkinson-syndromes based solely on motor disorders. In such
+scenarios, AI may play a supportive role for doctors in detecting
+variations in the movement states (closed/open) of the same patient
+(Vasquez-Correa et al., 2019).
+Currently, research on multimodal PD diagnosis based
+on large-scale and high-quality datasets and the development
+of wearable devices integrating multiple features are in high
+demand and represent a major trend in future research. Close
+cooperation
+between
+researchers,
+clinicians,
+and
+industry
+partners is essential. Researchers should work closely with
+clinicians
+to
+understand
+the
+actual
+needs
+in
+the
+clinical
+setting and develop practical solutions. Identiﬁcation models
+should
+adapt
+to
+diﬀerent
+application
+scenarios,
+such
+as
+community
+screening,
+home
+monitoring,
+and
+hospitalassisted diagnosis. Improving the real-time performance and
+usability of model recognition facilitates the early detection and
+diagnosis of the disease, enabling early intervention to delay
+disease progression.
+10 Conclusion
+This article reviews the role of the motor symptoms and
+corresponding characteristic manifestations of PD in AI-assisted
+diagnosis. At present, PD recognition technology based on speech,
+handwriting, Tap, and gait is relatively mature, but the extraction
+of dynamic features such as facial expressions and eye movements
+still needs to be strengthened. Establishing a standardized
+data collection process and a large-scale dataset containing
+multiple information labels is currently an urgent problem that
+needs to be solved. In the future, research on multimodal
+recognition models and wearable devices is a promising direction.
+Frontiers in Aging Neuroscience
+12
+frontiersin.org
+
+Yang et al.
+10.3389/fnagi.2025.1602426
+These suggestions may provide better services for both patients and
+doctors and contribute to social healthcare.
+Author contributions
+NY: Writing – original draft, Conceptualization, Methodology.
+JL: Methodology, Writing – original draft. DS: Formal Analysis,
+Writing – review and editing. JD: Writing – original draft. LS:
+Supervision, Writing – review and editing. XQ: Writing – review
+and editing, Supervision. WY: Project administration, Supervision,
+Writing – review and editing.
+Funding
+The author(s) declare that no ﬁnancial support was received for
+the research and/or publication of this article.
+Conﬂict of interest
+The authors declare that the research was conducted in the
+absence of any commercial or ﬁnancial relationships that could be
+construed as a potential conﬂict of interest.
+Generative AI statement
+The authors declare that no Generative AI was used in the
+creation of this manuscript.
+Publisher’s note
+All claims expressed in this article are solely those of the
+authors and do not necessarily represent those of their aﬃliated
+organizations, or those of the publisher, the editors and the
+reviewers. Any product that may be evaluated in this article, or
+claim that may be made by its manufacturer, is not guaranteed or
+endorsed by the publisher.
+References
+Abdullah, S. M., Abbas, T., Bashir, M. H., Khaja, I. A., Ahmad, M., Soliman,
+N. F., et al. (2023). Deep transfer learning based parkinson’s disease detection using
+optimized feature selection. IEEE Access. 11, 3511–3524. doi: 10.1109/ACCESS.2023.
+3233969
+Abusrair, A. H., Elsekaily, W., and Bohlega, S. (2022). Tremor in Parkinson’s disease:
+From pathophysiology to advanced therapies. Tremor Other Hyperkinet Mov. (N Y)
+12:29. doi: 10.5334/tohm.712
+Adnan, T., Islam, M. S., Rahman, W., Lee, S., Tithi, S. D., Noshin, K., et al. (2023).
+Unmasking Parkinson’s disease with smile: An ai-enabled screening framework. arXiv
+[preprint] doi: 10.48550/arXiv.2308.02588
+Afonso, L. C. S., Rosa, G. H., Pereira, C. R., Weber, S. A. T., Hook, C., Albuquerque,
+V. H. C., et al. (2019). A recurrence plot-based approach for Parkinson’s disease
+identiﬁcation. Fut. Generat. Comp. Syst. 94, 282–292. doi: 10.1016/j.future.2018.11.054
+Agostino, R., Berardelli, A., Currà, A., Accornero, N., and Manfredi, M. (1998).
+Clinical impairment of sequential ﬁnger movements in Parkinson’s disease. Mov.
+Disord. 13, 418–421. doi: 10.1002/MDS.870130308
+Agostino, R., Bologna, M., Dinapoli, L., Gregori, B., Fabbrini, G., Accornero, N.,
+et al. (2008). Voluntary, spontaneous, and reﬂex blinking in Parkinson’s disease. Mov.
+Disord. 23, 669–675. doi: 10.1002/mds.21887
+Ahmadi, S., Siragy, T., and Nantel, J. (2021). Regularity of kinematic data between
+single and dual-task treadmill walking in people with Parkinson’s disease. J. Neuroeng.
+Rehabil. 18:20. doi: 10.1186/s12984-021-00807-5
+Aldujaili, A. A., Rosa-Zurera, M., and Utrilla-Manso, M. (2025). Review of
+Parkinson’s disease detection with deep-learning machines. Multimed. Tools Appl. 84,
+3015–3051. doi: 10.1007/S11042-024-20466-7/METRICS
+Ali, M. R., Myers, T., Wagner, E., Ratnu, H., Dorsey, E. R., and Hoque, E. (2021).
+Facial expressions can detect Parkinson’s disease: Preliminary evidence from videos
+collected online. NPJ Digit. Med. 4:129. doi: 10.1038/s41746-021-00502-8
+Alkhatib, R., Diab, M. O., Corbier, C., and Badaoui, M. E. (2020). Machine learning
+algorithm for gait analysis and classiﬁcation on early detection of parkinson. IEEE
+Sens. Lett. 4, 1–4. doi: 10.1109/LSENS.2020.2994938
+Almeida, Q. J., and Lebold, C. A. (2010). Freezing of gait in Parkinson’s disease:
+A perceptual cause for a motor impairment? J. Neurol. Neurosurg. Psychiatry 81,
+513–518. doi: 10.1136/jnnp.2008.160580
+Amprimo, G., Rechichi, I., Ferraris, C., and Olmo, G. (2023). “Objective assessment
+of the ﬁnger tapping task in parkinson’s disease and control subjects using azure kinect
+and machine learning,” in Proceedings of the 2023 IEEE 36th International Symposium
+on Computer-Based Medical Systems (CBMS), (Piscataway, NJ: IEEE).
+Aouraghe, I., Khaissidi, G., and Mrabti, M. (2023). A literature review of online
+handwriting analysis to detect Parkinson’s disease at an early stage. Multimed. Tools
+Appl. 82, 11923–11948. doi: 10.1007/S11042-022-13759-2
+Arasavali, N., Jaﬃr, S., Lavanya, B., Ashok, D., and Kumar, P. T. (2024).
+“Handwriting dynamic assessment using deep neural network multi layer perceptron
+for parkinsons disease classiﬁcation,” in Proceedings of the 2024 International
+Conference on Communication, Control, and Intelligent Systems (CCIS), (Piscataway,
+NJ: IEEE).
+Arias-Vergara, T., Vásquez-Correa, J. C., and Orozco-Arroyave, J. R. (2017).
+Parkinson’s disease and aging: Analysis of their eﬀect in phonation and articulation
+of speech. Cogn. Comput. 9, 731–748. doi: 10.1007/S12559-017-9497-X/METRICS
+Armstrong, R. A. (2015). Oculo-Visual dysfunction in Parkinson’s disease.
+J. Parkinsons Dis. 5, 715–726. doi: 10.3233/JPD-150686
+Asci, F., Costantini, G., Di Leo, P., Zampogna, A., Ruoppolo, G., Berardelli, A., et al.
+(2020). Machine-Learning analysis of voice samples recorded through smartphones:
+The combined eﬀect of ageing and gender. Sensors (Basel) 20:5022. doi: 10.3390/
+s20185022
+Azadi, H., Akbarzadeh, M. R. T., Shoeibi, A., and Kobravi, H. R. (2021). Evaluating
+the eﬀect of parkinson’s disease on jitter and shimmer speech features. Adv. Biomed.
+Res. 10:54. doi: 10.4103/ABR.ABR_254_21
+Baez, S., Herrera, E., Trujillo, C., Cardona, J. F., Diazgranados, J. A., Pino, M., et al.
+(2020). Classifying Parkinson’s disease patients with syntactic and socio-emotional
+verbal measures. Front. Aging Neurosci. 12:586233. doi: 10.3389/fnagi.2020.586233
+Balestrino, R., and Schapira, A. H. V. (2020). Parkinson disease. Eur. J. Neurol. 27,
+27–42. doi: 10.1111/ene.14108
+Bandini, A., Orlandi, S., Escalante, H. J., Giovannelli, F., Cincotta, M., Reyes-Garcia,
+C. A., et al. (2017). Analysis of facial expressions in parkinson’s disease through videobased automatic methods. J. Neurosci. Methods 281, 7–20. doi: 10.1016/j.jneumeth.
+2017.02.006
+Bashir, M., and Kempf, F. (2012). Advanced biometric pen system for recording
+and analyzing handwriting. J. Signal. Process Syst. 68, 75–81. doi: 10.1007/S11265-011-
+0576-Z/METRICS
+Beier, E., Cohn, M., Trammel, T., Ferreira, F., and Zellou, G. (2025). Marking
+prosodic prominence for voice assistant and human addressees. J. Exp. Psychol. Learn.
+Mem. Cogn. 51, 986–1003. doi: 10.1037/XLM0001396
+Bejani, M., Luque-Buzo, E., Gomez-García, J., Burlaka-Petrash, A., Grandas, F., and
+Godino-Llorente, J. (2022). Detection of Parkinson’s disease by analysis of smooth
+pursuit eye movements and machine learning. Mov. Disord. 37, S184–S185.
+Beli´c, M., Radivojevi´c, Z., Bobi´c, V., Kosti´c, V., and Ðuri´c-Joviˇci´c, M. (2023).
+Quick computer aided diﬀerential diagnostics based on repetitive ﬁnger tapping in
+Parkinson’s disease and atypical parkinsonisms. Heliyon 9:e14824. doi: 10.1016/j.
+heliyon.2023.e14824
+Bernhardt, A. M., Longen, S., Trossbach, S. V., Rossi, M., Weckbecker, D., Schmidt,
+F., et al. (2025). A quantitative lewy-fold-speciﬁc alpha-synuclein seed ampliﬁcation
+Frontiers in Aging Neuroscience
+13
+frontiersin.org
+
+Yang et al.
+10.3389/fnagi.2025.1602426
+assay as a progression marker for Parkinson’s disease. Acta Neuropathol. 149:20. doi:
+10.1007/s00401-025-02853-y
+Bloem, B. R., Okun, M. S., and Klein, C. (2021). Parkinson’s disease. Lancet 397,
+2284–2303. doi: 10.1016/S0140-6736(21)00218-X
+Bologna, M., Fabbrini, G., Marsili, L., Defazio, G., Thompson, P. D., and Berardelli,
+A. (2013). Facial bradykinesia. J. Neurol Neurosurg. Psychiatry 84, 681–685. doi: 10.
+1136/jnnp-2012-303993
+Bologna, M., Leodori, G., Stirpe, P., Paparella, G., Colella, D., Belvisi, D., et al. (2016).
+Bradykinesia in early and advanced Parkinson’s disease. J. Neurol. Sci. 369, 286–291.
+doi: 10.1016/j.jns.2016.08.028
+Borzì, L., Mazzetta, I., Zampogna, A., Suppa, A., Olmo, G., and Irrera, F. (2021).
+Prediction of freezing of gait in Parkinson’s disease using wearables and machine
+learning. Sensors (Basel) 21:614. doi: 10.3390/s21020614
+Boualoulou, N., Belhoussine Drissi, T., and Nsiri, B. (2023). CNN and LSTM for the
+classiﬁcation of parkinson’s disease based on the gtcc and MFCC. Appl. Comp. Sci. 19,
+1–24. doi: 10.35784/ACS-2023-11
+Bowers, D., Miller, K., Bosch, W., Gokcay, D., Pedraza, O., Springer, U., et al.
+(2006). Faces of emotion in Parkinsons disease: Micro-expressivity and bradykinesia
+during voluntary facial expressions. J. Int. Neuropsychol. Soc. 12, 765–773. doi: 10.
+1017/S135561770606111X
+Brien, D. C., Riek, H. C., Yep, R., Huang, J., Coe, B., Areshenkoﬀ, C.,
+et al. (2023). Classiﬁcation and staging of Parkinson’s disease using video-based
+eye tracking. Parkinson. Relat. Disord. 110:105316. doi: 10.1016/j.parkreldis.2023.
+105316
+Buongiorno, D., Bortone, I., Cascarano, G. D., Trotta, G. F., Brunetti, A., and
+Bevilacqua, V. (2019). A low-cost vision system based on the analysis of motor features
+for recognition and severity rating of Parkinson’s Disease. BMC Med. Inform. Decis.
+Mak. 19:243. doi: 10.1186/S12911-019-0987-5
+Bustos, N., Mashhadi, M., Lai-Yuen, S. K., Sarkar, S., and Das, T. K.
+(2023). A systematic literature review on object detection using near infrared
+and thermal images. Neurocomputing 560:126804. doi: 10.1016/j.neucom.2023.
+126804
+Carlos, P. (2016). Parkinson dataset with replicated acoustic features. Irvine, CA: UCI
+Machine Learning Repository.
+Cascarano, G. D., Loconsole, C., Brunetti, A., Lattarulo, A., Buongiorno, D., Losavio,
+G., et al. (2019). Biometric handwriting analysis to support Parkinson’s disease
+assessment and grading. BMC Med. Inform. Decis. Mak. 19(Suppl. 9):252. doi: 10.1186/
+s12911-019-0989-3
+Cavallieri, F., Di Rauso, G., Gessani, A., Budriesi, C., Fioravanti, V., Contardi,
+S., et al. (2023). A study on the correlations between acoustic speech variables and
+bradykinesia in advanced Parkinson’s disease. Front. Neurol. 14:1213772. doi: 10.3389/
+fneur.2023.1213772
+Chudzik, A., Szyma´nski, A., Nowacki, J. P., and Przybyszewski, A. W. (2020).
+“Eye-Tracking and machine learning signiﬁcance in parkinson’s disease symptoms
+prediction,” in Proceedings of the Asian Conference on Intelligent Information and
+Database Systems, (Cham: Springer).
+Clarke, C. E., Patel, S., Ives, N., Rick, C. E., Woolley, R., Wheatley, K., et al. (2016).
+Clinical eﬀectiveness and cost-eﬀectiveness of physiotherapy and occupational therapy
+versus no therapy in mild to moderate Parkinson’s disease: A large pragmatic randomised
+controlled trial (PD REHAB), appendix 1, UK Parkinson’s disease society brain Bank
+diagnostic criteria. England: NIHR Journals Library.
+Cluzel, E., Pape, L., Hlavinka, D., Arthur, T., Tolu, S., Thomsen, T. H., et al. (2025).
+Pilot study on gait performance and freezing detection in Parkinson’s using smart insoles.
+Rochester, NY: SSRN. doi: 10.2139/SSRN.5249672
+Cont, C., Stute, N., Galli, A., Schulte, C., and Wojtecki, L. (2025). Eye tracking
+as biomarker compared to neuropsychological tests in parkinson syndromes: An
+exploratory pilot study before and after deep transcranial magnetic stimulation. Brain
+Sci. 15:180. doi: 10.3390/brainsci15020180
+Daniol, M., Hemmerling, D., Sikora, J., Jemiolo, P., Wodzinski, M., and
+Wojcik-Pedziwiatr, M. (2024). “Eye-tracking in mixed reality for diagnosis
+of
+neurodegenerative
+diseases,”
+in
+Proceedings
+of
+the
+2024
+46th
+Annual
+International Conference of the IEEE Engineering in Medicine and Biology
+Society (EMBC), (Piscataway, NJ: IEEE). doi: 10.1109/EMBC53108.2024.1078
+2100
+Darkhal, F., and Sedaghat, Z. (2025). Enhanced early diagnosis of parkinson’s disease
+via transformer-based deep learning and GAN-Augmented handwriting analysis.
+J. Innov. Comp. Sci. Eng. (JICSE). doi: 10.48308/JICSE.2025.239594.1063
+Deng, L. (2015). Deep learning: From speech recognition to language and
+multimodal processing. SIP 5, 1–15. doi: 10.1017/ATSIP.2015.22
+Diaz, M., Ferrer, M. A., Impedovo, D., Pirlo, G., and Vessio, G. (2019). Dynamically
+enhanced static handwriting representation for parkinson’s disease detection. Patt.
+Recogn. Lett. 128, 204–210. doi: 10.1016/j.patrec.2019.08.018
+Dimauro, G., Di, N. V., Bevilacqua, V., Caivano, D., and Girardi, F. (2017). . IEEE
+Access. 5, 22199–22208. doi: 10.1109/ACCESS.2017.2762475
+Dirkx, M. F., and Bologna, M. (2022). The pathophysiology of Parkinson’s disease
+tremor. J. Neurol. Sci. 435:120196. doi: 10.1016/j.jns.2022.120196
+Dromey, C., Ramig, L. O., and Johnson, A. B. (1995). Phonatory and articulatory
+changes associated with increased vocal intensity in Parkinson disease: A case study.
+J. Speech Hear. Res. 38, 751–764. doi: 10.1044/jshr.3804.751
+Drotár, P., Mekyska, J., Rektorová, I., Masarová, L., Smékal, Z., and Faundez-
+Zanuy, M. (2016). Evaluation of handwriting kinematics and pressure for diﬀerential
+diagnosis of Parkinson’s disease. Artif. Intell. Med. 67, 39–46. doi: 10.1016/j.artmed.
+2016.01.004
+Drotár, P., Mekyska, J., Rektorová, I., Masarová, L., Smékal, Z., and Faundez-
+Zanuy, M. (2015). Decision support framework for Parkinson’s disease based on
+novel handwriting markers. IEEE Trans. Neural Syst. Rehabil. Eng. 23, 508–516. doi:
+10.1109/TNSRE.2014.2359997
+Elbaz, A., Carcaillon, L., Kab, S., and Moisan, F. (2016). Epidemiology of
+Parkinson’s disease. Rev. Neurol. (Paris) 172, 14–26. doi: 10.1016/J.NEUROL.2015.
+09.012
+Er, M. B., Isik, E., and Isik, I. (2021). Parkinson’s detection based on combined
+CNN and LSTM using enhanced speech signals with variational mode decomposition.
+Biomed. Signal Proc. Control 70:103006. doi: 10.1016/j.bspc.2021.103006
+Escobar-Grisales, D., Arias-Vergara, T., David Rios-Urrego , C., Nöth, E., García,
+A. M., and Orozco-Arroyave, J. R. (2023a). “An automatic multimodal approach to
+analyze linguistic and acoustic cues on parkinson’s disease patients,” in Proceedings
+of the Annual Conference of the International Speech Communication Association,
+INTERSPEECH, (Grenoble: International Speech Communication Association), doi:
+10.21437/Interspeech.2023-2287
+Escobar-Grisales, D., Ríos-Urrego, C. D., and Orozco-Arroyave, J. R. (2023b). Deep
+learning and artiﬁcial intelligence applied to model speech and language in Parkinson’s
+disease. Diagnostics (Basel) 13:2163. doi: 10.3390/diagnostics13132163
+Eyben, F., Weninger, F., Gross, F., and Schuller, B. (2013). “Recent developments in
+openSMILE, the munich open-source multimedia feature extractor,” in Proceedings of
+the 21st ACM international conference on Multimedia, (New York, NY: ACM).
+Eyigoz, E., Courson, M., Sedeño, L., Rogg, K., Orozco-Arroyave, J. R., Nöth, E., et al.
+(2020). From discourse to pathology: Automatic identiﬁcation of Parkinson’s disease
+patients via morphological measures across three languages. Cortex 132, 191–205.
+doi: 10.1016/j.cortex.2020.08.020
+Eyigoz, E., Polosecki, P., García, A. M., Rogg, K., Orozco-Arroyave, J., Skodda, S.,
+et al. (2018). “Unsupervised morphological segmentation for detecting Parkinson’s
+disease,” in Proceedings of the Workshops of the 32nd AAAI Conference on
+Artiﬁcial Intelligence. Association for the Advancement of Artiﬁcial Intelligence,
+(Washington, DC).
+Fabbri, M., Abreu, L., Santos, T., and Ferreira, J. J. (2017). Resting and reemergent
+tongue tremor as presenting symptoms of Parkinson’s disease. Mov. Disord. Clin.
+Pract. 4, 273–274. doi: 10.1002/MDC3.12408
+Faragó, P., ¸Stef˘anig˘a, S. A., Cordo¸s, C. G., Mih˘ail˘a, L. I., Hintea, S., Pe¸stean,
+A. S., et al. (2023). CNN-Based identiﬁcation of Parkinson’s disease from
+continuous speech in noisy environments. Bioengineering (Basel) 10:531. doi: 10.3390/
+bioengineering10050531
+Favaro, A., Motley, C., Cao, T., Iglesias, M., Butala, A., Oh, E. S., et al. (2023a). “A
+Multi-Modal array of interpretable features to evaluate language and speech patterns
+in diﬀerent neurological disorders,” in Proceedings of the 2022 IEEE Spoken Language
+Technology Workshop (SLT), (Piscataway, NJ: IEEE).
+Favaro, A., Tsai, Y. T., Butala, A., Thebaud, T., Villalba, J., Dehak, N., et al. (2023b).
+Interpretable speech features vs. DNN embeddings: What to use in the automatic
+assessment of Parkinson’s disease in multi-lingual scenarios. Comput. Biol. Med.
+166:107559. doi: 10.1016/j.compbiomed.2023.107559
+Ferrante, C., and Scotti, V. (2023). “Cross-Lingual transferability of voice analysis
+models: A parkinson’s disease case study,” in Booklet of abstracts–spoken language in the
+medical ﬁeld: Linguistic analysis, technological applications and clinical tools. Milano
+MI: Politecnico di Milano University. Available online at: https://re.public.polimi.it/
+bitstream/11311/1245957/2/output-4.pdf
+Fong, A., Hoﬀman, D., and Ratwani, R. M. (2016). Making sense of mobile eyetracking data in the real-world. Proc. Hum. Fact. Ergonom. Soc. Ann. Meet. 60,
+1567–1571. doi: 10.1177/1541931213601362
+Gagliano, M., John, V., and Bayang, T. (2017). Applications of machine learning in
+medical diagnosis. New Zealand: JameDepartment of Computer Science, University of
+Auckland.
+Gao, Z., and Patras, I. (2024). “Self-Supervised facial representation learning with
+facial region awareness,” in Proceedings of the 2024 IEEE/CVF Conference on Computer
+Vision and Pattern Recognition (CVPR), (Seattle, WA: IEEE).
+García, A. M., Carrillo, F., Orozco-Arroyave, J. R., Trujillo, N., Vargas Bonilla, J. F.,
+Fittipaldi, S., et al. (2016). How language ﬂows when movements don’t: An automated
+analysis of spontaneous discourse in Parkinson’s disease. Brain Lang. 162, 19–28.
+doi: 10.1016/j.bandl.2016.07.008
+García, A. M., Escobar-Grisales, D., Vásquez Correa, J. C., Bocanegra, Y., Moreno, L.,
+Carmona, J., et al. (2022). Detecting Parkinson’s disease and its cognitive phenotypes
+via automated semantic analyses of action stories. NPJ Parkinsons Dis. 8:163. doi:
+10.1038/s41531-022-00422-8
+García-Ordás, M. T., Benítez-Andrades, J. A., Aveleira-Mata, J., Alija-Pérez, J. M.,
+and Benavides, C. (2024). Determining the severity of Parkinson’s disease in patients
+Frontiers in Aging Neuroscience
+14
+frontiersin.org
+
+Yang et al.
+10.3389/fnagi.2025.1602426
+using a multi task neural network. Multimed. Tools Appl. 83, 6077–6092. doi: 10.1007/
+s11042-023-14932-x
+Ghiglione, P., Mutani, R., and Chiò, A. (2005). Cogwheel rigidity. Arch. Neurol. 62,
+828–830. doi: 10.1001/archneur.62.5.828
+Giovannoni, G., Van Schalkwyk, J., Fritz, V. U., and Lees, A. J. (1999). Bradykinesia
+akinesia inco-ordination test (BRAIN TEST): An objective computerised assessment
+of upper limb motor function. J. Neurol. Neurosurg. Psychiatry 67, 624–629. doi:
+10.1136/JNNP.67.5.624
+Gironell, A., Pascual-Sedano, B., Aracil, I., Marín-Lahoz, J., Pagonabarraga, J., and
+Kulisevsky, J. (2018). Tremor types in Parkinson disease: A descriptive study using a
+new classiﬁcation. Parkinsons Dis. 2018:4327597. doi: 10.1155/2018/4327597
+Gitchel, G. T., Wetzel, P. A., and Baron, M. S. (2012). Pervasive ocular tremor in
+patients with Parkinson disease. Arch. Neurol. 69, 1011–1017. doi: 10.1001/archneurol.
+2012.70
+Goetz, C. G. (2011). The history of Parkinson’s disease: Early clinical descriptions
+and neurological therapies. Cold Spring Harb. Perspect. Med. 1:a008862. doi: 10.1101/
+cshperspect.a008862
+Gómez-Gómez, L. F., Morales, A., Orozco-Arroyave, J. R., and Fierrez, J. (2022).
+Exploring facial expressions and action unit domains for parkinson detection. SSRN
+Electron. J. doi: 10.2139/SSRN.4069648
+Grammatikopoulou, A., Grammalidis, N., Bostantjopoulou, S., and Katsarou, Z.
+(2019). “Detecting hypomimia symptoms by selﬁe photo analysis,” in Proceedings of
+the 12th ACM international conference on pervasive technologies related to assistive
+environments, (Greece).
+Guarín, D. L., Wong, J. K., McFarland, N. R., Ramirez-Zamora, A., and Vaillancourt,
+D. E. (2024). What the trained eye cannot see: Quantitative kinematics and machine
+learning detect movement deﬁcits in early-stage Parkinson’s disease from videos.
+Parkinson. Relat Disord. 127:107104. doi: 10.1016/j.parkreldis.2024.107104
+Guayacán, L., Castrillón, Y., Gómez, F., and Martínez, F. (2025). A persistent
+homology gait analysis for parkinson disease characterization. Biomed. Signal Process.
+Control 106:107752. doi: 10.1016/J.BSPC.2025.107752
+Gunnery, S. D., Naumova, E. N., Saint-Hilaire, M., and Tickle-Degnen, L. (2017).
+Mapping spontaneous facial expression in people with Parkinson’s disease: A multiple
+case study design. Cogent Psychol. 4:1376425. doi: 10.1080/23311908.2017.1376425
+Guo, Z., Zeng, W., Yu, T., Xu, Y., Xiao, Y., Cao, X., et al. (2022). Vision-Based ﬁnger
+tapping test in patients with Parkinson’s disease via spatial-temporal 3d hand pose
+estimation. IEEE J. Biomed. Health Inform. 26, 3848–3859. doi: 10.1109/JBHI.2022.
+3162386
+Gupta, D., Julka, A., Jain, S., Aggarwal, T., Khanna, A., Arunkumar, N., et al. (2018).
+Optimized cuttleﬁsh algorithm for diagnosis of Parkinson’s disease. Cogn. Syst. Res. 52,
+36–48. doi: 10.1016/j.cogsys.2018.06.006
+Gupta, R., Kumari, S., Senapati, A., Ambasta, R. K., and Kumar, P. (2023). New
+era of artiﬁcial intelligence and machine learning-based detection, diagnosis, and
+therapeutics in Parkinson’s disease. Ageing Res. Rev. 90:102013. doi: 10.1016/j.arr.2023.
+102013
+Hausdorﬀ, J. (2000). Gait in neurodegenerative disease database. PhysioNet.
+Hausdorﬀ, J. (2008). Gait in Parkinson’s disease. PhysioNet.
+Hausdorﬀ, J. M. (2009). Gait dynamics in Parkinson’s disease: Common and
+distinct behavior among stride length, gait variability, and fractal-like scaling. Chaos
+19:026113. doi: 10.1063/1.3147408
+Hemmerling, D., Wodzinski, M., Orozco-Arroyave, J. R., Sztaho, D., Daniol, M.,
+Jemiolo, P., et al. (2023). Vision transformer for Parkinson’s disease classiﬁcation using
+multilingual sustained vowel recordings. Annu. Int. Conf. IEEE Eng. Med. Biol. Soc.
+2023, 1–4. doi: 10.1109/EMBC40787.2023.10340478
+Hireš, M., Drotár, P., Pah, N. D., Ngo, Q. C., and Kumar, D. K. (2023). On the interdataset generalization of machine learning approaches to Parkinson’s disease detection
+from voice. Int. J. Med. Inform. 179:105237. doi: 10.1016/j.ijmedinf.2023.105237
+Hireš, M., Gazda, M., Drotár, P., Pah, N. D., Motin, M. A., and Kumar, D. K. (2022).
+Convolutional neural network ensemble for Parkinson’s disease detection from voice
+recordings. Comput. Biol. Med. 141:105021. doi: 10.1016/j.compbiomed.2021.105021
+Hlavnika, J., Tykalov, T., Onka, K., Rika, E., and Rusz, J. (2017). Early biomarkers
+of Parkinson’s disease based on natural connected speech. Irvine, CA: UCI Machine
+Learning Repository.
+Holmes, R. J., Oates, J. M., Phyland, D. J., and Hughes, A. J. (2000). Voice
+characteristics in the progression of Parkinson’s disease. Int. J. Lang. Commun. Disord.
+35, 407–418. doi: 10.1080/136828200410654
+Hou, X., Qin, S., and Su, J. (2022). Visual detection of parkinson’s disease via facial
+features recognition. Lect. Notes Electrical Eng. 801, 249–257. doi: 10.1007/978-981-
+16-6372-7_29
+Hou, X., Zhang, Y., Wang, Y., Wang, X., Zhao, J., Zhu, X., et al. (2021). A markerless
+2D video, facial feature recognition-based, artiﬁcial intelligence model to assist with
+screening for parkinson disease: Development and usability study. J. Med. Int. Res.
+23:e29554. doi: 10.2196/29554
+House, R., Lasso, A., Harish, V., Baum, Z., and Fichtinger, G. (2017). Evaluation
+of the Intel RealSense SR300 camera for image-guided interventions and application
+in vertebral level localization. Proc. SPIE - Int. Soc. Opt. Eng. 10135, 771–777. doi:
+10.1117/12.2255899
+Hu, Y., Yuan, X., Ye, P., Chang, C., Hu, Y. H., Zhang, W., et al. (2023). Virtual reality
+in clinical nursing practice over the past 10 years: Umbrella review of meta-analyses.
+JMIR Serious Games 11:e52022. doi: 10.2196/52022
+Huang, W., Xu, W., Wan, R., Zhang, P., Zha, Y., and Pang, M. (2024). Auto diagnosis
+of Parkinson’s disease via a deep learning model based on mixed emotional facial
+expressions. IEEE J. Biomed. Health Inform. 28, 2547–2557. doi: 10.1109/JBHI.2023.
+3239780
+Hubble, R. P., Naughton, G. A., Silburn, P. A., and Cole, M. H. (2015). Wearable
+sensor use for assessing standing balance and walking stability in people with
+Parkinson’s disease: A systematic review. PLoS One 10:e0123705. doi: 10.1371/journal.
+pone.0123705
+Impedovo, D., and Pirlo, G. (2008). Automatic signature veriﬁcation: The state
+of the art. IEEE Trans. Syst. Man Cybernet. Part C: Appl. Rev. 38, 609–635. doi:
+10.1109/TSMCC.2008.923866
+Isenkul, M., and Betul, S. (2017). Parkinson disease spiral drawings using digitized
+graphics tablet. Irvine, CA: UCI Machine Learning Repository.
+Izonin, I., Kutucu, H., and Singh, K. K. (2023). Smart systems and data-driven
+services in healthcare. Comput. Biol. Med. 158:106074. doi: 10.1016/j.compbiomed.
+2022.106074
+Jabberi, M., Wali, A., Chaudhuri, B. B., and Alimi, A. M. (2023). 68 landmarks are
+eﬃcient for 3D face alignment: What about more?: 3d face alignment method applied
+to face recognition. Multimed. Tools Appl. 82, 41435–41469. doi: 10.1007/s11042-023-
+14770-x
+Jackson, W. (2015). “The hardware of digital painting: Tablet and stylus,” in Digital
+painting techniques. Berkeley, CA: Apress. doi: 10.1007/978-1-4842-1736-8_5
+Jankovic, J. (2008). Parkinson’s disease: Clinical features and diagnosis. J. Neurol.
+Neurosurg. Psychiatry 79, 368–376. doi: 10.1136/jnnp.2007.131045
+Jiang, M., Liu, Y., Cao, Y., Liu, Y., Wang, J., Li, P., et al. (2024). Auxiliary diagnostic
+method of Parkinson’s disease based on eye movement analysis in a virtual reality
+environment. Neurosci. Lett. 842:137956. doi: 10.1016/j.neulet.2024.137956
+Jiang, R., Chazot, P., Pavese, N., Crookes, D., Bouridane, A., and Celebi, M. E. (2022).
+Private facial prediagnosis as an edge service for Parkinson’s DBS treatment valuation.
+IEEE J. Biomed. Health Inform. 26, 2703–2713. doi: 10.1109/JBHI.2022.3146369
+Jin, B., Qu, Y., Zhang, L., and Gao, Z. (2020). Diagnosing Parkinson disease through
+facial expression recognition: Video analysis. J. Med. Int. Res. 22:e18697. doi: 10.2196/
+18697
+Jin, Y., Mao, Z., Ling, Z., Xu, X., Zhang, Z., and Yu, X. (2017). Altered emotional
+recognition and expression in patients with Parkinson’s disease. Neuropsychiatr. Dis.
+Treat. 13, 2891–2902. doi: 10.2147/NDT.S149227
+Jung, I., and Kim, J. S. (2019). Abnormal eye movements in parkinsonism and
+movement disorders. J. Mov. Disord. 12, 1–13. doi: 10.14802/jmd.18034
+Kajan, S., Goga, J., Matejiˇcka, P., Minár, M., Pavloviˇcová, J., and Košutzká, Z. (2024).
+Real-time visual veriﬁcation of leap motion controller measurements for reliable ﬁnger
+tapping test in parkinson’s disease. J. Electrical Eng. 75, 325–332. doi: 10.2478/jee-
+2024-0039
+Kamireddy, R. R., Kandala, N. R., Polinati, S., and Dhuli, R. A. (2025). Hybrid
+framework for the diagnosis of Parkinson’s disease using handwritten drawings-spiral
+and wave: Diagnosis of parkinson’s disease using hand drawings-spiral and wave. J. Sci.
+Indust. Res. (JSIR) 84, 520–530. doi: 10.56042/JSIR.V84I5.4474
+Kamran, I., Naz, S., Razzak, I., and Imran, M. (2021). Handwriting dynamics
+assessment using deep neural network for early identiﬁcation of Parkinson’s
+disease. Fut. Generat. Comp. Syst. 117, 234–244. doi: 10.1016/j.future.2020.11.
+020
+Kang, J., Derva, D., Kwon, D. Y., and Wallraven, C. (2019). Voluntary
+and spontaneous facial mimicry toward other’s emotional expression in patients
+with
+Parkinson’s
+disease.
+PLoS
+One
+14:e0214957.
+doi:
+10.1371/journal.pone.
+0214957
+Kansizoglou, I., Tsintotas, K. A., Bratanov, D., and Gasteratos, A. (2025). Drawingaware Parkinson’s disease detection through hierarchical deep learning models. IEEE
+Access 13, 21880–21890. doi: 10.1109/ACCESS.2025.3535232
+Karaman, O., Çakın, H., Alhudhaif, A., and Polat, K. (2021). Robust automated
+Parkinson disease detection based on voice signals with transfer learning. Exp. Syst.
+Appl. 178:115013. doi: 10.1016/j.eswa.2021.115013
+Karan, B., Sahu, S. S., and Mahto, K. (2020a). Parkinson disease prediction using
+intrinsic mode function based features from speech signal. Biocybernet. Biomed. Eng.
+40, 249–264. doi: 10.1016/j.bbe.2019.05.005
+Karan, B., Sahu, S. S., and Mahto, K. (2020b). “Stacked auto-encoder based Timefrequency features of speech signal for parkinson disease prediction,” in Proceedings of
+the 2020 international conference on Artiﬁcial Intelligence and Signal Processing (AISP),
+(Piscataway, NJ: IEEE).
+Kasab, M., Masri, N. A. L., and Moghrabi, R. A. L. (2024). “Detection of Parkinson’s
+disease through spiral drawings using convolutional autoencoders,” in Proceedings of
+Frontiers in Aging Neuroscience
+15
+frontiersin.org
+
+Yang et al.
+10.3389/fnagi.2025.1602426
+the 2024 IEEE International Conference on Smart Systems and Power Management,
+IC2SPM, (Piscataway, NJ: IEEE).
+Kassner, M., Patera, W., and Bulling, A. (2014). “Pupil: An open source platform
+for pervasive eye tracking and mobile gaze-based interaction,” in Proceedings of the
+2014 ACM International Joint Conference on Pervasive and Ubiquitous Computing,
+(New York, NY: ACM).
+Kelly, V. E., Eusterbrock, A. J., and Shumway-Cook, A. (2012). The eﬀects of
+instructions on dual-task walking and cognitive task performance in people with
+Parkinson’s disease. Parkinsons Dis. 2012:671261. doi: 10.1155/2012/671261
+Khan, T., Nyholm, D., Westin, J., and Dougherty, M. (2014). A computer vision
+framework for ﬁnger-tapping evaluation in Parkinson’s disease. Artif. Intell. Med. 60,
+27–40. doi: 10.1016/j.artmed.2013.11.004
+Khojasteh, P., Viswanathan, R., Aliahmad, B., Ragnav, S., Zham, P., and Kumar,
+D. K. (2018). “Parkinson’s disease diagnosis based on multivariate deep features
+of speech signal,” in Proceedings of the 2018 IEEE Life Sciences Conference (LSC),
+(Montreal, QC).
+Kim, J. W., Lee, J. H., Kwon, Y., Kim, C. S., Eom, G. M., Koh, S. B., et al. (2011).
+Quantiﬁcation of bradykinesia during clinical ﬁnger taps using a gyrosensor in patients
+with Parkinson’s disease. Med. Biol. Eng. Comput. 49, 365–371. doi: 10.1007/s11517-
+010-0697-8
+King, L. A., Carlson-Kuhta, P., Wilhelm, J. L., Lapidus, J. A., Dale, M. L., Talman,
+L. S., et al. (2022). TURN-IT: A novel turning intervention program to improve
+quality of turning in daily life in people with Parkinson’s disease. BMC Neurol. 22:442.
+doi: 10.1186/s12883-022-02934-5
+Kononenko, I. (2001). Machine learning for medical diagnosis: History, state of the
+art and perspective. Artif. Intell. Med. 23, 89–109. doi: 10.1016/s0933-3657(01)00077-x
+Kotsavasiloglou, C., Kostikis, N., Hristu-Varsakelis, D., and Arnaoutoglou, M.
+(2017). Machine learning-based classiﬁcation of simple drawing movements in
+Parkinson’s disease. Biomed. Signal Process Control. 31, 174–180. doi: 10.1016/j.bspc.
+2016.08.003
+Kovac, D., Mekyska, J., Galaz, Z., Brabenec, L., Kostalova, M., Rapcsak, S. Z.,
+et al. (2021). “Multilingual analysis of speech and voice disorders in patients with
+Parkinson’s disease,” in Proceedings of the 2021 44th International Conference on
+Telecommunications and Signal Processing, TSP 2021, (Piscataway, NJ: IEEE).
+Kraus, P. H., Lemke, M. R., and Reichmann, H. (2006). Kinetic tremor in Parkinson’s
+disease–an underrated symptom. J. Neural. Transm. (Vienna) 113, 845–853. doi: 10.
+1007/s00702-005-0354-9
+Krithika, L. B., and Priya, G. G. L. (2021). Graph based feature extraction and hybrid
+classiﬁcation approach for facial expression recognition. J. Ambient Intell. Humaniz
+Comput. 12, 2131–2147. doi: 10.1007/s12652-020-02311-5
+Krupicka, R., Viteckova, S., Cejka, V., Klempir, O., Szabo, Z., and Ruzicka, E.
+(2017). “BradykAn: A motion capture system for objectiﬁcation of hand motor tests in
+Parkinson Disease,” in Proceedings of the 2017 E-Health and Bioengineering Conference,
+EHB 2017, (Piscataway, NJ: IEEE).
+Kumar, D., Kumar, R., Janrao, S., Sharma, V., Begum, N., Fernandes, V., et al. (2025).
+Treadmill exercise mitigates rotenone-induced neuroinﬂammation and α-synuclein
+level in a mouse model of Parkinson’s disease. Brain Res. 1854:149540. doi: 10.1016/j.
+brainres.2025.149540
+Kumar, K., and Ghosh, R. (2024). Parkinson’s disease diagnosis using recurrent
+neural network based deep learning model by analyzing online handwriting.
+Multimed. Tools Appl. 83, 11687–11715. doi: 10.1007/S11042-023-15811-1
+Kursun, O., Gumus, E., Sertbas, A., and Favorov, O. V. (2012). Selection of vocal
+features for Parkinson’s disease diagnosis. Int. J. Data Min. Bioinform. 6, 144–161.
+doi: 10.1504/ijdmb.2012.048196
+Kurtis,
+M.,
+Gasca,
+C.,
+Maycas-Cepeda,
+T.,
+Gomez-Sanchez,
+P.,
+Lopez-
+Manzanares, L., Mata Alvarez-Santullano, M., et al. (2019). PARKMIM: A
+transversal pilot study on hemihypomimia in Parkinson disease. Mov. Disord. 34:
+S914.
+Kuruvilla-Dugdale, M., Dietrich, M., McKinley, J. D., and Deroche, C. (2020). An
+exploratory model of speech intelligibility for healthy aging based on phonatory and
+articulatory measures. J. Commun. Disord. 87:105995. doi: 10.1016/j.jcomdis.2020.
+105995
+Kyprakis, I., Skaramagkas, V., Boura, I., Karamanis, G., Fotiadis, D. I., Kefalopoulou,
+Z., et al. (2025). A Deep Learning Approach for Depressive Symptoms assessment in
+Parkinson’s Disease Patients Using Facial Videos. Available online at: https://arxiv.org/
+pdf/2505.03845
+Laganas, C., Iakovakis, D., Hadjidimitriou, S., Charisis, V., Dias, S. B.,
+Bostantzopoulou, S., et al. (2022). Parkinson’s disease detection based on running
+speech data from phone calls. IEEE Trans. Biomed. Eng. 69, 1573–1584. doi: 10.1109/
+TBME.2021.3116935
+Lee, C. Y., Kang, S. J., Hong, S. K., Ma, H. I., Lee, U., and Kim, Y. J. (2016). A
+validation study of a smartphone-based ﬁnger tapping application for quantitative
+assessment of bradykinesia in Parkinson’s disease. PLoS One 11:e0158852. doi: 10.
+1371/journal.pone.0158852
+Lee, J. Y., Martin-Bastida, A., Murueta-Goyena, A., Gabilondo, I., Cuenca, N.,
+Piccini, P., et al. (2022). Multimodal brain and retinal imaging of dopaminergic
+degeneration in Parkinson disease. Nat. Rev. Neurol. 18, 203–220. doi: 10.1038/s41582-
+022-00618-9
+Letanneux, A., Danna, J., Velay, J. L., Viallet, F., and Pinto, S. (2014). From
+micrographia to Parkinson’s disease dysgraphia. Mov. Disord. 29, 1467–1475. doi:
+10.1002/MDS.25990
+Li, H., Shao, X., Zhang, C., and Qian, X. (2021). Automated assessment of
+parkinsonian ﬁnger-tapping tests through a vision-based ﬁne-grained classiﬁcation
+model. Neurocomputing 441, 260–271. doi: 10.1016/j.neucom.2021.02.011
+Li, H., Zhang, X., Yang, Y., and Xie, A. (2023). Abnormal eye movements in
+Parkinson’s disease: From experimental study to clinical application. Parkinson. Relat.
+Disord. 115:105791. doi: 10.1016/j.parkreldis.2023.105791
+Li, Z., Lu, K., Cai, M., Liu, X., Wang, Y., and Yang, J. (2022). An automatic evaluation
+method for Parkinson’s dyskinesia using ﬁnger tapping video for small samples. J. Med.
+Biol. Eng. 42, 351–363. doi: 10.1007/S40846-022-00701-Y/METRICS
+Lim, W. S., Fan, S. P., Chiu, S. I., Wu, M. C., Wang, P. H., Lin, K. P., et al. (2025).
+Smartphone-derived multidomain features including voice, ﬁnger-tapping movement
+and gait aid early identiﬁcation of Parkinson’s disease. NPJ Parkinsons Dis. 11:111.
+doi: 10.1038/S41531-025-00953-W
+Little, M. (2007). Parkinsons. Irvine, CA: UCI Machine Learning Repository.
+Liu, Y., Chen, J., Hu, C., Ma, Y., Ge, D., Miao, S., et al. (2019). Vision-Based method
+for automatic quantiﬁcation of parkinsonian bradykinesia. IEEE Trans. Neural Syst.
+Rehabil. Eng. 27, 1952–1961. doi: 10.1109/TNSRE.2019.2939596
+Loh, K. Y., and Ogle, J. (2004). Age related visual impairment in the elderly. Med. J.
+Malaysia 59:562-8, quiz 569.
+Lohnes, C. A., and Earhart, G. M. (2011). Saccadic eye movements are related to
+turning performance in Parkinson disease. J. Parkinsons Dis. 1, 109–118. doi: 10.3233/
+JPD-2011-11019
+Ma, J., Zhang, Y., Li, Y., Zhou, L., Qin, L., Zeng, Y., et al. (2021). Deep dual-side
+learning ensemble model for Parkinson speech recognition. Biomed. Signal. Process
+Control. 69:102849. doi: 10.1016/j.bspc.2021.102849
+Malekroodi, H. S., Madusanka, N., Lee, B. I., and Yi, M. (2024). Leveraging deep
+learning for ﬁne-grained categorization of Parkinson’s disease progression levels
+through analysis of vocal acoustic patterns. Bioengineering (Basel) 11:295. doi: 10.3390/
+bioengineering11030295
+Mallela, J., Illa, A., Belur, Y., Atchayaram, N., Yadav, R., Reddy, P., et al.
+(2020a). “Raw speech waveform based classiﬁcation of patients with als, parkinson’s
+disease and healthy controls using CNN-BLSTM,” in Proceedings of the Annual
+Conference of the International Speech Communication Association, INTERSPEECH,
+(India: ISCA).
+Mallela, J., Illa, A., Ns, B., Udupa, S., Belur, Y., Atchayaram, N., et al. (2020b). “Voice
+based classiﬁcation of patients with amyotrophic lateral sclerosis, parkinson’s disease
+and healthy controls with CNN-LSTM using transfer learning,” in Proceedings of the
+ICASSP 2020 - 2020 IEEE International Conference on Acoustics, Speech and Signal
+Processing (ICASSP), (Piscataway, NJ: IEEE).
+Marsili, L., Agostino, R., Bologna, M., Belvisi, D., Palma, A., Fabbrini, G., et al.
+(2014). Bradykinesia of posed smiling and voluntary movement of the lower face in
+Parkinson’s disease. Parkinsonism Relat. Disord. 20, 370–375. doi: 10.1016/j.parkreldis.
+2014.01.013
+Matejicka, P., Kajan, S., Goga, J., Straka, I., Balaz, M., Janovic, S., et al. (2024).
+Bradykinesia in dystonic hand tremor: Kinematic analysis and clinical rating. Front.
+Hum. Neurosci. 18:1395827. doi: 10.3389/fnhum.2024.1395827
+Mawdsley, C., and Gamsu, C. V. (1971). Periodicity of speech in Parkinsonism.
+Nature 231, 315–316. doi: 10.1038/231315a0
+Mendes-Laureano, J., Gómez-García, J. A., Guerrero-López, A., Luque-Buzo, E.,
+Arias-Londoño, J. D., Grandas-Pérez, F. J., et al. (2014). NeuroVoz: A castillian
+Spanish corpus of parkinsonian speech. Sci. Data 11:1367. doi: 10.1038/s41597-024-
+04186-z
+Miller, N. (2017). Communication changes in Parkinson’s disease. Pract. Neurol. 17,
+266–274. doi: 10.1136/practneurol-2017-001635
+Mir, A. N., Nissar, I., Ahmed, M., Masood, S., and Rizvi, D. R. (2024). “Parkinson’s
+disease diagnosis through deep learning: A novel LSTM-Based approach for freezing
+of gait detection,” in Proceedings of the International Conference on Advances in
+Distributed Computing and Machine Learning, (Singapore: Springer Nature), doi: 10.
+1007/978-981-97-3523-5_16
+Mirelman, A., Bonato, P., Camicioli, R., Ellis, T. D., Giladi, N., Hamilton, J. L.,
+et al. (2019). Gait impairments in Parkinson’s disease. Lancet Neurol. 18, 697–708.
+doi: 10.1016/S1474-4422(19)30044-4
+Mishra, S. (2021). Simulation study and at home diagnostic tool for early detection
+of Parkinsons disease. arXiv [Preprint] doi: 10.48550/arXiv.2111.12086
+Monje, M. H. G., Domínguez, S., Vera-Olmos, J., Antonini, A., Mestre, T. A.,
+Malpica, N., et al. (2021). Remote evaluation of parkinson’s disease using a
+conventional webcam and artiﬁcial intelligence. Front. Neurol. 12:742654. doi: 10.
+3389/fneur.2021.742654
+Mucha, J., Faundez-Zanuy, M., Mekyska, J., Zvoncak, V., Galaz, Z., Kiska, T., et al.
+(2019). “Analysis of Parkinson’s disease dysgraphia based on optimized fractional
+Frontiers in Aging Neuroscience
+16
+frontiersin.org
+
+Yang et al.
+10.3389/fnagi.2025.1602426
+order derivative features,” in Proceedings of the 27th European Signal Processing
+Conference (EUSIPCO), (Czechia).
+Mucha, J., Mekyska, J., Faundez-Zanuy, M., Lopez-De-Ipina, K., Zvoncak, V., Galaz,
+Z., et al. (2018). “Advanced Parkinson’s disease dysgraphia analysis based on fractional
+derivatives of online handwriting,” in Proceedings of the International Congress on Ultra
+Modern Telecommunications and Control Systems and Workshops, (Czechia).
+Naz, S., Kamran, I., Gul, S., Hadi, F., and Khalifa, F. (2023). Multi-Model fusion of
+CNNs for identiﬁcation of parkinson’s disease using handwritten samples. IEEE Access
+11, 135600–135608. doi: 10.1109/ACCESS.2023.3337804
+Ogata, T., Hashiguchi, H., Hori, K., Hirobe, Y., Ono, Y., Sawada, H., et al.
+(2022). Foot trajectory features in gait of Parkinson’s disease patients. Front. Physiol.
+13:726677. doi: 10.3389/FPHYS.2022.726677
+Olcay, K., Betul, S., Isenkul, M., Sakar, C., Ahmet, S., and Fikret, G. (2013).
+Parkinson’s speech with multiple types of sound recordings. Irvine, CA: UCI Machine
+Learning Repository.
+Orlosky, J., Itoh, Y., Ranchet, M., Kiyokawa, K., Morgan, J., and Devos, H. (2017).
+Emulation of physician tasks in eye-tracked virtual reality for remote diagnosis of
+neurodegenerative disease. IEEE Trans. Vis. Comput. Graph. 23, 1302–1311. doi: 10.
+1109/TVCG.2017.2657018
+Orozco-Arroyave, J. R., Arias-Londõ No, J. D., Vargas-Bonilla, J. F., González-
+Rátiva, M. C., and Nöth, E. (2014). “New Spanish speech corpus database for the
+analysis of people suﬀering from Parkinson’s disease,” in Proceedings of the 9th
+International Conference on Language Resources and Evaluation (LREC’14), (Iceland:
+European Language Resources Association (ELRA)).
+Padhee, S., Illendula, A., Sadler, M., Shalin, V. L., Banerjee, T., Thirunarayan, K.,
+et al. (2020). “Predicting early indicators of cognitive decline from verbal utterances,”
+in Proceedings of the 2020 IEEE International Conference on Bioinformatics and
+Biomedicine (BIBM), (Piscataway, NJ: IEEE).
+Palmeri, R., Lo Buono, V., Bonanno, L., Allone, C., Drago, N., Sorbera, C., et al.
+(2020). Impaired recognition of facial emotion in patients with Parkinson disease
+under dopamine therapy. J. Geriatr. Psychiatry Neurol. 33, 265–271. doi: 10.1177/
+0891988719882094
+Panichelli, B. S., and Spitz, M. (2021). Hemihypomimia: An atypical and interesting
+feature of Parkinson’s disease. Arq. Neuropsiquiatr. 79:853. doi: 10.1590/0004-282X-
+ANP-2020-0461
+Park, K. W., Lee, E. J., Lee, J. S., Jeong, J., Choi, N., Jo, S., et al. (2021).
+Machine learning-based automatic rating for cardinal symptoms of Parkinson disease.
+Neurology 96, e1761–e1769. doi: 10.1212/WNL.0000000000011654
+Pasluosta, C. F., Gassner, H., Winkler, J., Klucken, J., and Eskoﬁer, B. M. (2015). An
+emerging era in the management of Parkinson’s disease: Wearable technologies and
+the internet of things. IEEE J. Biomed. Health Inform. 19, 1873–1881. doi: 10.1109/
+JBHI.2015.2461555
+Pereira, C. (2021). HandPD dataset. San Francisco, CA: Kaggle.
+Pereira, C. R., Weber, S. A. T., Hook, C., Rosa, G. H., and Papa, J. P. (2016).
+“Deep learning-aided Parkinson’s disease diagnosis from handwritten dynamics,” in
+Proceedings of the 2016 29th SIBGRAPI Conference on Graphics, Patterns and Images
+(SIBGRAPI), (Piscataway, NJ: IEEE).
+Pérez-Toro, P. A., Vásquez-Correa, J. C., Strauss, M., Orozco-Arroyave, J. R., and
+Nöth, E. (2019). “Natural language analysis to detect Parkinson’s disease,” in Lecture
+notes in computer science (including subseries lecture notes in artiﬁcial intelligence and
+lecture notes in bioinformatics), ed. K. Ekštein (Ljubljana, SI), doi: 10.1007/978-3-030-
+27947-9_7
+Phillips, O., D’Abreu, A., Friedman, J. H., and Akbar, U. (2020). Recognising
+hemihypomimia as a mimic of ’facial weakness’. J. Neurol. Neurosurg. Psychiatry 91,
+1357–1358. doi: 10.1136/jnnp-2020-323201
+Postuma, R. B., Berg, D., Stern, M., Poewe, W., Warren Olanow, C., Oertel, W.,
+et al. (2015). MDS clinical diagnostic criteria for Parkinson’s disease. Mov. Disord. 30,
+1591–1601. doi: 10.1002/mds.26424
+Priebe, J. A., Kunz, M., Morcinek, C., Rieckmann, P., and Lautenbacher, S. (2015).
+Does Parkinson’s disease lead to alterations in the facial expression of pain? J. Neurol.
+Sci. 359, 226–235. doi: 10.1016/j.jns.2015.10.056
+Priya, S. J., Durai, C. A. D., Subathra, M. S. P., George, S. T., and Jeyabose, A.
+(2025). Automated Parkinson’s disease diagnosis using decomposition techniques and
+deep learning for accurate gait analysis. IEEE Access 13, 74078–74091. doi: 10.1109/
+ACCESS.2025.3562566
+Quan, C., Ren, K., Luo, Z., Chen, Z., and Ling, Y. (2022). Biocybernet. Biomed. Eng.
+42, 556–574. doi: 10.1016/j.bbe.2022.04.002
+Rahimpour, S., Gaztanaga, W., Yadav, A. P., Chang, S. J., Krucoﬀ, M. O., Cajigas,
+I., et al. (2021). Freezing of gait in Parkinson’s disease: Invasive and noninvasive.
+Neuromodulation 24, 829–842. doi: 10.1111/ner.13347
+Rajnoha, M., Mekyska, J., Burget, R., Eliasova, I., Kostalova, M., and Rektorova,
+I. (2018). “Towards identiﬁcation of hypomimia in Parkinson’s disease based on
+face recognition methods,” in Proceedings of the 10th International Congress on
+Ultra Modern Telecommunications and Control Systems and Workshops (ICUMT),
+(Piscataway, NJ: IEEE).
+Rana, A., Dumka, A., Singh, R., Panda, M. K., and Priyadarshi, N. A. (2022a).
+Computerized analysis with machine learning techniques for the diagnosis of
+Parkinson’s disease: Past studies and future perspectives. Diagnostics (Basel) 12:2708.
+doi: 10.3390/diagnostics12112708
+Rana, A., Dumka, A., Singh, R., Panda, M. K., Priyadarshi, N., and Twala, B. (2022b).
+Imperative role of machine learning algorithm for detection of Parkinson’s disease:
+Review, challenges and recommendations. Diagnostics (Basel) 12:2003. doi: 10.3390/
+diagnostics12082003
+Reddy, N. S. S., Manoj, A. V. S., Reddy, V. P. M. S., Aadhithya, A., and Sowmya, V.
+(2024). “Transfer learning approach for diﬀerentiating parkinson’s syndromes using
+voice recordings,” in Advanced computing, eds D. Garg, J. J. P. C. Rodrigues, S. K.
+Gupta, X. Cheng, P. Sarao, and G. S. Patel (Cham: Springer).
+Reddy, V. (2024). PPINtonus: Early detection of parkinson’s disease using deeplearning tonal analysis. arXiv [Prperint] doi: 10.48550/arXiv.2406.02608
+Richens, J. G., Lee, C. M., and Johri, S. (2020). Improving the accuracy of medical
+diagnosis with causal machine learning. Nat. Commun. 11:3923. doi: 10.1038/s41467-
+020-17419-7
+Rios-Urrego, C. D., Moreno-Acevedo, S. A., Nöth, E., and Orozco-Arroyave,
+J. R. (2022). “End-to-End parkinson’s disease detection using a deep convolutional
+recurrent network,” in Text, speech, and dialogue. TSD 2022. Lecture notes in
+computer science, eds P. Sojka, A. Horák, I. Kopeˇcek, and K. Pala (Cham:
+Springer).
+Rose, D., Cameron, D. J., Lovatt, P. J., Grahn, J. A., and Annett, L. E. (2020).
+Comparison of spontaneous motor tempo during ﬁnger tapping, toe tapping and
+stepping on the spot in people with and without Parkinson’s disease. J. Mov. Disord.
+13, 47–56. doi: 10.14802/jmd.19043
+Rusz, J., Bonnet, C., Klempíˇr, J., Tykalová, T., Baborová, E., Novotný, M., et al.
+(2015). Speech disorders reﬂect diﬀering pathophysiology in Parkinson’s disease,
+progressive supranuclear palsy and multiple system atrophy. J. Neurol. 262, 992–1001.
+doi: 10.1007/s00415-015-7671-1
+Saha, R., Mukherjee, A., Ghosh, A., Banerjee, S., and Dhar, S. (2024).
+Neurodegenerative diseases detection using pattern recognition and handwriting
+analysis through a multimodal approach based on archimedean spiral, meander and
+micrographia. Rochester, NY: SSRN.
+Sakar, C., Gorkem, S., Aysegul, G., Hatice, N., and Betul, S. (2018). Parkinson’s
+disease classiﬁcation. Irvine, CA: UCI Machine Learning Repository.
+Salazar, R. D., Ren, X., Ellis, T. D., Toraif, N., Barthelemy, O. J., Neargarder, S., et al.
+(2017). Dual tasking in Parkinson’s disease: Cognitive consequences while walking.
+Neuropsychology 31, 613–623. doi: 10.1037/neu0000331
+Sarbaz, Y., Towhidkhah, F., Jafari, A., and Gharibzadeh, S. (2012). Do the chaotic
+features of gait change in Parkinson’s disease? J. Theor. Biol. 307, 160–167. doi: 10.
+1016/j.jtbi.2012.04.032
+Sarker, I. H. (2021a). Data science and analytics: An overview from data-driven
+smart computing, decision-making and applications perspective. SN Comput. Sci.
+2:377. doi: 10.1007/s42979-021-00765-8
+Sarker, I. H. (2021b). Deep learning: A comprehensive overview on techniques,
+taxonomy, applications and research directions. SN Comput. Sci. 2:420. doi: 10.1007/
+s42979-021-00815-1
+Sekar, A., Panouillères, M. T. N., and Kaski, D. (2024). Detecting abnormal eye
+movements in patients with neurodegenerative diseases - current insights. Eye Brain
+16, 3–16. doi: 10.2147/EB.S384769
+Shahbakhti, M., Taherifar, D., and Sorouri, A. (2013). “Linear and non-linear speech
+features for detection of parkinson’s disease,” in Proceedings of the 6th 2013 Biomedical
+Engineering International Conference, (Piscataway, NJ: IEEE).
+Sharma, P., Pahuja, S. K., and Veer, K. (2022). A systematic review of machine
+learning based gait characteristics in Parkinson’s disease. Mini Rev. Med. Chem. 22,
+1216–1229. doi: 10.2174/1389557521666210927151553
+Shima, K., Tsuji, T., Kandori, A., Yokoe, M., and Sakoda, S. (2019). Quantitative
+evaluation of human ﬁnger tapping movements through magnetic measurements.
+IEEE/ASME
+Trans.
+Mechatron.
+24,
+186–196.
+doi:
+10.1109/TMECH.2018.288
+1002
+Shin, J., Matsumoto, M., Maniruzzaman, M., Hasan, M. A. M., Hirooka, K.,
+Hagihara, Y., et al. (2024). Classiﬁcation of hand-movement disabilities in Parkinson’s
+disease using a motion-capture device and machine learning. IEEE Access 12, 52466–
+52479. doi: 10.1109/ACCESS.2024.3386367
+Shrivastava, A., Chakkaravarthy, M., and Asif Shah, M. (2024). A novel approach
+using learning algorithm for Parkinson’s disease detection with handwritten sketches’.
+Cybern Syst. 55, 2388–2404. doi: 10.1080/01969722.2022.2157599
+Simons, G., Pasqualini, M. C., Reddy, V., and Wood, J. (2004). Emotional
+and nonemotional facial expressions in people with Parkinson’s disease. J. Int.
+Neuropsychol. Soc. 10, 521–535. doi: 10.1017/S135561770410413X
+Singh, M., Prakash, P., Kaur, R., Sowers, R., Braši´c, J. R., and Hernandez, M. E.
+(2023). A deep learning approach for automatic and objective grading of the motor
+impairment severity in Parkinson’s disease for use in tele-assessments. Sensors (Basel)
+23:9004. doi: 10.3390/s23219004
+Frontiers in Aging Neuroscience
+17
+frontiersin.org
+
+Yang et al.
+10.3389/fnagi.2025.1602426
+Smith, M. C., Smith, M. K., and Ellgring, H. (1996). Spontaneous and posed facial
+expression in Parkinson’s disease. J. Int. Neuropsychol. Soc. 2, 383–391. doi: 10.1017/
+s1355617700001454
+Song, J., Kim, J., Lee, M. J., Ahn, J. H., Lee, D. Y., Youn, J., et al. (2022). Diﬀerential
+diagnosis between Parkinson’s disease and atypical parkinsonism based on gait and
+postural instability: Artiﬁcial intelligence using an enhanced weight voting ensemble
+model. Parkinson. Relat. Disord. 98, 32–37. doi: 10.1016/j.parkreldis.2022.04.003
+Stamatakis, J., Crémers, J., MacQ, B., and Garraux, G. (2010). “Finger tapping
+feature extraction in Parkinson’s disease using low-cost accelerometers,” in Proceedings
+of the IEEE/EMBS Region 8th International Conference on Information Technology
+Applications in Biomedicine, ITAB, (Corfu: IEEE).
+Su, D., and Li, Y. (2020). A comparison of single-buﬀer and double-buﬀer design
+in a systolic array generator. J. Phys. Conf. Ser. 1693:012197. doi: 10.1088/1742-6596/
+1693/1/012197
+Surangsrirat, D., Sri-Iesaranusorn, P., Chaiyaroj, A., Vateekul, P., and Bhidayasiri,
+R. (2022). Parkinson’s disease severity clustering based on tapping activity on mobile
+device. Sci. Rep. 12:3142. doi: 10.1038/s41598-022-06572-2
+Syeda, H. B., Glover, A., Pillai, L., Kemp, A. S., Spencer, H., Lotia, M., et al. (2022).
+Amplitude setting and dopamine response of ﬁnger tapping and gait are related in
+Parkinson’s disease. Sci. Rep. 12:4180. doi: 10.1038/s41598-022-07994-8
+Szyma´nski, A., Szluﬁk, S., Koziorowski, D. M., and Przybyszewski, A. W. (2017).
+“Building classiﬁers for parkinson’s disease using new eye tribe tracking method,” in
+Intelligent information and database systems. ACIIDS 2017. lecture notes in computer
+science, eds N. Nguyen, S. Tojo, L. Nguyen, and B. Trawi´nski (Cham: Springer).
+Taleb, C., Khachab, M., Mokbel, C., and Likforman-Sulem, L. (2017). “Feature
+selection for an improved Parkinson’s disease identiﬁcation based on handwriting,”
+in Proceedings of the 2017 1st IEEE International Workshop on Arabic Script Analysis
+and Recognition, ASAR 2017, (France).
+Teng, F., Chen, Y., Cheng, Y., Ji, X., Zhou, B., and Xu, W. (2023). PDGes: An
+interpretable detection model for parkinson’s disease using smartphones. ACM Trans.
+Sen. Netw. 19, 1–21. doi: 10.1145/3585314
+Terry, M. A., and Alvarez-Vazquez, E. (2025). Eﬃcacy of wearable devices in
+monitoring and treating Parkinson’s disease symptoms: A systematic review and meta
+analyses. IEEE Access 13, 84240–84258. doi: 10.1109/ACCESS.2025.3569056
+The Michael J Fox Foundation (2023). Parkinson’s Freezing of Gait Prediction.
+San Francisco, CA: Kaggle.
+Tsanas, A., Little, M. A., McSharry, P. E., and Ramig, L. O. (2010). Accurate
+telemonitoring of Parkinson’s disease progression by non-invasive speech tests. IEEE
+Trans. Biomed. Eng. 57, 884–893. doi: 10.1109/TBME.2009.2036000
+van Gelderen, L., and Tejedor-García, C. (2024). Innovative speech-based deep
+learning approaches for Parkinson’s disease classiﬁcation: A systematic review. Appl.
+Sci. 14:7873. doi: 10.3390/APP14177873
+Varrecchia, T., Castiglia, S. F., Ranavolo, A., Conte, C., Tatarelli, A., Coppola, G.,
+et al. (2021). An artiﬁcial neural network approach to detect presence and severity of
+Parkinson’s disease via gait parameters. PLoS One 16:e0244396. doi: 10.1371/journal.
+pone.0244396
+Vasquez-Correa, J. C., Arias-Vergara, T., Orozco-Arroyave, J. R., Eskoﬁer, B.,
+Klucken, J., and Noth, E. (2019). Multimodal assessment of Parkinson’s disease: A deep
+learning approach. IEEE J. Biomed. Health Inform. 23, 1618–1630. doi: 10.1109/JBHI.
+2018.2866873
+Vásquez-Correa, J. C., Rios-Urrego, C. D., Arias-Vergara, T., Schuster, M., Rusz,
+J., Nöth, E., et al. (2021). Transfer learning helps to improve the accuracy to classify
+patients with diﬀerent speech disorders in diﬀerent languages. Patt. Recogn. Lett. 150,
+272–279. doi: 10.1016/j.patrec.2021.04.011
+Vitório, R., Lirani-Silva, E., Baptista, A. M., Barbieri, F. A., dos Santos, P. C.,
+Teixeira-Arroyo, C., et al. (2014). Disease severity aﬀects obstacle crossing in people
+with Parkinson’s disease. Gait Posture 40, 266–269. doi: 10.1016/j.gaitpost.2014.03.003
+Voigtlaender, S., Pawelczyk, J., Geiger, M., Vaios, E. J., Karschnia, P., Cudkowicz, M.,
+et al. (2024). Artiﬁcial intelligence in neurology: Opportunities, challenges, and policy
+implications. J. Neurol. 271, 2258–2273. doi: 10.1007/s00415-024-12220-8
+Wahid, F., Begg, R. K., Hass, C. J., Halgamuge, S., and Ackland, D. C. (2015).
+Classiﬁcation of Parkinson’s disease gait using spatial-temporal gait features. IEEE J.
+Biomed. Health Inform. 19, 1794–1802. doi: 10.1109/JBHI.2015.2450232
+Wang, T., Wang, Z., Zhang, D., Gu, T., Ni, H., Jia, J., et al. (2016).
+Recognizing parkinsonian gait pattern by exploiting Fine-Grained movement
+function features. ACM Trans. Intell. Syst. Technol. 8, 1–22. doi: 10.1145/
+2890511
+Wenzelburger, R., Raethjen, J., Löﬄer, K., Stolze, H., Illert, M., and Deuschl, G.
+(2000). Kinetic tremor in a reach-to-grasp movement in Parkinson’s disease. Mov.
+Disord. 15, 1084–1094. doi: 10.1002/1531-8257(200011)15:6<1084::aid-mds1005>3.0.
+co;2-y
+Williams, S., Fang, H., Relton, S. D., Graham, C. D., and Alty, J. E. (2020a). Seeing
+the unseen: Could Eulerian video magniﬁcation aid clinician detection of subclinical
+Parkinson’s tremor? J. Clin. Neurosci. 81, 101–104. doi: 10.1016/j.jocn.2020.09.046
+Williams, S., Zhao, Z., Hafeez, A., Wong, D. C., Relton, S. D., Fang, H., et al.
+(2020b). The discerning eye of computer vision: Can it measure Parkinson’s ﬁnger
+tap bradykinesia? J. Neurol. Sci. 416:117003. doi: 10.1016/j.jns.2020.117003
+Wu, H.-Y., Rubinstein, M., Shih, E., Guttag, J., Durand, F., and Freeman, W. (2012).
+Eulerian video magniﬁcation for revealing subtle changes in the world. ACM Trans.
+Graph. 31, 1–8. doi: 10.1145/2185520.2185561
+Wu, P., Gonzalez, I., Patsis, G., Jiang, D., Sahli, H., Kerckhofs, E., et al. (2014).
+Objectifying facial expressivity assessment of Parkinson’s patients: Preliminary study.
+Comput. Math. Methods Med. 2014:427826. doi: 10.1155/2014/427826
+Wu, Y., and Krishnan, S. (2010). Statistical analysis of gait rhythm in patients
+with Parkinson’s disease. IEEE Trans. Neural Syst. Rehabil. Eng. 18, 150–158. doi:
+10.1109/TNSRE.2009.2033062
+Xu, F., Zou, X. W., Yang, L. Q., Mo, S. C., Guo, Q. H., Zhang, J., et al. (2022). Facial
+muscle movements in patients with Parkinson’s disease undergoing phonation tests.
+Front. Neurol. 13:1018362. doi: 10.3389/FNEUR.2022.1018362
+Xu, H., Zheng, X., Xing, X., Bi, Z., Wang, D., Zhang, C., et al. (2025). Advances
+in autonomic dysfunction research in Parkinson’s disease. Front. Aging Neurosci.
+17:1468895. doi: 10.3389/fnagi.2025.1468895
+Xu, S., and Pan, Z. (2020). A novel ensemble of random forest for assisting diagnosis
+of Parkinson’s disease on small handwritten dynamics dataset. Int. J. Med. Inform.
+144:104283. doi: 10.1016/j.ijmedinf.2020.104283
+Yang, N., Liu, D.-F., Liu, T., Han, T., Zhang, P., Xu, X., et al. (2022). Automatic
+detection pipeline for accessing the motor severity of parkinson’s disease in ﬁnger
+tapping and postural stability. IEEE Access 10, 66961–66973. doi: 10.1109/ACCESS.
+2022.3183232
+Yokoi, K., Iribe, Y., Kitaoka, N., Tsuboi, T., Hiraga, K., Satake, Y., et al.
+(2023). Analysis of spontaneous speech in Parkinson’s disease by natural language
+processing. Parkinson. Relat. Disord. 113:105411. doi: 10.1016/j.parkreldis.2023.
+105411
+Yu, T., Park, K. W., McKeown, M. J., and Wang, Z. J. (2023). Clinically informed
+automated assessment of ﬁnger tapping videos in Parkinson’s disease. Sensors (Basel)
+23:9149. doi: 10.3390/s23229149
+Zemmar, A., Bennour, A., Tahar, M., Ghabban, F., and Al-Sarem, M. (2025).
+Unveiling Parkinson’s: Handwriting symptoms with explainable and interpretable
+CNN model. Int. J. Patt. Recogn. Artif. Intell. doi: 10.1142/S0218001424400019
+Zham, P., Arjunan, S. P., Raghav, S., and Kumar, D. K. (2018). Eﬃcacy of guided
+spiral drawing in the classiﬁcation of Parkinson’s disease. IEEE J. Biomed. Health
+Inform. 22, 1648–1652. doi: 10.1109/JBHI.2017.2762008
+Zham, P., Raghav, S., Kempster, P., Arjunan, S. P., Wong, K., Nagao, K. J., et al.
+(2019). A kinematic study of progressive micrographia in Parkinson’s disease. Front.
+Neurol. 10:403. doi: 10.3389/FNEUR.2019.00403
+Zhang, J., Fan, Y., Liang, H., and Zhang, Y. (2024). Global, regional and national
+temporal trends in Parkinson’s disease incidence, disability-adjusted life year rates in
+middle-aged and older adults: A cross-national inequality analysis and Bayesian ageperiod-cohort analysis based on the global burden of disease 2021. Neurol. Sci. 46,
+1647–1660. doi: 10.1007/S10072-024-07941-7
+Zhao, G., Shen, Y., Zhang, C., Shen, Z., Zhou, Y., and Wen, H. (2024). RGBE-Gaze:
+A large-scale event-based multimodal dataset for high frequency remote gaze tracking.
+IEEE Trans. Patt. Anal. Mach. Intell. 47, 601–615. doi: 10.1109/TPAMI.2024.3474858
+Zhao, H., Cao, J., Wang, R., Lei, Y., Liao, W.-H., and Cao, H. (2021).
+Accurate identiﬁcation of parkinson’s disease by distinctive features and ensemble
+decision trees. Biomed. Signal Process. Control. 69:102860. doi: 10.1016/J.BSPC.2021.
+102860
+Zhou, L. Q., Wang, J. Y., Yu, S. Y., Wu, G. G., Wei, Q., Deng, Y. B. et al. (2019).
+Artiﬁcial intelligence in medical imaging of the liver. World J. Gastroenterol. 25,
+672–682. doi: 10.3748/wjg.v25.i6.672
+Frontiers in Aging Neuroscience
+18
+frontiersin.org

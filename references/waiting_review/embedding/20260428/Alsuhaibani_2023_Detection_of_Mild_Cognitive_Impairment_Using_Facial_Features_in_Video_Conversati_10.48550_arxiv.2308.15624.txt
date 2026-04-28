@@ -1,0 +1,1156 @@
+Detection of Mild Cognitive Impairment Using Facial Features in
+Video Conversations
+Muath Alsuhaibania,b, Hiroko H. Dodgec and Mohammad H. Mahoora,∗
+aDepartment of Electrical and Computer Engineering, University of Denver, Denver 80208, CO, United States
+bDepartment of Electrical Engineering, Prince Sattam Bin Abdulaziz University, Al-Kharj 11942, Saudi Arabia
+cDepartment of Neurology, Massachusetts General Hospital, Harvard Medical School, Boston 02114, MA, United States
+A R T I C L E I N F O
+Keywords:
+Facial features
+Deep learning
+Mild cognitive impairment
+Causal conversation
+Older adults
+A B S T R A C T
+Early detection of Mild Cognitive Impairment (MCI) leads to early interventions to slow the
+progression from MCI into dementia. Deep Learning (DL) algorithms could help achieve early
+non-invasive, low-cost detection of MCI. This paper presents the detection of MCI in older adults
+using DL models based only on facial features extracted from video-recorded conversations at home.
+We used the data collected from the I-CONECT behavioral intervention study (NCT02871921),
+where several sessions of semi-structured interviews between socially isolated older individuals and
+interviewers were video recorded. We develop a framework that extracts spatial holistic facial features
+using a convolutional autoencoder and temporal information using transformers. Our proposed DL
+model was able to detect the I-CONECT study participants’ cognitive conditions (MCI vs. those
+with normal cognition (NC)) using facial features. The segments and sequence information of the
+facial features improved the prediction performance compared with the non-temporal features. The
+detection accuracy using this combined method reached 88% whereas 84% is the accuracy without
+applying the segments and sequences information of the facial features within a video on a certain
+theme.
+1. Introduction
+The Alzheimer’s Association is projecting the number of Americans age 65 and older who are living with
+Alzheimer’s disease-related dementia to double by 2050.
+Alzheimer’s Disease (AD) is a brain disease affecting memory and other cognitive functions, ultimately deteriorating
+a patient’s ability to perform daily tasks. Mild Cognitive
+Impairment (MCI) has a high likelihood to progress to
+AD overtime. Older adults (MCI) can live independently
+but they start having difficulty with tasks that depends on
+memory, language, or other thinking skills. Currently, older
+adults with MCI are diagnosed clinically; however, their
+daily challenges are often not noticeable to those whom
+they encounter irregularly. Early diagnosis of MCI helps
+to identify people who are at increased risk of developing
+dementia. Once identified, those with MCI can then be
+offered information, advice, and support and be kept under
+review. Also, if they do develop dementia, they would have
+been diagnosed sooner and receive treatment [1].
+It is often challenging to diagnose MCI as it requires
+in-depth neuropsychological assessments [2], brain positron
+emission tomography (PET) scan, or spinal fluid test for
+amyloid beta protein [3–7]. Although recent advancements
+in plasma blood biomarkers could provide more affordable
+solutions in the future, we need to come up with costeffective, non-invasive approaches to identify MCI at an
+early stage in the community.
+∗Corresponding author
+muath.alsuhaibani@du.edu (M. Alsuhaibani);
+hdodge@mgh.harvard.edu (H.H. Dodge);
+mohammad.mahoor@du.edu (M.H. Mahoor)
+Artificial Intelligence (AI) has shown to be a promising
+technique for achieving an automated detection of cognitive
+impairment conditions at an early stage. Thus, the number
+of research in recent years that aim to use AI in medical
+condition detection has surged. AI showed that extracting
+valuable features from users’ physiological, biological, and
+behavioral patterns would detect the human medical condition. Although many AI studies are focused on clinical
+assessments and medical scans such as PET, magnetic
+resonance imaging (MRI), functional MRI (fMRI), and
+electroencephalogram (EEG) [8–10], further research needs
+to be developed in analyzing behavioral patterns using Deep
+Learning (DL) methods.
+Deep learning algorithms are an essential subset of
+AI. The DL models include various architectures that have
+been proven to resolve substantial challenges in many fields
+including computer vision. The DL models help to extract
+useful features from large amounts of data. The outstanding
+achievements of AI systems in digital healthcare performance were achieved by deep learning. For example, several
+types of cancers are detected using DL models [11–13].
+Detection of medical conditions such as depression [14,
+15], Parkinson’s [16], or other psychiatric impairments [17]
+has been successfully studied with patients’ facial features
+using DL approaches. These algorithms are applied to analyze facial features. In this study, we capture facial features
+from semi-structured video interviews of MCI and normal
+cognition (NC) participants who underwent an I-CONECT
+clinical trial (clinicaltrials.gov#: NCT02871921) [18]. This
+clinical trial was aimed to enhance cognitive reserve by
+providing frequent conversations to socially isolated older
+subjects. The interaction between the elderly and the study
+interviewers via a webcam could show the cognitive status
+Alsuhaibani et al.
+Page 1 of 10
+arXiv:2308.15624v1  [cs.CV]  29 Aug 2023
+
+Detection of MCI Using Facial Features in Video Conversations
+of the older participants. We hypothesize that patterns in
+facial features among MCI make them distinguishable from
+those with normal cognition. We propose a DL method that
+detects cognitive conditions in older adults using their facial
+features in the I-CONECT dataset. The purpose of this paper
+is to show that the facial features and interaction information
+of the participants during the semi-structured interviews are
+impacted by the cognitive conditions of participants.
+The remainder of this paper is structured as follows.
+Section 2 reviews the related work of detecting MCI using
+facial features. Section 3 describes the dataset and explains
+the preprocessing procedure and feature extraction. Section
+4 provides the experimental implementation and results.
+Finally, Section 5 concludes this paper with a discussion and
+future research directions.
+2. Related Work
+In this section, we will review past studies in the field
+of computer vision to determine human cognitions mainly
+based on facial features, including eye movements and facial
+expressions.
+Eye Features: Several studies have investigated the
+differences in eye features between NC and MCI [19–
+21]. These eye features include eye movements, gaze, and
+blinking. Alzahrani et al. [22] computed an eye aspect ratio
+from six points of participants’ facial landmarks extracted
+using Dlib [23] and Openface [24] libraries, which have pretrained models for facial features extraction. They calculated the eye blinking rate for every participant and applied
+basic machine learning algorithms to predict participants’
+cognitive conditions. Because they used two different pretrained models, they reported a 10% accuracy difference
+between the models. Chen et al. [20] have analyzed the
+eye movement patterns of participants while performing
+face recognition tasks. They found that older adults tend to
+focus on the center of the target face especially the elderly
+with low Montreal Cognitive Assessment (MoCA) scores.
+Furthermore, Nam et al.[25] recorded participants’ faces
+while they watch emotion-evoking videos to analyze the
+correlation between the eye and head movements. Using
+Openface [24], they extracted the eye and head movements.
+They analyzed these data in order to observe the attention
+and concentration decline of dementia patients. They concluded that AD patients tend to have eye movements in the
+same vertical direction as their heads. Haque et al. [26]
+developed a deep learning model which estimates participants’ eye gaze during memory-triggering tasks in a clinical
+setting. They were able to distinguish cognitive impairment
+participants by tracking their eye gaze and viewing time
+during the tasks.
+Facial Expression: Studies have shown that cognitive impairment does affect a person’s facial expression
+[27, 28]. Using computer vision approaches, researchers
+have extracted facial action units [29] or estimated facial
+expression using deep learning methods [30] to predict
+participants’ cognitive condition. Jiang et al. [31] recorded
+participants’ faces while undergoing a memory test in a
+clinical setting. They extracted participants’ facial expressions using a pre-trained Convolutional Neural Network
+(CNN) on a popular facial expression dataset that is not
+dedicated to elderly faces. The estimated facial expression
+for the video frames are average for subject-level facial
+expression. Traditional machine learning algorithms were
+implemented to classify cognitively impaired participants
+from cognitively unimpaired ones. They also considered
+the viewing time of the targeted region. Fei et al. [30]
+extracted participants’ facial expressions when participants
+are watching emotional stimuli. The authors computed the
+emotional occurrence among cognitive conditions elderly.
+They selected time periods of the participants’ emotional
+occurrence which has a large difference between MCI
+and NC. A traditional machine learning algorithm was
+used to classify participants’ conditions. Gerlowska et al.
+[32] showed no differences in the frequency of emotions
+expressed in patients and healthy controls. An emotional
+functioning pattern among older adults was noticed despite
+cognitive dysfunctions. The analysis was based on mimicking 6 basic emotions that were shown on a screen for the
+subjects and manually selecting 10-15 most intense seconds.
+Tanaka et al. [29] extracted facial landmarks using Openface
+[24] from participants while responding to an agent system.
+They tracked facial landmarks that represent facial action
+units during the participants’ response to the agent. They
+developed an algorithm to extract talking segments using
+a sequence of facial landmarks that surround the mouth.
+Using this approach, they were able to classify participants
+with dementia using traditional machine learning methods.
+Holistic Facial Features: There are limited works that
+use holistic facial features to detect participants’ cognitive conditions. Umeda-Kameyama et al. [33] implemented
+deep learning models to detect cognitive impairment conditions of participants’ facial images. Consequently, spatial
+facial features are extracted for the training and evaluation
+of the model. They found that the model had better prediction performance when using the lower half of participants’
+facial images. Lee et al. [34] applied two-stream ConvNet
+using spatial and motion features to classify participants’
+conditions with frame sequence intervals of 10 frames per
+segment.
+We focused on studies that adapted computer vision
+algorithms in facial feature extraction either implementing
+DL models that are trained on large datasets to capture these
+features or proposing a model that is solely for the purpose
+of detecting the participants’ cognitive status. Regardless
+of the adapted methods, the participant’s facial features led
+to the revealing of the cognitive conditions. In most of the
+works, participants were in a clinical setting in which the
+study staff had control over the room lighting and point view
+of participants’ faces [30, 31]. However, video recording
+of participants’ faces in a home setting is very challenging
+to have an automated method to extract facial features.
+We have faced some challenges in this respect. Additional
+challenges will be also discussed later in this paper.
+Alsuhaibani et al.
+Page 2 of 10
+
+Detection of MCI Using Facial Features in Video Conversations
+Figure 1: The Prepossessing Steps of Participants’ Videos.
+In addition to the reviewed above, facial landmarks
+extracted using pre-trained models do not achieve highly
+accurate results on the elderly, especially older adults with
+cognitive impairment conditions [35, 36]. Therefore, the
+detection of facial landmarks still needs to be improved for
+the elderly. This motivated our approach where we extracted
+holistic facial features using Convolutional Autoencoder
+(CAE).
+3. Materials and Methods
+In this section, we introduce the I-CONECT dataset and
+our approach to preprocessing the participants’ appearance
+during the interviews. We also explain our method of spatial
+and temporal extractions of features.
+3.1. Dataset
+The Internet-Based Conversational Engagement Clinical Trial (I-CONECT) has video-recorded semi-structured
+interviews between the socially-isolated-older participants
+and trained conversational staff [18]. The participants have
+a minimum age limit of 75 and live in socially isolated
+environments to be included in this study. These participants
+were clinically diagnosed with either MCI or NC at the
+baseline. For each session, the participants and interviewer
+have a specific theme to discuss such as pets, foods, history,
+etc. Each session is approximately 30 minutes in duration.
+A total of 158 themes of video chats have been recorded
+among 69 subjects who were assigned to the intervention
+(i.e. video-chats) group.
+We have selected four themes for this study based on
+the number of participants with recordings. Table 1 shows
+the overview of selected themes (Summertime, Self-Care,
+Halloween, Cities and Towns) with the trial’s week number,
+the total number of participants that attended, and the
+number of selected videos based on the quality evaluation
+which we discuss in Section 3.2. Demographic characteristics of participants vary between every theme since some
+Table 1
+Themes general information.
+Themes
+Trial’s Week
+Total Participants
+Selected Videos
+Summertime
+1
+66
+30
+Self-Care
+2
+60
+30
+Halloween
+23
+59
+32
+Cities and Towns
+9
+59
+39
+Table 2
+Demographic
+information
+of
+participants
+for
+selected
+themes.
+Themes
+Age, Years
+(mean) (SD)
+Education
+(mean) (SD)
+Condition
+(MCI/NC)
+Gender
+(M/F)
+Summertime
+80.7 (4.75)
+15.8 (2.79)
+14/16
+8/22
+Self-Care
+80.5 (4.24)
+15.4 (2.63)
+16/14
+11/19
+Halloween
+80.3 (3.73)
+15.3 (2.5)
+14/18
+12/20
+Cities and Towns
+80.7 (4.31)
+15.5 (2.59)
+19/20
+15/24
+participants have missed these themes’ sessions or their
+videos are excluded in the current study due to quality issues
+with the videos. Since the selected participants of the themes
+are inconsistent, Table 2 shows the demographics by the
+themes.
+In our study, we made sure that videos with the same
+topic were analyzed separately because topics would trigger
+specific emotions that do affect facial features. The participants were assessed for their cognitive status (i.e., MCI vs.
+NC) at three-time points (baseline, Month 6, Month 12). We
+used the cognitive status assessed closest to the video chats.
+In our experiment, we used the clinical status assessed at the
+beginning of the trial except for the Halloween theme which
+occurred near the six-month (24 weeks) evaluation.
+3.2. Data preprocessing
+The I-CONECT dataset requires preprocessing to make
+it suitable for training on our model. The preprocessing
+steps include: selecting the participants’ appearance during
+the videos, face extraction, quality evaluation, and facial
+feature extraction. The videos include the participants’ IDs
+Alsuhaibani et al.
+Page 3 of 10
+
+Detection of MCI Using Facial Features in Video Conversations
+during the facial appearance. Thus, optical character recognition (OCR) helped to determine the desired frames from
+the video with less computation and higher confidence.
+We used CRAFT [37] which is a pre-trained model that
+performs scene text detection on natural images. Because
+the videos have different frame rates, we fixed the frame
+extraction rate of the videos. We performed a downsampling
+of the original frame per second (fps) which ranged from 30
+fps to 10 fps. In our experiment, we choose a frame rate of
+10 fps by following the frameshift value from Equation 1 to
+perform frame selection.
+𝐹𝑟𝑎𝑚𝑒𝑆ℎ𝑖𝑓𝑡= 𝑅𝑜𝑢𝑛𝑑𝑑𝑜𝑤𝑛
+(𝑓𝑝𝑠𝑜𝑟𝑖𝑔𝑖𝑛𝑎𝑙
+𝑓𝑝𝑠𝑡𝑎𝑟𝑔𝑒𝑡
+)
+(1)
+In order to detect participants’ faces, we used the retina
+face pre-trained model [38] to detect and extract the subject
+faces. Figure 1 shows the preprocessing steps to extract
+the facial features from the participant video interviews. To
+ensure that all extracted faces belong to participants, the
+detected faces are referenced by face size and coordination
+within the frames. Faces within the created area of interest
+are kept which results in better face extraction of the
+participants.
+We randomly evaluated the majority of the extracted
+faces from every video. The quality evaluation criteria are
+as follows: 1. Very good: all the faces are clear and the
+lighting is good. 2. Good: all the faces are clear and the
+lighting is acceptable. 3. Ok: most of the faces are clear
+or need further processing to enhance the extracted faces.
+4. Poor: some of the extracted faces are unclear, i.e. screen
+obstacle covers part of the faces. 5. Very poor: most of the
+extracted faces are not acceptable due to lighting conditions
+or subjects’ faces being barely detectable. This step is
+performed manually because it is challenging to automate
+this step. The participants’ videos that do not meet the
+quality standards are dropped. We set the passing limit for
+video ratings of very good and good.
+3.3. Unsupervised learning
+Facial Features: Since there are no pre-trained CNN
+models suitable for the elderly especially those with cognitive impairment [36], we initialized an autoencoder neural
+network architecture which is integrated to solve the issue
+of extracting meaningful features from unlabeled data. The
+autoencoder depends on three components which are the
+encoder and decoder, and latent code. We integrated a
+CNN for the encoder and decoder of the autoencoder to
+extract subjects’ facial features. We extracted the subject’s
+facial features at the frame level. We applied a CAE neural
+network with ResNet-50 architecture [39] in the encoder
+and the reverse architecture of ResNet-50 as a decoder with
+a latent feature size of 128. Table 3 shows the architecture
+of ResNet-50 with the output size of network layers based
+on our input size of the faces. Using this approach, we
+generated a feature vector of every frame. The feature
+vectors should have embedded features of facial expression,
+head pose, eye gaze, and general facial features. extracted
+Table 3
+The ResNet-50 Architecture of 96 image size input.
+layer name
+output size
+50-layer
+conv1
+48 × 48
+7 × 7, 64, stride 2
+conv2_x
+24 × 24
+3 × 3 max pool, stride 2
+⎡
+⎢
+⎢⎣
+1 × 1,
+64
+3 × 3,
+64
+1 × 1,
+256
+⎤
+⎥
+⎥⎦
+× 3
+conv3_x
+12 × 12
+⎡
+⎢
+⎢⎣
+1 × 1,
+128
+3 × 3,
+128
+1 × 1,
+512
+⎤
+⎥
+⎥⎦
+× 4
+conv4_x
+6 × 6
+⎡
+⎢
+⎢⎣
+1 × 1,
+256
+3 × 3,
+256
+1 × 1,
+1024
+⎤
+⎥
+⎥⎦
+× 6
+conv5_x
+3 × 3
+⎡
+⎢
+⎢⎣
+1 × 1,
+512
+3 × 3,
+512
+1 × 1,
+2048
+⎤
+⎥
+⎥⎦
+× 3
+average pool, 128-d fc, softmax
+faces are inconsistent in terms of width and height. Thus,
+they are resized to a width and height of 96. The face size is
+set to avoid upsampling of participants’ faces.
+Feature analysis: It is challenging to interpret the latent
+features of an autoencoder with the original image. For
+example, the values of the vector elements that represent
+facial expressions, poses, or eye gazes are still ambiguous.
+In fact, it is an ongoing research topic, nevertheless, we
+show that the reconstructed image preserved the facial
+features of the original image. Figure 2 shows examples
+of a participant’s face with different facial features that are
+encoded and decoded using our CAE model after training.
+Since we are dealing with videos, consecutive frames should
+have similar features with only slight changes, based on
+the participant’s facial movement, which could represent the
+changes in facial expression and eye features as well.
+The latent feature vectors have embedded participants’
+facial features based on their interaction during the interviews. The CAE preserves the related facial attributes in
+the latent feature vectors. In order to prove and ensure the
+relativity of facial features within these vectors, we have
+calculated the cosine similarity among various facial representations of the embedding features of the same subject.
+Figure 3 shows the values of latent feature vector similarity
+among the selected facial frames of the same participant
+during the same theme discussion. We set a reference
+facial embedding vector that has a neutral facial expression,
+clear face presentation, and the participant’s head pose is
+relatively ideal during the interview. This empirical result
+shows the difference in the facial feature representation. It is
+clear to observe that the vector that has the largest difference
+is when the participant raised a paper that covered part of the
+face which threw off the embedding features. Although the
+cosine similarity ranges from -1 to 1 where 1 is the same
+vector and -1 is the opposite vector, all these similarity have
+values above 0 which indicate they are similar in the facial
+features of the same participant.
+Alsuhaibani et al.
+Page 4 of 10
+
+Detection of MCI Using Facial Features in Video Conversations
+Figure 2: Examples of participant’s face and autoencoder
+reconstructed Ones.
+Figure 3: The vector cosine similarities between several
+latent feature vectors.
+3.4. Temporal information
+Segments and sequences: We have extracted features
+that fed to the model which represent segments and sequences of the participants’ interaction. We define a segment as consecutive frames within a video that have extracted faces. A segment within a video is ended when three
+consecutive frames do not show a participant’s face as the
+main face in the frame. We also refer to a sequence as a
+set of consecutive frames. In the selection of the sequence
+and segments of the videos, a sequence must present all its
+interval facial features. Thus, the segment is dropped if its
+number of frames is less than the sequence size. During the
+feature arrangement, we made sure that consecutive frames
+are set to the same sequence. The video has three main
+parts which are the participant’s face, the interviewer’s face,
+and the theme introduction slides. We are interested in the
+participants’ faces; thus, we kept the participants’ frames
+and labeled their appearance as it is shown in Figure 4. Consequently, we are also showing a snippet of the number of
+segments and sequences of participants that have different
+cognitive conditions. Figure 5 shows the plot of segments
+and sequence indices within a video. Although this is a
+small example of the sequence and segment information,
+the figure leads to the idea that MCI participants have less
+continuous taking time compared to the NC participants.
+This indicates that interviewers tend to follow up more.
+Temporal features: The transformers were introduced
+by [40] for machine translation. Although transformers are
+widely used in the Natural Language Processing field, the
+computer vision field also benefited from the concept and
+is being applied to images and videos [41, 42]. The idea of
+representing a frame as a token should help the prediction
+of subjects’ conditions. Since transformers have proven
+their capability in various deep-learning interventions, they
+can capture temporal information from sequential frame
+features due to the attention mechanism represented in
+Equation 2 where Q, K, and V are query, key, and value,
+respectively. Transformers also use multi-head attention to
+perform a parallel computation of the attention mechanism
+where a key, query, and value are split into a number of
+heads and concatenated after the self-attention is applied.
+Equation 3 shows the computation process of attention
+scores where self-attention is calculated for every head
+where 𝑊𝑜is a learnable parameter that is multiplied by the
+concatenation of all the heads. Heads equation is shown in
+Equation 4.
+𝐴𝑡𝑡𝑒𝑛𝑡𝑖𝑜𝑛(𝑄, 𝐾, 𝑉) = 𝑠𝑜𝑓𝑡𝑚𝑎𝑥
+(
+𝑄𝐾𝑇
+√
+𝑑𝑘
+)
+𝑉
+(2)
+𝑀𝑢𝑙𝑡𝑖𝐻𝑒𝑎𝑑(𝑄, 𝐾, 𝑉) = 𝐶𝑜𝑛𝑐𝑎𝑡(ℎ𝑒𝑎𝑑1, ℎ𝑒𝑎𝑑2, ...ℎ𝑒𝑎𝑑𝑖)𝑊𝑜
+(3)
+Where
+ℎ𝑒𝑎𝑑𝑖= 𝐴𝑡𝑡𝑒𝑛𝑡𝑖𝑜𝑛(𝑄𝑊𝑄
+𝑖, 𝐾𝑊𝐾
+𝑖, 𝑉𝑊𝑉
+𝑖)
+(4)
+Transformers are able to capture the dependency of
+the input data, so the representation of the feature vectors
+and classification tokens affect the behavior of the model.
+Thus, we created a classification token for every sequence
+which is a common practice for sequence classification
+using transformers [41, 43]. The classification token is fed
+to a classifier to perform sequence classification of the input.
+Thus, this arbitrary token would have learned from the selfattention mechanism and positional embedding layer the
+label of the sequence input.
+One of the important components of transformers is
+the positional embedding layer. This layer preserves the
+positions of the sequential representation for the attention
+mechanism. This layer inspired us to have the sequence and
+segment representation of every video added to the transformer. This positioning of the facial features could yield a
+hierarchical representation of an overall representation of a
+participant’s video.
+Alsuhaibani et al.
+Page 5 of 10
+
+Detection of MCI Using Facial Features in Video Conversations
+Figure 4: The frame extraction from a video with segments and sequences labeling.
+Figure 5: An example of a number of segments and sequences of participants with different cognitive conditions.
+4. Experiments and Results
+In this section, we present our experiment implementation details. Then, we explain the section performance of our
+model. Eventually, we study the model performance while
+changing some of the hyperparameters of the model in the
+ablation study.
+4.1. Implementation
+We implemented our models using Python 3.8.10 and
+PyTorch 1.12.0.0+cu102 and ran the experiments on the
+NVIDIA GeForce GTX 1080 GPU. The CAE model has
+a latent size of 128 with input and reconstructed images
+of size 96 × 96. The model was trained for 32 epochs
+using the Adam optimizer and Mean Square Error (MSE)
+loss function. The embedded facial features / latent feature
+vectors are updated until the MSE reaches a small value
+between the original face and the reconstructed one.
+The transformer was implemented in the same environment and trained for 40 epochs with Adam optimizer and
+weighted binary cross-entropy (BCE) loss function that is
+shown in Equation 5. The model consists of four transformer
+encoder layers, three positional embedding layers (sequential, sequence, and segment), and a classifier. The encoder
+has a hidden dimension equal to the latent feature vector size
+which is 128 and two heads. The classifier is a multilayer
+perceptron (MLP) which has three fully connected layers
+of [64, 32, 2]. The model is trained with a dropout of
+the value of 0.2. Figure 6 shows the transformer diagram.
+The first stage arranges the facial feature sequences with
+the appendant of a classification token. The second stage
+is adding the positional embeddings of the sequences and
+the transformer encoder. The third stage contains the MLP
+which takes the classification tokens output and makes a
+binary classification decision after a sigmoid function maps
+the model output.
+𝑊𝑒𝑖𝑔ℎ𝑡𝑒𝑑𝐵𝐶𝐸= −𝛽(𝑦𝑖𝑙𝑜𝑔(𝑝𝑖)+(1−𝑦𝑖)𝑙𝑜𝑔(1−𝑝𝑖)) (5)
+where 𝛽is the weight assigned to the positive class.
+In our sequence approach, we defined M ∈ℝ𝕝𝕩𝔽as
+a sequence where 𝑙is the sequence size (15) and 𝐹
+∈
+ℝ𝟙𝟚𝟠is the latent feature vector. The segments are defined as 𝑆= {𝑀1, 𝑀2, ...𝑀𝑠}. The video is presented as
+𝑉
+= {𝑆1, 𝑆2, ...𝑆𝑣} or {𝑀1, 𝑀2, ...𝑀𝑛}. The positional
+embeddings are calculated as follows 𝑃= 𝑃𝑀+ 𝑃𝑆+ 𝑃𝑝.
+Eventually, the model input is 𝑍= 𝑧+ 𝑃where z refers to
+the latent feature vectors. 𝑃∈ℝ𝟙𝟚𝟠is the overall positional
+embeddings that capture the sequential representation of
+feature vectors because self-attention in transformers does
+not consider the timing appearance of the facial features.
+Considering the same concept, the positional embeddings
+within a video of the sequences and segments are captured
+in this layer. The purpose of this implementation is to have
+a hierarchical representation of every participant’s video as
+we evaluate the model on the participants’ video level.
+4.2. Results
+We separated the training and evaluation of the model
+based on the interview themes. Thus, all results will refer
+to the target theme. Accuracy, F1 score, and Area under the
+ROC Curve (AUC) are the evaluation metrics. The accuracy
+reflects the percentage of participants that were correctly
+classified during the testing. The F1 score is a combination
+score of precision and recall. AUC measures the model’s
+ability to distinguish between binary cognitive conditions.
+Alsuhaibani et al.
+Page 6 of 10
+
+Detection of MCI Using Facial Features in Video Conversations
+Figure 6: The model diagram of training the transformers.
+Table 4
+The model evaluation of 15 as a sequence size with positional embedding of sequence, segment, both, and none.
+Themes
+positional information
+no position
+sequence
+segment
+sequence and segment
+Accuracy
+F1
+AUC
+Accuracy
+F1
+AUC
+Accuracy
+F1
+AUC
+Accuracy
+F1
+AUC
+Summertime
+76.7%
+0.77
+0.77
+76.6%
+0.79
+0.76
+80%
+0.81
+0.8
+83.3%
+0.85
+0.83
+Self-care
+70%
+0.64
+0.69
+63.3%
+0.56
+0.63
+60%
+0.5
+0.59
+66.7%
+0.58
+0.66
+Halloween
+84.4%
+0.86
+0.84
+75%
+0.79
+0.74
+81.3%
+0.84
+0.8
+87.5%
+0.89
+0.87
+Cities and Towns
+76.9%
+0.77
+0.77
+76.9%
+0.76
+0.77
+79.5%
+0.79
+0.8
+79.5%
+0.78
+0.8
+We randomly separated the participants into 10-folds and
+performed cross-validation. We ensured the representation
+of participants from both cognitive conditions are assigned
+to the test fold during the random assigning. The procedure
+is to classify a video based on the percentage of the correct
+classified sequences within a video. We labeled a video as
+correctly classified if the majority of sequences within a
+video are correctly classified.
+Table 4 shows the baseline performance of our model
+which considers the embedded facial features and does not
+consider the positions of the sequences and segments of
+the videos. The segments and sequences positional embeddings have improved the detection performance of the
+participants’ cognitive conditions. The combinations of both
+of these positions performed better than either of them.
+In fact, applying one of these positions could drop the
+detection accuracy as it is presented for the Halloween
+theme when we add only one of these positional information
+the performance drops. The Self-care theme has the least
+detection performance among the themes which is impacted
+by the quality of the participants’ facial appearance during
+the interview.
+We can observe that by adding the segments and sequences information the transformer helped the model analyze the participants’ interaction behavior or the length
+of their response to the interviewers’ questions regardless
+Table 5
+Performance comparison with other MCI detection on I-
+CONECT dataset.
+Methods
+Modality
+Accuracy
+F1
+AUC
+Asgari et al. (2017) [44]
+Linguistic
+83.3%
+–
+0.8
+Chen et al. (2020) [45]
+Linguistic
+79.2%
+–
+0.84
+Tang et al. (2022) [46]
+Acoustic & Linguistic
+–
+–
+0.83
+Ours
+Visual
+87.5%
+0.89
+0.87
+of which theme is discussed. The results show that adding
+the segment and sequence information does improve the
+overall detection of the participants’ condition. Thus, MCI
+is detectable using facial features; however, the interaction
+boosted the model performance. Other studies have detected
+MCI participants in the I-CONECT dataset using different
+modalities. The main focus of the studies on the dataset
+was on speech signals. Table 5 shows the best results of the
+studies and compares them with our top performance result
+among the themes in this study. Asgari et al. [44] extracted
+Linguistic Inquiry and Word Count (LIWC) features from
+participants’ transcribed data and classified the participants.
+Chen et al. [45] have used a topic-based method to detect
+participants with MCI. Tang et al. [46] integrated the acoustic and linguistic markers from the participants’ speeches to
+distinguish the participants.
+Alsuhaibani et al.
+Page 7 of 10
+
+Detection of MCI Using Facial Features in Video Conversations
+Table 6
+The evaluation of different sizes of sequences.
+Themes
+sequence size
+15
+20
+25
+Accuracy
+F1
+AUC
+Accuracy
+F1
+AUC
+Accuracy
+F1
+AUC
+Summertime
+83.3%
+0.85
+0.83
+80%
+0.82
+0.79
+77%
+0.8
+0.76
+Self-care
+66.7%
+0.58
+0.66
+70%
+0.66
+0.7
+60%
+0.54
+0.59
+Halloween
+87.5%
+0.89
+0.87
+81.2%
+0.83
+0.81
+81.2%
+0.84
+0.8
+Cities and Towns
+79.5%
+0.78
+0.8
+79.5%
+0.78
+0.8
+79.5%
+0.76
+0.8
+4.3. Ablation study
+In this section, we evaluated the model’s detecting
+performance with variations of the model hyperparameters.
+We show the effects of different sequence sizes, overlapping
+of sequences, and loss function.
+Sequence size: we studied the effect of changing the
+sequence sizes when we feed the transformer with participants’ facial features. Table 6 shows the performance of the
+model while applying different sequence sizes [15, 20, 25].
+It is important to mention that changing the sequence size
+would change the total number of sequences per participant
+and the number of segments. In fact, the facial temporal
+features extracted from the transformer will be affected
+depending on the sequence size as well. The sequence size
+of 15 has performed overall better than the size of 20 and
+25. The Cities and Towns theme performance was sustained
+across all sequence sizes. The prediction on the Self-care
+theme had a slight improvement when the sequence size is
+20 but it dropped when the sequence size is 25.
+Sequence overlapping: we studied the effect of sequence overlapping while keeping the sequence size fixed.
+Table 7 shows the accuracies of 0%, 20%, and 40% overlapping sizes while selecting sequences of facial features
+during the training and evaluation. This study shows our sequence covered the majority of participants’ features during
+the interviews. The overlapping of sequences will increase
+the number of sequences and keep the number of segments
+fixed. Thus, the accuracies decreased with the overlapping
+except for the Cities and Towns themes. With the consideration of Cities and Towns theme performance shown in Table
+4, the accuracy of adding segment information was similar
+to adding sequence and segment information. However, the
+increase of sequence information caused the model a better
+prediction of the participants’ cognitive conditions. In other
+words, sequence augmentation improved the prediction for
+the Cities and Towns theme.
+Loss function: although participants’ conditions are
+balanced for all selected themes, the number of sequences
+that represent each participant varies so the weighted binary
+cross-entropy loss function triggers the class imbalance in
+the training for every fold. Here, we study the concept
+of applying the weighted BCE loss function to help the
+model performance compared with the average BCE loss
+function 6. Table 8 shows the accuracies of different themes
+with consideration of changing the loss function. Across all
+themes, the accuracies improved by at least 2.6% with the
+Table 7
+Detection comparison between sequence overlapping.
+sequence overlapping percentage
+Themes
+0%
+20%
+40%
+Summertime
+83.3%
+80%
+80%
+Self-care
+66.7%
+63.3%
+60%
+Halloween
+87.5%
+84.4%
+75%
+Cities and Towns
+79.5%
+79.5%
+82.1%
+Table 8
+Comparison between applying weighted BCE and BCE as a
+model loss function.
+Themes
+weighted BCE
+BCE
+Summertime
+83.3%
+76.7%
+Self-care
+66.7%
+56.7%
+Halloween
+87.5%
+78.1%
+Cities and Towns
+79.5%
+76.9%
+weighted BCE loss function. We investigate this to prove
+that the model prediction performance improved with the
+weighted BCE loss function. This loss function would act
+as if the class with fewer samples has more samples based
+on the ratio weight that is updated for every fold during the
+training.
+𝐵𝐶𝐸= −1
+𝑁
+𝑁
+∑
+𝑖=1
+(𝑦𝑖𝑙𝑜𝑔(𝑝𝑖) + (1 −𝑦𝑖)𝑙𝑜𝑔(1 −𝑝𝑖)) (6)
+Our work has several limitations, especially regarding
+the video quality. In our approach, the manual quality check
+is one of the challenges which takes a considerably long
+time to evaluate. However, an automated computer-based
+approach will help achieve the evaluation faster; therefore,
+more themes can be included in the study. The number of
+eliminated videos within a theme is concernedly large which
+is mainly based on the video quality. The video quality
+does not only refer to the typical technical challenges of
+the videos such as room lighting, viewpoint, and facial
+appearance but it also considers the full face during the
+interview because some participants did not show their
+faces for the majority of the video. Therefore, older adults
+are having challenges in handling computer intermedium
+interviews.
+Alsuhaibani et al.
+Page 8 of 10
+
+Detection of MCI Using Facial Features in Video Conversations
+5. Conclusion
+In this paper, we demonstrated a method to detect
+older adults with MCI using their facial features in visual
+semi-structured interviews from the I-CONECT study. The
+method is based on extracting spatial features and temporal
+information that is conducted by using a CAE and the
+self-attention mechanism in the transformers. We showed
+the interaction timing of the facial features of subjects
+is important as it helped boost the performance of our
+model in distinguishing the cognitive condition among participants. We conclude that using segments and sequence
+indices within a video does improve the prediction of the
+participants’ conditions. Participants’ facial features vary
+during the topic discussion. Thus, future work will study
+the sequences’ contribution to cognitive condition detection
+among the participants including the speech data and the
+automated video quality assessment using DL algorithms.
+CRediT authorship contribution statement
+Muath Alsuhaibani: Conceptualization, Data curation,
+Formal analysis, Investigation, Methodology, Software, Validation, Visualization, Writing - original draft. Hiroko H.
+Dodge: Investigation, Resources, Validation, Writing - review & editing. Mohammad H. Mahoor: Investigation,
+Resources, Supervision, Project administration, Validation,
+Writing - review & editing.
+Declaration of Competing Interest
+The authors declare that they have no known competing
+financial interests or personal relationships that could have
+appeared to influence the work reported in this paper.
+Acknowledgements
+The following federal fund supported this project:
+R01AG051628, R01AG056102, RF1AG672448 from the
+National Institute of Health (NIH) in the United States to
+Dr. Hiroko Dodge. Dr. Mohammad Mahoor received a grant
+from the Colorado Office of Economic Development and
+International Trade in support of this research project.
+References
+[1] 2022 alzheimer’s disease facts and figures, Alzheimer’s & Dementia:
+The Journal of the Alzheimer’s Association 18 (4) (2022) 700–789.
+doi:10.1002/alz.12638.
+[2] L. G. Apostolova, J. L. Cummings, Neuropsychiatric manifestations
+in mild cognitive impairment: a systematic review of the literature,
+Dementia and geriatric cognitive disorders 25 (2) (2008) 115–126.
+[3] K. Herholz, S. Carter, M. Jones, Positron emission tomography imaging in dementia, The British journal of radiology 80 (special_issue_2)
+(2007) S160–S167.
+[4] G. D. Rabinovici, C. Gatsonis, C. Apgar, K. Chaudhary, I. Gareen,
+L. Hanna, J. Hendrix, B. E. Hillner, C. Olson, O. H. Lesman-
+Segev, et al., Association of amyloid positron emission tomography
+with subsequent change in clinical management among medicare
+beneficiaries with mild cognitive impairment or dementia, Jama
+321 (13) (2019) 1286–1294.
+[5] S.-K. Herukka, A. H. Simonsen, N. Andreasen, I. Baldeiras,
+M.
+Bjerke,
+K.
+Blennow,
+S.
+Engelborghs,
+G.
+B.
+Frisoni,
+T.
+Gabryelewicz,
+S.
+Galluzzi,
+et
+al.,
+Recommendations
+for
+cerebrospinal fluid alzheimer’s disease biomarkers in the diagnostic
+evaluation of mild cognitive impairment, Alzheimer’s & Dementia
+13 (3) (2017) 285–295.
+[6] D. A. Butterfield, T. Reed, S. F. Newman, R. Sultana, Roles of amyloid 𝛽-peptide-associated oxidative stress and brain protein modifications in the pathogenesis of alzheimer’s disease and mild cognitive
+impairment, Free Radical Biology and Medicine 43 (5) (2007) 658–
+677.
+[7] C. Ritchie, N. Smailagic, A. H. Noel-Storr, Y. Takwoingi, L. Flicker,
+S. E. Mason, R. McShane, Plasma and cerebrospinal fluid amyloid
+beta for the diagnosis of alzheimer’s disease dementia and other
+dementias in people with mild cognitive impairment (mci), Cochrane
+Database of Systematic Reviews (6) (2014).
+[8] T. Jo, K. Nho, S. L. Risacher, A. J. Saykin, Deep learning detection of
+informative features in tau pet for alzheimer’s disease classification,
+BMC bioinformatics 21 (21) (2020) 1–13.
+[9] T.-E. Kam, H. Zhang, Z. Jiao, D. Shen, Deep learning of static and
+dynamic brain functional networks for early mci detection, IEEE
+transactions on medical imaging 39 (2) (2019) 478–487.
+[10] S. Yang, J. M. S. Bornot, K. Wong-Lin, G. Prasad, M/eeg-based biomarkers to predict the mci and alzheimer’s disease: a review from
+the ml perspective, IEEE Transactions on Biomedical Engineering
+66 (10) (2019) 2924–2935.
+[11] Z. Hu, J. Tang, Z. Wang, K. Zhang, L. Zhang, Q. Sun, Deep learning
+for image-based cancer detection and diagnosis- a survey, Pattern
+Recognition 83 (2018) 134–149.
+[12] L. Shen, L. R. Margolies, J. H. Rothstein, E. Fluder, R. McBride,
+W. Sieh, Deep learning to improve breast cancer detection on screening mammography, Scientific reports 9 (1) (2019) 12495.
+[13] D. Painuli, S. Bhardwaj, et al., Recent advancement in cancer
+diagnosis using machine learning and deep learning techniques: A
+comprehensive review, Computers in Biology and Medicine 146
+(2022) 105580.
+[14] Z. Jiang, S. Harati, A. Crowell, H. S. Mayberg, S. Nemati, G. D.
+Clifford, Classifying major depressive disorder and response to deep
+brain stimulation over time by analyzing facial expressions, IEEE
+Transactions on Biomedical Engineering 68 (2) (2020) 664–672.
+[15] M. Fang, S. Peng, Y. Liang, C.-C. Hung, S. Liu, A multimodal fusion
+model with multi-level attention mechanism for depression detection,
+Biomedical Signal Processing and Control 82 (2023) 104561.
+[16] A. Bandini, S. Orlandi, H. J. Escalante, F. Giovannelli, M. Cincotta,
+C. A. Reyes-Garcia, P. Vanni, G. Zaccara, C. Manfredi, Analysis
+of facial expressions in parkinson’s disease through video-based
+automatic methods, Journal of neuroscience methods 281 (2017) 7–
+20.
+[17] M. L. Birnbaum, A. Abrami, S. Heisig, A. Ali, E. Arenare, C. Agurto,
+N. Lu, J. M. Kane, G. Cecchi, Acoustic and facial features from
+clinical interviews for machine learning–based psychiatric diagnosis:
+Algorithm development, JMIR Mental Health 9 (1) (2022) e24699.
+[18] K. Yu, K. Wild, K. Potempa, B. M. Hampstead, P. A. Lichtenberg,
+L. M. Struble, P. Pruitt, E. L. Alfaro, J. Lindsley, M. MacDonald,
+et al., The internet-based conversational engagement clinical trial
+(i-conect) in socially isolated adults 75+ years old: randomized
+controlled trial protocol and covid-19 related study modifications,
+Frontiers in digital health 3 (2021) 714813.
+[19] T. J. Crawford, S. Higham, T. Renvoize, J. Patel, M. Dale, A. Suriya,
+S. Tetley, Inhibitory control of saccadic eye movements and cognitive
+impairment in alzheimer’s disease, Biological psychiatry 57 (9)
+(2005) 1052–1060.
+[20] C. Y. Chan, A. B. Chan, T. M. Lee, J. H. Hsiao, Eye-movement
+patterns in face recognition are associated with cognitive decline in
+older adults, Psychonomic bulletin & review 25 (2018) 2200–2207.
+[21] T. D. Wilcockson, D. Mardanbegi, B. Xia, S. Taylor, P. Sawyer,
+H. W. Gellersen, I. Leroi, R. Killick, T. J. Crawford, Abnormalities of
+saccadic eye movements in dementia due to alzheimer’s disease and
+Alsuhaibani et al.
+Page 9 of 10
+
+Detection of MCI Using Facial Features in Video Conversations
+mild cognitive impairment, Aging (Albany NY) 11 (15) (2019) 5389.
+[22] F. Alzahrani, B. Mirheidari, D. Blackburn, S. Maddock, H. Christensen, Eye blink rate based detection of cognitive impairment using
+in-the-wild data, in: 2021 9th International Conference on Affective
+Computing and Intelligent Interaction (ACII), IEEE, 2021, pp. 1–8.
+[23] G. B. Huang, M. Mattar, T. Berg, E. Learned-Miller, Labeled faces
+in the wild: A database forstudying face recognition in unconstrained
+environments, in: Workshop on faces in’Real-Life’Images: detection,
+alignment, and recognition, 2008.
+[24] T. Baltrusaitis, A. Zadeh, Y. C. Lim, L.-P. Morency, Openface 2.0:
+Facial behavior analysis toolkit, in: 2018 13th IEEE international
+conference on automatic face & gesture recognition (FG 2018),
+IEEE, 2018, pp. 59–66.
+[25] U. Nam, K. Lee, H. Ko, J.-Y. Lee, E. C. Lee, Analyzing facial and eye
+movements to screen for alzheimer’s disease, Sensors 20 (18) (2020)
+5349.
+[26] R. U. Haque, A. L. Pongos, C. M. Manzanares, J. J. Lah, A. I.
+Levey, G. D. Clifford, Deep convolutional neural networks and
+transfer learning for measuring cognitive impairment using eyetracking in a distributed tablet-based environment, IEEE Transactions
+on Biomedical Engineering 68 (1) (2020) 11–18.
+[27] T. McLellan, L. Johnston, J. Dalrymple-Alford, R. Porter, The
+recognition of facial expressions of emotion in alzheimer’s disease: a
+review of findings, Acta Neuropsychiatrica 20 (5) (2008) 236–250.
+[28] I. Spoletini, C. Marra, F. Di Iulio, W. Gianni, G. Sancesario, F. Giubilei, A. Trequattrini, P. Bria, C. Caltagirone, G. Spalletta, Facial
+emotion recognition deficit in amnestic mild cognitive impairment
+and alzheimer disease, The American Journal of Geriatric Psychiatry
+16 (5) (2008) 389–398.
+[29] H. Tanaka, H. Adachi, H. Kazui, M. Ikeda, T. Kudo, S. Nakamura,
+Detecting dementia from face in human-agent interaction, in: Adjunct
+of the 2019 International Conference on Multimodal Interaction,
+2019, pp. 1–6.
+[30] Z. Fei, E. Yang, L. Yu, X. Li, H. Zhou, W. Zhou, A novel deep neural network-based emotion analysis system for automatic detection
+of mild cognitive impairment in the elderly, Neurocomputing 468
+(2022) 306–316.
+[31] Z. Jiang, S. Seyedi, R. U. Haque, A. L. Pongos, K. L. Vickers,
+C. M. Manzanares, J. J. Lah, A. I. Levey, G. D. Clifford, Automated
+analysis of facial emotions in subjects with cognitive impairment,
+Plos one 17 (1) (2022) e0262527.
+[32] J. Gerłowska, K. Dmitruk, K. Rejdak, Facial emotion mimicry
+in older adults with and without cognitive impairments due to
+alzheimer’s disease, AIMS neuroscience 8 (2) (2021) 226.
+[33] Y. Umeda-Kameyama, M. Kameyama, T. Tanaka, B.-K. Son, T. Kojima, M. Fukasawa, T. Iizuka, S. Ogawa, K. Iijima, M. Akishita,
+Screening of alzheimer’s disease by facial complexion using artificial
+intelligence, Aging (Albany NY) 13 (2) (2021) 1765.
+[34] C.-C. Lee, H.-H. H. Chau, H.-L. Wang, Y.-F. Chuang, Y. Chau,
+Detection of mild cognitive impairment by facial videos, in: 2022
+IEEE International Conference on Consumer Electronics-Taiwan,
+IEEE, 2022, pp. 197–198.
+[35] A. Asgarian, S. Zhao, A. B. Ashraf, M. E. Browne, K. M. Prkachin,
+A. Mihailidis, T. Hadjistavropoulos, B. Taati, Limitations and biases
+in facial landmark detection d an empirical study on older adults with
+dementia., in: CVPR Workshops, 2019, pp. 28–36.
+[36] B. Taati, S. Zhao, A. B. Ashraf, A. Asgarian, M. E. Browne,
+K. M. Prkachin, A. Mihailidis, T. Hadjistavropoulos, Algorithmic
+bias in clinical populations—evaluating and improving facial analysis
+technology in older adults with dementia, IEEE access 7 (2019)
+25527–25534.
+[37] Y. Baek, B. Lee, D. Han, S. Yun, H. Lee, Character region awareness
+for text detection, in: Proceedings of the IEEE/CVF conference on
+computer vision and pattern recognition, 2019, pp. 9365–9374.
+[38] J. Deng, J. Guo, E. Ververas, I. Kotsia, S. Zafeiriou, Retinaface:
+Single-shot multi-level face localisation in the wild, in: Proceedings
+of the IEEE/CVF conference on computer vision and pattern recognition, 2020, pp. 5203–5212.
+[39] K. He, X. Zhang, S. Ren, J. Sun, Deep residual learning for image
+recognition, in: Proceedings of the IEEE conference on computer
+vision and pattern recognition, 2016, pp. 770–778.
+[40] A. Vaswani, N. Shazeer, N. Parmar, J. Uszkoreit, L. Jones, A. N.
+Gomez, Ł. Kaiser, I. Polosukhin, Attention is all you need, Advances
+in neural information processing systems 30 (2017).
+[41] A. Dosovitskiy, L. Beyer, A. Kolesnikov, D. Weissenborn, X. Zhai,
+T. Unterthiner, M. Dehghani, M. Minderer, G. Heigold, S. Gelly,
+et al., An image is worth 16x16 words: Transformers for image
+recognition at scale, arXiv preprint arXiv:2010.11929 (2020).
+[42] A. Arnab, M. Dehghani, G. Heigold, C. Sun, M. Luˇci´c, C. Schmid,
+Vivit: A video vision transformer, in: Proceedings of the IEEE/CVF
+international conference on computer vision, 2021, pp. 6836–6846.
+[43] J. Devlin, M.-W. Chang, K. Lee, K. Toutanova, Bert: Pre-training
+of deep bidirectional transformers for language understanding, arXiv
+preprint arXiv:1810.04805 (2018).
+[44] M. Asgari, J. Kaye, H. Dodge, Predicting mild cognitive impairment from spontaneous spoken utterances, Alzheimer’s & Dementia:
+Translational Research & Clinical Interventions 3 (2) (2017) 219–
+228.
+[45] L. Chen, H. H. Dodge, M. Asgari, Topic-based measures of conversation for detecting mild cognitive impairment, in: Proceedings of
+the conference. Association for Computational Linguistics. Meeting,
+Vol. 2020, NIH Public Access, 2020, p. 63.
+[46] F. Tang, J. Chen, H. H. Dodge, J. Zhou, The joint effects of acoustic
+and linguistic markers for early identification of mild cognitive
+impairment, Frontiers in digital health 3 (2022) 702772.
+Alsuhaibani et al.
+Page 10 of 10

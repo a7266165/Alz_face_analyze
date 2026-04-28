@@ -149,26 +149,39 @@ BLOCK_TITLE_PATTERNS = [
 ]
 
 # Positive: keep if title or abstract matches ANY of these (Stage 2/4).
+# Bare \bface\b / \bfaces\b removed — they match "face challenges" / "faces difficulties"
+# in dementia literature (verb usage). Use compound patterns instead.
 POSITIVE_PATTERNS = [
-    r"\bface\b", r"\bfacial\b", r"\bfaces\b",
+    r"\bfacial\b",
     r"\bFER\b",
     r"\bfacial expression", r"\bfacial emotion", r"\bfacial affect",
     r"\bfacial recognition", r"\bfacial landmark", r"\bfacial photograph",
     r"\bfacial image", r"\bfacial video",
     r"\bfacial age", r"\bfacial aging",
     r"\bfacial asymmetry", r"\bface symmetry",
+    r"\bfacial soft.?tissue", r"\bfacial morpholog",
     r"\bhemifac", r"\bhalf.face\b",
-    r"\bphotograph\b", r"\bportrait\b", r"\bselfie\b",
+    # face + image/photo/recognition compounds (replaces bare \bface\b)
+    r"\bface image", r"\bface photograph", r"\bface video",
+    r"\bface recognition", r"\bface detection", r"\bface verification",
+    r"\bface identification", r"\bface classification",
+    r"\bface embedding", r"\bface representation",
+    r"\bface analy", r"\bface processing\b",
+    r"\bface mesh\b", r"\bface keypoint\b", r"\bface landmark\b",
+    r"\bface biometric", r"\bface attribute",
+    r"\bface aging\b", r"\bface age\b",
+    # photograph-based studies
+    r"\bphotograph\b.{0,30}\b(face|patient|subject|expression|emotion|age)",
+    r"\bportrait\b.{0,30}\b(photo|image|patient)", r"\bselfie\b",
+    # named models / toolkits
     r"\bArcFace\b", r"\bFaceNet\b", r"\bTopoFR\b",
     r"\bVGG.?Face\b", r"\bDlib\b",
-    r"\bMiVOLO\b", r"\bFaceAge\b",
+    r"\bMiVOLO\b", r"\bFaceAge\b", r"\bDeepFace\b",
     r"\baction unit\b", r"\bAU intensity\b", r"\bAU detection\b",
     r"\bopen.?face\b", r"\bpy.?feat\b", r"\blibreface\b",
     r"\bpyramid cross.?fusion", r"\bPOSTER\b",
-    r"\bHSEmotion\b",
+    r"\bHSEmotion\b", r"\bAffectNet\b", r"\bFER2013\b", r"\bRAF.?DB\b",
     r"\bMediaPipe\b.*face",
-    r"\bface mesh\b", r"\bface keypoint\b",
-    r"\bface detection\b",
     r"\bMicro.?expression\b",
     r"\bvalence.{0,5}arousal\b",
 ]

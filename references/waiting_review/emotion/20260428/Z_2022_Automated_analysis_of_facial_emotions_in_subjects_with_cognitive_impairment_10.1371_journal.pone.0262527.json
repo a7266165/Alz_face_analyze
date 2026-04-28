@@ -1,0 +1,28 @@
+{
+  "title": "Automated analysis of facial emotions in subjects with cognitive impairment.",
+  "authors": [
+    "Jiang Z",
+    "Seyedi S",
+    "Haque RU",
+    "Pongos AL",
+    "Vickers KL",
+    "Manzanares CM",
+    "Lah JJ",
+    "Levey AI",
+    "Clifford GD"
+  ],
+  "year": 2022,
+  "abstract": "Differences in expressing facial emotions are broadly observed in people with cognitive impairment. However, these differences have been difficult to objectively quantify and systematically evaluate among people with cognitive impairment across disease etiologies and severity. Therefore, a computer vision-based deep learning model for facial emotion recognition trained on 400.000 faces was utilized to analyze facial emotions expressed during a passive viewing memory test. In addition, this study was conducted on a large number of individuals (n = 493), including healthy controls and individuals with cognitive impairment due to diverse underlying etiologies and across different disease stages. Diagnoses included subjective cognitive impairment, Mild Cognitive Impairment (MCI) due to AD, MCI due to other etiologies, dementia due to Alzheimer's diseases (AD), and dementia due to other etiologies (e.g., Vascular Dementia, Frontotemporal Dementia, Lewy Body Dementia, etc.). The Montreal Cognitive Assessment (MoCA) was used to evaluate cognitive performance across all participants. A participant with a score of less than or equal to 24 was considered cognitively impaired (CI). Compared to cognitively unimpaired (CU) participants, CI participants expressed significantly less positive emotions, more negative emotions, and higher facial expressiveness during the test. In addition, classification analysis revealed that facial emotions expressed during the test allowed effective differentiation of CI from CU participants, largely independent of sex, race, age, education level, mood, and eye movements (derived from an eye-tracking-based digital biomarker for cognitive impairment). No screening methods reliably differentiated the underlying etiology of the cognitive impairment. The findings provide quantitative and comprehensive evidence that the expression of facial emotions is significantly different in people with cognitive impairment, and suggests this may be a useful tool for passive screening of cognitive impairment.",
+  "doi": "10.1371/journal.pone.0262527",
+  "arxiv_id": null,
+  "venue": "PloS one",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "35061824"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.1371/journal.pone.0262527"
+}

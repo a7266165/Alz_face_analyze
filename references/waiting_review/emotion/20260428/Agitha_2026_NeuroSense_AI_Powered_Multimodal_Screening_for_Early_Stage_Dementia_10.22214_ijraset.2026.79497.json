@@ -1,0 +1,20 @@
+{
+  "title": "NeuroSense: AI-Powered Multimodal Screening for Early-Stage Dementia",
+  "authors": [
+    "Dr. T. Agitha"
+  ],
+  "year": 2026,
+  "abstract": "Dementia is a progressive neurological disorder that affects memory, cognition, behaviour, and daily functioning. Early detection is essential for effective intervention and improved patient outcomes. This paper proposes NeuroSense, an AIpowered multimodal system for early-stage dementia screening by integrating speech analysis, EEG signal processing, handwriting analysis, facial emotion recognition, and cognitive assessment. The system collects data from multiple modalities and processes it through preprocessing, feature extraction, and machine learning-based classification. Speech features such as MFCC, pitch, and pause duration, EEG frequency bands, handwriting patterns, and facial expressions are analysed independently and combined using a weighted decision fusion approach. The system is implemented using a React-based frontend and a Flask backend for real-time interaction and analysis. Experimental results show that the proposed model achieves an overall accuracy of 83%, with speech analysis contributing the highest performance among all modalities. The system provides a non-invasive, cost-effective, and interpretable solution for early dementia detection, supporting healthcare professionals in clinical decision-making.",
+  "doi": "10.22214/ijraset.2026.79497",
+  "arxiv_id": null,
+  "venue": "International Journal for Research in Applied Science and Engineering Technology",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://doi.org/10.22214/ijraset.2026.79497",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W7152998844"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.22214/ijraset.2026.79497"
+}

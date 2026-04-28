@@ -1,0 +1,25 @@
+{
+  "title": "Detecting Dementia from Face-Related Features with Automated Computational Methods.",
+  "authors": [
+    "Zheng C",
+    "Bouazizi M",
+    "Ohtsuki T",
+    "Kitazawa M",
+    "Horigome T",
+    "Kishimoto T"
+  ],
+  "year": 2023,
+  "abstract": "Alzheimer's disease (AD) is a type of dementia that is more likely to occur as people age. It currently has no known cure. As the world's population is aging quickly, early screening for AD has become increasingly important. Traditional screening methods such as brain scans or psychiatric tests are stressful and costly. The patients are likely to feel reluctant to such screenings and fail to receive timely intervention. While researchers have been exploring the use of language in dementia detection, less attention has been given to face-related features. The paper focuses on investigating how face-related features can aid in detecting dementia by exploring the PROMPT dataset that contains video data collected from patients with dementia during interviews. In this work, we extracted three types of features from the videos, including face mesh, Histogram of Oriented Gradients (HOG) features, and Action Units (AU). We trained traditional machine learning models and deep learning models on the extracted features and investigated their effectiveness in dementia detection. Our experiments show that the use of HOG features achieved the highest accuracy of 79% in dementia detection, followed by AU features with 71% accuracy, and face mesh features with 66% accuracy. Our results show that face-related features have the potential to be a crucial indicator in automated computational dementia detection.",
+  "doi": "10.3390/bioengineering10070862",
+  "arxiv_id": null,
+  "venue": "Bioengineering (Basel, Switzerland)",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "37508889"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.3390/bioengineering10070862"
+}

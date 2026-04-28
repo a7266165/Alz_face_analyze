@@ -1,0 +1,1158 @@
+Vol.:(0123456789)
+Cognitive, Affective, & Behavioral Neuroscience (2024) 24:599–614
+https://doi.org/10.3758/s13415-024-01160-5
+RESEARCH ARTICLE
+Facial emotion recognition in individuals with mild cognitive
+impairment: An exploratory study
+Francesca Burgio1 · Arianna Menardi2,3 · Silvia Benavides‑Varela3,4 · Laura Danesin1   · Andreina Giustiniani1 ·
+Jan Van den Stock5,6 · Roberta De Mitri1 · Roberta Biundo7,8 · Francesca Meneghello9 · Angelo Antonini10 ·
+Antonino Vallesi2,3 · Beatrice de Gelder11 · Carlo Semenza2,3
+Accepted: 10 January 2024 / Published online: 5 February 2024
+© The Psychonomic Society, Inc. 2024
+Abstract
+Understanding facial emotions is fundamental to interact in social environments and modify behavior accordingly. Neurodegenerative processes can progressively transform affective responses and affect social competence. This exploratory
+study examined the neurocognitive correlates of face recognition, in individuals with two mild cognitive impairment (MCI)
+etiologies (prodromal to dementia – MCI, or consequent to Parkinson’s disease – PD-MCI). Performance on the identification
+and memorization of neutral and emotional facial expressions was assessed in 31 individuals with MCI, 26 with PD-MCI,
+and 30 healthy controls (HC). Individuals with MCI exhibited selective impairment in recognizing faces expressing fear,
+along with difficulties in remembering both neutral and emotional faces. Conversely, individuals with PD-MCI showed no
+differences compared with the HC in either emotion recognition or memory. In MCI, no significant association emerged
+between the memory for facial expressions and cognitive difficulties. In PD-MCI, regression analyses showed significant
+associations with higher-level cognitive functions in the emotional memory task, suggesting the presence of compensatory
+mechanisms. In a subset of participants, voxel-based morphometry revealed that the performance on emotional tasks correlated with regional changes in gray matter volume. The performance in the matching of negative expressions was predicted
+by volumetric changes in brain areas engaged in face and emotional processing, in particular increased volume in thalamic
+nuclei and atrophy in the right parietal cortex. Future studies should leverage on neuroimaging data to determine whether
+differences in emotional recognition are mediated by pathology-specific atrophic patterns.
+Keywords  Emotion recognition · Mild cognitive impairment · Parkinson’s disease · Neuroimaging · Cognitive predictors
+Francesca Burgio and Arianna Menardi share the first authorship.
+Beatrice de Gelder and Carlo Semenza should be considered joint
+senior authors.
+ *	 Laura Danesin
+
+laura.danesin@hsancamillo.it
+1
+IRCCS San Camillo Hospital, 30126 Venezia, Italy
+2
+Department of Neuroscience, University of Padova,
+35128 Padova, Italy
+3
+Padova Neuroscience Center, University of Padova,
+35129 Padova, Italy
+4
+Department of Developmental and Social Psychology,
+University of Padova, Padova, Italy
+5
+Department of Neuroscience, Leuven Brain Institute, KU
+Leuven, 3000 Leuven, Belgium
+6
+Geriatric Psychiatry, University Psychiatric Center KU
+Leuven, 3000 Leuven, Belgium
+7
+Department of General Psychology (DPG), University
+of Padua, 35131 Padua, Italy
+8
+Study Center for Neurodegeneration (CESNE), University
+of Padua, 35131 Padua, Italy
+9
+Unità Operativa Complessa Cure Primarie Distretto 3
+Mirano-Dolo, Aulss 3, Serenissima, Italy
+10	 Parkinson’s Disease and Movement Disorders Unit,
+Department of Neuroscience, Centre for Rare Neurological
+Diseases (ERN‑RND), University of Padova, Padova, Italy
+11	 Department of Cognitive Neuroscience, Faculty
+of Psychology and Neuroscience, Maastricht University,
+6200, MD, Maastricht, the Netherlands
+
+600
+
+Cognitive, Affective, & Behavioral Neuroscience (2024) 24:599–614
+Introduction
+Understanding emotions is crucial for social interactions.
+Previous studies have pointed toward the existence of basic
+emotions, characterized by well-recognized facial expressions, patterns of autonomous nervous system activity, and
+bodily sensations (Ekman, 1992). Emotions included in
+this basic set are happiness, surprise, fear, sadness, anger,
+and disgust, although their neural substrates are still a matter of debate. Normally, the processing of facial emotions
+requires at least two processes: perception and recognition.
+Several cortical and subcortical regions are involved in
+recognition of emotions from facial expressions, including
+the occipito-temporal cortex (Anderson et al., 2000), the
+amygdala (Adolphs et al., 1999), the orbitofrontal cortex
+(Hornak et al., 1996), the basal ganglia (Cheung et al.,
+2006), and the right parietal cortex (Adolphs et al., 2000).
+Neurodegenerative diseases can affect social behavior and
+affective processing and offer a valuable opportunity to
+advance our understanding of emotional mechanisms, as
+patients often exhibit altered brain patterns involving many
+of the above-mentioned brain areas. Among neurodegenerative diseases, deficits in emotion recognition have been
+reported in individuals with mild cognitive impairment
+(MCI) both when MCI is a prodromal phase of Alzheimer’s disease (McCade et al., 2011) and when it is consequent to Parkinson's disease (PD-MCI) (Ibarretxe-Bilbao
+et al., 2009). In particular, studies on individuals with MCI
+primarily focused on the perception of facial expressions,
+reporting emotion-specific deficits for stimuli with negative valence, such as sadness, fear (Spoletini et al., 2008),
+and anger (McCade et al., 2013). However, other studies
+have reported more general emotional deficits regardless
+of the valence of the presented stimuli (Weiss et al., 2008)
+or have not found emotion-specific deficits (see Morellini
+et al., 2022, for a recent review). Conversely, studies conducted in individuals with PD-MCI have reported dysfunctions in emotional facial expression recognition (Assogna
+et al., 2008; Blonder & Slevin, 2011; Clark et al., 2008;
+Dujardin et al., 2004; Péron et al., 2010; Sprengelmeyer
+et al., 2003), possibly linked to impaired facial mimicry
+(Argaud et al., 2016, 2018; Prenguer & MacDonald, 2018),
+but there is yet no consensus about the type of emotions
+affected in these patients (Péron et al., 2012).
+Due to the different etiology, several differences occur
+between MCI and PD-MCI. For instance, individuals with
+PD-MCI have been shown to have an overall better performance at a variety of neuropsychological tests compared
+with MCI (Besser et al., 2016), with the most commonly
+affected cognitive domain being that of executive functions in PD-MCI (Caviness et al., 2007) and that of memory in MCI. Such differences may depend on the different
+underlying patterns of neural alterations between MCI
+and PD-MCI. For instance, although both etiologies show
+an early involvement of entorhinal cortices (Devanand
+et al., 2007; Jia et al., 2019), PD-MCI also show an early
+involvement of frontal regions (Chung et al., 2019; Ekman
+et al., 2012; Suo et al., 2021), suggesting an underlying
+aberrant frontostriatal network as the cause of early executive dysfunctions (Ekman et al., 2012). As a result, the
+combined anatomical and cognitive differences might lead
+to different patterns of alterations in emotional processes
+between MCI and PD-MCI. Namely, deficits in emotional
+processes may be confined to emotional recognition or
+extend to emotional memory, especially in the case of individuals with MCI, and may or may not be limited to the
+processing of specific emotions.
+To date, several studies have assessed the relation
+between atrophic brain patterns and cognitive impairment in
+individuals with MCI and PD-MCI (see Aarsland, 2016, for
+an overview), whereas others have focused on the presence
+of altered emotional processing (Mioni et al., 2018; Sarabia-
+Cobo et al., 2015; Teng et al., 2007; Waldthaler et al., 2019).
+However, studies investigating the relation between all three
+factors are still lacking. Notably, clarifying the relationship
+between cognitive deficits and emotional difficulties and
+their anatomical correlates at a structural brain level may
+improve our knowledge about the pattern of alterations characterizing neurodegenerative diseases and support clinical
+strategies with an important impact on patients’ social life
+and affective behaviors.
+In the present study, we assessed emotional processes in
+individuals with MCI and PD-MCI. In particular, we compared emotional recognition and emotional memory for
+faces and explored their correlation with cognitive domains
+in the two neurodegenerative pathologies. Moreover, we
+conducted a preliminary analysis on the association between
+emotional recognition and gray matter volume in individuals with MCI and PD-MCI. We used the Facial Expressive
+Action Stimulus Test (FEAST) (De Gelder et al., 2015),
+which allows a detailed and computerized investigation of
+the several components of emotional processing.
+Methods
+Participants
+For this exploratory study, 26 participants with idiopathic
+PD-MCI (20 males, 6 females), 31 individuals with MCI (8
+males, 23 females), and 30 healthy age-matched controls
+(HC — 14 males, 16 females) were enrolled. Participants
+were recruited at the IRCCS San Camillo Hospital (Venice,
+Italy). HCs were recruited among patients’ family members
+
+601
+Cognitive, Affective, & Behavioral Neuroscience (2024) 24:599–614
+or through adverts. Patients were diagnosed by experienced
+neurologists according to standard clinical criteria (Gauthier
+et al., 2006; Litvan et al., 2012; Postuma et al., 2015). In
+particular, the diagnosis of MCI was based on clinical and
+cognitive data and did not involve invasive procedures to
+collect biomarkers related to Alzheimer’s pathology. Inclusion criteria for all participants were: age > 50 years, Italian as their first language, and the ability to provide written, informed consent. Exclusion criteria were: clinically
+evident dementia or general intellectual decline as defined
+by DSM IV criteria and a MMSE score < 24; neuroimaging evidence of cortical or subcortical vascular lesions on
+MRI scan; current psychiatric disorder (e.g., current major
+depression, xzschizophrenia) or an additional neurological
+disorder, brain injury, substance abuse. Control participants
+were autonomous in their Instrumental Activities of Daily
+Living (IADL) and had no developmental learning disorders
+or relevant pathologies that could affect their cognitive performance at the time of the assessment.
+Participants were informed about the purposes of the study,
+and written, informed consent was obtained before starting
+the screening activities. The study was conducted in accordance with the Declaration of Helsinki. Ethical approval for
+the study was provided by the IRCCS San Camillo Ethical
+Review Committee, reference number 2015.20.
+All participants (N = 87) underwent a comprehensive
+neuropsychological assessment and completed the experimental evaluation on emotion recognition using the FEAST
+battery. Moreover, a subset of participants (n = 28 HC; n
+= 31 MCI; n = 10 PD-MCI) underwent neuroimaging data
+acquisition. Concerning participants with PD, dopaminergic
+treatment data were collected, and the equivalent dose was
+calculated according to Tomlinson et al. (2010).
+Sample size determination
+We used G*Power for linear multiple regression with an
+effect size of ­f2 = .15, alpha = .05, power = .85, and five predictors (cognitive domains). Additionally, a previous work
+using the same battery and similar statistical procedures on
+behavioral data confirmed that this sample size would be
+adequate (Lenzoni et al., 2020). Concerning neuroimaging
+data, because of the exploratory nature of the analyses, we
+considered the sample size to be appropriate to the scopes
+while being aware that a larger scale study would be desirable to corroborate the reported findings.
+Neuropsychological assessment
+All participants performed a comprehensive neuropsychological evaluation, which included measures of attention
+and executive functions, memory, and visuospatial abilities. The evaluation lasted approximately 2 hr. Participants
+could request short breaks if tired. The tests used to assess
+each domain were chosen on the basis of theoretical and
+clinical considerations. The goal was to obtain cognitive profiles that could be clinically informative and sensitive to the
+impact of early-stage neurodegeneration. In particular, the
+following tests were administered (Table 1): 1) Mini-Mental
+State Examination (MMSE) to assess general cognitive functioning; 2) Stroop test, Raven matrices, attentive matrices,
+phonological fluency, digit span backward and similarities
+to assess attention and executive functions; 3) word pairedassociates test, digit span forward, prose memory, spatial
+span, recall of the Rey-Osterrieth complex figure to assess
+learning and memory functions; 4) copy of the Rey-Osterrieth complex figure to assess visuospatial abilities.
+Facial expressive action stimulus test
+Face emotion recognition was assessed by using the Facial
+Expressive Action Stimulus Test (FEAST) battery (De
+Gelder et al., 2015). The battery provides several tasks that
+have been developed to test multiple aspects of face and
+emotion recognition abilities (for a full description of the
+battery see De Gelder et al., 2015). Given the purpose of
+the current study, we administered only a subset of FEAST
+tasks, in particular those encompassing emotion recognition
+and memory for emotions. Thus, the following tasks were
+considered for investigation:
+•	 Facial Expression Matching Task - Human (FEM-H)
+assesses emotion recognition ability in human faces.
+On each trial, three pictures are shown: one picture on
+Table 1   Cognitive tests administered as part of the comprehensive
+neuropsychological assessment, divided by cognitive domain
+Cognitive domain
+Test
+General cognitive functioning
+Mini-mental state examination
+Attention and Executive functions
+Stroop test
+Attentive matrices
+Raven matrices
+Phonological fluency
+Digit span backward
+Similarities
+Short term memory
+Digit span forward
+Spatial span
+Prose memory - immediate recall
+Long term memory
+Word paired-associates test
+Prose memory - delayed recall
+Rey-Osterrieth complex figure
+– recall
+Visuospatial abilities
+Rey-Osterrieth complex figure
+– copy
+
+602
+
+Cognitive, Affective, & Behavioral Neuroscience (2024) 24:599–614
+top (sample) and two pictures underneath. One of the
+two bottom pictures presents a face expressing the same
+emotion as the sample, the other is a distractor. The participant has to match the faces based on their emotional
+expression. Each emotional condition (anger, disgust,
+fear, sadness, surprise, happiness) contains ten trials in
+which the target emotion is paired with a distractor from
+each of the other emotions. All conditions are balanced
+based on the face gender (5 male faces), resulting in a
+total of 60 trials.
+•	 Neutral Face Memory Task (FaMe-N) includes an encoding and a recognition phase. Stimuli consist of Caucasian
+faces with a frontal neutral facial expression and frontal
+eye gaze. In the encoding phase, 50 stimuli are presented
+for 3000 ms, and participants are instructed to memorize
+each face as they will be asked to recognize them subsequently. In the recognition phase, two adjacent faces are
+presented simultaneously: the target face and a distractor, for a total of 50 trials. For each trial, participants
+are instructed to indicate as quickly and as accurately as
+possible which face they have seen in the encoding phase
+by pressing a button on the keyboard.
+•	 Emotional Face Memory Task (FaMe-E) shares the same
+procedure as the neutral face memory task, with the difference that the presented stimuli consist of emotional
+rather than neutral faces. The stimuli consist of 96 photographs with direct eye gaze and frontal view of individuals expressing emotions of fear, sadness, or happiness.
+Forty-eight trials (16 per emotion) are presented in both
+the encoding and the recognition phases.
+All the tasks were created and administered by using
+E-prime 2 (Schneider et al., 2012). Participants had to
+choose between two possible answers by pressing a button
+on the keyboard. No verbal answers were required. Accuracy
+and response times for each trail were recorded automatically by the computer.
+Voxel‑based morphometry
+A subsample of participants (n = 28 HC; n = 31 MCI;
+n = 10 PD-MCI) were scanned in 1.5 T Achieva Philips
+scanner (Philips Medical Systems, Best, The Netherlands)
+with an 8-channel head coil at the San Camillo Hospital in
+Venice Lido, Italy. Conversely, two HC and 16 individuals with PD-MCI could not undergo neuroimaging data
+acquisition for clinical reasons, such as claustrophobia,
+presence of pacemaker, or metallic prosthesis. A standard
+clinical T1-weighted anatomical scan was collected (TE
+= 3.5 ms, TR = 7.6 ms, 3D-acquisition, FOV: 240-mm
+× 240-mm × 280-mm, 1-mm x 1-mm x 0.59-mm voxel
+size). Images were then pre-processed using the Computational Anatomy Toolbox (CAT12) (Gaser et al., 2022) for
+SPM12 (Ashburner et al., 2014; www.​fil.​ac.​uk/​spm/)  in
+Matlab R2017b (The Mathworks, Inc., Natick, MA  2017).
+Preprocessing steps included bias-field and noise removal,
+skull stripping, segmentation into the gray and white matter tissue components, smoothing, and normalization to
+MNI space. The CAT12 toolbox has the further advantage
+of providing ratings of image data quality, based on basic
+image properties, noise, and geometric distortions (e.g.,
+due to motion). As a result, a weighted image quality rating
+(IQR) is produced for each individual data, which in this
+study was on average between 80% and 85%, representing an above-average quality of data. Measures of Total
+Intracranial Volume (TIV), representing the overall volume
+of the brain in cubic millimeters, were extracted for each
+participant to be considered as potential confounding variables in the analysis. Furthermore, for the purpose of the
+current study, volumetric data from the native space of the
+individual were extracted from regions of interest (ROIs)
+of the Desikan-Killiany (Desikan et al., 2006) and Cobra
+(https://​github.​com/​CoBrA​Lab/​atlas​es) atlases, which
+respectively cover cortical, subcortical, and cerebellar
+areas of the human brain.
+Statistical analyses on the neuropsychological
+assessment
+Statistical analyses were performed by using SPSS, version 23 (SPSS, 2015). The procedure followed different
+steps. First, analysis of variance (ANOVA) models with
+post hoc comparison or chi-square (for numeric or categorical variables, respectively) were employed to test
+for possible differences between HC, MCI, and PD-MCI
+in demographic features. Second, to analyze the cognitive abilities of the groups, participants’ raw scores in the
+neuropsychological tests were converted into z-scores and
+averaged to form composite variables for each of the main
+cognitive domains (Table 1). Third, to evaluate the performance on face and emotional processing among groups,
+participants’ proportion of errors and response times
+(RT’s) at each FEAST task were calculated. Like in previous studies (Vandierendonck, 2017), both measures were
+combined into linear integrated speed-accuracy (LISAS)
+scores. Of note, higher LISAS scores correspond to worse
+performances in terms of slower RTs and/or higher rates
+of errors. Trials in which the response time exceeded the
+mean experiment-specific and subject-specific response
+time by at least 3 standard deviations—or with a response
+time less than 150 ms—were excluded. LISAS scores were
+computed at the global level for each task (face expression
+matching, neutral face memory, emotional face memory)
+and separately for each emotion.
+To compute statistical comparisons among patients (MCI
+and PD-MCI) and HC in both the cognitive composite scores
+
+603
+Cognitive, Affective, & Behavioral Neuroscience (2024) 24:599–614
+and the FEAST tasks, analysis of covariance (ANCOVA)
+models were run, using the individual level of education,
+age, and sex as a covariates of interest. In case of significant
+correlations, p-values were corrected for the multiple comparison Bonferroni procedure, accounting for the type I error.
+Finally, to explore the association between FEAST tasks
+and cognitive measures, two-step linear regression analyses
+were computed for each of the LISAS scores separately. In
+the first step, years of education, aige, sex, and the composite
+value for general cognitive functioning were added to the
+model as independent variables to account for possible differences in demographic characteristics and for the general
+cognitive functioning across groups. In the second step, the
+composite values specific to each cognitive domain were
+added. In case of significant correlations, p-values were corrected for multiple comparisons with Bonferroni correction,
+accounting for the type I error.
+Statistical analyses on the relationship
+between regional volume and FEAST performance
+To understand the role of regional volumetric data in predicting individual performance at the administered FEAST
+tasks, we ran a pilot investigation on a subsample of participants for which neuroimaging data were available. Linear
+mixed-effect models were run in Matlab 2017b (The Mathworks, Inc., Natick, MA 2017). In consideration of the risk
+of multiple comparisons, we reduced the number of models
+by only investigating the relationship between FEAST performance and four ROIs that have been previously reported
+to be involved in facial emotion recognition, merely the
+amygdala (amyg), the striatum (striat), the thalamus (thal),
+and the right parietal cortex (rPariet). More specifically,
+our analyses focused on the power of regional volumetric
+measures in predicting individual performance at the 1) face
+emotional matching (FEM-H), and 2) face emotional recognition (FaMe-N and FaMe-E) tasks. The FEM-H task was
+divided into six measures, corresponding to each of the emotions assessed in this task (i.e., anger, disgust, fear, sadness,
+surprise, happiness). Similarly, three measures corresponding to each of the three emotions assessed in the FaMe-E
+task (i.e., fear, happiness, and sadness) were included. The
+score of the FaMe-N and a combined face emotion recognition measure obtained by averaging the results of the
+FaMe-E also were included. In the models, volumetric data
+were treated as fixed effects, whereas both TIV measures
+and years of education were considered as random effects.
+Indeed, previous studies have highlighted the need to control for head size (for which TIV is a solid proxy) to reduce
+possible interindividual variations in brian volume because
+of head size differences (Crowley et al., 2018). On the other
+hand, years of education are known to be positively associated with brain volume and to represent a protective factor
+against pathological aging and deterioration (Bartrés-Faz &
+Arenaza-Urquijo, 2011). Hence, both TIV and educational
+attainment can influence the association between regional
+brain volume and cognitive performance, which dictates the
+need for controlling for unwanted influences of these variables in the data, as reported in the formula below:
+To test for a possible differential predictive power of
+regional volumetric measures on FEAST performance
+between healthy controls, MCI, and PD-MCI patients, an
+interaction term (group) was added to the model. To control
+for the risk of multicollinearity among the selected ROIs,
+the variance inflation factor (VIF) was computed among all
+predictors in the formula, proving null to little collinearity
+between the variables ­(VIFthal = 1.7; ­VIFamyg = 1.71;VIFstriat = 1.6; ­VIFrPariet = 1.47). Outliers were removed based
+on the models’ residuals. The significant threshold was set
+at p < 0.05. Because the years of education were not available for one participant, data interpolation was performed by
+substituting the missing entry with the group average score.
+Transparency and openness
+We reported all data exclusions, all manipulations, and
+all measures in the study, and we followed Journal Article
+Reporting Standards (Kazak, 2018). Analyses for this study
+were not preregistered. The data presented in this study has
+not been previously used for other scopes. Data supporting
+the findings of this study are available on request from the
+corresponding author. Data are not publicly available due to
+privacy or ethical restrictions.
+Results
+Sociodemographic characteristics
+No statistically significant differences were found between
+patients and HC for age (F(2,84) = 2.664, p = 0.076).
+Conversely, significant differences were found for years of
+education (F(2,84) = 7.345, p = 0.001) and gender (χ2 =
+14.844, p = 0.001). In particular, HC had a higher education
+than both PD-MCI and MCI patients, whereas no differences
+were observed between PD-MCI and MCI patients. Participants’ sociodemographic data are reported in Table 2. Concerning the medication doses administered to patients with
+FEAST task ∼volamyg ∗group + volstriat ∗group + volthal ∗group
++ volrPariet ∗group + (TIV) + (1|education)
+
+604
+
+Cognitive, Affective, & Behavioral Neuroscience (2024) 24:599–614
+PD, the mean levodopa equivalent daily dose was 1106.28
+(SD = 455.84) and the dopamine agonist equivalent daily
+dose was 145.73 (SD = 89.69).
+Performance on the neuropsychological
+assessments and on FEAST
+Figures 1, 2, and 3 report the participants’ mean composite values for each cognitive domain and the mean performances at each FEAST task, respectively. Of note, among
+individual with MCI, four participants showed impairments
+specific for the memory domain (amnestic single-domain
+MCI), five difficulties pertaining single domains other than
+memory (nonamnestic single-domain MCI), 20 in multiple
+domains, including memory (amnestic multidomain MCI),
+and two in multiple domains without the involvement of
+memory (nonamnestic multidomain MCI).
+Significant differences were observed between HC,
+MCI, and PD-MCI in general cognitive functioning (F =
+7.606; p < 0.001), attention and executive function (F =
+9.625; p < 0.001), visuospatial abilities (F = 6.624; p =
+0.002), and long-term memory (F = 7.766; p < 0.001). In
+particular, individuals with MCI performed worse than
+HC in neuropsychological tests of general cognitive functioning (t = −3.881; p < 0.001), attention and executive
+function (t = −4.385; p < 0.001), visuospatial abilities (t =
+−2.858; p = 0.015), and long-term memory (t = −3.926; p
+< 0.001). The results remained significant after the correction for multiple comparisons. No statistically significant
+differences were found in short-term memory (t = −2.118;
+p = 0.093). Conversely, PD-MCI patients performed worse
+than HC in tests of visuospatial abilities (t = −3.165; p =
+0.006), whereas in the other domains they did not show
+statistical differences (General cognitive functioning: t =
+−1.106; p = 0.513; Attention and executive function: t
+= −1.792; p = 0.180; Short-term memory: t = −0.106;
+p = 0.994; Long-term memory: t = 1.160; p = 0.481).
+No significant differences were observed between MCI
+Table 2   Participants’ socio-demographic characteristics
+HC (n=30)
+MCI (n=31)
+PD-MCI (n=26)
+F/X2
+p
+HC vs MCI
+HC vs PD- MCI
+MCI vs PD-MCI
+Age (mean, sd)
+72.87 (7.38)
+75.39 (5.78)
+70.35 (11.13)
+2.664
+.076
+.458
+.490
+.061
+Education (mean, sd)
+12.80 (4.37)
+9.00 (3.52)
+9.62 (4.37)
+7.345
+.001
+.002
+.013
+.841
+Gender (N Females, %) 16 (53.33)
+23 (74.19)
+6 (23.08)
+14.844
+.001
+.090
+.021
+<.001
+Fig. 1   Cognitive performances in each group. Mean composite values for the five cognitive domains assessed are reported on the y-axis
+
+605
+Cognitive, Affective, & Behavioral Neuroscience (2024) 24:599–614
+and PD-MCI across cognitive domains (general cognitive functioning: t = −2.256; p = 0.069; Attention and
+executive function: t = −2.040; p = 0.110; Visuospatial
+abilities: t = 0.579; p = 0.832; Short-term memory: t =
+−1.846; p = 0.162; Long-term memory: t = −2.243; p =
+0.071).
+In the FEM-H task, MCI patients showed higher LISAS
+scores in the matching of fear faces compared with HC (t
+= 3.224; p = 0.005), and the result remained significant
+after the correction for multiple comparisons. No differences between MCI and HC were found in the matching of the other emotional faces (Anger: t = 2.142; p =
+0.089; Disgust: t = 2.124; p = 0.092; Sadness: t = 1.895;
+p = 0.148; Surprise: t = 1.601; p = 0.252; Happiness: t
+= 1.206; p = 0.422). Conversely, individuals with PD-
+MCI showed higher LISAS scores in the matching of
+faces expressing anger compared with HC (t = 2.586; p
+= 0.031), which however did not survive after the correction for multiple comparisons, whereas showed no differences in the other emotions (Disgust: t = 1.986; p = 0.123;
+Fear: t = 1.538; p = 0.280; Sadness: t = 2.073; p = 0.103;
+Surprise: t = 1.737; p = 0.199; Happiness: t = 2.283; p
+= 0.076). Lastly, no significant differences were observed
+between MCI and PD-MCI patients in matching emotional
+Fig. 2   Performances at the FEM-H task in each group. Mean LISAS scores are reported on the y-axis for each emotion. Higher LISAS scores
+indicate worse performances
+Fig. 3   Performances at the FaMe-N and FaMe-E tasks in each group. Mean LISAS scores are reported on the y-axis for each emotion. Higher
+LISAS scores indicate worse performances
+
+606
+
+Cognitive, Affective, & Behavioral Neuroscience (2024) 24:599–614
+faces (Anger: t = 0.510; p = 0.867; Disgust: t = −0.030; p
+= 0.999; Fear: t = −1.413; p = 0.340; Sadness: t = 0.253;
+p = 0.965; Surprise: t = 0.200; p = 0.978; Happiness: t =
+0.576; p = 0.954).
+In the FaMe-N task, MCI patients showed higher LISAS
+scores compared with HC (t = 2.810; p = 0.018), whereas no
+differences were observed between HC and PD-MCI (t = 0.723;
+p = 0.751) nor between PD-MCI and MCI (t = 1.637; p = 0.238).
+In the FaMe-E task, MCI patients performed worse than
+controls in the memory of happy (t = 3.682; p = 0.001),
+sad (t = 4.035; p < 0.001), and fearful faces (t = 3.246; p
+= 0.005). MCI patients showed significantly higher LISAS
+scores compared with PD-MCI patients in the memory of
+happy (t = 3.272; p = 0.005), sad (t = 2.953; p = 0.012), and
+fearful faces (t = 3.036; p = 0.009). The results remained
+significant after the correction for multiple comparisons. No
+differences were observed between HC and PD-MCI patients
+(Happiness: t = 0.117; p = 0.993; Sadness: t = 0.577; p =
+0.833; Fear: t = 0.270; p = 0.961). Similarly, in the global
+LISAS score of memory of emotional faces, the MCI group
+performed worse than both HC (t = 3.968; p < 0.001) and
+PD-MCI group (t = 3.374; p = 0.004), but no differences
+were found between PD-MCI and HC (t = 0.045; p = 0.999).
+In the linear regression analyses between FEM-H and
+cognitive performance, HC showed a positive association
+between visuospatial abilities and the matching of faces
+expressing fear (t = 2.407; p = 0.026), sadness (t = 2.122;
+p = 0.047), and surprise (t = 2.251; p = 0.036). In the MCI
+patients group, negative associations were observed between
+general cognitive functioning and LISAS scores of matching
+of happy faces (t = −2.707; p = 0.014), whereas the matching of sad faces was associated with the composite score of
+visuospatial abilities (t = −2.465; p = 0.026) and long-term
+memory (t = −2.591; p = 0.020). PD-MCI patients showed
+a significant negative association between the attention and
+the executive function domain and LISAS subscores of anger
+(t = −2.589; p = 0.036), fear (t = −3.570; p = 0.009), sadness (t = −2.428; p = 0.046), and surprise (t = −2.453; p =
+0.044). Moreover, the composite score of general cognitive
+functioning was negatively associated with the matching of
+anger (t = −2.452; p = 0.044), fear (t = −3.009; p = 0.020),
+sadness (t = −2.581; p = 0.036), and surprise (t = −2.553;
+p = 0.038).
+In the linear regression analyses between FaMe-N and
+cognitive domains, HC showed a negative association
+between the memory of neutral faces and the domain of
+attention and executive functions (t = −4.409; p < 0.001)
+and a positive association with visuospatial abilities (t =
+3.371; p = 0.003). On the other hand, no significant associations were observed between the task and any cognitive
+domain in individuals with MCI and PD-MCI (MCI: attention and executive function: t = −1.432; p = 0.178; Visuospatial abilities: t = 0.081; p = 0.937; Long-term memory:
+t = −0.299; p = 0.770; Short-term memory: t = −0.690;
+p = 0.503; PD-MCI: attention and executive function: t =
+−1.118; p = 0.314; Visuospatial abilities: t = 0.081; p =
+0.939; Long-term memory: t = 0.078; p = 0.941; Short-term
+memory: t = 0.210; p = 0.842).
+In the linear regression analyses between FaMe-E and
+cognitive performance in HC, negative associations were
+observed between attention and executive function and
+the memory of fear faces (t = −2.882; p = 0.010) and the
+general score of memory of emotional faces (t = −2.601;
+p = 0.018). Additionally, significant positive associations
+were found between the visuospatial abilities domain and
+the memory of fear (t = 2.127; p = 0.047) and sad faces (t
+= 2.194; p = 0.041), and with the general score of memory
+of emotional faces (t = 2.387; p = 0.028). Conversely, no
+significant association was observed between the memory
+of happy faces and cognitive functions in HC (attention and
+executive function: t = −2.037; p = 0.056; Visuospatial abilities: t = 1.962; p = 0.065; Long-term memory: t = 0.659; p
+= 0.518; Short-term memory: t = −1.060; p = 0.302). In the
+MCI group, no significant associations were found between
+cognitive domains and the memory of emotional faces (Fear:
+attention and executive function: t = 0.215; p = 0.833; Visuospatial abilities: t = 0.404; p = 0.693; Long-term memory:
+t = −0.149; p = 0.884; Short-term memory: t = −1.662;
+p = 0.120; Happiness: attention and executive function: t
+= −1.601; p = 0.133; Visuospatial abilities: t = −0,737; p
+= 0.474; Long-term memory: t = 1.000; p = 0.336; Shortterm memory: t = −1.738; p = 0.106; Sadness: attention and
+executive function: t = −0.240; p = 0.814; Visuospatial abilities: t = 0.100; p = 0.922; Long-term memory: t = 0.097;
+p = 0.924; Short-term memory: t = −1.307; p = 0.214).
+Similarly, in the PD-MCI group, no significant associations
+were observed between the LISAS scores of this task and
+cognitive composite scores (Fear: attention and executive
+function: t = −1.565; p = 0.169; Visuospatial abilities: t
+= −0.311; p = 0.767; Long-term memory: t = 0.038; p =
+0.971; Short-term memory: t = 0.549; p = 0.603; Happiness:
+attention and executive function: t = −1.092; p = 0.317;
+Visuospatial abilities: t = −0.958; p = 0.375; Long-term
+memory: t = 0.116; p = 0.911; Short-term memory: t =
+0.176; p = 0.866; Sadness: attention and executive function:
+t = −0.631; p = 0.551; Visuospatial abilities: t = −0.483; p
+= 0.646; Long-term memory: t = 0.302; p = 0.773; Shortterm memory: t = −0.033; p = 0.975).
+Relationship between regional volume and FEAST
+performance
+Linear-mixed effects models were run to explore the predictive power of regional volume of four different ROIs on the
+individual performance at the FEAST tasks in a subsample
+of healthy, MCI, and PD-MCI patients. In all models, the
+
+607
+Cognitive, Affective, & Behavioral Neuroscience (2024) 24:599–614
+TIV was not found to be a significant covariate, and it rather
+resulted in overfitting of the model. For these reasons, only
+the years of education were used as random effects. A likelihood ratio test comparing the models with and without the
+TIV as a covariate was run, and the best model was chosen
+based on the lowest Akaike Information Criterion (AIC),
+Bayesian information criterion (BIC), and the p-value of the
+likelihood ratio test.
+For what concerns performance at the FEM-H, significant
+findings were observed for the anger, disgust, and happiness
+subscales. In more detail, individual performance at matching of angry faces was significantly predicted by volume of
+the rPariet (t(45) = −2.73, p = 0.009). A significant interaction term was observed for MCI patients in the predictive
+power of the volume of the thalamus (t(45) = −2.57, p =
+0.013) and the rPariet (𝑡(45) = 2.56, p = 0.013), with opposite
+impact on the dependent variable. Indeed, the thalamic volume was observed to be negatively associated with LISAS
+scores, whereas the rPariet volume was positively associated
+with LISAS scores. Years of education emerged as a significant covariate (95% confidence interval [CI] 0.002, 74.21).
+Individual performance at matching of faces of disgust was
+significantly predicted by volume of the striatum (t(42) =
+2.05, p = 0.046). A significant interaction was observed for
+MCI patients in the predictive power of the volume of the
+thalamus (t(42) = −3.77, p = 0.0005) and the rPariet (𝑡(42) =
+2.42, p = 0.02), again with opposite slopes. Years of education emerged as a significant covariate (95% CI 0.82 , 5.59).
+Finally, for what concerns performance at the matching of
+happy faces, a significant interaction was observed for MCI
+patients in the predictive power of the volume of the thalamus (t(44) = −2.71, p = 0.009), which was negatively associated with LISAS score, and of the rPariet (𝑡(44) = 2.52, p =
+0.015), which instead showed a positive relationship with the
+computed scores. Only for this model, the years of education
+were removed as a covariate as they resulted in overfitting
+of the model. Plot of the residuals and of the fitted response
+for each significant model is shown in Fig. 4.
+For what concerns performance at the FaMe-N and
+FaMe-E tasks, significant findings were observed for the
+subscales of general recognition of emotion and for the
+recognition of emotions of fear and sadness. In more detail,
+individual general abilities to recognize emotional faces
+was significantly predicted by the volume of the amygdala
+(t(42) = 2.23, p = 0.031). Years of education emerged as
+a significant covariate (95% CI 2.50 , 5.81). Conversely,
+individual performance at the recognition of fearful faces
+was significantly predicted by the volume of the thalamus
+(t(41) = −2.27, p = 0.028). A significant interaction was
+observed for MCI patients and the volume of the thalamus
+(t(41) = 2.49, p = 0.017) and the rPariet (𝑡(41) = −3.72, p
+= 0.0006), which respectively showed a positive and a
+Fig. 4   Volumetric predictors of FEM-H performance. The residuals
+(in blue), as well as the predicted versus the observed response (in
+red) is shown for each model testing the predictive power of regional
+volume on FEM-H scores for the conditions of anger (A), disgust (B),
+and happiness (C). In MCI patients compared with HC, volume of
+the thalamus and of the right parietal cortex were found predictive of
+performance (in opposite directions) in the matching of facial expressions for the emotions of anger, disgust and happiness (D)
+
+608
+
+Cognitive, Affective, & Behavioral Neuroscience (2024) 24:599–614
+negative association to LISAS scores. A significant interaction term was also observed for PD-MCI patients in the
+predictive power of the volume of the striatum (t(41) =
+−2.43, p = 0.019), the thalamus (𝑡(41) = 2.97, p = 0.005),
+and the rPariet (𝑡(41) = −3.14, p = 0.003); the thalamic
+volume showed a positive association to LISAS scores. In
+contrast, the volume of the striatum and of the rPariet were
+observed to be negatively related to the dependent variable. Years of education emerged as a significant covariate in the model (95% CI 3.01, 6.84). Finally, individual
+performance at the recognition of sad faces was significantly predicted by volume of the amygdala (t(41) = 2.45,
+p = 0.018). A significant interaction term was observed
+for MCI patients and the volume of the thalamus (t(41) =
+2.83, p = 0.007) in positively predicting LISAS scores.
+Years of education emerged as a significant covariate in
+the model (95% CI 2.68, 6.36). Plot of the residuals and
+of the fitted response for each significant model is shown
+in Fig. 5. Figures 6 and 7 depict the association between
+VBM volume and performance at the FEAST tasks. Tables
+specifying all the models’ coefficients and significance levels of the analyses reported above are available in the Supplementary Materials (Tables S1 to S6). Furthermore, we
+run separate models on two control regions: the bilateral
+middle temporal regions and the bilateral frontal poles.
+As expected, we did not observe meaningful associations
+between the volume of such regions and the performance
+at the administered FEAST tasks (Tables S7 to S12 in the
+Supplementary Materials).
+Discussion
+The purpose of this exploratory study was to assess face
+emotion recognition abilities in individuals with MCI, PD-
+MCI, and in healthy age-matched controls. We used face and
+facial expression subtests of the FEAST test that measure
+different face processing abilities known to be problematic in
+people with face recognition disorders, such as recognition
+of facial expressions and memory for faces. Moreover, we
+related the performance on these tasks to the performance
+on specific cognitive tests and to volumetric differences
+in regions of the brain known to support facial emotion
+recognition.
+In accordance with other studies (McCade et al., 2013;
+Sarabia-Cobo et al., 2015; Varjassyová et al., 2013), the
+Fig. 5   Volumetric predictors of FaMe-E performance. The residuals
+(in blue), as well as the predicted versus the observed response (in
+red) is shown for each model testing the predictive power of regional
+volume on FaMe-E scores for the conditions of general emotion recognition (A), fear (B), and sadness (C). In MCI patients compared
+with HC, volume of the thalamus and of the right parietal cortex were
+found predictive of performance in the memory of facial expressions
+of fear; volume of the thalamus also was predictive of memory of sad
+faces. In MCI-PD patients compared with HC, volume of the thalamus, of the right parietal cortex and of the striatum were found predictive of performance in the memory of facial expressions of fear,
+although with different directions (see text for details) (D)
+
+609
+Cognitive, Affective, & Behavioral Neuroscience (2024) 24:599–614
+data indicated that individuals with MCI cope with emotional faces worse than healthy older adults and showed
+emotion-specific difficulties in processing facial expressions.
+Compared with healthy controls, MCI patients struggled in
+identifying facial expressions of fear whilst they showed preserved identification of other emotions. These results confirmed previous studies reporting difficulty in identifying
+negative valence emotions in healthy older adults (Mienaltowski et al., 2013; West et al., 2012), which seem to worsen
+in MCI patients and in patients with Alzheimer’s disease
+(McCade et al., 2013; Ostos et al., 2011; Sarabia-Cobo et al.,
+2015; Spoletini et al., 2008; Weiss et al., 2008). Negative
+valence emotions require more facial muscle movements
+compared with positive-valence ones, such as happiness
+(Ekman & Friesen, 1971). As such, some authors argue that
+they might be generally more difficult to identify (García-
+Rodríguez et al., 2012; Sarabia-Cobo et al., 2015).
+A central question is whether the poorer performance in
+MCI can be considered secondary to the more advanced
+degeneration affecting overall cognitive performance. We
+did not find evidence supporting this hypothesis in our study.
+First, the deficit was specific to fear and did not extend to
+the other negative or positive emotions. Second, the regression analysis revealed no association between the identification of fear and measures of general cognitive functioning.
+Third, the identification of other negative emotions, such
+as sadness, was, if anything, linearly associated with visuospatial abilities and memory, suggesting that it centers
+around perceptual mechanisms pertaining to the scanning
+of specific features of face processing, as reported elsewhere
+(Sarabia-Cobo et al., 2015). Thus, some of the features in
+fearful faces might become less salient when these basic
+perceptual processes begin to decline. Fourth, an expansion
+of the regional volume of the thalamus (whose nuclei are
+involved in the subcortical pathway of emotion processing)
+(Tamietto & De Gelder, 2010) along with atrophy of the
+right parietal area (part of the frontoparietal regions implicated in attentional control) significantly predicted a better
+performance on negative emotions, such as anger or disgust, in the MCI group. Of note, higher LISAS scores correspond to worse performance in terms of longer RTs and/or
+higher rates of errors. Although these results should only be
+considered preliminary given our small sample sizes, they
+might indicate that divergent patterns in the identification of
+emotions in the MCI phase may reveal progressive though
+specific changes to neural structures engaged in face and
+emotional processing. A tentative explanation might consider a higher reliance on basic and fast visual pathways
+implicated in unconscious perception of emotions (i.e. the
+thalamic nuclei), at the expense of a decremental recruitment
+Fig. 6   Association between VBM and FEM-H performance. Interaction plots depicting the association between regional volume and performance at the FEM-H_Anger (A), FEM-H_Disgust, (B) and FEM-H_Happiness (C) scales as a function of group (HC, MCI, PD-MCI)
+
+610
+
+Cognitive, Affective, & Behavioral Neuroscience (2024) 24:599–614
+of areas that can later modulate their conscious perception
+(i.e., frontoparietal regions). Additional task-related functional connectivity studies might be able to provide further
+light on and eventually test this possibility more specifically.
+Concerning memory for faces and facial expressions,
+we observed a more generalized impairment in the MCI
+group. Indeed, MCI patients, compared with both PD-MCI
+and healthy controls, showed substantial difficulties when
+remembering face images with fear expressions but also neutral, sad, and happy faces. However, the regression models
+showed no significant association between the cognitive
+domains and the memory for facial expression. This finding could partially clarify the progressive changes that older
+adults experience in the MCI phase. Indeed, in the healthy
+group, cognitive functions, such as attention,executive functions, and visuospatial abilities, are recruited and linearly
+related to successful recognition of emotional faces. Individuals with MCI, instead, seem not to rely on specific cognitive functions to overcome difficulties pertaining to emotional face recognition. This suggests, although speculatively
+for now, a maladaptive strategy to counteract the effects of
+neurodegeneration and sustained performance in these tasks.
+Our preliminary data from the VBM analyses showed a
+pattern of significant correlations that can provide additional
+clues about anatomical areas supporting emotion recognition in healthy aging and the reorganization that takes place
+in MCI. In fact, the overall index of recognition of emotional faces was significantly predicted by the volume of
+the amygdala. The “emotion system” includes several cortical and subcortical areas, and the amygdala is the most
+extensively studied subcortical structure that is involved in
+emotion processing (Phelps & LeDoux, 2005; Whalen et al.,
+2009). Therefore, it is not surprising that the volume in this
+brain region was directly associated with performance in
+emotion recognition tasks. Similarly, recognition of disgust
+was significantly predicted by the volume of the striatum,
+which is consistent with several studies suggesting that recognizing expressions of disgust is critically reliant on the
+intact basal ganglia (Calder et al., 2000; Gray et al., 1997;
+Sprengelmeyer et al., 1996). However, in MCI compared
+with HCs, a different pattern of regional volume best predicted the performance with other emotions (i.e., fear and
+sadness). In this case, the volume of the thalamus and the
+right parietal regions had an opposite impact on the performance of the patients. It is possible that these volumetric
+changes, by progressing in cortical and subcortical pathways
+at the same time, contribute to an alteration of the perceptual mechanisms involved in encoding emotions in MCI
+Fig. 7   Association between VBM and FaMe-E performance. Interaction plots depicting the association between regional volume and performance at the FaMe-E_Fear (A) and FaMe-E_Sadness, (B) scales as a function of group (HC, MCI, PD-MCI)
+
+611
+Cognitive, Affective, & Behavioral Neuroscience (2024) 24:599–614
+and subsequently affect the process of recognition of these
+(poorly) encoded stimuli. At the same time, MCI impairment
+in emotion recognition should not be considered only as the
+mere product of atrophy. Indeed, the positive association
+between volume and LISAS scores (indicative of a worse
+behavioral performance) that is observed may be interpreted
+as evidence that even when MCI patients have intact volume of a specific brain region, deficits in emotion recognition and memory are still present. The MCI impairment
+in memorizing socially relevant stimuli can have practical
+consequences. It may probably affect (and/or be affected by)
+nonverbal communication, social interactions, interpersonal
+relatedness, and consequently quality of life.
+By contrast, behavioral results in the present study provided limited evidence that the processing of emotional faces
+(for both identity and memory) was impaired in PD-MCI
+patients. Indeed, the performance of the PD-MCI group did
+not significantly differ from that of healthy controls in any
+of the FEAST tasks. These findings contrast with previous
+studies reporting partial or total impairment of facial expression recognition (Jacobs et al., 1995; Kan et al., 2002) and
+facial mimicry in PD (Argaud et al., 2016, 2018; Prenguer
+& MacDonald, 2018), but align and extend other studies
+that argue in favor of intact recognition of facial emotions
+in this group (Adolphs et al., 1998; Pell & Leonard, 2005).
+The lack of consensus in this literature might be accounted
+for by several factors, including differences in the disease
+progression of the samples, the presence or absence of
+pharmacological treatments, comorbid psychological disorders, such as depression, differences in the reliance on
+facial mimicry, etc. Finding the sources of these discrepancies is an important mission but is outside the scope of
+the present study. However, a closer look at the regression
+analyses in our samples may provide further hints to better uncover subclinical manifestations in individuals with
+PD-MCI before the onset of any symptom. The regression
+analyses revealed a linear association of the PD-MCI performance in the facial-matching tasks (expressing anger, fear,
+sadness, surprise, and happiness) and their scores in attention, executive functions, and general cognitive functioning.
+This reflects different strategies compared with MCI and
+HC and possibly implicates a stronger reliance on top-down
+processes to differentiate among emotional stimuli. Reliance
+on higher-level cognitive functions in these tasks suggests a
+compensatory mechanism conceivably linked to the progressive neurodegeneration of subcortical regions, characteristic
+of PD. Indeed, it has been observed that a full damage to the
+basal ganglia can lead to pronounced impairments in the
+ability to recognize facial expressions (Calder et al., 2000).
+Although a partial damage to this structure might have some
+influence, it does not appear sufficient to produce an impairment in the recognition of emotional faces. Our results suggest that a possible compensatory mechanism to overcome
+the disturbance might operate in PD-MCI patients via attention and executive functions. This is compatible with the
+correlations with brain volume, which show, in the case of
+fear, that an increase in the volume of both the striatum and
+the right-parietal regions results in a better performance of
+the PD-MCI patients on this task (lower LISAS scores).
+Thus, preserved brain structures that take part in different
+processes of emotion recognition, either through cortical or
+subcortical pathways, can possibly prevent evident impairments in the ability to recognize facial expressions in PD-
+MCI. However, the interpretation of results linking VBM
+and the matching/recognition of emotional faces remains
+preliminary, and further studies are needed to corroborate
+our findings. These accounts remain speculative waiting for
+longitudinal, functional neuroimaging data.
+Finally, we observed that years of education emerged as
+a significant covariate in most of the VBM analyses. This
+is consistent with previous studies on young healthy adult
+participants showing that education (i.e., no college education vs. college education) has an effect on the attribution
+of emotion to facial expressions (Trauffer et al., 2013). It
+also is consistent with a meta-analysis that identified education level as moderator of age effects in emotion perception
+(Gonçalves et al., 2018). Our results extend these findings by
+suggesting that the relationship between emotion perception
+and the brain structures that support it is shaped by cultural
+factors, such as education both in healthy and in pathological
+aging. This highlights how interpreting facial expressions
+can change according to the observer’s context and has some
+implications for educational and clinical intervention programs designed to enhance socioemotional abilities across
+the lifespan.
+Limitations
+The present exploratory study has several limitations that
+we need to acknowledge. First, for clinical reasons, some
+participants, particularly most individuals with PD-MCI,
+could not undergo MRI data acquisition, thus limiting the
+power of the results and our ability to draw conclusions in
+this subsample of participants. Moreover, for the present
+study, the diagnosis of MCI was based only on the examination of an experienced neurologist and on the performance at cognitive tests and did not include the analysis of
+biomarkers associated with Alzheimer’s pathology. Therefore, it is possible that our sample included individuals
+with MCI because of different underlying pathologies, not
+necessarily related either to AD or to PD. Moreover, in the
+present exploratory study, general cognitive functioning
+was assessed by using a single neuropsychological screening tool, that is MMSE. However, the metric to use as a
+proxy of general cognitive functioning is debated in the
+
+612
+
+Cognitive, Affective, & Behavioral Neuroscience (2024) 24:599–614
+literature, with some studies suggesting the administration
+of other measures, such as the Montreal Cognitive Assessment (Siqueira et al., 2019) or the Alzheimer’s disease
+Assessment Scale (Balsis et al., 2015), taking into account
+the risk of ceiling effects in general cognitive assessments.
+A last aspect that we need to account for is the difference in educational level observed in the sample. Indeed,
+although the years of education were added to the analysis
+as a covariate of interest, we cannot exclude that other factors related to education, such as the type of occupation
+and cognitive reserve (Nucci et al., 2012), may have influenced the results. We suggest that further studies should
+consider the effects of these factors, such as occupation
+type and cognitive reserve, on cognitive performances and
+emotion recognition in individuals with MCI because of
+different underlying pathologies.
+Conclusions
+The present results unveiled a different pattern of alterations in facial emotional processing in individuals with
+two MCI etiologies. We found evidence of emotion-specific and task-related deficits in prodromal to dementia
+MCI and no evidence of impairment in MCI consequent
+to Parkinson’s disease. In the MCI group, we identified
+two separate deficits. First, an impairment confined to
+negative-valence emotions, specifically fear, when participants performed matching facial expression tasks.
+Second, a generalized impairment for negative, positive,
+and neutral emotions that was observed in facial emotion memory tasks. Our findings suggest that the former
+is related to volumetric changes in brain areas regularly
+engaged in face and emotional processing, in particular
+the thalamic nuclei and the right parietal cortex. The difficulties in emotional memory, instead, seem to be independent from cognitive difficulties in MCI participants.
+In individuals with PD-MCI, regression analyses suggest
+a stronger reliance on higher-level cognitive functions
+compared with the MCI and the healthy control participants. This presumably allows individuals with PD-MCI
+to compensate for the effects of neurodegeneration in
+subcortical regions and to successfully perform the tasks.
+Our conclusions should be confirmed by future studies
+with larger populations of MCI and PD-MCI individuals
+that will examine correlations between deficits in facial
+emotion processing performance, functional neuroimaging, and connectivity findings.
+Supplementary Information  The online version contains supplementary material available at https://​doi.​org/​10.​3758/​s13415-​024-​01160-5.
+Author contributions  FB, SBV, BDG, and CS contributed to conception and design of the study. AM and LD performed the statistical
+analysis. FB and JVDS wrote the first draft of the manuscript. FB,
+AM, SBV, AV, AG, and LD wrote sections of the manuscript. FB was
+responsible for funding acquisition. All authors contributed to manuscript revision, read, and approved the submitted version.
+Funding  This work was supported by “Progetto giovani ricercatori:
+FINAGE” (GR-2018-12367927) from the Ministry of Health to F. B.
+Declarations
+Conflict of interest  The authors declare that the research was conducted in the absence of any commercial or financial relationships that
+could be construed as a potential conflict of interest.
+References
+Aarsland, D. (2016). Cognitive impairment in Parkinson’s disease and
+dementia with Lewy bodies. Parkinsonism and Related Disorders,
+22, S144–S148. https://​doi.​org/​10.​1016/j.​parkr​eldis.​2015.​09.​034
+Adolphs, R., Schul, R., & Tranel, D. (1998). Intact recognition of facial
+emotion in Parkinson’s disease. Neuropsychology, 12(2), 253.
+Adolphs, R., Tranel, D., Hamann, S., Young, A. W., Calder, A. J.,
+Phelps, E. A., Anderson, A., Lee, G. P., & Damasio, A. R. (1999).
+Recognition of facial emotion in nine individuals with bilateral
+amygdala damage. Neuropsychologia, 37(10), 1111–1117.
+Adolphs, R., Damasio, H., Tranel, D., Cooper, G., & Damasio, A. R.
+(2000). A role for somatosensory cortices in the visual recognition of emotion as revealed by three-dimensional lesion mapping.
+Journal of Neuroscience, 20(7), 2683–2690.
+Anderson, A. K., Spencer, D. D., Fulbright, R. K., & Phelps, E. A.
+(2000). Contribution of the anteromedial temporal lobes to the
+evaluation of facial emotion. Neuropsychology, 14(4), 526.
+Argaud, S., Delplanque, S., Houvenaghel, J. F., Auffret, M., Duprez, J.,
+Vérin, M., et al. (2016). Does facial amimia impact the recognition
+of facial emotions? An EMG study in Parkinson’s disease. PLoS
+One, 11(7), e0160329.
+Argaud, S., Vérin, M., Sauleau, P., & Grandjean, D. (2018). Facial
+emotion recognition in Parkinson's disease: a review and new
+hypotheses. Movement disorders, 33(4), 554–567.
+Ashburner, J., Barnes, G., Chen, C.-C., Daunizeau, J., Flandin, G.,
+Friston, K., Kiebel, S., Kilner, J., Litvak, V., & Moran, R. (2014).
+SPM12 manual. Wellcome Trust Centre for Neuroimaging, London, UK, 2464(4).
+Assogna, F., Pontieri, F. E., Caltagirone, C., & Spalletta, G. (2008).
+The recognition of facial emotion expressions in Parkinson’s disease. European Neuropsychopharmacology, 18(11), 835–848.
+Balsis, S., Benge, J. F., Lowe, D. A., Geraci, L., & Doody, R. S. (2015).
+How do scores on the ADAS-Cog, MMSE, and CDR-SOB correspond? The Clinical Neuropsychologist, 29(7), 1002–1009.
+Bartrés-Faz, D., & Arenaza-Urquijo, E. M. (2011). Structural and functional imaging correlates of cognitive and brain reserve hypotheses in healthy and pathological aging. Brain Topography, 24,
+340-357.
+Besser, L. M., Litvan, I., Monsell, S. E., Mock, C., Weintraub, S.,
+Zhou, X.-H., & Kukull, W. (2016). Mild cognitive impairment in
+Parkinson’s disease versus Alzheimer’s disease. Parkinsonism &
+Related Disorders, 27, 54–60.
+Blonder, L. X., & Slevin, J. T. (2011). Emotional dysfunction in Parkinson’s disease. Behavioural Neurology, 24(3), 201–217.
+
+613
+Cognitive, Affective, & Behavioral Neuroscience (2024) 24:599–614
+Calder, A. J., Keane, J., Manes, F., Antoun, N., & Young, A. W. (2000).
+Impaired recognition and experience of disgust following brain
+injury. Nature Neuroscience, 3(11), 1077–1078.
+Caviness, J. N., Driver-Dunckley, E., Connor, D. J., Sabbagh, M. N.,
+Hentz, J. G., Noble, B., Evidente, V. G. H., Shill, H. A., & Adler,
+C. H. (2007). Defining mild cognitive impairment in Parkinson’s
+disease. Movement Disorders: Official Journal of the Movement
+Disorder Society, 22(9), 1272–1277.
+Cheung, C. C. Y., Lee, T. M. C., Yip, J. T. H., King, K. E., & Li, L.
+S. W. (2006). The differential effects of thalamus and basal ganglia on facial emotion recognition. Brain and Cognition, 61(3),
+262–268.
+Chung, S. J., Yoo, H. S., Lee, Y. H., Lee, H. S., Ye, B. S., Sohn, Y.
+H., Kwon, H., & Lee, P. H. (2019). Frontal atrophy as a marker
+for dementia conversion in Parkinson’s disease with mild cognitive impairment. Human Brain Mapping, 40(13), 3784–3794.
+https://​doi.​org/​10.​1002/​hbm.​24631
+Clark, U. S., Neargarder, S., & Cronin-Golomb, A. (2008). Specific
+impairments in the recognition of emotional facial expressions
+in Parkinson’s disease. Neuropsychologia, 46(9), 2300–2309.
+Crowley, S., Huang, H., Tanner, J., Zhao, Q., Schwab, N. A., Hizel,
+L., ... & Price, C. C. (2018). Considering total intracranial volume and other nuisance variables in brain voxel based morphometry in idiopathic PD. Brain Imaging and Behavior, 12, 1-12.
+De Gelder, B., Huis in’t Veld, E. M. J., & Van den Stock, J. (2015).
+The Facial Expressive Action Stimulus Test. A test battery for
+the assessment of face memory, face and object perception,
+configuration processing, and facial expression recognition.
+Frontiers in Psychology, 6, 1609.
+Desikan, R. S., Ségonne, F., Fischl, B., Quinn, B. T., Dickerson, B.
+C., Blacker, D., Buckner, R. L., Dale, A. M., Maguire, R. P., &
+Hyman, B. T. (2006). An automated labeling system for subdividing the human cerebral cortex on MRI scans into gyral based
+regions of interest. Neuroimage, 31(3), 968–980.
+Devanand, D. P., Pradhaban, G., Liu, X., Khandji, A., De Santi, S., Segal,
+S., Rusinek, H., Pelton, G. H., Honig, L. S., Mayeux, R., Stern, Y.,
+Tabert, M. H., & de Leon, M. (2007). Hippocampal and entorhinal
+atrophy in mild cognitive impairment. Neurology, 68(11), 828 LP –
+836. https://​doi.​org/​10.​1212/​01.​wnl.​00002​56697.​20968.​d7
+Dujardin, K., Blairy, S., Defebvre, L., Duhem, S., Noël, Y., Hess, U., &
+Destée, A. (2004). Deficits in decoding emotional facial expressions in Parkinson’s disease. Neuropsychologia, 42(2), 239–250.
+Ekman, P. (1992). An argument for basic emotions. Cognition & Emotion, 6(3–4), 169–200.
+Ekman, P., & Friesen, W. V. (1971). Constants across cultures in the
+face and emotion. Journal of Personality and Social Psychology,
+17(2), 124.
+Ekman, U., Eriksson, J., Forsgren, L., Mo, S. J., Riklund, K., &
+Nyberg, L. (2012). Functional brain activity and presynaptic dopamine uptake in patients with Parkinson’s disease and mild cognitive impairment: a cross-sectional study. The Lancet Neurology,
+11(8), 679–687. https://​doi.​org/​10.​1016/​S1474-​4422(12)​70138-2
+García-Rodríguez, B., Vincent, C., Casares-Guillén, C., Ellgring, H.,
+& Frank, A. (2012). The effects of different attentional demands
+in the identification of emotional facial expressions in Alzheimer’s disease. American Journal of Alzheimer’s Disease & Other
+Dementias®, 27(7), 530–536.
+Gaser, C., Dahnke, R., Thompson, P. M., Kurth, F., & Luders, E.
+(2022). CAT-a computational anatomy toolbox for the analysis
+of structural MRI data. BioRxiv, 2006–2022.
+Gauthier, S., Reisberg, B., Zaudig, M., Petersen, R. C., Ritchie, K.,
+Broich, K., Belleville, S., Brodaty, H., Bennett, D., & Chertkow,
+H. (2006). Mild cognitive impairment. The Lancet, 367(9518),
+1262–1270.
+Gonçalves, A. R., Fernandes, C., Pasion, R., Ferreira-Santos, F., Barbosa, F., & Marques-Teixeira, J. (2018). Effects of age on the
+identification of emotions in facial expressions: A meta-analysis.
+PeerJ, 6, e5278.
+Gray, J. M., Young, A. W., Barker, W. A., Curtis, A., & Gibson, D.
+(1997). Impaired recognition of disgust in Huntington’s disease gene carriers. Brain: A. Journal of Neurology, 120(11),
+2029–2038.
+Hornak, J., Rolls, E. T., & Wade, D. (1996). Face and voice expression
+identification in patients with emotional and behavioural changes
+following ventral frontal lobe damage. Neuropsychologia, 34(4),
+247–261.
+Ibarretxe-Bilbao, N., Junque, C., Tolosa, E., Marti, M., Valldeoriola,
+F., Bargallo, N., & Zarei, M. (2009). Neuroanatomical correlates
+of impaired decision-making and facial emotion recognition in
+early Parkinson’s disease. European Journal of Neuroscience,
+30(6), 1162–1171.
+Jacobs, D. H., Shuren, J., Bowers, D., & Heilman, K. M. (1995). Emotional facial imagery, perception, and expression in Parkinson’s
+disease. Neurology, 45(9), 1696–1702.
+Jia, X., Wang, Z., Yang, T., Li, Y., Gao, S., Wu, G., Jiang, T., & Liang, P.
+(2019). Entorhinal cortex atrophy in early, drug-naive Parkinson’s disease with mild cognitive impairment. Aging and Disease, 10(6), 1221.
+Kan, Y., Kawamura, M., Hasegawa, Y., Mochizuki, S., & Nakamura,
+K. (2002). Recognition of emotion from facial, prosodic and written verbal stimuli in Parkinson’s disease. Cortex, 38(4), 623–630.
+Kazak AE. (2018). Editorial: Journal article reporting standards. American Psychologist 73(1):1–2. https://​doi.​org/​10.​1037/​amp00​00263
+Lenzoni, S., Bozzoni, V., Burgio, F., de Gelder, B., Wennberg, A., Botta,
+A., Pegoraro, E., & Semenza, C. (2020). Recognition of emotions
+conveyed by facial expression and body postures in myotonic dystrophy (DM). Cortex, 127, 58–66. https://​doi.​org/​10.​1016/j.​cortex.​
+2020.​02.​005
+Litvan, I., Goldman, J. G., Tröster, A. I., Schmand, B. A., Weintraub,
+D., Petersen, R. C., Mollenhauer, B., Adler, C. H., Marder, K., &
+Williams-Gray, C. H. (2012). Diagnostic criteria for mild cognitive impairment in Parkinson’s disease: Movement Disorder Society Task Force guidelines. Movement Disorders, 27(3), 349–356.
+McCade, D., Savage, G., & Naismith, S. L. (2011). Review of emotion
+recognition in mild cognitive impairment. Dementia and Geriatric
+Cognitive Disorders, 32(4), 257–266.
+McCade, D., Savage, G., Guastella, A., Hickie, I. B., Lewis, S. J. G.,
+& Naismith, S. L. (2013). Emotion recognition in mild cognitive
+impairment: relationship to psychosocial disability and caregiver
+burden. Journal of Geriatric Psychiatry and Neurology, 26(3),
+165–173.
+Mienaltowski, A., Johnson, E. R., Wittman, R., Wilson, A.-T., Sturycz, C.,
+& Norman, J. F. (2013). The visual discrimination of negative facial
+expressions by younger and older adults. Vision Research, 81, 12–17.
+Mioni, G., Grondin, S., Meligrana, L., Perini, F., Bartolomei, L., &
+Stablum, F. (2018). Effects of happy and sad facial expressions
+on the perception of time in Parkinson’s disease patients with
+mild cognitive impairment. Journal of Clinical and Experimental
+Neuropsychology, 40(2), 123–138. https://​doi.​org/​10.​1080/​13803​
+395.​2017.​13240​21
+Morellini, L., Izzo, A., Rossi, S., Zerboni, G., Rege-Colet, L., Ceroni,
+M., Biglia, E., & Sacco, L. (2022). Emotion recognition and processing in patients with mild cognitive impairment: A systematic
+review. Frontiers in Psychology, 13.
+Nucci, M., Mapelli, D., & Mondini, S. (2012). Cognitive Reserve Index
+questionnaire (CRIq): a new instrument for measuring cognitive
+reserve. Aging clinical and experimental research, 24, 218–226.
+Ostos, M. W., Schenk, F., Baenziger, T., & Von Gunten, A. (2011). An
+exploratory study on facial emotion recognition capacity in beginning Alzheimer’s disease. European Neurology, 65(6), 361–367.
+Pell, M. D., & Leonard, C. L. (2005). Facial expression decoding in
+early Parkinson’s disease. Cognitive Brain Research, 23(2–3),
+327–340.
+
+614
+
+Cognitive, Affective, & Behavioral Neuroscience (2024) 24:599–614
+Péron, J., Biseul, I., Leray, E., Vicente, S., Le Jeune, F., Drapier, S.,
+Drapier, D., Sauleau, P., Haegelen, C., & Vérin, M. (2010). Subthalamic nucleus stimulation affects fear and sadness recognition
+in Parkinson’s disease. Neuropsychology, 24(1), 1.
+Péron, J., Dondaine, T., Le Jeune, F., Grandjean, D., & Vérin, M.
+(2012). Emotional processing in Parkinson’s disease: a systematic
+review. Movement Disorders, 27(2), 186–199.
+Phelps, E. A., & LeDoux, J. E. (2005). Contributions of the amygdala
+to emotion processing: from animal models to human behavior.
+Neuron, 48(2), 175–187.
+Postuma, R. B., Berg, D., Stern, M., Poewe, W., Olanow, C. W., Oertel,
+W., Obeso, J., Marek, K., Litvan, I., & Lang, A. E. (2015). MDS
+clinical diagnostic criteria for Parkinson’s disease. Movement Disorders, 30(12), 1591–1601.
+Prenger, M., & MacDonald, P. A. (2018). Problems with facial mimicry
+might contribute to emotion recognition impairment in Parkinson’s disease. Parkinson’s Disease, 2018.
+Sarabia-Cobo, C. M., García-Rodríguez, B., Navas, M. J., & Ellgring,
+H. (2015). Emotional processing in patients with mild cognitive
+impairment: the influence of the valence and intensity of emotional stimuli: the valence and intensity of emotional stimuli influence emotional processing in patients with mild cognitive impairment. Journal of the Neurological Sciences, 357(1–2), 222–228.
+Schneider, W., Eschman, A., & Zuccolotto, A. (2012). E-Prime 2.0
+reference guide manual. Psychology Software Tools.
+Siqueira, G. S., Hagemann, P. D. M., Coelho, D. D. S., Santos, F. H.
+D., & Bertolucci, P. H. (2019). Can MoCA and MMSE be interchangeable cognitive screening tools? A systematic review. The
+Gerontologist, 59(6), e743–e763.
+Spoletini, I., Marra, C., Di Iulio, F., Gianni, W., Sancesario, G., Giubilei, F., Trequattrini, A., Bria, P., Caltagirone, C., & Spalletta, G.
+(2008). Facial emotion recognition deficit in amnestic mild cognitive impairment and Alzheimer disease. The American Journal of
+Geriatric Psychiatry, 16(5), 389–398.
+Sprengelmeyer, R., Young, A. W., Calder, A. J., Karnat, A., Lange,
+H., Hömberg, V., Perrett, D. I., & Rowland, D. (1996). Loss of
+disgust: Perception of faces and emotions in Huntington’s disease.
+Brain, 119(5), 1647–1665.
+Sprengelmeyer, R., Young, A. W., Mahn, K., Schroeder, U., Woitalla,
+D., Büttner, T., Kuhn, W., & Przuntek, H. (2003). Facial expression recognition in people with medicated and unmedicated Parkinson’s disease. Neuropsychologia, 41(8), 1047–1057.
+Suo, X., Lei, D., Li, N., Li, J., Peng, J., Li, W., Yang, J., Qin, K., Kemp,
+G. J., Peng, R., & Gong, Q. (2021). Topologically convergent
+and divergent morphological gray matter networks in early-stage
+Parkinson’s disease with and without mild cognitive impairment.
+Human Brain Mapping, 42(15), 5101–5112. https://​doi.​org/​10.​
+1002/​hbm.​25606
+SPSS, I. (2015). IBM SPSS statistics for windows, version 23.0.
+Armonk: IBM Corp.
+Tamietto, M., & De Gelder, B. (2010). Neural bases of the non-conscious perception of emotional signals. Nature Reviews Neuroscience, 11(10), 697–709.
+Teng, E., Lu, P. H., & Cummings, J. L. (2007). Deficits in Facial Emotion Processing in Mild Cognitive Impairment. Dementia and
+Geriatric Cognitive Disorders, 23(4), 271–279. https://​doi.​org/​
+10.​1159/​00010​0829
+Trauffer, N. M., Widen, S. C., & Russell, J. A. (2013). Education and
+the attribution of emotion to facial expressions. Psihologijske
+Teme, 22(2), 237–247.
+Tomlinson, C. L., Stowe, R., Patel, S., Rick, C., Gray, R., & Clarke,
+C. E. (2010). Systematic review of levodopa dose equivalency
+reporting in Parkinson’s disease. Movement disorders, 25(15),
+2649–2653.
+The MathWorks Inc. (2017). MATLAB version: 9.3.0.713579
+(R2017b), Natick, Massachusetts: The MathWorks Inc. https://​
+www.​mathw​orks.​com
+Vandierendonck, A. (2017). A comparison of methods to combine
+speed and accuracy measures of performance: A rejoinder on the
+binning procedure. Behavior Research Methods, 49(2), 653–673.
+Varjassyová, A., Hořínek, D., Andel, R., Amlerova, J., Laczó, J., Sheardová, K., Magerová, H., Holmerová, I., Vyhnálek, M., & Bradáč,
+O. (2013). Recognition of facial emotional expression in amnestic
+mild cognitive impairment. Journal of Alzheimer’s Disease, 33(1),
+273–280.
+Waldthaler, J., Krüger-Zechlin, C., Stock, L., Deeb, Z., & Timmermann,
+L. (2019). New insights into facial emotion recognition in Parkinson’s disease with and without mild cognitive impairment from
+visual scanning patterns. Clinical Parkinsonism & Related Disorders, 1, 102–108. https://​doi.​org/​10.​1016/j.​prdoa.​2019.​11.​003
+Weiss, E. M., Kohler, C. G., Vonbank, J., Stadelmann, E., Kemmler, G.,
+Hinterhuber, H., & Marksteiner, J. (2008). Impairment in emotion
+recognition abilities in patients with mild cognitive impairment,
+early and moderate Alzheimer disease compared with healthy
+comparison subjects. The American Journal of Geriatric Psychiatry, 16(12), 974–980.
+West, J. T., Horning, S. M., Klebe, K. J., Foster, S. M., Cornwell, R.
+E., Perrett, D., Burt, D. M., & Davis, H. P. (2012). Age effects on
+emotion recognition in facial displays: From 20 to 89 years of age.
+Experimental Aging Research, 38(2), 146–168.
+Whalen, P., Davis, F. C., Oler, J. A., Kim, H., Kim, M. J., & Neta, M.
+(2009). Human amygdala responses to facial expressions of emotion. The Guilford Press.
+Open practices statement  Data supporting the findings of this study
+are available on request from the corresponding author. Data are not
+publicly available because of privacy or ethical restrictions.
+
+Publisher’s Note  Springer Nature remains neutral with regard to
+jurisdictional claims in published maps and institutional affiliations.
+Springer Nature or its licensor (e.g. a society or other partner) holds
+exclusive rights to this article under a publishing agreement with the
+author(s) or other rightsholder(s); author self-archiving of the accepted
+manuscript version of this article is solely governed by the terms of
+such publishing agreement and applicable law.

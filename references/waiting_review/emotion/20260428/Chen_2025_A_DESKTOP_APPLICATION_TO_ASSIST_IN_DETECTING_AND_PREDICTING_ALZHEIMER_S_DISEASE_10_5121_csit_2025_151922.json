@@ -1,0 +1,21 @@
+{
+  "title": "A DESKTOP APPLICATION TO ASSIST IN DETECTING AND PREDICTING ALZHEIMER’S DISEASE USING FACIAL RECOGNITION AND BRAINWAVE MONITORING",
+  "authors": [
+    "Haokun Chen",
+    "Rodrigo Onate"
+  ],
+  "year": 2025,
+  "abstract": "The project aims to address the lack of convenient tools to identify early signs of Alzheimer’s disease [4]. Current tools are challenging to utilize, costly, and inaccessible to many. Our proposed solution is a straightforward computer program utilizing face recognition and brainwave data to detect potential early signs of Alzheimer’s. The solution utilizes MediaPipe to analyze facial movements, a Muse2 EEG headband to record data, and OpenAI’s API to analyze data using prompts [5]. We encountered challenges with lowquality EEG data and required improved prompts and stable face tracking. We conducted two experiments to test how effective the prompts were and how well MediaPipe performed, and both demonstrated that the system is responsive to a set of words and the user’s states. Our proposal is affordable, easily scalable, and user-friendly for non-tech users relative to alternative services. The program assists in keeping track of cognitive functions, making screening for Alzheimer’s more accessible using readily available technology.",
+  "doi": "10.5121/csit.2025.151922",
+  "arxiv_id": null,
+  "venue": null,
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://doi.org/10.5121/csit.2025.151922",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4415582742"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.5121/csit.2025.151922"
+}
