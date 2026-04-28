@@ -202,6 +202,8 @@ def main() -> int:
                         help="rebuild references/_indexed.json from existing PDFs and exit")
     parser.add_argument("--rebuild-aliases", action="store_true",
                         help="back-fill _state.json aliases from existing waiting_review JSON sidecars and exit")
+    parser.add_argument("--batch", type=int, default=1,
+                        help="run N consecutive sweeps with cursor pagination; stops early if a sweep returns 0 new papers")
     parser.add_argument("-v", "--verbose", action="store_true")
     args = parser.parse_args()
 
@@ -252,34 +254,49 @@ def main() -> int:
         parser.error("either --slot or --topic is required")
 
     push = args.auto_push and not args.no_push
+    batch = max(1, args.batch)
 
-    if args.slot is not None:
-        override = None
-        if args.topic and args.topic != "all":
-            override = [args.topic]
-        run_slot(
-            args.slot,
-            repo_root,
-            max_per_source=args.max_per_source,
-            year_from=args.year_from,
-            dry_run=args.dry_run,
-            push=push,
-            override_topics=override,
-        )
-    else:
-        # Manual --topic without slot: search across all sources, broad query
-        topics = list(TOPICS) if args.topic == "all" else [args.topic]
-        run_slot(
-            slot=999,  # synthetic slot id, not in SLOT_PLAN
-            repo_root=repo_root,
-            max_per_source=args.max_per_source,
-            year_from=args.year_from,
-            dry_run=args.dry_run,
-            push=push,
-            override_topics=topics,
-            override_sources=["arxiv", "s2", "openalex", "pubmed"],
-            override_query_idx=0,
-        )
+    def _one_sweep() -> dict | None:
+        if args.slot is not None:
+            override = None
+            if args.topic and args.topic != "all":
+                override = [args.topic]
+            return run_slot(
+                args.slot,
+                repo_root,
+                max_per_source=args.max_per_source,
+                year_from=args.year_from,
+                dry_run=args.dry_run,
+                push=push,
+                override_topics=override,
+            )
+        else:
+            topics = list(TOPICS) if args.topic == "all" else [args.topic]
+            return run_slot(
+                slot=999,
+                repo_root=repo_root,
+                max_per_source=args.max_per_source,
+                year_from=args.year_from,
+                dry_run=args.dry_run,
+                push=push,
+                override_topics=topics,
+                override_sources=["arxiv", "s2", "openalex", "pubmed"],
+                override_query_idx=0,
+            )
+
+    for n in range(batch):
+        if batch > 1:
+            print(f"\n=== Sweep {n + 1}/{batch} ===", flush=True)
+        result = _one_sweep()
+        if batch > 1 and result is not None:
+            total_new = sum((result.get("counts") or {}).values())
+            if total_new == 0:
+                print(
+                    f"\nSweep {n + 1} returned 0 new papers — stopping early "
+                    f"({n + 1}/{batch} sweeps completed)",
+                    flush=True,
+                )
+                break
     return 0
 
 
