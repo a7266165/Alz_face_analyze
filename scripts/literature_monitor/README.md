@@ -1,40 +1,40 @@
 # literature_monitor
 
-自動化文獻監測：每天 10 個 slot，按關鍵字搜尋四面向（embedding / asymmetry /
-emotion / age），把候選 PDF 落地到 `references/waiting_review/<topic>/<YYYYMMDD>/`，
-並可選擇 git auto-push 同步到 GitHub。
+本機手動觸發的文獻監測：呼叫 4 個 API（arXiv / Semantic Scholar / PubMed /
+OpenAlex）按關鍵字搜四面向（embedding / asymmetry / emotion / age）的新論文，
+下載 open-access PDF 到 `references/waiting_review/<topic>/<YYYYMMDD>/`，並把
+結果 commit + push 到 GitHub。
 
-## 設計
+## 為什麼是「本機手動」而不是 cloud routine
 
-- **薄殼 routine + 厚 Python 腳本**：所有機械工作（API query / dedup / PDF
-  下載 / git push）都在 Python 裡，雲端 routine 只執行 `python -m
-  scripts.literature_monitor.run --slot N --auto-push` 並讀 stdout。
-- **去重**：`_state.json` 記錄已見的 paper ID（arxiv:XXX、doi:XXX、title:XXX
-  fallback）。第一次跑前應先 `--rebuild-index` 掃既有 `references/<topic>/*.pdf`
-  產生 `references/_indexed.json`，避免重抓已收論文。
-- **PDF 取得鏈**：arXiv → Semantic Scholar `openAccessPdf` → Unpaywall →
-  OpenAlex `best_oa_location`。皆無則只存 metadata `.json`。
+我們試過 Anthropic cloud routine（每天 10 個 slot 自動跑），但 cloud sandbox
+的出口 IP 對 arxiv / semantic scholar / pubmed / openalex 全部回 403——academic
+API 普遍對未認證的雲端流量限流。本機家用網路 egress 沒這個問題。
+
+因此最終架構是：你在本機 review 文獻時手動跑一行指令，腳本完成搜尋+下載+
+commit+push，其他裝置 `git pull` 同步。零 token 成本、簡單可預測。
 
 ## 使用範例
 
 ```bash
 # 第一次執行前：建立既有 references 索引
+conda activate Alz_face_litmonitor
 python -m scripts.literature_monitor.run --rebuild-index
 
-# Dry-run 測試（不下載、不寫 state、不 push）
-python -m scripts.literature_monitor.run --slot 0 --dry-run --max-per-source 3
+# 跑一個特定 slot（例如 emotion x pubmed+openalex）
+python -m scripts.literature_monitor.run --slot 6 --auto-push
 
-# 單個 slot，本地落檔但不 push
+# 一次掃所有 topic，所有 source
+python -m scripts.literature_monitor.run --topic all --max-per-source 30 --auto-push
+
+# 只看不抓（dry-run）
+python -m scripts.literature_monitor.run --slot 0 --dry-run --max-per-source 5
+
+# 本機落檔但不 push（測試用）
 python -m scripts.literature_monitor.run --slot 0 --no-push
-
-# 單個 slot 完整 routine 模式（包含 git push）
-python -m scripts.literature_monitor.run --slot 0 --auto-push
-
-# 手動補抓特定 topic（across all sources）
-python -m scripts.literature_monitor.run --topic embedding --max-per-source 50
 ```
 
-## Slot 規劃（10/day）
+## Slot 設計（10 種搜尋組合，可任意挑）
 
 | slot | topic       | sources              | query idx | 備註     |
 |------|-------------|----------------------|-----------|----------|
@@ -49,14 +49,16 @@ python -m scripts.literature_monitor.run --topic embedding --max-per-source 50
 | 8    | all         | all                  | 2         | narrow   |
 | 9    | (digest)    | —                    | —         | summary  |
 
+實際使用上不必 10 個 slot 都跑——按你當下想找什麼 topic 挑。
+
 ## 輸出結構
 
 ```
 references/waiting_review/
-├── _state.json                       # 去重狀態
-├── _logs/<YYYYMMDD>.log              # 每日 log
-├── _digests/<YYYYMMDD>.md            # 每 slot 增量 digest
-├── _digests/<YYYYMMDD>_summary.md    # 當日 summary（slot 9 產出）
+├── _state.json                       # 已見 paper ID（去重狀態）
+├── _logs/<YYYYMMDD>.log              # 每次 run 的訊息
+├── _digests/<YYYYMMDD>.md            # 每次 run 增量 digest
+├── _digests/<YYYYMMDD>_summary.md    # 當日總結（slot 9 產出）
 ├── embedding/<YYYYMMDD>/*.pdf, *.json
 ├── asymmetry/<YYYYMMDD>/*.pdf, *.json
 ├── emotion/<YYYYMMDD>/*.pdf, *.json
@@ -65,19 +67,33 @@ references/waiting_review/
 
 ## 二篩流程（人工）
 
-1. 每日 review `_digests/<TODAY>_summary.md`
-2. 對保留的論文：把 PDF + JSON 從 `waiting_review/<topic>/<DATE>/` 搬到
+1. Review `_digests/<TODAY>.md` 與當日 PDF
+2. **保留**：把 PDF + JSON 從 `waiting_review/<topic>/<DATE>/` 搬到
    `references/<topic>/`，並在 `references/README.md` 主目錄補一筆條目
-3. 對丟棄的論文：搬到 `references/_archive_rejected/<DATE>/`（保留紀錄，避免下輪再被抓）
+3. **丟棄**：搬到 `references/_archive_rejected/<DATE>/`（保留紀錄，避免下輪
+   再被抓）
 
-## /schedule 雲端 routine 設定（待實裝階段）
+## 既有論文索引
 
-routine 內容（薄殼）：
-```bash
-cd /path/to/Alz_face_analyze
-git pull --rebase origin main
-SLOT=$(( $(date -u +%H) * 10 / 24 ))   # 0..9 from UTC hour
-python -m scripts.literature_monitor.run --slot $SLOT --auto-push 2>&1 | tail -n 20
-```
+`references/_indexed.json` 由 `python -m scripts.literature_monitor.run
+--rebuild-index` 產生，記錄 `references/<topic>/*.pdf` 的標題列表，給去重邏輯
+交叉比對用。新增 / 移除 PDF 後請 rerun 此指令。
 
-Cron：每天 10 次（均勻分散），詳見計畫檔。
+## Task Scheduler 自動化（選擇性）
+
+如果想讓本機每天自動跑一次（不用手動觸發），可以用 Windows Task Scheduler：
+
+1. 建立 .bat wrapper，例如 `c:/Users/4080/lit_monitor.bat`：
+   ```bat
+   @echo off
+   call C:\Users\4080\anaconda3\Scripts\activate.bat Alz_face_litmonitor
+   cd /d c:\Users\4080\Desktop\Alz_face_analyze
+   python -m scripts.literature_monitor.run --topic all --max-per-source 25 --auto-push >> references\waiting_review\_logs\task_scheduler.log 2>&1
+   ```
+2. 在 Task Scheduler 建任務：
+   - Trigger：Daily 22:00
+   - Action：執行 `c:/Users/4080/lit_monitor.bat`
+   - 「不論使用者登入與否」勾起來
+3. 第一次手動執行 .bat 確認沒問題
+
+不上 Task Scheduler 完全 OK——你 review 前手動跑也很乾淨。
