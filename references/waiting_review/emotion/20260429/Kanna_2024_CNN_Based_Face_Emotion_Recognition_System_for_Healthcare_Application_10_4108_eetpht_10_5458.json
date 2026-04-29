@@ -1,0 +1,25 @@
+{
+  "title": "CNN Based Face Emotion Recognition System for Healthcare Application",
+  "authors": [
+    "R. Kishore Kanna",
+    "Bhawani Sankar Panigrahi",
+    "Susanta Kumar Sahoo",
+    "Anugu Rohith Reddy",
+    "Yugandhar Manchala",
+    "Nirmal Keshari Swain"
+  ],
+  "year": 2024,
+  "abstract": "INTRODUCTION: Because it has various benefits in areas such psychology, human-computer interaction, and marketing, the recognition of facial expressions has gained a lot of attention lately. OBJECTIVES: Convolutional neural networks (CNNs) have shown enormous potential for enhancing the accuracy of facial emotion identification systems. In this study, a CNN-based approach for recognizing facial expressions is provided. METHODS: To boost the model's generalizability, transfer learning and data augmentation procedures are applied. The recommended strategy defeated the existing state- of-the-art models when examined on multiple benchmark datasets, including the FER-2013, CK+, and JAFFE databases. RESULTS: The results suggest that the CNN-based approach is fairly excellent at properly recognizing face emotions and has a lot of potential for usage in detecting facial emotions in practical scenarios. CONCLUSION: Several diverse forms of information, including oral, textual, and visual, maybe applied to comprehend emotions. In order to increase prediction accuracy and decrease loss, this research recommended a deep CNN model for emotion prediction from facial expression.",
+  "doi": "10.4108/eetpht.10.5458",
+  "arxiv_id": null,
+  "venue": "EAI Endorsed Transactions on Pervasive Health and Technology",
+  "citation_count": 8,
+  "source": "openalex",
+  "pdf_url": "https://publications.eai.eu/index.php/phat/article/download/5458/3023",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4392909213"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.4108/eetpht.10.5458"
+}

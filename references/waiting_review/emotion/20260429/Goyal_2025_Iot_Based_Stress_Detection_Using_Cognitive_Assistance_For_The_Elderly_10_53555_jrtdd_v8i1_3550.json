@@ -1,0 +1,22 @@
+{
+  "title": "Iot Based Stress Detection Using Cognitive Assistance For The Elderly",
+  "authors": [
+    "Aditi Goyal",
+    "Sakshi Gupta",
+    "Mitali Kanchan"
+  ],
+  "year": 2025,
+  "abstract": "Facial expressions are one of the key features of human beings that can be used to speculate emotional state at a particular moment. The current work employs Convolution Neural Network to develop a facial recognition model that categorizes a facial expression into some different emotion categories Afraid, Anger, Disgust, Happiness, Neutral, Sad, and Surprise. Capturing facial expressions over a certain period of time can give an idea of what extent the elderly is feeling pain and can enable nurse/family members to decide their feelings and provide necessary assistance. For identification, the elderly’s photos are continuously taken with a smart camera and sent to the decision maker (laptop or desktop). Once the elderly are identified, he/she is monitored continuously for emotion recognition through facial expressions, and the detected emotions are stored. When an abnormal condition is detected, an alert message is sent to the caretaker/nurse. The system analyses visual cues, such as facial expressions and eye movements to detect signs of stress using computer vision and machine learning.",
+  "doi": "10.53555/jrtdd.v8i1.3550",
+  "arxiv_id": null,
+  "venue": null,
+  "citation_count": 1,
+  "source": "openalex",
+  "pdf_url": "https://jrtdd.com/index.php/journal/article/download/3550/2682",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4409587160"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.53555/jrtdd.v8i1.3550"
+}

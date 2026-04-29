@@ -1,0 +1,24 @@
+{
+  "title": "Human Emotion Recognition Based on Spatio-Temporal Facial Features Using HOG-HOF and VGG-LSTM",
+  "authors": [
+    "Hajar Chouhayebi",
+    "Mohamed Adnane Mahraz",
+    "Jamal Riffi",
+    "Hamid Tairi",
+    "Nawal Alioua"
+  ],
+  "year": 2024,
+  "abstract": "Human emotion recognition is crucial in various technological domains, reflecting our growing reliance on technology. Facial expressions play a vital role in conveying and preserving human emotions. While deep learning has been successful in recognizing emotions in video sequences, it struggles to effectively model spatio-temporal interactions and identify salient features, limiting its accuracy. This research paper proposed an innovative algorithm for facial expression recognition which combined a deep learning algorithm and dynamic texture methods. In the initial phase of this study, facial features were extracted using the Visual-Geometry-Group (VGG19) model and input into Long-Short-Term-Memory (LSTM) cells to capture spatio-temporal information. Additionally, the HOG-HOF descriptor was utilized to extract dynamic features from video sequences, capturing changes in facial appearance over time. Combining these models using the Multimodal-Compact-Bilinear (MCB) model resulted in an effective descriptor vector. This vector was then classified using a Support Vector Machine (SVM) classifier, chosen for its simpler interpretability compared to deep learning models. This choice facilitates better understanding of the decision-making process behind emotion classification. In the experimental phase, the fusion method outperformed existing state-of-the-art methods on the eNTERFACE05 database, with an improvement margin of approximately 1%. In summary, the proposed approach exhibited superior accuracy and robust detection capabilities.",
+  "doi": "10.3390/computers13040101",
+  "arxiv_id": null,
+  "venue": "Computers",
+  "citation_count": 8,
+  "source": "openalex",
+  "pdf_url": "https://www.mdpi.com/2073-431X/13/4/101/pdf?version=1713259501",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4394837057"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.3390/computers13040101"
+}

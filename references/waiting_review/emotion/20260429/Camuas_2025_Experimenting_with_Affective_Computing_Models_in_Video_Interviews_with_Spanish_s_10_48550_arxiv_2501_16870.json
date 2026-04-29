@@ -1,0 +1,24 @@
+{
+  "title": "Experimenting with Affective Computing Models in Video Interviews with Spanish-speaking Older Adults",
+  "authors": [
+    "Josep López Camuñas",
+    "Cristina Bustos",
+    "Yanjun Zhu",
+    "Raquel Ros",
+    "Àgata Lapedriza"
+  ],
+  "year": 2025,
+  "abstract": "Understanding emotional signals in older adults is crucial for designing virtual assistants that support their well-being. However, existing affective computing models often face significant limitations: (1) limited availability of datasets representing older adults, especially in non-English-speaking populations, and (2) poor generalization of models trained on younger or homogeneous demographics. To address these gaps, this study evaluates state-of-the-art affective computing models -- including facial expression recognition, text sentiment analysis, and smile detection -- using videos of older adults interacting with either a person or a virtual avatar. As part of this effort, we introduce a novel dataset featuring Spanish-speaking older adults engaged in human-to-human video interviews. Through three comprehensive analyses, we investigate (1) the alignment between human-annotated labels and automatic model outputs, (2) the relationships between model outputs across different modalities, and (3) individual variations in emotional signals. Using both the Wizard of Oz (WoZ) dataset and our newly collected dataset, we uncover limited agreement between human annotations and model predictions, weak consistency across modalities, and significant variability among individuals. These findings highlight the shortcomings of generalized emotion perception models and emphasize the need of incorporating personal variability and cultural nuances into future systems.",
+  "doi": "10.48550/arxiv.2501.16870",
+  "arxiv_id": null,
+  "venue": "ArXiv.org",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://arxiv.org/pdf/2501.16870",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4406960013"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.48550/arxiv.2501.16870"
+}

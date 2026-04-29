@@ -1,0 +1,23 @@
+{
+  "title": "Smile Detection in Real-World Dementia Care Setting: A Pilot Study Toward Objective Evaluation of the Quality of Life of Persons with Dementia",
+  "authors": [
+    "Keiji Matsuda",
+    "Kenji Nishida",
+    "Tōru Yamada",
+    "Katsuo Yamanaka"
+  ],
+  "year": 2025,
+  "abstract": "Quality of life (QOL) measurement is essential in evaluating effective interventions for persons with dementia. Essentially, QOL is assessed based on self-ratings. As the disease progresses, persons with dementia cannot perform these self-ratings; however, their emotional expressions can be observed. Thus, proxy-rating is used, which involves another person such as a caregiver, who answers from the perspective of the person studied or evaluates the emotional state from the person’s facial expressions. However, the results of proxy-rating differ from those of self-rating. This is considered to be partly due to the subjectivity of the caregiver who performs the rating. Thus, an objective method is needed to evaluate the QOL of persons with dementia. A pilot study was conducted to detect objectively the smiles of persons with dementia, because conventional QOL assessments include facial expression-related items, and smile is strongly related to pleasantness or friendliness. To detect smiles, we developed an image processing method including tilt correction of the facial image and face detection of a specified person among many faces regardless of the facial expressions presented. To verify the effectiveness of the proposed method, we measured smiles before and after a day care intervention program that involved 1 hour of physical exercises and 2 hours of cognitive stimulation, which has been shown to improve QOL. We developed an experimental protocol to quantify the changes in the smiles of 11 persons with dementia at a day care facility. A facility staff member induced each person to smile using simple words while recording video. Each recorded video was then processed to calculate the increase in detection of smiles evoked by the staff member. By comparing the differences before and after participating in the day care program, we confirmed that the frequency of smile detection increased significantly after the program.",
+  "doi": "10.14326/abe.14.241",
+  "arxiv_id": null,
+  "venue": "Advanced Biomedical Engineering",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://www.jstage.jst.go.jp/article/abe/14/0/14_241/_pdf",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4410222565"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.14326/abe.14.241"
+}

@@ -1,0 +1,23 @@
+{
+  "title": "Emotion recognition and artificial intelligence: A systematic review (2014–2023) and research recommendations",
+  "authors": [
+    "Smith K. Khare",
+    "Victoria Blanes‐Vidal",
+    "Esmaeil S. Nadimi",
+    "U. Rajendra Acharya"
+  ],
+  "year": 2023,
+  "abstract": "Emotion recognition is the ability to precisely infer human emotions from numerous sources and modalities using questionnaires, physical signals, and physiological signals. Recently, motion recognition has gained attention because of its diverse application areas, like affective computing, healthcare, human–robot interactions, and market research. This paper provides a comprehensive and systematic review of emotion recognition techniques of the current decade. The paper includes emotion recognition using physical and physiological signals. Physical signals involve speech and facial expression, while physiological signals include electroencephalogram, electrocardiogram, galvanic skin response, and eye tracking. The paper provides an introduction to various emotion models, stimuli used for emotion elicitation, and the background of existing automated emotion recognition systems. This paper covers comprehensive searching and scanning of well-known datasets followed by design criteria for review. After a thorough analysis and discussion, we selected 142 journal articles using PRISMA guidelines. The review provides a detailed analysis of existing studies and available datasets of emotion recognition. Our review analysis also presented potential challenges in the existing literature and directions for future research.",
+  "doi": "10.1016/j.inffus.2023.102019",
+  "arxiv_id": null,
+  "venue": "Information Fusion",
+  "citation_count": 389,
+  "source": "openalex",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4386800155"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.1016/j.inffus.2023.102019"
+}

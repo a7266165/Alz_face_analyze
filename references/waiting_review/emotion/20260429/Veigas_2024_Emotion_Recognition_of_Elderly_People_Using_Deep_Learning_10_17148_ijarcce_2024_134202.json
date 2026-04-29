@@ -1,0 +1,24 @@
+{
+  "title": "Emotion Recognition of Elderly People Using Deep Learning",
+  "authors": [
+    "John Prakash Veigas",
+    "Annam Navya",
+    "Adithya Shetty",
+    "Ananya S Adappa",
+    "Aksha Aksha"
+  ],
+  "year": 2024,
+  "abstract": "Currently, many countries around the world are moving towards becoming an aging society.The mental health of the elderly is one of the key challenges in an aging society.An elderly population is a special group that needs to be taken care of closely.A key area of concern for the elderly is that of mental health and many technologies can be applied in this area.One possible tool is facial expression recognition (FER) that can be used to detect emotions of the elderly for the purpose of mental health care.Emotion recognition in the field of human-computer interaction refers to that the computer has the corresponding perceptual ability to predict the emotional state of human beings in advance by observing human expressions, behaviours and emotions, so as to ensure that computers can communicate emotionally with humans.This project proposes a reminder system to help patients or old people to take medication.It also helps the users to take appointment from the needy doctor and send notification about the appointment confirmation and notify the care taker about the appointment date and time well in advance.This project recognizes the emotions of elder people using deep learning technique and send the notification to care taker so that care taker can respond to elder people very quickly.This project uses Django framework to build backend of the system and uses MySQL for persistent data storage.Android application enables a graphical user interface were end user will interact with application.",
+  "doi": "10.17148/ijarcce.2024.134202",
+  "arxiv_id": null,
+  "venue": "IJARCCE",
+  "citation_count": 1,
+  "source": "openalex",
+  "pdf_url": "http://dx.doi.org/10.17148/ijarcce.2024.134202",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4396737587"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.17148/ijarcce.2024.134202"
+}

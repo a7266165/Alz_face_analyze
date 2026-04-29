@@ -1,0 +1,22 @@
+{
+  "title": "Convolutional Neural Networks Detect Alzheimer's disease by Analyzing Facial Expressions and Eye Movements",
+  "authors": [
+    "S. V. Swamy Kadali",
+    "R. N. V. Jagan Mohan",
+    "M. Lakshmi"
+  ],
+  "year": 2024,
+  "abstract": "The most common form of severe dementia, Alzheimer’s disease (AD), is a cumulative neurological disorder because of the degradation and death of nerve cells in the brain tissue, intelligence steadily declines and most of its activities are compromised in AD. Before diving into the level of AD diagnosis, it is essential to highlight the fundamental differences between conventional machine learning (ML) and deep learning (DL). This work covers a number of photo-preprocessing approaches that aid in learning because image processing is essential for the diagnosis of AD. The most crucial kind of neural network for computer vision used in medical image processing is called a Convolutional Neural Network (CNN). The proposed study will consider facial characteristics, including expressions and eye movements using the diffusion model, as part of CNN’s meticulous approach to Alzheimer’s diagnosis. Convolutional neural networks were used in an effort to sense Alzheimer’s disease in its early stages using a big collection of pictures of facial expressions.",
+  "doi": "10.1201/9781003529231-1",
+  "arxiv_id": null,
+  "venue": null,
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4399577782"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.1201/9781003529231-1"
+}

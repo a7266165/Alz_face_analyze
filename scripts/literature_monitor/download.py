@@ -100,6 +100,14 @@ def _download_pdf(url: str, dest: Path) -> bool:
                 logger.debug("Downloaded file <10kB, treating as failure: %s", dest)
                 dest.unlink(missing_ok=True)
                 return False
+            # Validate magic bytes — publishers sometimes serve recaptcha
+            # HTML with Content-Type: application/pdf
+            with dest.open("rb") as f:
+                head = f.read(8)
+            if not head.startswith(b"%PDF"):
+                logger.debug("Not a real PDF (magic bytes %r) on %s", head, url)
+                dest.unlink(missing_ok=True)
+                return False
             return True
     except Exception as e:
         logger.debug("Download exception %s: %s", url, e)

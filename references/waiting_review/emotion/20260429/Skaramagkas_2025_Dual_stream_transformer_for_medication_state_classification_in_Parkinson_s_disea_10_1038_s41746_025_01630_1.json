@@ -1,0 +1,27 @@
+{
+  "title": "Dual stream transformer for medication state classification in Parkinson’s disease patients using facial videos",
+  "authors": [
+    "Vasileios Skaramagkas",
+    "Iro Boura",
+    "Georgios Karamanis",
+    "Ioannis Kyprakis",
+    "Dimitrios I. Fotiadis",
+    "Zinovia Kefalopoulou",
+    "Cleanthe Spanaki",
+    "Manolis Tsiknakis"
+  ],
+  "year": 2025,
+  "abstract": "Hypomimia is a prominent, levodopa-responsive symptom in Parkinson's disease (PD). In our study, we aimed to distinguish ON and OFF dopaminergic medication state in a cohort of PD patients, analyzing their facial videos with a unique, interpretable Dual Stream Transformer model. Our approach integrated two streams of data: facial frame features and optical flow, processed through a transformer-based architecture. Various configurations of embedding dimensions, dense layer sizes, and attention heads were examined to enhance model performance. The final model, trained on 183 PD patients, attained an accuracy of 86% in differentiating between ON- and OFF-medication state. Moreover, uniform classification performance (up to 88%) was obtained across various stages of PD severity, as expressed by the Hoehn and Yahr (H&Y) scale. These values highlight the potential of our model as a non-invasive, cost-effective instrument for clinicians to remotely and accurately detect patients' response to treatment from early to more advanced PD stages.",
+  "doi": "10.1038/s41746-025-01630-1",
+  "arxiv_id": null,
+  "venue": "npj Digital Medicine",
+  "citation_count": 5,
+  "source": "openalex",
+  "pdf_url": "https://www.nature.com/articles/s41746-025-01630-1.pdf",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4409835677"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.1038/s41746-025-01630-1"
+}

@@ -1,0 +1,25 @@
+{
+  "title": "A Review of Deep Learning Approaches for Non-Invasive Cognitive Impairment Detection",
+  "authors": [
+    "Muath Alsuhaibani",
+    "Ali Pourramezan Fard",
+    "Jian Sun",
+    "Farida Far Poor",
+    "Peter Pressman",
+    "Mohammad H. Mahoor"
+  ],
+  "year": 2024,
+  "abstract": "This review paper explores recent advances in deep learning approaches for non-invasive cognitive impairment detection. We examine various non-invasive indicators of cognitive decline, including speech and language, facial, and motoric mobility. The paper provides an overview of relevant datasets, feature-extracting techniques, and deep-learning architectures applied to this domain. We have analyzed the performance of different methods across modalities and observed that speech and language-based methods generally achieved the highest detection performance. Studies combining acoustic and linguistic features tended to outperform those using a single modality. Facial analysis methods showed promise for visual modalities but were less extensively studied. Most papers focused on binary classification (impaired vs. non-impaired), with fewer addressing multi-class or regression tasks. Transfer learning and pre-trained language models emerged as popular and effective techniques, especially for linguistic analysis. Despite significant progress, several challenges remain, including data standardization and accessibility, model explainability, longitudinal analysis limitations, and clinical adaptation. Lastly, we propose future research directions, such as investigating language-agnostic speech analysis methods, developing multi-modal diagnostic systems, and addressing ethical considerations in AI-assisted healthcare. By synthesizing current trends and identifying key obstacles, this review aims to guide further development of deep learning-based cognitive impairment detection systems to improve early diagnosis and ultimately patient outcomes.",
+  "doi": "10.48550/arxiv.2410.19898",
+  "arxiv_id": null,
+  "venue": "arXiv (Cornell University)",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://arxiv.org/pdf/2410.19898",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4404313529"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.48550/arxiv.2410.19898"
+}

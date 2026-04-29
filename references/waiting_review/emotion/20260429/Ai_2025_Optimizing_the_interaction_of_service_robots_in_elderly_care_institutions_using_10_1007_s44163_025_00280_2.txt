@@ -1,0 +1,1520 @@
+Vol.:(0123456789)
+ Discover Artificial Intelligence            (2025) 5:49
+| https://doi.org/10.1007/s44163-025-00280-2
+Discover Artificial Intelligence
+Research
+Optimizing the interaction of service robots in elderly care institutions
+using multi‑modal emotion recognition system based on transfer
+learning
+Yongguan Ai1 · Yuanjun Zhang1 · Juan Wang1 · Nianfang Xu2
+Received: 23 December 2024 / Accepted: 25 April 2025
+© The Author(s) 2025
+
+OPEN
+Abstract
+As the global population continues to age, the emotional and mental health needs of older adults are becoming increasingly significant. Conventional emotion recognition systems frequently encounter difficulties in adapting to the unique
+emotional expression characteristics exhibited by this demographic. This paper proposes a multimodal emotion recognition system based on transfer learning, with the objective of enhancing the efficacy of robots in emotion recognition,
+emotional engagement, and the promotion of mental well-being in older individuals. Initially, public emotion datasets
+such as AffectNet and IEMOCAP are utilised for pre-training convolutional neural networks (CNN) and bidirectional long
+short-term memory (Bi-LSTM) models to capture general emotional features. Subsequently, the system is fine-tuned
+using a home-grown nursing home dataset, employing a hierarchical fine-tuning strategy to optimise the model, with a
+particular emphasis on enhancing the facial expressions, speech and physiological signals of the elderly. To address the
+challenges posed by the complexity of the nursing home environment, small batch learning and noise enhancement
+techniques are incorporated. The experimental results demonstrate the model’s capacity to accurately recognise the
+emotional states of the elderly by integrating multimodal data, encompassing facial expressions, speech, body language
+and physiological signals. The effectiveness of the system in promoting emotional engagement and enhancing mental
+health is further substantiated by heart rate and galvanic skin response monitoring. In terms of emotion recognition
+accuracy, the experimental group’s average recognition accuracy for multiple emotions reaches 84.1%, with an F1 score
+of 82.5%, precision of 83.2% and recall of 81.8%. In addition, the experimental group performs better than the control
+group in improving mental health and mobilising emotions. However, the study is confronted with challenges such
+as domain adaptation issues, the necessity for fine-tuning, and data limitations specific to older individuals, which are
+addressed by hierarchical fine-tuning and data augmentation techniques.
+Keywords  Transfer learning · Multi-modal emotion recognition · Elderly care institutions · Service robots · Mental health
+1  Introduction
+The application of emotion recognition technology in elderly care service robots has crucial social significance,
+especially in the context of the increasing global aging population [1, 2]. According to the World Health Organisation
+(WHO), the elderly population is defined as individuals aged 60 years and over. A United Nations report (n.d.) states
+ *  Yuanjun Zhang, zhangyj@uta.edu.cn; Yongguan Ai, aiyg@uta.edu.cn; Juan Wang, wangjuan@uta.edu.cn; Nianfang Xu, xunf@
+uta.edu.cn | 1School of Public Administration, Anhui Vocational and Technical College, Hefei 230011, Anhui, China. 2School of Computer
+and Information Technology, Anhui Vocational and Technical College, Hefei 230011, Anhui, China.
+
+Vol:.(1234567890)
+Research
+
+Discover Artificial Intelligence            (2025) 5:49
+| https://doi.org/10.1007/s44163-025-00280-2
+that by 2050, the proportion of the worldwide population aged 65 and above can reach 16.3%, and is expected to
+further increase to 21% in the second half of this century, with Asia becoming the region with the largest elderly
+population. [3]. This trend has put higher demands on traditional elderly care services while promoting the rapid
+development of smart elderly care technologies [4, 5]. As an innovative auxiliary tool, elderly care service robots
+can alleviate the labor shortage problem and provide emotional support and social interaction [6]. However, existing elderly care robots face many challenges in emotion recognition, especially when facing the elderly group. The
+particularity of emotional expression makes it challenging for traditional systems to accurately capture emotional
+fluctuations [7]. In elderly care, various technologies have been explored to improve the quality of life and safety of
+older people. For example, one study explored the use of fuzzy inference systems and video-based motion estimation for fall detection in older adults, highlighting the importance of customised technological solutions [8]. Another
+study outlined the role of service robots in healthcare, highlighting their potential to improve care and support for
+older people [9]. In addition, problems such as data scarcity, emotional diversity, and lack of personalized adjustment
+limit existing systems’ effectiveness. Therefore, improving the accuracy, versatility, and customization of emotion
+recognition has become a key direction of current research.
+Traditional emotion recognition systems usually rely on a single modality, which makes them unable to handle
+the complex emotions of the elderly [10, 11]. The emotional expression of the elderly is often affected by physiological changes and health problems, showing features that are significantly different from those of young people.
+Meanwhile, emotion recognition technology usually requires large-scale labeled data, but in special scenarios such
+as nursing homes, data collection, and labeling are very difficult, further restricting system performance. In addition,
+traditional elderly care robots often lack personalized adjustment capabilities and cannot flexibly respond to the
+emotional needs of each elderly person, thereby reducing the quality of interaction [12]. Therefore, current emotion
+recognition systems and elderly care robots urgently need to combine multi-modal recognition and personalized
+adjustment functions to improve their adaptability and accuracy in emotional interaction with the elderly. While
+previous studies have explored the integration of transfer learning and multi-modal emotion recognition, our study
+uniquely combines these techniques to address the specific challenges of emotion recognition in elderly care settings. Our hierarchical fine-tuning strategy and modality adaptive weighting mechanism provide a more robust and
+accurate emotion recognition system tailored for the elderly.
+To address these challenges, this paper proposes a multimodal emotion recognition system based on transfer learning, which aims to improve the effectiveness of robots in emotion recognition, emotional engagement,
+and promoting the mental well-being of elderly people. The system integrates multiple modalities, including facial
+expressions, speech, body language, and physiological signals, to provide a more comprehensive and accurate
+emotion recognition capability. Specifically, the system uses convolutional neural networks (CNN) and bidirectional
+long short-term memory (Bi-LSTM) models to capture common emotional features from public emotion datasets
+such as AffectNet and IEMOCAP. The system is then fine-tuned using an in-house nursing home dataset, applying
+a hierarchical fine-tuning strategy to optimise the model, with a focus on enhancing the facial expressions, speech
+and physiological signals of the elderly. Small-batch learning and noise enhancement techniques are incorporated
+to cope with the complexity of the nursing home environment.
+The following multi-modal data processing methods are employed:
+1.	 Facial expression recognition: An optimised CNN model is utilised to extract features from facial images, with a focus
+on key areas such as the eyes, mouth, and eyebrows. The model employs smaller convolution kernels to capture
+subtle changes in facial expressions and retains more local information through adjusted pooling layers.
+2.	 Speech recognition: Mel-frequency cepstral coefficients (MFCC) are utilised to extract speech features, which are
+subsequently processed by a Bi-LSTM network to capture long-term dependencies in voice signals.
+3.	 Body language recognition: Body language, encompassing posture, gestures, and gait, is captured using cameras and
+depth sensors. The system employs pre-trained CNN models to extract emotion-related features from body actions
+and combines Bi-LSTM to model the time series.
+4.	 Physiological signal recognition: Physiological data, including heart rate and galvanic skin response (GSR), is collected
+using smart wearable devices. These signals are then preprocessed and analysed to provide an objective physiological basis for emotion recognition.
+The research contributions of this article include:
+
+Vol.:(0123456789)
+Discover Artificial Intelligence            (2025) 5:49
+| https://doi.org/10.1007/s44163-025-00280-2
+
+Research
+1.	 The innovation of this paper lies in the use of transfer learning and multi-modal emotion recognition technology.
+Transfer learning effectively alleviates the problem of data scarcity by pre-training and fine-tuning on large-scale
+datasets and significantly improves the accuracy and robustness of the emotion recognition model.
+2.	 Compared with a single modality, this study overcomes the limitations of a single modality by integrating multiple
+information such as speech, facial expressions, and body language and can more comprehensively understand the
+emotional expression of the elderly.
+3.	 At the same time, combined with online learning and personalized adaptation functions, this study further optimizes
+the interactive experience between robots and the elderly. These innovations improve the robot’s adaptability in
+dynamic emotional expression scenarios and provide strong support for the personalized development of elderly
+care service robots.
+2  Literature review
+Cultural factors play an important role in the expression and perception of emotions, especially among older adults.
+Some studies have explored the impact of cultural differences on emotion expression and recognition in older adults,
+emphasising the importance of cultural sensitivity in emotion recognition systems. to ensure effective functioning in
+diverse populations [13]. Body language is an important component of emotional expression, and older adults may
+exhibit unique body language due to factors such as decreased mobility, chronic pain, or cognitive decline. At the same
+time, age-related declines in auditory and visual perception can significantly affect older adults’ ability to recognise
+emotions [14]. One study investigated how these declines affect emotional expression and recognition, highlighting
+the need for customised solutions in assistive technology. Their study found that hearing loss and vision loss can lead
+to changes in speech patterns and facial expressions, which can affect the accuracy of emotion recognition systems.
+This study highlights the importance of addressing age-related sensory decline in the design of emotion recognition
+systems for older adults [15].
+Recently, emotion recognition technologies have made remarkable progress in single-modal recognition, such as
+speech, facial expression, text, and body language [16]. Morgan inferred emotions through intonation and speaking
+speed [17], but environmental noise and individual differences affected accuracy. The facial feature extraction model
+of Abdullah et al. was limited by the differences in facial expressions among the elderly [18]. Text sentiment analysis
+method of Poria et al. still faced challenges identifying complex emotions [19]. Dzedzickis et al. recognized emotions
+through body language, but data collection and noise processing were still limited [20]. Despite the progress in singlemodal emotion recognition, it has obvious limitations in complex emotional expressions [21, 22]. Therefore, effectively
+integrating multi-modal information to improve recognition accuracy has become a research focus.
+Multi-modal emotion recognition combines multiple information such as speech, facial expressions, body language,
+etc., which is especially important for the elderly [23–25]. The complementarity between modalities enhances the
+system’s robustness, but modal fusion still faces challenges such as data heterogeneity and information redundancy.
+Speech and facial expressions often provide consistent emotional signals, and body language can provide more detail.
+Efficiently integrating these signals and improving recognition results remain key issues. The application of transfer
+learning in emotion recognition has developed rapidly [26, 27]. Through transfer learning, the pre-trained model in
+the source domain can be fine-tuned in the target domain, alleviating the data scarcity problem and improving model
+adaptability. Pre-training on large-scale datasets such as AffectNet and IEMOCAP supports emotion recognition in the
+elderly, but the difference between the source and target domains remains a challenge in transfer learning [28, 29].
+With the development of multi-modal emotion recognition and transfer learning technologies, optimizing the
+emotional interaction performance of elderly care service robots has become a research hotspot [30]. Due to the
+diversity and uniqueness of the emotional expressions of the elderly, robots need to be highly personalized and
+adaptable. Traditional robot systems lack flexible personalized adjustment functions and are difficult to precisely
+respond to the emotions of the elderly, resulting in poor interaction effects [31, 32]. Therefore, combining multi-modal
+recognition with transfer learning to enhance the robot’s emotional adaptability in complex situations becomes the
+key to improving the quality of interaction [33]. In recent years, multi-modal emotion recognition systems combined
+with online learning have been gradually applied, which can adjust recognition strategies in real time to cope with
+emotional changes in the elderly [34, 35]. However, further improving the system’s precision and flexibility remains
+a challenge to be addressed.
+
+Vol:.(1234567890)
+Research
+
+Discover Artificial Intelligence            (2025) 5:49
+| https://doi.org/10.1007/s44163-025-00280-2
+3  Construction of multi‑modal emotion recognition system based on transfer learning
+3.1  Application of transfer learning
+(1)	 Pre-training model selection and optimization
+
+  According to the transfer learning method, choosing a suitable pre-trained model is crucial to improving the
+emotion detection system in the nursing environment. This paper selects convolutional neural networks (CNN) and
+long short-term memory (LSTM) as the pre-training basic models [36, 37]. Although existing multi-modal emotion
+datasets provide abundant training samples, the emotional expressions in these datasets differ from those of elderly
+people in nursing homes, so directly transferring these models may have limited effects. To this end, this paper
+optimizes the pre-training process to improve the model’s adaptability in the nursing home environment.
+
+  First, in terms of model architecture, considering that the facial expressions and phonetic features of the elderly
+may be significantly different from those of young people, this paper makes targeted adjustments to CNN and LSTM
+to enhance the model’s ability to recognize the emotional expression features of the elderly. The optimization of
+the CNN model focuses on improving its sensitivity to subtle changes in the facial expressions of the elderly. Due
+to aging and health problems, facial expressions in the elderly are often weaker or asymmetrical. This paper uses
+smaller convolution kernels in the convolutional layer to capture detailed features and adjusts the pooling layer
+configuration to retain more local information to address this issue [38, 39]. Following is the mathematical formula
+for the convolution operation:
+
+  In Formula (1), f represents the input image; g represents the convolution kernel; (i, j) represents the pixel position
+of the output image; ∗ represents the convolution operation. In addition, in the design of the pooling layer, the
+maximum pooling operation is adopted, and its formula is:
+x1, x2, … , xn are the values in the pooling area, and the maximum pooling takes the maximum value in the area.
+Figure 1 presents the optimized CNN structure:
+
+  In optimizing the LSTM model, this paper uses the Mel-frequency cepstral coefficients (MFCC) phonetic features
+[40]. In addition, using Bi-LSTM architecture enables the model to capture emotional fluctuations more precisely
+[41]. The output of the bidirectional LSTM is:
+
+  In Formula (3), the forward and backward LSTM outputs are represented as hforward
+t
+ and hbackward
+t
+ , respectively.
+Figure 2 shows the optimized Bi-LSTM model workflow:
+(2)	 Fine-tuning strategy and feature optimization
+
+  Since the elderly population in nursing homes express emotions differently, although the pre-trained model can
+extract general emotional elements, it needs further fine-tuning to adapt to the target work. This paper uses a small
+amount of labeled data collected from a nursing home environment and adopts a hierarchical fine-tuning strategy
+to freeze the low-level network layers and only fine-tune the high-level feature extraction layers so that the model
+can focus more on capturing the special patterns of emotional expression of the elderly while retaining general
+emotion recognition capabilities [42, 43]. The formula is as follows:
+
+  This paper uses data augmentation technology to improve the model’s robustness and cope with the problem of
+insufficient nursing home data. Specifically, methods such as text semantic expansion, audio time stretching, and
+face image rotation are applied to artificially increase the dataset diversity, thereby enhancing the generalization
+(1)
+(f ∗g)(i, j) =
+∑
+m
+∑
+n
+f(m, n) ⋅g(i −m, j −n).
+(2)
+maxpool(x) = max
+(x1, x2, … , xn
+)
+,
+(3)
+ht = [hforward
+t
+, hbackward
+t
+]
+.
+(4)
+휃high
+t+1 = 휃high
+t
+−휂∇휃L
+(
+휃high
+t
+)
+.
+
+Vol.:(0123456789)
+Discover Artificial Intelligence            (2025) 5:49
+| https://doi.org/10.1007/s44163-025-00280-2
+
+Research
+ability of the model under scarce data conditions. Data diversification is achieved by rotating the image, especially
+in image enhancement.
+
+
+Data augmentation: We have applied advanced data augmentation techniques specifically targeting
+underrepresented emotion classes. This includes methods such as synthetic data generation, which helps to
+artificially increase the number of samples for less frequent emotions.
+Fig. 1   Optimized CNN structure
+Fig. 2   Optimized Bi-LSTM
+workflow
+
+Vol:.(1234567890)
+Research
+
+Discover Artificial Intelligence            (2025) 5:49
+| https://doi.org/10.1007/s44163-025-00280-2
+
+  Class weighting: During the model training process, we have incorporated class weighting mechanisms. Emotions
+with fewer samples are assigned higher weights, ensuring that the model pays more attention to these classes
+during training.
+
+  Evaluation metrics: We have expanded our evaluation metrics beyond simple accuracy. Metrics such as precision,
+recall, F1-score, and confusion matrices are now used to comprehensively assess model performance across different
+emotion classes.
+
+  The specific rotation operation can be achieved through the following formula:
+
+  Formula (6) achieves time stretching of audio:
+
+  This solves the problem of insufficient data and enhances the model’s ability to adapt to different elderly groups’
+emotional expressions.
+
+  In terms of feature optimization, this paper makes fine-tuning adjustments based on the unique phonetic and
+facial expression features of the elderly population. In facial expression recognition, combining fine-grained facial
+action units (Aus) analysis methods can effectively capture subtle changes in facial expressions of the elderly,
+especially the feature differences produced during the aging process [44, 45]. Table 1 lists common facial action
+units:
+
+  This paper pays special attention to the elderly’s phonetic features, such as pitch changes, speaking speed, and
+speech clarity, in speech emotion recognition. Through targeted modeling, these optimization measures enable
+the model to more precisely capture subtle fluctuations in the elderly’s emotional expressions, thereby significantly
+improving the accuracy of emotion recognition.
+
+  Dataset distribution analysis: We have conducted a thorough analysis of the dataset distribution. The emotional
+datasets used in our study indeed exhibit class imbalance, with certain emotions (e.g., happiness) being more
+frequently represented than others (e.g., sadness or anxiety). This imbalance could potentially lead the model to
+develop unintended biases, thereby affecting the accuracy of recognizing less frequent emotions.
+(3)	 Domain adaptation and model robustness enhancement.
+
+
+In emotion recognition tasks, there are significant differences between target and source data, and directly
+applying pre-trained models may lead to performance degradation. This paper applies domain adaptation
+(DA) technology to solve this problem to improve the model’s adaptability and robustness in the nursing home
+environment [46, 47].
+
+  This paper adopts an adversarial training method to make the model learn sentiment features shared across
+domains using adversarial loss [48]. During the optimization process, the model gradually reduces the difference
+between the source data and the target data, thereby effectively transferring the source domain knowledge and
+improving the ability to recognize the emotional expressions of the elderly in the nursing home environment. The
+loss function formula for adversarial training is:
+(5)
+R(휃) =
+[ cos(휃) −sin(휃)
+sin(휃) cos(휃)
+]
+.
+(6)
+x(t) = x(at).
+(7)
+Ladv = 피xs∼ps(x)
+[logD(xs
+)] + 피xt∼pt(x)
+[log(1 −D(xt
+))],
+Table 1   Examples of common
+facial action units
+AU number
+Description
+AU number
+Description
+AU1
+Lift inner eyebrows
+AU9
+Extend nose
+AU2
+Lift outer eyebrows
+AU12
+Extend mouth outwards
+AU4
+Press down the front of the eyebrows
+AU15
+Droop eyebrows
+AU5
+Open eyes
+AU17
+Droop inner eyebrows
+AU6
+Smile (turn the corners of the mouth upward)
+AU20
+Slightly purse mouth
+(lips slightly open)
+AU7
+Pull mouth corners down
+AU25
+Close eyes (squinting)
+
+Vol.:(0123456789)
+Discover Artificial Intelligence            (2025) 5:49
+| https://doi.org/10.1007/s44163-025-00280-2
+
+Research
+xs and xt are source data and target data samples, respectively, and D(xt) represents the probability that the discriminator believes that the input sample xt belongs to the source data. In addition, this paper also adopts the
+generator’s adversarial loss:
+
+  G(xt) is a pseudo sample of the target data generated by the generator, the purpose of which is to deceive the
+discriminator so that the discriminator cannot effectively distinguish between actual data and generated data, so
+that the features of the target domain can be better transferred.
+
+  This paper adopts the domain adaptation method, which reduces the structural differences between the two
+through feature mapping so that the model can better adapt to the emotional expression features in the nursing
+home environment [49, 50]. This paper uses the maximum mean discrepancy (MMD) loss function to measure the
+difference in feature distribution between the source and the target domains:
+
+  In Formula (9), 휙(.) is the feature mapping function; xi
+s and xi
+t are the samples of the source domain and the target
+domain, respectively; ns and nt are the number of samples of the source domain and the target domain. Minimizing
+the MMD loss can reduce the feature differences between the source and target domains, allowing the model to be
+better transferred to the target domain.
+3.2  System design for multi‑modal emotion recognition
+(1)	 Voice signal and facial expression recognition
+
+  The implementation process of voice signal recognition starts with the preprocessing of voice signals. Firstly, MFCC
+is used to extract voice signal features, mainly features such as pitch, speaking speed, and intonation in the elderly’s
+speech. Pitch is an essential clue to emotional expression. For example, happy emotions are usually accompanied
+by higher pitches, while lower pitches express sad emotions. Changes in speaking speed can reflect the intensity of
+emotions. When an individual is anxious or excited, his speaking speed may be faster, while a slower speaking speed
+may accompany depression. In the MFCC calculation process, the signal is converted into the frequency domain
+through a short-time Fourier transform (STFT) and processed using a Mel-frequency filter bank to finally obtain the
+MFCC. The formula for STFT to convert a signal from the time domain to the frequency domain is as follows:
+
+  In Formula (10), X(t, f) represents the spectrum at time t and frequency f ; x(n) represents the input signal; w(n −t)
+is the window function. Next, the Mel-frequency filter bank is applied to obtain the Mel frequencies:
+
+  Then, the logarithmic Mel spectrum is calculated, and the MFCC features are extracted by discrete cosine
+transform:
+
+  MFCCn is the n-th feature of the Mel-frequency cepstral coefficient; K is the dimension of the cepstral coefficient;
+Lk is the k-th logarithmic Mel-frequency spectrum value. These extracted features are input into Bi-LSTM, which can
+effectively process time series data and capture long-term dependencies in voice signals through its memory cells.
+Bi-LSTM processes the features of the current voice signal and combines past and future contextual information to
+(8)
+LG = 피xt∼pt(x)
+[logD(G(xt
+))]
+,
+(9)
+MMDPs, Pt
+
+ = ‖ 1
+ns
+ns
+
+
+i=1
+휙xi
+s
+
+ −1
+nt
+nt
+
+
+i=1
+휙xi
+t
+
+‖
+2
+.
+(10)
+X(t, f) =
+∞
+∑
+n=−∞
+x(n) ⋅w(n −t) ⋅e−j2휋fn.
+(11)
+Mel(f) = 2595 ⋅log10
+(
+1 +
+f
+700
+)
+.
+(12)
+MFCCn =
+K∑
+k=1
+Lk ⋅cos
+[휋
+K (n −1)
+(
+k −1
+2
+)]
+.
+
+Vol:.(1234567890)
+Research
+
+Discover Artificial Intelligence            (2025) 5:49
+| https://doi.org/10.1007/s44163-025-00280-2
+capture emotional fluctuations more precisely. During the state update process of Bi-LSTM, the calculations of the
+input gate, forget gate, and output gate are:
+
+  Finally, through the output layer of the Bi-LSTM network, the system can classify emotions based on the extracted
+phonetic features and achieve real-time monitoring of the emotional state of the elderly.
+
+  Facial expression recognition is achieved through an optimized CNN model. CNN extracts features from facial
+images through convolutional layers, focusing on the details of key parts such as eyes, mouth, and eyebrows,
+which are essential for emotional expression. Especially in the elderly, the aging process may cause changes in
+facial expressions to become more subtle or asymmetrical, increasing the difficulty of emotion recognition. CNN
+addresses this challenge by using smaller convolution kernels to increase sensitivity to changes in these tiny details.
+In addition, CNN extracts more abstract features layer by layer through a multi-layer convolutional structure, further
+enhancing the model’s ability to recognize subtle changes in facial expressions, especially when recognizing subtle
+emotional expressions such as lifted corners of the mouth and lifted eyebrows. In facial expression recognition,
+CNN first extracts local features from the image, including subtle movements of parts such as the lips and around
+the eyes. Combined with fine-grained facial action unit analysis, the system can further capture the differences in
+facial expressions during the aging process and enhance the emotion recognition accuracy. Action unit analysis can
+describe subtle changes in the face through the displacement of key points. The modeling formula is as follows:
+
+
+In Formula (16), Pi,j represents the j-dimensional position of the i-th key point, and Δ(Pi,j) represents the
+displacement of the key point.
+(2)	 Body language and physiological signal recognition.
+
+
+Body language and physiological signals provide essential additional information for emotion recognition,
+especially in the elderly, where these signals can effectively fill in the information gaps in speech and facial expression
+recognition. Body language, including posture, gestures, and gait, is an essential part of emotional expression and
+reflects the emotional fluctuations of an individual in a specific situation. By using ordinary cameras and depth
+camera visual sensors to capture changes in body language in real time, the system can recognize non-verbal
+behaviors such as posture, gestures, and gait and use them to infer the emotional state of the elderly. Table 2 shows
+the emotions corresponding to some common postures:
+
+  Through the pre-trained CNN model, the system can extract these emotion-related features from the captured
+body actions and combine Bi-LSTM to model the time series to recognize the emotional changes of the elderly.
+
+  Physiological signals also play a crucial role in emotion recognition, especially when emotions fluctuate violently.
+Physiological indicators such as heart rate, galvanic skin response (GSR), and respiratory rate can often directly
+reflect an individual’s emotional state. This paper integrates smart wearable devices, such as smart watches, GSR
+sensors, heart rate monitors, etc., to obtain the physiological data of the elderly in real time and then analyze their
+emotional changes. Heart rate variation is one of the most commonly used indicators of emotion recognition among
+physiological signals. An accelerated heart rate usually accompanies emotions such as anxiety and excitement,
+while a relaxed state presents a relatively stable heart rate curve. GSR is also an important physiological indicator
+and is often used to detect changes in emotional state. When an individual feels anxious, angry, or stressed, skin
+conductivity increases, whereas in a relaxed or happy state, the GSR is lower. The system can provide an objective
+physiological basis for emotion recognition through real-time monitoring and analysis of these physiological signals.
+
+  In addition to heart rate and GSR, this paper also collects physiological signals such as respiratory rate and blood
+pressure. These indicators reflect emotional fluctuations to a certain extent. Anger or tension usually leads to accelerated breathing and increased blood pressure, while a relaxed state results in relatively stable breathing and lower
+blood pressure. By collecting real-time physiological data from smart wearable devices and combining them with
+(13)
+ft = 휎(Wf ⋅[ht−1, xt
+] + bf
+)
+,
+(14)
+it = 휎(Wi ⋅[ht−1, xt
+] + bi
+)
+,
+(15)
+ot = 휎(Wo ⋅[ht−1, xt
+] + bo
+)
+.
+(16)
+AUs = Δ(Pi,j
+)
+.
+
+Vol.:(0123456789)
+Discover Artificial Intelligence            (2025) 5:49
+| https://doi.org/10.1007/s44163-025-00280-2
+
+Research
+Table 2   Common action-emotion correspondence
+Body language
+Emotion
+Body language
+Emotion
+Clenching fist
+Anger and anxiety
+Rubbing fingers
+Nervousness and anxiety
+Lifting chest
+Confidence and joy
+Tilting body backwards
+Relax and comfort
+Embracing with both hands
+Defensiveness, closure, and anxiety
+Retracting butt
+Fear and avoidance
+Widening eyes
+Surprise and fear
+Lowering head and no eye contact
+Guilt, shame, and fear
+Hands on hips
+Impatience, challenge, and anger
+Tapping the desktop with both hands
+Excitement and anger
+Quickly swinging both arms
+Excitement, impatience, and anxiety
+Smiling
+Happiness, joy, and friendliness
+Fast pace
+Anxiety and tension
+Frowning
+Anger, annoyance, and confusion
+Slow pace and lowering head
+Depression and sadness
+Swinging hands
+Happiness and excitement
+
+Vol:.(1234567890)
+Research
+
+Discover Artificial Intelligence            (2025) 5:49
+| https://doi.org/10.1007/s44163-025-00280-2
+emotional state analysis models, the system can more precisely assess changes in an individual’s emotional state,
+helping to better recognize and predict the emotional responses of the elderly.
+(3)	 Modal fusion
+
+  In multi-modal emotion recognition, data from different modalities provide complementary perspectives for
+emotional expression. However, a single modality is often affected by noise, environmental interference, and
+individual differences, limiting the accuracy and robustness of emotion recognition. Therefore, this paper adopts
+a multi-modal deep neural network architecture to optimize the fusion effect of speech, facial expressions, body
+language, and physiological signals. Specifically, the features of each modality are first processed independently.
+Voice signals are extracted through MFCC features. Facial expression images are processed through optimized CNN.
+Body language data is extracted through posture recognition and motion analysis. Physiological signals are collected
+in real time through smart wearable devices. After preliminary processing, the feature data of each modality are
+input into the multi-modal fusion network.
+
+  This paper adopts multilayer perceptron (MLP) and deep neural networks (DNN) architecture to achieve effective
+integration between different modalities. Multi-modal data is combined into the same network through feature
+concatenation and weighted fusion. Figure 3 shows the fusion process:
+
+  In this process, considering the different contributions of each modality to emotion recognition, this paper uses
+a modality adaptive weighting mechanism to dynamically adjust the weight of each modality and optimize the
+fusion effect. In the specific implementation, assuming there are N modalities M1 , M2 , …, MN , the feature of each
+modality is xi , and the weight is wi . The fused emotion prediction ̂y can be obtained by weighted summation:
+f(xi) represents the feature output of the i-th modality.
+
+  This paper uses a modality adaptive weighting mechanism to update the weight according to the confidence
+level confi(t) of each modality to dynamically adjust the weight:
+(17)
+̂y =
+N
+∑
+i=1
+wi ⋅f(xi
+),
+Speech data
+(MFCC)
+Speech feature
+extraction
+Facial expression data
+(CNN)
+Facial feature
+extraction
+Body language data
+(Pose/Action)
+Body language
+feature extraction
+Physiological data
+(Wearables)
+Bio signal feature
+extraction
+Multimodal feature
+fusion(MLP/DNN)
+Adaptive weight adjustment
+Emotion prediction
+Emotion
+MFCC
+CNN
+Pose/Action
+Wearables
+Multimodal features
+Adaptive weight
+Fig. 3   Multi-modal data fusion process
+
+Vol.:(0123456789)
+Discover Artificial Intelligence            (2025) 5:49
+| https://doi.org/10.1007/s44163-025-00280-2
+
+Research
+
+  In addition, through DNN, the fused features x1 , x2,…, xN are processed layer by layer, and finally, the emotion
+prediction result yﬁnal is the output:
+3.3  System implementation and optimization
+(1)	 Data collection and preprocessing.
+
+  The realization of the system first depends on the acquisition and preprocessing of multi-modal data. This paper
+uses various sensing devices in the data collection stage, including cameras, microphones, and physiological signal
+sensors. These devices can simultaneously collect speech, facial expressions, body language, and physiological
+signals to form rich emotional expression information. Data collection is conducted in a nursing home setting
+and involves multiple rounds of interactive data from 50 elderly people. Each elderly person participates in data
+collection at least three times, and 3,000 emotional state data are collected, covering common emotional states of
+the elderly, such as anxiety, loneliness, joy, and depression. The specifications of the data acquisition equipment
+are shown in Table 3.
+
+  In the data preprocessing stage, this paper adopts an effective processing method for multi-modal data. First,
+spectral subtraction and Wiener filtering are used to remove background noise and environmental interference
+from speech data to improve the clarity of voice signals. Spectral subtraction removes noise by subtracting the
+noise spectrum in the frequency domain. The formula is:
+
+
+X(f) is the noisy speech spectrum; N(f) is the noise spectrum; 휖 is a small constant to prevent the spectrum
+amplitude from being negative. Wiener filtering optimizes denoising based on the power spectral density of the
+signal and noise, and the formula is:
+
+  In Formula (21), Psx(f) represents the cross-power spectral density of signal and noise, and Pxx(f) represents the
+noise power spectral density.
+
+  The preprocessing of facial expression images first uses the multi-task cascaded convolutional neural networks
+(MTCNN) algorithm to locate the facial area to ensure accurate extraction. Then, Dlib’s 68-point key point detection
+is used to calibrate facial features, and affine transformation is used for image alignment to eliminate the effects
+of shooting angle and lighting changes and ensure image consistency. A band-pass filter is used for physiological
+signals to remove low-frequency and high-frequency noise to provide signal stability. The transfer function of the
+band-pass filter is:
+(18)
+wi(t) =
+wi ⋅confi(t)
+∑N
+j=1 wj ⋅confj(t)
+.
+(19)
+yﬁnal = DNN(w1 ⋅x1 + w2 ⋅x2 + ⋯+ wN ⋅xN
+)
+.
+(20)
+S(f) = max(|X(f)|2 −|||N(f)|2, 휖)
+,
+(21)
+s (t) = Psx(f)
+Pxx(f)x(t).
+Table 3   Data collection equipment specifications
+Device type
+Device model
+Key specifications
+Microphone
+Shure SM58
+Frequency response: 50 Hz to 15 kHz, sensitivity: − 54.5 dBV/Pa,
+impedance: 150 ohms
+Physiological signal sensors
+Empatica E4 Wristband
+Heart rate accuracy: ± 1 bpm, GSR range: 0–50 μS, Sampling rate: 32 Hz
+Camera
+Logitech C920
+Resolution: 1920 × 1080, Frame rate: 30 Hz, Field of view: 78 degrees
+Depth camera
+Microsoft Kinect V2
+Depth resolution: 512 × 424, Depth accuracy: ± 1 cm, Frame rate: 30 Hz
+
+Vol:.(1234567890)
+Research
+
+Discover Artificial Intelligence            (2025) 5:49
+| https://doi.org/10.1007/s44163-025-00280-2
+
+  In Formula (22), flow and fhigh are the filter’s low-frequency and high-frequency cut-off frequencies, respectively.
+Median filtering is used to remove the instantaneous outliers caused by sensors. The formula is as follows:
+
+  In Formula (23), k is the window size. Finally, z-score standardization is performed on physiological signals, such
+as heart rate and GSR:
+
+  After preprocessing, the constructed nursing home dataset is divided into a training set and a validation set in a
+ratio of 8:2.
+
+  The system uses an optimized convolutional neural network (CNN) to extract features from facial images. MFCC
+(Mel-frequency cepstrum coefficient) is used to extract speech features, such as pitch, speech speed, intonation, etc.
+Body language, including posture, gestures and gait, is captured using cameras and depth sensors. Physiological
+data such as heart rate, electrodermal response (GSR) and respiratory rate are collected through smart wearable
+devices. Through feature splicing and weighted fusion, the features of each mode are combined into the same
+network. The modal adaptive weighting mechanism dynamically adjusts the weights of each mode according to
+the modal confidence to optimize the fusion effect. The fused features are processed layer by layer by Deep Neural
+Network (DNN) to output the final emotion prediction result.
+(2)	 Model training and transfer.
+
+  In model training, this paper first uses public emotion datasets such as AffectNet and IEMOCAP to pre-train CNN
+and Bi-LSTM models. These datasets cover emotion label data of modalities such as facial expressions, speech, and
+body language, aiming to help the model learn common emotional features and expression patterns, laying the
+foundation for subsequent emotion recognition which can then be fine-tuned for the specific emotional expressions
+of the elderly in nursing homes. The hyperparameters are initially tuned, and the Adam optimizer is selected. The
+learning rate is set to 0.0005, and the batch size is 32. The training efficiency and model performance are balanced
+to optimize the pre-training effect. In addition, dropout (0.4) and L2 regularization (0.001) techniques are used to
+prevent overfitting and ensure the model’s good generalization ability on large-scale datasets.
+
+  Implementation details:
+
+  The model was trained using Adam optimizer with the following hyperparameters:
+
+  Pre-training Learning Rate: 0.0005, chosen to balance stable convergence and efficient updates for large-scale
+datasets.
+
+  Fine-tuning Learning Rate: 0.0001, reduced to adapt to the smaller elderly-specific dataset while preserving pretrained knowledge.
+
+  Dropout Rate: 0.4, applied to prevent overfitting by deactivating 40% of neurons during training.
+
+  L2 Regularization: 0.001, selected to impose moderate weight penalty without hindering learning capacity.
+
+  Rationale: These values were empirically determined based on prior practices in multimodal emotion recognition.
+The learning rate decay strategy (Sect. 3.3) further stabilizes fine-tuning by reducing the rate by 10% per epoch if
+validation loss plateaus.
+
+  This paper adopts a hierarchical fine-tuning strategy to adapt the model to the emotional expression of the
+elderly group. The nursing home dataset constructed in this paper is used for fine-tuning. During fine-tuning,
+optimization is performed on subtle changes in the facial expressions of the elderly to improve the sensitivity of
+the facial expression recognition model. Regarding speech recognition, the focus is on optimizing the model’s
+ability to recognize emotional expression features of the elderly, such as low pitch and rapid speaking speed. In
+terms of physiological signals, the model’s recognition precision of physiological signals such as heart rate and GSR
+is improved by combining the physiological fluctuation features of the elderly. During the fine-tuning process, a
+smaller learning rate (0.0001) is used, and the learning rate decay strategy is adjusted according to the unique needs
+of facial expressions, speech, and physiological signals so that the model can better adapt to the emotional features
+of the elderly while retaining pre-training knowledge. The batch size is set to 16 to reduce noise during training
+(22)
+H(f) = {{ 1, flow ≤f ≤fhigh
+0,
+otherwise
+.
+(23)
+yi = median(xi−k, … , xi+k
+)
+.
+(24)
+z = x −휇
+휎
+.
+
+Vol.:(0123456789)
+Discover Artificial Intelligence            (2025) 5:49
+| https://doi.org/10.1007/s44163-025-00280-2
+
+Research
+and ensure that the model can focus on subtle emotion changes. On this basis, after the training, an evaluation is
+carried out on the validation set to further optimize the model’s performance by testing the precision of emotion
+recognition in different situations.
+
+  During fine-tuning, adaptation to the target task is also performed. Considering the background noise in the
+nursing home environment and the relatively hidden emotional expressions of the elderly, the system adjusts the
+emotion labels and annotation standards to better reflect the emotional features of the elderly. In addition, a noise
+adaptation mechanism is added to address noise interference in complex environments, improving the model’s
+robustness. In terms of physiological signal modeling, considering individual differences, this paper analyzes the
+fluctuations of physiological signals in different situations and further optimizes the emotion prediction model.
+Noise augmentation technology enhances the model’s adaptability to environmental noise. Random noise data
+with a ratio of 0.3 is added during the training process. These fine-tuning and task adaptation significantly improve
+the model’s emotion recognition ability in the nursing home environment.
+(3)	 Personalized adaptation and online learning.
+
+  This paper achieves dynamic adjustment and optimization of the emotional expression of the elderly through
+personalized adaptation and online learning technology. The system continuously updates and adjusts the model
+according to the unique emotional features of each elderly person to improve emotion recognition accuracy. Figure 4 illustrates the principle of personalized adaptation:
+
+  First, the system continuously interacts with the elderly, collecting multi-modal data such as body language,
+speech, facial expressions, and physiological signs to realize personalized adaptation. Whenever the elderly
+express emotions, the system uses the data to update the personalized emotion recognition model. Taking speech
+recognition as an example, the system automatically adjusts the model’s ability to recognize individual phonetic
+features. For facial expressions, the system can capture subtle changes in the expressions of the elderly and adjust
+the model’s sensitivity to accommodate these slight changes.
+
+  Online learning technology is the core of achieving personalized adaptation. Figure 5 shows its implementation
+process:
+Fig. 4   Principle of personalized adaptation
+
+Vol:.(1234567890)
+Research
+
+Discover Artificial Intelligence            (2025) 5:49
+| https://doi.org/10.1007/s44163-025-00280-2
+
+  When interacting with the elderly, the system uses an incremental learning algorithm to update the model online
+based on real-time feedback data. After each interaction, the system uses a “sliding window” approach to finetune the existing model using only recent data rather than retraining the entire model. This approach reduces
+computational costs and enables the model to quickly adapt to the dynamic changes in the emotional expressions of
+the elderly. In the specific implementation, the system combines incremental learning with a gradient descent-based
+optimization algorithm for updates, uses batch normalization and dropout techniques to maintain generalization
+capabilities, and prevents overfitting through a moderate learning rate.
+
+  In addition, in noisy environments, the system can adjust the recognition method according to the emotional
+changes of the elderly. For example, when the speech is disturbed by background noise, the system preprocesses
+the voice signal through a noise robustness algorithm to eliminate the noise and extract adequate emotional
+information. Similarly, the system can adjust the processing methods of physiological signals such as heart rate
+and GSR in real time according to changes in the elderly’s physical condition, thereby improving the accuracy of
+emotion prediction.
+3.4  Lightweight deployment optimization
+To ensure practical applicability in resource-constrained elderly care facilities, the proposed model integrates the
+following optimizations:
+Model Pruning: Redundant neurons in fully connected layers were iteratively pruned based on magnitude criteria,
+reducing parameter count by 35% with < 1% accuracy drop.
+Quantization-aware Training: We adopted 8-bit integer quantization during fine-tuning to compress the model size
+by 4 × while maintaining FP32-level performance.
+Edge-friendly frameworks: The final model was converted to TensorRT and ONNX formats for efficient inference on
+edge devices (e.g., NVIDIA Jetson Nano, Raspberry Pi).
+4  System optimization effect evaluation
+	 (1)	 Experimental design
+
+	   Several comparative experiments are designed to verify the actual application effects of the system in various
+aspects to comprehensively evaluate the optimization effect of the multi-modal emotion recognition system
+Fig. 5   Online learning implementation flowchart
+
+Vol.:(0123456789)
+Discover Artificial Intelligence            (2025) 5:49
+| https://doi.org/10.1007/s44163-025-00280-2
+
+Research
+built in this paper. There are five groups in the experiment. One group uses the optimized multi-modal emotion
+recognition system constructed in this paper as the experimental group. The other four groups use the traditional
+single-modal emotion recognition system, the traditional multi-modal emotion recognition system (without
+personalized adaptation), the classical rule-based emotion recognition system, and the template-based emotion
+recognition system. These four groups together constitute the control groups. All five systems are deployed on
+service robots in nursing homes.
+
+	   The experimental site is a nursing home in the area. With the consent of their families and the institution, 25
+elderly people are selected for the experiment. All robots in the experimental and control groups use the same
+hardware platform, configured with NVIDIA GTX 2080 Ti GPU and Intel i9-11900 K processor to ensure efficient realtime data processing and deep learning inference. Each robot is equipped with a high-definition camera (resolution
+of 1920 × 1080 and frame rate of 30 Hz) for facial expression recognition and a four-microphone array for speech
+recognition, which can effectively filter out background noise. The robot is also equipped with heart rate and skin
+conductivity sensors to monitor the physiological signals of the elderly and capture emotional fluctuations. All
+systems are deployed in the Ubuntu 20.04 operating system and Python 3.8 environment, using the TensorFlow
+2.0 and PyTorch frameworks and libraries such as OpenCV and Librosa to ensure the compatibility and real-time
+performance of the system.
+	 (2)	 Emotion recognition accuracy evaluation
+
+	   A comparative experiment is designed to comprehensively evaluate the performance of the multi-modal emotion recognition system constructed in this paper in emotion recognition among the elderly. During the experiment, 5 elderly people are randomly selected from the participants to interact with the robots in the experimental
+group and the control groups for 30 min, respectively. The total number of interactions in the experiment is 25
+times. The robot uses multi-modal input information, such as speech, body language, facial expressions, and
+physiological signs, to recognize the emotional state of the elderly in real time during the conversation. It makes
+emotional judgments based on the above multi-modal data in each interaction cycle and records the recognition
+results. Emotion types include happiness, sadness, anger, anxiety, and surprise. After each round of interaction,
+the average emotion recognition accuracy of each group of robots for five elderly people in different emotion
+categories is calculated and counted. Figure 6 presents the experimental results:
+
+
+Figure 6 shows that the multi-modal emotion recognition system optimized in this paper has apparent
+advantages in emotion recognition. The emotion recognition accuracy of the experimental group under various
+emotion types is generally higher than that of the control groups. Specifically, the average recognition accuracy
+of the experimental group for “happiness” reaches 85.2%, which is significantly higher than 76.4% of the control
+group 1 (single-modal system), 79.3% of the control group 2 (traditional multi-modal system), 68.2% of the control
+group 3 (classical rule-based system), and 70.1% of the control group 4 (template-based system). This trend is
+also verified in other types of emotions, especially in recognition of “anger,” where the average accuracy of the
+Fig. 6   Emotion recognition accuracy
+
+Vol:.(1234567890)
+Research
+
+Discover Artificial Intelligence            (2025) 5:49
+| https://doi.org/10.1007/s44163-025-00280-2
+experimental group is 88.0%, much higher than the 72.5% to 81.0% of the control groups. Overall, the experimental
+group shows higher emotion recognition accuracy under all emotion categories, demonstrating the effectiveness
+of multi-modal input and personalized adaptation techniques. At the same time, the accuracy rates of all control
+groups are relatively close and generally lower than those of the experimental group, indicating that traditional
+single-modal systems or systems without personalized optimization have certain limitations when faced with
+diverse emotional expressions.
+	 (3)	 Emotion mobilization and mental health improvement effect evaluation
+
+	   Five elderly people who participate in the experiment are randomly selected to interact with the robots in the
+experimental and control groups for 15 min to comprehensively evaluate the effectiveness of each system in terms
+of emotion mobilization and mental health improvement. During the interaction, the robots monitor and record
+the heart rate and GSR of the elderly in real time. In addition, before and after the experiment, the psychological conditions of the elderly are scored using the UCLA Loneliness Scale (Univesity of California at Los Angels) to
+evaluate each group of robots’ mental health improvement effect. Figures 7 and 8 show the changes in heart rate
+and GSR during the experiment:
+
+	   According to Figs. 7 and 8, the robot in the experimental group effectively causes the elderly people’s heart
+rate to rise within 15 min of interaction with them, from 70 beats/min to a maximum of 98 beats/min and then
+gradually decreasing to 94 beats/min, indicating that the elderly’s emotions are extensively mobilized through
+communication with the robot in the experimental group. At the same time, the GSR also shows a clear upward
+trend, increasing from 2.5 μS to 6.5 μS. This indicates that the robot in the experimental group significantly affects
+emotion mobilization and can stimulate more obvious physiological and emotional responses in the elderly. In
+contrast, although the heart rate and GSR of the control groups also show an upward trend, the increase is smaller,
+and there are fluctuations or slowdowns at certain time points, which may mean that the effect of the control
+groups’ robots in emotion mobilization is not as stable or significant as the experimental group’s robot. For example,
+the heart rate of the control group 1 fluctuates at the 5th and 10th min, while the GSR slows down at the 3rd
+and 6th min. These fluctuations may be related to the robots’ interaction design, emotion recognition ability, or
+personalized adaptability. Based on the changes in heart rate and GSR, the robot in the experimental group shows
+more apparent effects in emotion mobilization and is able to more effectively induce physiological and emotional
+responses in the elderly.
+
+	   Table 4 lists the test scores of the loneliness scale before and after the experiment:
+
+	   Table 4 shows that the experimental group performs better than the control groups in improving the mental
+health of the elderly. The average score of the experimental group drops from the initial 67.8 points to 49.8 points,
+showing a significant alleviation of loneliness. The improvement is large, and the scores of some elderly people
+drop by as much as 20 points. In contrast, the scores of the control groups change less. Although there is a certain
+Fig. 7   Heart rate change curves
+
+Vol.:(0123456789)
+Discover Artificial Intelligence            (2025) 5:49
+| https://doi.org/10.1007/s44163-025-00280-2
+
+Research
+decline, the decline is relatively limited, with the average score ranging from 61.6 to 63.4. In control group 1,
+the score of elderly 1 drops from 65 to 59, and the score of elderly 2 drops from 70 to 63, indicating that the
+improvement effect of the control groups is relatively general. Overall, the robot in the experimental group shows
+more significant effects in emotion mobilization and mental health improvement and can effectively alleviate the
+loneliness of the elderly and improve their mental health level.
+	 (4)	 Response time and interaction duration evaluation
+
+	   In this experiment, five elderly people who participate in the experiment are randomly selected to interact with
+each group of robots for 30 min. During the experiment, the average response time (in milliseconds) and interaction duration (in minutes) of each group of robots when interacting with the elderly are recorded. The interaction
+duration and response speed of each group are evaluated by comparison, as shown in Fig. 9:
+
+	   Table 5 shows the interaction time data between each group of robots and each elderly person:
+
+	   In Fig. 9, regarding response time, the experimental group shows lower response time in all elderly numbers, with
+specific values ranging from 232 to 264 ms and an average response time of 248.6 ms. In contrast, the response
+times of the control groups are generally higher. The response time of control group 1 ranges from 297 to 345 ms,
+with an average of 317.2 ms. The response times of control group 2 ranges from 277 to 311 ms, with an average
+of 292.8 ms. The response time of control group 3 ranges from 308 to 347 ms, with an average of 329 ms. The
+response time of control group 4 ranges from 292 to 326 ms, with an average of 309.4 ms. This suggests that the
+experimental group has a clear advantage in response speed and can respond more quickly to the interaction
+needs of the elderly.
+
+	   It can be obtained from Table 4 that the experimental group also has a significant advantage regarding the
+interaction time. The interaction time with each elderly person ranges from 26.4 min to 29.1 min, and the average
+Fig. 8   GSR change curves
+Table 4   Loneliness score results
+Elderly number
+Initial score
+Experimental
+group
+Control group 1
+Control group 2
+Control group 3
+Control group 4
+1
+65
+45
+59
+60
+61
+58
+2
+70
+50
+63
+64
+65
+62
+3
+72
+53
+66
+67
+68
+66
+4
+64
+49
+58
+59
+60
+61
+5
+68
+52
+62
+61
+63
+62
+Average score
+67.8
+49.8
+61.6
+62.2
+63.4
+61.8
+
+Vol:.(1234567890)
+Research
+
+Discover Artificial Intelligence            (2025) 5:49
+| https://doi.org/10.1007/s44163-025-00280-2
+interaction time is 28.08 min. The interaction time of the control groups is relatively short. The average interaction
+time of control group 1 is 26.68 min; that of control group 2 is 27.08 min; that of control group 3 is 26.06 min; control
+group 4 has the shortest average interaction time of 25.48 min. The longer interaction duration in the experimental
+group may mean that a richer and deeper communication experience can be provided when interacting with the
+elderly.
+	 (5)	 Interaction naturalness, fluency, and user satisfaction evaluation
+
+	   After the experiment, the fluency and naturalness of interaction of the robots in the experimental and control
+groups are scored using the Likert scale, and a user satisfaction questionnaire is distributed to all elderly people
+who participate in the experiment to collect their satisfaction with each group of robots in various aspects during the experiment. Figure 10 displays the average Likert scale scores of the experimental and control groups in a
+statistical manner:
+
+	   The collected user satisfaction questionnaire results are summarized and statistically analyzed. Table 6 lists the
+results:
+
+	   According to the results in Fig. 10, the mean Likert scale scores of the experimental group in terms of fluency
+and naturalness of interaction are significantly higher than those of all control groups. The average fluency
+score of the experimental group is 4.88, and the average score of interaction naturalness is 4.84, indicating that
+participants generally believe that the robot in the experimental group shows higher fluency and naturalness
+in communication. In contrast, the control groups score lower, especially control group 1, which has an average
+score of 3.68 on fluency and 3.58 on naturalness of interaction. The average scores of fluency and naturalness of
+interaction of control group 4 are only 3.78 and 3.72, significantly lower than those of the experimental group. This
+indicates that the control group performs considerably worse than the experimental group on these dimensions.
+Fig. 9   Each group’s response time results
+Table 5   Interaction duration
+data of the experimental
+group and control groups
+Elderly
+number
+Experimental
+group (minutes)
+Control group 1
+(minutes)
+Control group 2
+(minutes)
+Control group 3
+(minutes)
+Control group
+4 (minutes)
+1
+28.2
+26.5
+27.8
+25.9
+26.3
+2
+29.1
+27.2
+28.4
+26.1
+25.7
+3
+27.9
+26.6
+27.1
+26.3
+25.7
+4
+26.4
+25.8
+25.2
+24.6
+24.2
+5
+28.8
+27.3
+26.9
+27.4
+25.5
+
+Vol.:(0123456789)
+Discover Artificial Intelligence            (2025) 5:49
+| https://doi.org/10.1007/s44163-025-00280-2
+
+Research
+
+	   Table 5 shows that the experimental group also performs well in terms of interaction convenience, personalized response, emotional resonance, entertainment, and interaction continuity, especially in emotional resonance
+(4.5 points) and interaction continuity (4.6 points). This suggests that the robot in the experimental group is more
+effective in establishing emotional connections with users and maintaining continuity of interaction. Relatively,
+the scores of the control groups are generally lower. For example, the scores of control group 1 on interaction
+convenience and personalized response are 3.2 and 3.1, respectively. They are also significantly lower than the
+experimental group in terms of emotional resonance (3.3 points), entertainment (3.0 points), and interaction
+continuity (3.2 points). These gaps reflect that there is still room for improvement in the control groups regarding
+improving user satisfaction and emotional interaction.
+	 (6)	 Statistical analysis
+
+	   In order to validate the performance of the model, the results were statistically analysed to demonstrate the
+significance of this improvement relative to the previous method. The results of the statistical analysis are shown
+in Table 7.
+
+	   The proposed system shows a statistically significant improvement (p < 0.001) in sentiment recognition accuracy
+compared to previous methods. The average accuracy improved by 4.1% and the 95% confidence interval indicates
+reliable improvement.
+	 (7)	 Robustness analysis.
+
+	   In order to verify the reliability of the model, we conducted robustness experiments on the model and the results
+are shown in Table 8.
+
+	   The model’s performance steadily decreases as noise increases, with a 7.6% drop in accuracy from no noise to
+high noise. Higher individual variability reduces the accuracy of the model by 6.1% compared to low variability.
+Performance decreases significantly with increasing cognitive impairment, and in severe cases, accuracy decreases
+Fig. 10   Score results of the fluency and naturalness of interaction
+Table 6   Statistics of
+satisfaction questionnaire
+survey results
+Evaluation dimension
+Experimental
+group
+Control
+group 1
+Control
+group 2
+Control
+group 3
+Control
+group 4
+Interaction convenience
+4.3
+3.2
+3.5
+3.4
+3.3
+Personalized response
+4.4
+3.1
+3.3
+3.2
+3.1
+Emotional resonance
+4.5
+3.3
+3.4
+3.3
+3.2
+Entertainment and fun
+4.2
+3.0
+3.1
+3.0
+2.9
+Interaction continuity
+4.6
+3.2
+3.4
+3.3
+3.1
+
+Vol:.(1234567890)
+Research
+
+Discover Artificial Intelligence            (2025) 5:49
+| https://doi.org/10.1007/s44163-025-00280-2
+by 19.4% compared to no cognitive impairment. The table demonstrates the robustness of the model under a
+variety of challenging conditions, highlighting its vulnerabilities and areas for improvement.
+	 (8)	 Baseline comparison with other methodologies.
+
+
+In order to compare the performance of the models, we conducted additional experiments comparing our
+proposed models with several state-of-the-art methods including Graphical Neural Networks (GNN) and
+reinforcement learning based methods. The results of the experiments are shown in Table 9.
+
+	   While direct comparisons with state-of-the-art models (e.g., GNNs, RL-adaptive) are limited by differences in
+data modalities and target populations, our model achieves competitive performance on elderly-specific datasets.
+Notably, the proposed framework outperforms in F1-score (0.79 vs. 0.75) despite advantage in young adult data
+homogeneity.
+	 (9)	 Sensitivity analysis experiments.
+
+	   Evaluate the robustness of the model under different hyperparameter settings and perform a comprehensive
+sensitivity analysis. The results of the sensitivity analysis are shown in Table 10.
+
+	   Results indicate that the model performance remains stable (± 1.2% accuracy variance) across tested ranges,
+confirming the robustness of our selections. The fine-tuning phase exhibits higher sensitivity to learning rate,
+justifying our conservative choice of 0.0001 to avoid overfitting.
+	(10)	 Deployment Efficiency Analysis.
+
+	   We evaluated the model on three hardware configurations. Table 11 shows the deployment efficiency analysis
+results.
+Table 7   Results of statistical
+analysest
+Variable
+Proposed system
+Previous
+method
+Mean accuracy (%)
+84.1
+80.0
+Standard deviation (%)
+5.0
+6.0
+Sample size (n)
+300
+300
+t-Value
+9.11
+–
+Degrees of freedom (df)
+598
+–
+p-value
+ < 0.001
+–
+95% confidence interval
+[3.22, 4.98]
+–
+Table 8   Model Robustness
+Assessment Under Various
+Conditions
+Condition
+Accuracy (%)
+Precision (%)
+Recall (%)
+F1-Score (%)
+No noise
+84.1
+83.2
+81.8
+82.5
+Low noise
+79.3
+78.5
+77.1
+77.8
+Medium noise
+73.2
+71.9
+70.3
+71.1
+High noise
+66.5
+64.8
+63.4
+64.1
+Individual variability—low
+81.5
+80.7
+79.2
+80.0
+Individual variability—high
+75.4
+74.1
+72.8
+73.5
+cognitive impairment—mild
+78.9
+77.5
+76.1
+76.8
+Cognitive impairment—moderate
+72.3
+70.8
+69.4
+70.1
+Cognitive impairment—severe
+64.7
+62.9
+61.3
+62.1
+Table 9   Benchmark
+comparison results
+Model
+Modality
+Accuracy (%)
+F1-Score
+Target population
+Proposed (ours)
+Multimodal
+82.4
+0.79
+Elderly-specific
+GNN-based
+Text + Speech
+79.1
+0.73
+General adults
+RL-Adaptive
+Facial + EEG
+78.6
+0.71
+Cross-age groups
+Multimodal fusion
+Text + Video
+80.2
+0.75
+Young adults
+
+Vol.:(0123456789)
+Discover Artificial Intelligence            (2025) 5:49
+| https://doi.org/10.1007/s44163-025-00280-2
+
+Research
+
+	   Results demonstrate acceptable accuracy degradation (≤ 2.6%) on edge devices, with real-time inference capability (≥ 7 FPS on Jetson Nano). This confirms the model’s readiness for deployment in low-resource elderly care
+environments.
+5  Discussion and future work
+This study integrates transfer learning with multimodal emotion recognition to enhance the effectiveness of emotion
+recognition in aged care settings. This integration enables the model to utilize pre-trained knowledge from extensive
+public datasets and adapt it to the specific emotional expressions exhibited by older adults. Hierarchical fine-tuning
+strategies, which involve freezing low-level network layers while fine-tuning high-level feature extraction layers,
+improve model adaptability and mitigate overfitting. Furthermore, an adaptive weighting mechanism dynamically
+adjusts the weight of each modality based on its confidence level, optimizing the fusion effect and enhancing
+the system’s capacity for accurate emotion recognition. While prior research has examined transfer learning and
+multimodal emotion recognition independently, our approach uniquely combines these two techniques to tackle
+challenges related to data scarcity and distinctive emotional expressions among older adults. This combination yields
+a more robust and precise emotion recognition system for elder care. The implementation of hierarchical fine-tuning
+strategies alongside adaptive weighting mechanisms distinguishes our study from existing methodologies that
+typically employ fixed weights or simplistic joins for multimodal fusion.
+The experimental group achieved an average emotion recognition accuracy of 84.1%, significantly surpassing
+the control group’s average accuracy of less than 80%. This finding underscores the efficacy of our approach in
+accurately identifying emotions. Additionally, variations in heart rate and electrodermal response (GSR) confirmed
+that the system effectively engaged elderly individuals’ emotions. Notably, loneliness scores decreased substantially
+within the experimental group, indicating an improvement in mental health outcomes. Future iterations of the
+research should aim to combine physical, psychological, and behavioral assessment techniques to provide a more
+comprehensive assessment of mental health improvement. Longitudinal studies could be conducted to assess the
+long-term effects of the system on mental health. By addressing these issues, future research can contribute to the
+development of more sophisticated service robots that provide compassionate and effective care for older adults,
+ultimately improving their quality of life and well-being.
+6  Conclusion
+This paper constructs a multi-modal emotion recognition system based on transfer learning and applies it to the interaction optimization of service robots in nursing homes. By integrating multi-modal information such as facial expressions,
+speech, body language, and physiological signals, this paper significantly improves the robot’s performance in emotion
+recognition, emotion mobilization, and mental health improvement. First, public datasets such as AffectNet and IEMOCAP
+Table 10   Hyperparameter
+sensitivity on model
+performance
+Hyperparameter
+Tested range
+Accuracy (%)
+F1-Score
+Pre-training LR
+0.00025–0.001
+80.1–81.9
+0.77–0.79
+Fine-tuning LR
+0.00005–0.0002
+81.2–81.5
+0.78–0.79
+Dropout rate
+0.3–0.5
+80.8–81.4
+0.77–0.78
+L2 Regularization
+0.0005–0.002
+80.9–81.3
+0.77–0.78
+Table 11   Deployment
+efficiency analysis
+Device
+Inference time (ms)
+Memory (MB)
+Accuracy (%)
+NVIDIA V100 (baseline)
+12.3
+2048
+82.4
+NVIDIA Jetson Nano
+56.7
+512
+81.1
+Raspberry Pi 4
+142.5
+256
+79.8
+
+Vol:.(1234567890)
+Research
+
+Discover Artificial Intelligence            (2025) 5:49
+| https://doi.org/10.1007/s44163-025-00280-2
+are used for pre-training to learn general emotional features. Subsequently, a hierarchical fine-tuning strategy is used
+to optimize the emotional features of the elderly, significantly improving the accuracy of emotion recognition. The
+experimental results show that the experimental group outperforms the control groups in terms of emotion recognition
+accuracy, emotion mobilization, and interaction naturalness. Through comparative analysis with four control groups, the
+effectiveness of the system in improving the quality of emotional communication among the elderly is verified, especially
+in terms of emotional resonance, interaction continuity, and improvement of mental health.
+Nevertheless, this study still has some limitations. Firstly, although the model has achieved good results in the
+experimental environment, its performance in the complex and dynamic actual elderly care environment still needs
+further verification. Secondly, existing emotion datasets have not yet fully covered the specific needs of the elderly, and
+more personalized datasets should be explored in the future to improve the adaptability and precision of the model.
+Future research can focus on optimizing the model’s real-time emotion recognition capabilities, studying the fusion
+effect of multi-modal information, and verifying the application of the model in more elderly groups to promote the
+widespread application of service robots in nursing homes in actual scenarios.
+Author contributions  Yongguan Ai-Writing-original draft, review and editing, Conceptualization, Yuanjun Zhang-Formal analysis, Methology,
+Funding acquisition; Juan Wang-review and editing, Validation, Nianfang Xu-review and editing, Supervision,Visualization. All authors reviewed
+the manuscript.
+Funding  This work was supported by Anhui Province Higher Education Science Research Project—Research on the Current Situation and
+Countermeasures of Talent Shortage in Elderly Care Institutions from the Perspective of Rational People (Project Number: 2022AH052043),
+and Anhui Provincial Quality Engineering Project for Higher Education Institutions —Exploration and practice of "coupled project-based"
+public welfare and charity talent training mode based on chimeric symbiosis (Project Number: 2023jyxm1339).
+Data availability  The data are available from the corresponding author on reasonable request.
+Declarations
+Ethics approval and consent to participate  This study was reviewed and approved by the Anhui Vocational and Technical College prior to commencement and was conducted in accordance with the ethical principles of Anhui Vocational and Technical College. We followed the ethical
+standards of our institution and obtained written informed consent from all participants. For participants under 16 years of age, we obtained
+consent from their parents or guardians. Participants were informed of their rights and a sample consent form was provided on request.
+Consent for publication  Not applicable.
+Competing interests  The authors declare no competing interests.
+Open Access   This article is licensed under a Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License, which
+permits any non-commercial use, sharing, distribution and reproduction in any medium or format, as long as you give appropriate credit to
+the original author(s) and the source, provide a link to the Creative Commons licence, and indicate if you modified the licensed material. You
+do not have permission under this licence to share adapted material derived from this article or parts of it. The images or other third party
+material in this article are included in the article’s Creative Commons licence, unless indicated otherwise in a credit line to the material. If
+material is not included in the article’s Creative Commons licence and your intended use is not permitted by statutory regulation or exceeds
+the permitted use, you will need to obtain permission directly from the copyright holder. To view a copy of this licence, visit http://​creat​iveco​
+mmons.​org/​licen​ses/​by-​nc-​nd/4.​0/.
+References
+	 1.	 Portugal D, Alvito P, Christodoulou E, Samaras G, Dias J. A study on the deployment of a service robot in an elderly care center. Int J Soc
+Robot. 2019;11:317–41.
+	 2.	 Hung J. Smart elderly care services in China: challenges, progress, and policy development. Sustainability. 2022;2023(15):178.
+	 3.	 Chen R, Xu P, Song P, Wang M, He J. China has faster pace than Japan in population aging in next 25 years. Biosci Trends. 2019;13(4):287–91.
+	 4.	 Feng Z, Glinskaya E, Chen H, Gong S, Qiu Y, Xu J, Yip W. Long-term care system for older adults in China: policy landscape, challenges, and
+future prospects. The Lancet. 2020;396(10259):1362–72.
+	 5.	 Zhang Q, Li M, Wu Y. Smart home for elderly care: development and challenges in China. BMC Geriatr. 2020;20:1–8.
+	 6.	 Anghel I, Cioara T, Moldovan D, Antal M, Pop CD, Salomie I, Pop CB, Chifu VR. Smart environments and social robots for age-friendly
+integrated care services. Int J Environ Res Public Health. 2020;17(11):3801.
+
+Vol.:(0123456789)
+Discover Artificial Intelligence            (2025) 5:49
+| https://doi.org/10.1007/s44163-025-00280-2
+
+Research
+	 7.	 Abou Allaban A, Wang M, Padır T. A systematic review of robotics research in support of in-home care for older adults. Information.
+2020;11(2):75.
+	 8.	 Rezaee K, Haddadnia J, Delbari A. Intelligent detection of the falls in the elderly using fuzzy inference system and video-based motion
+estimation method. In: 2013 8th Iranian Conference on Machine Vision and Image Processing (MVIP). 2013; pp. 284–288. IEEE.
+	 9.	 Holland J, Kingston L, McCarthy C, Armstrong E, O’Dwyer P, Merz F, McConnell M. Service robots in the healthcare sector. Robotics.
+2021;10(1):47.
+	10.	 Liu W, Qiu JL, Zheng WL, Lu BL. Comparing recognition performance and robustness of multimodal deep learning models for multimodal
+emotion recognition. IEEE Trans Cogn Dev Syst. 2021;14(2):715–29.
+	11.	 Kang D, Kim D, Kang D, Kim T, Lee B, Kim D, Song BC. Beyond superficial emotion recognition: modality-adaptive emotion recognition
+system. Expert Syst Appl. 2024;235: 121097.
+	12.	 Johansson-Pajala RM, Gustafsson C. Significant challenges when introducing care robots in Swedish elder care. Disabil Rehabil Assist
+Technol. 2022;17(2):166–76.
+	13.	 de Gelder B, Veld HIT, Elisabeth MJ. Cultural differences in emotional expressions and body language. Oxford: Oxford University Press;
+2015.
+	14.	 Ruffman T, Halberstadt J, Murray J. Recognition of facial, auditory, and bodily emotions in older adults. J Gerontol B Psychol Sci Soc Sci.
+2009;64(6):696–703.
+	15.	 Simonetti S, Davis C, Kim J. Older adults’ emotion recognition: no auditory-visual benefit for less clear expressions. PLoS ONE. 2022;17(12):
+e0279822.
+	16.	 Zhang J, Yin Z, Chen P, Nichele S. Emotion recognition using multi-modal data and machine learning techniques: a tutorial and review.
+Inf Fusion. 2020;59:103–26.
+	17.	 Morgan SD. Comparing emotion recognition and word recognition in background noise. J Speech Lang Hear Res. 2021;64(5):1758–72.
+	18.	 Abdullah SMSA, Ameen SYA, Sadeeq MA, Zeebaree S. Multimodal emotion recognition using deep learning. J Appl Sci Technol Trends.
+2021;2(01):73–9.
+	19.	 Poria S, Majumder N, Mihalcea R, Hovy E. Emotion recognition in conversation: research challenges, datasets, and recent advances. IEEE
+access. 2019;7:100943–53.
+	20.	 Dzedzickis A, Kaklauskas A, Bucinskas V. Human emotion recognition: review of sensors and methods. Sensors. 2020;20(3):592.
+	21.	 Egger M, Ley M, Hanke S. Emotion recognition from physiological signal analysis: a review. Electron Notes Theoret Comput Sci.
+2019;343:35–55.
+	22.	 Cai Y, Li X, Li J. Emotion recognition using different sensors, emotion models, methods and datasets: a comprehensive review. Sensors.
+2023;23(5):2455.
+	23.	 Zhang K, Li Y, Wang J, Cambria E, Li X. Real-time video emotion recognition based on reinforcement learning and domain knowledge.
+IEEE Trans Circuits Syst Video Technol. 2021;32(3):1034–47.
+	24.	 Ayata D, Yaslan Y, Kamasak ME. Emotion recognition from multimodal physiological signals for emotion aware healthcare systems. J Med
+Biol Eng. 2020;40:149–57.
+	25.	 Luna-Jimenez C, Kleinlein R, Griol D, Callejas Z, Montero JM, Fernandez-Martinez F. A proposal for multimodal emotion recognition using
+aural transformers and action units on ravdess dataset. Appl Sci. 2021;12(1):327.
+	26.	 Akhand MAH, Roy S, Siddique N, Kamal MAS, Shimamura T. Facial emotion recognition using transfer learning in the deep CNN. Electronics. 2021;10(9):1036.
+	27.	 Chowdary MK, Nguyen TN, Hemanth DJ. Deep learning-based facial emotion recognition for human–computer interaction applications.
+Neural Comput Appl. 2023;35(32):23311–28.
+	28.	 Liu R, Shi Y, Ji C, Jia M. A survey of sentiment analysis based on transfer learning. IEEE Access. 2019;7:85401–12.
+	29.	 Zhuang F, Qi Z, Duan K, Xi D, Zhu Y, Zhu H, He Q. A comprehensive survey on transfer learning. Proc IEEE. 2020;109(1):43–76.
+	30.	 Nyamathi A, Dutt N, Lee JA, Rahmani AM, Rasouli M, Krogh D, Brunswicker S. Establishing the foundations of emotional intelligence in care
+companion robots to mitigate agitation among high-risk patients with dementia: protocol for an empathetic patient–robot interaction
+study. JMIR Res Protocols. 2024;13(1): e55761.
+	31.	 Zhao D, Sun X, Shan B, Yang Z, Yang J, Liu H, Hiroshi Y. Research status of elderly-care robots and safe human-robot interaction methods.
+Front Neurosci. 2023;17:1291682.
+	32.	 Hellou M, Gasteiger N, Lim JY, Jang M, Ahn HS. Personalization and localization in human-robot interaction: a review of technical methods.
+Robotics. 2021;10(4):120–43.
+	33.	 Abdollahi H, Mahoor MH, Zandie R, Siewierski J, Qualls SH. Artificial emotional intelligence in socially assistive robots for older adults: a
+pilot study. IEEE Trans Affect Comput. 2022;14(3):2020–32.
+	34.	 Lu J, Liu Y, Lv T, Meng L. An emotional-aware mobile terminal accessibility-assisted recommendation system for the elderly based on
+haptic recognition. Int J Human–Computer Interact. 2024;40(22):7593–609.
+	35.	 Costa A, Rincon JA, Carrascosa C, Julian V, Novais P. Emotions detection on an ambient intelligent system using wearable devices. Futur
+Gener Comput Syst. 2019;92:479–89.
+	36.	 Luna-Jimenez C, Griol D, Callejas Z, Kleinlein R, Montero JM, Fernandez-Martinez F. Multimodal emotion recognition on RAVDESS dataset
+using transfer learning. Sensors. 2021;21(22):7665.
+	37.	 Zhang X, Wang X, Yin S. Multi-modal data transfer learning-based LSTM method for speech emotion recognition. Int J Electron Inf Eng.
+2021;13(2):54–65.
+	38.	 Zou Y, Cheng L. A transfer learning model for gesture recognition based on the deep features extracted by CNN. IEEE Trans Artif Intell.
+2021;2(5):447–58.
+	39.	 Geethanjali R, Valarmathi A. A novel hybrid deep learning IChOA-CNN-LSTM model for modality-enriched and multilingual emotion
+recognition in social media. Sci Rep. 2024;14(1):22270–97.
+	40.	 Ahmed MR, Islam S, Islam AM, Shatabda S. An ensemble 1D-CNN-LSTM-GRU model with data augmentation for speech emotion recognition. Expert Syst Appl. 2023;218: 119633.
+
+Vol:.(1234567890)
+Research
+
+Discover Artificial Intelligence            (2025) 5:49
+| https://doi.org/10.1007/s44163-025-00280-2
+	41.	 Amadi CO, Odii JN, Okpalla C, La OCI. Emotion detection using a bidirectional long-short term memory (bilstm) neural network. Int J Curr
+Pharmaceut Rev Res. 2023;4(11):1718–32.
+	42.	 Sharma A, Sharma K, Kumar A. Real-time emotional health detection using fine-tuned transfer networks with multimodal fusion. Neural
+Comput Appl. 2023;35(31):22935–48.
+	43.	 Nguyen D, Nguyen DT, Sridharan S, Denman S, Nguyen TT, Dean D, Fookes C. Meta-transfer learning for emotion recognition. Neural
+Comput Appl. 2023;35(14):10535–49.
+	44.	 Lian H, Lu C, Li S, Zhao Y, Tang C, Zong Y. A survey of deep learning-based multimodal emotion recognition: speech, text, and face. Entropy.
+2023;25(10):1440.
+	45.	 Zhang W, Li L, Ding Y, Chen W, Deng Z, Yu X. Detecting facial action units from global-local fine-grained expressions. IEEE Trans Circuits
+Syst Video Technol. 2023;34(2):983–94.
+	46.	 Li W, Huan W, Hou B, Tian Y, Zhang Z, Song A. Can emotion be transferred?—A review on transfer learning for EEG-based emotion recognition. IEEE Trans Cogn Dev Syst. 2021;14(3):833–46.
+	47.	 Wang F, Zhang W, Xu Z, Ping J, Chu H. A deep multi-source adaptation transfer network for cross-subject electroencephalogram emotion
+recognition. Neural Comput Appl. 2021;33:9061–73.
+	48.	 Latif S, Rana R, Khalifa S, Jurdak R, Schuller B. Self supervised adversarial domain adaptation for cross-corpus and cross-language speech
+emotion recognition. IEEE Trans Affect Comput. 2022;14(3):1912–26.
+	49.	 Shi H, Zhao H, Yao W. A transfer fusion framework for body sensor networks (BSNs): dynamic domain adaptation from distribution evaluation to domain evaluation. Information Fusion. 2023;91:338–51.
+	50.	 Sadiq R, Erzin E. Emotion dependent domain adaptation for speech driven affective facial feature synthesis. IEEE Trans Affect Comput.
+2020;13(3):1501–13.
+Publisher’s Note  Springer Nature remains neutral with regard to jurisdictional claims in published maps and institutional affiliations.

@@ -1,0 +1,1159 @@
+Belharbi et al.
+[FG 2024]
+Guided Interpretable Facial Expression Recognition via Spatial Action Unit Cues
+Soufiane Belharbi1, Marco Pedersoli1, Alessandro Lameiras Koerich1, Simon Bacon2, and Eric Granger1
+1 LIVIA, Dept. of Systems Engineering, ÉTS, Montreal, Canada
+2 Dept. of Health, Kinesiology & Applied Physiology, Concordia University, Montreal, Canada
+soufiane.belharbi@etsmtl.ca
+ABSTRACT
+Although state-of-the-art classifiers for facial expression
+recognition (FER) can achieve a high level of accuracy, they
+lack interpretability, an important feature for end-users. Experts typically associate spatial action units (AUs) from a
+codebook to facial regions for the visual interpretation of expressions. In this paper, the same expert steps are followed.
+A new learning strategy is proposed to explicitly incorporate
+AU cues into classifier training, allowing to train deep interpretable models. During training, this AU codebook is
+used, along with the input image expression label, and facial landmarks, to construct a AU heatmap that indicates the
+most discriminative image regions of interest w.r.t the facial
+expression. This valuable spatial cue is leveraged to train
+a deep interpretable classifier for FER. This is achieved by
+constraining the spatial layer features of a classifier to be
+correlated with AU heatmaps. Using a composite loss, the
+classifier is trained to correctly classify an image while yielding interpretable visual layer-wise attention correlated with
+AU maps, simulating the expert decision process. Our strategy
+only relies on image class expression for supervision, without
+additional manual annotations. Our new strategy is generic,
+and can be applied to any deep CNN- or transformer-based
+classifier without requiring any architectural change or significant additional training time. Our extensive evaluation1 on
+two public benchmarks RAF-DB, and AffectNet datasets
+shows that our proposed strategy can improve layer-wise interpretability without degrading classification performance.
+In addition, we explore a common type of interpretable classifiers that rely on class activation mapping (CAM) methods,
+and show that our approach can also improve CAM interpretability.
+Keywords: Facial Expression Recognition, Interpretability,
+Action Units, Deep Models, Weakly-supervised Object Localization, Class Activation Maps (CAMs).
+1
+Introduction
+Facial expression recognition (FER) has recently received
+much interest in the computer vision and machine learning
+communities [8, 82, 92]. Since facial expression is one of the
+1Code :https://github.com/sbelharbi/interpretable-fer-aus.
+Figure 1: Comparison of class activation mapping (CAM)
+and attention maps produced at inference time using a FER
+classifier trained without (top) and with (bottom, ours) AU
+maps. In our experiments, we use an identical architecture
+to compare the impact of training with and without AU maps.
+The difference only resides in an additional AU-based training loss using AU maps. Training a FER classifier with our
+AU maps yields attention and CAM that are aligned with the
+expert’s knowledge used to assess basic facial expressions in
+images [51], as illustrated in the AU map A. Consequently,
+our approach allows training a classifier that provides reliable
+interpretability, without compromising the classification accuracy. Details of our training strategy are presented in Fig.3.
+Note that in CAM-based models, the classification head can
+be fully convolutional or standard fully connected layers pooling posterior probabilities.
+most important ways for people to express emotions [16], FER
+finds a wide range of applications in, e.g., medical analysis
+and monitoring [1, 35, 84], e-health [68], driver fatigue detection [2, 46], safe driving [33], security [41, 58], lecturing [69],
+and many other fields [63].
+FER remains challenging, particularly for real-world applications. This is due to the subtle differences between expressions, leading to low inter-class variability. Learning to distinguish samples from overlapping classes can be difficult. Additionally, people express the same facial expression differently
+1
+arXiv:2402.00281v5  [cs.CV]  14 May 2024
+
+Belharbi et al.
+[FG 2024]
+depending on attributes such as level of expressiveness, age,
+gender, and ethnic background [38, 71]. To tackle these challenges, many deep learning methods have been proposed to
+train highly accurate classification models [8, 38, 82, 92]. This
+is achieved by learning robust feature representations compared to traditional hand-crafted features [15, 47, 67]. Deep
+FER methods usually rely on either global or local approaches
+to learn feature representations. Global approaches [24, 39]
+propose training loss functions to improve the overall representation robustness. To avoid incorporating noise into the
+global image representation, local approaches resort to learning from parts of the image [8, 30, 40, 74, 79, 80, 82, 92].
+These methods use facial landmarks to extract robust local
+features around relevant facial parts [30, 79, 92]. Other methods rely on self-attention mechanisms to focus on relevant and
+discriminative parts of the facial image and suppress noisy
+regions [8, 40, 74, 80, 82].
+State-of-the-art FER classifiers have achieved significant
+progress in terms of accuracy. However, end-users may not
+require only an accurate classifier that yields a classification
+score in multiple critical applications [17, 61, 94]. They
+may also need the model to provide an interpretable decision [17, 83, 94]. For instance, this can help clinicians and
+therapists understand and build trust in the FER model decisions, planning better future interventions [72]. Subsequently,
+this facilitates better integration of machine learning methods
+into daily clinical routines and health care practice [72]. In addition, interpretability can greatly help diagnose errors made
+by machine learning models and facilitate the identification
+of weaknesses for future improvement. Unfortunately, interpretability has been overlooked in the FER due to the main
+focus on classification accuracy. This has led to the design of
+FER models that lack interpretability. Recent progress with
+attention-based methods like APVIT [82] allows extracting internal attention explicitly to select only discriminative regions
+of interest (ROIs). Although they provide visual interpretability to highlight the regions used for classification, such ROIs
+are not necessarily aligned with expert knowledge typically
+used to assess facial expressions.
+Experts commonly rely on a codebook of AUs to determine
+a basic facial expression [51] (Fig. 2). Each expression is
+associated with a subset of spatial AUs in the face. Ideally,
+an interpretable classifier should point to and localize the correct AU ROIs when predicting the corresponding expression.
+However, this task is challenging since predicting such ROIs
+using only image expression supervision is not trivial. Additionally, the localization cues are not publicly available to
+be learned due to the annotation costs and the complexity of
+building large-scale benchmarks.
+This paper introduces a generic learning strategy to build an
+interpretable deep classifier for the FER task. This is achieved
+using spatial AU cues constructed from the image class supervision without extra manual annotation cost. This explicitly
+integrates the expert facial expression assessment approach
+into a classifier’s decision-making. In particular, we build a
+visual interpretability tool consistent with AU cues used by
+experts [51]. To this end, a spatial discriminative heatmap is
+constructed that gathers relevant locations of AUs required to
+determine the expression in an input image. Then, layer-wise
+deep features of a classifier are constrained to be correlated
+with such heatmap cues during training. At the same time,
+the model is trained to classify the image correctly. Such a
+multi-task training scheme allows for building accurate but,
+most importantly, interpretable classifiers. During inference,
+the layer-wise attention provides a visual interpretability tool
+that indicates which ROIs are used to determine the predicted
+expression (Fig. 3, 1). This is achieved without additional
+annotation costs, as illustrated in Fig. 3. A discriminative AU
+heatmap can be built simply using image class expression, an
+AU codebook, and facial landmarks, which are commonly estimated using off-the-shelf methods. Interpretability in models
+usually emerges as a result of other tasks, such as classification without explicit supervision for interpretability [19]. It
+represents a tool to clarify the model decision, for instance,
+under the form of visual ROIs. However, since we explicitly
+provide interpretability cues to train our model, we refer to it
+as guided interpretable FER model.
+Following the interpretable classifier direction, we explore a
+curated branch of classifiers in this work that allows us to perform image classification and yield visual interpretability. In
+particular, we employ CAM-based classifiers [12, 62]. These
+methods are popular for weakly-supervised object localization
+(WSOL) tasks in computer vision on different imaging types,
+including natural scene [93] and medical imaging [62, 73].
+Given an input image, a classifier can be trained using only
+image-class labels to correctly classify an image and provide
+a per-class heatmap, i.e., CAM, to localize image ROIs related
+to the output prediction. Therefore, they play an important
+role in localization and visual interpretability, making them
+well-suited for our work. Consequently, we conduct a comparative study using different CAM methods from other families
+of methods, and assess their capacity for classification and
+interpretability on the FER task. Note that this is the first work
+to leverage CAM methods for the FER task.
+Our main contributions are summarized as follows:
+(1) To improve the visual interpretability of state-of-the-art
+FER classifiers, we introduce a learning strategy allowing to
+training of an accurate but, most importantly, interpretable
+deep classifier (Fig.1) that is consistent with the process used
+by experts to determine basic facial expressions. Our training
+relies on aligning spatial features with spatial AU maps built
+using facial landmarks and image-class labels. This guides
+the classifier’s attention to use regions around AUs leading to
+more interpretable decisions.
+2
+
+Belharbi et al.
+[FG 2024]
+Figure 2: Codebook of basic facial expressions and their associated AUs [51]. The spatial AU map is built using the image
+expression to select the right corresponding AU subset in combination with facial landmarks, which are employed to localize
+these same AUs in the image. In particular, the location of landmarks is used to estimate AU positions. For instance, the right
+’Cheek’ location is estimated using landmark 47 (middle of the low right eye) and 11 (right side of the jaw). The code ’AUx’
+is the identifier of the AU [51].
+(2) Our method does not require extra manual annotation,
+significant extra computations during training, nor change the
+model architecture or the inference process. In addition, our
+method is generic – it can be used with any deep CNN or
+transformer-based model.
+(3) Our approach is validated experimentally on two public
+FER benchmarks (RAF-DB, and AffectNet) in terms of
+classification and interpretability accuracy. We evaluated different CAM-based methods with and without our spatial AU
+cues. Different ablations are provided as well. Empirical
+results showed that both classification and interpretability improved. Interestingly, compared to a vanilla deep classifier,
+we show that its layer-wise attention can largely be shifted
+using our AU spatial cues without compromising classification accuracy. We show that classification accuracy improves,
+particularly over large datasets such as AffectNet. This
+demonstrates that spatial AUs are a reliable source for discriminative ROIs for basic facial expression recognition [51].
+2
+Related Work
+This review covers related work on FER classifier systems,
+CAM methods for localization and interpretability, FER systems interpretability, and AUs in FER tasks.
+2.1
+Standard FER classifiers
+Given the availability of large public benchmarks [39, 53],
+different methods have been proposed to achieve state-ofthe-art classification accuracy [38]. This is most achieved
+by designing robust features to overcome the limitations of
+traditional hand-crafted features [15, 47, 67]. Robust features
+are also learned using deep models, either through a global or
+local approach.
+Global methods typically focus on designing robust training
+losses to build enhanced discriminative features while using
+the entire image to build a global representation [24, 39].
+For instance, Farzaneh and Qi [24] leverage deep metric
+learning and propose a deep attentive center loss to select
+a subset of relevant features for classification adaptively. Although successful, image faces are typically noisy, which
+may easily corrupt the features. Local methods tackle this
+issue by explicitly incorporating different mechanisms to remove the noise and build better features. Mainly, these methods rely on a part-based approach assuming that only some
+regions in the image are relevant to determine the expression [8, 30, 40, 74, 79, 80, 81, 82, 92].
+A subset of these methods assumes that discriminative features are located around facial landmarks. Therefore, only
+these regions are cropped either at image or spatial feature
+level [30, 79, 92]. This assumes that relevant regions are located around the landmarks. Such early dropout of patches
+may discard relevant patches not included in the landmarks
+in addition to missing the context. This also requires highly
+accurate landmarks. However, leveraging landmarks has been
+successful in the recent work POSTER [50, 92] by crossfusion of sparse key-landmarks features with standard global
+image features.
+A second subset exploits attention mechanism [8, 80, 74, 81,
+82] either self-learned or with provided cue. DAM-CNN [80]
+learns a spatial feature attention to filter out noise and keep
+only relevant spatial features to build a dense embedding later.
+The APVIT method [81, 82] leverages transformers and their
+attention potential to design a FER classifier. In particular,
+they propose a self-attention approach early in the network.
+Such attention allows the selection of relevant patch regions
+and performs hard attention at the spatial feature level. Patches
+are scored, and only the top-k are allowed to proceed into the
+next layer to build an image embedding. This explicitly allows the model to learn to filter out irrelevant patches. Other
+methods are provided external spatial cues to be aware where
+to look for discriminative regions [8, 40, 74]. RAN [74] is a
+region-based method. It performs image cropping either randomly or using landmarks. Their features are then attended
+3
+
+Belharbi et al.
+[FG 2024]
+using self-attention and relation-attention modules. Such attention is then used to combine different features and build an
+image embedding. This makes the final representation robust
+to pose and occlusion. Li et al. [40] follow a similar direction by decomposing the spatial features into the regions and
+using the attention module afterward. Bonnard et al. [8] use
+facial landmarks to build a heatmap, which is used to align
+spatial features in a deep model. This is expected to filter out
+irrelevant spatial features and focus mostly on features around
+landmarks. Our work is more aligned with this family of
+methods. However, we use grounded and more reliable cues,
+that is, spatial AUs. Since spatial AUs are class-dependent,
+they are more discriminative for the FER task [51], compared
+to facial landmarks, which are generic and class-agnostic.
+While the abovementioned methods focus on FER over still
+images, other methods tackle video applications [42, 43, 44,
+45]. These methods deal with similar issues presented in
+still images while leveraging temporal dependency and multimodality in videos to capture better expressiveness and build
+robust features.
+2.2
+CAM methods for WSOL and interpretability
+Using only image class as supervision, CAM-based methods
+can be trained to classify an image correctly and yield reliable localization of ROIs related to the image class. They are
+currently the dominant approach for the WSOL task [12, 62].
+They achieved interesting results in different domains, including natural scene images [7, 62, 77], and medical imaging [5, 6, 62, 73]. They have also been extended for localization in videos [3, 4]. Early works have focused on building different spatial pooling layers [20, 21, 59, 93]. However, CAMs tend to highlight only small and most discriminative parts of an object [12, 62], limiting its localization
+performance. To overcome this, different strategies have
+been proposed, including data augmentation on input image or deep features [6, 13, 49], as well as architectural
+changes [29, 36, 77, 90].
+Recently, learning via pseudo-labels has shown great potential,
+despite its reliance on noisy labels [7, 5, 52, 56, 54, 55, 75].
+Most previous methods used only forward information in
+a CNN (bottom-up family [62]). However, other methods
+also aim to leverage backward information (top-down methods [62]). These include biologically inspired methods [9, 87],
+and gradient [10, 28, 34, 66] or confidence score aggregation methods [18, 57]. CAM-based methods have been
+used for interpretability as well [64, 78] since they provide
+a map that indicates ROIs relevant to the model’s decision.
+Gradient-based CAMs are most common in interpretability
+task [10, 28, 34, 66] in addition to [9, 87]. They mainly search
+for ROIs in the feature maps that better stimulate a class response. This inspires other methods [88] to leverage gradient
+and extend it to input image and perform perturbation analysis [14, 25, 26, 60, 86] where the aim is to find which ROI
+of the network’s input that better stimulates its output. Compared to CAM-based, these methods are often more expensive
+in computation and require optimization, making them less
+attractive for FER tasks. However, CAM-based methods are
+simple to use, and they are built into the model, requiring a
+single forward or a forward and backward computation.
+2.3
+Interpretability in FER systems
+In critical FER applications such as e-health and behavioral
+health interventions and assessments [11], it may not be
+enough to predict the facial expression accurately. Users
+may require interpretability to help understand the model decision [17, 61, 83, 94]. Although important, interpretability in
+FER systems has been largely overlooked. This is mainly due
+to the focus on achieving state-of-the-art classification accuracy over challenging benchmarks [38]. The absence of public
+datasets with interpretability annotation has also contributed
+to shadowing such an important task. Some recent works have
+attempted to provide built-in discriminative attention under
+visual interpretability, such as the APVIT method [81, 82].
+Due to the lack of annotation, these methods are still limited
+and unreliable since their interpretability has not yet been
+quantified. In this work, we propose a protocol to evaluate the
+interpretability of a FER system without the need for extra
+manual annotation. We use spatial facial AUs to simulate experts’ processes to assess expressions [51]. Such AUs are built
+and encoded automatically in a convenient spatial heatmap
+using only image expression as supervision. This can help to
+automatically label large benchmarks easily, allowing training
+and evaluation of FER models in terms of interpretability.
+2.4
+AUs in FER systems
+The Facial Action Coding System (FACS) is a taxonomy for
+fine-grained facial expression analysis [22, 27]. They have
+long been used to analyze facial expressions [23, 32, 48, 65,
+91]. Each basic facial expression is associated with a list of
+AUs as they determine which facial muscles are involved in
+expressing such emotion. The standard established task in the
+literature is AU detection [32, 48]. It is a supervised multilabel classification task. It aims at predicting the correct set
+of active AUs in an input image. To perform such a task, a
+tedious annotation is required to determine the active set of
+AUs in each image since not all AUs must be active at once.
+Another related task goes further to estimate the intensity of
+the AUs [23, 91], which is furthermore challenging. Other
+works aim to localize and estimate the intensity [65] jointly.
+The work of [32] is relatively close to our work. To accurately
+detect active AUs through multi-label classification, authors
+leverage multi-task learning to predict a localization heatmap
+4
+
+Belharbi et al.
+[FG 2024]
+for the same AUs jointly. The goal is to improve the detection
+of AUs via their spatial localization. However, AUs have not
+been used for the interpretability of FER classifiers. This
+makes our work the first to do so. To avoid the extra annotation costs, we used a generic discriminative AUs codebook
+defined in [51]. It allows the automatic labeling of extensive benchmarks without manual intervention (Fig. 3). The
+codebook associates a set of AUs to a basic facial expression
+(Fig. 2). This is used to build a discriminative heatmap that
+holds potential ROIs to be inspected by the model to determine the facial expression in the input image. This does not
+require all the AUs to be active. But, it is more likely that
+part of them are active for the expression to manifest in an
+image. A further step of our work is to use active AUs to build
+an ideal interpretable model, although this comes at an additional expensive annotation cost. Alternatively, a pretrained
+AU detector, such as [32], could be used.
+3
+Proposed Approach
+3.1
+Notation
+We denote by D = {(X, y)i}N
+i=1 a training set of N images, where Xi, of size h × w, is the input image, and
+yi ∈{1, · · · , K} is its image class, i.e. facial expression,
+with K is the total number of classes. We denote by f(X; θ)
+a deep classifier with θ its parameters. The posterior perclass probabilities are referred to as f(X) ∈[0, 1]K where
+f(X)k is the probability of the class k. The spatial feature
+maps produced by the classifier’s encoder at a layer l are a
+tensor denoted by Fl ∈Rn×h′×w′, where n is the number
+of feature maps, and h′ × w′ is their size which is typically
+smaller than the input image. CAM-based WSOL methods
+produce an additional spatial tensor that holds all the CAMs,
+M ∈RK×h′′×w′′, where M[k] is the CAM of the class k.
+3.2
+Building spatial AU maps
+Given an input image and its label (X, y), standard 68 facial
+landmarks are extracted from the image using off-the-shelf
+techniques such as SynergyNet [76]. This allows us to localize relevant parts of the face such as mouth, nose, eyes, and
+eyebrows, which will be helpful later to estimate the location
+of relevant AUs. Martinez et al. [51] suggest that each facial
+expression can be recognized by inspecting a combination
+of AUs (Fig. 2). For instance, the expression ’Happiness’
+involves a set of AUs: ’cheek raise’, ’lip corner puller’, ’lips
+part’. Using the extracted facial landmarks around the mouth
+part, we can localize the ’lip part’ of the face. Such localization is translated into a 2D heatmap where strong activations
+are concentrated around the ’lip’ to indicate an ROI and tiny
+activations everywhere else to indicate the background. Such
+a 2D map is of great importance in training since it provides
+Figure 3: Our interpretable classifier for the FER task (training and inference). Each basic facial expression can be determined via a set of AUs [51]. Therefore, to train our interpretable FER classifier, we first extract facial landmarks and
+build a discriminative spatial map A that contains the set of
+all AUs associated with the image class expression [51]. This
+map is used as localization cues to train layer-wise attention
+Tl to focus on the ROIs highlighted in the AU map. A classification loss, such as cross-entropy, is also used. Once trained,
+the classifier yields an interpretable layer-wise attention map.
+When a CAM method [62] is considered, the classifier can
+also produce a per-class interpretable map.
+useful localization cues for relevant discriminative parts in
+an input image for the FER task used by experts. Typically,
+this requires manual annotation to delineate ROIs, increasing
+the annotation cost. Unfortunately, such valuable annotation
+is not available in public facial expression benchmarks. This
+work simulates such ROIs without an additional manual supervision cost. Using the codebook of facial expressions and
+their associated AUs provided in [51] (Fig. 2), in combination with the extracted facial landmarks and the image label
+expression y, a single 2D heatmap, A ∈Rh×w, is built to
+hold all the relevant (i.e., discriminative) AUs for the input
+image (Fig. 3). Consequently, the input image is augmented
+with an extra supervision cue to be (X, y, A) where A is the
+estimated AU map. To ease subsequent alignment computations, this map is normalized to have values between 0 and 1:
+5
+
+Belharbi et al.
+[FG 2024]
+A ∈[0, 1]h×w. Note that this process requires only the image
+class, i.e., image facial expression, as supervision. No extra
+manual annotations are needed.
+3.3
+Layer-wise attention
+Given a layer-wise spatial feature tensor Fl at layer l, we aim
+to determine which spatial parts are relevant for classification.
+A common approach to achieve this is through features selfattention [13, 96]. Such spatial attention is estimated via the
+average feature map as follows,
+Tl = 1
+n
+n
+X
+j=0
+Fl[j] ,
+(1)
+where n is the total number of feature maps. The discrepancy in activations in Tl differentiates relevant from irrelevant
+regions. High activations indicate potential spatial ROIs for
+classification, while low activations point to background and
+noisy regions. In a deep classifier, such attention maps are a
+great candidate for incorporating spatial learning cues into the
+model. Although CAM tensors M hold spatial discriminative cues, they are sensitive to being altered. Aligning them
+explicitly with other maps can easily lead to poor classification [7, 12]. Therefore, we rely on layer-wise attention to
+learn better and interpretable spatial features.
+3.4
+AU map alignment loss
+After estimating both layer-wise attention Tl and AU map A,
+we can proceed with their alignment to train the classifier to
+yield similar spatial cues. Since the dynamic range of the
+attention map is unknown beforehand, and since it changes
+during training, it is inadequate to train the attention to have
+the same values as the AU map A. Instead, we resort to a loss
+that aims to yield attention maps that are correlated with A.
+To this end, we use cosine similarity as,
+R(Tl, A) =
+P (Tl ⊙A)
+∥Tl∥2∥A∥2
+,
+(2)
+where · ⊙· is the Hadamard product, and ∥·∥2 is the ℓ2 norm.
+Maximizing Eq. (2) pushes the layer l to learn spatial features
+in a way their mean is highly correlated with the AU map cue
+A. In practice, the map A is downsampled to the same size
+as Tl before applying the alignment in Eq. (2).
+3.5
+Total training loss
+Given the triplet (X, y, A), our goal is to train the classifier
+f on input image X to yield the correct class y. Additionally,
+we aim to encourage layer l to construct spatial features that
+are correlated with the AU map cues A. To achieve this, we
+jointly minimize the following composite loss,
+min
+θ
+−log(f(X; θ)y) + λ(1 −R(Tl, A)) ,
+(3)
+where λ ≥0 is a weighting coefficient that balances the importance of attention alignment with the AU map compared
+to cross-entropy loss (left side term). The generalization of
+Eq. (3) to a combination of multiple layers is straightforward.
+It can be achieved by adding more layer-wise terms to the
+loss. Minimizing Eq. (3) incorporates explicitly the experts’
+procedure in assessing basic facial expressions in images into
+the model decision process. The classifier is trained to localize the relevant AUs to build discriminative features for
+expression prediction. This justifies using layer-wise attention
+Tl as an interpretability tool during inference time (Fig. 3).
+We note that the computational cost added by the alignment
+term is negligible since it can be easily computed on GPU.
+This leads to a training time similar to the vanilla case, where
+no alignment is used. The only required pre-processing is facial landmark extraction, which can be done offline once and
+stored on disk. AU map A can be computed in a negligible
+time on CPU on the fly during training using the image-class
+label only as supervision. Since image-class labels are unavailable at test time, AU maps can not be built using the lookup
+table emotion-AUs. Hence, training the model to produce
+them along with the true label is more realistic and practical.
+Furthermore, it allows the model itself to build them, leading
+to more interpretable predictions.
+4
+Results and Discussion
+4.1
+Experimental Methodology
+Datasets. To evaluate our method, experiments are conducted
+on two standard datasets for the FER task: RAF-DB [39], and
+AffectNet [53].
+- RAF-DB Real-world Affective Faces Database is a large
+scale facial expression dataset [39]. Multiple annotators have
+manually annotated all images. It contains six basic expressions (’Happiness’, ’Sadness’, ’Surprise’, ’Anger’, ’Disgust’,
+’Fear’) and ’Neutral’. The dataset contains 12,271 samples
+for training and 3,068 samples for testing. Both sets have the
+same distribution.
+- AffectNet is one of the largest facial expression recognition datasets with 420k images were manually annotated.
+Following [37], 283,901 images are used for training and
+3,500 for testing. In terms of labels, this dataset has the same
+six basic expressions as in the RAF-DB dataset, in addition to
+’Neutral’.
+Implementation Details. For all our experiments, we trained
+each method for 100 epochs over RAF-DB with a mini-batch
+size 32 and 20 epochs for AffectNet, with a mini-batch
+size 224. For CNN-based methods, we used ResNet50 [31]
+as an encoder. For transformer-based methods, we used Deit-
+S [70] for TS-CAM [29]. We used their proposed transformer
+6
+
+Belharbi et al.
+[FG 2024]
+RAF-DB
+AffectNet
+CL
+CAM-COS
+CL
+CAM-COS
+Method
+w/o AU w/ AU w/o AU w/ AU
+w/o AU w/ AU w/o AU w/ AU
+CNN-based
+CAM [93] (cvpr,2016)
+88.20
+88.95
+0.55
+0.70
+60.88
+62.37
+0.56
+0.69
+WILDCAT [20] (cvpr,2017)
+88.26
+88.85
+0.52
+0.69
+59.88
+61.62
+0.62
+0.80
+GradCAM [66] (iccv,2017)
+88.39
+88.85
+0.55
+0.74
+60.77
+62.08
+0.53
+0.75
+GradCAM++ [10] (wacv,2018)
+87.84
+89.14
+0.60
+0.82
+60.22
+62.45
+0.66
+0.83
+ACoL [89] (cvpr,2018)
+87.94
+88.68
+0.54
+0.67
+58.28
+61.48
+0.55
+0.65
+PRM [95] (cvpr,2018)
+88.13
+88.88
+0.48
+0.59
+57.77
+60.97
+0.52
+0.75
+ADL [13] (cvpr,2019)
+87.45
+88.65
+0.50
+0.63
+57.88
+61.25
+0.54
+0.66
+CutMix [85] (eccv,2019)
+88.39
+88.59
+0.55
+0.57
+58.74
+59.88
+0.56
+0.58
+LayerCAM [34] (ieee,2021)
+87.90
+88.88
+0.60
+0.84
+60.77
+62.45
+0.66
+0.83
+Transformer-based
+TS-CAM [29] (iccv,2021)
+86.70
+88.00
+0.58
+0.71
+58.99
+59.54
+0.57
+0.58
+APViT [82] (ieee,2022)
+91.00
+91.03
+−−
+−−
+60.62
+62.28
+−−
+−−
+Table 1: Classification (CL) and CAM-localization (CAM-COS) performance on RAF-DB and AffectNet test sets with
+and without AUs across methods.
+RAF-DB
+AffectNet
+Methods / Case
+w/o AU w/ AU
+w/o AU w/ AU
+CNN-based
+CAM [93] (cvpr,2016)
+0.57
+0.85
+0.64
+0.82
+WILDCAT [20] (cvpr,2017)
+0.47
+0.85
+0.61
+0.81
+GradCAM [66] (iccv,2017)
+0.63
+0.85
+0.65
+0.82
+GradCAM++ [10] (wacv,2018)
+0.52
+0.87
+0.65
+0.82
+ACoL [89] (cvpr,2018)
+0.46
+0.84
+0.60
+0.81
+PRM [95] (cvpr,2018)
+0.43
+0.85
+0.55
+0.82
+ADL [13] (cvpr,2019)
+0.51
+0.85
+0.65
+0.83
+CutMix [85] (eccv,2019)
+0.51
+0.80
+0.57
+0.82
+LayerCAM [34] (ieee,2021)
+0.52
+0.86
+0.65
+0.82
+Transformer-based
+TS-CAM [29] (iccv,2021)
+0.55
+0.88
+0.48
+0.79
+APViT [82] (ieee,2022)
+0.38
+0.85
+0.45
+0.84
+Table 2: Attention-localization (ATT-COS) (at layer 5) performance over RAF-DB and AffectNet test sets with and
+without AUs.
+architecture for the APVIT method [82], which also relies on
+Deit-S [70]. Images are aligned and resized to 256 × 256, and
+randomly cropped patches of size 224 × 224 are extracted for
+training. For APVIT [82], images are resized to 112 × 112
+and fed as input following the method’s protocol. The hyperparameter λ > 0 is estimated using validation by covering
+values that range from less than 1 to 20. The optimization
+of training loss is performed using stochastic gradient descent (SGD). The hyper-parameters search of different methods is done over the RAF-DB dataset. Due to its large size,
+relevant hyper-parameters are transferred from RAF-DB to
+AffectNet dataset.
+Baseline Methods. To assess the benefits of using AU cues,
+we leverage WSOL classifiers. They allow the classification of an image using only the image class as a label. In
+addition, they provide interpretability maps. In particular,
+Methods
+CL
+CAM-COS
+CAM [93] w/o AU
+88.20
+0.55
+CAM [93] w/ AU at layers:
+1
+88.52
+0.58
+2
+88.26
+0.57
+3
+88.39
+0.56
+4
+88.62
+0.61
+5
+88.95
+0.70
+5+4
+88.78
+0.67
+5+4+3
+88.78
+0.67
+5+4+3+2
+88.55
+0.67
+5+4+3+2+1
+88.46
+0.67
+Table 3: Ablation study over RAF-DB test set: impact of
+applying AU alignment over different layers over classification
+(CL) and CAM-localization (CAM-COS). Method: CAM [93]
+and ResNet50 [31] encoder. Layer 1 is the input layer.
+we use CAM-based WSOL methods, which provide interpretability by highlighting ROIs associated with a class. To
+this end, we selected methods that cover both families of
+CAM techniques [62]: 1- Bottom-up methods where information flows from the input layer to the output layer. This
+includes CAM [93], WILDCAT [20], ACoL [89], PRM [95],
+ADL [13], and TS-CAM [29]. 2- Top-down methods where
+information flows in both directions. This includes gradientbased methods: GradCAM [66], GradCAM++ [10], and LayerCAM [34]. All these methods are common in the WSOL
+field. In the FER task, we selected a recent state-of-the-art
+method, APVIT [82], which builds spatial attention in its architecture to yield interpretable maps. However, it does not
+have a CAM module. All the methods are trained with and
+without our AU loss in addition to classification loss to assess
+the impact of using AUs as spatial cues for learning. We note
+that all results are reported using our implementations.
+7
+
+Belharbi et al.
+[FG 2024]
+To build AU map cues, we first extract standard 68 facial landmarks from images using SynergyNet [76]2. Following [51],
+each facial expression can be recognized using only a set of
+generic AUs. Using the extracted facial landmarks, one can
+build a 2D map that contains a heatmap of a single AU. For
+an image, a single 2D heatmap is then built containing all
+the AUs associated with the image expression. This heatmap
+encodes the location of the necessary discriminative spatial
+ROIs needed to recognize the facial expression presented in
+the image. Training a classifier to focus mainly on these spatial ROIs in an image is expected to improve its interpretability
+and classification accuracy. Note that the only manual supervision required for our method is the image expression. No
+extra manual annotations are required.
+Evaluation Metrics. We use standard classification accuracy
+(CL) for the classification task. We also report a classification confusion matrix. Localization of AUs is performed at
+CAM, and layer-wise attention maps. Although they are both
+normalized between [0, 1], they do not necessarily have the
+same value at the pixel level, compared to AU map, since
+attention is trained to be correlated with AU maps. Therefore,
+we resort to using cosine similarity (Eq. 2) as a localization
+(interpretability) measure to assess how a CAM or attention
+is well aligned with the AU map. To evaluate either a CAM
+or an attention map, it is first upsampled to the same size as
+the AU map A. Higher similarity indicates better localization and, hence, better interpretability. We refer to the cosine
+similarity between a CAM and an AU map as CAM-COS and
+as ATT-COS for the case of attention map versus AU map.
+Similarly to the classification confusion matrix, we report a
+per-class cosine similarity matrix. During training, we select the model with the best classification accuracy (CL), and
+report its corresponding localization metrics.
+4.2
+Comparison with different methods
+Table 1 shows the impact of using AU alignment over classification and CAM interpretability across different methods.
+Overall, using our proposed AU alignment helped improve
+the CAM interpretability by a large margin. Since CAMs are
+often built after the last layer where we applied the alignment,
+they are strongly affected, leading to better AU localization.
+We note that classification accuracy (CL) has also improved
+with a relatively large margin over AffectNet compared
+to RAF-DB. This may be related to the fact there is still a
+large room for improvement in AffectNet compared to
+RAF-DB. Regarding attention interpretability (Table 2), the
+effect of using AU loss is larger than in CAM. Most importantly, since the alignment is applied over layer-wise attention,
+it leads to attention that is better in interpretability than CAM.
+Note that achieving better classification accuracy does not
+2Other facial landmarks extractors can also easily be used used.
+Figure 4:
+Illustration of interpretability prediction over
+RAF-DB test samples using CAM method [93] with and without action units alignment. From left to right: Input image,
+true action units map A, CAM M[k], attention T5.
+necessarily translate to better interpretability. For instance,
+the vanilla APVIT method [82] has the highest classification accuracy CL of 91% over RAF-DB. However, it only
+scores 0.38 in terms of attention interpretability ATT-COS,
+the low est score across all models. Since the vanilla case is
+optimized only to maximize the classification score, it can
+easily find features that are not necessarily interpretable to
+achieve that. Interestingly, we show that the same model can
+achieve a similar classification accuracy of 91.03% and an
+attention interpretability score of 0.85 when using our alignment loss. This suggests that spatial features have largely
+shifted their focus, as illustrated in Fig. 6, without compromising classification performance. As a result, the model finds
+different spatial features that satisfy both losses: classification and interpretability (AU). On RAF-DB and AffectNet,
+we note that our best obtained classification performance of
+91.03% and 62.28% are close to the current state-of-the-art
+performance of 92.21% and 67.49% achieved by [50], respectively. Additionally, building AU maps during training adds
+negligible computational time. On the RAF-DB dataset, we
+obtain a training time of 1min 19sec /epoch and 1min 47sec
+/epoch without and with AU maps. Over the AffectNet
+dataset, rates of 15min 9sec /epoch and 17min 35sec /epoch
+are achieved without and with AU maps. We provide in Fig.4
+an illustration of prediction with and without our action units
+alignment. In addition, Figs. 6, 7, 8, 9 show per-class average
+attention and CAM over both dataset. These visuals show
+better improvement of our classifier interprebility compared
+to vanilla case.
+8
+
+Belharbi et al.
+[FG 2024]
+Figure 5: Ablations on the RAF-DB test set: impact of λ over
+classification and localization (interpretability) performance.
+Alignment to AUs is performed over layer 5 of ResNet50 [31]
+with CAM [93] method.
+4.3
+Ablation Studies
+We performed two relevant ablations, assessing how classification and localization (interpretability) performance is affected
+by λ and at which layer the alignment loss is applied.
+1- Impact of λ (Fig. 5). Given different values of λ, we
+report in Fig. 5 its impact on localization (red, left curves)
+on CAM, and attention at layer 5 using CAM method [93]
+and a ResNet50 backbone [31] over the RAF-DB dataset. It
+is observed that increasing λ improves localization at both
+CAM and attention. However, localization performance starts
+to stagnate after λ ≈8. Additionally, since the alignment
+with AUs is performed at the attention level, localization at
+layer-wise attention (ATT-COS) is higher than at CAM-level
+(CAM-COS). However, they are still better than their corresponding vanilla cases (dashed lines). In practice, although
+CAMs can be used for interpretability, the attention layer is
+more accurate and, hence, more reliable. We also report the
+impact of λ on classification accuracy (green, right curve).
+Increasing λ showed to improve localization since much importance is considered for the alignment loss term. Classification accuracy also kept improving until λ ≈4. However,
+large values of λ put substantial importance on localization
+compared to classification, leading to degradation in classification accuracy. Hence, a compromise value is the one that
+improves localization without decreasing classification accuracy (e.g., λ ≈4). Even large λ values can yield relatively
+better classification accuracy than the vanilla case (dashed
+green line).
+2- Layer where alignment loss is applied (Table 3). Overall,
+applying our AU loss term across single or multiple layers
+improved both classification and CAM-localization. However, its application on the last feature layer has shown to
+be most beneficial. Top layers often capture semantic and
+most discriminative regions [86]. Since AU maps highlight
+discriminative ROIs, using them to build better features at top
+layers is a reasonable choice. In all our experiments, we use
+the top layer for alignment.
+5
+Conclusion
+In this work, we have introduced an approach to make FER
+models more interpretable. We extended the FER model
+training with an additional loss that favors feature maps whose
+average activations are similar to facial AU activations. As in
+most datasets AU localizations are not available, we estimate
+them by leveraging off-the-shelf facial point localizers and
+expert knowledge that associates AUs to the corresponding
+emotion. By doing that, we manage to obtain a much more
+reliable and interpretable activation of the FER model that, in
+many cases, also leads to better recognition performance.
+Acknowledgments
+This work was supported in part by the Fonds de recherche
+du Québec – Santé (FRQS), the Natural Sciences and Engineering Research Council of Canada (NSERC), Canada
+Foundation for Innovation (CFI), and the Digital Research
+Alliance of Canada.
+9
+
+Belharbi et al.
+[FG 2024]
+Figure 6: Illustration of per-class average attention maps
+over all test set of RAF-DB with and without action units
+alignment. Expressions from left to right: ’Anger’, ’Disgust’,
+’Fear’, ’Happiness’, ’Sadness’, ’Surprise’.
+Figure 7: Illustration of per-class average CAM over all
+test set of RAF-DB with and without action units alignment.
+Expressions from left to right: ’Anger’, ’Disgust’, ’Fear’,
+’Happiness’, ’Sadness’, ’Surprise’.
+Figure 8: Illustration of per-class average attention maps
+over all test set of AffectNet with and without action units
+alignment. Expressions from left to right: ’Anger’, ’Disgust’,
+’Fear’, ’Happiness’, ’Sadness’, ’Surprise’.
+Figure 9: Illustration of per-class average CAM over all test
+set of AffectNet with and without action units alignment.
+Expressions from left to right: ’Anger’, ’Disgust’, ’Fear’,
+’Happiness’, ’Sadness’, ’Surprise’.
+10
+
+Belharbi et al.
+[FG 2024]
+(a) Confusion matrix W/o AUs
+(b) Cosine matrix W/o AUs
+(c) Confusion matrix W/ AUs
+(d) Cosine matrix W/ AUs
+Figure 10: Confusion matrix and cosine matrix over RAF-DB test set with CAM method [93] with (top row) and without
+(bottom row) action units alignment. It show per-class and per-layer/CAM performance.
+11
+
+Belharbi et al.
+[FG 2024]
+(a) Confusion matrix W/o AUs
+(b) Cosine matrix W/o AUs
+(c) Confusion matrix W/ AUs
+(d) Cosine matrix W/ AUs
+Figure 11: Confusion matrix and cosine matrix over AffectNet test set with CAM method [93] with (top row) and without
+(bottom row) action units alignment. It show per-class and per-layer/CAM performance.
+12
+
+Belharbi et al.
+[FG 2024]
+References
+[1] T. Altameem and A. Altameem. Facial expression recognition
+using human machine interaction and multi-modal visualization analysis for healthcare applications. Image and Vision
+Computing, 103:104044, 2020.
+[2] M. A. Assari and M. Rahmati. Driver drowsiness detection
+using face expression recognition. In ICSIPA, 2011.
+[3] S. Belharbi, I. Ben Ayed, L. McCaffrey, and E. Granger.
+Tcam: Temporal class activation maps for object localization
+in weakly-labeled unconstrained videos. In WACV, 2023.
+[4] S. Belharbi, S. Murtaza, M. Pedersoli, I. Ben Ayed, L. McCaffrey, and E. Granger. Colo-cam: Class activation mapping for
+object co-localization in weakly-labeled unconstrained videos.
+CoRR, abs/2303.09044.
+[5] S. Belharbi, M. Pedersoli, I. Ben Ayed, L. McCaffrey, and
+E. Granger. Negative evidence matters in interpretable histology image classification. In MIDL, 2022.
+[6] S. Belharbi, J. Rony, J. Dolz, I. Ben Ayed, L. McCaffrey,
+and E. Granger. Deep interpretable classification and weaklysupervised segmentation of histology images via max-min uncertainty. IEEE Transactions on Medical Imaging, 41:702–714,
+2022.
+[7] S. Belharbi, A. Sarraf, M. Pedersoli, I. Ben Ayed, L. McCaffrey,
+and E. Granger. F-cam: Full resolution class activation maps
+via guided parametric upscaling. In WACV, 2022.
+[8] J. Bonnard, A. Dapogny, F. Dhombres, and K. Bailly. Privileged attribution constrained deep networks for facial expression recognition. In ICPR, 2022.
+[9] C. Cao, X. Liu, Y. Yang, et al. Look and think twice: Capturing
+top-down visual attention with feedback convolutional neural
+networks. In ICCV, 2015.
+[10] A. Chattopadhyay, A. Sarkar, P. Howlader, and V. N. Balasubramanian. Grad-cam++: Generalized gradient-based visual
+explanations for deep convolutional networks. In WACV, 2018.
+[11] L.-Y. Chen, T.-H. Tsai, A. Ho, C.-H. Li, L.-J. Ke, L.-N. Peng,
+M.-H. Lin, F.-Y. Hsiao, and L.-K. Chen. Predicting neuropsychiatric symptoms of persons with dementia in a day care center
+using a facial expression recognition system. Aging (Albany
+NY), 14(3):1280, 2022.
+[12] J. Choe, S. J. Oh, S. Lee, S. Chun, Z. Akata, and H. Shim.
+Evaluating weakly supervised object localization methods right.
+In CVPR, 2020.
+[13] J. Choe and H. Shim. Attention-based dropout layer for weakly
+supervised object localization. In CVPR, 2019.
+[14] P. Dabkowski and Y. Gal. Real time image saliency for black
+box classifiers. NeurIPS, 30, 2017.
+[15] N. Dalal and B. Triggs. Histograms of oriented gradients for
+human detection. In CVPR, 2005.
+[16] C. Darwing and P. Prodger. The expression of the emotions in
+man and animals. Oxford University Press, USA, 1998.
+[17] M. M. Deramgozin, S. Jovanovic, M. Arevalillo-HerrÁez, and
+H. Rabah. An explainable and reliable facial expression recognition system for remote health monitoring. In ICECS, 2022.
+[18] S. Desai and H. Ramaswamy. Ablation-cam: Visual explanations for deep convolutional network via gradient-free localization. In WACV, 2020.
+[19] F. Doshi-Velez and B. Kim. Towards a rigorous science of
+interpretable machine learning. CoRR, abs/1702.08608, 2017.
+[20] T. Durand, T. Mordan, N. Thome, and M. Cord. Wildcat:
+Weakly supervised learning of deep convnets for image classification, pointwise localization and segmentation. In CVPR,
+2017.
+[21] T. Durand, N. Thome, and M. Cord. Weldon: Weakly supervised learning of deep convolutional neural networks. In CVPR,
+2016.
+[22] P. Ekman and W. V. Friesen. Facial action coding system.
+Environmental Psychology & Nonverbal Behavior, 1978.
+[23] Y. Fan, J. Lam, and V. Li. Facial action unit intensity estimation via semantic correspondence learning with dynamic graph
+convolution. In AAAI, 2020.
+[24] A. H. Farzaneh and X. Qi. Facial expression recognition in the
+wild via deep attentive center loss. In WACV, 2021.
+[25] R. Fong, M. Patrick, and A. Vedaldi. Understanding deep
+networks via extremal perturbations and smooth masks. In
+ICCV, 2019.
+[26] R. C. Fong and A. Vedaldi. Interpretable explanations of black
+boxes by meaningful perturbation. In ICCV, 2017.
+[27] E. Friesen and P. Ekman.
+Facial action coding system: a
+technique for the measurement of facial movement. Palo Alto,
+3(2):5, 1978.
+[28] R. Fu, Q. Hu, X. Dong, Y. Guo, Y. Gao, and B. Li. Axiom-based
+grad-cam: Towards accurate visualization and explanation of
+cnns. In BMVC, 2020.
+[29] W. Gao, F. Wan, X. Pan, Z. Peng, Q. Tian, Z. Han, B. Zhou,
+and Q. Ye. TS-CAM: token semantic coupled attention map
+for weakly supervised object localization. In ICCV, 2021.
+[30] S. Happy and A. Routray. Automatic facial expression recognition using features of salient facial patches. IEEE Transactions
+on Affective Computing, 6(1):1–12, 2014.
+[31] K. He, X. Zhang, S. Ren, and J. Sun. Deep residual learning
+for image recognition. In CVPR, 2016.
+[32] G. M. Jacob and B. Stenger. Facial action unit detection with
+transformers. In CVPR, 2021.
+[33] M. Jeong and B. C. Ko. Driver’s facial expression recognition
+in real-time for safe driving. Sensors, 18(12):4270, 2018.
+[34] P. Jiang, C. Zhang, Q. Hou, M. Cheng, and Y. Wei. Layercam:
+Exploring hierarchical class activation maps for localization.
+IEEE Trans. Image Process., 30:5875–5888, 2021.
+[35] K. H. Kim, K. Park, H. Kim, B. Jo, S. H. Ahn, C. Kim, M. Kim,
+T. H. Kim, S. B. Lee, D. Shin, et al. Facial expression monitoring system for predicting patient’s sudden movement during
+radiotherapy using deep learning. Journal of applied clinical
+medical physics, 21(8):191–199, 2020.
+[36] J. Lee, E. Kim, S. Lee, J. Lee, and S. Yoon.
+Ficklenet:
+Weakly and semi-supervised semantic image segmentation using stochastic inference. In CVPR, 2019.
+[37] H. Li, N. Wang, X. Ding, X. Yang, and X. Gao. Adaptively
+learning facial expression representation via C-F labels and
+distillation. IEEE Trans. Image Process., 30:2016–2028, 2021.
+[38] S. Li and W. Deng. Deep facial expression recognition: A
+survey. IEEE transactions on affective computing, 13(3):1195–
+1215, 2020.
+[39] S. Li, W. Deng, and J. Du. Reliable crowdsourcing and deep
+locality-preserving learning for expression recognition in the
+wild. In CVPR, 2017.
+[40] Y. Li, J. Zeng, S. Shan, and X. Chen. Occlusion aware facial
+expression recognition using cnn with attention mechanism.
+IEEE Transactions on Image Processing, 28(5):2439–2450,
+2018.
+[41] Z. Li, T. Zhang, X. Jing, and Y. Wang. Facial expressionbased analysis on emotion correlations, hotspots, and potential
+occurrence of urban crimes. Alexandria Engineering Journal,
+60(1):1411–1420, 2021.
+[42] C. Liu, X. Zhang, X. Liu, T. Zhang, L. Meng, Y. Liu, Y. Deng,
+and W. Jiang. Facial expression recognition based on multimodal features for videos in the wild. In CVPR, 2023.
+13
+
+Belharbi et al.
+[FG 2024]
+[43] D. Liu, H. Zhang, and P. Zhou. Video-based facial expression
+recognition using graph convolutional networks. In ICPR,
+2021.
+[44] X. Liu, L. Jin, X. Han, J. Lu, J. You, and L. Kong. Identityaware facial expression recognition in compressed video. In
+ICPR, 2021.
+[45] Y. Liu, W. Wang, C. Feng, H. Zhang, Z. Chen, and Y. Zhan.
+Expression snippet transformer for robust video-based facial expression recognition. Pattern Recognition, 138:109368, 2023.
+[46] Z. Liu, Y. Peng, and W. Hu. Driver fatigue detection based
+on deeply-learned facial expression representation. Journal of
+Visual Communication and Image Representation, 71:102723,
+2020.
+[47] D. G. Lowe. Distinctive image features from scale-invariant
+keypoints. Int. J. Comput. Vis., 60(2):91–110, 2004.
+[48] C. Luo, S. Song, W. Xie, L. Shen, and H. Gunes. Learning
+multi-dimensional edge feature-based AU relation graph for
+facial action unit recognition. In IJCAI, 2022.
+[49] J. Mai, M. Yang, and W. Luo. Erasing integrated learning:
+A simple yet effective approach for weakly supervised object
+localization. In CVPR, 2020.
+[50] J. Mao, R. Xu, X. Yin, Y. Chang, B. Nie, and A. Huang.
+POSTER V2: A simpler and stronger facial expression recognition network. CoRR, abs/2301.12149, 2023.
+[51] B. Martínez, M. F. Valstar, B. Jiang, and M. Pantic. Automatic analysis of facial actions: A survey. IEEE Trans. Affect.
+Comput., 10(3):325–347, 2019.
+[52] A. Meethal, M. Pedersoli, S. Belharbi, and E. Granger. Convolutional stn for weakly supervised object localization and
+beyond. In ICPR, 2020.
+[53] A. Mollahosseini, B. Hassani, and M. H. Mahoor. Affectnet: A
+database for facial expression, valence, and arousal computing
+in the wild. IEEE Trans. Affect. Comput., 10(1):18–31, 2019.
+[54] S. Murtaza, S. Belharbi, M. Pedersoli, A. Sarraf, and
+E. Granger. Constrained sampling for class-agnostic weakly
+supervised object localization. In Montreal AI symposium,
+2022.
+[55] S. Murtaza, S. Belharbi, M. Pedersoli, A. Sarraf, and
+E. Granger.
+Discriminative sampling of proposals in selfsupervised transformers for weakly supervised object localization. CoRR, abs/2209.09209, 2022.
+[56] S. Murtaza, S. Belharbi, M. Pedersoli, A. Sarraf, and
+E. Granger. Dips: Discriminative pseudo-label sampling with
+self-supervised transformers for weakly supervised object localization. Image and Vision Computing, page 104838, 2023.
+[57] R. Naidu, A. Ghosh, Y. Maurya, S. R. N. K, and S. S. Kundu. IS-
+CAM: integrated score-cam for axiomatic-based explanations.
+CoRR, abs/2010.03023, 2020.
+[58] Y. Nan, J. Ju, Q. Hua, H. Zhang, and B. Wang. A-mobilenet:
+An approach of facial expression recognition. Alexandria Engineering Journal, 61(6):4435–4444, 2022.
+[59] M. Oquab, L. Bottou, I. Laptev, and J. Sivic. Is object localization for free?-weakly-supervised learning with convolutional
+neural networks. In CVPR, 2015.
+[60] V. Petsiuk, A. Das, and K. Saenko. RISE: randomized input
+sampling for explanation of black-box models. In BMVC, 2018.
+[61] M. Puente Durán, D. Moreno Blanco, J. Solana Sánchez,
+P. Sánchez González, and E. J. Gómez Aguilera. A facial expression recognition system for ehealth intervention platforms:
+A proof of concept. 2019.
+[62] J. Rony, S. Belharbi, J. Dolz, I. Ben Ayed, L. McCaffrey, and
+E. Granger. Deep weakly-supervised learning methods for
+classification and localization in histology images: A survey.
+Machine Learning for Biomedical Imaging, 2:96–150, 2023.
+[63] M. Sajjad, F. U. M. Ullah, M. Ullah, G. Christodoulou, F. Alaya
+Cheikh, M. Hijji, K. Muhammad, and J. J. Rodrigues.
+A
+comprehensive survey on deep facial expression recognition:
+challenges, applications, and future guidelines. Alexandria
+Engineering Journal, 68:817–840, 2023.
+[64] W. Samek, G. Montavon, A. Vedaldi, L. K. Hansen, and
+K. Müller, editors. Explainable AI: Interpreting, Explaining
+and Visualizing Deep Learning, volume 11700 of Lecture Notes
+in Computer Science. Springer, 2019.
+[65] E. Sánchez-Lozano, G. Tzimiropoulos, and M. F. Valstar.
+Joint action unit localisation and intensity estimation through
+heatmap regression. In BMVC, 2018.
+[66] R. R. Selvaraju, M. Cogswell, A. Das, R. Vedantam, D. Parikh,
+and D. Batra. Grad-cam: Visual explanations from deep networks via gradient-based localization. In ICCV, 2017.
+[67] C. Shan, S. Gong, and P. W. McOwan. Facial expression
+recognition based on local binary patterns: A comprehensive
+study. Image Vis. Comput., 27(6):803–816, 2009.
+[68] S. ter Stal, G. Jongbloed, and M. Tabak. Embodied Conversational Agents in eHealth: How Facial and Textual Expressions
+of Positive and Neutral Emotions Influence Perceptions of
+Mutual Understanding. Interacting with Computers, 33(2):167–
+176, 07 2021.
+[69] G. Tonguç and B. O. Ozkara. Automatic recognition of student
+emotions from facial expressions during a lecture. Computers
+& Education, 148:103797, 2020.
+[70] H. Touvron, M. Cord, M. Douze, F. Massa, A. Sablayrolles,
+and H. Jégou. Training data-efficient image transformers &
+distillation through attention. In ICML, 2021.
+[71] M. F. Valstar, M. Mehu, B. Jiang, M. Pantic, and K. Scherer.
+Meta-analysis of the first facial expression recognition challenge. IEEE Transactions on Systems, Man, and Cybernetics,
+Part B (Cybernetics), 42(4):966–979, 2012.
+[72] A. Vellido. The importance of interpretability and visualization
+in machine learning for applications in medicine and health
+care. Neural computing and applications, 32(24):18069–18083,
+2020.
+[73] J. Wang, A. Bhalerao, T. Yin, S. See, and Y. He. Camanet:
+class activation map guided attention network for radiology
+report generation. IEEE Journal of Biomedical and Health
+Informatics, 2024.
+[74] K. Wang, X. Peng, J. Yang, D. Meng, and Y. Qiao. Region
+attention networks for pose and occlusion robust facial expression recognition. IEEE Transactions on Image Processing,
+29:4057–4069, 2020.
+[75] J. Wei, Q. Wang, Z. Li, S. Wang, S. K. Zhou, and S. Cui. Shallow feature matters for weakly supervised object localization.
+In CVPR, 2021.
+[76] C.-Y. Wu, Q. Xu, and U. Neumann. Synergy between 3dmm
+and 3d landmarks for accurate 3d facial geometry. In 3DV,
+2021.
+[77] P. Wu, W. Zhai, Y. Cao, J. Luo, and Z. Zha. Spatial-aware token
+for weakly supervised object localization. In ICCV, 2023.
+[78] X. Xiao, Y. Shi, and J. Chen.
+Towards better evaluations
+of class activation mapping and interpretability of cnns. In
+International Conference on Neural Information Processing,
+pages 352–369, 2023.
+[79] S. Xie and H. Hu. Facial expression recognition using hierarchical features with deep comprehensive multipatches aggregation
+convolutional neural networks. IEEE Transactions on Multimedia, 21(1):211–220, 2018.
+[80] S. Xie, H. Hu, and Y. Wu. Deep multi-path convolutional neural
+network joint with salient region attention for facial expression
+recognition. Pattern recognition, 92:177–191, 2019.
+14
+
+Belharbi et al.
+[FG 2024]
+[81] F. Xue, Q. Wang, and G. Guo. Transfer: Learning relationaware facial expression representations with transformers. In
+ICCV, 2021.
+[82] F. Xue, Q. Wang, Z. Tan, Z. Ma, and G. Guo. Vision transformer with attentive pooling for robust facial expression recognition. IEEE Transactions on Affective Computing, 2022.
+[83] K. Yadav. Explaining human emotions using interpretable
+machine learning for behavioral and mental healthcare. PhD
+thesis, 2022.
+[84] G. Yolcu, I. Oztel, S. Kazan, C. Oz, K. Palaniappan, T. E. Lever,
+and F. Bunyak. Deep learning-based facial expression recognition for monitoring neurological disorders. In International
+Conference on Bioinformatics and Biomedicine (BIBM), 2017.
+[85] S. Yun, D. Han, S. Chun, S. Oh, Y. Yoo, and J. Choe. Cutmix: Regularization strategy to train strong classifiers with
+localizable features. In ICCV, 2019.
+[86] M. D. Zeiler and R. Fergus. Visualizing and understanding
+convolutional networks. In ECCV, 2014.
+[87] J. Zhang, S. A. Bargal, Z. Lin, et al. Top-down neural attention
+by excitation backprop. International Journal of Computer
+Vision, 126(10):1084–1102, 2018.
+[88] Q. Zhang, L. Rao, and Y. Yang. A novel visual interpretability
+for deep neural networks by optimizing activation maps with
+perturbation. In AAAI, 2021.
+[89] X. Zhang, Y. Wei, J. Feng, Y. Yang, and T. Huang. Adversarial complementary learning for weakly supervised object
+localization. In CVPR, 2018.
+[90] X. Zhang, Y. Wei, and Y. Yang. Inter-image communication
+for weakly supervised localization. In A. Vedaldi, H. Bischof,
+T. Brox, and J. Frahm, editors, ECCV, Lecture Notes in Computer Science, 2020.
+[91] Y. Zhang, R. Zhao, W. Dong, B.-G. Hu, and Q. Ji. Bilateral
+ordinal relevance multi-instance regression for facial action
+unit intensity estimation. In CVPR, 2018.
+[92] C. Zheng, M. Mendieta, and C. Chen. POSTER: A pyramid
+cross-fusion transformer network for facial expression recognition. In ICCVw, 2023.
+[93] B. Zhou, A. Khosla, A. Lapedriza, A. Oliva, and A. Torralba.
+Learning deep features for discriminative localization.
+In
+CVPR, 2016.
+[94] X. Zhou, K. Jin, Y. Shang, and G. Guo. Visually interpretable
+representation learning for depression recognition from facial
+images. IEEE transactions on affective computing, 11(3):542–
+552, 2018.
+[95] Y. Zhou, Y. Zhu, Q. Ye, Q. Qiu, and J. Jiao. Weakly supervised
+instance segmentation using class peak response. In CVPR,
+2018.
+[96] Y. Zhu, Y. Zhou, Q. Ye, et al. Soft proposal networks for
+weakly supervised object localization. In ICCV, 2017.
+15

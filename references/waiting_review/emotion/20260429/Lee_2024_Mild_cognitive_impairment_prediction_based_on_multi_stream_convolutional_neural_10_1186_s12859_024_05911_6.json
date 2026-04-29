@@ -1,0 +1,24 @@
+{
+  "title": "Mild cognitive impairment prediction based on multi-stream convolutional neural networks",
+  "authors": [
+    "Chien-Cheng Lee",
+    "Hong-Han Chau",
+    "Hsiao-Lun Wang",
+    "Yi‐Fang Chuang",
+    "Yawgeng A. Chau"
+  ],
+  "year": 2024,
+  "abstract": "BACKGROUND: Mild cognitive impairment (MCI) is the transition stage between the cognitive decline expected in normal aging and more severe cognitive decline such as dementia. The early diagnosis of MCI plays an important role in human healthcare. Current methods of MCI detection include cognitive tests to screen for executive function impairments, possibly followed by neuroimaging tests. However, these methods are expensive and time-consuming. Several studies have demonstrated that MCI and dementia can be detected by machine learning technologies from different modality data. This study proposes a multi-stream convolutional neural network (MCNN) model to predict MCI from face videos. RESULTS: The total effective data are 48 facial videos from 45 participants, including 35 videos from normal cognitive participants and 13 videos from MCI participants. The videos are divided into several segments. Then, the MCNN captures the latent facial spatial features and facial dynamic features of each segment and classifies the segment as MCI or normal. Finally, the aggregation stage produces the final detection results of the input video. We evaluate 27 MCNN model combinations including three ResNet architectures, three optimizers, and three activation functions. The experimental results showed that the ResNet-50 backbone with Swish activation function and Ranger optimizer produces the best results with an F1-score of 89% at the segment level. However, the ResNet-18 backbone with Swish and Ranger achieves the F1-score of 100% at the participant level. CONCLUSIONS: This study presents an efficient new method for predicting MCI from facial videos. Studies have shown that MCI can be detected from facial videos, and facial data can be used as a biomarker for MCI. This approach is very promising for developing accurate models for screening MCI through facial data. It demonstrates that automated, non-invasive, and inexpensive MCI screening methods are feasible and do not require highly subjective paper-and-pencil questionnaires. Evaluation of 27 model combinations also found that ResNet-50 with Swish is more stable for different optimizers. Such results provide directions for hyperparameter tuning to further improve MCI predictions.",
+  "doi": "10.1186/s12859-024-05911-6",
+  "arxiv_id": null,
+  "venue": "BMC Bioinformatics",
+  "citation_count": 4,
+  "source": "openalex",
+  "pdf_url": "https://link.springer.com/content/pdf/10.1186/s12859-024-05911-6.pdf",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4402471030"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.1186/s12859-024-05911-6"
+}

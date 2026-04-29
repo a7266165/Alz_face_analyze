@@ -1,0 +1,24 @@
+{
+  "title": "An Artificial Intelligence Model for Sensing Affective Valence and Arousal from Facial Images",
+  "authors": [
+    "Hiroki Nomiya",
+    "Koh Shimokawa",
+    "Shushi Namba",
+    "Masaki Osumi",
+    "Wataru Sato"
+  ],
+  "year": 2025,
+  "abstract": "Artificial intelligence (AI) models can sense subjective affective states from facial images. Although recent psychological studies have indicated that dimensional affective states of valence and arousal are systematically associated with facial expressions, no AI models have been developed to estimate these affective states from facial images based on empirical data. We developed a recurrent neural network-based AI model to estimate subjective valence and arousal states from facial images. We trained our model using a database containing participant valence/arousal states and facial images. Leave-one-out cross-validation supported the validity of the model for predicting subjective valence and arousal states. We further validated the effectiveness of the model by analyzing a dataset containing participant valence/arousal ratings and facial videos. The model predicted second-by-second valence and arousal states, with prediction performance comparable to that of FaceReader, a commercial AI model that estimates dimensional affective states based on a different approach. We constructed a graphical user interface to show real-time affective valence and arousal states by analyzing facial video data. Our model is the first distributable AI model for sensing affective valence and arousal from facial images/videos to be developed based on an empirical database; we anticipate that it will have many practical uses, such as in mental health monitoring and marketing research.",
+  "doi": "10.3390/s25041188",
+  "arxiv_id": null,
+  "venue": "Sensors",
+  "citation_count": 5,
+  "source": "openalex",
+  "pdf_url": "https://www.mdpi.com/1424-8220/25/4/1188/pdf?version=1739601214",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4407615495"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.3390/s25041188"
+}

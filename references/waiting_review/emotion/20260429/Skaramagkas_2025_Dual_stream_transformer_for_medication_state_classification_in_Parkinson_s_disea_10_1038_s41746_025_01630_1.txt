@@ -1,0 +1,1160 @@
+npj | digital medicine
+Article
+Published in partnership with Seoul National University Bundang Hospital
+https://doi.org/10.1038/s41746-025-01630-1
+Dual stream transformer for medication
+state classiﬁcation in Parkinson’s disease
+patients using facial videos
+Check for updates
+Vasileios Skaramagkas1,2
+, Iro Boura3,4, Georgios Karamanis5, Ioannis Kyprakis1,2, Dimitrios I. Fotiadis6,7,
+Zinovia Kefalopoulou5,8
+, Cleanthe Spanaki3,4,8
+& Manolis Tsiknakis1,2,8
+Hypomimia is a prominent, levodopa-responsive symptom in Parkinson’s disease (PD). In our study,
+we aimed to distinguish ON and OFF dopaminergic medication state in a cohort of PD patients,
+analyzing their facial videos with a unique, interpretable Dual Stream Transformer model. Our
+approach integrated two streams of data: facial frame features and optical ﬂow, processed through a
+transformer-based architecture. Various conﬁgurations of embedding dimensions, dense layer sizes,
+and attention heads were examined to enhance model performance. The ﬁnal model, trained on 183
+PD patients, attained an accuracy of 86% in differentiating between ON- and OFF-medication state.
+Moreover, uniform classiﬁcation performance (up to 88%) was obtained across various stages of PD
+severity, as expressed by the Hoehn and Yahr (H&Y) scale. These values highlight the potential of our
+model as a non-invasive, cost-effective instrument for clinicians to remotely and accurately detect
+patients’ response to treatment from early to more advanced PD stages.
+Parkinson’sdisease(PD)isarelativelycommon,chronicneurodegenerative
+disorder, affecting 0.1–0.2% of the general population1. This rate increases
+tenfold after the age of 60, with a marked rise in the number of affected
+individuals worldwide in recent years2. This ﬁgure is expected to grow
+further in the coming decades, posing signiﬁcant challenges for healthcare
+providers and policymakers globally3,4. Therefore, the implementation of
+novel strategies to efﬁciently address the needs of PD patients and their
+caregivers, while facilitating clinicians’ workload is crucial.
+Clinical
+manifestations
+and
+progression
+of
+PD
+are
+highly
+heterogeneous5,6; however, dopaminergic therapy, and particularly levodopa, remains the primary treatment option irrelevant of the PD stage7.
+Though a clear and substantial response to dopaminergic therapy is consideblack a key-feature in PD diagnostics, the observed heterogeneity
+expands to the response of parkinsonian symptoms to dopaminergic
+therapy as well8. The multi-faceted dopaminergic response can vary from
+excellent to poor or even absent, without the latter excluding a pathological
+diagnosis of PD in rare cases8. Additionally, the emergence of drug-induced
+motor and non-motor ﬂuctuations introduces the terms of ON and OFF
+state in the everyday life of PD patients, which describe the optimal and the
+worst motor and/or non-motor performance respectively regarding their
+parkinsonian symptoms and their response to treatment. Fluctuations are
+experienced as transitions from the ON to OFF state or vice versa, typically
+precipitated by the effect of dopaminergic medications (mainly levodopa).
+Administration of a single levodopa dose induces the ON state, while, as the
+medication effect diminishes and eventually wears off, PD patients are
+anticipated to gradually transition to the OFF state. However, this association is not uniform, as various, occasionally unexpected, parameters can
+affect the absorption or action of levodopa and, consequently, the patients’
+performance (e.g. food intake, stress/anxiety, fatigue, weather)9. In early PD
+stages, parkinsonian symptoms exhibit a stable response to treatment, when
+theirregimenisestablished;patientsdonotexperienceanyOFFstate,evenif
+they delay or skip single levodopa doses. Fluctuations typically develop with
+long-term dopaminergic therapy, as one-tenth of PD patients develop
+ﬂuctuations and dyskinesia with each passing year of levodopa therapy10,
+and can signiﬁcantly complicate the management of the disease in later
+stages. The concepts of OFF-medication state, also referblack to as
+1Electrical and Computer Engineering, Hellenic Mediterranean University, Estavromenos, Heraklion, GR-710 04, Greece. 2Institute of Computer Science, Foundation for Research and Technology Hellas (FORTH), 100 Nikolaou Plastira, Heraklion, GR-700 03, Greece. 3School of Medicine, University of Crete, A. Kalokerinou
+13, Heraklion, GR-715 00, Greece. 4Department of Neurology, University Hospital of Heraklion, Vassilika Vouton, Heraklion, GR-711 00, Greece. 5Department of
+Neurology, Patras University Hospital, Rion, Patras, GR-264 04, Greece. 6Unit of Medical Technology and Intelligent Information Systems, University of Ioannina,
+Ioannina, GR-451 10, Greece. 7Biomedical Research Institute, Foundation for Research and Technology Hellas (FORTH), Ioannina, GR-451 10, Greece. 8These
+authors contributed equally: Zinovia Kefalopoulou, Cleanthe Spanaki, Manolis Tsiknakis.
+e-mail: vskaramagkas96@gmail.com; zkefalopoulou@gmail.com;
+kliospanaki@gmail.com; tsiknaki@ics.forth.gr
+npj Digital Medicine |   (2025) 8:226
+1
+1234567890():,;
+1234567890():,;
+
+“practically deﬁned OFF” or “overnight OFF” state, and ON-medication
+state are often used in PD research to express the state experienced by PD
+patients following a 12-hour abstinence of their usual dopaminergic therapy
+and 60 min after its administration respectively. Despite the signiﬁcant
+overlap observed between ON/OFF state and ON-/OFF-medication state,
+these terms are not perfectly aligned.
+These diverse dynamics in PD presentations pose signiﬁcant challenges for clinicians, particularly for those less experienced with movement
+disorders. Capturing the full extent and individual particularities of clinical
+symptoms and their response to treatment in order to establish an efﬁcient
+and personalized regimen for PD patients often requires lengthy and
+numerousin-personassessments,includinga comprehensivehistory taking
+and repeating neurological evaluations. The introduction of newer technologies has revolutionized diagnostic and monitoring procedures in PD,
+offering additional information, whichmay not be fully captublack during a
+visit in Outpatient Clinics11. Wearable sensors have been increasingly used
+to track motor symptoms of PD patients in real-time within their usual
+living environment, even under ambulatory conditions12. These devices can
+monitor motor complications (e.g. ﬂuctuations, dyskinesia, freezing of gait),
+and measure motor performance in relation to dopaminergic therapy, as
+patients can instantly register drug intake via their smartphone or other
+online applications13. Such digital tools are gaining increasing acceptability
+among PD patients14, and can further support the prescribing physicians to
+monitor patients’ adherence to treatment, as well as symptoms’ response to
+therapy, and adapt medication schemes to optimize them in relevant ways
+with minimal input from their patients.
+The rationale behind wearable devices lies in their potential to characterizemotor symptoms in PD. The National Institute for Healthand Care
+Excellence (NICE) has conditionally endorsed many devices for the remote
+monitoring of PD, including Kinesia 360, KinesiaU, PDMonitor, Personal
+KinetiGraph (PKG), and STAT-ON15. Numerous small-sample studies
+(n ≤30) have employed such devices to distinguish various levels of motor
+performance, including transitions from the OFF to ON state, or from the
+OFF- to ON-medication state. In the latter occasion, the acute transitions
+were evaluated with wearable sensors on-site, using gyroscope signals
+throughout daily activities16, or a reinforcement learning methodology,
+showcasing enhanced generalizability across datasets17. Adequate accuracy
+values were achieved in both instances. Other studies used wearables to
+differentiate between ON and OFF state, as those deﬁned either by PD
+patients’ perspective, documented on self-reported diaries under real-world
+circumstances18, or according to constant monitoring by a movement disorders expert on-site19. A veriﬁed sensor-based algorithm, demonstrating
+impressive classiﬁcation accuracy, and a deep learning (DL) model with
+encouraging outcomes were described in these studies. These approaches
+outline the heterogeneity in the deﬁned ON and OFF state across different
+studies, while highlighting various applications of wearable sensors in
+experimental or home-based settings.
+Hypomimia, as expressed by blackuced spontaneous facial movements, is a common sign in PD, reﬂecting both motor (e.g. bradykinesia)
+and non-motor (e.g. apathy) aspects of PD symptomatology20–22. Notably,
+decreasedfacialexpressionhasbeencorrelatedwithOFF-medicationmotor
+performance (mostly bradykinesia and rigidity), while the response of
+hypomimia following levodopa dosing reﬂected a similar improvement
+pattern to other axial PD symptoms (e.g. speech, posture, gait, balance),
+regardless of disease duration21. The effect of dopaminergic medication on
+voluntary facial movements was assessed in video-recordings in the ONand OFF-medication state in a small cohort of PD patients (n = 34),
+uncovering a consistent positive effect of levodopa on dynamic parameters
+of facial expression23. Moreover, hypomimia was found to be independently
+associated with striatal dopaminergic denervation, further corroborating its
+potential dopaminergic substrate24,25.
+Recent advancements in computer vision and machine learning,
+especially DL models, present novel opportunities for automating the
+identiﬁcation of PD symptoms, including hypomimia. Although facial
+video analysis has been effectively employed to assess emotion, cognition
+and pain26–28, its use in PD cohorts is still constrained29. Prior models concentrated on either static facial characteristics or basic motion tracking,
+limiting their capacity to capture dynamic and subtle variations observed in
+PD-related facial expressions, including transitions linked to dopaminergic
+stimulation, as in administration of levodopa or dopamine agonists. Conventional Convolutional Neural Network (CNN)-based designs have
+pblackominantly been used to identify hypomimia and assess emotional
+expressiveness in PD patients. Automatic video-based analysis of hypomimia was employed to efﬁciently differentiate de novo PD patients (n = 91)
+from healthy controls (n = 75) (AUC = 0.87)30, while a classiﬁcation accuracy 91.87% was attained by Valenzuela et al. using a 3D convolutional
+architecturetodistinguishPDpatients(n = 16)fromcontrols(n = 16)based
+on facial movement patterns31. Abrami et al. reported that a CNN model
+could discern the medication state from facial video-recordings of 35 PD
+patients, attaining an accuracy 63.00%32.
+The fact that hypomimia is consideblack a core, likely levodoparesponsive symptom of PD, which is often associated, even correlated, with
+speciﬁc motor and non-motor parkinsonian symptoms, justiﬁes the utilization of dynamic, continuous facial video-recordings to develop a model
+for detecting potential differences between ON- and OFF-medication state
+of PD patients. Notwithstanding the previous approaches, which have
+underscoblack the efﬁcacy of transformer models in diverse facial analysis
+tasks,suchanapplicationremainspoorlyexploblackincurrentresearchand
+could provide a cost-effective and practical tool to remotely assess PD
+patients’ responsiveness to dopaminergic therapy irrelevant of their
+disease stage.
+We present here an innovative transformer model that leverages multiple input streams to classify PD patients’ dopaminergic medication statespeciﬁcally, ON- (one hour after receiving levodopa/dopamine agonist) and
+OFF-medication state (12 h without levodopa/dopamine agonists)-through
+facial video-recordings of PD patients performing six different expression
+tasks (open and close mouth, still face, smile-and-kiss, tongue up-and-down,
+tongue in-and-out, tongue right-and-left). The initial stream analyzes
+characteristics derived from the videos, whereas the subsequent stream
+integrates optical ﬂow data to capture the motion dynamics of facial
+expressions. The novelty of our approach lies in the integration of both static
+and dynamic facial features through a transformer-based framework to
+enhance classiﬁcation accuracy and robustness. Utilizing optical ﬂow in
+conjunction with static feature extraction, our model effectively captures the
+subtleties of facial expressions, while adapting to the temporal ﬂuctuations
+present in video data. This dual Stream architecture improves the model
+capacity to detect nuanced variations in facial behavior linked to opposite
+medication states, thus ﬁlling a void in existing research and potentially
+facilitating applications of remote and continuous monitoring of PD.
+Results
+Characteristics of PD patients
+A total of 183 PD patients were included (109 men and 74 women) with a
+mean age of 65.3 ± 9.67 years. Of these patients, 150 completed the protocol
+assessments both before and after medication intake (ON- and OFFmedication state respectively), whereas 18 were assessed only in the ONmedication state, and 15 only in the OFF-medication state, including 12
+drug-naíve patients. From the 11 patients with deep brain stimulation
+(DBS), nine completed both cycles of the protocol, while two were only
+assessedintheON-medicationstatedueto advancedPD.Therewere13,88,
+29 and 53 patients with Hoehn & Yahr (H&Y) scores of 1, 2, 2.5, and 3-4,
+respectively.
+Performance evaluation of dual stream transformer model
+against alternative architectures
+Initially, we aimed to assess the efﬁcacy of the proposed Dual Stream
+Transformer model in comparison to three different transformer-based
+architectures utilizing the same dataset. The comparison encompasses a
+basic transformer (chosen parameters after test: embedding dimension of
+512, 8 dense units, and 4 attention heads), a CNN-transformer hybrid
+https://doi.org/10.1038/s41746-025-01630-1
+Article
+npj Digital Medicine |   (2025) 8:226
+2
+
+(chosenparameters after test: 3 convolutional layers, embedding dimension
+of 512, 8 dense units, and 4 attention heads), and a stacked transformer
+(chosen parameters after test: 3 transformer layers, embedding dimension
+512, 8 dense units, and 4 attention heads), each intended to evaluate the
+impact of various architectural elements on the medication state classiﬁcation problem. Table 1 displays the comprehensive outcomes of these
+models across multiple evaluation metrics. Finally, the ﬁnal Dual Stream
+Transformer model, which combines frame-level and optical ﬂow inputs,
+utilizes an embedding dimension 512, 8 dense units, and 4 attention heads.
+As displayed in Table 1, for most tasks, the Dual Stream Transformer
+consistently achieved higher accuracy, precision, recall, and f1-scores than
+theotherarchitectures,particularlyevidentintasksinvolvingmorecomplex
+facial dynamics, such as T1 (mouth movement) and T5 (tongue movement).
+The other models exhibited similar performance in certain tasks, with
+accuracies typically ranging from 75% to 78%. In contrast, the Dual Stream
+Transformer consistently showed signiﬁcant enhancement, attaining an
+accuracy 86% in T1 and 80% in T5, indicating its superior capability in
+classifying medication state. The CNN-Transformer Hybrid, while competitive in some tasks, generally had the lowest performance, especiallyin T3
+and T6, where it lagged behind competing architectures. Furthermore, as
+seen in Table 1, the Wilcoxon Signed-Rank tests conﬁrmed the statistical
+signiﬁcance of the performance improvements of the Dual Stream Transformer over the other models, with p-values consistently less than 0.05,
+demonstrating its superior efﬁcacy in all tasks.
+Effectiveness of dual stream transformer model across H&Y
+stages in medication state classiﬁcation
+Alongside evaluating the overall efﬁcacy of the proposed Dual Stream
+Transformer model against previous transformer-based architectures, we
+also examined its effectiveness in identifying medication state within subgroups of PD patients, as deﬁned by their H&Y stage. This assessment is
+essential for comprehending the model’s efﬁcacy in differentiating the ONand OFF-medication states across patients at various phases of PD progression and motor deterioration. Figure 1 delineates the classiﬁcation
+outcomes of the proposed model for patients in the early (H&Y = 1, from
+now on referblack as H&Y1), intermediate (H&Y = 2 or 2.5, from now on
+referblackasH&Y2 and H&Y2.5), and advanced phases (H&Y = 3 or 4, from
+now on referblack as H&Y3,4).
+The classiﬁcation outcomes, illustrated in Fig. 1, exhibit the efﬁcacy of
+the proposed Dual Stream Transformer model across various H&Y stages
+and tasks. The highest accuracy values overall across all H&Y stages were
+obtained with T1, ranging from 0.81 to 0.85, while the H&Y3,4 group
+demonstrated the highest performance. A wider accuracy spectrum was
+found with T2, T5 and T6; values ranged around the level of 0.80 (T2:
+0.75–0.83, T5: 0.76–0.88, T6: 0.77–0.83), with the highest performance
+achieved by the H&Y1 group on all occasions. The highest accuracy value
+was noted with T5 (0.88), which also exhibited the broader accuracy spectrum, as the performance of the other groups was lower than 0.80. Additionally, accuracy values were consistently below 0.77 with T3 and T4 (T3:
+0.72–0.77, T4: 0.71–0.77) for all H&Y groups. Precision, recall, and f1-scores
+exhibited a comparable pattern, typically correlating with the accuracy
+outcomesforeachH&Ygroup and task. WenotethattheWilcoxonSigned-
+Rank tests conﬁrmed the statistical signiﬁcance of the performance
+improvements of the Dual Stream Transformer over the other models.
+Intepretability
+Figure 2 demonstrates the interpretability of our model’s pblackictions
+through a visual analysis of key frames from a video segment of one PD
+Table 1 | Performance metrics for different models across tasks T1 to T6
+Task
+Model
+Accuracy
+Precision
+Recall
+f1-score
+Wilcoxon testa
+T1
+Basic Tr.
+0.77
+0.74
+0.77
+0.73
+4.64e−20
+Stacked Tr.
+0.77
+0.72
+0.77
+0.73
+4.65e−20
+CNN Tr.
+0.75
+0.69
+0.74
+0.70
+5.38e−21
+Dual Stream Tr.
+0.86
+0.87
+0.86
+0.85
+–
+T2
+Basic Tr.
+0.72
+0.66
+0.72
+0.67
+6.61e−9
+Stacked Tr.
+0.73
+0.67
+0.73
+0.68
+1.44e−8
+CNN Tr.
+0.73
+0.67
+0.73
+0.68
+1.34e−8
+Dual Stream Tr.
+0.77
+0.79
+0.77
+0.73
+–
+T3
+Basic Tr.
+0.78
+0.72
+0.78
+0.73
+6.48e−18
+Stacked Tr.
+0.77
+0.72
+0.77
+0.73
+3.93e−14
+CNN Tr.
+0.67
+0.61
+0.67
+0.63
+5.99e−24
+Dual Stream Tr.
+0.78
+0.79
+0.78
+0.77
+–
+T4
+Basic Tr.
+0.77
+0.72
+0.77
+0.72
+2.32e−12
+Stacked Tr.
+0.77
+0.71
+0.77
+0.72
+2.32e−12
+CNN Tr.
+0.70
+0.74
+0.70
+0.65
+5.47e−20
+Dual Stream Tr.
+0.77
+0.77
+0.77
+0.74
+T5
+Basic Tr.
+0.75
+0.70
+0.75
+0.70
+5.87e−17
+Stacked Tr.
+0.76
+0.71
+0.76
+0.72
+4.01e−16
+CNN Tr.
+0.70
+0.74
+0.70
+0.65
+9.65e−22
+Dual Stream Tr.
+0.80
+0.81
+0.80
+0.78
+T6
+Basic Tr.
+0.75
+0.69
+0.75
+0.70
+8.73e−19
+Stacked Tr.
+0.76
+0.70
+0.76
+0.71
+4.73e−18
+CNN Tr.
+0.71
+0.66
+0.71
+0.66
+9.46e−22
+Dual Stream Tr.
+0.78
+0.80
+0.78
+0.76
+aThe p-values in the “Wilcoxon test” column indicate the outcomes of the Wilcoxon Signed-Rank test conducted pairwise comparing the Dual Stream Transformer and the other models (Basic Transformer,
+Stacked Transformer, and CNN Transformer). A p-value below <0.05 signiﬁes a statistically signiﬁcant disparity in performance, with the Dual Stream Transformer consistently surpassing the other models.
+Best performance metrics are highlighted in bold.
+https://doi.org/10.1038/s41746-025-01630-1
+Article
+npj Digital Medicine |   (2025) 8:226
+3
+
+patient performing T6. The upper row exhibits the original video frames,
+providing baseline visuals. The second row displays ResNet-50 Grad-CAM
+heatmaps, emphasizing locations of signiﬁcant model interest during each
+frame; these areas relate to face features that are particularly critical in
+differentiating the medication state. The third row exhibits optical ﬂow
+visualizations, illustrating motion patterns throughout the frames,
+demonstrating strong focus on the mouth region when the tongue movements become stronger. The fourth row depicts the temporal attention
+derived from each transformer head illustrating the model’s dynamic focus
+on inter-frame relationships, indicating which frame is most essential
+throughoutthe processing of sequential video data. This attention is vitalfor
+elucidating the model’s decision-making, as it offers insights into how
+various frames affect pblackictions, aiding our comprehension of the temporal relationships the model identiﬁes from each head viewpoint. Overall,
+thisenhancedinterpretabilitystrengthensnotonlytheaccuracy,butalsothe
+transparency of the automated evaluations, fostering trust and assisting
+clinicians in decision-making by allowing experts to align model insights
+with clinical observations.
+System speciﬁcations
+The implementation and experiments were conducted on a highperformance GPU cluster. Each training session employed NVIDIA
+A100-SXM4-40GB GPUs, utilizing a total of 8 GPUs per node. The cluster
+hadAMDEPYC774264-coreprocessors,operatingataclockspeedofupto
+2.25GHz,and1 TiBofRAM.Themodelwastrained usingthe TensorFlow-
+GPU package (version 2.5.0) using the Keras interface. We utilized the
+Adam optimizer, setting an initial learning rate of 10−4, and employed
+binary cross-entropy as the loss function. The suggested Dual Stream
+Transformer model underwent training with a batch size of 8 across 200
+epochs.Each training sessionconsumed around 38 GB of GPUmemoryper
+unit and requiblack approximately 20 to 25 minutes for completion. Furthermore, the average inference time per video was approximately 370
+milliseconds. Finally, the proposed model comprises 407,286,802 trainable
+parameters.
+Discussion
+In the advancing ﬁeld of PD research, precise and comprehensive monitoring of the diverse clinical manifestations of PD, particularly with respect
+to dopaminergic medications, remains challenging. The inherent heterogeneity of PD patients’ symptoms and their response to therapy has
+nowadays imposed a personalized and tailoblack approach to meet individual needs in PD diagnostics and treatment33. However, PD assessment and
+follow-up largely depend on clinicians’ expertise and experience, as the
+pursuit of reliable and objectively measurable biomarkers, though
+promising, is still ongoing34. Pblackicting the magnitude, quality and
+duration of the clinical response to dopaminergic therapy has been a
+longstanding concern for clinicians over the past few decades35. This issue
+can be relevant to both advanced-stage PD, when treatment-related ﬂuctuations and dyskinesia emerge, but also to early-stage, when parkinsonian
+symptomsaremild,thecompleteclinicalspectrumofPDhasyetto develop,
+and a clear response to dopaminergic therapy would substantially enhance
+the conﬁdence of a PD diagnosis.
+The term “masked face”, used to denote blackuced facial movements,
+refers to one of the earliest descriptions of parkinsonian hypomimia, while
+numerous factors, such as bradykinesia, emotional processing and social
+behavior, are thought to intertwine to produce the characteristic parkinsonian facial expression36. Hypomimia is typically not included in the
+treatment outcome points when evaluating the success of an intervention in
+PD, as it does not contribute directly to patients’ disability and impaiblack
+functionality, like walking difﬁculties or pain37. However, it is present
+throughout all PD stages, and responds, at least partly, to dopaminergic
+therapy, while it can be easily captublack by inexpensive, commercially
+available and widespread digital tools, such as smartphones or tablets38.
+These characteristics point towards hypomimia as an essential biomarker in
+PD diagnostics and therapeutics. Novel technologies have assumed a
+growing role in assisting clinicians and researchers to effectively and quickly
+evaluate the response of PD patients’ symptoms to dopaminergic
+medication39–41. In our study, we developed an innovative Dual Stream
+Transformer model designed to detect ON- and OFF-medication state via
+facial video analysis. This method utilizes facial frame traits and optical ﬂow
+to identify the nuanced and dynamic alterations in facial expressions linked
+to opposite medication states. The incorporation of sophisticated DL
+methodologies enables the model to examine complex face motions,
+yielding insights into frequently neglected aspects of facial expression, likely
+associated with both motor and non-motor symptoms. This improvement
+strengthens our comprehension of PD phenomenology and paves the way
+for more focused research questions. Moreover, it facilitates the development of efﬁcient, remote and low-cost monitoring methods for purposes of
+research and routine clinical practice, without intruding patients’ comfort
+and functionality in everyday life, with the ultimate goal of enhancing
+treatment outcomes and quality of life.
+The principal ﬁnding of our study is the efﬁcacy of the suggested Dual
+Stream Transformer model in distinguishing the medication state in PD
+patients of early to mid/advanced disease stage. The model demonstrated
+enhanced performance compablack to other designs, ranging from 77 to
+86%, which highlights its capacity to detect the nuanced facial expressions
+associated with the medication state of PD patients. Notably, the highest
+values were obtained in tasks involving rough facial movements, such as T1
+Fig. 1 | Performance metrics. Accuracy, precision, recall and f1-score rates of proposed architecture for each task within the different H& Y groups.
+https://doi.org/10.1038/s41746-025-01630-1
+Article
+npj Digital Medicine |   (2025) 8:226
+4
+
+and T5, attaining accuracies 86% and 80%, respectively. This ﬁnding could
+be attributed to the impaiblack ability of PD patients to reach peak
+expressions in voluntary facial movements due to bradykinesia (slowness of
+movement), hypokinesia (blackuced range of movement), or even nonmotorparametersthatimprovewithdopaminergictherapy(e.g.apathy)23,42.
+Similarly to prior research30, these tasks and the interpretability of the
+pblackictions of our model point towards the mouth as a signiﬁcantly
+dysfunctional area, affected by dopaminergic deﬁcits. The lower accuracy
+values obtained in tasks necessitating ﬁner motor control and smaller range
+of movement, such as T3 and T4, underscore the need to deepen our
+understanding of facial dynamics.
+The model’s sustained performance throughout several H&Y stages
+indicates its overall therapeutic signiﬁcance, irrelevant of PD severity and
+progression. The model was particularly successful in differentiating the
+medication state in PD patients classiﬁed at the two ends of the clinical
+severity spectrum, either the least (H&Y1) or the most affected (H&Y3,4).
+Differentiating between ON-and OFF-medication state in PD patients with
+more advanced disease seems plausible, as these patients are more likely to
+experience ﬂuctuations and, thus, are more dependent on the shortduration response to levodopa. The highest accuracy found in PD patients
+with milder symptoms is interesting, as patients with unilateral motor
+symptoms (H&Y1) are more likely to be at an early stage of PD, when
+patients typically do not experience any immediate alterations in their
+performance following each individual dose of dopaminergic medication.
+Stratiﬁcation of PD severity according to the H&Y scale considers more
+roughly deﬁned motor traits, such as localization of motor symptoms
+(unilateralorbilateral)andgait/balanceimpairment,ignoringtheseverityof
+hypomimia. Whether this ﬁnding indicates hypomimia as an early marker
+Fig. 2 | Model interpretability. Original frames, Grad-CAM heatmaps, optical ﬂow visualizations and temporal attention maps for key video frames during one video
+segment.The authors have obtained written consent to publish the image.
+https://doi.org/10.1038/s41746-025-01630-1
+Article
+npj Digital Medicine |   (2025) 8:226
+5
+
+to pblackict an adequate, potentially sub-clinical, response to dopaminergic
+therapy remains to be investigated. Furthermore, the noted declines in
+accuracyattheintermediateH&Ystagesmayreﬂecttheheterogeneityofthe
+clinical characteristics of our cohort in these groups, particularly associated
+with the coexistence of ﬂuctuations, which commonly, but not necessarily,
+develop in mid-PD stages43. Additional or alternative sub-grouping of PD
+patients with regards to selected clinical features could further reﬁne the
+applicability and accuracy of our model.
+Our results guide future research, targeting at enhancing the model’s
+sensitivity to address subtle changes in PD-related facial expressions.
+Moreover, they highlight the potential for customizing clinical evaluations
+to meet the unique requirements of patients due to the inherent PD heterogeneity. The discrepancies in task-speciﬁc performance offer pragmatic
+insights for healthcare professionals, as they outline which activities may be
+more successful in efﬁciently discerning their patients’ response to dopaminergic therapy. These ﬁndings underscore the ability of the Dual Stream
+model to improve monitoring and management of PD symptoms, thus,
+promoting patient-centeblack treatment strategies that acknowledge the
+dynamic and individualized characteristics of PD. Our model obtained a
+high accuracy in discerning whether PD patients had withdrawn from
+dopaminergic medications for several hours or had them an hour prior,
+relying solely on their facial expressions during a series of given tasks. This
+result could be interpreted as an indirect indication that facial expression in
+PD, and indirectly hypomimia, have a dopaminergic basis. Such associations can further broaden the potential of digital tools, such as videorecording, in PD research, extending their applicability to encompass more
+fundamental domains, such as our understanding of PD pathophysiology.
+Upon comparing our ﬁndings with the studies delineated in Table 2,
+numerous advantages of the suggested Dual Stream Transformer concept
+become apparent. Although high performance was achieved with previous
+research16,44, utilization of facial videos offers competitive advantages in
+terms of accessibility and feasibility for both clinical and real-world settings
+over wearable sensors, which are often numerous, intricate and potentially
+impractical, even when lightweight. Acquisition of facial videos can be costeffective and straightforward, facilitated by user-friendly devices that enable
+the collection of relevant information without loss of data in minimally
+invasive manners, provided that strict regulations on personal data dissemination are established and rigorously adheblack to. Furthermore, our
+large dataset of 183 PD patients offers robustness and greater conﬁdence in
+the interpretation of our results across a wide range of PD characteristics,
+addressing gaps stemming from subject-speciﬁc variability. The performance characteristicsof our model are notable, exhibiting an accuracy 86%,
+precision 87%, recall 86%, and an f1-score 85%. These results are especially
+signiﬁcant considering that our model was trained on a markedly larger
+sample size in contrast to smaller cohorts of less than 70 subjects utilized in
+prior investigations17,19,45. Our method’s capacity to utilize the abundant
+information derived from facial expressions facilitates a more accurate
+classiﬁcation of the PD patients’ medication state, especially in contexts
+featuring intricate facial dynamics.
+While the proposed Dual Stream Transformer model holds signiﬁcant
+promise in detecting the medication state across PD patients of various
+stages, several limitations warrant consideration. A signiﬁcant drawback is
+the inherent complexity of the dual stream design, which, although
+enhancing accuracy, results in very extended inference times. This may
+provide challenges for real-time applications in therapeutic settings, where
+prompt decision-making is crucial. The model’s extensive amount of
+trainable parameters requires substantial computer resources for training
+and inference, which may restrict its use in resource-limited environments.
+Additionally, despite the large sample size of our dataset, it became more
+restricted when PD patients were categorized according to their H&Y stage,
+particularly for H&Y stage 4 with very few video samples available.
+Although the patients’ response to dopaminergic therapy is typically more
+clearly observed at advanced PD stages, this constraint may inﬂuence the
+model’s generalizability. To mitigate this, we employed Leave-One-Subject-
+Out Cross-Validation (LOSOCV), ensuring that the model was tested on
+completely unseen subjects in each iteration. This approach strengthens
+generalizability by blackucing overﬁtting and preventing the model from
+relying on patterns speciﬁc to any particular subgroup. Additionally, we
+segmented the videos into one-second intervals, signiﬁcantly increasing the
+number of training samples while preserving task-speciﬁc motion dynamics. This strategy enhances the model’s ability to learn from a more diverse
+set of examples, thereby blackucing potential biases associated with
+demographic or clinical subgroup imbalances.
+Furthermore, although we can intuitively suggest the potential of our
+method as a cost-effective and practical instrument to remotely evaluate PD
+patients,itiscrucialtorecognizethatdatacollectioninthisstudyoccurblack
+on-siteunderpre-deﬁned,experimentalconditions.Thisapproachaimed at
+achieving homogeneity among patients, facilitating comparisons and
+minimizing the inﬂuence of external factors which could introduce variability.However,itrepresentsalimitation,asitrestrictsthegeneralizabilityof
+our ﬁndings in real-world settings or telemedicine applications. Subsequent
+research should focus on assessing the model’s efﬁcacy using video
+recordings captublack in authentic, distant settings to validate its feasibility
+and economic viability for home-based surveillance.
+Dependence on facial video analysis may introduce bias arising from
+individual variations in facial expressiveness, associated with factors such as
+age, cultural background, comorbidities (e.g. tics), or other PD-related
+parameters, such as botulin toxin applications for symptoms management
+(e.g. blepharospasm) or aesthetic reasons. Ultimately, the model emphasizes
+facial motion through the six tasks that PD patients were instructed to
+execute, taking into consideration the overall PD motor severity, as
+expressedbytheH&Yscale.However,itneglectsothersigniﬁcantmotorand
+non-motor features of PD, including cognition or emotion. Introducing
+such data into our model could deepen our understanding of the complexities of facial movements and reveal potential confounding factors.
+Finally, despite the ON- and OFF-medication state usually being associated
+with better and worse performance, respectively, this is not unanimous,
+particularly in a heterogeneous sample, which further highlights the delicate
+nature of parkinsonian manifestations. Early-stage PD patients do not
+typically experience clinically detectable changes in their daily performance
+following intermittent drug intake, while the natural OFF-medication performance of drug-naíve PD patients can be quite different from the OFFmedication state of other groups of PD patients, including the OFFmedication state of DBS patients while they were stimulation-ON. On the
+Table 2 | Medication state classiﬁcation methods comparison
+Study
+Method
+Subjects
+Data source
+Results
+Fisher et al.45
+ANN
+34
+Accel.
+Rec. 0.60
+Hssayeni et al.16
+SVM
+19
+Accel., Gyr.
+Acc. 0.90, Rec. 0.94, Spec. 0.85
+Um et al.44
+CNN
+30
+Accel.
+Acc. 0.87
+Pﬁster et al.19
+CNN
+70
+Accel., Gyr.
+Acc. 0.65
+Shuqair et al.17
+RL
+19
+Accel., Gyr.
+f1 0.83
+Proposed
+Dual Stream Transformer
+183
+Facial videos
+Acc. 0.86, Pr. 0.87, Rec. 0.86, f1 0.85
+Accel. Accelerometer, Gyr. Gyroscope, ANN Artiﬁcial Neural Network, SVM Support Vector Machine, RL Reinforcement Learning, Acc. Accuracy, Pr. Precision, Rec. Recall, f1 f1-score.
+https://doi.org/10.1038/s41746-025-01630-1
+Article
+npj Digital Medicine |   (2025) 8:226
+6
+
+other hand, advanced PD patients are more vulnerable to drug-induced
+dyskinesia and ﬂuctuations, including dose failures and sub-optimal or
+delayed ON phenomena46. These characteristics have the potential to either
+exacerbate or mitigate the differences that allow the clinical distinction of
+ON- and OFF-medication state in selected patients. Although these particularities were not consideblack in our experimental protocol, the high
+values achieved by our model in differentiating between ON- and OFFmedication state indicate that clinically undetectable changes might have
+contributedtotheenhancedefﬁcacy,furthersupportingitsroleasanadd-on
+toolinclinicalpractice.Addressingtheselimitationsguidesournextstepsfor
+optimizing our model and enhancing its applicability in various settings.
+In conclusion, our research introduces an innovative Dual Stream
+Transformermodel that proﬁciently detects the ON- or OFF-dopaminergic
+medication state in PD patients, exhibiting strong performance across
+various stages of motor deterioration, as expressed by the H&Y scale. The
+model attained an accuracy 86%, a value which highlights its potential to
+effectively identify the medication state of PD patients, especially in the
+earliest and more advanced stages of the disease (H&Y1 and H&Y3,4), while
+providing additional evidence for the dopaminergic nature of facial
+expressions in PD. The model’s adaptability to the escalating motor
+impairment, signiﬁed by each H&Y stage, underscores its possible applications in diverse clinical scenarios, enabling personalized treatment
+approaches.Future endeavorswillincludeimprovingthemodel’ssensitivity
+in intermediate stages of PD severity, broadening our dataset to encompass
+variousdemographicgroups,andinvestigatingadditionalfactorsthatmight
+affect the nuanced facial dynamics, currently confounding our results. On
+the other hand, integrating real-time, continuous monitoring of PDpatients
+could signiﬁcantly improve the model’s generalizability and relevance in
+clinical practice, as future lightweight versions could be suited for mobile
+device storage, operating autonomously without external sensors. Optimizing the model’s architecture to blackuce its parameter count, while
+maintainingorenhancingperformancewillbeapriority,aimingatlowering
+computational requirements and facilitating deployment in resourceconstrained or uncontrolled settings. Such developments would further
+validate our model and solidify a cost-effective instrument for the remote
+management of PD patients. Real-world applications of our model will
+allow the accurate detection of clinically meaningful drug-induced
+improvements, and forward the overarching goal of efﬁciently addressing
+the delicate balances in PD therapeutics in a patient-centeblack approach.
+Methods
+Dataset
+Participants were recruited over a period of one year (June 2023 to May
+2024) from the Movement Disorders Outpatient Clinics of two hospitals in
+Greece, the University General Hospital of Heraklion in Crete (UGHH),
+and the University General Hospital of Patra (UGHP). Participants met
+Movement Disorder Society (MDS) criteria for Clinically Probable PD47.
+Eligible patients were adults with independent ambulation, either alone or
+with the use of accessory aids, suchas a cane or a walking stick, placing them
+within H&Y stage 1–4 in their ON-medication state. Individuals with
+confounding comorbidities, including dementia or cognitive impairment,
+major psychiatric disorders (e.g. major depression), severe hearing or visual
+impairment, and severe musculoskeletal problems, which could interfere
+with protocol adherence were excluded. PD patients with device-aided
+therapies (DBS or infusion pumps) were also included, as long as the rest
+criteria were honoblack. All procedures involving human participants were
+Fig. 3 | Tasks performed by PD participants. The
+six tasks include: a open and close mouth, b still face,
+c smile and kiss, d tongue up and down, e tongue in
+and out, f tongue right and left. The authors have
+obtained written consent to publish the image.
+https://doi.org/10.1038/s41746-025-01630-1
+Article
+npj Digital Medicine |   (2025) 8:226
+7
+
+conducted in accordance with the ethical standards of the institutional and
+national research committees and with the 1964 Helsinki Declaration and
+its later amendments. Written informed consent was obtained from all
+participants before participation in the study. The study was approved by
+the Ethics Committees of both hospitals. At the UGHH, approval was
+granted under reference number 11692/19-05-2023 by the Scientiﬁc
+Council chaiblack by George Halkiadakis, with vice-chair Stylianos Kteniadakis, and members I. Velegraki, A. Patriniakos, K. Tziovaras, and G.
+Sourvinos. At the UGHP, approval was granted under reference number
+347/13-07-2023 by the Scientiﬁc Council chaiblack by Petros Maragos, with
+members I. Michou, A. Tsiata, S. Asimakopoulos, A. Sarantopoulos, and N.
+Darioti.
+Experimental Process
+The regimen of each participant was documented. Patients receiving either
+levodopa or dopamine agonists were asked to stop them the night before the
+scheduled examination in order to start the experimental process of videorecording while these medications were withdrawn for a minimum of 12
+hours(OFF-medicationstate).Aftercompletingtheﬁrstcycleofexamination
+in the morning, patients resumed their regular doses of levodopa or dopamine agonists; the same experimental process was repeated after approximately60-90minutes(ON-medicationstate).Drug-naívepatients,deﬁnedas
+those not receiving levodopa or dopamine agonists, were assessed only once
+(OFF-medication state). Patients treated with infusion pumps (levodopacarbidopa intestinal gel (LCIG) or apomorphine), and those with advanced
+PDwhocouldnotreachthestudysitewithouttakingtheirmorninglevodopa
+dose performed the experimental process only once (ON-medication state).
+The medication state in DBS patients was deﬁned according to levodopa or
+dopamine agonists dosing, as described above, without turning off the DBS
+stimulation under any circumstances (always stimulation-ON). ON- and
+OFF-medication states were based strictly on dosing and time criteria and
+were unrelated to the deﬁnitions of ON- and OFF-medication state reﬂecting
+motor and/or non-motor performance. Eligible patients were grouped
+according to their H&Y stage48 at the ON-medication state, as assessed by a
+movement disorders specialist, while the presence or not of ﬂuctuations was
+not consideblack. For patients completing the protocol only during the OFFmedicationstate,theOFF-medicationH&Yscorewasrecorded.Patientswith
+H&Y stage 3 or 4 were grouped together.
+The protocol included two experimental cycles (OFF- and ON-medication), using the same assessment process for facial expression. The participants were instructed to sit in front of a ﬁxed action camera (GoPro
+Hero9), in a quiet room with white background and a luminance level
+stabilized around 450 lux. In each cycle patients were asked to perform six
+different facial expression tasks, each one involving speciﬁc motor actions,
+known to be affected in hypomimia49. These six tasks, shown in Fig. 3,
+comprised of opening and closing the mouth (T1), keeping a still face (T2), a
+smile-and-kiss exercise (T3), movingthe tongueup-and-down (T4), moving
+the tongue in-and-out (T5), and moving the tongue right-and-left (T6).
+Patients were instructed to repeat each task ten times as fast as possible.
+These tasks were selected after reviewing the literature of existing protocols
+for evaluating hypomimia and facial expressions in PD. Due to the lack of
+formal recommendations, tasks likely to best reveal bradykinesia were
+selected based on common clinical practices. Emphasis was placed on
+incorporating diadochokinetic exercises, which involve rapid, alternating,
+andrepetitivefacialmusclemovements.Suchtasksareexpectedtochallenge
+participants to sustain both the speed and accuracy of the instructed
+movements, while maintaining a high level of control. Despite their simple
+nature, these tasks are straightforward for participants to understand and
+perform, yet still require their active participation. Additionally, they are
+easy to replicate, ensuring consistency across different studies. Given these
+advantages, similar tasks have been widely used in protocols assessing
+speech impairment in PD50,51. Their application appears relevant and
+appropriate for evaluating hypomimia, although in our protocol patients
+refrained from speaking to maintain their focus on facial movements.
+Moreover, these tasks were selected as unrelated to emotions, as emotional
+processing can be impaiblack in PD The whole process was video-recorded.
+Thevideoresolutionwassetto4K(3840×2160)andtheframerateto30fps.
+Preprocessing
+The preprocessing of the facial videos was essential for maintaining the
+quality and consistency of the characteristics input into the Dual Stream
+Transformer model and comprised multiple stages. We initially implemented facial alignment on each video frame to standardize the input face
+data. Facial alignment was executed utilizing the Multi-task Cascaded
+convolutional Neural Network (MTCNN) model52, a prevalent technique
+for reliable face detection and alignment. The MTCNN algorithm identiﬁes
+facial landmarks in each frame, ensuring continuous alignment of the facial
+region throughout the video. This alignment is crucial for blackucing discrepancies in head posture or camera angle that may otherwise add noise
+into the feature extraction process. After aligning the faces, the videos were
+divided into segments of one second (30 frames per second). We have also
+performed experiments with segment lengths of 5 and 10 s, and we found
+that the 1-s segment resulted in the best performance. The shorter segment
+duration allowed the capturing of the essential motion patterns involved in
+the repetitive motions characterizing each task without introducing excessive variability, which was observed in longer segments. The 1-s segment
+was selected to balance between segment duration, dataset size and model
+performance. Subsequent to segmentation, each frame was scaled to a
+uniform resolution of 224 × 224 pixels for frame feature extraction and 48 ×
+48 pixels for opticalﬂow features extraction. This choice of resolutionallows
+for rich spatial feature extraction from facial frames while signiﬁcantly
+blackucing the computational burden of generating optical ﬂow features by
+minimizing their dimensionality.
+To mitigate overﬁtting and enhance model generalization, we implementedvariousdataaugmentationapproachesontheframesbeforethefacial
+feature extraction process. Augmentation operations comprised random
+horizontalﬂips,brightnessmodiﬁcations,andminorrotations,alldesignedto
+enhance the diversity of the training data53. These actions facilitated the
+model’sacquisitionofinvariantrepresentationsoffacialcharacteristicsacross
+varying illumination conditions, orientations, and occlusions.
+We utilized a pre-trained ResNet-50 model, initialized with ImageNet
+weights, as a feature extractor to derive signiﬁcant spatial information from
+the frames. The fully connected layers of the ResNet-50 architecture were
+eliminated, and global average pooling was utilized on the ﬁnal convolutional layer, condensing each frame’s representation into a 2048dimensional feature vector. This method guaranteed that each frame was
+characterized bya concise yet substantialfeature embedding. Each 1-second
+video segment produced facial features with a shape of (30, 2048), where 30
+denotes the number of frames in the segment, and 2048 indicates the
+dimensionality of the feature vectors for each frame. The feature vectors
+were subsequently aggregated over all segments.
+Alongside facial features, we calculated dense optical ﬂow across successive frames to capture motion information, namely the nuanced facial
+motions indicative of PD motor symptoms. Optical ﬂow quantiﬁes the
+directionandamplitudeofmovementinpixelintensitiesbetweensuccessive
+frames,offeringadynamicdepictionoffacialexpressionsandmotoractivity
+that enhances the static information derived from the frames.
+We employed Gunnar-Farnebäck’s approach to calculate optical ﬂow,
+which estimates motion between two frames by estimating the ﬂow ﬁeld54.
+The optical ﬂow F between two consecutive frames can be approximated
+using the following equations derived from the brightness constancy
+assumption:
+Taking the ﬁrst-order Taylor expansion, we obtain the optical ﬂow
+constraints:
+Ixu þ Iyv þ It ¼ 0;
+ð1Þ
+where Ix ¼ ∂I
+∂x is the gradient of the image intensity in the x-direction,
+Iy ¼ ∂I
+∂y isthegradientoftheimageintensityinthey-direction,andIt ¼ ∂I
+∂t is
+the gradient of the image intensity over time.
+https://doi.org/10.1038/s41746-025-01630-1
+Article
+npj Digital Medicine |   (2025) 8:226
+8
+
+The optical ﬂow can be estimated by minimizing the following
+expression over a small neighborhood of each pixel:
+F ¼
+u
+v
+
+
+¼ arg min
+u;v
+X
+ðx;yÞ2N
+Ixu þ Iyv þ It
+
+2
+;
+ð2Þ
+where N is a small neighborhood around the pixel (x, y).
+Using Gunnar-Farnebäck’s method54, the optical ﬂow can be computed with the following equation, which utilizes polynomial expansion to
+estimate the motion:
+F ¼ Farneb€ackðI1; I2Þ;
+ð3Þ
+where I1 and I2 are the two consecutive frames between which the optical
+ﬂow is computed.
+The resulting optical ﬂow features were ﬂattened to produce a onedimensional vector for each motion segment, capturing the motion information across the frames, thus leading to a ﬁnal representation with a shape
+of (29, 4608) for an 1-second segment, where each vector encapsulates the
+detailed movement dynamics between consecutive frames.
+Dual stream transformer architecture
+The Dual Stream Transformer architecture (Fig. 4) was developed to extract
+both spatial and temporal information from facial videos and their associated optical ﬂow representations, facilitating precise classiﬁcation of PD
+patients’ medication states. This architecture consists of two main branches:
+a Facial frame branch for face frame feature processing and an Optical Flow
+frame branch for motion information processing. Each branch employs a
+transformer encoder to extract intricate spatio-temporal correlations from
+the input data, which are subsequently integrated for ﬁnal classiﬁcation.
+The Facial frame branch processes facial frame features, which
+encompass the static appearance and expression-related information
+essential for comprehending the motor function and facial dynamics of PD
+patients in the two medication states. Each facial frame is initially processed
+bya ResNet-50 based featureextractor,yieldinga sequenceof feature vectors
+(Fig. 4). The feature vectors are subsequently input into the transformer
+architecture for temporal modeling. A Positional Embedding layer was
+employed to encode the position of each frame in the sequence. The input to
+this layer consistsof a sequence of feature vectorsthat represent facial frames
+throughout time. Due to the inherent permutation invariance of transformers,positionalembeddingsenablethemodeltodistinguishbetweenframes
+according to their sequential position. This is essential for understanding
+temporalrelationshipsbetweenfacialexpressionsandmovementsovertime.
+The transformer is realized as a Transformer Encoder, comprising a
+multi-head self-attention mechanism and a thick projection layer. The
+multi-head self-attention mechanism enables the model to assess the signiﬁcance of each frame’s feature vector in relation to others in the sequence,
+thereby capturing long-range dependencies in the temporal domain. This is
+especially beneﬁcial for PD symptoms classiﬁcation, as nuanced facial
+movementsovertimemaydiscloseuniquepatternslinkedtothemedication
+state. The attention output is succeeded by a residual connection and layer
+normalization, facilitating smooth gradient ﬂow and steady training. A
+compact projection layer, integrated with residual connections, further
+convertstheinputintoahigher-dimensionalspace,augmentingthemodel’s
+representationalcapacity.Subsequenttotheattentionand intricatechanges,
+a global max pooling operation is executed across the sequence, succinctly
+condensingthetemporalcharacteristicsintoasingularfeaturevector,which
+is further processed through a dropout layer to mitigate overﬁtting.
+The Optical Flow component enhances the Transformer component by
+acquiring motion data from the video. The optical ﬂow representations are
+treated similarly to the facial frame features, as seen in Fig. 4. The optical ﬂow
+data is initially integrated using a Positional Embedding layer to preserve the
+temporalsequenceoftheﬂowvectors.Theseﬂowvectorsdenotevariationsin
+pixel intensities across frames, and when analyzed temporally, they uncover
+motionpatternsessentialforPDassessment.Theseriesofopticalﬂowvectors
+is subsequently input into an additional Transformer Encoder layer. The
+multi-headself-attentionmechanisminthetransformerenablesthemodelto
+assess the signiﬁcance of motion patterns across several time steps, thereby
+Fig. 4 | Proposed architecture of the Dual Stream Transformer. This particular architecture was developed to extract both spatial and temporal information from facial
+videos and their associated optical ﬂow representations.
+https://doi.org/10.1038/s41746-025-01630-1
+Article
+npj Digital Medicine |   (2025) 8:226
+9
+
+capturing temporal correlations in movement. Similar to the Transformer
+architecture, the attention output is normalized and subsequently sent
+through a dense projection layer. The optical ﬂow data undergoes global max
+pooling, which consolidates the temporal information into a singular vector
+representation, succeeded by a dropout layer to mitigate overﬁtting.
+Upon completion of processing by both the facial frame and optical
+ﬂow branches, the outputs from the two streams are concatenated (Fig. 4).
+This concatenation integrates spatial and motion-based elements, successfully merging appearance and movement information into a cohesive
+representation. By integrating these two modalities, the model acquires a
+morethoroughcomprehensionofthepatients’facialexpressionsand motor
+functions, both essential for categorizing their medication state. Subsequent
+to concatenation, the integrated feature vector is transmitted through a
+concluding dropout layer to enhance model regularization. The integrated
+representation is subsequently input into a fully connected Dense layer,
+which produces the classiﬁcation of the medication state, employing a
+softmax activation function to forecast the probability distribution across
+the potential classes.
+The model was trained for a total of 200 epochs and its weights were
+preservedduringtrainingaccordingtovalidationlosstomitigateoverﬁtting.
+The model checkpoint callback was utilized to monitor the validation loss
+and preserve the optimal model weights for future application. Moreover,
+multiple combinations of transformer parameters were tested to determine
+the optimal conﬁguration, including dense layer dimension, number of
+attention heads, embedding dimension, and batch size.
+The evaluation of the Dual Stream Transformer model was conducted
+using LOSOCV. This methodology ensublack that the model was robust
+and generalized well to unseen data by training on all subjects except one.
+The medication assessment experiments were conducted in binary classi-
+ﬁcation scenarios, encompassing the evaluation of each of the 6 tasks
+described in the Methods section. The classiﬁcation metrics include accuracy, precision, recall (sensitivity), and f1-score. To evaluate the statistical
+signiﬁcance of performance disparities between the Dual Stream Transformer and the other models, we employed the Wilcoxon Signed-Rank tests
+on the performance metrics55. Pairwise tests were conducted between the
+Dual Stream Transformer and the rest three models for each task, with
+p-values less than 0.05 signifying statistically signiﬁcant improvements.
+Data availability
+The raw data used in this study are not publicly available to preserve participant privacy. The data generated and analyzed during this study are
+available from the corresponding authors upon reasonable request.
+Code availability
+The underlying code for thisstudy[and training/validation datasets] are not
+publicly available, but can be made available to qualiﬁed researchers on
+reasonable request from the corresponding authors.
+Received: 14 January 2025; Accepted: 10 April 2025;
+References
+1.
+Tysnes, O.-B. & Storstein, A. Epidemiology of Parkinson’s disease. J.
+Neural Transm. 124, 901–905 (2017).
+2.
+Ben-Shlomo, Y. et al. The epidemiology of Parkinson’s disease.
+Lancet 403, 283–292 (2024).
+3.
+Rossi, A. et al. Projection of the prevalence of Parkinson’s disease in
+the coming decades: Revisited. Mov. Disord. Off. J. Mov. Disord. Soc.
+33, 156–159 (2018).
+4.
+Dorsey, E. R. Global, regional, and national burden of Parkinson’s
+disease, 1990-2016: a systematic analysis for the Global Burden of
+Disease Study 2016. Lancet Neurol. 17, 939–953 (2018).
+5.
+Hähnel, T. et al. Progression subtypes in Parkinson’s disease
+identiﬁed by a data-driven multi cohort analysis. NPJ Parkinsons Dis.
+10, 95 (2024).
+6.
+Greenland, J. C., Williams-Gray, C. H. & Barker, R. A. The clinical
+heterogeneity of Parkinson’s disease and its therapeutic implications.
+Eur. J. Neurosci. 49, 328–338 (2019).
+7.
+Gupta, H. V., Lyons, K. E., Wachter, N. & Pahwa, R. Long term
+response to levodopa in parkinson’s disease. J. Parkinson’s Dis. 9,
+525–529 (2019).
+8.
+Martin, W. R. W. et al. Is levodopa response a valid indicator of
+parkinson’s disease? Mov. Disord. Off. J. Mov. Disord. Soc. 36,
+948–954 (2021).
+9.
+Mantri, S. et al. The experience of off periods in parkinson’s disease:
+descriptions, triggers, and alleviating factors. J. Patient Centered Res.
+Rev. 8, 232–238 (2021).
+10. Cardoso,F.& Tolosa, E. Fluctuations inParkinson’sdisease:progress
+and challenges. Lancet Neurol. 23, 448–449 (2024).
+11. Guan, I. et al. Comparison of the Parkinson’s KinetiGraph to off/on
+levodopa response testing: Single center experience. Clin. Neurol.
+Neurosurg. 209, 106890 (2021).
+12. Moreau, C. et al. Overview on wearable sensors for the management
+of Parkinson’s disease. npj Parkinsons Dis. 9, 1–16 (2023).
+13. Reichmann, H., Klingelhoefer, L. & Bendig, J. The use of wearables for
+the diagnosis and treatment of Parkinson’s disease. J. Neural Transm.
+130, 783–791 (2023).
+14. Kangarloo, T. et al. Acceptability of digital health technologies in early
+Parkinson’s disease: lessons from WATCH-PD. Front. Digital Health
+6, 1435693 (2024).
+15. Overview. Devices for remote monitoring of Parkinson’s disease.
+Guidance (NICE, 2023).
+16. Hssayeni, M. D., Burack, M. A., Jimenez-Shahed, J. & Ghoraani, B.
+Assessment of response to medication in individuals with Parkinson’s
+disease. Med. Eng. Phys. 67, 33–43 (2019).
+17. Shuqair, M., Jimenez-Shahed, J. & Ghoraani, B. Reinforcement
+learning-based adaptive classiﬁcation for medication state
+monitoring in parkinson’s disease. IEEE J. Biomed. Health Inform. 28,
+6168–6179 (2024).
+18. Rodríguez-Molinero, A. et al. A kinematic sensor and algorithm to
+detect motor ﬂuctuations in parkinson disease: validation study
+under real conditions of use. JMIR Rehabil. Assistive Technol. 5, e8
+(2018).
+19. Pﬁster, F. M. J. et al. High-resolution motor state detection in
+parkinson’s disease using convolutional neural networks. Sci. Rep.
+10, 5860 (2020).
+20. Sampedro, F., Martínez-Horta, S., Horta-Barba, A., Grothe, M. J. &
+Labrador-Espinosa, M. A. Clinical and structural brain correlates of
+hypomimia in early-stage Parkinson’s disease. Eur. J. Neurol. 29,
+3720–3727 (2022).
+21. Ricciardi, L. et al. Hypomimia in Parkinson’s disease: an axial sign
+responsive to levodopa. Eur. J. Neurol. 27, 2422–2429 (2020).
+22. Maycas-Cepeda, T. et al. Hypomimia in parkinson’s disease: what is it
+telling us? Front. Neurol. 11, 603582 (2020).
+23. Schade, R. N. et al. A pilot trial of dopamine replacement for dynamic
+facial expressions in parkinson’s disease. Mov. Disord. Clin. Pract. 10,
+213–222 (2023).
+24. Mäkinen, E. et al. Individual parkinsonian motor signs and striatal
+dopamine transporter deﬁciency: a study with [I-123]FP-CIT SPECT.
+J. Neurol. 266, 826–834 (2019).
+25. Pasquini, J. & Pavese, N. Striatal dopaminergic denervation and
+hypomimia in Parkinson’s disease. Eur. J. Neurol. 28, e2–e3 (2021).
+26. Skaramagkas, V. et al. Esee-d: emotional state estimation based on
+eye-tracking dataset. Brain Sci. 13, 589 (2023).
+27. Ktistakis, E. et al. COLET: A dataset for COgnitive workLoad
+estimation based on eye-tracking. Comput. Methods Prog. Biomed.
+224, 106989 (2022).
+28. Gkikas, S. et al. Multimodal automatic assessment of acute pain
+through facial videos and heart rate signals utilizing transformerbased architectures. Front. Pain Res. 5, 1372814 (2024).
+https://doi.org/10.1038/s41746-025-01630-1
+Article
+npj Digital Medicine |   (2025) 8:226
+10
+
+29. Skaramagkas, V., Pentari, A., Kefalopoulou, Z. & Tsiknakis, M. Multimodal deep learning diagnosis of parkinson’s disease-a systematic
+review. IEEE Trans. Neural Syst. Rehabilit. Eng. 31, 2399–2423 (2023).
+30. Novotny, M. et al. Automated video-based assessment of facial
+bradykinesia in de-novo Parkinson’s disease. npj Digital Med. 5, 1–8
+(2022).
+31. Valenzuela, B., Arevalo, J., Contreras, W. & Martinez, F. A spatiotemporal hypomimic deep descriptor to discriminate parkinsonian
+patients. Annu. Int. Conf. IEEE Eng. Med. Biol. Soc. IEEE Eng. Med.
+Biol. Soc. Annu. Int. Conf. 2022, 4192–4195 (2022).
+32. Abrami, A. et al. Automated computer vision assessment of
+hypomimia in parkinson disease: Proof-of-principle pilot study. J.
+Med. Internet Res. 23, e21037 (2021).
+33. Titova, N. & Chaudhuri, K. R. Personalized medicine and nonmotor
+symptoms in parkinson’s disease. Int. Rev. Neurobiol. 134,
+1257–1281 (2017).
+34. Vijiaratnam, N. & Foltynie, T. How should we be using biomarkers in
+trials of disease modiﬁcation in Parkinson’s disease? Brain A J.
+Neurol. 146, 4845–4869 (2023).
+35. Hughes, A. J., Lees, A. J. & Stern, G. M. Challenge tests to predict the
+dopaminergic response in untreated Parkinson’s disease. Neurology
+41, 1723–1725 (1991).
+36. Bianchini, E. et al. The story behind the mask: a narrative review on
+hypomimia in parkinson’s disease. Brain Sci. 14, 109 (2024).
+37. Nisenzon, A. N. et al. Measurement of patient-centered outcomes in
+Parkinson’s disease: what do patients really want from their
+treatment? Parkinsonism Relat. Disord. 17, 89–94 (2011).
+38. Su, G. et al. Detection of hypomimia in patients with Parkinson’s
+disease via smile videos. Ann. Transl. Med. 9, 1307 (2021).
+39. Matarazzo, M., Arroyo-Gallego, T., Montero, P. & Puertas-Martín, V.
+Remote monitoring of treatment response in parkinson’s disease: the
+habit of typing on a computer. Mov. Disord. Off. J. Mov. Disord. Soc.
+34, 1488–1495 (2019).
+40. Di Lazzaro, G. et al. Technology-based therapy-response and
+prognostic biomarkers in a prospective study of a de novo
+Parkinson’s disease cohort. Npj Parkinsons Dis. 7, 1–7 (2021).
+41. Pulliam, C. L. et al. Continuous assessment of levodopa response in
+parkinson’s disease using wearable motion sensors. IEEE Trans. Bio
+Med. Eng. 65, 159–164 (2018).
+42. Bowers, D. et al. Faces of emotion in Parkinsons disease: microexpressivity and bradykinesia during voluntary facial expressions. J.
+Int. Neuropsychological Soc. JINS 12, 765–773 (2006).
+43. Jankovic, J. Motor ﬂuctuations and dyskinesias in Parkinson’s
+disease: clinical manifestations. Mov. Disord. Off. J. Mov. Disord. Soc.
+20, S11–16 (2005).
+44. Um, T. T. Data augmentation of wearable sensor data for parkinson’s
+diseasemonitoringusingconvolutionalneuralnetworks.In:Proceedings
+of the 19th ACM International Conference on Multimodal Interaction,
+ICMI ’17, 216–220 (Association for Computing Machinery, 2017).
+45. Fisher, J. M. et al. Unsupervised home monitoring of Parkinson’s
+disease motor symptoms using body-worn accelerometers.
+Parkinsonism Relat. Disord. 33, 44–50 (2016).
+46. Olanow, C. W., Stern, M. B. & Sethi, K. The scientiﬁc and clinical basis
+for the treatment of Parkinson disease (2009). Neurology 72, S1–136
+(2009).
+47. Postuma, R. B. et al. MDS clinical diagnostic criteria for Parkinson’s
+disease: MDS-PD Clinical Diagnostic Criteria. Mov. Disord. 30,
+1591–1601 (2015).
+48. Hoehn, M. M. & Yahr, M. D. Parkinsonism: onset, progression and
+mortality. Neurology 17, 427–442 (1967).
+49. Roßkopf, S., Wechsler, T. F., Tucha, S. & Mühlberger, A. Effects of facial
+biofeedback on hypomimia, emotion recognition, and affect in
+Parkinson’sdisease.J.Int.NeuropsychologicalSoc.30,360–369(2024).
+50. Chiaramonte, R. & Bonﬁglio, M. Acoustic analysis of voice in
+Parkinson’s disease: a systematic review of voice disability and metaanalysis of studies. Rev. De. Neurologia 70, 393–405 (2020).
+51. Sara, J. D. S., Orbelo, D., Maor, E., Lerman, L. O. & Lerman, A. Guess
+what we can hear-"novel voice biomarkers for the remote detection of
+disease. Mayo Clin. Proc. 98, 1353–1375 (2023).
+52. Zhang, K., Zhang, Z., Li, Z. & Qiao, Y. Joint face detection and
+alignment using multitask cascaded convolutional networks. IEEE
+Signal Process. Lett. 23, 1499–1503 (2016).
+53. Kumar, T., Brennan, R., Mileo, A. & Bendechache, M. Image data
+augmentation approaches: a comprehensive survey and future
+directions. IEEE Access 12, 187536–187571 (2024).
+54. Farnebäck, G. Two-frame motion estimation based on polynomial
+expansion. In: Image Analysis, (eds, Bigun, J. & Gustavsson, T.)
+363–370 (Springer, 2003).
+55. Divine, G., Norton, H. J., Hunt, R. & Dienemann, J. A review of analysis
+and sample size calculation considerations for wilcoxon tests.
+Anesthesia Analgesia 117, 699–710 (2013).
+Author contributions
+V.S., I.B., G.K., C.S. and Z.K. contributed to the conceptualization and
+design of this study. V.S., I.B. and G.K. handled and mainly analyzed the
+research data. All authors interpreted the results. V.S. constructed machine
+learning and deep learning models and conducted interpretability analysis.
+V.S. and I.B. wrote the original draft of the paper. I.K., D.F., C.S., Z.K. and
+M.T. revised the paper. I.B., G.K., C.S. and Z.K. reviewed clinical evidence of
+this study. V.S., I.B. and G.K. provided the data. C.S., Z.K. and M.T. veriﬁed
+the quality of the data. V.S., I.B., G.K., C.S. and Z.K. had full access to all raw
+data. D.F. and M.T. secured funding for the data collection and analysis.All
+authors had the ﬁnal responsibility to submit for publication.
+Competing interests
+The authors declare no competing interests.
+Additional information
+Correspondence and requests for materials should be addressed to
+Vasileios Skaramagkas, Zinovia Kefalopoulou, Cleanthe Spanaki or
+Manolis Tsiknakis.
+Reprints and permissions information is available at
+http://www.nature.com/reprints
+Publisher’s note Springer Nature remains neutral withregardtojurisdictional
+claims in published maps and institutional afﬁliations.
+Open Access This article is licensed under a Creative Commons
+Attribution-NonCommercial-NoDerivatives 4.0 International License,
+which permits any non-commercial use, sharing, distribution and
+reproduction in any medium or format, as long as you give appropriate
+credit to the original author(s) and the source, provide a link to the Creative
+Commons licence, and indicate if you modiﬁed the licensed material. You
+do not have permission under this licence to share adapted material
+derived from this article or parts of it. The images or other third party
+material in this article are included in the article’s Creative Commons
+licence, unless indicated otherwise in a credit line to the material. If material
+isnot includedin thearticle’s CreativeCommons licenceandyour intended
+use is not permitted by statutory regulation or exceeds the permitted use,
+you will need to obtain permission directly from the copyright holder. To
+view a copy of this licence, visit http://creativecommons.org/licenses/bync-nd/4.0/.
+© The Author(s) 2025
+https://doi.org/10.1038/s41746-025-01630-1
+Article
+npj Digital Medicine |   (2025) 8:226
+11

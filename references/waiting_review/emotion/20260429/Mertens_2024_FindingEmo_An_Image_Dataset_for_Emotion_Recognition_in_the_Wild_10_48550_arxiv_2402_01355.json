@@ -1,0 +1,24 @@
+{
+  "title": "FindingEmo: An Image Dataset for Emotion Recognition in the Wild",
+  "authors": [
+    "Laurent Mertens",
+    "Elahe’ Yargholi",
+    "Hans Op de Beeck",
+    "Jan Van den Stock",
+    "Joost Vennekens"
+  ],
+  "year": 2024,
+  "abstract": "We introduce FindingEmo, a new image dataset containing annotations for 25k images, specifically tailored to Emotion Recognition. Contrary to existing datasets, it focuses on complex scenes depicting multiple people in various naturalistic, social settings, with images being annotated as a whole, thereby going beyond the traditional focus on faces or single individuals. Annotated dimensions include Valence, Arousal and Emotion label, with annotations gathered using Prolific. Together with the annotations, we release the list of URLs pointing to the original images, as well as all associated source code.",
+  "doi": "10.48550/arxiv.2402.01355",
+  "arxiv_id": null,
+  "venue": "arXiv (Cornell University)",
+  "citation_count": 1,
+  "source": "openalex",
+  "pdf_url": "https://arxiv.org/pdf/2402.01355",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4391555996"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.48550/arxiv.2402.01355"
+}

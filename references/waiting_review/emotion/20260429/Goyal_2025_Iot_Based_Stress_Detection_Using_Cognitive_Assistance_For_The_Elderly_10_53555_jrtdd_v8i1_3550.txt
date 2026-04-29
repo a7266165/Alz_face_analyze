@@ -1,0 +1,641 @@
+Journal for Re Attach Therapy and Developmental Diversities
+eISSN: 2589-7799
+2025 April; 8 (1): 108-117
+
+
+108
+
+https://jrtdd.com
+Iot Based Stress Detection Using Cognitive Assistance For The Elderly
+
+Aditi Goyal1*, Sakshi Gupta2, Mitali Kanchan3
+
+1*Amity School of Engineering and Technology, Amity University, Noida, Uttar Pradesh. aditigoyal2026@gmail.com
+2Amity School of Engineering and Technology, Amity University, Noida, Uttar Pradesh. sg9139842@gmail.com
+3Amity School of Engineering and Technology Amity University, Noida, Uttar Pradesh. kanchanmitali@gmail.com
+
+Abstract—
+
+Facial expressions are one of the key features of human beings that can be used to speculate emotional state at a particular
+moment. The current work employs Convolution Neural Network to develop a facial recognition model that categorizes
+a facial expression into some different emotion categories Afraid, Anger, Disgust, Happiness, Neutral, Sad, and Surprise.
+Capturing facial expressions over a certain period of time can give an idea of what extent the elderly is feeling pain and
+can enable nurse/family members to decide their feelings and provide necessary assistance. For identification, the elderly’s
+photos are continuously taken with a smart camera and sent to the decision maker (laptop or desktop). Once the elderly
+are identified, he/she is monitored continuously for emotion recognition through facial expressions, and the detected
+emotions are stored. When an abnormal condition is detected, an alert message is sent to the caretaker/nurse. The system
+analyses visual cues, such as facial expressions and eye movements to detect signs of stress using computer vision and
+machine learning.
+
+Keywords—cognitive assistance, machine learning, Facial expression, elderly
+
+I. INTRODUCTION
+
+Cognitive deficit is the most common health condition in elderly people. Approximately 5.2 million people of age 65 and
+older suffer from cognitive impairment. Dementia is one of the major causes of cognitive impairment which can be seen in
+elderly aged and more. As the population grows rapidly there is growing interest in advance technology like use of mobile
+phone (smartphone) for real time monitoring and many more. There are many patients and elderly people who are alone
+worldwide that can lead them towards stress and health deterioration, and none is there to take care of them as they may
+require help in that stage of life. Therefore, it is important to take preventative measures and use technologies that can aid
+in early detection. However there are many benefits to detect the cognitive symptoms early and accurate so that it can be
+cured.
+Human facial recognition is widely used in human- computer interaction to analyse and understand the emotions of human.
+As per the research paper [22], the highest percentage of emotional data shown by facial expression is 55%. Emotions are
+simply a human state of mind that corresponds to mood. These sentiments are typically distorted by motivation, attitude,
+temper, character, and temperament.
+The integration of IoT technology into healthcare systems has resulted in novel ways for monitoring and improving wellbeing of senior adults. One such breakthrough is the IoT-Assisted Context-Aware Automatic Cognitive Health
+Assessment, which uses machine learning models like Decision Trees, Random Forests, and Support Vector Machines to
+provide real-time mental health monitoring. It uses a Hierarchical Dynamic Bayesian Network (HDBN) model to
+recognize emotions and provide actionable insights for comprehensive mental health tracking [1].
+Similarly, the IoT-Based Remote Healthcare Monitoring System Through Emotion Recognition focuses on facial
+expression analysis to assess emotional states. The system uses image processing and methods such as Support Vector
+Machines (SVM) and confusion matrices to transmit real-time alert messages to caregivers. Despite its prospective
+applications, the system confronts obstacles such as emotional misunderstanding and a lack of clinical validation [2].
+Artificial Intelligence for Cognitive Health Assessment: State-of-the-Art, Open Challenges, and Future Directions [9]
+presents the role of AI in diagnosing cognitive illnesses including dementia and Alzheimer's disease. The paper further
+delivers into the ethical and legal constraints of applying AI in healthcare, emphasizing the importance of secure data
+handling and balanced datasets for improving diagnostic accuracy and dependability.
+The Smart Wristband-Based Stress Detection Framework for Older Adults [11] use cortisol as a stress biomarker, is a
+wearable system that integrates several physiological inputs, including electrodermal activity (EDA), blood volume pulse
+(BVP), and skin temperature (ST). A random forest classifier improves the accuracy of stress categorization, and the
+framework incorporates a voice-based interface to encourage user interaction and self-monitoring. Limitations included
+the necessity for frequent sensor calibration and probable inaccuracies caused by environmental conditions.
+The current literature collectively demonstrate the transformational potential of IoT and AI technologies in healthcare,
+notably for improving cognitive and emotional well-being among the elderly. These frameworks enable novel healthcare
+solutions by utilizing real-time data, powerful machine learning algorithms, and wearable sensors. This study investigates
+
+Journal for Re Attach Therapy and Developmental Diversities
+eISSN: 2589-7799
+2025 April; 8 (1): 108-117
+
+
+109
+
+https://jrtdd.com
+the practical implementations, problems, and future potential for building IoT-based stress detection systems for cognitive
+aid, focusing on their role in establishing a more inclusive and responsive healthcare environment.
+
+II. LITERATURE REVIEW
+
+Table 1: Problems addressed and gaps identified in related work
+Citation
+Objective
+Gap Identified and future scope
+[1]
+Recognition based on a Hierarchical
+Dynamic Bayesian Network (HDBN)
+mode
+Assess
+other
+mental
+health
+conditions
+such
+as
+anxiety,
+depression,
+and
+dementia,
+allowing comprehensive mental
+health tracking and diagnosis.
+
+[2]
+Image
+processing,
+frame
+rate
+comparisons
+and
+SVM,
+confusion
+matrix and an alert SMS message
+
+Emotional Misinterpretation
+Lack of Clinical Validation
+[3]
+Use
+of
+ECG
+for
+detection
+and
+classification emotion.
+
+Potential issues with emotion
+recognition accuracy.
+[4]
+It provides an affordable option for
+ongoing health monitoring by increasing
+the decision-making precision
+
+ To improve reliability, expand to
+include more health metrics and
+sophisticated algorithms.
+[5]
+It focuses on the non intrusive, real-time
+monitoring of elderly people with mental
+health conditions
+
+Continued surveillance and data
+gathering privacy issues
+[6]
+The project is to improve real-time
+health monitoring and boost caregiver
+productivity to improve healthcare
+services
+The prototype's scalability is
+hampered by its lack of interface
+with healthcare system
+[7]
+The automated chatbot assesses users'
+topic descriptions and detects cognitive
+impairment using machine learning.
+The majority of existing methods
+rely on human supervision for
+early diagnosis and are based on
+manual assessments.
+
+[8]
+Robots can enhance the health and
+psychological well-being of elderly
+people
+
+Focus on long-term effects of
+social robots
+[9]
+These
+evaluations
+are
+commonly
+employed in the diagnosis and follow-up
+of disorders
+Improve data privacy through
+secure handling methods.
+Increase data quality with larger,
+balanced datasets.
+
+[10]
+It addresses IoT healthcare issues,
+specifically those related to security and
+data management
+The main disadvantages include
+high power consumption, security
+holes caused by dangers associated
+with data
+
+[11]
+Using cortisol as a biomarker for stress
+detection in older persons, the study
+presents a smart wristband architecture
+
+Future research could improve the
+prototype
+by
+adding
+more
+physiological biomarkers
+[12]
+The framework uses the Restricted
+Boltzmann Machine (RBM) algorithm
+
+The framework's emphasis on
+negative emotions
+
+Journal for Re Attach Therapy and Developmental Diversities
+eISSN: 2589-7799
+2025 April; 8 (1): 108-117
+
+
+110
+
+https://jrtdd.com
+[13]
+Integrated
+Smart
+Home
+Systems
+acceptability
+variables
+including
+comfort and perceived benefits
+Non-wearable sensors to reduce
+discomfort and complexity
+[14]
+Use sensors to measure environmental
+and health variables and provide timely
+alerts.
+enhancing
+user
+interfaces,
+investigating
+non-invasive
+monitoring,
+and
+advanced
+analytics
+
+[15]
+It focuses on creating IoT solutions for
+the home that monitor and support health
+Progress technology to overcome
+obstacles like security threats and
+privacy issues.
+
+
+Table 1 highlights important developments and approaches in the field as it investigates the relationship between stress
+detection and cognitive support. It presents IoT and machine learning approaches to improve the effectiveness and
+performance of stress detection systems for elderly. Costa et al. [3] investigate cognitive assistant frameworks that rely on
+machine learning and human-computer interaction techniques. Their study focuses on designing intuitive interfaces for
+elderly while taking into account their cognitive limitations. The study is consistent with the increased demand for lowcost assistive technology that help the elderly while also fostering independence.
+Isa et al. [4] created an IoT-based health monitoring system that uses fuzzy logic to track vital signs in elderly patients,
+specifically blood oxygen saturation and heart rate. The system uses fuzzy rules to determine stable versus unstable
+conditions, however it is confined to monitoring only two metrics. The authors acknowledge that sensor accuracy in noncontrolled conditions remains a difficulty, recommending that future research should include more health metrics and
+create algorithms to improve reliability.
+Raed et al. [5] propose an RFID-based system with wearable sensors to monitor elderly patients' movements and mental
+stress using physiological signals. While novel in its approach to non-intrusive monitoring, the system has limits in
+situations with low RFID signal strength and raises privacy issues about continuous position tracking.
+UWIZEYIMANA [6] describes an Internet of Things-based health monitoring prototype for senior care in Rwanda that
+measures body temperature, heart rate, and location data. The system promises to improve healthcare services in rural
+areas, however it does not integrate with existing healthcare infrastructure. The author underlines the importance of
+establishing a comprehensive IoT architecture that interfaces easily with existing healthcare systems.
+de Arriba-Pérez et al. [7] provide an intelligent conversational platform that use natural language processing to assess
+cognitive loss in seniors. The technology uses automated chatbot conversations and machine learning algorithms to
+differentiate itself from standard diagnostic methods by providing autonomous assessment capabilities.
+Javed et al. [9] examine the impact of assistive social robots in elderly care, focusing on companionship elements. Their
+findings show scant evidence of positive impacts, highlighting cultural bias in existing research and the need for more
+robust, long-term investigations across varied cultures.
+Zamanifar and Azadeh [10] investigate IoT-based healthcare systems, dividing them into edge computing and traditional
+IoT healthcare techniques. Their findings emphasize security and data management problems, as well as future approaches
+in serverless computing for improved system performance.
+Fonseca et al. [12] create a system for tracking geriatric emotions during multimedia encounters, attaining 90% accuracy
+in identifying six basic emotions. The system employs heart rate data and the Restricted Boltzmann Machine algorithm,
+however it is limited by its emphasis on negative emotions and the possibility of external interference with heart rate
+measurements.
+Jo et al. [13] use focus group interviews to explore the elderly's impressions of Integrated Smart Home Systems. Their
+findings show that, while privacy problems exist, elder users often accept these technologies because of the perceived
+benefits of constant monitoring. The study's drawbacks include a small, female-only sample size, indicating the need for
+more varied participant groups in future studies.
+Sonia and Semwal [14] investigate IoT applications in geriatric care, specifically indoor health monitoring systems. Their
+research looks on how sensors can measure numerous health indicators and environmental elements and send timely
+notifications to caretakers. The authors acknowledge limitations in sensor accuracy and technological acceptance among
+senior users, and suggest that future research should focus on enhancing user interface design and non-invasive monitoring
+techniques.
+Edoh et al. [15] investigate IoT applications for aiding elderly people with dementia using in-home monitoring systems.
+While their research shows potential benefits for improving quality of life, they also identify substantial issues in data
+security and privacy protection, recommending that future research address these concerns while investigating novel IoT
+applications in the elder healthcare.
+
+Journal for Re Attach Therapy and Developmental Diversities
+eISSN: 2589-7799
+2025 April; 8 (1): 108-117
+
+
+111
+
+https://jrtdd.com
+Lourenço et al. [16] investigate IoT-based solutions for geriatric health monitoring, with a special emphasis on systems
+intended to improve quality of life. Their research emphasizes the importance of continued technology advancement while
+recognizing security threats and privacy concerns as major implementation obstacles.
+Lee et al. [17] investigate smart house and ambient assisted living systems that include IoT devices for senior care. Their
+research stresses user-centered design concepts while emphasizing that technology adoption is sometimes difficult for
+those with cognitive disabilities. The authors propose bridging the gap between technology and human care using holistic
+methods.
+
+Sinha et al. [18] provide a review of emotion recognition technology in elder care, with a focus on computer vision and
+machine learning advances. Their research looks into several detection approaches using facial expressions and
+physiological cues, while also highlighting implementation issues such as high prices and low adoption rates.
+Jiang et al. [19] investigate contactless detection techniques for monitoring emotional expressions and cognitive health in
+elders. Their findings highlight the significance of emotional recognition in assessing cognitive health, specifically how
+impaired emotional recognition abilities might lead to social disengagement.
+
+Al-Shaqi et al. [20] present a thorough examination of ambient aided systems for independent senior living. Their findings
+emphasize the relevance of social connection elements in these systems, as well as how technology might help seniors
+interact with their support networks.
+Muhammad et al. [21] examine facial recognition systems, with a special emphasis on deep learning algorithms and CNNs
+for emotion detection. Their review underlines the importance of multiple training datasets for improving algorithm
+generalizability and investigating various emotion recognition methodologies.
+Dalvi et al. [22] investigate the progression of machine learning techniques for facial emotion recognition, from traditional
+algorithms to advanced deep learning methods. Their work emphasizes the move from subjective interpretation to
+automated methods while recognizing the ongoing issues of accuracy and execution.
+Prete et al. [23] investigated implicit and explicit facial emotion recognition across age groups, establishing essential
+concepts in emotion processing. Their research looks at methodological techniques, emphasizing the need of including
+both conscious and unconscious emotional responses in detection systems.
+Chen et al. [24] investigate IoT applications in smart health monitoring for elderly, with an emphasis on indoor
+environmental parameters and health metrics. Their findings acknowledge issues in sensor accuracy and system reliability,
+while also suggesting improvements in user interface design and monitoring methodologies.
+
+Ali et al. [25] investigate IoT technology applications for dementia sufferers, specifically home monitoring systems and
+support mechanisms. Their research identifies security and privacy issues, while underlining the importance of continued
+technological innovation in elder healthcare solutions.
+Costanzo et al. [26] examine IoT-based monitoring systems for senior dementia patients, with an emphasis on improving
+their quality of life. Their findings highlight implementation issues such as security hazards and privacy concerns, and
+they recommend that future study address these limits while investigating new applications.
+Patel et al. [27] investigate sensing technologies for Alzheimer's disease care, emphasizing the preference for non-intrusive
+sensors over wearable devices. Their research advises using digital twin technologies and AI for individualized therapies,
+while also recognizing the underutilization of developing technology.
+Kshirsagar et al. [28] investigate AI-based assistive solutions for senior care, namely their usefulness in minimizing
+isolation. Their findings suggest that, while these technologies show potential, they cannot completely replace human
+interaction. The authors underline the need of combining neuroscientific methods with diverse approaches to technological
+growth.
+Nath et al. [29] describe an intelligent remote health monitoring system (i-MsRTRM) based on IoT and GSM technologies.
+Their work addresses cost issues in current monitoring systems while acknowledging limitations in tracking capability.
+The authors propose that future developments should focus on incorporating new health measures while remaining costeffective.
+Setz et al. [30] create a mobile healthcare monitoring system for real-time physiological data collection. While unique in
+its approach to remote monitoring, the system has limits in terms of complete health tracking and internet access
+requirements. The authors advocate investigating various sensor integration and increased data encryption approaches.
+The Fer2013 dataset was used by Gao and Zhiming [31] to assess Convolutional Neural Networks and Residual Networks
+for facial expression recognition. Their analysis demonstrates that CNN has an advantage in the short run, but it also
+suggests that ResNet's architecture may have long-term benefits. The work acknowledges the constraints of dataset
+diversity and suggests studying alternate designs such as Transformer-based models.
+Khaireddin et al. [32] use VGGNet architecture and hyperparameter optimization to improve facial emotion identification
+accuracy on the FER2013 dataset. Their research achieves 73.28% accuracy without extra training data, although there
+are still issues in dealing with intraclass variations and small expression changes.
+
+Journal for Re Attach Therapy and Developmental Diversities
+eISSN: 2589-7799
+2025 April; 8 (1): 108-117
+
+
+112
+
+https://jrtdd.com
+Debnath et al. [33] offer the "ConvNet" model for seven-emotion recognition, which combines CNN and LBP
+characteristics. Their technique yields good accuracy rates on the JAFFE and CK+ datasets, but it has limits in real-world
+applications due to lighting differences and demographic representation.
+Białek et al. [34] proposed two CNN models for facial emotion identification, emphasizing efficiency and ensemble
+techniques. While improving performance with fewer resources, their work recognizes real-world constraints and
+recommends using multimodal data sources for greater accuracy.
+Yaermaimaiti et al. [35] present a unique face expression recognition approach that combines DLDP and AR-LBP
+characteristics with CNN classification. Their approach enhances recognition rates while preserving real-time
+performance, although there are limits in dealing with different illumination situations and occlusions. The authors
+recommend investigating integration with additional sensory modalities to improve accuracy.
+
+III.IMPLEMENTATION
+
+The current study utilizes the FER2013 dataset [36] and aligns with findings from recent research emphasizing the superior
+performance of Convolutional Neural Networks (CNNs) in emotion recognition tasks, particularly for understanding stress
+levels in older adults. The following research papers provide a strong foundation for this conclusion:
+
+• "Comparison of CNN and ResNet Neural Networks on the Performance of Facial Expression Recognition" [31]:
+This study demonstrates a testing accuracy of 73.28% on the FER2013 dataset using a VGG-based CNN model, achieving
+one of the highest single-network accuracies without additional training data. The research underscores the computational
+efficiency and feature extraction capabilities of CNNs, significantly outperforming traditional methods like Support
+Vector Machines (SVM) and k-Nearest Neighbors (KNN).
+
+ • "Facial Emotion Recognition: State of the Art Performance on FER2013" [32]: Similarly, this research validates
+the testing accuracy of 73.28% on the FER2013 dataset using a VGG-based CNN, highlighting the advantages of CNNs
+over SVM and KNN in terms of performance and efficiency.
+
+• "Four-layer ConvNet to Facial Emotion Recognition with Minimal Epochs" [33]: Using the FER2013 database,
+this study achieved a test accuracy of 61.7% with a four-layer CNN model, demonstrating the robustness of CNNs in
+identifying facial expressions compared to conventional approaches.
+
+• An Efficient Approach to Face Emotion Recognition with Convolutional Neural Networks" [34]: This work
+presents a comparative analysis of CNN-based FER techniques, conclusively showing that CNNs are more accurate and
+efficient than traditional algorithms such as SVM and KNN.
+
+• "Research on Facial Expression Recognition Based on an Improved Fusion Algorithm" [35]: This study highlights
+the enhanced facial feature extraction capabilities of CNNs through multi-feature fusion, further establishing their
+superiority over conventional methods for emotion recognition tasks.
+In the current research, three machine learning models—Convolutional Neural Networks (CNN), Support Vector
+Machines (SVM), and Artificial Neural Networks (ANN)—were constructed and evaluated on the FER2013 dataset to
+determine the most effective approach for stress detection. Consistent with the findings of the aforementioned studies,
+CNN emerged as the most accurate model, affirming its suitability for developing a robust stress detection framework.
+
+
+Journal for Re Attach Therapy and Developmental Diversities
+eISSN: 2589-7799
+2025 April; 8 (1): 108-117
+
+
+113
+
+https://jrtdd.com
+
+Fig 1. Comparing accuracy of the model
+
+The development of the stress detection system, leveraging the FER2013 dataset [36], involved a systematic pipeline of
+data preprocessing, model training, and real-world integration. The approach aligns closely with methodologies detailed
+in contemporary research on CNN-based facial emotion recognition systems:
+
+Data Preprocessing and Standardization: Consistent with the best practices highlighted in research such as
+“Comparison of CNN and ResNet Neural Networks on the Performance of Facial Expression Recognition” [31], the initial
+step involved resizing images from the FER2013 dataset to ensure compatibility with CNN input requirements. Pixel
+value normalization was performed to standardize the input data, thereby enhancing training efficiency and consistency,
+as supported by findings in “An Efficient Approach to Face Emotion Recognition with Convolutional Neural Networks”
+[34].
+
+Model Training and Optimization: Following preprocessing, the dataset was divided into training and testing subsets.
+Using TensorFlow, a widely recognized framework for deep learning, a CNN model was trained, incorporating techniques
+such as dropout regularization to mitigate overfitting. This aligns with approaches in “Four-layer ConvNet to Facial
+Emotion Recognition with Minimal Epochs” [33], which emphasizes the significance of training optimization for robust
+performance. Bottleneck feature extraction, integrated into the pipeline, further streamlined the training process and
+enhanced accuracy.
+
+Analysis and Visualization: Tools like Matplotlib and Seaborn were employed to monitor training progress and visualize
+performance metrics, a practice validated by “Research on Facial Expression Recognition Based on an Improved Fusion
+Algorithm” [35], which emphasizes the role of visual insights in refining model architecture and hyperparameters.
+
+Real-Time Integration and Image Processing: To enable real-time emotion recognition, OpenCV was incorporated into
+the system for efficient facial detection and consistent input scaling. Such integration aligns with strategies in “Facial
+Emotion Recognition: State of the Art Performance on FER2013” [32], where preprocessing and input consistency were
+critical to achieving high accuracy.
+
+
+Journal for Re Attach Therapy and Developmental Diversities
+eISSN: 2589-7799
+2025 April; 8 (1): 108-117
+
+
+114
+
+https://jrtdd.com
+
+Fig 2. Confusion Matrix of the model
+
+System Capabilities and Deployment: The trained CNN model, demonstrating high accuracy in recognizing facial
+expressions, became the cornerstone of the stress detection system. The system was further integrated into an Internet of
+Things (IoT)-based senior cognitive support framework, performing the following tasks:
+
+1. Emotion Recognition: Identifies emotions from live or recorded facial images, consistent with findings in “Comparison
+of CNN and ResNet Neural Networks on the Performance of Facial Expression Recognition” [31].
+
+2. Stress Level Analysis: Links recognized emotions to predefined stress thresholds, offering an evidence-based approach
+for analyzing stress levels.
+
+3. Stress Management Suggestions: Provides personalized recommendations for stress alleviation tailored to senior
+users, as suggested in “Research on Facial Expression Recognition Based on an Improved Fusion Algorithm” [35].
+
+By synthesizing methodologies from state-of-the-art research and implementing advanced techniques in preprocessing,
+model training, and deployment, this system presents a robust framework for emotion recognition and stress analysis, with
+applications in enhancing senior cognitive support systems.
+
+
+Fig 3. Emotions
+
+
+
+
+Journal for Re Attach Therapy and Developmental Diversities
+eISSN: 2589-7799
+2025 April; 8 (1): 108-117
+
+
+115
+
+https://jrtdd.com
+Output of the above emotion through the model:
+
+
+Fig 4. Output of the happy emotion
+
+IV. CONCLUSION
+
+The importance of facial recognition and machine learning in creating cognitive support systems for stress detection in
+the elderly is highlighted by this study. The suggested framework offers a non-invasive and effective method for real-time
+emotional state monitoring by using facial expressions as the main input. The method enables continuous and automatic
+emotion detection by classifying emotions into discrete categories, including Afraid, Anger, Disgust, Happiness, Neutral,
+Sad, and Surprise, using convolutional neural networks (CNNs). This feature facilitates prompt actions in response to
+signs of stress or distress and improves caregivers' capacity to evaluate the emotional health of senior citizens.
+The usefulness and scalability of this architecture are further highlighted by the incorporation of Internet of Things (IoT)
+technologies. Continuous monitoring is made possible by IoT-enabled smart cameras and decision-making systems, and
+timely contact with family members or caregivers is ensured via automatic warnings during unusual circumstances. The
+promise of such interdisciplinary techniques, which combine artificial intelligence (AI) with the Internet of Things (IoT),
+to improve healthcare solutions is supported by existing literature. Examples of these models include wearable stress
+detection devices and hierarchical dynamic Bayesian systems.
+This study does, however, recognize a number of difficulties, such as the requirement for thorough clinical validation,
+sensor calibration, and data security. Due to these difficulties, algorithms must be further improved in order to increase
+accuracy, handle privacy issues, and provide user-friendly interfaces designed with the senior population in mind.
+Enhancing system robustness through the integration of multimodal inputs (such as speech and physiological signals), the
+incorporation of varied datasets, and compatibility with current healthcare infrastructures should be the top priority for
+future research paths.
+To sum up, the suggested approach is a major step toward developing an inclusive and adaptable healthcare environment
+for senior citizens. This technology has the ability to enhance the quality of life for senior citizens while offering comfort
+to their relatives and caregivers by tackling existing constraints and using a multidisciplinary approach.
+
+V. FUTURE SCOPE
+
+The proposed framework for stress detection in elderly individuals has significant potential for enhancement through the
+integration of additional parameters and cognitive engagement features. To increase the accuracy and dependability of the
+system, a possible direction for future research is to include voice analysis as a supplementary parameter in addition to
+face recognition. Together with facial expressions, speech characteristics like tone, pitch, and cadence can provide deep
+emotional insights that help provide a more complete picture of stress levels. In real-time situations, this multimodal
+method will allow for more accurate and reliable stress detection.
+Furthermore, the system may be expanded to incorporate a customized chatbot intended to improve senior users' cognitive
+capacities. This chatbot will retrieve current news via APIs and provide consumers succinct, pertinent extracts. The chatbot
+can improve memory recall and cognitive stimulation by having users read and respond to context-specific questions
+based on the news. This interactive element encourages mental agility and active engagement in addition to helping to
+assess cognitive health.
+The goal of these developments is to provide a comprehensive approach that proactively treats cognitive impairment in
+older individuals in addition to identifying stress. While providing useful resources for caretakers, this interdisciplinary
+approach has the potential to greatly enhance the quality of life for senior citizens.
+
+REFERENCES
+
+1. Alam, Mohammad Arif Ul, et al. "Autocognisys: Iot assisted context-aware automatic cognitive health
+assessment." MobiQuitous 2020-17th EAI International Conference on Mobile and Ubiquitous Systems: Computing,
+Networking and Services. 2020.
+
+Journal for Re Attach Therapy and Developmental Diversities
+eISSN: 2589-7799
+2025 April; 8 (1): 108-117
+
+
+116
+
+https://jrtdd.com
+2. Santhi,
+G.,
+et
+al.
+"An
+IoT
+Based
+Remote
+HealthCare
+Monitoring
+System
+through
+Emotion
+Recognition." IIRJET 2.Special Issue ICEIET (2017).
+3. Costa, Angelo, et al. "A Low-Cost Cognitive Assistant." Electronics 9.2 (2020): 310.
+4. Isa, Indra Griha Tofik, et al. "Constructing an elderly health monitoring system using fuzzy rules and Internet of
+Things." AIP Advances 14.5 (2024).
+5. Raed, Mhd Wasim, et al. "An RFID based localization and mental stress recognition system using wearable sensors."
+Proceedings of the 16th International Joint Conference on Biomedical Engineering Systems and Technologies
+(BIOSTEC 2023). Vol. 4. 2023
+6. UWIZEYIMANA, Theodosie. "IoT-Based system to monitor health conditions of eldery people in Rwanda." PhD
+diss., 2022.
+7. de Arriba-Pérez, Francisco, Silvia García-Méndez, Francisco J. González-Castaño, and Enrique Costa-Montenegro.
+"Automatic detection of cognitive impairment in elderly people using an entertainment chatbot with Natural Language
+Processing capabilities." Journal of ambient intelligence and humanized computing 14, no. 12 (2023)
+8. Broekens, Joost, Marcel Heerink, and Henk Rosendal. "Assistive social robots in elderly care: a review."
+Gerontechnology 8, no. 2 (2009): 94-103.
+9. Javed, Abdul Rehman, Ayesha Saadia, Huma Mughal, Thippa Reddy Gadekallu, Muhammad Rizwan, Praveen Kumar
+Reddy Maddikunta, Mufti Mahmud, Madhusanka Liyanage, and Amir Hussain. "Artificial intelligence for cognitive
+health assessment: state-of-the-art, open challenges and future directions." Cognitive Computation 15, no. 6 (2023)
+10. Zamanifar, Azadeh. "Remote patient monitoring: health status detection and prediction in IoT-based health care." IoT
+in healthcare and Ambient Assisted living (2021): 89-102.
+11. Nath, Rajdeep Kumar, and Himanshu Thapliyal. "Smart wristband-based stress detection framework for older adults
+with cortisol as stress biomarker." IEEE Transactions on Consumer Electronics 67, no. 1 (2021): 30-39.
+12. Fonseca, Davi, Kátia C. Neles da Silva, Renata L. Rosa, and Demóstenes Z. Rodríguez. "Monitoring and classification
+of emotions in elderly people." In 2019 International Conference on Software, Telecommunications and Computer
+Networks (SoftCOM), pp. 1-6. IEEE, 2019.
+13. Jo, Tae Hee, Jae Hoon Ma, and Seung Hyun Cha. "Elderly perception on the internet of things-based integrated smarthome system." Sensors 21, no. 4 (2021): 1284.
+14. Sonia, and Semwal Tushar. "Smart Health Monitoring for Elderly Care in Indoor Environments." Digital Cities
+Roadmap: IoT‐Based Architecture and Sustainable Buildings (2021): 379-399.
+15. Edoh, Thierry, and Jules Degila. "Iot-enabled health monitoring and assistive systems for in place aging dementia
+patient and elderly." Internet of Things (IoT) for Automated and Smart Applications 69 (2019).
+16. Lourenço, David, and Octavian Postolache. "IoT Health Status Monitoring System for Elderly People." In 2021
+International Conference on e-Health and Bioengineering (EHB), pp. 1-4. IEEE, 2021.
+17. Lee, Cheng-Wen, and Hsiu-Mang Chuang. "Design of a seniors and Alzheimer's disease caring service platform."
+BMC Medical Informatics and Decision Making 21 (2021): 1-14.
+18. Sinha¹, Mandeep Kumar, and M. Ravindra. "Elderly Assistant Based on Facial Emotion and Posture Analysis." (2020).
+19. Jiang, Di, Luowei Yan, and Florence Mayrand. "Emotion expressions and cognitive impairments in the elderly: review
+of the contactless detection approach." Frontiers in Digital Health 6 (2024): 1335289.
+20. Al-Shaqi, Riyad, Monjur Mourshed, and Yacine Rezgui. "Progress in ambient assisted systems for independent living
+by the elderly." SpringerPlus 5 (2016): 1-20.
+21. Muhammad, Ghulam, et al. "A facial-expression monitoring system for improved healthcare in smart cities." IEEE
+Access 5 (2017): 10871-10881.
+22. Dalvi, Chirag, et al. "A survey of ai-based facial emotion recognition: Features, ml & dl techniques, age-wise datasets
+and future directions." Ieee Access 9 (2021): 165806-165840.
+23. Prete, Giulia, et al. "Detecting implicit and explicit facial emotions at different ages." European Journal of Ageing
+21.1 (2024): 8.
+24. Chen, Xi, Miaoling Wu, Dongbo Wang, Jian Zhang, Bo Qu, and Yaxin Zhu. "Association of smart elderly care and
+quality of life among older adults: the mediating role of social support." BMC geriatrics 24, no. 1 (2024): 471.
+25. Ali, Muhammed Toqeer, Cristian Turetta, Graziano Pravadelli, and Florenc Demrozi. "ICT-based solutions for
+Alzheimer’s  Disease Care: A systematic review." IEEE Access (2024).
+26. Costanzo, Mariagrazia, Rossana Smeriglio, and Santo Di Nuovo."New technologies and assistive robotics for elderly:
+A review on psychological variables." Archives of Gerontology and Geriatrics Plus (2024): 100056.
+27. Patel, Warish, Sharnil Pandya, and Viral Mistry. "i-MsRTRM: developing an IoT based intelligent medicare system
+for real-time remote health monitoring." In 2016 8th International Conference on Computational Intelligence and
+Communication Networks (CICN), pp. 641-645. IEEE, 2016.
+28. Kshirsagar, Pravin, Akshay Pote, K. K. Paliwal, Vaibhav Hendre,  Pranav Chippalkatti, and Nikhil Dhabekar. "A
+review on IOT based health care monitoring system." In ICCCE 2019: Proceedings of the 2nd International Conference
+on Communications and Cyber Physical Engineering, pp. 95-100. Singapore: Springer Singapore, 2019.
+
+Journal for Re Attach Therapy and Developmental Diversities
+eISSN: 2589-7799
+2025 April; 8 (1): 108-117
+
+
+117
+
+https://jrtdd.com
+29. Nath, Rajdeep Kumar, Himanshu Thapliyal, Allison Caban-Holt, and Saraju P. Mohanty. "Machine learning based
+solutions for real-time stress monitoring." IEEE Consumer Electronics Magazine 9, no. 5 (2020): 34-41
+30. Setz, Cornelia, Bert Arnrich, Johannes Schumm, Roberto La  Marca, Gerhard Tröster, and Ulrike Ehlert.
+"Discriminating stress from cognitive load using a wearable EDA device." IEEE Transactions on information
+technology in biomedicine 14, no. 2 (2009): 410-417.
+31. Gao, Zhiming. "Comparison of CNN and ResNet Neural Networks on the Performance of Facial Expression
+Recognition." Highlights in Science, Engineering and Technology 94 (2024): 31-38.
+32. Khaireddin, Yousif, and Zhuofa Chen. "Facial emotion recognition: State of the art performance on FER2013." arXiv
+preprint arXiv:2105.03588 (2021).
+33. Debnath, Tanoy, Md Mahfuz Reza, Anichur Rahman, Amin Beheshti, Shahab S. Band, and Hamid Alinejad-Rokny.
+"Four-layer ConvNet to facial emotion recognition with minimal epochs and the significance of data
+diversity." Scientific Reports 12, no. 1 (2022): 6991.
+34. Białek, Christian, Andrzej Matiolański, and Michał Grega. "An Efficient Approach to Face Emotion Recognition with
+Convolutional Neural Networks." Electronics 12, no. 12 (2023): 2707.
+35. Yaermaimaiti, Yilihamu, Tusongjiang Kari, and Guohang Zhuang. "Research on facial expression recognition based
+on an improved fusion algorithm." Nonlinear Engineering 11, no. 1 (2022): 112-122.
+36. Dataset: https://www.kaggle.com/datasets/msambare/fer2013

@@ -1,0 +1,24 @@
+{
+  "title": "Deep Learning-Based Facial Expression Recognition for the Elderly: A Systematic Review",
+  "authors": [
+    "F. Xavier Gaya-Morey",
+    "José María Buades Rubio",
+    "Philippe Palanque",
+    "Raquel Lacuesta",
+    "Cristina Manresa-Yee"
+  ],
+  "year": 2025,
+  "abstract": "The rapid aging of the global population has highlighted the need for technologies to support elderly, particularly in healthcare and emotional well-being. Facial expression recognition (FER) systems offer a non-invasive means of monitoring emotional states, with applications in assisted living, mental health support, and personalized care. This study presents a systematic review of deep learning-based FER systems, focusing on their applications for the elderly population. Following a rigorous methodology, we analyzed 31 studies published over the last decade, addressing challenges such as the scarcity of elderly-specific datasets, class imbalances, and the impact of age-related facial expression differences. Our findings show that convolutional neural networks remain dominant in FER, and especially lightweight versions for resource-constrained environments. However, existing datasets often lack diversity in age representation, and real-world deployment remains limited. Additionally, privacy concerns and the need for explainable artificial intelligence emerged as key barriers to adoption. This review underscores the importance of developing age-inclusive datasets, integrating multimodal solutions, and adopting XAI techniques to enhance system usability, reliability, and trustworthiness. We conclude by offering recommendations for future research to bridge the gap between academic progress and real-world implementation in elderly care.",
+  "doi": "10.48550/arxiv.2502.02618",
+  "arxiv_id": null,
+  "venue": "ArXiv.org",
+  "citation_count": 1,
+  "source": "openalex",
+  "pdf_url": "https://arxiv.org/pdf/2502.02618",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4407208748"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.48550/arxiv.2502.02618"
+}

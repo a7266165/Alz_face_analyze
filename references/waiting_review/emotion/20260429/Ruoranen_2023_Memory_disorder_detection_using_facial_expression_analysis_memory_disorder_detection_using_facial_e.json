@@ -1,0 +1,20 @@
+{
+  "title": "Memory disorder detection using facial expression analysis",
+  "authors": [
+    "Julia Ruoranen"
+  ],
+  "year": 2023,
+  "abstract": "Facial expressions are people’s way of communicating and interact with each other. Without saying a word person can message his/her emotions by them. When there happen some changes in facial expressions it can affect person’s social interaction and relationships. Changes in facial expressions occur with memory disorder. Of the individual symptoms, apathy in particular reduces the intensity of the facial expressions, making the face expressionless. The purpose of this thesis was to explore how the facial expression recognition program could be applied when searching memory disorder. The focus is on apathy as a symptom because it correlates clearest with changes in facial expressions. The idea was to recognize facial expressions from two video clips. The difference between the clips was that the first one had spontaneous reactions for a funny video and second one expressionless reaction to the same video. Recognized expressions were analyzed and the differences between the videos were spotted to show how the apathic facial expressions differ from normally produced facial expressions. The program was built by using Python facial expressions analysis toolbox (PyFeat) which contains tools for analyzing and visualizing facial expressions. Detector for facial expression analysis was built by using PyFeat’s pretrained detectors (face, facial landmarks, pose, action units and emotions). This detector recognized expressions from the videos and produces data of face and facial landmark location, action units’ prediction values and emotional reactions’ prediction values. Biggest differences between the videos were found in action units’ and emotions’ prediction values. Action unit values showed that movement in any action unit area were minimum since the values stayed in 0.5 and under the whole video. While comparing the certain action units which produces emotional reaction of happiness (the emotion which was tried to trigger with the video) the spontaneous video’s values were high most time of the video while the apathic video showed no movement in these action units during the video. Emotion prediction values showed as well that the maintaining emotion in the spontaneous video was happiness but in the apathic video the maintaining emotion was neutral. Neutral facial expression was there to describe where there is no visible emotion in the face. Neutral expression is main thing to focus when trying to find out if the memory disorder exists. Important thing to notice is that some reference data is needed when analyzing someone’s facial expression changes since people have differences in facial expressiveness in usual. In the future the concrete differences need to be identified if the facial expression analysis is wanted to be used as a memory disorder detection method.",
+  "doi": null,
+  "arxiv_id": null,
+  "venue": "Trepo - Institutional Repository of Tampere University",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://trepo.tuni.fi/bitstream/10024/148874/3/RuoranenJulia.pdf",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W7133080351"
+  },
+  "pdf_status": "ok",
+  "primary_id": "title:memory disorder detection using facial expression analysis"
+}

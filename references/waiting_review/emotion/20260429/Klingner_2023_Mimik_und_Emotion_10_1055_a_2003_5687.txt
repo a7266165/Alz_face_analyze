@@ -1,0 +1,973 @@
+Klingner CM, Guntinas-Lichius O. Mimik und Emotion.  Laryngo-Rhino-Otol 2023; 102: S115–S125 | © 2023. The Author(s).
+Referat
+Mimik und Emotion
+Facial expression and emotion
+
+Autoren
+Carsten M. Klingner1, 2, Orlando Guntinas-Lichius3
+Institute
+1	 Hans Berger Department of Neurology, Jena University
+Hospital, Germany
+2	 Biomagnetic Center, Jena University Hospital, Germany
+3	 Clinic for Otorhinolaryngology, Jena University
+Hospital,Germany
+Schlüsselwörter
+Emotionen, Mimik, Fazialis, Mikroexpressionen, zerebrale
+Emotionsverarbeitung
+Key words
+emotion, facial expression, microexpression, cerebral
+emotion processing
+Bibliografie
+Laryngo-Rhino-Otol 2023; 102: S115–S125
+DOI  10.1055/a-2003-5687
+ISSN  0935-8943
+© 2023. The Author(s).
+This is an open access article published by Thieme under the terms of the
+Creative Commons Attribution-NonDerivative-NonCommercial-License,
+permitting copying and reproduction so long as the original work is given
+appropriate credit. Contents may not be used for commercial purposes, or
+adapted, remixed, transformed or built upon. (https://creativecommons.
+org/licenses/by-nc-nd/4.0/)
+Georg Thieme Verlag, Rüdigerstraße 14,
+70469 Stuttgart, Germany
+Korrespondenzadresse
+Prof. Dr. med. Carsten M. Klingner
+Hans Berger Clinic for Neurology,
+Jena University Hospital Friedrich Schiller University
+Am Klinikum1
+07747 Jena
+Deutschland
+carsten.klingner@med.uni-jena.de
+Zusammenfassung
+Die menschliche Mimik ist einzigartig in ihrer Fähigkeit unseren
+Emotionen Ausdruck zu verleihen und diese anderen Menschen
+zu übermitteln. Die mimische Expression grundlegender Emotionen ist über verschiedene Kulturen hinweg sehr ähnlich und
+du weist auch Gemeinsamkeiten zu anderen Säugetieren auf.
+Dies deutet auf einen gemeinsamen genetischen Ursprung des
+Zusammenhangs von Mimik und Emotion. Neuere Untersuchungen zeigen aber auch kulturelle Einflüsse und Unterschiede. Die Erkennung von Emotionen aus der Mimik und auch der
+Prozess des mimischen Ausdrucks der eigenen Emotionen erfolgt in einem äußerst komplexen zerebralen Netzwerk. Aufgrund der Komplexität des zerebralen Verarbeitungssystems
+gibt es eine Vielzahl von neurologischen und psychiatrischen
+Erkrankungen, welche die Kopplung von Mimik und Emotionen
+erheblich stören können. Auch durch das Tragen von Masken
+wird unsere Fähigkeit zur Übermittlung und zum Erkennen von
+Emotionen über die Mimik eingeschränkt. Durch die Mimik
+lassen sich aber nicht nur „echte“ Emotionen ausdrücken, sondern auch gespielte. Damit eröffnet die Mimik die Möglichkeit
+sozial erwünschten Ausdruck vorzuspielen und auch Emotionen
+bewusst vorzutäuschen. Diese Täuschungen sind jedoch zumeist nicht perfekt und können von kurzfristigen Gesichts­
+bewegungen begleitet sein, die auf die tatsächlich vorhandenen
+Emotionen hinweisen (Mikroexpressionen). Diese Mikroexpressionen sind von nur sehr kurzer Dauer und vom Menschen häufig kaum wahrnehmbar, jedoch das ideale Anwendungsgebiet
+für computergestützte Analysen. Diese automatische Identifikation von Mikroexpressionen hat in den letzten Jahren nicht
+nur wissenschaftliche Aufmerksamkeit erfahren, sondern ihr
+Einsatz wird auch in sicherheitsrelevanten Bereichen getestet.
+Der vorliegende Artikel fasst den aktuellen Wissensstand von
+Mimik und Emotionen zusammen.
+ABSTRACT
+Human facial expressions are unique in their ability to express
+our emotions and communicate them to others. The mimic
+expression of basic emotions is very similar across different
+cultures and has also many features in common with other
+mammals. This suggests a common genetic origin of the association between facial expressions and emotion. However, recent studies also show cultural influences and differences. The
+recognition of emotions from facial expressions, as well as the
+process of expressing one’s emotions facially, occurs within an
+extremely complex cerebral network. Due to the complexity
+of the cerebral processing system, there are a variety of neurological and psychiatric disorders that can significantly disrupt
+the coupling of facial expressions and emotions. Wearing
+masks also limits our ability to convey and recognize emotions
+S115
+Artikel online veröffentlicht: 02.05.2023
+
+Klingner CM, Guntinas-Lichius O. Mimik und Emotion.  Laryngo-Rhino-Otol 2023; 102: S115–S125 | © 2023. The Author(s).
+Referat
+1. Einleitung
+Der Mensch ist ein soziales Geschöpf, das auf sich allein gestellt
+kaum überlebensfähig ist. Der Alltag der meisten Menschen besteht aus einer Vielzahl an Interaktionen mit unseren Mitmenschen.
+Diese Interaktionen transferieren nicht nur Sachinformationen,
+sondern offenbaren auch Informationen über den Sendenden (Selbstoffenbarungsebene), die Beziehung der Interakteure (Beziehungsebene) und Informationen über das, was wir von unserem
+Kommunikationspartner zu erreichen suchen (Appellebene). Bis
+auf die Ebene der Sachinformation ist für eine erfolgreiche Kommunikation das Senden und Wahrnehmen von Emotionen entscheidend. Die Emotionswahrnehmung ist hilfreich für das kontextuelle
+Verständnis von Informationen, die Interpretation von Aktionen
+anderer und auch ihrer Absichten. Emotionen lassen sich in der
+menschlichen Kommunikation über vielfältige Wege übermitteln.
+So kann neben der Mimik auch Sprache oder Gesten eingesetzt
+werden. Die Mimik stellt jedoch die mit Abstand am häufigsten eingesetzte Form für die menschliche Kommunikation dar. Die korrekte Interpretation der Emotionen anderer Menschen aus ihrer
+Mimik kann daher zu erheblichen Vorteilen in der sozialen Interaktion führen [1, 2].
+In den letzten 50 Jahren konnten große Fortschritte in unserem
+Verständnis der mimischen Emotionsübermittlung erzielt werden.
+Demgegenüber bleibt das Verständnis von Emotionen an sich weit
+zurück und sie bleiben eine der faszinierendsten und geheimnisvollsten Produkte der Hirnfunktion. Dies zeigt sich allein schon in
+der Schwierigkeit Emotionen zu definieren.
+Wir werden uns in diesem Artikel zuerst der Definition von
+Mimik, Kommunikation und Emotion widmen, um dann die willkürlichen und unwillkürlichen Aspekte unseres mimischen Ausdrucks von Emotionen zu diskutieren. Wir werden auf den gesellschaftlichen Nutzen, den evolutionären Ursprung und die aktuellen Möglichkeiten der automatisierten Emotionserkennung
+eingehen.
+2. Mimik, Kommunikation und Emotionen
+Unter dem Wort Mimik verstehen wir sichtbare Bewegungen der
+Gesichtsoberfläche, welche durch ein spezifisches Muster von Muskelaktivität bedingt ist. Die Mimik kann von Menschen wahrgenommen und interpretiert werden. Sie ist ein zentrales Element des
+Ausdrucksverhaltens des Menschen und ist besonders geeignet
+Emotionen Ausdruck zu verleihen und diese nach außen zu kommunizieren. Die Interpretation von Emotionen aus der Mimik erfordert höhere zerebrale Verarbeitungsleistungen, welche neben
+der Auswertung des aktuellen visuellen Inputs auch stark von kontextuelle Informationen und der Verfügbarkeit von Gedächtnis­
+inhalten abhängt [2]. Im Gegensatz zu Mimik und Kommunikation,
+ist der Begriff der Emotion nicht klar definiert und es gibt bis heute
+heftige Diskussionen um die Frage, was eine Emotion überhaupt
+ist und ob Bewusstsein eine Voraussetzung für Emotionen ist [3–
+8]. Einige Autoren sind der Ansicht, dass Emotionen bewusste Abstraktionen des eigenen inneren Zustandes sind, welche kognitiv
+zusammengesetzt werden. Nach dieser Definition erfordert eine
+Emotion ein Bewusstsein seines Selbst und damit wäre die Emo­tion
+als Begriff für viele andere Spezies nicht mehr anwendbar. Andere
+Autoren argumentieren, dass Bewusstsein lediglich eine Eigenschaft von Emotionen und deren Verarbeitung darstellt sich diese
+additiv zu den basalen Emotionseigenschaften gesellt [9–11].
+Emotionen werden häufig durch Worte (glücklich, traurig, wütend) beschrieben. In der psychologischen Forschung haben sich
+als Möglichkeit der numerischen Beschreibung des Begriffs die Valenz und das Arousal durchgesetzt. Die Valenz beschreibt den affektiven Gehalt einer Emotion als Kontinuum von angenehm zu un-
+Inhaltsverzeichnis
+
+Zusammenfassung
+115
+
+ABSTRACT
+115
+1.
+Einleitung
+116
+2.
+Mimik, Kommunikation und Emotionen
+116
+3.
+Willkürliche und unwillkürliche Mimik Einteilung von
+Mimik … Mikroexpressionen
+117
+4.
+Kulturelle Gemeinsamkeiten und Unterschiede von
+Mimik und Emotion
+117
+5.
+Einfluss von Erkrankungen auf Mimik und Emotionen
+118
+6.
+Mimik und Emotionen im Zeitalter von Masken
+119
+7.
+Mimik und Emotionen in anderen Spezies
+119
+8.
+Die zerebrale Verarbeitung von mimischer Emotionsperzeption
+119
+9.
+Interpretation von Emotionen aus Gesichtsausdrücken
+in ihrer Bedeutung in der Gesellschaft
+121
+10.
+Zusammenfassung
+122
+
+Literatur
+122
+through facial expressions. Through facial expressions, however, not only “real” emotions can be expressed, but also acted
+ones. Thus, facial expressions open up the possibility of faking
+socially desired expressions and also of consciously faking emotions. However, these pretenses are mostly imperfect and can
+be accompanied by short-term facial movements that indicate
+the emotions that are actually present (microexpressions).
+These microexpressions are of very short duration and often
+barely perceptible by humans, but they are the ideal application
+area for computer-aided analysis. This automatic identification
+of microexpressions has not only received scientific attention
+in recent years, but its use is also being tested in security-related areas. This article summarizes the current state of knowledge of facial expressions and emotions.
+S116
+
+Klingner CM, Guntinas-Lichius O. Mimik und Emotion.  Laryngo-Rhino-Otol 2023; 102: S115–S125 | © 2023. The Author(s).
+angenehm bzw. gut zu schlecht, während das Arousal den Grad der
+inneren Aktivierung durch die Emotion beschreibt.
+In dieser Arbeit werden wir letztere Definition nutzen und somit
+Emotionen als evolutionär konservierte funktionelle Zustände des
+Gehirns betrachten [7, 12, 13]. Nach dieser Sichtweise sind Emotio­
+nen aus evolutionären Prozessen hervorgegangen und somit können auch im Menschen primitive Formen als konservierte Merkmale noch vorhanden sein. Unstrittig ist jedoch, dass Emotionen bestimmte Reaktionen auf biochemischer, physiologischer und
+Verhaltens-Ebene auslösen [14].
+Zur Interpretation einer Emotion aus dem Gesichtsausdruck
+eines Menschen benötigen wir nicht immer das ganze Gesicht, sondern es reichen häufig einzelne Teile aus (z. B. die traurigen Augen
+oder der fröhliche Mund) [15, 16]. Die Integration verschiedenster
+Einzelmerkmale über das gesamte Gesicht ist eine hochgradig integrative Leistung, die deutlich komplexer ist als nur eine Summation der Einzeleigenschaften [17, 18].
+Die Bedeutung einzelner Gesichtsregionen für die Entschlüsselung von Emotionen unterscheidet sich zwischen verschiedenen
+Emotionen. So sind die Augen besonders wichtig für die Wahrnehmung von Traurigkeit [19], Wut [20, 21] und Angst [22, 23]. Auch
+andere Gesichtspartien geben zwar Hinweise für diese Emotionen,
+jedoch konnte z. B. für die Angst gezeigt werden, dass die Emo­
+tionserkennung aus dem oberen Gesichtsteil präziser ist als aus
+dem unteren [24]. Demgegenüber fällt es Menschen leichter glückliche Gesichtsausdrücke anhand der unteren Gesichtshälfte zu erkennen [24]. Entsprechend fokussieren Beobachter von glücklichen
+Gesichtern länger die Mundpartie [22, 23, 25]. Für die Nasenregion konnte eine besondere Bedeutung bei der Entschlüsselung von
+Gesichtsausdrücken des Ekels nachgewiesen werden [19].
+Neben der Interpretation von einzelnen Gesichtsregionen wird
+der Gesichtsausdruck zusätzlich noch ganzheitlich verarbeitet und
+interpretiert, d. h. es existiert noch eine Verarbeitung des Gesichtsausdrucks, welche sich nicht aus den Einzelmerkmalen zusammensetzt und somit mehr als die Summe ihrer Teile ist [26]. Die Bedeutung dieser ganzheitlichen Gesichtsinterpretation für die Erkennung von Emotionen unterscheidet sich zwischen den Emotionen.
+Für alle Emotionen gilt jedoch, dass sich ihre Interpretation weder
+rein aus der Wahrnehmung und Verarbeitung einzelner Eigenschaften von Teilregionen des Gesichts noch ausschließlich aus dieser
+ganzheitlichen Gesichtsinterpretation zusammensetzt, sondern
+aus einer Kombination dieser beiden parallel ablaufenden Prozesse besteht [16, 27].
+3. Willkürliche und unwillkürliche Mimik
+Einteilung von Mimik … Mikroexpressionen
+Der Mensch kann seine Mimik willkürlich steuern. Diese willkürliche Steuerung kann genutzt werden, um einen emotionalen Zustand vorzutäuschen. Diese Täuschung bezieht sich zumeist auf
+einen Kommunikationspartner, kann jedoch auch an sich selbst gerichtet sein. Die willkürliche Steuerung der Mimik hat einen Zielzustand, welcher einem internen Modell entspricht (das was wir ausdrücken wollen). Neben den willkürlichen Gesichtsbewegungen
+werden empfundene Emotionen aber in aller Regel unwillkürlich
+mimisch ausgedrückt und die entsprechenden Muskeln unwillkürlich angesteuert. Sie durchdringen unsere bewusste Steuerung und
+spiegeln sich in unserem Gesicht. Dieses emotionales Leakage muss
+dabei nicht immer mit großen Massenbewegungen von Muskeln
+einhergehen, sondern kann z.T. auch sehr dezent sein. Diese Bewegungen werden unter den Namen Mikroexpressionen zusammengefasst. Konkret verstehen wir unter Mikroexpressionen Gesichtsbewegungen die kurzfristig, unwillkürlich und automatisch ausgeführt werden. Bestimmte Muskelgruppen kontrahieren bzw.
+entspannen sich dabei in festen Mustern. Es wird weiterhin angenommen, dass diese Muster auf einer genetischen Grundlage basieren und eng mit dem emotionalen Zustand der Person gekoppelt sind. Die genetische Grundlage hat weiterhin zur Annahme
+geführt, dass es eine Reihe von basalen emotionalen Zustände gibt,
+die kulturübergreifend universell sind [28], obgleich diese Annahme bis heute weiter diskutiert wird [29]. Da diese Bewegungen unwillkürlich sind, wird angenommen, dass sie Rückschlüsse auf den
+tatsächlichen emotionalen Zustand einer Person zulassen.
+Von besonderem Interesse ist das Zusammenspiel von willkürlichen und unwillkürlichen Gesichtsbewegungen. Eine willkürliche
+Gesichtsbewegung wird häufig eingesetzt, um die tatsächlich empfundene Emotion zu verbergen und damit den Kommunikationspartner zu täuschen. Es stellt sich hier die Frage, ob diese willkürlichen Gesichtsbewegungen schnell genug und vor allem vollständig genug sind, um unwillkürliche Mikroexpressionen, die einen
+Hinweis auf echte Emotionen geben, zu unterdrücken.
+In einem klassischen Experiment filmten Paul Ekman und Wallace Friesen eine psychiatrische Patientin, welche versuchte den
+Therapeuten zu überzeugen, dass es ihr gut ginge und sie aus der
+Psychiatrie entlassen werden könne. Am Ende des Interviews brach
+die Patientin weinend zusammen und gestand, dass es ihr weiterhin schlecht geht. In der Phase des Vorspielens von Wohlbefinden
+konnten verschiedene kurzfristige Mikroexpressionen nachgewiesen werden, welche deutlich Hinweise auf die Täuschung gaben
+[30]. Es gab nachfolgend noch eine große Anzahl an Untersuchungen zu diesem Thema, die letztlich zum Schluss kommen, dass es
+dem Täuschenden nicht immer möglich ist, die Täuschung perfekt
+aufrecht zu erhalten und es häufig unwillentlich es zum Entweichen
+von Emotionen über die Mimik in Form von Mikroexpressionen
+kommt. Auf Grund der Unwillkürlichkeit dieser Mikroexpressionen
+wird weiterhin angenommen, dass sie Rückschlüsse auf den tatsächlichen emotionalen Zustand einer Person zulassen.
+4. Kulturelle Gemeinsamkeiten und
+Unterschiede von Mimik und Emotion
+Die Dominanz der westlichen Welt in der Wissenschaft im vergangenen Jahrhundert führte dazu, dass ein Großteil von Studien zur
+Wahrnehmung von Mimik und Emotionen an kulturell westlich geprägten Kaukasiern durchgeführt wurden. Es gab im letzten Jahrhundert nur wenige Studien, welche den Zusammenhang von
+Mimik und Emotionen kultur- und völkerübergreifend untersucht
+haben. Die ersten wesentlichen Studien wurden durch den amerikanischen Psychologen Paul Ekman in den 60er und 70er Jahren
+durchgeführt und kamen zum Ergebnis, das er mimische Ausdruck
+von Emotionen kulturübergreifend universell sei [28, 31]. Dies sollte zumindest für sechs Grundemotionen gelten [32]. Diese Sichtweise blieb lange Zeit unangefochten, doch legen neuere Studien
+S117
+
+Klingner CM, Guntinas-Lichius O. Mimik und Emotion.  Laryngo-Rhino-Otol 2023; 102: S115–S125 | © 2023. The Author(s).
+Referat
+nun kulturelle Unterschiede nahe [29]. Dies gilt insbesondere,
+wenn der emotionale Ausdruck spezifisch nach kontextuellen und
+kulturellen Einflüssen hin untersucht wird. So zeigen beispielsweise Menschen westlicher und ostasiatischer Kultur gemeinsame Vorstellungen über Schmerzen, aber es konnten auch Unterschiede im
+mimischen Ausdruck von Freude festgestellt werden [29].
+In unserem alltäglichen Leben und der Kommunikation mit anderen gehen wir aber wie selbstverständlich davon aus, dass unser
+Modell von Emotionen und Emotionswahrnehmung universell sei.
+Scheinbar konträr zu dieser Aussage existiert jedoch auch ein rassistischer Bias der das Wahrnehmen der mimisch ausgedrückten
+Gefühle von Personen anderer Kulturkreise beeinflusst [33].
+5. Einfluss von Erkrankungen auf Mimik und
+Emotionen
+Die Expression von Mimik – wie auch die Interpretation der Mimik
+anderer – kann durch verschiedene Erkrankungen verändert sein.
+Das klassische Beispiel für eine Störung des mimischen Ausdrucks
+von Emotionen stellt das Parkinson Syndrom dar. Hierbei handelt
+es sich um eine neurodegenerative Erkrankung die u. a. mit einer
+Verminderung von Gesichtsbewegungen einhergeht [34, 35]. In
+späteren Stadien ist die Fähigkeit zur Modulation des mimischen
+Ausdruck so stark eingeschränkt, dass man auch von einem
+„Maskengesicht“ spricht [35]. Die Betroffenen zeigen in diesem
+Stadium dann praktisch keinen emotional getriggerten mimischen Ausdruck mehr. Dieser verminderte oder z.T. nicht vorhandene mimische Ausdruck hat erhebliche Auswirkungen auf die
+Kommunikationsfähigkeit der Patienten und ihre Wahrnehmung
+durch andere [36–38]. So empfinden Beobachter die entsprechenden Patienten als weniger einfühlsam, gelangweilt, ängstlich und
+verschroben [36–38]. Dies führt zu einem geringeren Interesse an
+Beziehungen mit diesen Patienten [36]. Die Folgen sind die zunehmende Verschlechterung der sozialen Beziehungen auch mit nahestehenden Personen, eine zunehmende soziale Isolation und eine
+damit einhergehende Verschlechterung der empfundenen Lebensqualität [34, 35]. Diese erheblichen Auswirkungen machen die Bedeutung der Mimik für die soziale Interaktion deutlich.
+Die reduzierte oder fehlende Mimik hat aber auch ganz direkte
+Auswirkungen auf das Kommunikationsverhalten. So kommt es
+z. B. im ärztlichen Gesprächskontext immer wieder zu ärztlichen
+Monologen, wo Krankheitsmodelle verdeutlicht oder die weiteren
+Therapieschritte erklärt werden. Obgleich in solchen Situationen
+oft nur eine Person spricht, erhält der Sprechende eine Vielzahl an
+mimischen Botschaften, welche z. B. den Grad des Verständnisses
+des Gesagten ausdrücken aber auch über den emotionalen Zustand
+des Gesprächspartners Auskunft geben. So der Sprecher dieser Botschaften gewahr wird, moduliert er dann den Inhalt entsprechend
+des erhaltenen Feedbacks. Das völlige Fehlen jeder mimischen Reaktion in solch einer Gesprächssituation ist ein eindrucksvolles Erlebnis, da es das Gefühl vermittelt das Gespräch ohne Orientierung
+zu führen. Der Sprechende hat keine Hinweise, ob das Gesagte verstanden wurde, und weiß nicht, ob der Gesprächspartner mit Ver-
+ärgerung, Ablehnung oder Akzeptanz reagiert. Der Zustand führt
+zu Verunsicherung und Unwohlsein beim Sprecher. Es scheint sich
+hierbei um ein evolutionär determiniertes Bedürfnis nach einem
+kommunikativen Feedback zu handeln. Dies legten zumindest die
+„still face“ Experimente mit Babys und Kleinkindern durch Edward
+Tronick nahe [39]. In diesen Experimenten stellt die Mutter plötzlich jeden mimischen Ausdruck ein. Kinder beginnen daraufhin mit
+verschiedenen Aktionen um die Interaktion wieder herzustellen.
+Sie zeigen in der Folge dann zunehmend Reaktionen des Unwohlseins bis das Kind in der Regel mit Weinen reagiert [39].
+Diese Experimente, aber auch die Gefühle als Erwachsener in
+einer ähnlichen Situation, machen nicht nur die Bedeutung von
+Mimik für die Kommunikation deutlich, sondern zwingt auch zu
+einer Änderung des Kommunikationsverhaltens des Gesprächspartners. Längere Monologe sind nicht mehr möglich, da man auf
+eine verbale Rückkopplung zu dem Gesagten angewiesen ist. Es
+macht zudem auch deutlich, wie stark selbst „Monologe“ auf den
+ständigen nonverbalen Austausch von Informationen angewiesen
+sind.
+Die am Beispiel des Parkinson-Syndroms beschriebene Wirkung
+einer verminderten oder aufgehobenen Mimik ist direkt übertragbar auf andere Erkrankungen die mit einer verminderten Fähigkeit
+zum mimischen Ausdruck von Emotionen einhergehen z. B. Muskeldystrophien, Myasthenia gravis oder die amyotrophe Lateralsklerose. Die negativen Auswirkungen auf die Kommunikation und
+die Wahrnehmung der Betroffen findet sich aber auch bei einseitigen Störungen der Gesichtsmotorik wie z. B. der peripheren Fazialisparese [40].
+Neben der verminderten Fähigkeit Emotionen mimisch auszudrücken leiden Parkinsonpatienten jedoch auch unter einer verminderten Fähigkeit mimische Ausdrücke anderer wahrzunehmen
+[41–43] und haben auch grundsätzliche Schwierigkeiten mit der
+Verarbeitung von emotionalen Inhalten [44–46]. Dies ist eine Eigenschaft vieler neurodegenerativer Erkrankungen. Als Ursache
+wird häufig auf die begleitenden zerebralen Veränderungen der Erkrankungen verwiesen. Allerdings wird seit einigen Jahren auch der
+Einfluss der eigenen eingeschränkten Mimik als Ursache für eine
+Einschränkung der Fähigkeit zur Interpretation des emotionalen
+Gehalts der Mimik anderer diskutiert. So finden sich Einschränkung
+in der Interpretation des emotionalen Gehalts der Mimik anderer
+auch bei Myasthenia gravis [47], myotoner Dystrophie [48], Duchenne Muskeldystrophy [49] und amyotropher Lateralsklerose
+[50]. All diese Erkrankungen betreffen zwar primär die Motorik der
+Patienten, haben jedoch auch zentrale Auswirkungen. Interessanterweise können allerdings auch Veränderungen der Interpreta­
+tion von emotionalen Mimik anderer bei rein peripheren Störungen wie der peripheren Fazialisparese beobachtet werden [51, 52].
+Dies unterstützt die Theorie, dass die Einschränkungen der eigenen rein motorischen Fähigkeit Emotionen mimisch auszudrücken
+einen negativen Effekt auf die Fähigkeit der Emotionsinterpretation in der Mimik anderer haben. Diese Theorie wir unterstützt durch
+die Befunde, dass z. B. bei der amyotrophen Lateralsklerose die mimische Emotionsdetektion auch dann vermindert ist, wenn andere kognitive Fähigkeiten noch erhalten waren [50]. Auch Parkinson
+Patienten wie auch Patienten mit M. Huntington zeigen eine direkte Korrelation zwischen der Fähigkeit sich mimisch ausdrücken zu
+können und der Fähigkeit die Emotionen anderer interpretieren zu
+können [53–55]. Zusammengefasst ist die wesentliche Gemeinsamkeit der periphere Fazialisparese mit all diesen beschriebenen
+neurodegenerativen Erkrankungen die Verminderung der Fähig-
+S118
+
+Klingner CM, Guntinas-Lichius O. Mimik und Emotion.  Laryngo-Rhino-Otol 2023; 102: S115–S125 | © 2023. The Author(s).
+keit zur motorischen Steuerung der Mimik. Dennoch zeigen alle Erkrankungen gemeinsam Auswirkungen auf die Emotionserkennung
+und die zerebrale Verarbeitung von Emotionen. Dies deutet darauf
+hin, dass auch bei möglichen alternativen Ursachen für eine Verminderung der Emotionserkennung, die rein motorische Störung
+diese beeinträchtigen kann. Dieser Befund lässt sich auch gut mit
+der aktuell dominierenden Theorie des „embodied cognition“ in
+Einklang bringen. Diese besagt, dass ein wichtiger Mechanismus
+zur Wahrnehmung von Gesichtsemotionen deren sensomotorische
+Simulation im eigenen Gehirn ist. Dies bedarf einer mentalen Nachbildung des wahrgenommenen Gesichtsausdrucks. Da der eigene
+Gesichtsausdruck gestört ist, verändert dies jedoch auch die mentale Nachbildbarkeit, was letztlich die Fähigkeit zu Simulation und
+damit zur Erkennung von Gesichtsemotionen einschränkt [56, 57].
+Neben diesen bisher beschriebenen Erkrankungen der peripheren und/oder zentralen Störungen gibt es jedoch auch viele zentrale Erkrankungen, welche die Emotionsdetektion der Mimik
+anderer stören. So finden sich Defiziten z. B. in Patienten mit
+Schizophrenie [58], chronischem Alkoholismus [59], Borderline
+Persönlichkeitsstörung [60] und Multipler Sklerose [61–63].
+6. Mimik und Emotionen im Zeitalter von
+Masken
+Das Tragen von Gesichtsmasken ist im Zeitalter der COVID Pandemie zu einem alltäglichen Begleiter geworden. Gesichtsmasken
+stellen die kosteneffektivste Schutzmaßnahme gegen den SARS-
+Cov2 Virus da und erlauben weiterhin persönliche soziale Kontakte zu pflegen [64]. Dennoch zeigten sich in vielen Ländern erhebliche Widerstände gegen das Tragen von Masken. Als mögliche Ursache wird vor allem das Gefühl der Einschränkung der persönlichen
+Freiheit diskutiert [65, 66]. Dass das Tragen einer Gesichtsmaske
+trotz der erheblichen Vorteile als so starke Einschränkung der persönlichen Freiheit empfunden wird, scheint mit der empfundenen
+starken Einschränkung der physischen und psychischen Freiheit
+durch die Gesichtsmaske zusammenzuhängen. Höchstwahrscheinlich wäre ein Stoff den man z. B. als Binde am Oberarm tragen müsste nicht mit dem gleichen Gefühl der Einschränkung der persönlichen Freiheit verbunden gewesen. Das Tragen einer Gesichtsmaske ist sicher eine Unannehmlichkeit und kann bei einzelnen
+Personen auch zu einer Verstärkung von Kopfschmerzen [67] oder
+Akne [68] führen. Diese Nebenwirkungen sind jedoch selten. Sehr
+viel wahrscheinlicher ist jedoch, dass das Gefühl der Freiheitsbeschränkung dadurch entsteht, dass die Maske den größten Teil
+genau der Körperregionen bedeckt, die uns zu kommunikativen
+und sozialen Lebewesen macht. Die eigene Akzeptanz des Tragens
+der Maske beeinflusst allerdings auch wieder unsere Wahrnehmung
+durch andere. So beeinträchtigen negative Gefühle beim Tragen
+der Maske auch die soziale Wahrnehmung durch andere Maskenträger [69]. Das Tragen von Masken stört natürlich auch das Erkennen von Emotionen aus der Mimik unserer Mitmenschen und erschwert somit soziale Interaktionen [70]. Da mimische Emotionserkennung nicht aus der Summe der Gesichtsteilbereiche
+zusammengesetzt ist, sondern auch einen starken holistischen Prozess beinhaltet, verschlechtert das Tragen von Masken diese Fähigkeit stärker als es aus den fehlenden Informationen der bedeckten
+Gesichtsbereiche zu vermuten wäre [71]. Es wird weiterhin argumentiert, dass das die entstehenden Defizite in der nonverbalen
+Kommunikation Menschen ein Gefühl der Unsicherheit und der Entmutigung vermittelt und bei entsprechender Prädisposition auch
+das Entstehen psychischen Störungen befördern kann [72].
+Die beschriebenen Auswirkungen reduzieren sich aktuell durch
+den zunehmenden Wegfall von der Pflicht eine Maske zu tragen.
+Im Gesundheitswesen ist es jedoch weiterhin verpflichtend und die
+besonderen Anforderungen an die Empathie und Gesprächsführung von Ärzten stellt diese vor besondere Herausforderungen. Hier
+ist es entscheidend sich den entstehenden Perzeptionsdefiziten
+von beiden Kommunikationspartnern bewusst zu sein und diese
+durch ein verändertes und vor allem stärker bidirektionale Kommunikationsverhalten zu kompensieren.
+7. Mimik und Emotionen in anderen Spezies
+Die Expression von Emotionen spielt sich bei vielen Spezies auf biochemischer und physiologischer Ebene ähnlich zu den menschlichen Reaktionen ab. So sind die Reaktionen auf Angst mit einer beschleunigten Atmung, Änderung der Blutverteilung, Hormonfreisetzung und einer Pupillenerweiterung sehr ähnlich. In der Mimik
+finden sich deutlich stärkere Unterschiede zwischen Spezies, die
+allein schon durch die unterschiedliche Anzahl von Muskelgruppen
+im Gesicht sowie der Fähigkeit diese anzusteuern bedingt sind.
+Bereits Darwin stellte fest, dass Tiere spezifische und an ihre Art
+angepasste Gesichtsausdrücke entwickeln können [73]. Das von
+Ekman und Friesen entwickelte „Facial Action Coding System“, das
+zur anatomiebasierten Klassifikation von Emotionen beim Menschen entwickelt wurde [74], konnte auch erfolgreich in sieben anderen Spezies einschließlich Schimpansen eingesetzt werden [75–
+77]. Selbst in Nagern konnten mimische Ausdrücke mit einem zumindest affektivem Inhalt nachgewiesen werden [78, 79].
+Unstrittig ist jedoch, dass sich die Möglichkeiten der fazialen
+Ausdrucksmöglichkeiten mit niedrigerem Entwicklungsstand reduzieren [75]. In diesem Zusammenhang bleibt die Frage wie viel
+Selbstbewusstsein notwendig ist, um Emotionen mimisch auszudrücken und in anderen zu erkennen von großem Interesse.
+8. Die zerebrale Verarbeitung von mimischer
+Emotionsperzeption
+Funktionelle Bildgebungsstudien zeigen, dass die Verarbeitung von
+emotionalen Gesichtern mit erhöhter Aktivität in visuellen, limbischen, temporoparietalen, cerebellären sowie präfrontalen Arealen und dem Putamen verbunden sind [80] (▶Abb. 1). Die optischen Informationen erreichen zuerst den visuellen Kortex. Hier
+erfolgt die Verarbeitung von emotionalen Gesichtern in mehreren
+Unterarealen (Gyrus occipitalis inferior, Gyrus lingualis, Gyrus fusiformis). Die Verarbeitung in diesen Regionen scheinen tief in der
+Verarbeitungshierarchie zu stehen und unabhängig von der verarbeiteten Emotion oder deren Valenz zu sein [81, 82]. Auch das
+Kleinhirn ist bei der Verarbeitung von Emotionen beteiligt. Obwohl
+die zerebellären Areale starke anatomische Verbindungen zum kortikalen Assoziationskortex und verschiedenen limbischen Strukturen
+besitzen [83],. scheinen sie, ähnlich wie die visuellen Areale unabhängig von der zu verarbeitenden Emotion selbst zu sein [84–86].
+S119
+
+Klingner CM, Guntinas-Lichius O. Mimik und Emotion.  Laryngo-Rhino-Otol 2023; 102: S115–S125 | © 2023. The Author(s).
+Referat
+Ängstliche Gesichter aktivieren den medialen frontalen Kortex,
+welcher eine Schlüsselrolle beim bewussten Erleben und der Regulation von Emotionserleben spielt.
+Die Amygdala wird bei der Betrachtung von traurigen, ängstlichen oder auch glücklichen Gesichtern aktiviert, während wütende oder angewiderte Gesichter keine Aktivitätsveränderung der
+Amygdala bedingen. Für letztere zwei Emotionen fanden sich besonders starke Aktivierung in der Inselregion [80]. Diese erscheint
+auf angewiderte Gesichter stärker zu reagieren als auf wütende. Es
+wird vermutet, dass limbische Regionen wie die Amygdala und der
+Hippocampus verstärkt an der Verarbeitung von externen positiven emotionalen sensorischen Informationen beteiligt sind, während die Inselregion vor allem bei interozeptiven Stimuli und beunruhigenden externen Reizen aktiviert wird [87]. Der cinguläre Kortex wird insbesondere durch die Wahrnehmung von glücklichen
+Gesichtern aktiviert [87].
+Aus dieser Verteilung wird deutlich, dass die Verarbeitung des
+emotionalen Inhalts von Gesichtern in einem komplexen Netzwerk
+von Hirnregionen erfolgt. Die verschiedenen Emotionen involvieren verschiedene Hirnregionen unterschiedlich stark, jedoch sind
+viele Hirnregionen an der Verarbeitung der meisten Emotionen beteiligt.
+Das zerebrale Aktivierungsmuster bei der Verarbeitung von
+emotionalen Gesichtern scheint neben der dargebotenen Emotion
+allerdings auch von der ihr zugewandten Aufmerksamkeit abzuhängen [88–90]. Allgemein besteht Konsens, dass die Gesichtsverarbeitung eine rechtshirnige Dominanz aufweist. Dies ist ein bereits lange bekannter Befund für die allgemeine Verarbeitung von
+Gesichtern sowohl für Identitätserkennung, Emotionen und Aufmerksamkeit [88–90]. Dies passt auch zu dem Befund, dass bei Patienten mit parietalen Läsionen rechtsseitige Läsionen zu stärkeren
+Neglectsymptomen führen im Vergleich zu linksseitigen [91]. Diese
+rechtsseitige Dominanz für die allgemeine Verarbeitung von Gesichtern scheint sich auch auf die Verarbeitung von emotionalen
+Gesichtern zu übertragen. So fand sich bei einer beidseitigen Präsentation von ängstlichen Gesichtern eine stärkere Aktivierung und
+Konnektivität von rechtem visuellen Kortex und rechter Amygdala
+im Vergleich zu neutralen Gesichtern [92]. Auch wenn Gesichtern
+wenig Aufmerksamkeit geschenkt wird, findet sich eine rechts lateralisiert erhöhte Aktivität in der Amygdala und dem Temporalpol
+[93].
+Diese bisher beschriebene Verarbeitung von emotionalen Gesichtern erfolgt explizit d. h. mit einem Bewusstsein für die Informationen. Demgegenüber steht die implizite d. h. unbewusste Verarbeitung von emotionalen Informationen aus Gesichtern. Experimentell lässt sich diese unbewusste Wahrnehmung z. B. durch
+zeitlich rückwirkende Maskierung mit anderen Stimuli oder durch
+interokulärere Suppression erzeugen. Interessant ist diese implizite Verarbeitung vor allem, da bereits frühzeitig gezeigt wurde, dass
+Patienten mit strukturellen Läsionen des primären visuellen Kortex
+spezifische Charakteristika dieser Reize unterscheiden konnten
+[94]. Nachfolgende Studien zeigten, dass sich diese Fähigkeit insbesondere auch auf das Wahrnehmen von emotionalen Gesichtern
+bezieht [95] – ein Phänomen, das affektive Blindheit genannt
+wurde. Betroffene Patienten zeigen die Fähigkeit die Emotionen
+aus Gesichtern mit einem überzufällig häufig korrekt zu identifizieren, obgleich sie diese nicht sehen können [96, 97]. Sie zeigen erhöhte Aktivität in der linken Amygdala , dem linken Striatum und
+dem rechten mittleren temporalen Gyrus [93]. Die Verarbeitung
+von unbewusst wahrgenommenen Gesichtern ist zudem abhängig
+von ausgedrückten Emotionen. Bei der Verarbeitung von unbewusst wahrgenommenen Gesichtern mit positiven Emotionen wird
+der temporale und der parietale Kortex stärker involviert als bei der
+unbewussten Verarbeitung von neutralen Gesichtern. Unbewusst
+wahrgenommene Gesichtsausdrücke mit negativem emotionalen
+Gehalt führen dagegen zu stärkeren Aktivitäten in subkortikalen
+Regionen [93].
+Insgesamt wurde für die Verarbeitung von emotionalen Gesichtern das parallele existieren eines subcortikalen Verarbeitungspfades zur rechten Amygdala über das Mittelhirn und den Thalamus
+vorgeschlagen, während hierzu parallel ein kortikaler Pfad für die
+bewusste Gesichtswahrnehmung existiert [93, 98–100]. Diese Ansicht ist jedoch umstritten, da einige Autoren argumentieren, dass
+auch die unbewusste Verarbeitung emotionaler Gesichter kortikal
+erfolgt [101–103]. Die Existenz eines subkortikalen parallelen Pfades wäre auch eine Erklärung für die Tatsache, dass basale Emotio­
+nen in Gesichtern in präfrontalen Arealen mit einer Geschwindigkeit von bis zu 120 ms perzeptiert werden können [104]. Dies ist
+erstaunlich schnell, wenn man bedenkt, dass bewegungsunabhängige foveale Informationen erst nach ca. 60 ms den occipitalen Kortex erreichen und die komplex zusammengesetzte P100 Komponente erst nach 100 ms messbar ist. Trotz dieser erheblichen Geschwindigkeit ist jedoch auch hier ein schneller kortikaler Pfad nicht
+Happy
+Sad
+Angry
+Fearful
+Disgusted
+▶Abb. 1	Regionen erhöhter neuronaler Aktivität als Reaktion auf glückliche, traurige, wütende, ängstliche und angewiderte menschliche Gesichter
+im Verglich zu neutralen Gesichtern (FG fusiformer Gyrus, ACC anteriorer cingulärer Cortex, LG lingualer Gyrus, IOG inferiorer occipitaler Gyrus, MFG
+medialer frontaler Gyrus). [80].
+S120
+
+Klingner CM, Guntinas-Lichius O. Mimik und Emotion.  Laryngo-Rhino-Otol 2023; 102: S115–S125 | © 2023. The Author(s).
+auszuschließen. Neben diesen schnellen Komponenten sind jedoch
+auch deutlich spätere Komponenten im präfrontalen Kortex messbar. Es erscheint, dass die Interpretation von Emotionen in einem
+zeitlich gestaffelten Prozess erfolgt. Der präfrontale Kortex ist in
+diesem Zusammenhang auch von besonderer Bedeutung, da er die
+visuelle Informationsverarbeitung in anderen Hirnregionen moduliert [104]. Dieser iterative Informationsverarbeitungsprozess erscheint insbesondere plausibel, da er starke Ähnlichkeiten zur parallelen Organisation in anderen sensorischen Systemen aufweist
+[105, 106]. Die Existenz von parallelen sehr schnellen Antworten
+deutet auch auf die erhebliche evolutionäre Bedeutung der Emotionserkennung hin, da dieser additive Verarbeitungsweg durch
+seine Geschwindigkeit einen evolutionären Vorteil erbracht haben
+muss.
+9. Interpretation von Emotionen aus
+Gesichtsausdrücken in ihrer Bedeutung in der
+Gesellschaft
+Es besteht Einigkeit, dass sie Emotionen in Gesichtern, die wir anschauen, einen Effekt auf uns haben. Obwohl wir das nette Lächeln
+der Hotelangestellten am Tresen kognitiv nicht als Zeichen der
+Freude über unseren Besuch einordnen würden, empfinden wir es
+zumeist doch als angenehm oder zumindest das Ausbleiben eines
+Lächelns als unangenehm. In den Rechtssystemen westlicher Demokratien wird die Interpretation von Emotionen durch Richter
+auch als für das Strafmaß beeinflussend angesehen. Dies setzt das
+Selbstverständnis voraus, das wir glauben Emotionen korrekt einordnen zu können. So wirkt sich das Darstellen von Trauer sowohl
+in Mimik aber auch im Wort häufig als strafmindernd aus. Dabei
+empfinden viele die Mimik als entscheidender unter der Annahme,
+dass diese einen stärkeren Einblick in die Emotionen zulässt als ein
+vorgelesenes Wort des Bedauerns. So schrieb z. B. ein Richter des
+obersten Gerichtshofes der USA (Anthony Kennedy) 1992, dass das
+Lesen der Gefühle des Angeklagten notwendig sei, um das Herz
+und den Verstand des Täters zu erkennen („know the heart and
+mind of the offender”).
+Obgleich die Interpretation von Emotionen und deren Bewertung auf das Strafmaß in unserem Rechtssystem als fair angesehen
+wird, gilt dies nicht für eine Emotionsinterpretation in anderen Bereichen der Gesellschaft. So hat der amerikanische Psychologe Paul
+Ekman ein Schulungsprogramm für die US-Verkehrssicherheits­
+behörde entwickelt und 2007 eingeführt, welches das Personal trainierte Passagiere auf verdächtige Anzeichen von Stress, Täuschung
+oder Angst zu beobachten. Das Programm basiert auf den Forschungen von Paul Ekman aus den späten 1970 Jahren, in denen
+Ekman mehrere Artikel publizierte zur Identifikation von Emotionen aus minimalen Veränderungen von Gesichtsausdrücken [107].
+Es basiert weiterhin auf der Annahme, dass der Versuch Emotionen
+zu verbergen oder zu lügen, zum Durchsickern von Emotionen in
+Form von Mikroausdrücken in die Gesichtsmimik führe.
+Die erhebliche Ungenauigkeit und rassistische Ausrichtung führten jedoch zu erheblicher Kritik durch Wissenschaftler, Mitgliedern
+des US-Kongresses und verschiedene Menschenrechtsorganisatio­
+nen [108]. Unter Ausblendung von ethisch-moralischen Aspekten ist dieses Programm aus rein wissenschaftlicher Perspektive
+hochinteressant, da es die Hypothese untersucht, dass man aus der
+reinen Beobachtung von Menschen feststellen kann, ob diese betrügen oder feindliche Handlungen planen. Einen Eindruck der
+Größe des Programms ergibt sich aus der Zahl von Mitarbeitern.
+Im Jahr 2015 wurden 2800 Mitarbeiter in diesem sogenannten
+SPOT-Programm beschäftigt und zwischen den Jahren 2007 und
+2013 wurden 900 Millionen US Dollar investiert. Diese Größenordnung kann selbstverständlich keine akademisch getriebene Untersuchung erreichen. Die enorme Datengröße und die verschiedenen Technologieeinsätze machen dieses Programm besonders interessant.
+Die genannte Hypothese hat viele Anhänger und so wurde auf
+dem Londoner Heathrow Airport Personal zur Verhaltensbeobachtung eingestellt und auch das US-Ministerium für Heimatschutz
+verfolgt ein Programm zur elektronischen Bewertung von nonverbalem Verhalten. Die Untersuchung der Mimik bildet hierbei einen
+besonders wichtigen Aspekt. Kritiker werfen ein, dass es keine wissenschaftlichen Belege für die Annahme gäbe, dass sich aus der Beobachtung Rückschlüsse auf Vorsatz oder zukünftiges Verhalten
+ableiten ließen [109]. Diese Einschätzung teilte auch eine Überprüfungskommission des Programms durch den US-Kongress. Als Reaktion auf diese Bedenken hat die Transportsicherheitsbehörde
+eine unabhängige Studie in Auftrag gegeben, deren Ergebnis aktuell noch aussteht.
+Automatisierte Analyse und Kategorisierung von Emotionen Die
+automatisierte Analyse und Kategorisierung von Emotionen aus
+Gesichtern ist in den letzten 2 Jahrzehnten intensiv erforscht worden. Für statische Bilder können aktuelle Algorithmen Emotionen
+mit mehr als 90 % Korrektheit identifizieren. In den letzten 10 Jahren ist die Analyse von Bildern in der Forschung stark in den Hintergrund getreten, während zunehmend die Analyse von Emotionen
+aus Videosequenzen erforscht wird. Auch hier konnte durch die erhebliche Steigerung der Rechnerleistung sowie vor allem durch
+Fortschritte im Forschungsbereich Computer Vision erhebliche Erfolge in der automatisierten Analyse und Kategorisierung von Emotionen aus Gesichtern erzielt warden [110–112].
+Die Analyse von Videos ist hierbei sehr viel komplexer als die
+Analyse von statischen Bildern. Bei der Analyse von Videos handelt
+es sich nicht um eine Analyse jedes einzelnen Bildes, sondern sind
+diese Emotionsanalysen abhängig von den Eigenschaften des Gesichts in der Vergangenheit und der Zukunft. Insbesondere können
+in Videos anders als in statischen Bildern willentliche und unwillentliche Gesichtsbewegungen unterschieden werden. Gerade das
+„Durchsickern“ von echten Emotionen durch eine vorgetäuschte
+Emotion kann analysiert werden. Gerade dieses Zusammenspiel
+aus willkürlichen und unwillkürlichen Bewegungen und die damit
+einhergehende Detektion von Mikroexpressionen sind Gegenstand
+sehr aktiver Forschung [113].
+Das „Durchsickern“ von echten Emotionen durch einen gespielten Gesichtsausdruck dauert nur sehr kurze Zeit an und ist für das
+menschliche Auge oft nur schwer erkennbar. Die Dauer von Mikroexpressionen wird im Bereich von 40–200 ms angegeben [30, 114].
+Eine weitere Eigenschaft von Mikroexpressionen, die sie für das
+menschliche Auge schwer detektierbar macht, ist, dass die häufig
+fragmentiert sind. Nur ein Teil der Muskelgruppen, die eine bestimmte Emotion ausdrücken, werden bei diesen Mikroexpressionen aktiviert [115].
+S121
+
+Klingner CM, Guntinas-Lichius O. Mimik und Emotion.  Laryngo-Rhino-Otol 2023; 102: S115–S125 | © 2023. The Author(s).
+Referat
+Diese Eigenschaften der Mikroexpressionen machen sie zu
+einem idealen Anwendungsgebiet für rechnergestützte Bildanalysen. Es gibt vielfältige Anwendungsgebiete so z. B. in Geschäftsverhandlungen, in psychiatrischen Gesprächen und in der Forensik
+[108, 116]. Ein erster Ansatz wurde durch Paul Ekman im Jahr 2002
+entwickelt. Er trainierte mithilfe eines Tools Menschen um 7 verschiedene Kategorien von Mikroexpressionen zu detektieren [117].
+Die Ergebnisse waren jedoch ernüchternd, da gezeigt werden konnte, dass Studenten, die mit diesem Tool arbeiteten im Erkennen von
+Mikroexpressionen dem Personal der US Küstenwache, welche
+ohne Hilfestellung arbeiteten, unterlegen waren [118].
+Bis heute wird die Entwicklung von Analysemethoden wesentlich durch die nur geringen vorhandenen Datensätze limitiert. Um
+Datensätze mit möglichst reichhaltigen Mikroexpressionen zu erstellen, werden Probanden angehalten Videos mit emotionalem
+Inhalt zu schauen und ihnen wird gleichzeitig Belohnung angeboten, wenn sie keine Emotionen zeigen. Das labeln dieser Daten
+bleibt jedoch schwierig und resultiert in aktuell nur wenigen vorhandenen frei zugänglichen Datensätzen von begrenztem Umfang
+[113, 119].
+Zusätzlich werden Analysen durch Bewegungen des Kopfes der
+aufgenommenen Person aber auch durch Gesichtsbewegungen
+ohne emotionalen Bezug (z. B. blinzeln) erschwert. Neben der Interpretation des emotionalen Gehalts einer Mikroexpression stellt
+vor allem die Identifikation der Phasen des Auftretens dieser Mikro­
+expression ein erhebliches Problem dar [120]. Für diese Teilpro­
+bleme gab es insbesondere in den letzten 12 Jahren eine zunehmende Anzahl an Untersuchungen und eine deutliche Verbesserung der Ergebnisqualität. Wenn die Anzahl der zu erkennenden
+Emotionen limitiert wird (z. B. auf positiv, negativ, überrascht und
+andere), können Ergebnisse mit einer Akkuratheit von um 70 % erzielt warden [121–123].
+Aktuelle Ergebnisse zeigen auf einzelnen Datenbanken (keine
+Datenbankübergreifende Performance) eine Akkuratheit von 65 %
+bis über 70 % im Erkennen, wenn die zu Erkennenden Eigenschaften limitiert werden (z. B. positiv, negativ, überrascht, andere). Aktuelle Methoden setzen auch auf den Einsatz von sogenannten convolutional neural networks, welche mit unterschiedlichen Zusatzmethoden eine Akkuratheit von über 70 % erzielen können [124]
+und dies z.T. sogar über verschiedene Datensätze hinweg [125].
+Trotz dieser deutlichen Fortschritte gibt es in der Emotionsdetektion aus Videos und auch in der Detektion und Interpretation von
+Mikroexpressionen nach Potential für Verbesserungen und eine aktuelle Ergebnisqualität, die den Einsatz in der Praxis deutlich limitiert.
+10. Zusammenfassung
+Das Zusammenspiel von Mimik und Emotionen ist ein wichtiger Teil
+in der täglichen sozialen Interaktion. Wissenschaftliche Forschungen der letzten 50 Jahre haben einen großen Wissenszuwachs erbringen können. So konnten insbesondere tiefere Einblicke in die
+evolutionären Ursprünge und die behavioralen Eigenschaften von
+Mimik und Emotion gewonnen werden. Auch die zerebrale Verarbeitung wurde intensiv erforscht und ist heute weitgehend anatomisch zuordenbar. Es mangelt aber bis heute an funktionellen Modellen über das Erkennen und den Ausdruck von Emotionen in der
+Mimik, welche uns in unserem Verständnis über die zerebralen Verarbeitungsmechanismen deutlich voranbringen. In den nächsten
+Jahren wird das Erkennen von Emotionen in Videos und insbesondere das Erkennen von Mikroexpressionen ein wesentliches wissenschaftliches und zunehmend auch wirtschaftliches Thema darstellen.
+Interessenkonflikt
+Die Autorinnen geben an, dass kein Interessenkonflikt besteht.
+Literatur
+[1]	 Frank MG, Stennett J. The forced-choice paradigm and the perception
+of facial expressions of emotion. J Pers Soc Psychol 2001; 80: 75–85.
+doi:10.1037//0022-3514.80.1.75
+[2]	 Grossmann T, Johnson MH. The development of the social brain in
+human infancy. Eur J Neurosci 2007; 25: 909–919.
+doi:10.1111/j.1460-9568.2007.05379.x
+[3]	 Barrett LF. Functionalism cannot save the classical view of emotion.
+Soc Cogn Affect Neurosci 2017; 12: 34–36. doi:10.1093/scan/
+nsw156
+[4]	 Adolphs R, Mlodinow L, Barrett LF. What is an emotion?  Curr Biol
+2019; 29: R1060–R1064. doi:10.1016/j.cub.2019.09.008
+[5]	 LeDoux J. Rethinking the emotional brain. Neuron 2012; 73:
+653–676. doi:10.1016/j.neuron.2012.02.004
+[6]	 Shackman AJ, Wager TD. The emotional brain: Fundamental
+questions and strategies for future research. Neurosci Lett 2019; 693:
+68–74. doi:10.1016/j.neulet.2018.10.012
+[7]	 Anderson DJ, Adolphs R. A framework for studying emotions across
+species. Cell 2014; 157: 187–200. doi:10.1016/j.cell.2014.03.003
+[8]	 Panksepp J, Lane RD, Solms M, Smith R. Reconciling cognitive and
+affective neuroscience perspectives on the brain basis of emotional
+experience. Neurosci Biobehav Rev 2017; 76: 187–215.
+doi:10.1016/j.neubiorev.2016.09.010
+[9]	 Fanselow MS, Pennington ZT. A return to the psychiatric dark ages
+with a two-system framework for fear. Behav Res Ther 2018; 100:
+24–29. doi:10.1016/j.brat.2017.10.012
+[10]	 Chikazoe J, Lee DH, Kriegeskorte N, Anderson AK. Population coding
+of affect across stimuli, modalities and individuals. Nat Neurosci
+2014; 17: 1114–1122. doi:10.1038/nn.3749
+[11]	 Adolphs R. Emotion. Curr Biol 2010; 20: R549–552. doi:10.1016/j.
+cub.2010.05.046
+[12]	 Adolphs R. How should neuroscience study emotions? by
+distinguishing emotion states, concepts, and experiences. Soc Cogn
+Affect Neurosci 2017; 12: 24–31. doi:10.1093/scan/nsw153
+[13]	 Adolphs R, Anderson D. The Neuroscience of Emotion: A New
+Synthesis. Princeton University Press;  2018.
+doi:10.23943/9781400889914
+[14]	 Damasio A, Carvalho GB. The nature of feelings: evolutionary and
+neurobiological origins. Nat Rev Neurosci 2013; 14: 143–152.
+doi:10.1038/nrn3403
+[15]	 Ellison JW, Massaro DW. Featural evaluation, integration, and
+judgment of facial affect. J Exp Psychol Hum Percept Perform 1997;
+23: 213–226. doi:10.1037//0096-1523.23.1.213
+[16]	 Beaudry O, Roy-Charland A, Perron M, Cormier I, Tapp R. Featural
+processing in recognition of emotional facial expressions. Cogn Emot
+2014; 28: 416–432. doi:10.1080/02699931.2013.833500
+S122
+
+Klingner CM, Guntinas-Lichius O. Mimik und Emotion.  Laryngo-Rhino-Otol 2023; 102: S115–S125 | © 2023. The Author(s).
+[17]	 McKone E, Davies AA, Darke H, Crookes K, Wickramariyaratne T,
+Zappia S, Fiorentini C, Favelle S, Broughton M, Fernando D.
+Importance of the inverted control in measuring holistic face
+processing with the composite effect and part-whole effect. Front
+Psychol 2013; 4: 33. doi:10.3389/fpsyg.2013.00033
+[18]	 Tobin A, Favelle S, Palermo R. Dynamic facial expressions are
+processed holistically, but not more holistically than static facial
+expressions. Cogn Emot 2016; 30: 1208–1221. doi:10.1080/026999
+31.2015.1049936
+[19]	 Schurgin MW, Nelson J, Iida S, Ohira H, Chiao JY, Franconeri SL. Eye
+movements during emotion recognition in faces. J Vis 2014; 14: 14.
+doi:10.1167/14.13.14
+[20]	 Eisenbarth H., Alpers G.W. Happy mouth and sad eyes: Scanning
+emotional facial expressions. Emotion 2011; 11: 860–865.
+doi:10.1037/a0022758
+[21]	 Blais C, Fiset D, Roy C, Saumure Régimbald C, Gosselin F. Eye fixation
+patterns for categorizing static and dynamic facial expressions.
+Emotion 2017; 17: 1107–1119. doi:10.1037/emo0000283
+[22]	 Gillespie SM, Rotshtein P, Wells LJ, Beech AR, Mitchell IJ. Psychopathic
+traits are associated with reduced attention to the eyes of emotional
+faces among adult male non-offenders. Front Hum Neurosci 2015; 9:
+552. doi:10.3389/fnhum.2015.00552
+[23]	 Wells LJ, Gillespie SM, Rotshtein P. Identification of Emotional Facial
+Expressions: Effects of Expression, Intensity, and Sex on Eye Gaze.
+PLoS One 2016; 11: e0168307. doi:10.1371/journal.pone.0168307
+[24]	 Calder AJ, Young AW, Keane J, Dean M. Configural information in
+facial expression perception. Journal of Experimental Psychology:
+Human Perception and Performance 2000; 26: 527–551.
+doi:10.1037/0096-1523.26.2.527
+[25]	 Calvo MG, Nummenmaa L. Detection of emotional faces: salient
+physical features guide effective visual search. J Exp Psychol Gen
+2008; 137: 471–494. doi:10.1037/a0012771
+[26]	 Tanaka JW, Simonyi D. The “Parts and Wholes” of Face Recognition:
+A Review of the Literature. Quarterly Journal of Experimental
+Psychology 2016; 69: 1876–1889. doi:10.1080/17470218.2016.114
+6780
+[27]	 Kilpeläinen M, Salmela V. Perceived emotional expressions of
+composite faces. PLoS ONE 2020; 15: e0230039. doi:10.1371/
+journal.pone.0230039
+[28]	 Ekman P, Friesen WV. Constants across cultures in the face and
+emotion. Journal of Personality and Social Psychology 1971; 17:
+124–129. doi:10.1037/h0030377
+[29]	 Chen Z, Whitney D. Tracking the affective state of unseen persons.
+Proceedings of the National Academy of Sciences 2019; 116:
+7559–7564. doi:10.1073/pnas.1812250116
+[30]	 Ekman P, Friesen WV. Nonverbal leakage and clues to deception.
+Psychiatry 1969; 32: 88–106. doi:10.1080/00332747.1969.11023575
+[31]	 Ekman P, Sorenson ER, Friesen WV. Pan-Cultural Elements in Facial
+Displays of Emotion. Science 1969; 164: 86–88. doi:10.1126/
+science.164.3875.86
+[32]	 Ekman P. An argument for basic emotions. Cognition and Emotion
+1992; 6: 169–200. doi:10.1080/02699939208411068
+[33]	 Ruba AL, McMurty R, Gaither SE, Wilbourn MP. How White American
+Children Develop Racial Biases in Emotion Reasoning. Affect Sci 2022;
+3: 21–33. doi:10.1007/s42761-022-00111-y
+[34]	 Jankovic J. Parkinson’s disease: clinical features and diagnosis.
+J Neurol Neurosurg Psychiatry 2008; 79: 368–376. doi:10.1136/
+jnnp.2007.131045
+[35]	 Bologna M, Fabbrini G, Marsili L, Defazio G, Thompson PD, Berardelli
+A. Facial bradykinesia. J Neurol Neurosurg Psychiatry 2013; 84:
+681–685. doi:10.1136/jnnp-2012-303993
+[36]	 Hemmesch AR, Tickle-Degnen L, Zebrowitz LA. The influence of facial
+masking and sex on older adults’ impressions of individuals with
+Parkinson’s disease. Psychol Aging 2009; 24: 542–549. doi:10.1037/
+a0016105
+[37]	 Pentland B, Gray JM, Riddle WJ, Pitcairn TK. The effects of reduced
+non-verbal communication in Parkinson’s disease. Br J Disord
+Commun 1988; 23: 31–34. doi:10.3109/13682828809019874
+[38]	 Tickle-Degnen L, Lyons KD. Practitioners’ impressions of patients
+with Parkinson’s disease: the social ecology of the expressive mask.
+Soc Sci Med 2004; 58: 603–614. doi:10.1016/s0277-9536(03)00213-2
+[39]	 Tronick E. The neurobehavioral and social-emotional development of
+infants and children. 1st ed.W. W. Norton; Co: 2007
+[40]	 Dobel C, Miltner WHR, Witte OW, Volk GF, Guntinas-Lichius O.
+[Emotional impact of facial palsy]. Laryngorhinootologie 2013; 92:
+9–23. doi:10.1055/s-0032-1327624
+[41]	 Herrera E, Cuetos F, Rodríguez-Ferreiro J. Emotion recognition
+impairment in Parkinson’s disease patients without dementia.
+J Neurol Sci 2011; 310: 237–240. doi:10.1016/j.jns.2011.06.034
+[42]	 Dujardin K, Blairy S, Defebvre L, Duhem S, Noël Y, Hess U, Destée A.
+Deficits in decoding emotional facial expressions in Parkinson’s
+disease. Neuropsychologia 2004; 42: 239–250. doi:10.1016/
+s0028-3932(03)00154-4
+[43]	 Ibarretxe-Bilbao N, Junque C, Tolosa E, Marti M-J, Valldeoriola F,
+Bargallo N, Zarei M. Neuroanatomical correlates of impaired
+decision-making and facial emotion recognition in early Parkinson’s
+disease. Eur J Neurosci 2009; 30: 1162–1171.
+doi:10.1111/j.1460-9568.2009.06892.x
+[44]	 Poewe W. Non-motor symptoms in Parkinson’s disease. Eur J Neurol
+2008; 15: Suppl 1 14–20. doi:10.1111/j.1468-1331.2008.02056.x
+[45]	 Péron J, Dondaine T, Le Jeune F, Grandjean D, Vérin M. Emotional
+processing in Parkinson’s disease: a systematic review. Mov Disord
+2012; 27: 186–199. doi:10.1002/mds.24025
+[46]	 Reijnders JSAM, Ehrt U, Weber WEJ, Aarsland D, Leentjens AFG. A
+systematic review of prevalence studies of depression in Parkinson’s
+disease. Mov Disord 2008; 23: 183–189. quiz 313. doi:10.1002/
+mds.21803
+[47]	 Lázaro E, Amayra I, López-Paz JF, Jometón A, Martín N, Caballero P,
+De Nicolás L, Hoffmann H, Kessler H, Ruiz B et al. Facial affect
+recognition in myasthenia gravis. Span J Psychol 2013; 16: E52.
+doi:10.1017/sjp.2013.59
+[48]	 Winblad S, Hellström P, Lindberg C, Hansen S. Facial emotion
+recognition in myotonic dystrophy type 1 correlates with CTG repeat
+expansion. J Neurol Neurosurg Psychiatry 2006; 77: 219–223.
+doi:10.1136/jnnp.2005.070763
+[49]	 Hinton VJ, Fee RJ, De Vivo DC, Goldstein E. Poor facial affect
+recognition among boys with duchenne muscular dystrophy. J Autism
+Dev Disord 2007; 37: 1925–1933. doi:10.1007/s10803-006-0325-5
+[50]	 Sedda A. Disorders of emotional processing in amyotrophic lateral
+sclerosis. Curr Opin Neurol 2014; 27: 659–665. doi:10.1097/
+WCO.0000000000000147
+[51]	 Korb S, Wood A, Banks CA, Agoulnik D, Hadlock TA, Niedenthal PM.
+Asymmetry of Facial Mimicry and Emotion Perception in Patients
+With Unilateral Facial Paralysis. JAMA Facial Plast Surg 2016; 18:
+222–227. doi:10.1001/jamafacial.2015.2347
+[52]	 Storbeck F, Schlegelmilch K, Streitberger K-J, Sommer W, Ploner CJ.
+Delayed recognition of emotional facial expressions in Bell’s palsy.
+Cortex 2019; 120: 524–531. doi:10.1016/j.cortex.2019.07.015
+[53]	 Wagenbreth C, Wattenberg L, Heinze H-J, Zaehle T. Implicit and
+explicit processing of emotional facial expressions in Parkinson’s
+disease. Behav Brain Res 2016; 303: 182–190. doi:10.1016/j.
+bbr.2016.01.059
+S123
+
+Klingner CM, Guntinas-Lichius O. Mimik und Emotion.  Laryngo-Rhino-Otol 2023; 102: S115–S125 | © 2023. The Author(s).
+Referat
+[54]	 Ricciardi L, Visco-Comandini F, Erro R, Morgante F, Bologna M, Fasano
+A, Ricciardi D, Edwards MJ, Kilner J. Facial Emotion Recognition and
+Expression in Parkinson’s Disease: An Emotional Mirror Mechanism?
+PLoS One 2017; 12: e0169110. doi:10.1371/journal.pone.0169110
+[55]	 Trinkler I, Devignevielle S, Achaibou A, Ligneul RV, Brugières P, Cleret
+de Langavant L, De Gelder B, Scahill R, Schwartz S, Bachoud-Lévi A-C.
+Embodied emotion impairment in Huntington’s Disease. Cortex
+2017; 92: 44–56. doi:10.1016/j.cortex.2017.02.019
+[56]	 Wood A, Rychlowska M, Korb S, Niedenthal P. Fashioning the Face:
+Sensorimotor Simulation Contributes to Facial Expression
+Recognition. Trends Cogn Sci 2016; 20: 227–240. doi:10.1016/j.
+tics.2015.12.010
+[57]	 Price TF, Harmon-Jones E. Embodied emotion: the influence of
+manipulated facial and bodily states on emotive responses. Wiley
+Interdiscip Rev Cogn Sci 2015; 6: 461–473. doi:10.1002/wcs.1370
+[58]	 Belge J-B, Maurage P, Mangelinckx C, Leleux D, Delatte B, Constant E.
+Facial decoding in schizophrenia is underpinned by basic visual
+processing impairments. Psychiatry Res 2017; 255: 167–172.
+doi:10.1016/j.psychres.2017.04.007
+[59]	 Maurage P, Campanella S, Philippot P, Martin S, de Timary P. Face
+processing in chronic alcoholism: a specific deficit for emotional
+features. Alcohol Clin Exp Res 2008; 32: 600–606.
+doi:10.1111/j.1530-0277.2007.00611.x
+[60]	 Domes G, Schulze L, Herpertz S.C. Emotion recognition in borderline
+personality disorder-a review of the literature. J Pers Disord 2009; 23:
+6–19. doi:10.1521/pedi.2009.23.1.6
+[61]	 Parada-Fernández P, Oliva-Macías M, Amayra I, López-Paz JF, Lázaro E,
+Martínez Ó, Jometón A, Berrocoso S, García de Salazar H, Pérez M.
+Accuracy and reaction time in recognition of facial emotions in
+people with multiple sclerosis. Rev Neurol 2015; 61: 433–440
+[62]	 Berneiser J, Wendt J, Grothe M, Kessler C, Hamm AO, Dressel A.
+Impaired recognition of emotional facial expressions in patients with
+multiple sclerosis. Mult Scler Relat Disord 2014; 3: 482–488.
+doi:10.1016/j.msard.2014.02.001
+[63]	 Cecchetto C, Aiello M, D’Amico D, Cutuli D, Cargnelutti D, Eleopra R,
+Rumiati RI. Facial and bodily emotion recognition in multiple
+sclerosis: the role of alexithymia and other characteristics of the
+disease. J Int Neuropsychol Soc 2014; 20: 1004–1014. doi:10.1017/
+S1355617714000939
+[64]	 Li T, Liu Y, Li M, Qian X, Dai SY. Mask or no mask for COVID-19: A
+public health and market study. PLoS One 2020; 15: e0237691.
+doi:10.1371/journal.pone.0237691
+[65]	 Kiefer B. Masque, Covid et liberté. Rev Med Suisse 2020; 16: 1780
+[66]	 Miller FG. Liberty and Protection of Society During a Pandemic:
+Revisiting John Stuart Mill. Perspect Biol Med 2021; 64: 200–210.
+doi:10.1353/pbm.2021.0016
+[67]	 Ong JJY, Bharatendu C, Goh Y, Tang JZY, Sooi KWX, Tan YL, Tan BYQ,
+Teoh H, Ong ST, Allen DM et al. Headaches Associated With Personal
+Protective Equipment – A Cross-Sectional Study Among Frontline
+Healthcare Workers During COVID-19. Headache: The Journal of
+Head and Face Pain 2020; 60: 864–877. doi:10.1111/head.13811
+[68]	 Teo W. The “Maskne” microbiome – pathophysiology and
+therapeutics. Int J Dermatology 2021; 60: 799–809. doi:10.1111/
+ijd.15425
+[69]	 Biermann M, Schulze A, Unterseher F, Atanasova K, Watermann P,
+Krause-Utz A, Stahlberg D, Bohus M, Lis S. Trustworthiness appraisals
+of faces wearing a surgical mask during the Covid-19 pandemic in
+Germany: An experimental study. PLoS ONE 2021; 16: e0251393.
+doi:10.1371/journal.pone.0251393
+[70]	 Carbon C-C. Wearing Face Masks Strongly Confuses Counterparts in
+Reading Emotions. Front. Psychol 2020; 11: 566886. doi:10.3389/
+fpsyg.2020.566886
+[71]	 Ferrari GRA, Möbius M, van Opdorp A, Becker ES, Rinck M. Can’t Look
+Away: An Eye-Tracking Based Attentional Disengagement Training for
+Depression. Cogn Ther Res 2016; 40: 672–686. doi:10.1007/
+s10608-016-9766-0
+[72]	 Matuschek C, Moll F, Fangerau H, Fischer JC, Zänker K, van Griensven
+M, Schneider M, Kindgen-Milles D, Knoefel WT, Lichtenberg A et al.
+Face masks: benefits and risks during the COVID-19 crisis. Eur J Med
+Res 2020; 25: 32. doi:10.1186/s40001-020-00430-5
+[73]	 Darwin C, Ekman P. The expression of the emotions in man and
+animals 4th ed., 200th anniversary ed. Oxford University Press; 2009
+[74]	 Ekman P, Friesen WV. Facial Action Coding System 2019.
+doi:10.1037/t27734-000
+[75]	 Zych AD, Gogolla N. Expressions of emotions across species. Curr
+Opin Neurobiol 2021; 68: 57–66. doi:10.1016/j.conb.2021.01.003
+[76]	 Parr LA, Waller BM, Vick SJ, Bard KA. Classifying chimpanzee facial
+expressions using muscle action. Emotion 2007; 7: 172–181.
+doi:10.1037/1528-3542.7.1.172
+[77]	 Parr LA, Waller BM, Burrows AM, Gothard KM, Vick SJ. Brief
+communication: MaqFACS: A muscle-based facial movement coding
+system for the rhesus macaque. Am J Phys Anthropol 2010; 143:
+625–630. doi:10.1002/ajpa.21401
+[78]	 Grill HJ, Norgren R. The taste reactivity test. I. Mimetic responses to
+gustatory stimuli in neurologically normal rats. Brain Res 1978; 143:
+263–279. doi:10.1016/0006-8993(78)90568-1
+[79]	 Grill HJ, Norgren R. Chronically decerebrate rats demonstrate
+satiation but not bait shyness. Science 1978; 201: 267–269.
+doi:10.1126/science.663655
+[80]	 Fusar-Poli P, Placentino A, Carletti F, Landi P, Allen P, Surguladze S,
+Benedetti F, Abbamonte M, Gasparotti R, Barale F et al. Functional
+atlas of emotional faces processing: a voxel-based meta-analysis of
+105 functional magnetic resonance imaging studies. J Psychiatry
+Neurosci 2009; 34: 418–432
+[81]	 Adolphs R. Neural systems for recognizing emotion. Curr Opin
+Neurobiol 2002; 12: 169–177. doi:10.1016/s0959-4388(02)00301-x
+[82]	 Barton JJS. Face processing in the temporal lobe. Handb Clin Neurol
+2022; 187: 191–210. doi:10.1016/B978-0-12-823493-8.00019-5
+[83]	 Baillieux H, De Smet HJ, Paquier PF, De Deyn PP, Mariën P. Cerebellar
+neurocognition: insights into the bottom of the brain. . Clin Neurol
+Neurosurg 2008; 110: 763–773. doi:10.1016/j.clineuro.2008.05.013
+[84]	 Reiman EM, Lane RD, Ahern GL, Schwartz GE, Davidson RJ, Friston KJ,
+Yun LS, Chen K. Neuroanatomical correlates of externally and
+internally generated human emotion. Am J Psychiatry 1997; 154:
+918–925. doi:10.1176/ajp.154.7.918
+[85]	 Sacchetti B, Baldi E, Lorenzini CA, Bucherelli C. 2002; Cerebellar role
+in fear-conditioning consolidation. Proc Natl Acad Sci U S A 99:
+8406–8411. doi:10.1073/pnas.112660399
+[86]	 Turner BM, Paradiso S, Marvel CL, Pierson R, Boles Ponto LL, Hichwa
+RD, Robinson RG. The cerebellum and emotional experience.
+Neuropsychologia 2007; 45: 1331–1341. doi:10.1016/j.
+neuropsychologia.2006.09.023
+[87]	 Husted DS, Shapira NA, Goodman WK. The neurocircuitry of
+obsessive-compulsive disorder and disgust. Prog
+Neuropsychopharmacol Biol Psychiatry 2006; 30: 389–399.
+doi:10.1016/j.pnpbp.2005.11.024
+[88]	 Thiebaut de Schotten M, Dell’Acqua F, Forkel SJ, Simmons A, Vergani
+F, Murphy DGM, Catani M. A lateralized brain network for visuospatial
+attention. Nat Neurosci 2011; 14: 1245–1246. 10.1038/nn.2905
+[89]	 Ha D, De E, Ea Y, Dw H. Brain lateralization of emotional processing:
+historical roots and a future incorporating “dominance.”. Behavioral
+and cognitive neuroscience reviews 2005; 4:
+10.1177/1534582305276837
+S124
+
+Klingner CM, Guntinas-Lichius O. Mimik und Emotion.  Laryngo-Rhino-Otol 2023; 102: S115–S125 | © 2023. The Author(s).
+[90]	 Vuilleumier P, Mohr C, Valenza N, Wetzel C, Landis T. Hyperfamiliarity
+for unknown faces after left lateral temporo-occipital venous
+infarction: a double dissociation with prosopagnosia. Brain 2003;
+126: 889–907. doi:10.1093/brain/awg086
+[91]	 Parton A, Malhotra P, Husain M. Hemispatial neglect. J Neurol
+Neurosurg Psychiatry 2004; 75: 13–21
+[92]	 T, N., J, D., Hj, H., and R, D.  Asymmetrical activation in the human
+brain during processing of fearful faces. Current biology : CB 2005;
+15:. doi:10.1016/j.cub.2004.12.075
+[93]	 Qiu Z, Lei X, Becker SI, Pegna AJ. Neural activities during the
+Processing of unattended and unseen emotional faces: a voxel-wise
+Meta-analysis. Brain Imaging Behav 2022; 16: 2426–2443.
+doi:10.1007/s11682-022-00697-8
+[94]	 Weiskrantz L, Warrington EK, Sanders MD, Marshall J. Visual capacity
+in the hemianopic field following a restricted occipital ablation. Brain
+1974; 97: 709–728. doi:10.1093/brain/97.1.709
+[95]	 de Gelder B, Pourtois G, van Raamsdonk M, Vroomen J, Weiskrantz L.
+Unseen stimuli modulate conscious visual experience: evidence from
+inter-hemispheric summation. Neuroreport 2001; 12: 385–391.
+doi:10.1097/00001756-200102120-00040
+[96]	 de Gelder B, Vroomen J, Pourtois G, Weiskrantz L. Non-conscious
+recognition of affect in the absence of striate cortex. Neuroreport
+1999; 10: 3759–3763. doi:10.1097/00001756-199912160-00007
+[97]	 Pegna AJ, Khateb A, Lazeyras F, Seghier ML. Discriminating emotional
+faces without primary visual cortices involves the right amygdala. Nat
+Neurosci 2005; 8: 24–25. doi:10.1038/nn1364
+[98]	 Méndez-Bértolo C, Moratti S, Toledano R, Lopez-Sosa F, Martínez-
+Alvarez R, Mah YH, Vuilleumier P, Gil-Nagel A, Strange BA. A fast
+pathway for fear in human amygdala. Nat Neurosci 2016; 19:
+1041–1049. doi:10.1038/nn.4324
+[99]	 Morris JS, Ohman A, Dolan RJ. A subcortical pathway to the right
+amygdala mediating “unseen” fear. Proc Natl Acad Sci U S A 1999;
+96: 1680–1685. doi:10.1073/pnas.96.4.1680
+[100]	 Kragel PA, Čeko M, Theriault J, Chen D, Satpute AB, Wald LW,
+Lindquist MA, Feldman Barrett L, Wager TD. A human colliculuspulvinar-amygdala pathway encodes negative emotion. Neuron
+2021; 109: 2404–2412.e5. doi:10.1016/j.neuron.2021.06.001
+[101]	 Sanchez-Lopez J, Cardobi N, Pedersini CA, Savazzi S, Marzi CA. What
+cortical areas are responsible for blindsight in hemianopic patients?
+Cortex 2020; 132: 113–134. doi:10.1016/j.cortex.2020.08.007
+[102]	 Cauchoix M, Crouzet SM. How plausible is a subcortical account of
+rapid visual recognition?  Front Hum Neurosci 2013; 7: 39.
+doi:10.3389/fnhum.2013.00039
+[103]	 Pessoa L, Adolphs R. Emotion processing and the amygdala: from a
+“low road” to “many roads” of evaluating biological significance. Nat
+Rev Neurosci 2010; 11: 773–783. doi:10.1038/nrn2920
+[104]	 Kawasaki H, Kaufman O, Damasio H, Damasio AR, Granner M, Bakken
+H, Hori T, Howard MA, Adolphs R. Single-neuron responses to
+emotional visual stimuli recorded in human ventral prefrontal cortex.
+Nat Neurosci 2001; 4: 15–16. doi:10.1038/82850
+[105]	 Klingner CM, Brodoehl S, Huonker R, Witte OW. The Processing of
+Somatosensory Information Shifts from an Early Parallel into a Serial
+Processing Mode: A Combined fMRI/MEG Study. Frontiers in systems
+neuroscience 2016; 10: 103. doi:10.3389/fnsys.2016.00103
+[106]	 Klingner CM, Brodoehl S, Huonker R, Gotz T, Baumann L, Witte OW.
+2015; Parallel processing of somatosensory information: Evidence
+from dynamic causal modeling of MEG data. Neuroimage 118:
+193–198. doi:10.1016/j.neuroimage.2015.06.028
+[107]	 Ekman P, Oster H. Facial expressions of emotion. Annual Review of
+Psychology 1979; 30: 527–554. doi:10.1146/annurev.
+ps.30.020179.002523
+[108]	 Weinberger S. Airport security: Intent to deceive?  Nature 2010; 465:
+412–415. doi:10.1038/465412a
+[109]	 Hontz CR, Hartwig M.Kleinman, and Meissner, CA.  Credibility
+Assessment at Portals. Portals Committee Report 2009
+[110]	 Zeng Z, Pantic M, Roisman GI, Huang TS. A survey of affect
+recognition methods: audio, visual, and spontaneous expressions.
+IEEE Trans Pattern Anal Mach Intell 2009; 31: 39–58. doi:10.1109/
+TPAMI.2008.52
+[111]	 Bettadapura V. Face Expression Recognition and Analysis: The State
+of the Art 2012. doi:10.48550/ARXIV.1203.6722
+[112]	 Sariyanidi E, Gunes H, Cavallaro A. Automatic Analysis of Facial
+Affect: A Survey of Registration, Representation, and Recognition.
+IEEE Trans Pattern Anal Mach Intell 2015; 37: 1113–1133.
+doi:10.1109/TPAMI.2014.2366127
+[113]	 Oh Y-H, See J, Le Ngo AC, Phan RC-W, Baskaran VM. A Survey of
+Automatic Facial Micro-Expression Analysis: Databases, Methods, and
+Challenges. Front Psychol 2018; 9: 1128. doi:10.3389/
+fpsyg.2018.01128
+[114]	 Ekman P. Telling Lies: Clues to Deceit in the Marketplace, Politics, and
+Marriage Reissue Edition. WW Norton; Co: 2009
+[115]	 Porter S, ten Brinke L. Reading between the lies: identifying
+concealed and falsified emotions in universal facial expressions.
+Psychol Sci 2008; 19: 508–514. doi:10.1111/j.1467-9280.2008.02116.x
+[116]	 Frank M, Herbasz M, Sinuk K, Keller A, Nolan C. I see how you feel:
+Training laypeople and professionals to recognize fleeting emotions.
+In 2009; pp. 1–35
+[117]	 Ekman P. MicroExpression training tool (METT) 2002
+[118]	 Seidenstat P, Splane FX. Protecting airline passengers in the age of
+terrorism (ABC-CLIO) 2009
+[119]	 Guerdelli H, Ferrari C, Barhoumi W, Ghazouani H, Berretti S. Macro-
+and Micro-Expressions Facial Datasets: A Survey. Sensors (Basel)
+2022; 22: 1524. doi:10.3390/s22041524
+[120]	 Davison AK, Lansley C, Costen N, Tan K, Yap MH. SAMM:
+A Spontaneous Micro-Facial Movement Dataset. IEEE Trans. Affective
+Comput 2018; 9: 116–129. doi:10.1109/TAFFC.2016.2573832
+[121]	 Zong Y, Huang X, Zheng W, Cui Z, Zhao G. Learning From
+Hierarchical Spatiotemporal Descriptors for Micro-Expression
+Recognition. IEEE Transactions on Multimedia 2018; 20: 3160–3172.
+doi:10.1109/TMM.2018.2820321
+[122]	 Zheng H. Micro-Expression Recognition based on 2D Gabor Filter and
+Sparse Representation. J. Phys.: Conf. Ser 2017; 787: 012013.
+doi:10.1088/1742-6596/787/1/012013
+[123]	 Kim DH, Baddar WJ, Ro YM. Micro-Expression Recognition with
+Expression-State Constrained Spatio-Temporal Feature
+Representations. In Proceedings of the 24th ACM international
+conference on Multimedia MM ’16. (Association for Computing
+Machinery) 2016; pp. 382–386. doi:10.1145/2964284.2967247
+[124]	 Leong S-M, Noman F, Phan RC-W, Baskaran VM, Ting C-M. GraphEx:
+Facial Action Unit Graph for Micro-Expression Classification. In 2022
+IEEE International Conference on Image Processing (ICIP) 2022;
+3296–3300. doi:10.1109/ICIP46576.2022.9897873
+[125]	 Song B, Zong Y, Li K., Zhu J, Shi J, Zhao L. Cross-Database Micro-
+Expression Recognition Based on a Dual-Stream Convolutional Neural
+Network. IEEE Access 2022; 10: 66227–66237. doi:10.1109/
+ACCESS.2022.3185132
+S125

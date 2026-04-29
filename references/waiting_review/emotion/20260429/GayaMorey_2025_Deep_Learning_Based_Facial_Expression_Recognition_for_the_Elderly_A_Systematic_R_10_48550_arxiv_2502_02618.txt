@@ -1,0 +1,2481 @@
+Deep Learning-Based Facial Expression Recognition for the Elderly: A
+Systematic Review
+F. Xavier Gaya-Moreya,∗, Jose M. Buades-Rubioa, Philippe Palanqueb, Raquel Lacuestac, Cristina Manresa-Yeea
+aUniversitat de les Illes Balears, Carretera de Valldemossa, km 7.5, Palma, Illes Balears, 07122, Spain
+bICS-IRIT, University Toulouse 3, Paul Sabatier, 118 Rte de Narbonne, Toulouse, 31062, France
+cUniversidad de Zaragoza, C. de Pedro Cerbuna, 12, Zaragoza, Arag´on, 50009, Spain
+Abstract
+The rapid aging of the global population has highlighted the need for technologies to support elderly, particularly
+in healthcare and emotional well-being. Facial expression recognition (FER) systems offer a non-invasive means of
+monitoring emotional states, with applications in assisted living, mental health support, and personalized care. This
+study presents a systematic review of deep learning-based FER systems, focusing on their applications for the elderly
+population. Following a rigorous methodology, we analyzed 31 studies published over the last decade, addressing
+challenges such as the scarcity of elderly-specific datasets, class imbalances, and the impact of age-related facial
+expression differences. Our findings show that convolutional neural networks remain dominant in FER, and especially lightweight versions for resource-constrained environments. However, existing datasets often lack diversity
+in age representation, and real-world deployment remains limited. Additionally, privacy concerns and the need for
+explainable artificial intelligence emerged as key barriers to adoption. This review underscores the importance of
+developing age-inclusive datasets, integrating multimodal solutions, and adopting XAI techniques to enhance system
+usability, reliability, and trustworthiness. We conclude by offering recommendations for future research to bridge the
+gap between academic progress and real-world implementation in elderly care.
+Keywords: facial expression recognition, deep learning, computer vision, elderly
+1. Introduction
+The global population is aging at an unprecedented
+rate, with significant implications for multiple aspects
+of society, including healthcare, social services, and the
+economy (Bloom and Luca, 2016). According to the
+World Population Aging report (WHO, 2024), there will
+be 265 million persons aged 80 years or older by the
+mid-2030s, more than the number of infants (1 year of
+age or less), and by the late 2070s, the number of persons at ages 65 years and higher is projected to reach
+2.2 billion, surpassing the number of children (under
+age 18). This shift in demographics, driven by increasing life expectancy and declining fertility rates, particularly in developed countries, is creating a significant demand for innovations in elderly care. As older adults are
+∗Corresponding author
+Email addresses: francesc-xavier.gaya@uib.es (F. Xavier
+Gaya-Morey), josemaria.buades@uib.es (Jose M.
+Buades-Rubio), philippe.palanque@irit.fr (Philippe
+Palanque), lacuesta@unizar.es (Raquel Lacuesta),
+cristina.manresa@uib.es (Cristina Manresa-Yee)
+more susceptible to physical and cognitive health conditions, including dementia, Alzheimer’s disease, and
+other age-related illnesses (Langa, 2018), they often require specialized care. Providing such care on a large
+scale poses unique challenges, calling for the development of technologies that can assist with monitoring, diagnosing, and enhancing the well-being of this rapidly
+growing segment of the population with very specific
+needs.
+One area where technology can have a significant impact is in the real-time recognition of emotional states
+in elderly individuals.
+Facial expression recognition
+(FER) systems offer a non-invasive means to monitor emotional well-being and identify potential mental
+health issues early on (Fei et al., 2019). FER, in particular, has become an important tool in healthcare, enabling caregivers and medical professionals to better understand the emotional states of their patients and respond accordingly.
+Social robots, for example, have
+been shown to increase social engagement among the
+elderly and can help reduce loneliness and depression
+Preprint submitted to Elsevier
+February 6, 2025
+arXiv:2502.02618v1  [cs.CV]  4 Feb 2025
+
+by providing emotional support (Saez-Pons et al., 2015;
+Wang et al., 2014). By incorporating FER into these
+systems, they can interact more naturally with older
+adults, helping to recognize emotions and respond in
+ways that are empathetic and supportive. However, despite the growing need for such technology, research in
+FER focused on the elderly population remains underrepresented in the literature (Ma et al., 2019). Most existing studies on FER target adults and younger adults,
+leaving a significant gap in understanding how to optimize these systems for older adults, whose facial features may change due to age-related factors (Ko et al.,
+2021), making emotion recognition more challenging
+(Mary and Jayakumar, 2016).
+The foundation of FER systems largely stems from
+the work of psychologist Paul Ekman, who identified
+six basic facial expressions—happiness, sadness, fear,
+anger, surprise, and disgust—that are universally recognized across cultures (Ekman, 1992). These six expressions have since formed the basis of most emotion recognition systems, despite ongoing debates about
+their universality and the ability of facial expressions to
+fully capture the complexity of human emotions (Barrett et al., 2019). For older adults, FER systems have
+the potential to greatly improve quality of life by facilitating better communication between caregivers and
+patients, supporting emotional monitoring, and enabling
+more personalized care. FER can assist across an array
+of domains, including medical diagnosis and treatment
+(Grabowski et al., 2019), enabling timely intervention,
+which is particularly important for individuals suffering from cognitive decline, where emotional expression
+may be the primary means of communication.
+In recent years, Deep Learning (DL) has revolutionized the field of computer vision, including FER
+(O’Mahony et al., 2020).
+DL techniques, especially
+Convolutional Neural Networks (CNNs), have demonstrated remarkable performance in recognizing facial
+expressions by automatically learning features from
+large datasets without the need for extensive manual
+feature engineering (Li and Deng, 2022). The success of
+DL in tasks such as object detection, speech recognition,
+and natural language processing has motivated its application to FER, where it has achieved state-of-the-art
+performance. One of the key advantages of DL models
+is their ability to generalize well to complex data, such
+as facial images, which often involve variations in lighting, pose, and expression. For FER in elderly populations, DL offers the possibility of overcoming the challenges posed by age-related changes in facial structure,
+allowing for more accurate recognition across diverse
+populations and over a long period of time for the same
+population.
+However, while DL-based FER systems hold significant promise, they also come with challenges. A key
+limitation of DL models is their ”black-box” nature,
+meaning that the decision-making process of these models is often opaque to users.
+In high-stakes applications, such as healthcare, understanding how a model
+arrives at a particular prediction is crucial for building
+trust in the system and ensuring its reliability (Barredo
+Arrieta et al., 2020; Adadi and Berrada, 2018). For instance, a medical professional may need to know why a
+system predicts that a patient is exhibiting signs of depression or distress before making treatment decisions
+based on that prediction. This lack of transparency in
+DL models has led to the rise of explainable artificial
+intelligence (XAI), a field that seeks to make AI systems more interpretable and understandable to humans
+(Barredo Arrieta et al., 2020). XAI techniques aim to
+shed light on the internal workings of complex models
+by providing explanations for their predictions (Gunning et al., 2019). In the context of FER for the elderly,
+XAI methods can offer caregivers insights into why a
+system interprets certain facial expressions in specific
+ways, allowing them to better assess the emotional wellbeing of their patients. Moreover, the integration of XAI
+can enhance the development of FER systems by allowing researchers to identify and mitigate biases in the
+data or model, leading to more robust and reliable systems (Burkart and Huber, 2021). Thus, the adoption of
+XAI techniques is essential for making DL-based FER
+systems not only effective but also trustworthy and accountable. Furthermore, these techniques can provide
+insights into expression differences influenced by age.
+This paper presents a systematic review of the current state of DL-based facial expression recognition systems, with a specific focus on their applications for elderly people. The review follows the guidelines for conducting a systematic literature review (SLR) in software
+engineering, as outlined by Kitchenham and Charters
+(2007), which provide a comprehensive framework for
+ensuring rigor in methodology, structure, and best practices. The structure of the paper is as follows: first, we
+summarize previous reviews on FER, alongside background information emphasizing the effects of aging in
+FER, highlighting the need for specialized solutions for
+this population. Next, we introduce the review questions. Following that, the methodology of the review is
+detailed, including data sources, the search strategy, criteria for study selection, quality assessment procedures,
+and the process of data extraction. Subsequently, the
+list of selected studies is thoroughly analyzed to provide
+insights that address the review questions. In the dis-
+2
+
+cussion section, we reflect on the key findings, outline
+the identified strengths and weaknesses of the analyzed
+studies, and offer recommendations for future works on
+the subject. Finally, last section of the paper presents
+the conclusions drawn from the SLR.
+2. Related Work
+In this section, we examine the literature to identify
+studies that assess the impact of age on FER tasks, as
+well as prior reviews on FER. Our objective is twofold:
+first, to underscore the lack of FER reviews focused on
+specific age groups, particularly the elderly, and second,
+to provide evidence of the age bias often introduced by
+age-agnostic approaches. This analysis aims to highlight the need for age-sensitive methodologies in FER
+and to emphasize the importance of addressing this gap
+in existing reviews.
+2.1. Effects of Aging on Facial Expression Recognition
+Numerous psychological studies have explored the
+effects of aging on facial expression recognition,
+demonstrating that observers are influenced by their
+own age. For example, older individuals tend to exhibit
+deficits in decoding specific emotions (Isaacowitz and
+Stanley, 2011; Ruffman et al., 2008). However, aging
+impacts not only the observers but also the individuals
+displaying the target expressions. In this regard, F¨olster
+et al. (2014) examined how age-related changes in the
+face, such as wrinkles and folds, influence the decoding
+process of emotional expressions, concluding that the
+age of the face is a critical factor. This finding is supported by subsequent studies, such as Ko et al. (2021),
+which identified variations in facial expression intensities and muscle usage across different age groups. For
+instance, elderly individuals tend to display more negative emotions and engage more muscles in the lower
+face compared to younger people. Similarly, Grondhuis et al. (2021) used generative adversarial networks
+(GAN) to investigate the increased difficulty in identifying expressions of older adults and attributed this
+challenge to the decline in facial muscle function with
+age. S¨onmez (2019) explored the effect of training FER
+models with data from different age groups and found
+that recognizing expressions in elderly faces posed the
+greatest difficulty. A review by Atallah et al. (2019)
+on the effect of facial aging on FER identified several
+open challenges, including the scarcity of images capturing the same individuals across different ages (which
+hinders the learning of aging patterns), the tendency of
+models to overlook important facial features, and the
+considerable variation in aging effects across subjects.
+Moreover, the training of a Siamese CNN on the ElderReact and EmoReact datasets by Jannat and Canavan (2021) highlighted differences in the expressions
+of elderly individuals and children. Park et al. (2022)
+demonstrated the importance of addressing age bias in
+FER, showing that age-specific training yielded a 22%
+improvement in accuracy compared to using a non-agespecific dataset.
+Automatic FER systems are heavily influenced by the
+age of the faces in the dataset, making the choice of
+dataset critical. Datasets such as FACES (Ebner et al.,
+2010a) and LifeSpan (Minear and Park, 2004), are frequently employed (Guo et al., 2013; Mary and Jayakumar, 2016; Wu et al., 2015; Wang et al., 2015; Al-
+Garaawi and Morris, 2016; Lopes et al., 2018; S¨onmez,
+2019; Caroppo et al., 2017, 2019, 2020; Al-Garaawi
+et al., 2022), largely due to their inclusion of subjects
+from a broad age range, which facilitates the development of age-invariant models. To address the effects of
+aging, several strategies have been proposed. One approach involves removing aging features through facial
+smoothing techniques that eliminate age-related details
+without compromising essential structural information
+(Guo et al., 2013; Mary and Jayakumar, 2016). Another
+method incorporates age information during training using Bayesian networks, while marginalizing over age
+during testing (Wu et al., 2015; Wang et al., 2015). Al-
+Garaawi and Morris (2016) first analyzed age-related
+differences in facial characteristics, then later incorporated age as a key feature in their model (Al-Garaawi
+et al., 2022), using a weighted combination of age group
+estimators and age-specific expression recognizers.
+Other studies have focused on specific age groups
+rather than addressing aging effects comprehensively.
+Datasets utilized in such approaches include ElderReact
+(Ma et al., 2019) and Tsinghua (Yang et al., 2020) for elderly subjects, CK+ (Lucey et al., 2010), JAFFE (Lyons
+et al., 2020a), AFEW (Dhall et al., 2007), and FER-
+2013 (Goodfellow et al., 2013) for adults, and LIRIS
+(Khan et al., 2019), CAFE (LoBue and Thrasher, 2014),
+DEFSS (Meuwissen et al., 2017), and EmoReact (Nojavanasghari et al., 2016) for children, among others.
+2.2. Summary of Previous Reviews
+Mining the literature, we identified several existing
+reviews addressing facial expression recognition. Although most of these do not focus specifically on elderly populations and therefore do not consider the effects of human aging discussed in the previous section,
+they do provide valuable insights into the datasets and
+3
+
+techniques commonly employed in FER. In this section, we analyze relevant reviews and surveys from the
+past decade, highlighting that many critical aspects addressed in our current study have not been thoroughly
+examined in prior reviews.
+To begin with, it is important to consider the methodological rigor of prior review processes. A systematic
+review methodology promotes a thorough and unbiased
+selection and analysis of studies by precisely defining
+information sources, search strategies, study selection
+criteria, and data extraction procedures. Additionally,
+quality assessment steps are essential to ensure that only
+high-quality, relevant studies are included. However,
+only 12 of the 41 reviews listed in Table 1 followed a
+systematic review process. Kitchenham and Charters
+(2007) also emphasize the importance of analyzing existing reviews in the field to identify gaps in the literature and avoid duplicate efforts. Yet, only 11 studies
+accounted for previous reviews, as illustrated in the table.
+The main distinction between the current study and
+earlier reviews lies in our focus on FER applications
+for the elderly and deep learning tools. Only two previous reviews have concentrated specifically on elderly
+populations. Labzour et al. (2023) discussed 11 studies
+on elderly-focused FER, covering both traditional and
+deep learning methods and their associated datasets. Fei
+et al. (2019) also reviewed FER in elderly populations,
+primarily as a tool for early diagnosis of mild cognitive impairment. However, their work lacks coverage of
+recent studies from the last five years and focuses primarily on traditional computer vision approaches rather
+than DL-based methods. Consequently, there is a gap in
+the literature regarding recent DL-based FER research
+specific to elderly individuals.
+Ten reviews were identified that discuss DL in FER
+(Ghayoumi, 2017; Chinchanikar, 2019; Sari et al., 2020;
+Li and Deng, 2022; Abdullah and Abdulazeez, 2021;
+Liang and Dong, 2023; Pinto et al., 2023; Boughanem
+et al., 2023; Kumari et al., 2024). Of these, only the
+work by Pinto et al.
+employed a systematic review
+process, and none of these reviews examined previous
+FER reviews, which may have contributed to overlapping lists of studies. While many of these reviews included extensive lists of commonly used datasets–an
+important consideration in DL-based approaches–none
+were focused on elderly populations, nor did they address critical aspects for the current work such as deployment in real-world environments, privacy preservation, or explainable AI techniques.
+Three critical aspects—deployment in real–world
+settings, privacy preservation, and XAI techniques–
+remain largely unexplored in prior reviews.
+Deployment in real-world scenarios was examined in only two
+reviews, which described applications involving mobile
+apps and robots (Leong et al., 2023) and smart home integration (Aziz et al., 2022). Although ethical concerns
+regarding privacy were noted in two reviews (Kaur and
+Kumar, 2024; Almasoudi et al., 2023), only one review
+explored this issue in depth (Adyapady and Annappa,
+2023). Furthermore, despite the growing importance of
+XAI, this area was not thoroughly investigated in any
+review, even though some listed it as a future challenge
+(Mohana and Subashini, 2024; Kaur and Kumar, 2024;
+Patel et al., 2020).
+Given the evident lack of reviews focused on elderly
+populations using DL-based techniques for FER, the
+present study aims to address this gap. Additionally, as
+few reviews have examined factors critical for the practical deployment of FER systems in real-world environments, and none have explored XAI in detail, our work
+may offer valuable insights for the development of practical, reliable applications.
+3. Review Questions
+We identified two primary review questions, each associated with multiple secondary questions, as shown in
+Table 3.
+RQ1 aims to find which deep learning techniques are
+applied specifically to facial expression recognition in
+elderly populations, and understand how are they used.
+The associated secondary questions delve into particular facets of these techniques, such as the prevalent architectures and datasets. Additionally, the questions examine data characteristics (e.g., image or video format,
+and multimodal integration) and assess the role of facial
+landmarks and action units, which are common features
+in FER research.
+In contrast, RQ2 focuses on practical considerations
+for deploying FER systems for elderly users in realworld settings. We investigate factors crucial to successful deployment, including the potential impact of agerelated biases in training data that could lead to suboptimal performance in real-life scenarios. We also assess
+privacy and economic considerations.
+Finally, given
+the critical need for transparency and trust in DL applications within healthcare settings (Adadi and Berrada,
+2018), we explore the extent to which explainable AI
+techniques are integrated into these systems.
+4
+
+Process
+Focus
+Researched data
+Systematic
+Prev. reviews
+Elderly
+DL
+Datasets
+Multimodality
+Deployment
+Privacy
+XAI
+Ghayoumi (2017)
+✓
+Asad et al. (2017)
+Ko (2018)
+✓
+✓
+Rajeswari and IthayaRani (2018)
+Liliana and Basaruddin (2018)
+Fei et al. (2019)
+✓
+Bhattacharya and Gupta (2019)
+Martinez et al. (2019)
+✓
+✓
+Canedo and Neves (2019)
+✓
+✓
+✓
+Chinchanikar (2019)
+✓
+✓
+Vyas et al. (2019)
+✓
+Sari et al. (2020)
+✓
+✓
+Li and Deng (2022)
+✓
+✓
+✓
+Patel et al. (2020)
+✓
+✓
+Alexandre et al. (2020)
+✓
+✓
+✓
+✓
+Pranathi et al. (2021)
+✓
+Dalvi et al. (2021)
+✓
+✓
+✓
+✓
+Revina and Emmanuel (2021)
+✓
+Moolchandani et al. (2021)
+✓
+Ullah and Tian (2021)
+✓
+✓
+Muazu et al. (2021)
+✓
+Abdullah and Abdulazeez (2021)
+✓
+Htay (2021)
+✓
+Jain et al. (2021)
+✓
+✓
+Modi and Patel (2022)
+Canal et al. (2022)
+✓
+✓
+✓
+Aziz et al. (2022)
+✓
+✓
+✓
+Maithri et al. (2022)
+✓
+✓
+✓
+Khan (2022)
+✓
+✓
+Guerdelli et al. (2022)
+✓
+✓
+Adyapady and Annappa (2023)
+✓
+Liang and Dong (2023)
+✓
+✓
+✓
+Labzour et al. (2023)
+✓
+✓
+Pinto et al. (2023)
+✓
+✓
+✓
+Boughanem et al. (2023)
+✓
+✓
+✓
+Leong et al. (2023)
+✓
+✓
+✓
+Almasoudi et al. (2023)
+✓
+Kumari et al. (2024)
+✓
+✓
+Kaur and Kumar (2024)
+✓
+✓
+✓
+✓
+Mohana and Subashini (2024)
+✓
+✓
+✓
+This study
+✓
+✓
+✓
+✓
+✓
+✓
+✓
+✓
+✓
+Table 1: Comparison of previous reviews with our work, considering the key aspects of the current systematic review. The columns represent
+the following criteria, from left to right: whether the review is systematic; it includes an exploration of prior reviews; it focuses on the elderly
+population; it focuses on DL-based approaches; it provides a list of datasets; it investigates the use of multimodal data; it examines the deployment
+of FER systems in real-world environments; it considers privacy a critical issue; and it discusses the application of XAI techniques in FER systems.
+5
+
+ID
+Research Question
+RQ1
+What DL techniques are applied for FER in elderly populations?
+RQ1.1
+Which architectures are most commonly used?
+RQ1.2
+Which datasets are most frequently employed?
+RQ1.3
+What are the primary characteristics of the data utilized?
+RQ1.4
+To what extent are facial landmarks and action units used?
+RQ1.5
+What other tasks are commonly computed alongside FER?
+RQ2
+How can these techniques be effectively deployed in real-world environments?
+RQ2.1
+Are proposed solutions being deployed?
+RQ2.2
+Are aging biases addressed?
+RQ2.3
+Is privacy a primary concern?
+RQ2.4
+Is economic cost a primary consideration?
+RQ2.5
+Are XAI techniques employed?
+Table 2: Primary and secondary research questions used for this SLR.
+4. Review Methods
+In this section, we provide a detailed description of
+the systematic review process, adhering to the guidelines outlined by Kitchenham and Charters (2007).
+First, we present the data sources and search strategy
+employed to compile the initial list of studies. Next,
+we explain the quality assessment and study selection
+procedures used to exclude low-quality and irrelevant
+works.
+Lastly, we outline the information extracted
+from each selected study.
+4.1. Data sources
+To ensure a comprehensive collection of relevant
+studies, we utilized five distinct digital databases. SCO-
+PUS and Web of Science (WOS) were selected for their
+broad interdisciplinary coverage, while the ACM Digital Library, IEEE Xplore Digital Library, and PubMed
+were chosen for their focus on computer science, technology, and biomedical research, respectively. Figure 1
+illustrates the distribution of studies retrieved from each
+source. Notably, the ACM Digital Library yielded the
+highest number of studies among the five databases.
+4.2. Search strategy
+To ensure a more precise search in the SCOPUS
+database, we limited our query to the title, abstract, and
+keywords, as searching the full text yielded a significant number of irrelevant results. In contrast, full-text
+searches were performed in the other databases. Although the query strings were adjusted according to the
+specific requirements of each search engine, they consistently included four key concepts: facial expression
+recognition, computer vision, elderly population, and
+Figure 1:
+Distribution of publications retrieved across the five
+databases.
+deep learning. Each concept was paired with multiple
+synonyms and, where applicable, the ”*” wildcard was
+used to capture various word terminations.
+The search was constrained to publications from the
+past ten years, specifically from 2015 through September 2024, inclusive. Figure 2 presents the number of
+related studies identified by year, demonstrating a clear
+upward trend, particularly over the last three years.
+4.3. Quality assessment
+To assess the quality of the included studies, we
+followed the guidelines proposed by Kitchenham and
+Charters (2007). The evaluation was based on four primary criteria:
+6
+
+Figure 2: Number of publications found from 2015 to September 2024
+(both included).
+• Type of publication. Since conference proceedings may not always undergo a rigorous peerreview process, unlike journal articles, the type of
+publication was considered as a quality indicator.
+• Reproducibility. This criterion assesses whether
+the work can be replicated, either through detailed
+explanations of the methods used, by providing access to the programming code, or by making the
+collected dataset publicly available.
+• Benchmarking
+with
+the
+state-of-the-art.
+Whether the proposed methods are compared with
+prior works under similar conditions, such as using
+the same performance metrics, dataset splits, and
+methodologies.
+• Performance on public datasets.
+The use of
+publicly available datasets is important, as it allows other researchers to compare their results with
+those of prior studies in a standardized manner.
+By applying these criteria, we were able to filter out
+studies that exhibited potential bias. This quality assessment was integrated into the study selection process,
+further detailed in Section 4.4, and the list of extracted
+data from each study, outlined in Section 4.5.
+4.4. Study selection
+After gathering the search results from multiple
+databases, totaling 285 studies, we identified and removed 16 duplicate entries. The remaining studies were
+then screened individually to exclude publications that
+were not directly relevant to the research topics. Additionally, we eliminated works that did not meet our
+inclusion criteria, including those not written in English
+or Spanish, those without full-text access, or those that
+did not meet the quality standards outlined in Section
+4.3.
+Figure 3 illustrates the progression of the selection
+process, from the initial collection of studies to the final screening. Ultimately, 31 studies were selected for
+inclusion in this review, of which 15 were journal articles, and 16 were conference proceedings. As stated
+by Kitchenham and Charters (2007), ”publication bias
+can lead to systematic bias in systematic reviews unless
+special efforts are made to address this issue”. Since
+scanning conference proceedings is a standard search
+strategy to address publication bias, they were retained
+for analysis among the relevant studies.
+4.5. Data extraction and synthesis
+To synthesize the relevant studies, different information was extracted from each one. The gathered fields
+are shown in Figure 4.
+5. Results
+The complete list of relevant studies is provided in
+Table 3.
+In this section, we present a detailed analysis of these studies to address the research questions
+posed. For improved readability, the results have been
+organized into distinct subsections, each addressing a
+review question.
+5.1. RQ1. DL techniques for FER in elderly populations
+Next, we present the findings related to the first research question, focusing on common DL architectures,
+datasets, data characteristics, the use of facial landmarks
+and action units, and related tasks in performing FER
+for elderly populations.
+5.1.1. RQ1.1. Deep learning architectures
+Table 4 provides an overview of the deep learningbased methods employed in the relevant studies. The
+table highlights the diversity in model architectures and
+their applications to various tasks within the facial expression recognition pipeline.
+The methods listed in the table were used for a wide
+range of tasks. The most common was FER itself, where
+models included a final classification layer to predict facial expressions. Convolutional models such as VGG,
+Inception, and ResNet were often employed to extract
+complex features, which were later used for classification tasks (Zhang et al., 2020; Bi et al., 2022; Huang
+et al., 2024b).
+Object detectors, including Faster R-
+CNN, YOLO, SSD, MTCNN, and SCRFD, were used
+7
+
+Figure 3: Summary of the systematic review process: collection of publications from the five databases, duplicate removal, and final study selection.
+Figure 4: Information extracted from each relevant study.
+in pre-processing steps to localize and crop faces before performing FER (Jiang et al., 2022; Gaya-Morey
+et al., 2024). Notably, Faster R-CNN, YOLO, and SSD
+were also used by Khajontantichaikun et al.
+(2022;
+2023) to simultaneously perform object detection and
+FER. In addition to FER, some studies focused on auxiliary tasks such as facial landmark estimation, for which
+MobileNet, SPIGA, MTCNN, FaceReader, and Open-
+Face 2.0 were employed (Zhu et al., 2024; Chen and
+Chen, 2023; Gaya-Morey et al., 2024). Among these,
+FaceReader and OpenFace 2.0 also supported action
+unit estimation. Other applications included emotion
+recognition from text, as demonstrated by Carolis et al.
+(2024), who used GPT-4 for emotion classification and
+text generation in a social robot.
+Gaya-Morey et al.
+(2024) also explored the integration of multiple tasks
+in a social robot, among which U2-Net and MiVOLO
+were used for object segmentation and for age and gender estimation, respectively. To address privacy concerns, Huang et al. (2024a) employed GAN to transform
+images and FaceQnet to estimate image quality. GAN
+were also used by Zhu et al. (2024) to generate a FER
+dataset comprising multiple age groups.
+Three primary families of architectures were frequently employed: CNNs, recurrent neural networks
+(RNNs), and Transformers. Convolutional neural networks were the most widely used, appearing in 27 models across 22 of the reviewed studies.
+These feedforward architectures are highly effective for computer
+vision tasks and were often used as either end-to-end
+FER solutions (Petrou et al., 2023; Gaya-Morey et al.,
+2024) or feature extractors (Caroppo et al., 2020; Sree-
+8
+
+Study
+Elderly
+Aging
+effects
+Video
+Economic
+cost
+Deployed
+XAI
+Multimodal
+Privacy
+Gaya-Morey et al. (2024)
+✓
+✓
+✓
+Huang et al. (2024a)
+✓
+✓
+Huang et al. (2024b)
+✓
+✓
+Jayanthi et al. (2024)
+Carolis et al. (2024)
+✓
+✓
+✓
+✓
+✓
+✓
+Zhu et al. (2024)
+✓
+✓
+Anand et al. (2023)
+✓
+✓
+✓
+✓
+Chen and Chen (2023)
+✓
+✓
+Khajontantichaikun et al. (2023)
+✓
+Petrou et al. (2023)
+✓
+Bi et al. (2022)
+✓
+Pic´on et al. (2022)
+✓
+Santoso and Kusuma (2022)
+Fahn et al. (2022)
+✓
+✓
+Fan et al. (2022)
+✓
+✓
+Fei et al. (2022)
+✓
+✓
+Jiang et al. (2022)
+Khajontantichaikun et al. (2022)
+✓
+Sreevidya et al. (2022)
+✓
+✓
+✓
+Kim et al. (2021)
+✓
+✓
+Jannat and Canavan (2021)
+✓
+✓
+Caroppo et al. (2020)
+✓
+✓
+✓
+✓
+Sharma et al. (2020)
+✓
+✓
+✓
+✓
+Yan et al. (2020)
+✓
+✓
+Zhang et al. (2020)
+✓
+Rokkones et al. (2019)
+✓
+✓
+Caroppo et al. (2018)
+✓
+✓
+Yang et al. (2018)
+✓
+✓
+Uddin et al. (2017b)
+✓
+✓
+Uddin et al. (2017a)
+✓
+✓
+Wu et al. (2015)
+✓
+✓
+✓
+Table 3: Relevant studies identified in the systematic review. The columns, from left to right, indicate whether the study includes experiments
+with elderly users, examines the effects of age on FER, utilizes the temporal dimension, considers economic cost, integrates the solution into a
+framework or deployment, employs XAI tools, incorporates additional modalities, and implements privacy protection methods.
+vidya et al., 2022).
+On the other hand, RNNs such
+as GRU and LSTM were used in only four studies,
+where they excelled in handling temporal information
+for video-based FER (Zhang et al., 2020) or sequential non-visual data (Sharma et al., 2020). Transformers,
+known for their attention mechanisms, have gained traction in recent years. Nine models from the table incorporated attention-based methods, appearing in six studies. Transformers were used for tasks ranging from FER
+in images (Santoso and Kusuma, 2022; Huang et al.,
+2024a) to multimodal analysis (Fan et al., 2022) and hybrid convolutional-transformer models like the Convolutional Vision Transformer (CvT).
+A few studies incorporated unsupervised learning
+phases in their FER pipelines. Uddin et al. (2017a;
+2017b) used deep belief networks (DBNs) with an initial unsupervised training phase for feature extraction
+learning, followed by supervised fine-tuning.
+Similarly, Caroppo et al. (2018) utilized a Stacked Denoising Auto-Encoder (SDAE), which first learned to reconstruct input data in an unsupervised phase before being
+fine-tuned for FER.
+To enable deployment on low-resource devices or
+ensure real-time processing, some studies adopted
+lightweight architectures. MobileNet (Fei et al., 2022;
+Gaya-Morey et al., 2024) was designed specifically for
+mobile applications, while EfficientNet (Carolis et al.,
+2024; Gaya-Morey et al., 2024; Santoso and Kusuma,
+9
+
+Reference
+Model/Software
+Task/s
+Studies
+Liu and Deng (2015)
+VGG
+FER, feat. ext.
+6
+Szegedy et al. (2015)
+Inception
+FER, feat. ext.
+5
+LeCun et al. (1999)
+CNN
+FER, feat. ext.
+5
+Tan and Le (2020a)
+EfficientNet
+FER, feat. ext.
+3
+Chollet (2017)
+Xception
+FER
+3
+Howard et al. (2017)
+MobileNet
+FER, FR, feat. ext., landmarks
+3
+Ren et al. (2017)
+Faster R-CNN
+FER, OD
+3
+He et al. (2016a)
+ResNet
+FER, FR, feat. ext.
+3
+Redmon et al. (2016)
+YOLO
+FER, OD
+3
+Zhang et al. (2016)
+MTCNN
+OD, landmarks
+3
+Noldus Information Technology b.v (2021)
+FaceReader
+FER, landmarks, AUs
+2
+Liu et al. (2016)
+SSD
+FER, OD
+2
+Goodfellow et al. (2014)
+GAN
+dataset gen., privacy prot.
+2
+Krizhevsky et al. (2017)
+AlexNet
+FER
+2
+Hinton et al. (2006)
+DBN
+FER
+2
+Hochreiter and Schmidhuber (1997)
+LSTM
+FER
+2
+Kuprashevich and Tolstykh (2024)
+MiVOLO
+age, gender
+1
+Ruan et al. (2024)
+SCaTNet
+feat. ext.
+1
+OpenAI et al. (2024)
+GPT-4
+text emotion recognition, chatbot
+1
+Kabir et al. (2023)
+SpinalNet
+FER
+1
+Ramis et al. (2022)
+SilNet
+FER
+1
+Liu et al. (2022)
+Swin-Transformer
+FER
+1
+Fan et al. (2022)
+FER-PCVT
+FER
+1
+Prados-Torreblanca et al. (2022)
+SPIGA
+landmarks
+1
+Dosovitskiy et al. (2021)
+ViT
+feat. ext.
+1
+Wang et al. (2021)
+PvT
+FER
+1
+Wu et al. (2021)
+CvT
+FER
+1
+Guo et al. (2021)
+SCRFD
+OD
+1
+Cao et al. (2021)
+OpenPose
+pose estimation
+1
+Qin et al. (2020)
+U2-Net
+OS
+1
+Hernandez-Ortega et al. (2019)
+FaceQnet
+facial image quality
+1
+Baltrusaitis et al. (2018)
+OpenFace 2.0
+landmarks, AUs
+1
+Microsoft Azure (2017)
+Microsoft Face
+FER
+1
+Vaswani et al. (2017)
+Transformer
+FER
+1
+Amazon (2016)
+Amazon Rekognition
+FER
+1
+Iandola et al. (2016)
+SqueezeNet
+OD
+1
+Sighthound Inc (2015)
+Sighthound
+FER
+1
+Li et al. (2015)
+WeiNet
+FER
+1
+Koch et al. (2015)
+Siamese NN
+FER
+1
+Song et al. (2014)
+SongNet
+FER
+1
+Cho et al. (2014)
+GRU
+FER
+1
+Megvii Technology (2012)
+Face++
+FER
+1
+Vincent et al. (2010)
+SDAE
+feat. ext.
+1
+Pearl (1988)
+Bayesian Network
+FER
+1
+Hopfield (1982)
+RNN
+FER
+1
+Table 4: Deep learning methods and software, along with the tasks they were applied to and the number of studies in which they were utilized.
+The following acronyms and abbreviations where used for conciseness: facial expression recognition (FER), feature extraction (feat. ext.), object
+detection (OD), facial recognition (FR), object segmentation (OS).
+10
+
+2022) offered scalable performance with optimized resource usage. Similarly, the SqueezeNet Iandola et al.
+(2016) achieved the same accuracy than AlexNet with
+50 times less parameters, thanks to their proposed Fire
+modules. The mini-Xception network (Yan et al., 2020;
+Petrou et al., 2023), a compact version of Xception,
+drastically reduced the number of trainable parameters,
+making it ideal for lightweight FER solutions.
+Commercial software also played a role in some
+studies.
+Kim et al. (2021) investigated the age bias
+in FER tools like Amazon Rekognition, Face++, Microsoft Face, and Sighthound, revealing significant performance drops when analyzing elderly faces. Open-
+Face 2.0 was employed by Sharma et al. (2020) for facial landmarks and action unit detection, which were
+subsequently used by DL models for FER. FaceReader,
+capable of estimating facial landmarks, action units,
+and expressions, was examined by Zhu et al. (2024),
+who defined expected outputs for smiling images. Chen
+and Chen (2023) further integrated FaceReader into an
+emotion-reading care environment.
+The number and type of output classes in FER models varied across studies. As shown in Figure 5, most
+studies focused on the six basic facial expressions–
+happiness, sadness, anger, surprise, fear, and disgust–
+along with the neutral expression. Additional expressions such as contempt (Zhang et al., 2020; Rokkones
+et al., 2019; Fan et al., 2022; Jayanthi et al., 2024), sleep,
+calmness (Chen and Chen, 2023), strain, tiredness, pain
+(Fan et al., 2022), excitement, and frustration (Anand
+et al., 2023) were also explored in a smaller number of
+studies.
+Figure 5: Distribution of FER classes observed in the analyzed studies.
+Lastly, several studies employed traditional computer vision approaches coupled with deep learning
+for facial expression recognition. Support vector machines (SVMs) were frequently utilized for facial expression classification after feature extraction through
+other methods (Fei et al., 2022; Caroppo et al., 2020).
+Principal component analysis was applied in some studies to reduce data dimensionality prior to classification
+(Uddin et al., 2017a; Bi et al., 2022).
+For face detection and cropping during pre-processing, the Viola-
+Jones algorithm was employed in multiple works (Fei
+et al., 2022; Gaya-Morey et al., 2024). Additionally, a
+variety of feature descriptors were implemented across
+studies, including local binary patterns (Caroppo et al.,
+2020; Zhang et al., 2020; Uddin et al., 2017a), local directional strength patterns (Rokkones et al., 2019), and
+the Geneva minimalistic acoustic parameter set (Sharma
+et al., 2020).
+5.1.2. RQ1.2. Datasets
+Table 5 provides an overview of the datasets used
+for training in the FER tasks identified in the reviewed
+studies. As highlighted, these datasets vary significantly
+in terms of annotations, data type, classes, and sample
+sizes.
+Several datasets were automatically collected from
+the Internet, including FER-2013, ElderReact, AffectNet, EmoReact, Jafar Hussain, CIFE, and CMU-
+MOSEI. This collection approach enables the creation
+of large datasets, such as FER-2013 (35,887 samples)
+and AffectNet (440,000 samples).
+However, these
+datasets often suffer from issues such as poor expression
+annotations (Mejia-Escobar et al., 2023), the presence
+of duplicate samples (Manresa-Yee et al., 2023), and
+the absence of demographic information about users.
+Conversely, datasets collected under controlled conditions offer advantages such as user selection based on
+demographic criteria, multiple samples from the same
+individual, and controlled lighting conditions. For example, FACES and LifeSpan emphasize age diversity,
+supporting cross-age group studies, while ElderReact
+and EmoReact target elderly individuals and children,
+respectively. Additionally, UIBVFED stands out as the
+only synthetically generated dataset, allowing for precise control over the facial expressions of avatars, as
+well as their demographic characteristics, including age,
+gender, and ethnicity.
+Although the majority of datasets are in image format, several are video-based (Lucey et al., 2010; Ma
+et al., 2019; Nojavanasghari et al., 2016; Zhao et al.,
+2011; Livingstone and Russo, 2018; Bagher Zadeh
+et al., 2018; Zhalehpour et al., 2017). Notably, MMI
+(Pantic et al., 2005) offers samples in both image and
+video formats. Video-based datasets enable the incorporation of temporal information into FER tasks and
+11
+
+Reference
+Dataset
+Users
+Ages
+Type
+Samples
+Classes
+Studies
+Goodfellow et al. (2013)
+FER-2013
+N/A
+N/A
+Image
+35,887
+7
+7
+Ebner et al. (2010b)
+FACES
+171
+19-80
+Image
+2,052
+6
+6
+Lucey et al. (2010)
+CK+
+123
+18-50
+Video
+593
+7
+5
+Minear and Park (2004)
+LifeSpan
+576
+18-93
+Image
+1,354
+8
+4
+Ma et al. (2019)
+ElderReact
+46
+N/A
+Video
+1,323
+6
+3
+Mollahosseini et al. (2019)
+AffectNet
+N/A
+N/A
+Image
+440,000
+7
+3
+Nojavanasghari et al. (2016)
+EmoReact
+63
+4-14
+Video
+1,102
+8
+3
+Zhao et al. (2011)
+Oulu-CASIA
+80
+23-58
+Video
+480
+6
+2
+Langner et al. (2010)
+RaFD
+49
+N/A
+Image
+5,880
+8
+2
+Fei et al. (2022)
+CAD
+N/A
+N/A
+Image
+165
+5
+1
+Fei et al. (2022)
+CEPD
+N/A
+N/A
+Image
+13,692
+6
+1
+Hussain (2021)
+Jafar Hussain
+N/A
+N/A
+Image
+679
+5
+1
+Yang et al. (2020)
+TFED
+110
+19-76
+Image
+1128
+8
+1
+Oliver and Amengual Alcover (2020)
+UIBVFED
+20
+20-80
+Image
+640
+6
+1
+Lyons et al. (2020b)
+JAFFE
+10
+N/A
+Image
+219
+7
+1
+Li et al. (2018)
+CIFE
+N/A
+N/A
+Image
+14,756
+7
+1
+Livingstone and Russo (2018)
+RAVDESS
+24
+21-33
+Video
+7,356
+8
+1
+Bagher Zadeh et al. (2018)
+CMU-MOSEI
+1,000
+N/A
+Video
+3,228
+6
+1
+Zhalehpour et al. (2017)
+BAUM-1s
+31
+19-65
+Video
+1,184
+8
+1
+Pantic et al. (2005)
+MMI
+75
+19-62
+Video+Image
+848+740
+6
+1
+Lundqvist et al. (1998)
+KDEF
+70
+20-30
+Image
+4,900
+7
+1
+Table 5: FER datasets used in the studies included in this review. The columns, from left to right, display the number of users, their age range,
+whether the dataset contains image or video data, the total number of samples, the number of facial expression classes, and the number of relevant
+studies that used each dataset.
+are particularly valuable for systems requiring real-time
+processing.
+Most datasets include the six basic facial expressions (happiness, sadness, anger, fear, disgust, and surprise). Additionally, the neutral expression is included
+in twelve datasets, while contempt is present in three.
+Other, less common expressions are found in only one
+dataset each, such as boredom (Zhalehpour et al., 2017),
+content (Yang et al., 2020), calmness (Livingstone and
+Russo, 2018), curiosity, uncertainty, excitement, frustration (Nojavanasghari et al., 2016), annoyance, and
+grumpiness (Minear and Park, 2004).
+Instead of relying on the datasets listed in Table 5,
+several of the analyzed studies chose to create custom
+datasets tailored to their specific research needs. These
+efforts provided unique opportunities to address specialized populations or expressions that were not wellrepresented in existing datasets. For instance, Uddin et
+al. (2017a; 2017b) developed a dataset containing 40
+close-up RGB-D videos for each of the six basic facial
+expressions. This approach leveraged depth information
+to improve facial expression recognition while maintaining user privacy. Similarly, Khajontantichaikun et
+al. (2022; 2023) curated a dataset of 900 images of Thai
+elderly individuals, with 150 samples per basic expression. These samples were collected from online media and annotated by five human evaluators. Zhu et al.
+(2024), on the other hand, employed a generative adversarial network to synthesize 20 images for each age
+group: children, young adults, middle-aged adults, and
+elderly individuals.
+Several studies focused on populations with specific
+medical or psychological conditions.
+For instance,
+Huang et al. (2024a) introduced the Parkinson’s disease facial expression dataset, which comprises RGB
+images of the six basic expressions from 95 patients
+with Parkinson’s disease. Fan et al. (2022) constructed
+a dataset of 1,302 videos from stroke patients aged 18-
+85, capturing not only basic expressions (happiness,
+sadness, surprise, and anger) but also four conditionspecific expressions: painful, strained, tired, and neutral.
+Additionally, this dataset included facial action
+coding system (FACS) labels, making it valuable for detailed facial action unit analysis. Sharma et al. (2020)
+gathered 140 videos from 70 elderly participants aged
+65 and above, 28 of whom were identified as apathetic,
+enabling the study of apathy recognition in older adults.
+To address the issue of imbalanced data, several techniques are available, such as rebalancing through undersampling or oversampling and employing weighted
+loss functions. However, despite many studies using
+imbalanced datasets, such as AffectNet and LifeSpan,
+12
+
+the majority either did not apply these methods or did
+not mention their use. Among the studies that explicitly addressed the imbalance, four utilized undersampling techniques (Sreevidya et al., 2022; Wu et al., 2015;
+Huang et al., 2024b; Fahn et al., 2022), while three
+opted to remove minority classes altogether (Yang et al.,
+2018; Petrou et al., 2023; Anand et al., 2023).
+5.1.3. RQ1.3. Data characteristics
+Seven studies leveraged the temporal dimension of
+visual data to perform facial expression recognition,
+while the remaining studies were limited to using static
+images. Most video-based solutions adopted a common
+approach: extracting features from individual frames
+and employing an RNN to capture temporal information.
+For instance, Zhang et al. (2020) utilized the
+VGG16 network for feature extraction, followed by
+a long short-term memory (LSTM) network to process sequential data. Similarly, Rokkones et al. (2019)
+employed local directional strength patterns as frame
+descriptors, which were then fed into an RNN. Bi
+et al. (2022) adopted a comparable methodology, using GoogleNet for feature extraction, applying principal component analysis to reduce data dimensionality,
+and processing the resulting data with a Bayesian probabilistic framework. In the same line, Sreevidya et al.
+(2022) extracted features from multiple video frames
+using a convolutional neural network and utilizing an
+LSTM to handle the temporal aspects.
+Other studies explored variations of this approach
+to optimize performance. For example, Sharma et al.
+(2020) combined visual features extracted by VGG16
+with action units and facial landmarks obtained via
+OpenPose 2.0, processing the sequential data with a
+gated recurrent unit (GRU). While most studies relied
+on RNNs to model sequential information, Anand et al.
+(2023) took a different route by employing a multimodal Transformer architecture (Vaswani et al., 2017)
+that integrated visual data, audio, and text. Carolis et al.
+(2024), despite performing FER on still images, incorporated temporal information by calculating the frequency of different expressions over a defined time period. They determined the final expression by selecting
+the most frequently occurring one, giving greater weight
+to the most recent frames.
+Only four studies opted for multimodal solutions,
+integrating non-visual data into the facial expression
+recognition pipeline. These approaches demonstrated
+the potential of combining modalities to enhance predictive performance.
+Sharma et al. (2020) investigated apathy detection
+from a multimodal perspective. For the audio modality, they extracted features using the Geneva minimalistic acoustic parameter set, which includes 18 lowlevel descriptors based on frequency, energy, and spectral parameters. These features were processed through
+fully connected layers to learn meaningful representations. The audio features were then concatenated with
+visual features, action units, and facial landmarks before being passed through additional fully connected
+layers. Comparing their multimodal model with unimodal approaches, they observed significant improvements in prediction accuracy when leveraging multiple
+modalities.
+Sreevidya et al. (2022) proposed two distinct methods for processing audio signals.
+The first approach
+used a one-dimensional representation, extracting features such as prosody, spectral coefficients, and voice
+quality characteristics (e.g., tenseness and creakiness)
+and feeding them into a 1-D convolutional neural network. The second approach converted the audio signals into 2-D spectrograms, which were processed using the Inception-V2 (Szegedy et al., 2016) network.
+For the visual modality, a separate CNN was employed
+to compute FER. The final multimodal model fused intermediate layers from both modalities, with the fusion
+layers determined through a grid-based search. Results
+showed that combining features from both audio and visual data significantly improved overall performance.
+Anand et al. (2023) introduced text as a third modality in their FER pipeline, proposing a multimodal Transformer network. The architecture consisted of modalityspecific peer networks that independently learned discriminative features from each modality. These features
+were then fused by minimizing the Kullback-Leibler divergence between peer networks. This design enabled
+the network to learn mode-specific patterns while effectively leveraging multiple modalities simultaneously,
+leading to remarkable improvements in performance,
+particularly in cross-dataset settings.
+Carolis et al. (2024) focused on integrating vision and
+text modalities. For the visual modality, they trained
+an EfficientNet model (Tan and Le, 2020b) to process
+RGB images. For the text modality, they utilized GPT-
+4.0 (OpenAI et al., 2024) to predict emotions from textual inputs. A late-fusion strategy was employed for the
+final prediction, using the confidence scores from both
+modalities.
+5.1.4. RQ1.4. Facial landmarks and action units for
+FER
+Facial landmarks and action units (AUs) are two fundamental tools frequently employed for facial expression recognition. Facial landmarks are visually identifi-
+13
+
+able points on the face, such as specific regions around
+the eyes, nose, and mouth, which help characterize facial geometry. AUs, on the other hand, were introduced
+in the facial action coding system (Ekman and Friesen,
+1978) to describe 46 basic muscle movements, providing a more granular understanding of facial expressions.
+These features serve as inputs for various computational
+approaches to facial expression recognition.
+One notable application of landmarks and AUs is in
+the multimodal apathy detection solution by Sharma
+et al. (2020). They integrated landmarks and AUs as
+features into a multimodal model alongside visual and
+audio data.
+They computed these features using the
+OpenFace 2.0 toolkit (Baltrusaitis et al., 2018), and
+demonstrated that combining multiple modalities significantly enhanced system performance. In contrast,
+Caroppo et al. (2020) extracted geometrical features–
+linear, elliptical, and polygonal–from facial landmarks
+estimated using an improved version of active shape
+models (Milborrow and Nicolls, 2014). These features
+were then used to train various machine learning models. However, their results showed that the performance
+of geometrical landmark-based features lagged behind
+that of DL-based features, such as those computed by
+VGG16 (Simonyan and Zisserman, 2015). A different
+approach was adopted by Wu et al. (2015), who utilized manually annotated fiducial points provided by
+Guo et al. (2013) to train a Bayesian network. By incorporating age labels during the training phase, Wu
+et al. demonstrated significant performance improvements, highlighting the potential of integrating demographic features like age into the FER task.
+On the other hand, some studies computed facial
+landmarks and AUs but did not use them directly for facial expression recognition. For instance, Gaya-Morey
+et al. (2024), Zhu et al. (2024), and Chen and Chen
+(2023) incorporated these features for other purposes,
+such as system development and integration, but refrained from leveraging them for FER tasks specifically.
+5.1.5. RQ1.5. Other tasks
+Apart from the facial expression recognition task,
+which is the central focus of this review, several other
+tasks were computed alongside it in multiple studies.
+Face detection emerged as the most common preprocessing step in the studies reviewed. This step involves
+cropping the image to focus on the face and removing irrelevant data for the FER task. Several approaches were
+used for face detection, with the Viola-Jones technique
+(Viola and Jones, 2001) being the most prevalent due
+to its simplicity, high speed, and low computational requirements. Another common preprocessing task was
+facial landmark estimation, which is further addressed
+in Section 5.1.4.
+Age estimation was frequently employed to address
+facial expression differences among age groups.
+For
+example, Caroppo et al. (2020) automatically labeled
+images from the CIFE and FER-2013 datasets using
+landmark-based methods (Wu et al., 2012) to study
+FER accuracy across different age groups. Similarly,
+Zhu et al. (2024) utilized FaceReader (Noldus Information Technology b.v, 2021) to classify images
+into age groups and analyze performance variations.
+Huang et al. (2024b) not only used age estimation with
+ResNet18 (He et al., 2016b) for evaluation purposes but
+also integrated it into their FER system to compute age
+group-specific features. In contrast, Yang et al. (2018)
+adopted a multi-tasking approach, simultaneously predicting both age and facial expressions to improve accuracy for both tasks. Because age estimation is included
+as a means to studying aging effects on facial expression
+recognition, these works are analyzed in more depth in
+Section 5.2.2
+FER was also employed as a tool for detecting cognitive impairment (CI), which is often characterized by
+abnormal emotional patterns. Fei et al. (2022) used the
+occurrence of facial expressions in consecutive frames
+as input to an SVM, enabling CI detection in elderly
+individuals. Jiang et al. (2022) adopted a similar approach, utilizing the VGG19 network (Simonyan and
+Zisserman, 2015) to predict facial expressions. These
+predictions were then fed into a linear regression model
+and an SVM for CI detection. They found that CI participants displayed significantly fewer positive emotions,
+more negative emotions, and higher facial expressiveness.
+However, attempts to identify CI subtypes using the same features were unsuccessful. Apathy detection, closely related to FER, was also explored by
+Sharma et al. (2020), who proposed a multimodal solution that combined RGB data, action units, and audio.
+Their results demonstrated that using multiple modalities improved performance compared to relying on a
+single modality.
+Several studies integrated FER with additional tasks
+to create multifunctional systems.
+Yan et al. (2020)
+combined FER with facial recognition and fall detection.
+For facial recognition, they used MobileNetV2
+(Sandler et al., 2018), while fall detection was achieved
+by estimating body pose using OpenPose (Cao et al.,
+2021) and analyzing shoulder and chest coordinates.
+This integration aimed to detect and respond to different warning situations, like falls and negative expressions prolonged in time. Similarly, Fahn et al. (2022)
+performed fall detection using body pose estimation and
+14
+
+incorporated gaze, facial expression, and speech recognition into a social robot. Carolis et al. (2024) extended
+FER by including emotion recognition from text and dialogue generation using GPT-4.0. These tasks, paired
+with FER, endowed a social robot with empathy capabilities. A user study involving 30 elderly participants
+revealed that the robot’s empathic features improved
+usability and provided more positive user experiences.
+Gaya-Morey et al. (2024) took this further by including
+eight tasks in their system: FER, face and person detection, age and gender estimation, facial recognition, facial landmark estimation, and background subtraction.
+They also provided multiple options for each task to accommodate different use cases. Their objective was to
+create a versatile, AI-powered module for any socially
+interactive agent.
+5.2. RQ2. Successful deployment in real-world environments
+We now present the findings related to the second
+research question, emphasizing framework integration,
+deployment, the impact of age on FER, privacy considerations, economic costs, and the use of explainable AI
+techniques.
+5.2.1. RQ2.1. Deployment
+The deployment of FER systems in real-world scenarios, such as care systems, presents multiple challenges, including privacy concerns and the need for
+seamless integration with other tools.
+Several studies have addressed these issues, offering innovative approaches to improve the functionality and user experience of FER systems.
+Chen and Chen (2023) proposed an adaptive nursing
+care environment that adjusts environmental factors–
+such as music, lighting, temperature, and scent–based
+on the detected emotions of users. This system aims
+to transform negative emotions into positive ones, for
+example, guiding anger and fear toward calmness, and
+disgust and sadness toward happiness. By personalizing
+environmental settings, they highlighted how FER systems can actively enhance users’ well-being and emotional state.
+Building on the theme of user interaction, Carolis
+et al. (2024) focused on the role of empathy in humanrobot interactions for elderly care. Their system recognized emotions using both visual data and text and
+enabled the robot to express emotions through speech
+and facial expressions displayed on a screen. GPT 4.0
+(OpenAI et al., 2024) was employed for emotional state
+analysis and dialogue generation. A user study involving 30 elderly participants found that the empathic version of the robot was more user-friendly and provided
+a better overall experience compared to a non-empathic
+version.
+Similarly, Yan et al. (2020) developed a multifunctional system for clinical monitoring, combining
+facial expression, gesture, and face recognition to aid
+in patient treatment. This system can alert caregivers
+of critical situations, such as falls, the presence of
+unknown individuals, or prolonged negative emotions
+(e.g., sadness, anger, fear, or disgust).
+Gaya-Morey et al. (2024) expanded the scope of FER
+applications by integrating multiple computer vision
+tasks into a single module designed for socially interactive agents. Their system supports a wide range of tasks,
+including facial expression recognition, facial recognition, facial landmark estimation, face and person detection, age and gender estimation, and background subtraction. Additionally, they incorporated explainable AI
+tools to enhance transparency and user trust.
+Lastly, Fahn et al. (2022) explored the integration of
+FER with complementary modalities, including gaze,
+speech, and pose recognition, within a social robot.
+While their work provided detailed descriptions of each
+task, it lacked specifics regarding their integration into
+the robot and did not include a user study.
+5.2.2. RQ2.2. Effects of age on facial expression recognition
+The age of users’ faces significantly influences both
+human and automated methods for decoding facial expressions, as highlighted in numerous studies (F¨olster
+et al., 2014; Ko et al., 2021; S¨onmez, 2019). Consequently, various works have introduced specific attention mechanisms to address the challenges posed by age
+differences in facial expression recognition.
+One of the earliest efforts to incorporate age into
+FER models was undertaken by Wu et al. (2015),
+who proposed a three-node Bayesian network that integrated age information during training. Utilizing the
+FACES and LifeSpan datasets, which include both expression and age labels, they evaluated the model’s performance through within-group and between-group assessments. Their findings revealed a substantial bias in
+all between-group cases, underscoring the importance
+of age-specific modeling. Notably, incorporating age
+information during training improved recognition accuracy across most expressions, except for happiness.
+Building on this concept, Yang et al. (2018) adopted
+a multi-task learning framework to simultaneously predict age and expressions.
+Their approach, which
+15
+
+leveraged two feature-extracting sub-networks (a convolutional neural network and a scatter network), allowed for shared feature representations across tasks.
+The model demonstrated superior performance on the
+FACES and LifeSpan datasets, outperforming earlier
+single-task solutions in both age and expression predictions.
+Another innovative approach came from Huang et al.
+(2024b), who integrated an age group classifier directly
+into the recognition pipeline. This allowed their model
+to specialize in age-specific features for distinct groups:
+babies (0–3 years), adolescents (4–19), young adults
+(20–39), middle-aged adults (40–69), and elderly adults
+(70+). Tested on the RAF-DB, AffectNet, and FACES
+datasets, their method achieved significant performance
+gains, particularly in recognizing facial expressions in
+the elderly population.
+Some works have focused on evaluating and addressing age-related biases in commercial FER systems. For
+example, Kim et al. (2021) benchmarked four commercial systems using the FACES dataset across three age
+groups: young, middle-aged, and older adults. They
+found that these systems consistently performed best on
+younger individuals and worst on older users. Moreover, specific expression classes, such as anger and neutrality, exhibited significantly lower positive predictive
+values for older individuals, highlighting critical shortcomings in current FER technologies. Zhu et al. (2024)
+also explored the performance of a commercial system,
+i.e., FaceReader (Noldus Information Technology b.v,
+2021). They used a GAN to generate 80 images distributed across four age groups: children, young adults,
+middle-aged adults, and elderly individuals. To validate
+the system, they conducted a survey with 496 participants via Amazon Mechanical Turk. While the system achieved strong agreement with survey responses
+for young, middle-aged, and elderly images (Cohen’s
+kappa > 0.8), it performed poorly for children’s images
+(kappa = 0.4), suggesting unique challenges in recognizing expressions in younger faces.
+A more targeted exploration of age-specific datasets
+was conducted by Jannat and Canavan (2021), who focused on children and elderly populations using the
+EmoReact and ElderReact datasets. By employing a
+siamese neural network trained on pairs of images (positive pairs with the same expression and negative pairs
+with different expressions), they achieved strong withindataset performance.
+However, cross-dataset testing
+revealed interesting dynamics: training on ElderReact
+and testing on EmoReact led to decreased performance,
+while training on EmoReact and testing on ElderReact
+resulted in an unexpected improvement.
+Finally, Caroppo et al. (2020) offered a broader perspective by studying traditional machine learning and
+deep learning methods across four datasets: FACES,
+LifeSpan, FER-2013, and CIFE. They analyzed performance across four age groups: young (18–29 years),
+middle-aged (30–49 years), old (50–69 years), and very
+old (70–93 years). Since FER-2013 and CIFE lacked
+age labels, they computed them automatically through
+landmark-based methods (Wu et al., 2012) to conduct
+their evaluations. Among the models tested, a combination of the VGG16 deep architecture with random
+forest yielded the best results, particularly for aging
+adults. However, cross-dataset evaluations revealed notable performance drops, especially for younger individuals, with per-class results varying significantly by
+dataset.
+5.2.3. RQ2.3. User privacy protection
+Privacy preservation is a critical concern in multiple
+fields, especially in healthcare applications, and particularly when visual data is involved. Multiple reviewed
+studies addressed this issue through diverse strategies
+aimed at protecting user identities while maintaining the
+effectiveness of facial expression recognition systems.
+Huang et al. (2024a) tackled privacy concerns by employing a Star Generative Adversarial Network (Star-
+GAN) to generate synthetic facial expression images of
+Parkinson’s disease patients. This technique preserved
+the patients’ identities while retaining essential expression data, ensuring privacy without compromising system performance. Another effective strategy involved
+the use of depth images instead of RGB data.
+Uddin et al. (2017a; 2017b) demonstrated the feasibility
+of FER with depth images, which inherently obfuscate
+user identities. They employed various feature descriptors, such as local directional position patterns and modified local directional patterns, to achieve robust FER
+performance.
+Several studies leveraged facial landmarks or action
+units to enhance FER while reducing reliance on raw
+RGB data. For instance, Sharma et al. (2020), Caroppo
+et al. (2020), and Wu et al. (2015) utilized these intermediate features, which allowed anonymization of the
+data after the initial RGB image processing stage. This
+approach offers a balance between accuracy and privacy
+by removing identifiable information in later stages of
+processing.
+Carolis et al. (2024) adopted a different approach,
+embedding their FER system into a small robot. Their
+privacy-preservation efforts focused on local processing, ensuring that all computations occurred within the
+16
+
+robot itself, thereby eliminating the need for transmitting user data over the Internet.
+5.2.4. RQ2.4. Economic cost
+The economic cost is a common concern when deploying a system, and it can be addressed in various
+ways, such as reducing hardware requirements or utilizing low-cost equipment. We identified eight studies
+that mentioned economic cost in some capacity.
+Carolis et al. (2024) conducted their experiment using
+the Ubtech Alpha Mini robot, chosen for its affordability. To further reduce costs, they selected the Efficient-
+Net model (Tan and Le, 2020b) for the FER task, which
+helped lower hardware requirements while increasing
+inference speed. Similarly, Petrou et al. (2023) used
+the mini-Xception model for FER, notable for requiring
+only 58,000 parameters and having a size smaller than 1
+MB, making it ideal for low-specification environments.
+Yan et al. (2020) also leveraged cost-effective models,
+utilizing mini-Xception for FER, SqueezeNet (Iandola
+et al., 2016) for face detection, and MobileNetV2 (Sandler et al., 2018) for face recognition. These models
+were deployed on a Raspberry Pi with a Pi Camera,
+both highly affordable components. Fei et al. (2022) and
+Fahn et al. (2022) adopted similar strategies to reduce
+hardware needs by employing compact models. Fei et
+al. utilized MobileNetV2, while Fahn et al. developed
+a small custom CNN for FER, showcasing how smaller
+models can effectively address economic constraints.
+Gaya-Morey et al. (2024) approached economic cost
+differently, offering a framework with multiple options
+for each task, accommodating a wide range of hardware
+requirements. This flexibility allows their framework to
+adapt to various environments and budgets. Additionally, their client-server scheme significantly reduces the
+hardware demands on the robot, as computationally intensive tasks are handled by an external computer.
+Lastly, Caroppo et al. (2018; 2020) highlighted in
+their future work plans to integrate their system into a
+cost-effective application, further emphasizing the importance of affordability in FER system design.
+5.2.5. RQ2.5. Explainable AI techniques
+As noted in the work by Barredo Arrieta et al. (2020),
+the search for explainable AI models is driven by goals
+such as trustworthiness, causality among data variables,
+transferability, informativeness for decision-making,
+confidence, and fairness, among others. Among relevant studies, we identified six that address these goals.
+Anand et al. (2023) developed a multimodal solution to FER, integrating text, audio, and visual data,
+and providing explanations separately for each modality. They employed local interpretable model-agnostic
+explanations (LIME) (Ribeiro et al., 2016) for the text
+and vision modalities, and its audio counterpart, audioLIME (Haunschmid et al., 2020), for audio. LIME explains the predictions of any classifier by learning an interpretable model locally around a prediction. The explanations consisted of visual plots (video frames and
+spectrograms) where the most relevant features for correct predictions were highlighted in green. In the visual
+modality, these features primarily corresponded to the
+face and arms. Gaya-Morey et al. (2024) also adopted
+model-agnostic XAI methods for integration into their
+general-purpose computer vision module designed for
+socially interactive agents. They incorporated three approaches: LIME (previously mentioned), randomized
+input sampling for explanation of black-box models
+(RISE) (Petsiuk et al., 2018), and Shapley additive explanations (SHAP) (Lundberg and Lee, 2017). Being
+model-agnostic, these methods are versatile and can be
+applied to any technique used for any task. The explanations they generate share a common format: visual plots
+that highlight the importance of different image regions
+using color gradients.
+In contrast to model-agnostic methods, Fan et al.
+(2022) adopted model-specific XAI techniques tailored to the architectures they evaluated. Their study
+introduced a patch-convolutional vision transformer
+(FER-PCVT) for FER, which they compared against
+ResNet18 (He et al., 2016b) and Vision Transformer
+(ViT) (Dosovitskiy et al., 2021). To explain ResNet18,
+they used Gradient-weighted Class Activation Mapping
+(Grad-CAM) (Selvaraju et al., 2017), a method specifically designed for convolutional neural networks commonly used in computer vision tasks. Grad-CAM uses
+the gradients flowing into the final convolutional layer
+to produce a coarse localization map that highlights important regions in the image for a target prediction. For
+transformer-based models, such as ViT and FER-PCVT,
+they aggregated attention weights across all layers. All
+explanations were visualized as heat maps, with hot regions corresponding to the most relevant areas for a specific prediction. FER-PCVT demonstrated the best results, extracting more specific facial features, while ViT
+attributed importance to data on the periphery of the image for certain classes, and ResNet18 focused on more
+extensive facial regions.
+Some studies also analyzed the clustering ability of
+the computed features in the last layer before classification. Although different from the aforementioned
+XAI methods, these approaches provide insights into
+the models’ inner workings by examining how well the
+17
+
+models separate classes and display the perceived similarities between them. In this context, Fan et al. (2022)
+used t-distributed stochastic neighbor embedding to visualize the last layer of the model by mapping each data
+point to a two-dimensional space. Similarly, Uddin et al.
+explored various visual descriptors such as local directional strength patterns, local directional position patterns, and modified local directional patterns in several
+works (2017a; 2017b; 2019), employing either local discriminant analysis or generalized discriminant analysis
+to get 3D plots where classes were clearly grouped into
+distinct clusters.
+6. Discussion
+In this section, we discuss the major findings of the
+systematic literature review, and analyze strengths and
+weaknesses of the found approaches for facial expression recognition on the elderly, as well as their main
+characteristics, attending to common aspects to take into
+account for deployment in real scenarios. Additionally,
+we give recommendations for future works, based on
+the findings.
+Convolutional architectures remain the most frequently utilized for vision-based data, as evidenced by
+the reviewed studies. Popular models such as VGG,
+Inception, and ResNet have proven to be robust feature extractors (Santoso and Kusuma, 2022; Bi et al.,
+2022). Recurrent architectures, on the other hand, are
+predominantly employed when temporal information is
+crucial for recognition tasks (Rokkones et al., 2019;
+Zhang et al., 2020). Meanwhile, Transformer architectures are gaining traction for both visual and sequential
+data (Fan et al., 2022; Anand et al., 2023). For resourceconstrained environments, lightweight models such as
+MobileNet, EfficientNet, and mini-Xception, designed
+for efficient deployment on low-power devices, have
+emerged as leading solutions (Fei et al., 2022; Carolis
+et al., 2024; Yan et al., 2020).
+Deep learning models thrive on data-driven learning,
+but they are inherently susceptible to biases in the training datasets.
+Three widely used datasets–FER-2013,
+CK+, and AffectNet–lack adequate representation of elderly individuals and do not include age annotations.
+This is a notable limitation given the demonstrated differences in facial expressions across age groups (see
+Section 5.2.2). In contrast, datasets such as FACES and
+LifeSpan provide age annotations, making them valuable for improving prediction accuracy for elderly populations (Caroppo et al., 2020; Wu et al., 2015). Similarly, ElderReact, while lacking explicit age annotations, contains a large volume of videos featuring elderly individuals. Class imbalance is another significant challenge in FER datasets, exemplified by Affect-
+Net (with over a 100,000-sample difference between the
+happiness and disgust classes) and LifeSpan (580 samples for the neutral class versus only 7 for disgust).
+However, many studies lack information on how they
+addressed this imbalance (Jiang et al., 2022; Carolis
+et al., 2024; Caroppo et al., 2018, 2020). When tackled,
+class imbalance was typically addressed by undersampling (Sreevidya et al., 2022; Wu et al., 2015; Huang
+et al., 2024b; Fahn et al., 2022) or by removing minority classes entirely (Anand et al., 2023; Petrou et al.,
+2023; Yang et al., 2018). While these methods can help
+in solving the imbalance problem, they reduce dataset
+diversity. Alternative approaches, such as oversampling
+techniques (Bach et al., 2017; Mohammed et al., 2020)
+or class-weighted loss functions (Cui et al., 2019), are
+preferable as they maintain dataset size and variability.
+Additionally, metrics like accuracy should be avoided
+for evaluating imbalanced data, as they fail to reflect
+true model performance across classes. Instead, metrics like the F1 score, which balances precision and recall for each class, are more appropriate (Branco et al.,
+2016).
+The literature reveals no consensus on whether static
+images suffice for FER or whether motion information
+is essential. For instance, while Alves (2013) argued
+that dynamic expressions elicit stronger facial and physiological responses in observers, Gold et al.
+(2013)
+found no additional benefit in using dynamic data for
+emotion recognition beyond what a single static snapshot provides. Nonetheless, static images dominate the
+analyzed studies, likely due to the scarcity of largescale video datasets. Developing video datasets for FER
+could not only provide new insights into the importance
+of dynamic expressions but also allow direct comparisons with static datasets. Similarly, multimodal solutions combining visual data with other modalities, such
+as audio, have demonstrated greater robustness to errors
+in a single modality. For instance, studies leveraging
+the ElderReact dataset showed that combining visual
+and audio data outperformed single-modality solutions
+(Sreevidya et al., 2022; Anand et al., 2023).
+Facial expression recognition can be combined with
+other tasks, as demonstrated in various studies, such as
+facial recognition (Yan et al., 2020), fall detection (Fahn
+et al., 2022), and speech recognition (Carolis et al.,
+2024). These combinations can be particularly valuable
+in healthcare environments, enabling systems to automatically identify users, detect potentially hazardous
+situations, and provide tools to mitigate loneliness. Integrating these tasks is advantageous when developing
+18
+
+smart care systems, as they can operate using the same
+input data (e.g., RGB video from a camera) and share
+similar resource requirements. Additionally, tasks such
+as face detection and age estimation have been primarily utilized as preprocessing steps to enhance the performance of expression recognition systems (Huang et al.,
+2024b; Sreevidya et al., 2022).
+Given the impact of aging on FER, as discussed in
+Section 5.2.2, these studies incorporate training with
+datasets that include elderly individuals.
+Some go
+further by improving results through approaches such
+as incorporating user age into training (Huang et al.,
+2024b; Wu et al., 2015) or adopting multi-tasking
+frameworks (Yang et al., 2018). However, we believe
+these approaches primarily address the scarcity of data
+representing diverse age groups, which often results in
+underrepresentation of elderly users.
+This highlights
+the critical need for more comprehensive datasets tailored to this demographic or the integration of multiple
+datasets that include elderly people. Moreover, only a
+few studies were found to integrate the developed methods into real-world applications, such as mobile applications, assisted living devices, and healthcare centers
+(Carolis et al., 2024; Chen and Chen, 2023). Since the
+ultimate goal of these studies is societal adoption and
+practical deployment, we argue that further research is
+required to understand elder users’ acceptance and trust
+in these technologies. Additionally, investigations into
+their potential benefits, risks of failure, and other realworld considerations are essential for ensuring successful implementation.
+As highlighted by Little and Briggs (2009), the proliferation of technology raises critical concerns about
+usability, trust, and privacy for elderly users.
+Notably, most reviewed studies (22 in total) relied on RGB
+data with identifiable user information, yet very few
+incorporated privacy-preserving measures. Techniques
+such as anonymization through facial landmark estimation or action units (Sharma et al., 2020) and privacypreserving transformations (Huang et al., 2024a) should
+be more widely adopted.
+Local processing is another recommended strategy to reduce privacy risks associated with external data exchange (Carolis et al.,
+2024). Economic considerations were also prevalent,
+with many studies focusing on reducing hardware requirements (Yan et al., 2020; Fahn et al., 2022; Carolis
+et al., 2024). Combining privacy-preserving techniques
+with lightweight, local solutions could simultaneously
+address privacy and cost concerns, making the systems
+more accessible.
+A notable gap in the reviewed studies is the limited
+use of explainable AI techniques. XAI is crucial for justifying model predictions and fostering user trust, particularly with complex and opaque models (Barredo Arrieta et al., 2020). While some studies analyzed the clustering ability of features (Rokkones et al., 2019; Uddin
+et al., 2017a), this approach only measures classification
+effectiveness and neglects input feature contributions.
+Advanced XAI methods, such as LIME (Ribeiro et al.,
+2016) or Grad-CAM (Selvaraju et al., 2017), were employed in a few studies (Fan et al., 2022; Gaya-Morey
+et al., 2024; Anand et al., 2023) and should be more
+widely adopted for future FER research.
+7. Conclusion
+This systematic review has provided a comprehensive analysis of deep learning-based facial expression
+recognition systems with a focus on elderly populations. Our findings reveal significant progress in leveraging deep learning techniques, particularly convolutional neural networks, for vision-based FER tasks.
+Lightweight architectures, such as MobileNet and mini-
+Xception, have demonstrated potential for deployment
+in resource-constrained environments, while emerging
+approaches like Transformer-based models and multimodal frameworks offer promising avenues for enhancing robustness and accuracy. Despite these advances,
+several critical challenges remain.
+A notable limitation across studies is the underrepresentation of elderly individuals in FER datasets. The
+most widely used data sets, such as FER-2013 and AffectNet, lack sufficient diversity in age representation
+and fail to account for age-related facial changes that
+impact expression recognition. This highlights the urgent need to develop comprehensive and age-inclusive
+datasets or to merge existing ones into larger and more
+diverse datasets to improve FER performance across diverse age groups. Addressing class imbalance, another
+prevalent issue, will require broader adoption of more
+advanced rebalancing techniques, than simple undersampling and minority class removal, as found.
+The real-world deployment of FER systems for the
+elderly remains insufficiently explored.
+Privacy concerns, usability challenges, and the lack of explainable AI adoption hinder the integration of these technologies into healthcare and assisted living applications,
+which are of high stake for elderly users. Incorporating
+privacy-preserving measures, such as anonymized facial
+data or local processing, alongside lightweight models,
+could address privacy concerns and improve accessibility (as age typically increases disabilities). Furthermore,
+XAI techniques must be implemented more widely to
+foster user trust and transparency, allowing caregivers
+19
+
+and medical professionals to better understand what is
+detected by the system and the predictions that are forecasted.
+Finally, while FER systems have immense potential
+to improve elderly care, additional research is needed to
+evaluate their societal acceptance, trustworthiness, and
+their impact on elder users when they are deployed. Future work should prioritize interdisciplinary efforts that
+combine technical innovation with human-centered design to ensure that these technologies are effective, ethical, and accessible. By addressing these challenges,
+FER systems can play a transformative role in enhancing the emotional well-being and quality of life of the
+aging population.
+CRediT authorship contribution statement
+F.
+Xavier
+Gaya-Morey:
+Conceptualization,
+Methodology, Validation, Investigation, Writing - Original Draft, Writing - Review & Editing Preparation,
+Visualization.
+Jose M. Buades-Rubio: Conceptualization, Methodology, Writing - Review & Editing
+Preparation,
+Supervision,
+Project
+administration,
+Funding acquisition.
+Philippe Palanque: Writing -
+Review & Editing Preparation, Supervision.
+Raquel
+Lacuesta: Writing - Review & Editing Preparation,
+Supervision.
+Cristina Manresa-Yee:
+Conceptualization, Methodology, Writing - Review & Editing
+Preparation,
+Supervision,
+Project
+administration,
+Funding acquisition.
+Funding
+This work is part of the Project PID2023-149079OB-
+I00 (EXPLAINME) funded by MICIU/AEI/10.13039/
+501100011033/ and FEDER, EU and of Project
+PID2022-136779OB-C32 (PLEISAR) funded by MI-
+CIU/ AEI /10.13039/501100011033/ and FEDER, EU.
+F. X. Gaya-Morey was supported by an FPU scholarship from the Ministry of European Funds, University
+and Culture of the Government of the Balearic Islands.
+Declaration of Competing Interest
+The authors declare that they have no known competing financial interests or personal relationships that
+could have appeared to influence the work reported in
+this paper.
+Data availability
+All data relevant to the study are included in this document. No additional data were generated.
+Declaration of generative AI and AI-assisted technologies in the writing process
+During the preparation of this work the authors used
+ChatGPT in order to improve the readability and language of the manuscript. After using this tool, the authors reviewed and edited the content as needed and take
+full responsibility for the content of the published article.
+References
+Abdullah, S.M.S., Abdulazeez, A.M., 2021. Facial expression recognition based on deep learning convolution neural network: A review. Journal of Soft Computing and Data Mining 2, 53–65.
+Adadi, A., Berrada, M., 2018. Peeking inside the black-box: A survey
+on explainable artificial intelligence (xai). IEEE Access 6, 52138–
+52160. doi:10.1109/ACCESS.2018.2870052.
+Adyapady, R.R., Annappa, B., 2023. A comprehensive review of facial expression recognition techniques. Multimedia Systems 29,
+73–103. doi:10.1007/s00530-022-00984-w.
+Al-Garaawi, N., Morris, T., 2016. Study on aging effect on facial
+expression recognition, in: Proceedings of the World Congress on
+Engineering.
+Al-Garaawi, N., Morris, T., Cootes, T.F., 2022.
+Fully automated
+age-weighted expression classification using real and apparent age.
+Pattern Analysis and Applications 25, 451–466.
+doi:10.1007/
+s10044-021-01044-1.
+Alexandre, G.R., Soares, J.M., Th´e, G.A.P., 2020. Systematic review
+of 3d facial expression recognition methods. Pattern Recognition
+100, 107108. doi:10.1016/j.patcog.2019.107108.
+Almasoudi, A., Baowidan, S., Sarhan, S., 2023.
+Facial expressions decoded: A survey of facial emotion recognition. International Journal of Computer Applications 185, 1–11. doi:10.5120/
+ijca2023922765.
+Alves, N., 2013. Recognition of static and dynamic facial expressions: A study review. Estudos de Psicologia (Natal) 18, 125–130.
+doi:10.1590/S1413-294X2013000100020.
+Amazon, 2016. What is amazon rekognition? URL: https://docs.
+aws.amazon.com/rekognition/latest/dg/what-is.html.
+Accessed 22nd Nov 2024.
+Anand, S., Devulapally, N.K., Bhattacharjee, S.D., Yuan, J., 2023.
+Multi-label emotion analysis in conversation via multimodal
+knowledge distillation, in: Proceedings of the 31st ACM International Conference on Multimedia, Association for Computing
+Machinery. pp. 6090–6100. doi:10.1145/3581783.3612517.
+Asad, U., Kashyap, N., Singh, S.N., 2017. Recent advancements in
+facial expression recognition systems: A survey, in: 2017 International Conference on Computing, Communication and Automation
+(ICCCA), pp. 1203–1208. doi:10.1109/CCAA.2017.8229981.
+Atallah, R.R., Kamsin, A., Ismail, M.A., 2019. A review study: The
+effect of face aging at estimating age and face recognition. Journal of Physics: Conference Series 1339, 12006. doi:10.1088/
+1742-6596/1339/1/012006.
+20
+
+Aziz, N.A.A., Khan, T., Aziz, K.A., Hasnul, M.A., Ismail, S.N.M.S.,
+2022.
+A systematic review on facial expression based emotion
+recognition system for smart homes, in: Proceedings of the Multimedia University Engineering Conference (MECON 2022), Atlantis Press. pp. 28–37. doi:10.2991/978-94-6463-082-4\_5.
+Bach, M., Werner, A., Zywiec, J., Pluskiewicz, W., 2017. The study
+of under- and over-sampling methods’ utility in analysis of highly
+imbalanced data on osteoporosis. Information Sciences 384, 174–
+190. doi:10.1016/j.ins.2016.09.038.
+Bagher Zadeh, A., Liang, P.P., Poria, S., Cambria, E., Morency, L.P.,
+2018. Multimodal language analysis in the wild: CMU-MOSEI
+dataset and interpretable dynamic fusion graph, in: Gurevych,
+I., Miyao, Y. (Eds.), Proceedings of the 56th Annual Meeting of
+the Association for Computational Linguistics (Volume 1: Long
+Papers), Association for Computational Linguistics, Melbourne,
+Australia. pp. 2236–2246. doi:10.18653/v1/P18-1208.
+Baltrusaitis, T., Zadeh, A., Lim, Y.C., Morency, L.P., 2018. Openface
+2.0: Facial behavior analysis toolkit, in: 2018 13th IEEE International Conference on Automatic Face & Gesture Recognition (FG
+2018), pp. 59–66. doi:10.1109/FG.2018.00019.
+Barredo Arrieta, A., D´ıaz-Rodr´ıguez, N., Del Ser, J., Bennetot, A.,
+Tabik, S., Barbado, A., Garcia, S., Gil-Lopez, S., Molina, D., Benjamins, R., Chatila, R., Herrera, F., 2020. Explainable artificial
+intelligence (xai): Concepts, taxonomies, opportunities and challenges toward responsible ai. Information Fusion 58, 82–115.
+Barrett, L.F., Adolphs, R., Marsella, S., Martinez, A.M., Pollak, S.D.,
+2019. Emotional expressions reconsidered: Challenges to inferring
+emotion from human facial movements. Psychological Science in
+the Public Interest 20, 1–68. doi:10.1177/1529100619832930.
+Bhattacharya, S., Gupta, M., 2019.
+A survey on: Facial emotion
+recognition invariant to pose, illumination and age, in: 2019 Second International Conference on Advanced Computational and
+Communication Paradigms (ICACCP), pp. 1–6.
+doi:10.1109/
+ICACCP.2019.8883015.
+Bi, A.Q., Tian, X.Y., Wang, S.H., Zhang, Y.D., 2022. Dynamic transfer exemplar based facial emotion recognition model toward online video. ACM Trans. Multimedia Comput. Commun. Appl. 18.
+doi:10.1145/3538385.
+Bloom, D., Luca, D., 2016. Chapter 1 - the global demography of
+aging: Facts, explanations, future, in: Piggott, J., Woodland, A.
+(Eds.), Handbook of the Economics of Population Aging. North-
+Holland. volume 1, pp. 3–56.
+Boughanem, H., Ghazouani, H., Barhoumi, W., 2023. Facial emotion recognition in-the-wild using deep neural networks: A comprehensive review. SN Computer Science 5, 96. doi:10.1007/
+s42979-023-02423-7.
+Branco, P., Torgo, L., Ribeiro, R.P., 2016.
+A survey of predictive modeling on imbalanced domains. ACM Comput. Surv. 49.
+doi:10.1145/2907070.
+Burkart, N., Huber, M.F., 2021. A survey on the explainability of
+supervised machine learning. Journal of Artificial Intelligence Research 70, 245–317. doi:10.1613/jair.1.12228.
+Canal, F.Z., M¨uller, T.R., Matias, J.C., Scotton, G.G., de Sa Junior,
+A.R., Pozzebon, E., Sobieranski, A.C., 2022. A survey on facial
+emotion recognition techniques: A state-of-the-art literature review. Information Sciences 582, 593–617. doi:10.1016/j.ins.
+2021.10.005.
+Canedo, D., Neves, A.J.R., 2019. Facial expression recognition using computer vision: A systematic review. Applied Sciences 9.
+doi:10.3390/app9214678.
+Cao, Z., Hidalgo, G., Simon, T., Wei, S.E., Sheikh, Y., 2021. Openpose: Realtime multi-person 2d pose estimation using part affinity
+fields. IEEE Transactions on Pattern Analysis and Machine Intelligence 43, 172–186. doi:10.1109/TPAMI.2019.2929257.
+Carolis, B.N.D., Palestra, G., Castellano, G., 2024. Exploring the
+role of empathy in designing social robots for elderly people, in:
+Adjunct Proceedings of the 32nd ACM Conference on User Modeling, Adaptation and Personalization, Association for Computing
+Machinery. pp. 120–125. doi:10.1145/3631700.3664887.
+Caroppo, A., Leone, A., Siciliano, P., 2017.
+Facial expression
+recognition in older adults using deep machine learning, in:
+AI*AAL@AI*IA.
+URL: https://api.semanticscholar.
+org/CorpusID:3526345.
+Caroppo, A., Leone, A., Siciliano, P., 2018. Facial expression recognition in older adults using deep machine learning, in: CEUR Workshop Proceedings, p. 30 – 43.
+Caroppo, A., Leone, A., Siciliano, P., 2019. Facial expression recognition in ageing adults: A comparative study, in: Leone, A., Caroppo,
+A., Rescio, G., Diraco, G., Siciliano, P. (Eds.), Ambient Assisted
+Living, Springer International Publishing. pp. 349–359.
+Caroppo, A., Leone, A., Siciliano, P., 2020. Comparison between
+deep learning models and traditional machine learning approaches
+for facial expression recognition in ageing adults. Journal of Computer Science and Technology 35, 1127 – 1146. doi:10.1007/
+s11390-020-9665-4.
+Chen, S.Y., Chen, C.C., 2023. Emotion-reading nursing care environment based on facial expression recognition. SENSORS AND
+MATERIALS 35, 1859–1869. doi:10.18494/SAM4314.
+Chinchanikar, N.A., 2019. Facial expression recognition using deep
+learning: a review. International Research Journal of Engineering
+and Technology 3274.
+Cho, K., van Merri¨enboer, B., Bahdanau, D., Bengio, Y., 2014. On
+the properties of neural machine translation: Encoder–decoder approaches, in: Wu, D., Carpuat, M., Carreras, X., Vecchi, E.M.
+(Eds.), Proceedings of SSST-8, Eighth Workshop on Syntax, Semantics and Structure in Statistical Translation, Association for
+Computational Linguistics, Doha, Qatar. pp. 103–111.
+doi:10.
+3115/v1/W14-4012.
+Chollet, F., 2017. Xception: Deep learning with depthwise separable convolutions, in: 2017 IEEE Conference on Computer Vision
+and Pattern Recognition (CVPR), pp. 1800–1807. doi:10.1109/
+CVPR.2017.195.
+Cui, Y., Jia, M., Lin, T.Y., Song, Y., Belongie, S., 2019.
+Classbalanced loss based on effective number of samples, in: 2019
+IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), pp. 9260–9269. doi:10.1109/CVPR.2019.00949.
+Dalvi, C., Rathod, M., Patil, S., Gite, S., Kotecha, K., 2021. A survey
+of ai-based facial emotion recognition: Features, ml & dl techniques, age-wise datasets and future directions. IEEE Access 9,
+165806–165840. doi:10.1109/ACCESS.2021.3131733.
+Dhall, A., Member, S., Goecke, R., Lucey, S., Gedeon, T., 2007.
+Collecting large, richly annotated facial-expression databases from
+movies.
+Dosovitskiy, A., Beyer, L., Kolesnikov, A., Weissenborn, D., Zhai,
+X., Unterthiner, T., Dehghani, M., Minderer, M., Heigold, G.,
+Gelly, S., Uszkoreit, J., Houlsby, N., 2021. An image is worth
+16x16 words: Transformers for image recognition at scale. doi:10.
+48550/arXiv.2010.11929.
+Ebner, N.C., Riediger, M., Lindenberger, U., 2010a. Faces-a database
+of facial expressions in young, middle-aged, and older women and
+men: Development and validation. Behavior Research Methods
+42, 351–362. doi:10.3758/BRM.42.1.351.
+Ebner, N.C., Riediger, M., Lindenberger, U., 2010b. Faces-a database
+of facial expressions in young, middle-aged, and older women and
+men: Development and validation. Behavior Research Methods
+42, 351–362. doi:10.3758/BRM.42.1.351.
+Ekman, P., 1992. An argument for basic emotions. Cognition and
+Emotion 6, 169–200. doi:10.1080/02699939208411068.
+Ekman, P., Friesen, W.V., 1978. Facial action coding system: a technique for the measurement of facial movement. Palo Alto 3, 5.
+21
+
+Fahn, C.S., Chen, S.C., Wu, P.Y., Chu, T.L., Li, C.H., Hsu, D.Q.,
+Wang, H.H., Tsai, H.M., 2022. Image and speech recognition technology in the development of an elderly care robot: Practical issues
+review and improvement strategies. Healthcare (Switzerland) 10.
+doi:10.3390/healthcare10112252.
+Fan, Y., Wang, H., Zhu, X., Cao, X., Yi, C., Chen, Y., Jia, J., Lu,
+X., 2022.
+Fer-pcvt: Facial expression recognition with patchconvolutional vision transformer for stroke patients.
+Brain Sciences 12. doi:10.3390/brainsci12121626.
+Fei, Z., Yang, E., Li, D.D.U., Butler, S., Ijomah, W., Zhou, H., 2019.
+A survey on computer vision techniques for detecting facial features towards the early diagnosis of mild cognitive impairment in
+the elderly. Systems Science & Control Engineering 7, 252–263.
+doi:10.1080/21642583.2019.1647577.
+Fei, Z., Yang, E., Yu, L., Li, X., Zhou, H., Zhou, W., 2022. A novel
+deep neural network-based emotion analysis system for automatic
+detection of mild cognitive impairment in the elderly. Neurocomputing 468, 306 – 316. doi:10.1016/j.neucom.2021.10.038.
+F¨olster, M., Hess, U., Werheid, K., 2014. Facial age affects emotional
+expression decoding. Frontiers in Psychology 5. doi:10.3389/
+fpsyg.2014.00030.
+Gaya-Morey, F.X., Manresa-Yee, C., Buades-Rubio, J.M., 2024. An
+ai-powered computer vision module for social interactive agents,
+in: Proceedings of the XXIV International Conference on Human Computer Interaction, Association for Computing Machinery.
+doi:10.1145/3657242.3658601.
+Ghayoumi, M., 2017.
+A quick review of deep learning in facial expression.
+Journal of Communication and Computer 14.
+doi:10.17265/1548-7709/2017.01.004.
+Gold, J.M., Barker, J.D., Barr, S., Bittner, J.L., Bromfield, W.D., Chu,
+N., Goode, R.A., Lee, D., Simmons, M., Srinath, A., 2013. The efficiency of dynamic and static facial expression recognition. Journal of Vision 13, 23–23. doi:10.1167/13.5.23.
+Goodfellow, I., Pouget-Abadie, J., Mirza, M., Xu, B., Warde-Farley,
+D., Ozair, S., Courville, A., Bengio, Y., 2014. Generative adversarial nets.
+Goodfellow, I.J., Erhan, D., Carrier, P.L., Courville, A., Mirza, M.,
+Hamner, B., Cukierski, W., Tang, Y., Thaler, D., Lee, D.H., Zhou,
+Y., Ramaiah, C., Feng, F., Li, R., Wang, X., Athanasakis, D.,
+Shawe-Taylor, J., Milakov, M., Park, J., Ionescu, R., Popescu, M.,
+Grozea, C., Bergstra, J., Xie, J., Romaszko, L., Xu, B., Chuang, Z.,
+Bengio, Y., 2013. Challenges in representation learning: A report
+on three machine learning contests, in: Lee, M., Hirose, A., Hou,
+Z.G., Kil, R.M. (Eds.), Neural Information Processing, Springer
+Berlin Heidelberg, Berlin, Heidelberg. pp. 117–124.
+Grabowski, K., Rynkiewicz, A., Lassalle, A., Baron-Cohen, S.,
+Schuller, B., Cummins, N., Baird, A., Podg´orska-Bednarz, J.,
+Pienia¸˙zek, A., Łucka, I., 2019. Emotional expression in psychiatric conditions: New technology for clinicians. Psychiatry and
+Clinical Neurosciences 73, 50–62. doi:10.1111/pcn.12799.
+Grondhuis, S.N., Jimmy, A., Teague, C., Brunet, N.M., 2021. Having difficulties reading the facial expression of older individuals?
+blame it on the facial muscles, not the wrinkles. Frontiers in Psychology 12. doi:10.3389/fpsyg.2021.620768.
+Guerdelli, H., Ferrari, C., Barhoumi, W., Ghazouani, H., Berretti, S.,
+2022.
+Macro- and micro-expressions facial datasets: A survey.
+Sensors 22. doi:10.3390/s22041524.
+Gunning, D., Stefik, M., Choi, J., Miller, T., Stumpf, S., Yang, G.Z.,
+2019. Xai—explainable artificial intelligence. Science Robotics 4,
+eaay7120. doi:10.1126/scirobotics.aay7120.
+Guo, G., Guo, R., Li, X., 2013. Facial expression recognition influenced by human aging. IEEE Transactions on Affective Computing
+4, 291–298. doi:10.1109/T-AFFC.2013.13.
+Guo, J., Deng, J., Lattas, A., Zafeiriou, S., 2021. Sample and computation redistribution for efficient face detection. doi:10.48550/
+arXiv.2105.04714.
+Haunschmid, V., Manilow, E., Widmer, G., 2020. audiolime: Listenable explanations using source separation. doi:10.48550/arXiv.
+2008.00582, arXiv:2008.00582.
+He, K., Zhang, X., Ren, S., Sun, J., 2016a. Deep residual learning for
+image recognition, in: 2016 IEEE Conference on Computer Vision
+and Pattern Recognition (CVPR), pp. 770–778.
+He, K., Zhang, X., Ren, S., Sun, J., 2016b. Deep residual learning
+for image recognition, in: 2016 IEEE Conference on Computer
+Vision and Pattern Recognition (CVPR), pp. 770–778. doi:10.
+1109/CVPR.2016.90.
+Hernandez-Ortega, J., Galbally, J., Fierrez, J., Haraksim, R., Beslay,
+L., 2019. Faceqnet: Quality assessment for face recognition based
+on deep learning, in: 2019 International Conference on Biometrics
+(ICB), pp. 1–8. doi:10.1109/ICB45273.2019.8987255.
+Hinton, G.E., Osindero, S., Teh, Y.W., 2006. A fast learning algorithm
+for deep belief nets. Neural Computation 18, 1527–1554. doi:10.
+1162/neco.2006.18.7.1527.
+Hochreiter, S., Schmidhuber, J., 1997. Long short-term memory. Neural Computation 9, 1735–1780.
+Hopfield, J.J., 1982. Neural networks and physical systems with emergent collective computational abilities. Proceedings of the National
+Academy of Sciences 79, 2554–2558. doi:10.1073/pnas.79.8.
+2554.
+Howard, A.G., Zhu, M., Chen, B., Kalenichenko, D., Wang, W.,
+Weyand, T., Andreetto, M., Adam, H., 2017. Mobilenets: Efficient convolutional neural networks for mobile vision applications.
+doi:10.48550/arXiv.1704.04861.
+Htay, M.M., 2021. Feature extraction and classification methods of
+facial expression: A survey. Computer Science and Information
+Technologies 2, 26–32. doi:10.11591/csit.v2i1.p26-32.
+Huang, W., Xu, W., Wan, R., Zhang, P., Zha, Y., Pang, M., 2024a.
+Auto diagnosis of parkinson’s disease via a deep learning model
+based on mixed emotional facial expressions.
+IEEE Journal of
+Biomedical and Health Informatics 28, 2547–2557. doi:10.1109/
+JBHI.2023.3239780.
+Huang, Y., Peng, J., Cai, Z., Guo, J., Chen, G., Tan, S., 2024b. Facial
+expression recognition with age-group expression feature learning, in: 2024 International Joint Conference on Neural Networks
+(IJCNN), pp. 1–8. doi:10.1109/IJCNN60899.2024.10649944.
+Hussain, J., 2021. Human emotions. URL: https://www.kaggle.
+com/datasets/jafarhussain786. Accessed: 27th Nov 2024.
+Iandola, F.N., Han, S., Moskewicz, M.W., Ashraf, K., Dally, W.J.,
+Keutzer, K., 2016. Squeezenet: Alexnet-level accuracy with 50x
+fewer parameters and < 0.5MB model size.
+doi:10.48550/
+arXiv.1602.07360.
+Isaacowitz, D.M., Stanley, J.T., 2011. Bringing an ecological perspective to the study of aging and recognition of emotional facial
+expressions: Past, current, and future methods. Journal of Nonverbal Behavior 35, 261–278. doi:10.1007/s10919-011-0113-6.
+Jain, P.R., Quadri, S.M.K., Lalit, M., 2021. Recent trends in artificial
+intelligence for emotion detection using facial image analysis, in:
+Proceedings of the 2021 Thirteenth International Conference on
+Contemporary Computing, Association for Computing Machinery.
+pp. 18–36. doi:10.1145/3474124.3474205.
+Jannat, S.R., Canavan, S., 2021. Expression recognition across age,
+in: 2021 16th IEEE International Conference on Automatic Face
+and Gesture Recognition (FG 2021), pp. 1–5.
+doi:10.1109/
+FG52635.2021.9667062.
+Jayanthi, P., Nirmaladevi, K., Bharathi, K.C.K., Krithiknimalan, S.K.,
+Vimalkumar, S., 2024. An enhanced method for recognition of facial expressions using convolutional neural network, in: Proceedings - 2024 5th International Conference on Intelligent Communication Technologies and Virtual Mobile Networks, ICICV 2024, p.
+173 – 175. doi:10.1109/ICICV62344.2024.00033.
+22
+
+Jiang, Z., Seyedi, S., Haque, R.U., Pongos, A.L., Vickers, K.L., Manzanares, C.M., Lah, J.J., Levey, A.I., Clifford, G.D., 2022. Automated analysis of facial emotions in subjects with cognitive impairment. PLoS ONE 17. doi:10.1371/journal.pone.0262527.
+Kabir, H.M.D., Abdar, M., Khosravi, A., Jalali, S.M.J., Atiya, A.F.,
+Nahavandi, S., Srinivasan, D., 2023. Spinalnet: Deep neural network with gradual input. IEEE Transactions on Artificial Intelligence 4, 1165–1177. doi:10.1109/TAI.2022.3185179.
+Kaur, M., Kumar, M., 2024. Facial emotion recognition: A comprehensive review. Expert Systems 41, e13670. doi:10.1111/exsy.
+13670.
+Khajontantichaikun, T., Jaiyen, S., Yamsaengsung, S., Mongkolnam,
+P., Chirapornchai, T., 2023.
+Facial emotion detection for thai
+elderly people using yolov7, in: 2023 15th International Conference on Knowledge and Smart Technology (KST), pp. 1–4.
+doi:10.1109/KST57286.2023.10086786.
+Khajontantichaikun, T., Jaiyen, S., Yamsaengsung, S., Mongkolnam,
+P., Ninrutsirikun, U., 2022. Emotion detection of thai elderly facial expressions using hybrid object detection, in: 2022 26th International Computer Science and Engineering Conference (ICSEC),
+pp. 219–223. doi:10.1109/ICSEC56337.2022.10049334.
+Khan, A.R., 2022. Facial emotion recognition using conventional machine learning and deep learning methods: Current achievements,
+analysis and remaining challenges. Information 13. doi:10.3390/
+info13060268.
+Khan, R.A., Crenn, A., Meyer, A., Bouakaz, S., 2019.
+A novel
+database of children’s spontaneous facial expressions (liris-cse).
+Image and Vision Computing 83-84, 61–69.
+doi:10.1016/j.
+imavis.2019.02.004.
+Kim, E., Bryant, D., Srikanth, D., Howard, A., 2021.
+Age bias
+in emotion detection:
+An analysis of facial emotion recognition performance on young, middle-aged, and older adults, in:
+Proceedings of the 2021 AAAI/ACM Conference on AI, Ethics,
+and Society, Association for Computing Machinery. pp. 638–644.
+doi:10.1145/3461702.3462609.
+Kitchenham, B., Charters, S., 2007. Guidelines for performing systematic literature reviews in software engineering.
+Ko, B.C., 2018. A brief review of facial emotion recognition based on
+visual information. Sensors 18. doi:10.3390/s18020401.
+Ko, H., Kim, K., Bae, M., Seo, M.G., Nam, G., Park, S., Park, S.,
+Ihm, J., Lee, J.Y., 2021. Changes in computer-analyzed facial expressions with age. Sensors 21. doi:10.3390/s21144858.
+Koch, G., Zemel, R., Salakhutdinov, R., et al., 2015. Siamese neural
+networks for one-shot image recognition, in: ICML deep learning
+workshop, Lille. pp. 1–30.
+Krizhevsky, A., Sutskever, I., Hinton, G.E., 2017. Imagenet classification with deep convolutional neural networks. Commun. ACM
+60, 84–90. doi:10.1145/3065386.
+Kumari, S., Kapoor, N., Saini, R., 2024. Emotion recognition from
+facial expression using deep learning model : A review, in: 2024
+5th International Conference for Emerging Technology (INCET),
+pp. 1–6. doi:10.1109/INCET61516.2024.10592970.
+Kuprashevich, M., Tolstykh, I., 2024.
+Mivolo: Multi-input transformer for age and gender estimation, in: Ignatov, D.I., Khachay,
+M., Kutuzov, A., Madoyan, H., Makarov, I., Nikishina, I.,
+Panchenko, A., Panov, M., Pardalos, P.M., Savchenko, A.V.,
+Tsymbalov, E., Tutubalina, E., Zagoruyko, S. (Eds.), Analysis of
+Images, Social Networks and Texts, Springer Nature Switzerland,
+Cham. pp. 212–226.
+Labzour, N., Fkihi, S.E., Benaissa, S., Zennayi, Y., Bourja, O., 2023.
+A survey on facial emotion recognition for the elderly, in: Motahhir, S., Bossoufi, B. (Eds.), Digital Technologies and Applications,
+Springer Nature Switzerland. pp. 561–575.
+Langa, K.M., 2018. Cognitive aging, dementia, and the future of an
+aging population, in: Future directions for the demography of aging: Proceedings of a workshop, National Academies Press Washington, DC, USA. pp. 249–268.
+Langner, O., Dotsch, R., Bijlstra, G., Wigboldus, D.H., Hawk, S.T.,
+van Knippenberg, A., 2010.
+Presentation and validation of the
+radboud faces database. Cognition and Emotion 24, 1377–1388.
+doi:10.1080/02699930903485076.
+LeCun, Y., Haffner, P., Bottou, L., Bengio, Y., 1999.
+Object
+Recognition with Gradient-Based Learning. Springer Berlin Heidelberg, Berlin, Heidelberg.
+pp. 319–345.
+doi:10.1007/
+3-540-46805-6\_19.
+Leong, S.C., Tang, Y.M., Lai, C.H., Lee, C.K.M., 2023. Facial expression and body gesture emotion recognition: A systematic review
+on the use of visual data in affective computing. Computer Science
+Review 48, 100545. doi:10.1016/j.cosrev.2023.100545.
+Li, S., Deng, W., 2022. Deep facial expression recognition: A survey. IEEE Transactions on Affective Computing 13, 1195–1215.
+doi:10.1109/TAFFC.2020.2981446.
+Li, W., Li, M., Su, Z., Zhu, Z., 2015. A deep-learning approach to
+facial expression recognition with candid images, in: 2015 14th
+IAPR International Conference on Machine Vision Applications
+(MVA), IEEE. pp. 279–282.
+Li, W., Tsangouri, C., Abtahi, F., Zhu, Z., 2018. A recursive framework for expression recognition: from web images to deep models
+to game dataset. Machine Vision and Applications 29, 489–502.
+doi:10.1007/s00138-017-0904-9.
+Liang, C., Dong, J., 2023. A survey of deep learning-based facial
+expression recognition research. Frontiers in Computing and Intelligent Systems 5, 56–60. doi:10.54097/fcis.v5i2.12445.
+Liliana, D.Y., Basaruddin, T., 2018. Review of automatic emotion
+recognition through facial expression analysis, in: 2018 International Conference on Electrical Engineering and Computer Science
+(ICECOS), pp. 231–236. doi:10.1109/ICECOS.2018.8605222.
+Little, L., Briggs, P., 2009.
+Pervasive healthcare: the elderly perspective, in: Proceedings of the 2nd International Conference on
+PErvasive Technologies Related to Assistive Environments, Association for Computing Machinery, New York, NY, USA. doi:10.
+1145/1579114.1579185.
+Liu, S., Deng, W., 2015.
+Very deep convolutional neural network
+based image classification using small training sample size, in:
+2015 3rd IAPR Asian Conference on Pattern Recognition (ACPR),
+pp. 730–734. doi:10.1109/ACPR.2015.7486599.
+Liu, W., Anguelov, D., Erhan, D., Szegedy, C., Reed, S., Fu, C.Y.,
+Berg, A.C., 2016. Ssd: Single shot multibox detector, in: Leibe,
+B., Matas, J., Sebe, N., Welling, M. (Eds.), Computer Vision –
+ECCV 2016, Springer International Publishing, Cham. pp. 21–37.
+Liu, Z., Ning, J., Cao, Y., Wei, Y., Zhang, Z., Lin, S., Hu, H., 2022.
+Video swin transformer, in: 2022 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), pp. 3192–3201.
+doi:10.1109/CVPR52688.2022.00320.
+Livingstone, S.R., Russo, F.A., 2018.
+The ryerson audio-visual
+database of emotional speech and song (ravdess): A dynamic,
+multimodal set of facial and vocal expressions in north american
+english. PLOS ONE 13, 1–35. doi:10.1371/journal.pone.
+0196391.
+LoBue, V., Thrasher, C., 2014. The child affective facial expression
+(cafe) set: Validity and reliability from untrained adults. Frontiers
+in Psychology 5. doi:10.3389/fpsyg.2014.01532.
+Lopes, N., Silva, A., Khanal, S.R., Reis, A., Barroso, J., Filipe, V.,
+Sampaio, J., 2018. Facial emotion recognition in the elderly using
+a svm classifier, in: 2018 2nd International Conference on Technology and Innovation in Sports, Health and Wellbeing (TISHW),
+pp. 1–5. doi:10.1109/TISHW.2018.8559494.
+Lucey, P., Cohn, J.F., Kanade, T., Saragih, J., Ambadar, Z., Matthews,
+I., 2010. The extended cohn-kanade dataset (ck+): A complete
+dataset for action unit and emotion-specified expression.
+23
+
+Lundberg, S.M., Lee, S.I., 2017. A unified approach to interpreting
+model predictions, in: Proceedings of the 31st International Conference on Neural Information Processing Systems, Curran Associates Inc., Red Hook, NY, USA. p. 4768–4777.
+Lundqvist, D., Flykt, A., ¨Ohman, A., 1998.
+Karolinska directed
+emotional faces.
+PsycTESTS Dataset 91, 630.
+doi:10.1037/
+t27732-000.
+Lyons, M.J., Kamachi, M., Gyoba, J., 2020a.
+Coding facial expressions with gabor wavelets (ivc special issue). doi:10.5281/
+ZENODO.4029679.
+Lyons, M.J., Kamachi, M., Gyoba, J., 2020b.
+Coding facial expressions with gabor wavelets (ivc special issue). doi:10.5281/
+zenodo.4029679.
+Ma, K., Wang, X., Yang, X., Zhang, M., Girard, J.M., Morency,
+L.P., 2019.
+Elderreact: A multimodal dataset for recognizing
+emotional response in aging adults, in: ICMI 2019 - Proceedings of the 2019 International Conference on Multimodal Interaction, Association for Computing Machinery, Inc. pp. 349–357.
+doi:10.1145/3340555.3353747.
+Maithri, M., Raghavendra, U., Gudigar, A., Samanth, J., Barua,
+P.D., Murugappan, M., Chakole, Y., Acharya, U.R., 2022. Automated emotion recognition: Current trends and future perspectives.
+doi:10.1016/j.cmpb.2022.106646.
+Manresa-Yee, C., Ramis, S., Buades, J.M., 2023. Analysis of gender
+differences in facial expression recognition based on deep learning
+using explainable artificial intelligence. International Journal of
+Interactive Multimedia and Artificial Intelligence In Press, 1–10.
+doi:10.9781/ijimai.2023.04.003.
+Martinez, B., Valstar, M.F., Jiang, B., Pantic, M., 2019.
+Automatic analysis of facial actions: A survey. IEEE Transactions on
+Affective Computing 10, 325–347. doi:10.1109/TAFFC.2017.
+2731763.
+Mary, R., Jayakumar, T.V., 2016.
+A review on how human aging
+influences facial expression recognition (fer), in: Advances in Intelligent Systems and Computing, Springer Verlag. pp. 313–322.
+doi:10.1007/978-3-319-28031-8\_27.
+Megvii Technology, 2012.
+Face++.
+URL: https://www.
+faceplusplus.com/emotion-recognition/. Accessed 22nd
+Nov 2024.
+Mejia-Escobar, C., Cazorla, M., Martinez-Martin, E., 2023. Towards a
+better performance in facial expression recognition: A data-centric
+approach.
+Computational Intelligence and Neuroscience 2023,
+1394882. doi:10.1155/2023/1394882.
+Meuwissen, A.S., Anderson, J.E., Zelazo, P.D., 2017.
+The creation and validation of the developmental emotional faces stimulus set. Behavior Research Methods 49, 960–966. doi:10.3758/
+s13428-016-0756-7.
+Microsoft
+Azure,
+2017.
+Microsoft
+face
+service.
+URL:
+https://azure.microsoft.com/en-us/products/
+ai-services/ai-vision. Accessed 22nd Nov 2024.
+Milborrow, S., Nicolls, F., 2014. Active shape models with sift descriptors and mars, in: 2014 International Conference on Computer
+Vision Theory and Applications (VISAPP), pp. 380–387.
+Minear, M., Park, D.C., 2004.
+A lifespan database of adult facial
+stimuli. Behavior Research Methods, Instruments, & Computers
+36, 630–633. doi:10.3758/BF03206543.
+Modi, P., Patel, S., 2022. A state-of-the-art survey on face recognition
+methods. International Journal of Computer Vision and Image Processing (IJCVIP) 12, 1–19. doi:10.4018/IJCVIP.2022010101.
+Mohammed, R., Rawashdeh, J., Abdullah, M., 2020. Machine learning with oversampling and undersampling techniques: Overview
+study and experimental results, in: 2020 11th International Conference on Information and Communication Systems (ICICS), pp.
+243–248. doi:10.1109/ICICS49469.2020.239556.
+Mohana, M., Subashini, P., 2024.
+Facial expression recognition
+using machine learning and deep learning techniques: A systematic review.
+SN Computer Science 5, 432.
+doi:10.1007/
+s42979-024-02792-7.
+Mollahosseini, A., Hasani, B., Mahoor, M.H., 2019. Affectnet: A
+database for facial expression, valence, and arousal computing in
+the wild. IEEE Transactions on Affective Computing 10, 18–31.
+doi:10.1109/TAFFC.2017.2740923.
+Moolchandani, M., Dwivedi, S., Nigam, S., Gupta, K., 2021.
+A
+survey on:
+Facial emotion recognition and classification, in:
+2021 5th International Conference on Computing Methodologies
+and Communication (ICCMC), pp. 1677–1686.
+doi:10.1109/
+ICCMC51019.2021.9418349.
+Muazu, A., Manzi, E., Aminu, J., 2021. A systematic review of methods of emotion recognition by facial expressions.
+International
+Journal of Advanced Research 9, 1141–1152.
+doi:10.21474/
+IJAR01/12951.
+Nojavanasghari, B., Baltruˇsaitis, T., Hughes, C.E., Morency, L.P.,
+2016. Emoreact: a multimodal approach and dataset for recognizing emotional responses in children, in: Proceedings of the 18th
+ACM International Conference on Multimodal Interaction, Association for Computing Machinery, New York, NY, USA. p. 137–144.
+doi:10.1145/2993148.2993168.
+Noldus Information Technology b.v, 2021. Facial expression recognition software — FaceReader. URL: https://www.noldus.com/
+facereader. Accessed 22nd Nov 2024.
+Oliver, M.M., Amengual Alcover, E., 2020.
+Uibvfed: Virtual facial expression dataset.
+PLOS ONE 15, 1–10.
+doi:10.1371/
+journal.pone.0231266.
+O’Mahony, N., Campbell, S., Carvalho, A., Harapanahalli, S., Hernandez, G.V., Krpalkova, L., Riordan, D., Walsh, J., 2020.
+Deep learning vs. traditional computer vision, in:
+Arai, K.,
+Kapoor, S. (Eds.), Advances in Computer Vision, Springer International Publishing, Cham. pp. 128–144.
+doi:10.1007/
+978-3-030-17795-9\_10.
+OpenAI, Achiam, J., Adler, S., et al., 2024. Gpt-4 technical report.
+doi:10.48550/arXiv.2303.08774.
+Pantic, M., Valstar, M., Rademaker, R., Maat, L., 2005.
+Webbased database for facial expression analysis, in:
+2005 IEEE
+International Conference on Multimedia and Expo, pp. 5 pp.–.
+doi:10.1109/ICME.2005.1521424.
+Park, H., Shin, Y., Song, K., Yun, C., Jang, D., 2022. Facial emotion
+recognition analysis based on age-biased data. Applied Sciences
+12. doi:10.3390/app12167992.
+Patel, K., Mehta, D., Mistry, C., Gupta, R., Tanwar, S., Kumar,
+N., Alazab, M., 2020.
+Facial sentiment analysis using ai techniques: State-of-the-art, taxonomies, and challenges. IEEE Access
+8, 90495–90519. doi:10.1109/ACCESS.2020.2993803.
+Pearl, J., 1988. Probabilistic Reasoning in Intelligent Systems: Networks of Plausible Inference. Morgan Kaufmann Publishers Inc.,
+San Francisco, CA, USA.
+Petrou, N., Christodoulou, G., Avgerinakis, K., Kosmides, P., 2023.
+Lightweight mood estimation algorithm for faces under partial occlusion, in: Proceedings of the 16th International Conference on
+PErvasive Technologies Related to Assistive Environments, Association for Computing Machinery. pp. 402–407.
+doi:10.1145/
+3594806.3596553.
+Petsiuk, V., Das, A., Saenko, K., 2018.
+Rise: Randomized input
+sampling for explanation of black-box models. doi:10.48550/
+arXiv.1806.07421.
+Pic´on, G.C., Roig-Maim´o, M.F., Oliver, M.M., Alcover, E.A., Mas-
+Sans´o, R., 2022. Do machines better understand synthetic facial
+expressions than people?, in: Proceedings of the XXII International Conference on Human Computer Interaction, Association
+for Computing Machinery. doi:10.1145/3549865.3549908.
+Pinto, L.V.L., Alves, A.V.N., Medeiros, A.M., da Silva Costa, S.W.,
+24
+
+Pires, Y.P., Costa, F.A.R., da Rocha Seruffo, M.C., 2023. A systematic review of facial expression detection methods. IEEE Access 11, 61881–61891. doi:10.1109/ACCESS.2023.3287090.
+Prados-Torreblanca, A., Buenaposada, J.M., Baumela, L., 2022.
+Shape preserving facial landmarks with graph attention networks.
+doi:10.48550/arXiv.2210.07233.
+Pranathi, P., Lakshmi, C., Suneetha, M., 2021. A review on various facial expression recognition techniques, in: 2021 Fifth International
+Conference on I-SMAC (IoT in Social, Mobile, Analytics and
+Cloud) (I-SMAC), pp. 1246–1254. doi:10.1109/I-SMAC52330.
+2021.9640733.
+Qin, X., Zhang, Z., Huang, C., Dehghan, M., Zaiane, O.R., Jagersand,
+M., 2020. U2-net: Going deeper with nested u-structure for salient
+object detection. Pattern Recognition 106, 107404. doi:10.1016/
+j.patcog.2020.107404.
+Rajeswari, G., IthayaRani, P., 2018. Literature survey on facial expression recognition techniques, in: 2018 3rd International Conference on Communication and Electronics Systems (ICCES), pp.
+137–142. doi:10.1109/CESYS.2018.8723953.
+Ramis, S., Buades, J.M., Perales, F.J., Manresa-Yee, C., 2022.
+A
+novel approach to cross dataset studies in facial expression recognition. Multimedia Tools Appl. 81, 39507–39544. doi:10.1007/
+s11042-022-13117-2.
+Redmon, J., Divvala, S., Girshick, R., Farhadi, A., 2016. You only
+look once: Unified, real-time object detection, in: 2016 IEEE Conference on Computer Vision and Pattern Recognition (CVPR), pp.
+779–788. doi:10.1109/CVPR.2016.91.
+Ren, S., He, K., Girshick, R., Sun, J., 2017. Faster r-cnn: Towards
+real-time object detection with region proposal networks. IEEE
+Transactions on Pattern Analysis and Machine Intelligence 39,
+1137–1149. doi:10.1109/TPAMI.2016.2577031.
+Revina, I., Emmanuel, W.R.S., 2021. A survey on human face expression recognition techniques. Journal of King Saud University
+- Computer and Information Sciences 33, 619–628. doi:10.1016/
+j.jksuci.2018.09.002.
+Ribeiro, M.T., Singh, S., Guestrin, C., 2016. “Why should I trust
+you?”: Explaining the predictions of any classifier, in: Proceedings
+of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining, ACM, New York. p. 1135–1144.
+doi:10.1145/2939672.2939778.
+Rokkones, A.S., Uddin, M.Z., Torresen, J., 2019.
+Facial expression recognition using robust local directional strength pattern features and recurrent neural network, in: Velikic, G., Gross, C.
+(Eds.), 2019 IEEE 9TH International Conference on Consumer
+Electronics (ICCE-BERLIN), IEEE. pp. 283–288. doi:10.1109/
+icce-berlin47944.2019.8966234.
+Ruan, Z., Wei, Y., Guo, Y., Xie, Y., Yuan, Y., 2024.
+Scatnet: A
+novel self-supervised contrastive framework with spatial-channel
+attention and temporal transformer for few-shot action recognition, in: Proceedings of the 2023 6th International Conference
+on Algorithms, Computing and Artificial Intelligence, Association for Computing Machinery, New York, NY, USA. p. 135–140.
+doi:10.1145/3639631.3639654.
+Ruffman, T., Henry, J.D., Livingstone, V., Phillips, L.H., 2008.
+A meta-analytic review of emotion recognition and aging: Implications for neuropsychological models of aging.
+Neuroscience & Biobehavioral Reviews 32, 863–881. doi:10.1016/j.
+neubiorev.2008.01.001.
+Saez-Pons, J., Syrdal, D.S., Dautenhahn, K., 2015. What has happened today? memory visualisation of a robot companion to assist user’s memory. Journal of Assistive Technologies 9, 207–218.
+doi:10.1108/JAT-02-2015-0004.
+Sandler, M., Howard, A., Zhu, M., Zhmoginov, A., Chen, L.C., 2018.
+Mobilenetv2: Inverted residuals and linear bottlenecks, in: 2018
+IEEE/CVF Conference on Computer Vision and Pattern Recognition, pp. 4510–4520. doi:10.1109/CVPR.2018.00474.
+Santoso, B.E., Kusuma, G.P., 2022. Facial emotion recognition on
+fer2013 using vggspinalnet. Journal of Theoretical and Applied
+Information Technology 100, 2088 – 2102.
+Sari, M., Moussaouı, A., Hadid, A., 2020. Automated facial expression recognition using deep learning techniques: An overview. International Journal of Informatics and Applied Mathematics 3, 39–
+53.
+Selvaraju, R.R., Cogswell, M., Das, A., Vedantam, R., Parikh, D., Batra, D., 2017. Grad-cam: Visual explanations from deep networks
+via gradient-based localization, in: 2017 IEEE International Conference on Computer Vision (ICCV), IEEE, New York. pp. 618–
+626. doi:10.1109/ICCV.2017.74.
+Sharma, G., Joshi, J., Zeghari, R., Guerchouche, R., 2020. Audiovisual weakly supervised approach for apathy detection in the elderly, in: 2020 International Joint Conference on Neural Networks
+(IJCNN), pp. 1–7. doi:10.1109/IJCNN48605.2020.9206829.
+Sighthound Inc, 2015. Sighthound cloud api. URL: https://www.
+sighthound.com/products/alpr. Accessed 22nd Nov 2024.
+Simonyan, K., Zisserman, A., 2015. Very deep convolutional networks for large-scale image recognition, in: 3rd International Conference on Learning Representations (ICLR 2015), Computational
+and Biological Learning Society. pp. 1–14.
+Song, I., Kim, H.J., Jeon, P.B., 2014. Deep learning for real-time
+robust facial expression recognition on a smartphone, in: 2014
+IEEE International Conference on Consumer Electronics (ICCE),
+pp. 564–567. doi:10.1109/ICCE.2014.6776135.
+Sreevidya, P., Veni, S., Murthy, O.V.R., 2022. Elder emotion classification through multimodal fusion of intermediate layers and crossmodal transfer learning. Signal Image Video Process. 16, 1281–
+1288.
+Szegedy, C., Liu, W., Jia, Y., Sermanet, P., Reed, S., Anguelov, D.,
+Erhan, D., Vanhoucke, V., Rabinovich, A., 2015. Going deeper
+with convolutions, in: 2015 IEEE Conference on Computer Vision
+and Pattern Recognition (CVPR), pp. 1–9.
+Szegedy, C., Vanhoucke, V., Ioffe, S., Shlens, J., Wojna, Z., 2016. Rethinking the inception architecture for computer vision, in: 2016
+IEEE Conference on Computer Vision and Pattern Recognition
+(CVPR), pp. 2818–2826. doi:10.1109/CVPR.2016.308.
+S¨onmez, E.B., 2019. A computational study on aging effect for facial expression recognition. Turkish Journal of Electrical Engineering and Computer Sciences 27, 2430–2443. doi:10.3906/
+elk-1811-70.
+Tan, M., Le, Q.V., 2020a.
+Efficientnet: Rethinking model scaling
+for convolutional neural networks. doi:10.48550/arXiv.1905.
+11946, arXiv:1905.11946.
+Tan, M., Le, Q.V., 2020b.
+Efficientnet: Rethinking model scaling
+for convolutional neural networks. doi:10.48550/arXiv.1905.
+11946.
+Uddin, M.Z., Hassan, M.M., Almogren, A., Alamri, A., Alrubaian,
+M., Fortino, G., 2017a. Facial expression recognition utilizing local direction-based robust features and deep belief network. IEEE
+Access 5, 4525–4536. doi:10.1109/ACCESS.2017.2676238.
+Uddin, M.Z., Hassan, M.M., Almogren, A., Zuair, M., Fortino, G.,
+Torresen, J., 2017b. A facial expression recognition system using
+robust face features from depth videos and deep learning. Computers & Electrical Engineering 63, 114–125. doi:10.1016/j.
+compeleceng.2017.04.019.
+Ullah, S., Tian, W., 2021. A systematic literature review of recognition of compound facial expression of emotions, in: Proceedings of the 2020 4th International Conference on Video and Image
+Processing, Association for Computing Machinery. pp. 116–121.
+doi:10.1145/3447450.3447469.
+Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez,
+A.N., Kaiser, L., Polosukhin, I., 2017. Attention is all you need,
+25
+
+in: Proceedings of the 31st International Conference on Neural Information Processing Systems, Curran Associates Inc., Red Hook,
+NY, USA. p. 6000–6010.
+Vincent, P., Larochelle, H., Lajoie, I., Bengio, Y., Manzagol, P.A.,
+2010. Stacked denoising autoencoders: Learning useful representations in a deep network with a local denoising criterion. Journal
+of Machine Learning Research 11, 3371–3408.
+Viola, P., Jones, M., 2001. Rapid object detection using a boosted cascade of simple features, in: Proceedings of the 2001 IEEE Computer Society Conference on Computer Vision and Pattern Recognition. CVPR 2001, pp. I–I. doi:10.1109/CVPR.2001.990517.
+Vyas, A.S., Prajapati, H.B., Dabhi, V.K., 2019. Survey on face expression recognition using cnn, in: 2019 5th International Conference
+on Advanced Computing & Communication Systems (ICACCS),
+pp. 102–106. doi:10.1109/ICACCS.2019.8728330.
+Wang, D., Subagdja, B., Kang, Y., Tan, A.H., Zhang, D., 2014.
+Towards intelligent caring agents for aging-in-place: Issues and
+challenges, in: 2014 IEEE Symposium on Computational Intelligence for Human-like Intelligence (CIHLI), pp. 1–8.
+doi:10.
+1109/CIHLI.2014.7013393.
+Wang, S., Wu, S., Gao, Z., Ji, Q., 2015. Facial expression recognition through modeling age-related spatial patterns.
+Multimedia Tools and Applications 75, 3937–3954.
+doi:10.1007/
+s11042-015-3107-2.
+Wang, W., Xie, E., Li, X., Fan, D.P., Song, K., Liang, D., Lu, T.,
+Luo, P., Shao, L., 2021. Pyramid vision transformer: A versatile backbone for dense prediction without convolutions, in: 2021
+IEEE/CVF International Conference on Computer Vision (ICCV),
+pp. 548–558. doi:10.1109/ICCV48922.2021.00061.
+WHO, 2024.
+World health organization report 2024.
+https://
+2024-wpds.prb.org/.
+Wu, H., Xiao, B., Codella, N., Liu, M., Dai, X., Yuan, L., Zhang,
+L., 2021. Cvt: Introducing convolutions to vision transformers,
+in: 2021 IEEE/CVF International Conference on Computer Vision
+(ICCV), pp. 22–31. doi:10.1109/ICCV48922.2021.00009.
+Wu, S., Wang, S., Wang, J., 2015. Enhanced facial expression recognition by age, in: 2015 11th IEEE International Conference and
+Workshops on Automatic Face and Gesture Recognition (FG), pp.
+1–6. doi:10.1109/FG.2015.7163117.
+Wu, T., Turaga, P., Chellappa, R., 2012. Age estimation and face
+verification across aging using landmarks. IEEE Transactions on
+Information Forensics and Security 7, 1780–1788. doi:10.1109/
+TIFS.2012.2213812.
+Yan, C., Xu, J., Klopfer, B., N¨urnberger, A., 2020. A deep neural
+network based multimodal video recognition system for caring, in:
+2020 IEEE International Conference on Human-Machine Systems
+(ICHMS), pp. 1–5. doi:10.1109/ICHMS49158.2020.9209395.
+Yang, H.F., Lin, B.Y., Chang, K.Y., Chen, C.S., 2018. Joint estimation
+of age and expression by combining scattering and convolutional
+networks. ACM Trans. Multimedia Comput. Commun. Appl. 14.
+doi:10.1145/3152118.
+Yang, T., Yang, Z., Xu, G., Gao, D., Zhang, Z., Wang, H., Liu, S., Han,
+L., Zhu, Z., Tian, Y., Huang, Y., Zhao, L., Zhong, K., Shi, B., Li,
+J., Fu, S., Liang, P., Banissy, M.J., Sun, P., 2020. Tsinghua facial
+expression database – a database of facial expressions in chinese
+young and older women and men: Development and validation.
+PLOS ONE 15, 1–14. doi:10.1371/journal.pone.0231304.
+Zhalehpour, S., Onder, O., Akhtar, Z., Erdem, C.E., 2017. Baum-1:
+A spontaneous audio-visual face database of affective and mental
+states. IEEE Transactions on Affective Computing 8, 300–313.
+doi:10.1109/TAFFC.2016.2553038.
+Zhang, H., Huang, B., Tian, G., 2020. Facial expression recognition based on deep convolution long short-term memory networks
+of double-channel weighted mixture. Pattern Recognition Letters
+131, 128 – 134. doi:10.1016/j.patrec.2019.12.013.
+Zhang, K., Zhang, Z., Li, Z., Qiao, Y., 2016. Joint face detection
+and alignment using multitask cascaded convolutional networks.
+IEEE Signal Processing Letters 23, 1499–1503.
+doi:10.1109/
+LSP.2016.2603342.
+Zhao, G., Huang, X., Taini, M., Li, S.Z., Pietik¨ainen, M., 2011. Facial expression recognition from near-infrared videos. Image and
+Vision Computing 29, 607–619. doi:10.1016/j.imavis.2011.
+07.002.
+Zhu, A., Boonipat, T., Cherukuri, S., Bite, U., 2024.
+Defining
+standard values for facereader facial expression software output.
+Aesthetic Plastic Surgery 48, 785–792.
+doi:10.1007/
+s00266-023-03468-y.
+26

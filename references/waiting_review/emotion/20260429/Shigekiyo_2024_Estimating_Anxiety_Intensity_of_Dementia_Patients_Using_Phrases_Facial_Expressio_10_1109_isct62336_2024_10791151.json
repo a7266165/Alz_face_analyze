@@ -1,0 +1,26 @@
+{
+  "title": "Estimating Anxiety Intensity of Dementia Patients Using Phrases, Facial Expressions, and Behaviors",
+  "authors": [
+    "Narumi Shigekiyo",
+    "Masaaki Yamauchi",
+    "Hiroshi Tsuji",
+    "Hideyuki Shimonishi",
+    "Masayuki Murata",
+    "Miwa Sugita",
+    "Michihiro Kita"
+  ],
+  "year": 2024,
+  "abstract": "Recently, the number of persons with dementia (PwD) has been steadily increasing. The PwDs live with anxiety derived from the decline in cognitive function, leading to concerns about memory loss and the future. The accumulation of these anxieties causes a state of agitation and Behavioral and Psychological Symptoms of Dementia (BPSD). Dealing with BPSD becomes a burden on the caregivers and the PwDs and violates their wellbeing. It is becoming a social issue. When a caregiver deals with agitation and BPSD, dealing with the early stages gives a smaller load than managing the escalated stage of agitation. Therefore, predicting agitation and BPSD in advance reduces the burden on caregivers and PwD and improves their wellbeing. Several methods have been proposed to predict BPSD using physiological, environmental, and caregiving data. However, there is a lack of research considering the state of feeling anxiety. Also, using a device that touches the skin tends to make PwD stressed, and continuous measurement is difficult. Thus, estimating anxiety from information obtained without contacting devices is necessary. Our research group has developed a metric, the CADATY index. The index is designed to estimate the intensity of anxiety and agitation based on the daily life situations of PwDs. We propose a method for estimating the CADATY index using Bayesian estimation by acquiring multimodal observation information such as phrases, facial expressions, and behaviors as the daily life of PwDs. To evaluate our method, we collect these data by recording video and audio in a nursing home that provides elderly housing with supportive services, i.e., in a daily living environment. We could estimate the CADATY index value in cases where we captured every modality. We found that the information from phrases and behaviors effectively detected signs of agitation and BPSD.",
+  "doi": "10.1109/isct62336.2024.10791151",
+  "arxiv_id": null,
+  "venue": null,
+  "citation_count": 1,
+  "source": "openalex",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4405491026"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.1109/isct62336.2024.10791151"
+}

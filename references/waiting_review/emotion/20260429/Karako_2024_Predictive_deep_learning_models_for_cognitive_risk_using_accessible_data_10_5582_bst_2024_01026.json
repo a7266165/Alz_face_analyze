@@ -1,0 +1,20 @@
+{
+  "title": "Predictive deep learning models for cognitive risk using accessible data",
+  "authors": [
+    "Kenji Karako"
+  ],
+  "year": 2024,
+  "abstract": "The early detection of mild cognitive impairment (MCI) is crucial to preventing the progression of dementia. However, it necessitates that patients voluntarily undergo cognitive function tests, which may be too late if symptoms are only recognized once they become apparent. Recent advances in deep learning have improved model performance, leading to applied research in various predictive problems. Studies attempting to estimate dementia and the risk of MCI based on readily available data are being conducted, with the hope of facilitating the early detection of MCI. The data used for these predictions vary widely, including facial imagery, voice recordings, blood tests, and inertial information during walking. Deep learning models that make predictions based on these data sources have been proposed. This article summarizes recent research efforts to predict the risk of dementia using easily accessible data. As research progresses and more accurate predictions become feasible, simple tests could be incorporated into daily life to monitor one's personal health status and to facilitate an early intervention.",
+  "doi": "10.5582/bst.2024.01026",
+  "arxiv_id": null,
+  "venue": "BioScience Trends",
+  "citation_count": 3,
+  "source": "openalex",
+  "pdf_url": "https://www.jstage.jst.go.jp/article/bst/advpub/0/advpub_2024.01026/_pdf",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4391936113"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.5582/bst.2024.01026"
+}

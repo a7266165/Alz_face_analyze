@@ -1,0 +1,23 @@
+{
+  "title": "Facial Expression Recognition in the Wild for Low-Resolution Images Using Voting Residual Network",
+  "authors": [
+    "José L. Gómez-Sirvent",
+    "Francisco López de la Rosa",
+    "Marı́a Teresa López",
+    "Antonio Fernández‐Caballero"
+  ],
+  "year": 2023,
+  "abstract": "Facial expression recognition (FER) in the wild has attracted much attention in recent years due to its wide range of applications. Most current approaches use deep learning models trained on relatively large images, which significantly reduces their accuracy when they have to infer low-resolution images. In this paper, a residual voting network is proposed for the classification of low-resolution facial expression images. Specifically, the network consists of a modified ResNet-18, which divides each sample into multiple overlapping crops, makes a prediction of the class to which each of the crops belongs, and by soft-voting the predictions of all the crops, the network determines the class of the sample. A novel aspect of this work is that the image splitting is not performed before entering the network, but at an intermediate point in the network, which significantly reduces the resource consumption. The proposed approach was evaluated on two popular benchmark datasets (AffectNet and RAF-DB) by scaling the images to a network input size of 48 × 48. The proposed model reported an accuracy of 63.06% on AffectNet and 85.69% on RAF-DB with seven classes in both cases, which are values comparable to those provided by other current approaches using much larger images.",
+  "doi": "10.3390/electronics12183837",
+  "arxiv_id": null,
+  "venue": "Electronics",
+  "citation_count": 10,
+  "source": "openalex",
+  "pdf_url": "https://www.mdpi.com/2079-9292/12/18/3837/pdf?version=1694421549",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4386617334"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.3390/electronics12183837"
+}

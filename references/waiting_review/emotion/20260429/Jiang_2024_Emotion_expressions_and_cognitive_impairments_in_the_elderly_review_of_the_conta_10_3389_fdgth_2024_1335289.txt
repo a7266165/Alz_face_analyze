@@ -1,0 +1,1829 @@
+EDITED BY
+Graham Jones,
+Tufts Medical Center, United States
+REVIEWED BY
+Meysam Asgari,
+Oregon Health and Science University,
+United States
+Brant Chapman,
+Bergen Community College, United States
+*CORRESPONDENCE
+Di Jiang
+di.jiang@cnrc-nrc.gc.ca
+RECEIVED 08 November 2023
+ACCEPTED 20 June 2024
+PUBLISHED 08 July 2024
+CITATION
+Jiang D, Yan L and Mayrand F (2024) Emotion
+expressions and cognitive impairments in
+the elderly: review of the contactless
+detection approach.
+Front. Digit. Health 6:1335289.
+doi: 10.3389/fdgth.2024.1335289
+COPYRIGHT
+© 2024 Jiang, Yan and Mayrand. This is an
+open-access article distributed under the
+terms of the Creative Commons Attribution
+License (CC BY). The use, distribution or
+reproduction in other forums is permitted,
+provided the original author(s) and the
+copyright owner(s) are credited and that the
+original publication in this journal is cited, in
+accordance with accepted academic practice.
+No use, distribution or reproduction is
+permitted which does not comply with these
+terms.
+Emotion expressions and
+cognitive impairments in
+the elderly: review of the
+contactless detection approach
+Di Jiang
+1*, Luowei Yan
+2 and Florence Mayrand
+2
+1Medical Devices Research Centre, National Research Council of Canada, Boucherville, QC, Canada,
+2Department of Psychology, McGill University, Montreal, QC, Canada
+The aging population in Canada has been increasing continuously throughout
+the past decades. Amongst this demographic, around 11% suffer from some
+form of cognitive decline. While diagnosis through traditional means (i.e.,
+Magnetic Resonance Imagings (MRIs), positron emission tomography (PET)
+scans, cognitive assessments, etc.) has been successful at detecting this
+decline, there remains unexplored measures of cognitive health that could
+reduce stress and cost for the elderly population, including approaches for
+early detection and preventive methods. Such efforts could additionally
+contribute to reducing the pressure and stress on the Canadian healthcare
+system, as well as improve the quality of life of the elderly population. Previous
+evidence has demonstrated emotional facial expressions being altered in
+individuals with various cognitive conditions such as dementias, mild cognitive
+impairment, and geriatric depression. This review highlights the commonalities
+among these cognitive health conditions, and research behind the contactless
+assessment methods to monitor the health and cognitive well-being of the
+elderly population through emotion expression. The contactless detection
+approach covered by this review includes automated facial expression analysis
+(AFEA), electroencephalogram (EEG) technologies and heart rate variability
+(HRV).
+In
+conclusion,
+a
+discussion
+of
+the
+potentials
+of
+the
+existing
+technologies and future direction of a novel assessment design through fusion
+of AFEA, EEG and HRV measures to increase detection of cognitive decline in
+a contactless and remote manner will be presented.
+KEYWORDS
+cognitive decline, remote health, contactless detection, machine learning, elderly
+population
+1 Introduction
+The cognitive health of the elderly population has grown to be a central issue in our
+society. Statistics estimated that at least 6.5 million of Americans aged 65 years or over are
+living with Alzheimer’s disease (AD) (1). In Canada, 597,300 individuals were living with
+dementia in 2020, and this number was projected to reach close to a million by 2030 (2).
+The demand and reliance on valid and precise diagnostic tools have therefore increased
+exponentially. Historically, traditional tools such as neuropsychological tests and brain
+imaging techniques have been the state-of-the-art diagnostic methods and assessment of
+severity. Although accurate, these techniques involve intense patient participation in the
+case of tests or intrusive manipulations in the case of MRIs and PET scans. During the
+same period where AD cases increased, the proportion of elders living in collective
+TYPE Review
+PUBLISHED 08 July 2024
+|
+DOI 10.3389/fdgth.2024.1335289
+Frontiers in Digital Health
+01
+frontiersin.org
+
+dwellings or assisted living facilities, such as a nursing home, a
+chronic care facility or a residence for seniors, also evolved
+signiﬁcantly. The 2011 census indicated that 7.9% of seniors aged
+65 or over resided in a collective dwelling, whereas the 2021
+census revealed 28% of those aged 80 and above living in such
+arrangements (3, 4). Speciﬁcally with the impact of COVID-19
+pandemic, one in every twenty Canadians aged 65 or over were
+living in these facilities in 2021 (5, 6). Thus, our healthcare
+systems are facing an unprecedented situation with continuously
+increasing needs and burdens. The emerging trend of regrouping
+of patients in the facilities brings on new possibilities regarding
+the assessments of their disorders and disabilities, such that this
+environment could serve as both the treatment and the diagnosis
+method. For instance, remote and contactless tools could easily
+be integrated into the living installations which AD patients
+utilize daily. To this end, existing evidence has demonstrated
+emotional facial expressions being altered in individuals with
+various cognitive conditions such as dementia, mild cognitive
+impairment, and geriatric depression. Technologies such as
+Automated Facial Expressions Analysis (AFEA) and remote
+photoplethysmography (rPPG) have been shown to provide
+accurate and reliable measures which can be related to cognitive
+health and disease progression. Given that these technologies can
+be added to daily protocols already administered to patients in
+care facilities via camera recordings, assessment of patients’
+health could be completely re-invented such that intrusive
+methods will be on need-basis and less required, and preliminary
+diagnosis can occur in community. In this paper, we will review
+the use of these technologies in the context of various cognitive
+conditions to enhance the accessibility of treatment and progress
+tracking for the elderly in a remote and contactless manner.
+2 Cognitive impairments in the elderly
+population
+2.1 Dementia and Alzheimer’s disease
+Dementia, the most well-known disorder associated with the
+elderly, is a general term for several diseases, including AD (7).
+Over 350 Canadians on average were diagnosed with dementia
+every day in 2022 (2). All these data demonstrate that dementia,
+with its prevalence, is a non-negligible condition in the health
+assessment of elders in long-term care facilities. Dementia is
+understood
+to
+affect
+memory,
+increase
+confusion,
+apathy/
+depression, and leads to a loss of ability to complete everyday
+tasks
+(8).
+Typically,
+dementia
+is
+assessed
+through
+various
+cognitive and neuropsychological tests such as the Mini-Mental
+Status Examination (MMSE). Brain scans, such as MRIs and
+PET scans, can also be used to detect dementia through changes
+in the brain structure, but these are associated with a high cost
+and demand extensive resources. While it remains exploratory
+whether the expression of emotions differs between older adults
+with dementia and healthy ones, several studies in this space
+provided promising results. For example, studies looking into
+facial expression of pain found that participants with dementia
+expressed more pain in their faces than participants in the
+control group (9). A more recent study also found that across
+their participant pool from AD research centers, it appeared that
+dementia patients facially expressed fewer positive emotions
+during emotion-eliciting events and instead used more negative
+expressions (10). In addition, AD patients demonstrated an
+overall increase in facial expressiveness (11). Similarly, other
+studies have found altered zygomatic activity (i.e., muscles that
+control
+smiling)
+in
+patients
+with
+dementia
+while
+viewing
+emotion-eliciting images when compared to healthy elderly
+counterparts (12). The ﬂexibility in emotion expressions was also
+found to be reduced for AD patients, such that they struggled to
+amplify positive emotions facially (13). That being said, while
+these techniques have been used increasingly in the clinical
+world,
+no
+automated
+assessment
+of
+pain
+through
+facial
+expressions has been tested as a valid tool for detecting dementia
+(14), and little effort has been put into relating facial expression
+analysis to other physiological measures of dementia. Hence, the
+automation of facial expression analysis, paired with other
+measures, would therefore provide an interesting option to both
+detect dementia, as well as monitor it once it is diagnosed.
+2.2 Mild cognitive impairment
+Dementia is often ﬁrst diagnosed as mild cognitive impairment
+(MCI), which makes it one of the ﬁrst observable conditions and
+symptoms in one’s cognitive decline. MCI is characterized by a
+limbo state between normal aging and dementia (15). For people
+with MCI, typical symptoms include memory deﬁcits as well as
+other reduced cognitive functions that do not hinder or only
+slightly
+affect
+one’s
+instrumental
+functional
+abilities.
+The
+prevalence
+of
+MCI
+increases
+with
+age,
+with
+10.88%
+of
+community-dwellers aged 50–59 years and 21.27% of those aged
+80 years and above, as indicated by a recent worldwide metaanalysis (16). More importantly, up to 30% of adults who
+develop MCI will go on to be diagnosed with some form of
+dementia; typically AD for those who experience memory deﬁcits
+(17). Early detection of MCI is crucial in reducing one’s risk of
+developing dementia. Traditional detection tools, however, are
+often targeted towards the impairments found in AD and
+therefore not very accurate at detecting MCI. In fact, the MMSE,
+which is one of the most commonly used cognitive tests, can
+only detect around 18% of MCI cases (18), and it does not
+provide substantial support for the early detection of dementia in
+MCI patients (19). Therefore, more tools are necessary to better
+understand MCI and help early treatment of cognitive decline. It
+is
+known
+that
+people
+with
+cognitive
+impairments
+express
+emotions differently through their faces compared to healthy
+adults of the same age (20, 21), and a recent effort has been
+made to use non-invasive, readily available technologies to assess
+MCI.
+For
+example,
+Fei
+and
+colleagues
+(18,
+22)
+proposed
+computer
+vision
+techniques
+for
+the
+detection
+of
+cognitive
+impairment, including MCI, in the elderly by analyzing facial
+features. As manual coding of these expressions can be tedious,
+an automated way of facial expression analysis (i.e., AFEA) could
+Jiang et al.
+10.3389/fdgth.2024.1335289
+Frontiers in Digital Health
+02
+frontiersin.org
+
+potentially provide an efﬁcient, contactless, and non-intrusive
+detection tool for MCI and allow for better prevention of dementia.
+2.3 Depression
+Often overlooked, depression is one of the most common
+symptoms in dementia and MCI patients. The prevalence of
+depression
+among
+elderly
+individuals
+tends to vary across
+investigations due to different experimental designs (23–25). For
+instance, estimates suggest that depression could affect up to 5%
+of the elderly population and close to 44% in elders requiring
+residential health care (26, 27). Despite its prevalence, late onset
+depression remains underdiagnosed and characterized as a part
+of normal aging. However, depression has serious impacts on the
+elderly’s cognitive and physical health. Late onset of depression
+can lead to serious cognitive deﬁcits, often similar to those seen
+in MCI (28). Research has shown that MCI patients are more
+likely to develop depression, with a prevalence rate between
+16.9% and 55% (29). In fact, half of those who experience
+depression
+after
+the
+age
+of
+65
+and
+along
+with
+cognitive
+impairment will go on to develop AD or other types of
+dementia.
+The
+comorbidity of
+depression
+in
+patients
+with
+dementia can vary between 9 and 68% (30). Hence, depression is
+both seen as a risk factor for dementia as well as a symptom of
+the disorder. The cognitive damage due to depression can
+however be reversed before one progresses into dementia but is
+too
+often
+ignored
+or
+undiagnosed.
+Typical
+assessments
+of
+depression such as the Geriatric Depression Scale (GDS) can be
+misleading and often wrongly diagnose cognitively impaired
+adults as depressive (31). New methods of detection are therefore
+needed, one of which could be the analysis of facial expressions
+or muscle activity. Facial expression analysis is a common tool
+used in adults with depression. For example, it has been shown
+that depressed individuals have a loss of facial muscle tone
+around the mouth, but higher tone in the brow area, which can
+be
+associated
+with
+anxiety
+and
+anger.
+Overall,
+depressed
+individuals
+express
+fewer
+smiles
+than
+healthy
+adults
+(32).
+Depressed individuals also demonstrate decreased activities in the
+cheek and brow areas upon viewing happy and sad images,
+compared
+to
+non-depressed
+individuals
+(33).
+Correlations
+between depressive symptoms and end-lip, mouth width, midtop lip, eye-opening, and mid-eyebrow measures have been
+found in some studies (34), as well as facial indicators of excess
+activity in the grief regions of the face, even during joy-inducing
+stimuli (35). Facial expression analysis is able to identify all these
+small facial changes during expression of emotions, but it has
+never
+been
+speciﬁcally
+applied
+to
+geriatric
+or
+late
+onset
+depression. Therefore, it would be informative to explore the
+application of facial expression analysis in the elderly for the
+prognosis and detection of depression, which in turn could
+contribute
+to
+the
+monitoring
+of
+dementia
+symptoms
+and
+progress in the same population.
+Here, we outlined 3 different cognitive and affective conditions
+present in the elderly population related to cognitive impairment
+(see Table 1 for summary of reviewed articles). While established
+diagnostic methods have been successful in identifying these
+diseases
+and
+disorders,
+recent
+breakthroughs
+in
+contactless
+technologies show that facial movements during affective states
+can be used to monitor cognitive decline and the severity of
+conditions. The implications of such methods are not negligible;
+remote and contactless assessment would allow for frequent
+updates on the cognitive health of elders at risk without invasive
+procedures and at a relatively low cost. Furthermore, the addition
+of such technologies can easily be integrated into care facilities,
+which house hundreds of patients in one place. This facilitates
+the routine assessment of cognitive decline daily, fostering a
+proactive approach instead of relying on periodic assessments
+that could lead to signiﬁcant deteriorations of disorders.
+3 Automated facial expression analysis,
+EEG and rPPG in emotion recognition
+In recent years, contactless detection for facial expression
+analysis and emotion recognition has become a growing ﬁeld,
+with more interest in its applications in the medical health
+domain.
+Today,
+various
+automated
+methods
+for
+emotion
+assessment have been developed to increase the accuracy of
+emotions
+through
+different
+means.
+Among
+them,
+Facial
+Expression Analysis, EEG, and heart rate monitoring have been
+emerging as viable ways to understand human emotions. Both
+Facial Expression Analysis and heart rate monitoring have been
+made available through contactless and remote means such as
+AFEAs and rPPG, respectively. In this section, we will present a
+summary of these technologies together with their respective
+accuracy and usability, as well as express the need for joint usage
+of these methods in emotion detection.
+3.1 Facial action coding system and
+automated facial expression analysis (AFEA)
+The Facial Action Coding System (FACS) is a taxonomy system
+to identify and classify facial movements during expressions of
+emotions (36). FACS has been used by psychologists for decades
+and has recently been applied in animations (37, 38). To classify
+certain facial expressions, FACS uses Action Units (AUs) to pair
+together different movements by facial muscles (39). A total of
+46 main action units makes up FACS, through which 7 emotions
+can be detected: happiness/joy, sadness, surprise, fear, anger,
+disgust, and contempt. Traditionally, FACS required coding of
+AUs by human coders. The training required to become a
+certiﬁed FACS coder is lengthy, with over hundreds of hours
+spent coding (40). In the last decade, amazing efforts have been
+made to automate FACS coding to speed up the process and
+alleviate
+human
+efforts.
+Through
+deep
+learning
+networks,
+algorithms have been able to successfully track facial movements
+and
+AUs,
+and
+subsequent
+emotion
+classiﬁcations
+(40–43).
+Analyses on the accuracy of these algorithms have varied, with
+some reaching nearly 90% accuracy while others fail to reach
+50% accuracy (44–46). For this reason, there are many different
+Jiang et al.
+10.3389/fdgth.2024.1335289
+Frontiers in Digital Health
+03
+frontiersin.org
+
+algorithms available that use different methods to develop their
+AFEA using FACS. Certain technology companies have created
+“ready-to-use” platforms that can serve multiple usage and
+provide AFEA to a wide range of professionals. Such products,
+like iMotions’s Affectiva and Noldus’ FaceReader, allow for
+AFEA to occur with video recordings and without the input of
+TABLE 1 Summary of previous research on cognitive decline and depression and facial mobility.
+Citation
+Article
+Type
+Sample
+Measures
+included
+Stimuli
+Main ﬁndings
+Kunz et al. (9)
+Empirical
+42 demented elders
+54 healthy elders
+Facial action coding
+system
+Pressure stimulation
+•
+Facial responses were signiﬁcantly increased in
+demented patients compared to healthy controls.
+•
+Facial responses were closely related to the intensity of
+stimulation for demented patients.
+Jiang et al. (10)
+Empirical
+258 healthy elders
+235 AD elders
+Vision-based facial
+expression recognition
+Images of object
+scenes
+•
+AD participants expressed signiﬁcantly fewer positive
+emotions, more negative emotions, and higher facial
+expressiveness.
+•
+Facial emotions expressed during the test allowed
+effective differentiation of AD from healthy
+participant.
+Seidl et al. (11)
+Empirical
+47 AD patients
+Facial action coding
+system
+International
+affective picture
+system
+•
+Cognitive decline was related to increased facial
+expressiveness.
+•
+Apathetic symptoms appear to be speciﬁcally
+associated with facial expression in AD.
+Burton & Kaszniak
+(12)
+Empirical
+13 elders with AD
+21 healthy elders
+Corrugator and
+zygomatic
+electromyography
+(EMG)
+International
+affective picture
+system
+•
+Change in zygomatic activity was signiﬁcantly
+different between AD and healthy groups, with AD
+subjects demonstrating an inverted pattern of activity
+compared to controls.
+Henry et al. (13)
+Empirical
+20 healthy elders
+20 AD elders
+Expressive emotion
+behavior coding
+system
+Neutral and amusing
+video clips
+•
+AD is associated with subtle changes in emotionexpressive behavior.
+•
+AD group displayed signiﬁcantly lower positive affect
+compared with the control group.
+Chen et al. (20)
+Empirical
+99 patients with
+frontotemporal dementia
+(FTD)
+45 AD patients
+37 healthy controls
+Subjective emotional
+experience
+Film clips
+•
+Patients with AD and FTD tended to experience more
+“mixed emotions” when watching emotionally
+arousing ﬁlm clips.
+•
+FTD patients reported more positive and negative
+non-target emotions, whereas AD patients reported
+more positive non-target emotions.
+Pressman et al.
+(21)
+Empirical
+36 healthy adults
+89 patients with a
+neurodegenerative disease
+Expressive emotion
+behavior coding
+system
+Three short ﬁlms
+•
+Participants with FTD tended to express less emotion
+on their faces than they did through self-report.
+•
+Differences within diagnostic subgroups.
+Fei et al. (18)
+Review
+N/A
+Facial features analysis;
+Facial features
+classiﬁcation
+N/A
+•
+Automatic facial expression analysis has the potential
+to be used for cognitive impairment detection in the
+elderly.
+•
+May be better to use a local method of facial
+components alignment, employ static approaches in
+facial feature extraction and facial feature
+classiﬁcation.
+Fei et al. (22)
+Empirical
+61 healthy and cognitively
+impaired elders
+Deep neural networkbased emotion analysis
+system
+KDEF dataset;
+Chinese adults
+dataset; Chinese
+elderly people dataset
+•
+The classiﬁer was able to detect the cognitive
+impairment based on the emotion data from the
+testing dataset with a detection accuracy of 73.3%.
+Katsikitis and
+Pilowsky (32)
+Empirical
+21 Parkinson’s disease patients
+20 depressed patients
+12 healthy adults
+Facial Expression
+Measurement program
+12 humorous
+cartoons
+•
+Depressed patients shown smaller mid-eyebrow
+measures compared to the control group.
+•
+Depressed and parkinsonian group had signiﬁcantly
+less smiles.
+Gehricke and
+Shapiro (33)
+Empirical
+11 depressed patients
+11 healthy adults
+Facial EMG
+Imagery situations
+•
+Facial muscle activity over the brow and cheek region
+was reduced in depressed compared to healthy
+patients during happy and sad imagery.
+•
+Lack of social context differences in frowning may
+suggest social disengagement and an inhibition of sad
+facial expression.
+Stolicyn et al. (34)
+Empirical
+48 depressed participants
+Facial action coding
+system
+Delayed match to
+sample task; Rapid
+detection task;
+Affective distractions
+•
+Symptomatic participants were characterised by less
+intense mouth and eyelid movements.
+•
+Classiﬁcation accuracy using cross-validation (withinstudy replication) reached 79%.
+Greden et al. (35)
+Empirical
+29 healthy controls
+37 depressed adults
+Facial EMG
+Imagery situations
+•
+Patients with endogenous depression had EMG levels
+that differentiated them from healthy subjects.
+•
+Depressed participants had signiﬁcantly greater
+activity in corrugator happy and corrugator sad
+imagery trials.
+Jiang et al.
+10.3389/fdgth.2024.1335289
+Frontiers in Digital Health
+04
+frontiersin.org
+
+human coders. These platforms all operate under the same rules
+and mostly use similar algorithms to classify emotion expressions
+(45). When using these algorithms, the choice of camera
+hardware to record the data is important, as the resolution will
+factor into the facial feature detection accuracy. Studies show that
+cameras that have stable framerates, auto-focus, and allow access
+to aperture, brightness, and white balance settings offer the best
+results (47).1 The Microsoft Kinect RGB-D camera was also
+found to accurately locate facial features with high resolution
+(48–51). However, detailed speciﬁcations on the appropriate
+hardware requirements have not been well established.
+From a software algorithm perspective, most deep learning
+networks utilize the Viola-Jones algorithm to detect the presence
+of faces within an image or video. The Viola-Jones algorithm
+works by ﬁrst selecting Haar-like features in images (52). It then
+creates an integral image and goes through a machine learning
+algorithm that identiﬁes the best features to detect a face by
+creating classiﬁers. Based on which classiﬁers work the best on
+training datasets with faces, the best performing ones are kept
+and then used to discard non-faces in images through a cascade
+of classiﬁers. In the last stage, an image is ﬁnally classiﬁed as a
+human face. Upon successful face identiﬁcation, platforms like
+FaceReader make a 3D model of the face using the Active
+Appearance Method (AAM) (53). The AAM can locate 500
+points on the face and also analyze texture. Based on the
+location of these points, the AAM can classify facial expressions
+through the training of the algorithm with over 10,000 images of
+faces. Once an expression is classiﬁed, these platforms can assess
+the valence and arousal of the expression as well as the intensity
+of all AUs involved during the expression (53).
+Such models and platforms, while having clear advantages and
+beneﬁts of not needing any pre-programming, require commercial
+licenses that involve regular payments. In addition, studies have
+demonstrated their limited suitability to applications. Because
+they are already pre-trained with some generic datasets of face
+images, some biases were observed in speciﬁc populations (54).
+While somewhat accurate at detecting AUs in the general adult
+Caucasian population, some research has found that the accuracy
+of these models drops signiﬁcantly when applied to other
+ethnicities and different age groups [(44, 54, 55), but see (56) for
+new technology addressing AI bias of skin tone]. Therefore, their
+usage cannot be applied universally.
+Nonetheless, the core foundations of these platforms remain
+unbiased prior to the training of the algorithms. Independent
+implementation of a similar platform can be done by utilizing open
+access deep learning networks. Through the training of the
+network, a platform could hypothetically be applied to any speciﬁc
+group and obtain accurate readings of facial expression. The
+challenge,
+however,
+consistent
+with
+those
+of
+most
+AI/ML
+algorithms, is the need for large-volume, diverse, and wellrepresenting datasets, which are known to be rare and limited (57).
+To successfully train an AFEA, thousands of images need to be
+presented in training to develop highly reliable classiﬁers. Without
+such training, the algorithm’s accuracy will drop signiﬁcantly, if not
+be nonexistent. Furthermore, to apply an AFEA to the aging
+population to detect conditions such as dementia and Parkinson’s
+disease, an extensive collection of images of elderly people’s faces
+would be necessary to train the algorithm. However, because these
+clinical
+populations
+are
+less
+prevalent
+relative
+to
+healthy
+populations, very few datasets are available (58). Among these few
+are the University of Regina’s Pain in Severe Dementia dataset and
+the UNBC-McMaster Shoulder Pain Expression Archive dataset.
+Other larger datasets such as the FACES dataset contain a
+subcategory with older adults but cannot be used on its own (57).
+Despite the individual limitations, these smaller datasets could
+potentially be grouped together to train an algorithm to work on
+the elderly population. Interesting alternatives were explored by
+researchers responding to the scarcity of available datasets. For
+example, online videos, such as YouTube videos, with people
+involved with Parkinson’s disease were used to train the AFEA to
+recognize patterns of the disease without having to develop their
+own dataset (59). This proved to be a promising training technique,
+with an accuracy of over 82% for the detection of Parkinson’s
+disease reported. Such a method could be used on all populations
+that are underrepresented in large datasets (59). Therefore, the
+biases seen in most algorithms can be minimized through retraining using various databases and available images/videos.
+3.2 EEG and emotion recognition
+In parallel to the externally observable and accessible factors of
+the facial mobility approach to cognitive assessment, measurement
+and understanding of patients’ internal brain activity using EEG
+data has been considered often as a reference information for
+clinical evaluation. For this purpose, EEG has been extensively
+studied in different populations exhibiting cognitive decline as
+well as in demented patients (e.g., AD patients; see Table 2 for
+summary of reviewed articles). As a result, there has been a
+growing consensus within the scientiﬁc community regarding the
+overall signiﬁcance of this approach.
+In resting-state EEG recordings, AD and MCI patients showed
+an increased spectral power and functional connectivity in the
+theta and delta bands, which are the slower frequencies of the
+spectrum (60). Interestingly, participants in the control group
+showed a decreased spectral power in these bands with advancing
+age, thus indicating an inverse aging pattern in the AD and MCI
+groups. AD participants also showed a decreased spectral power
+and functional connectivity in the alpha band normally observed
+in healthy aging. Meghdadi et al. (60) also reported that a [theta/
+alpha] ratio was very good at discriminating AD from MCI and
+controls, as exhibiting higher values was associated with increasing
+cognitive impairment and disease progression. Similarly, earlyonset AD patients exhibited higher spectral power in the lower
+frequencies as well as lower spectral power in higher frequencies
+when compared to age-matched healthy individuals (61). High
+1The Logitech HD Pro webcam C920 seems to obtain the best results
+amongst webcams (45).
+Jiang et al.
+10.3389/fdgth.2024.1335289
+Frontiers in Digital Health
+05
+frontiersin.org
+
+accuracy was obtained in discriminating the groups by computing a
+[alpha/theta] ratio, especially when measured in the frontal regions.
+Moreover, several factors related to different etiologies can explain
+the
+clinical
+symptoms
+of
+AD,
+such
+as
+the
+level
+of
+neurodegeneration and the accumulation of the amyloid-beta
+peptide. Separating groups based on these two variables, Gaubert
+et
+al.
+(62)
+reported
+that
+the
+most
+notable
+effects
+of
+neurodegeneration on EEG measures were concentrated in the
+frontocentral regions. This was marked by a rise in high-frequency
+oscillations (i.e., higher beta and gamma power), along with a
+decline in low-frequency oscillations (i.e., lower delta power). In
+addition, when measuring changes in EEG features after taking
+amyloid burden into account, the authors reported heterogeneity
+in participants where the extent of amyloid-beta accumulations
+can lead to differential spectral power proﬁles.
+Numerous studies have also used EEG to explore brain activity
+related to emotional processing (67–69). For instance, greater
+activity in the left prefrontal cortex was found to be associated
+with approach- related positive emotions, while greater activity in
+the right prefrontal cortex was associated with withdrawal-related
+negative emotions (63). In a study by Kisley et al. (64), the
+researchers examined the late positive potentials (LPP) [i.e.,
+event-related-potentials (ERPs) reﬂecting enhanced attention to
+emotional stimuli] in adults ranging from 18 to 81 years old.
+They found that the LPP amplitudes towards negative images
+declined linearly with age but remained consistent across ages for
+positive images. Moreover, Tsolaki et al. (65), reported that
+healthy older adults demonstrated larger N170 amplitudes than
+healthy young adults when viewing facial images displaying
+anger and fear expressions. Despite these proliﬁc ﬁndings, few
+studies have delved into the impairment of facial recognition in
+elders with dementia using EEG. One recent study reported that
+AD patients were shown to have lower theta power than healthy
+controls when perceiving angry facial expressions (66), suggesting
+the
+possible
+implication
+of
+EEG
+for
+assessing
+emotional
+processing in patients with neurocognitive disorders.
+Overall, there is an agreement that there is a decrease in EEG
+activity in cognitive decline, with higher relative spectral power in
+TABLE 2 Summary of previous research on cognitive decline and EEG.
+Citation
+Article
+type
+Sample
+Measures
+included
+Stimuli
+Main ﬁndings
+Meghdadi
+et al. (60)
+Empirical
+26 AD patients
+53 MCI patients
+246 healthy controls
+Resting state
+EEG
+N/A
+•
+Increases in both spectral power and coherence at slower
+frequencies in ADs and MCIs.
+•
+Decreases in spectral power at slower frequencies in HCs
+with advancing age.
+•
+Decreases in the spectral power and coherence at Alpha
+frequency in ADs, but not in MCIs.
+•
+Theta-to-alpha ratio demonstrated the largest and most
+signiﬁcant differences between ADs and HCs.
+Özbek et al.
+(61)
+Empirical
+47 early-onset AD patients
+(EOAD)
+51 late-onset AD patients
+(LOAD)
+49 young healthy controls
+51 old healthy controls
+Resting state
+EEG
+N/A
+•
+Increases in slow frequency bands and decreases in fast
+frequency bands in EOADs.
+•
+Frontal theta-to-alpha ratio best discriminated between
+EOADs and young HCs.
+•
+More widespread and severe electrophysiological
+abnormalities in EOADs than LOADs and HCs.
+Gaubert et al.
+(62)
+Empirical
+314 preclinical AD adults
+Resting state
+EEG
+N/A
+•
+Increases in high frequency oscillations and decreases in
+low frequency oscillations in frontocentral regions.
+•
+Different EEG patterns modulated by the degree of
+amyloid burden.
+Palmiero
+et al. (63)
+Minireview
+N/A
+Various
+N/A
+•
+Contradictory and mixed results.
+•
+Increases in left prefrontal EEG activity for approachrelated and positive emotions.
+•
+Increases in right EEG prefrontal activity for withdrawalrelated and negative emotions.
+Kisley et al.
+(64)
+Empirical
+51 healthy adults
+Tasked-evoked
+EEG
+Emotion-eliciting images
+•
+Overall larger LPP amplitudes elicited by negative than by
+positive images.
+•
+Linear decline of LPP amplitudes with advancing age
+towards negative images
+•
+Responses towards positive images remained age invariant
+Tsolaki et al.
+(65)
+Empirical
+11 young adults
+11 elderly adults
+Tasked-evoked
+EEG
+Photographs of fear and
+anger facial expressions
+•
+Larger amplitudes of the N170 early component in elderly
+adults than in young adults.
+•
+Less differentiation of N170 topographic maps between
+the two negative stimuli in elderly than in young adults.
+•
+More differentiation of topographic maps between the age
+groups in ‘anger’ than in ‘fear’.
+Güntekin
+et al. (66)
+Empirical
+30 healthy controls
+30 AD patients
+Tasked-evoked
+EEG
+Photographs of angry,
+happy, and neutral facial
+expressions
+•
+HCs: increased Theta power towards angry expressions,
+and increased right hemispheric alpha power.
+•
+ADs decreased Theta power towards angry expressions,
+and decreased right hemispheric alpha power.
+•
+Increases in alpha power towards angry than towards
+neutral expressions.
+Jiang et al.
+10.3389/fdgth.2024.1335289
+Frontiers in Digital Health
+06
+frontiersin.org
+
+the slower frequencies when compared to cognitively unimpaired
+participants. However, the accessibility and the applicability of
+EEG sensor devices limit the usage of EEG signals for cognitive
+skill evaluation, especially for the cognitive decline measures for
+the aging population. Thus, using ﬁndings in spectral power across
+different frequency bands to validate features from facial mobility
+could help in identifying which features from the automated facial
+expression analysis are relevant in the remote assessment of
+cognitive decline in the elderly population.
+3.3 Heart rate and emotion recognition
+In recent years, a strong effort has been made to develop contactless
+technologies to monitor health through physiological measures. Among
+them, rPPG has been used increasingly in the medical ﬁeld to assess
+heart rate (50) and further introduced in emotion analysis (see
+Table 3 for summary of reviewed articles). Heart rate variability
+(HRV) and heart rate (HR) as in beats per minute (bpm), while
+typically measured through electrocardiogram, have successfully been
+studied using PPG technologies (70, 74). Indeed, it is now believed
+that HRV can serve as a basis for recognizing emotions, detect stress
+and overall identify changes in the Autonomic Nervous System (71,
+75). According to a systematic review conducted by Cheng et al. (72),
+patients with dementia or neurocognitive disorders generally exhibit
+lower resting HRV indices compared to healthy controls. However,
+after distinguishing between different types of disorders, signiﬁcant
+differences in HRV values are observed only in patients with
+Dementia with Lewy Bodies and MCI. On the contrary, there are no
+signiﬁcant differences between patients with AD, Vascular Dementia,
+and Frontotemporal Dementia and the healthy controls. Furthermore,
+rPPG has been used in the study of pain and detection of engagement
+(14, 51). Because physiological, cognitive, and affective events can
+cause ﬂuctuations in HRV, rPPG can effectively isolate these changes
+and attribute them to various states (50). Software platforms, such as
+the FaceReader, have been used in multiple research studies as the
+heart rate monitoring tools. Great results have been found using this
+technology, and it remains the most accessible and well-developed
+rPPG on the market (14). However, accuracy of the physiological
+monitoring with these software tools remains to be further validated,
+and their individual usage as a cognitive assessment tool also requires
+further testing (73).
+3.4 Data fusion of heart rate, EEG and AFEA
+In an effort to increase accuracy in emotion analysis, some studies
+have paired rPPG measures with AFEA to establish meaningful
+correlations between the facial expressions and the physiological
+measures of emotions (49, 70; see Table 4 for summary of reviewed
+articles). Interestingly, this pairing allows for both strong (i.e.,
+surprise, fear, joy, etc.) and subtle (stress, contempt, etc.) affective
+states to be identiﬁed. rPPG relies on the discrete changes in heart
+rate to identify these subtle emotions, while AFEA is successful at
+differentiating between strong emotions that elicit similar variations
+in heart rate (77). This fusion of measures ensures that microexpressions, notorious for escaping AFEAs due to their lack of
+intensity, are still detectable and accounted for (78).
+TABLE 3 Summary of previous research on cognitive decline and heart rate.
+Citation
+Article type
+Sample
+Measures
+included
+Stimuli
+Main ﬁndings
+Lu et al. (70)
+Empirical
+42 healthy adults
+Resting
+electrocardiogram
+(ECG);
+Resting earlobe PPG
+N/A
+•
+Correlations in the temporal and frequency domains
+and in nonlinear dynamic analyses between HRV
+indices derived from PPG and ECG.
+•
+PPG can be a practical alternative to ECG for HRV
+analysis.
+Benezeth
+et al. (71)
+Empirical
+16 healthy adults
+Camera-based rPPG;
+Contact sensor-based
+PPG
+Video datasets of
+participants watching
+videos eliciting fear or
+anxiety
+•
+High agreement between the HRV analyses derived
+from the camera data and contact sensor.
+•
+Strong correlation between the remote HRV feature
+and different emotional states.
+Cheng et al.
+(72)
+Systematic review
+and metaanalysis
+Dementia patients
+healthy controls
+N/A
+N/A
+•
+Lower resting HRV in dementia patients for
+parasympathetic functions and total variability
+compared to HCs.
+•
+Lower HRV in patients with MCIs and with Dementia
+with Lewy Bodies compared to HCs.
+•
+Lower HRV in patients with Dementia with Lewy
+Bodies compared to ADs.
+Castillo et al.
+(14)
+Empirical
+2 elders with dementia
+2 healthy elders
+rPPG;
+Manual FACS coding;
+Video Magniﬁcation
+(VM) algorithm
+Video datasets of pain
+patients
+•
+Correlation between automated FaceReaderTM HR
+estimates and the optimized VM algorithm in baseline
+and pain conditions.
+•
+Correlation between non-verbal automated
+FaceReaderTM pain scores and manual FACS coding.
+•
+rPPG can be useful for the automated estimations of
+HR values and non-verbal pain scores.
+Benedetto
+et al. (73)
+Empirical
+24 healthy adults
+rPPG;
+ECG
+Stress test (i.e., Go/No-Go
+task)
+•
+Poor accuracy in FaceReaderTM rPPG compared to
+ECG, especially for lower and higher heart rates.
+•
+Lack of studies validating consumer devices and more
+assessment should be conducted.
+Jiang et al.
+10.3389/fdgth.2024.1335289
+Frontiers in Digital Health
+07
+frontiersin.org
+
+While heart rate monitoring and EEG measures have both
+individually
+been
+paired
+with
+automated
+facial
+expression
+analysis
+establishing
+correlations,
+only
+one
+recent
+study
+investigated employing a multimodal method to increase the
+accuracy in evaluating emotional states. Nagasawa et al. (79),
+presented participants with emotion-eliciting videos and obtained
+their facial recordings as well as EEG signals. Facial recordings
+were later analyzed to extract physiological responses (i.e., facial
+expressions,
+HR,
+and
+changes
+in
+pupil
+diameter).
+After
+performing an estimation on all data, researchers correlated them
+with participants’ subjective ratings. Results showed a stronger
+correlation between the estimated arousal signal derived from
+physiological responses and subjective ratings, compared to those
+derived from EEG signals, and a similar trend was observed for
+valence. Therefore, it appears that a multimodal measurement
+does improve the accuracy of estimating emotions to some extent.
+Establishing links between these three measures is imperative in
+the study of emotions, mostly because they all serve different
+purposes. If one of these factors can be measured, inferences can be
+made about the state of the other two. EEG signals can establish
+the reference value of emotions one is feeling, even if they are not
+facially expressed (i.e., sadness while smiling). HRV and HR signals
+are especially indicative of subtle emotions, as seen in prior
+literature (74, 76). AFEA performs well when detecting strong
+emotions that are visible through facial movements. Hence, they are
+all necessary in their own rights in emotion detection. EEG requires
+extensive equipment and professional guidance to be accurately
+performed, which is not feasible in the context of remote and
+contactless emotion analysis, thus only rPPG and AFEA can be
+used. Considering the established correlations between heart rate
+variability and brain signals, EEG might not be indispensable in
+this context. True emotions can be attributed based on heart rate
+monitoring and therefore replacing EEG in emotion detection. In
+the
+case
+of
+establishing
+these
+correlations
+with
+contactless
+technologies, one would need to conduct a joint study to ensure
+that past correlations that have been found in EEG signals, heart
+rate monitoring and facial expression analysis still hold true in
+contactless technologies (rPPG and AFEA).
+In the case of AFEA and EEG speciﬁcally, several studies have
+shown that EEG data can be used to classify different emotion
+categories processed by participants. Wang et al. (82) reported that
+the power spectrum was the best EEG analysis method to classify
+the emotional valence (i.e., positive, or negative) of the stimuli
+presented. In this study, higher frequency bands (i.e., beta and
+gamma frequency bands) were shown to have increased robustness
+at discriminating the valence component of emotions. In addition,
+TABLE 4 Summary of previous research on data fusion of AFEA, rPPG, EEG, and other measures.
+Citation
+Article
+type
+Sample
+Measures included
+Stimuli
+Main ﬁndings
+Monkaresi et al.
+(51)
+Empirical
+23 healthy adults
+Heart Rate (HR);
+Facial-Feature Based Detection of
+Engagement
+Essay writing
+•
+Accuracy of 75.8% when detecting engagement with
+pairing facial features and HR in live recordings.
+•
+Results were best when data fusion was used, over just
+facial-feature based detection.
+Pham and
+Wang (76)
+Empirical
+24 healthy adults
+Implicit photoplethysmography
+(PPG);
+Facial expression analysis (FEA)
+Video
+advertisements clips
+•
+AttentiveVideo achieved good accuracy (73.59%) on a
+wide range of emotional measures.
+•
+FEA works better for strong emotions (e.g., joy and
+anger), the PPG channel is more informative for
+subtle responses or emotions.
+McDuff (77)
+Doctoral
+Thesis
+N/A
+Automated facial expression analysis;
+Remote measurement of physiology
+N/A
+•
+There are clear trends within the physiological
+responses of individuals and the affect of the content
+they are watching.
+•
+Occurrences of positive valence expressions were
+predictors of increased preference toward presented
+stimuli.
+Lei et al. (78)
+Empirical
+Healthy adults
+Automated facial expression analysis
+(iMotions);
+Galvanic skin response (GSR); Heart
+Rate (HR)
+Emotional videos
+•
+Higher correlation between emotion and GSR
+compared to emotion and heart rate.
+•
+Within a participant, there was no distinct pattern
+found with the levels of the three parameters measured.
+Nagasawa et al.
+(79)
+Empirical
+35 health adults
+Electroencephalograph (EEG);
+Automated Facial Expression
+Analysis; Heart Rate (HR)
+FilmStim database
+•
+Noncontact measurement features can be estimated
+more accurately than EEG extracted features.
+•
+Compared to using only facial expressions, combining
+multiple physiological signals like HR enabled more
+accurate estimations.
+Sun et al. (80)
+Empirical
+12 healthy adults
+Functional near-infrared
+spectroscopy (fNIRS);
+Electroencephalograph (EEG);
+Automated Facial Expression
+Analysis
+Emotional videos
+•
+Results reveal a strong correlation between
+spontaneous facial affective expressions and the
+emotional valence.
+•
+The affective states were estimated by the fNIRS +
+EEG brain activity measurements.
+•
+Joint utilization of facial expression and wearable
+neuroimaging for improved emotional analysis.
+Koelstra and
+Patras (81)
+Empirical
+24 healthy
+participants
+Electroencephalograph (EEG);
+Automated facial expression analysis
+Film clips
+•
+A feature-level fusion approach is demonstrated to
+improve upon single modality results.
+•
+The differences are small and the number of samples
+too limited to provide a deﬁnite answer on the
+beneﬁts of fusion.
+Jiang et al.
+10.3389/fdgth.2024.1335289
+Frontiers in Digital Health
+08
+frontiersin.org
+
+a classiﬁcation algorithm using the spectral power on different
+channels was able to classify both the emotional valence and
+arousal of the emotion processed by participants with a high
+accuracy (83). These ﬁndings indicate that using a relatively basic
+analysis method of the EEG signal such as spectral power can
+provide insight into certain components of the emotions being
+processed by participants, such as arousal and valence. For instance,
+the combination of EEG features and spontaneous facial expression
+leads to high accuracy in emotional valence classiﬁcation (80). This
+suggests a potential relationship between EEG activity and facial
+expressions regarding emotional processing, and each of these
+modalities can offer unique insights. Furthermore, when comparing
+EEG and facial features on different dimensions of emotional
+processing, it has been shown that both modalities perform equally
+at classifying arousal, but that EEG was better at classifying the
+valence of the emotional stimuli (81). Thus, it appears that facial
+features can inform about the integrity of emotional processing
+with an accuracy as good as EEG. This increases the conﬁdence in
+using automated facial expression analysis to assess emotional
+processing and as it was discussed in the ﬁrst section, it is possible
+to extend this to the assessment of cognitive integrity.
+4 Discussion
+In the present review, we have highlighted three interconnected cognitive conditions across the elderly population that
+lack easily accessible, non-invasive detection and progression
+methods:
+dementia,
+MCI,
+and
+geriatric
+depression.
+More
+speciﬁcally, facial expressions and emotional responses, clear
+indicators of cognitive decline, have yet to be utilized in the
+clinical assessment of these conditions. The ﬁndings reported
+here show that there is a link to be made between facial
+expression
+features
+and
+cognition
+by
+assessing
+emotional
+processing. We therefore put forth the use of facial expression
+analysis, augmented by physiological measurements, within the
+established
+assessment
+of
+these
+conditions to
+enhance
+the
+accessibility of treatment and progress tracking for the elderly.
+As stated in the earlier sections of this review, the current state of
+the methods used in this clinical area leads to the conclusion that the
+remote assessment of automated facial expression analysis through
+the presentation of emotionally charged stimuli with the purpose of
+assessing cognitive integrity should be further investigated. Given
+that we can observe changes in muscle tone and activity through
+passive viewing of such images, the monetary and time cost of
+cognitive evaluation
+could
+be signiﬁcantly
+reduced.
+Although
+promising, the links between facial expressions during emotional
+states and cognitive health needs to be validated across various
+conditions, particularly for the aging population where various levels
+of cognitive deﬁcits might be present. Hence, the validation of this
+assessment with the use of EEG analyses will provide increased
+conﬁdence in the development of robust methods of remote
+cognitive decline detection.
+The potential avenues that stem from these technological
+developments are not negligible. If facial expression analysis is
+validated as a viable tool to as an indicator of the progression of
+cognitive
+health,
+the
+necessary
+technologies
+could
+be
+implemented within the care centers (i.e.,: a nursing home, a
+chronic care facility or a residence for seniors) where the elderly
+are living. The monitoring of their conditions can therefore
+occur daily via cameras, for example, placed in common living
+areas
+and
+information
+can
+be
+automatically
+extracted
+and
+analyzed by their healthcare provider. This signiﬁcantly reduces
+the need for mobility for the elderly to access continuous
+healthcare. The movement towards automated and in-house
+health monitoring is already underway, with many products now
+available to connect individuals to their provider in the comfort
+of their homes [see Philip et al. (84) for a review of the current
+technologies for at-home health monitoring for the elderly].
+Overall, the combined use of these technologies in emotion
+recognition provides an increase in accuracy, for both strong and
+subtle emotions and states. Through such methods, one could
+potentially obtain true affective states while analyzing the expressed
+facial movements in order to better understand cognition and
+emotion processing. These technologies would allow us to move
+health and medical monitoring into a completely automated phase,
+in which minimal professional input is needed while proﬁting the
+patients. Future work should focus on establishing valid and reliable
+links between emotional facial expressions and brain activity as well
+as testing the acceptance of such technologies in the elderly population.
+Author contributions
+DJ: Conceptualization, Project administration, Supervision,
+Writing – original draft, Writing – review & editing. LY:
+Resources,
+Validation,
+Writing
+–
+review
+&
+editing.
+FM:
+Conceptualization, Investigation, Project administration, Validation,
+Writing – original draft, Writing – review & editing.
+Funding
+The author(s) declare ﬁnancial support was received for the
+research, authorship, and/or publication of this article.
+This research was supported by two graduate fellowships from
+the NSERC-CREATE network (FM and LY).
+Acknowledgments
+The authors would like to thank the support for the Aging
+in Place Challenge Program from the National Research Council
+of Canada (NRC), as well as Negar Mazloum, Jimmy Hernandez
+and Linda Pecora for their support and feedback on this review.
+Conﬂict of interest
+The authors declare that the research was conducted in the
+absence of any commercial or ﬁnancial relationships that could
+be construed as a potential conﬂict of interest.
+Jiang et al.
+10.3389/fdgth.2024.1335289
+Frontiers in Digital Health
+09
+frontiersin.org
+
+Publisher’s note
+All claims expressed in this article are solely those of the
+authors and do not necessarily represent those of their afﬁliated
+organizations, or those of the publisher, the editors and the
+reviewers. Any product that may be evaluated in this article, or
+claim that may be made by its manufacturer, is not guaranteed
+or endorsed by the publisher.
+References
+1. Gaugler J, James B, Johnson T, Reimer J, Solis M, Weuve J, et al. 2022 Alzheimer’s
+disease facts and ﬁgures. Alzheimers & Dementia. (2022) 18(4):700–89. doi: 10.1002/
+alz.12638
+2. Alzheimer Society of Canada. Navigating the Path Forward for Dementia in
+Canada: The Landmark Study Report #1. Canada: Alzheimer Society of Canada
+(2022).
+Available
+online
+at:
+http://alzheimer.ca/en/research/reports-dementia/
+landmark-study-report-1-path-forward (cited August 13, 2023)
+3. Statistics Canada. 2011 Census of Population: Families, Households, Marital status,
+Structural Type of Dwelling, Collectives. Ottawa: The Daily (2012).
+4. Statistics Canada. A Portrait of Canada’s Growing Population Aged 85 and Older
+from the 2021 Census. Ottawa: Statistics Canada (2022).
+5. Statistics Canada. Table 98-10-0045-01 Type of Collective Dwelling, age and
+Gender for the Population in Collective Dwellings: Canada, Provinces and Territories.
+Ottawa: Statistics Canada (2022).
+6. Statistics Canada. Census Proﬁle, 2021 Census of Population: Proﬁle Table. Ottawa:
+Statistics Canada (2021).
+7. Gustafson L. What is dementia? Acta Neurol Scand. (1996) 94:22–4. doi: 10.1111/
+j.1600-0404.1996.tb00367.x
+8. Cerejeira J, Lagarto L, Mukaetova-Ladinska EB. Behavioral and psychological
+symptoms of dementia. Front Neurol. (2012) 3:73. doi: 10.3389/fneur.2012.00073
+9. Kunz M, Scharmann S, Hemmeter U, Schepelmann K, Lautenbacher S. The facial
+expression of pain in patients with dementia. Pain. (2007) 133(1-3):221–8. doi: 10.
+1016/j.pain.2007.09.007
+10. Jiang Z, Seyedi S, Haque RU, Pongos AL, Vickers KL, Manzanares CM, et al.
+Automated analysis of facial emotions in subjects with cognitive impairment. PLoS
+One. (2022) 17(1):e0262527. doi: 10.1371/journal.pone.0262527
+11. Seidl U, Lueken U, Thomann PA, Kruse A, Schröder J. Facial expression in
+Alzheimer’s disease: impact of cognitive deﬁcits and neuropsychiatric symptoms. Am
+J Alzheimer’s Dis Other Demen. (2012) 27(2):100–6. doi: 10.1177/1533317512440495
+12. Burton KW, Kaszniak AW. Emotional experience and facial expression in
+Alzheimer’s disease. Aging Neuropsychol Cogn. (2006) 13(3-4):636–51. doi: 10.1080/
+13825580600735085
+13. Henry JD, Rendell PG, Scicluna A, Jackson M, Phillips LH. Emotion experience,
+expression, and regulation in Alzheimer’s disease. Psychol Aging. (2009) 24(1):252.
+doi: 10.1037/a0014001
+14. Castillo LI, Browne ME, Hadjistavropoulos T, Prkachin KM, Goubran R.
+Automated vs. manual pain coding and heart rate estimations based on videos of
+older adults with and without dementia. J Rehabil Assist Technol Eng. (2020)
+7:2055668320950196. doi: 10.1177/2055668320950196
+15. Bruscoli M, Lovestone S. Is MCI really just early dementia? A systematic review of
+conversion studies. Int Psychogeriatr. (2004) 16(2):129–40. doi: 10.1017/S1041610204000092
+16. Bai W, Chen P, Cai H, Zhang Q, Su Z, Cheung T, et al. Worldwide prevalence of
+mild cognitive impairment among community dwellers aged 50 years and older: a
+meta-analysis and systematic review of epidemiology studies. Age Ageing. (2022)
+51(8):afac173. doi: 10.1093/ageing/afac173
+17. Roberts RO, Knopman DS, Mielke MM, Cha RH, Pankratz VS, Christianson TJ,
+et al. Higher risk of progression to dementia in mild cognitive impairment cases who
+revert to normal. Neurology. (2014) 82(4):317–25. doi: 10.1212/wnl.0000000000000055
+18. Fei Z, Yang E, Li DD, Butler S, Ijomah W, Zhou H. A survey on computer vision
+techniques for detecting facial features towards the early diagnosis of mild cognitive
+impairment in the elderly. Syst Sci Control Eng. (2019) 7(1):252–63. doi: 10.1080/
+21642583.2019.1647577
+19. Arevalo-Rodriguez I, Smailagic N, Roqué-Figuls M, Ciapponi A, Sanchez-Perez
+E, Giannakou A, et al. Mini-mental state examination (MMSE) for the early detection
+of dementia in people with mild cognitive impairment (MCI). Cochrane Database Syst
+Rev. (2021) 7(7):1–68. doi: 10.1002/14651858.CD010783.pub3
+20. Chen KH, Lwi SJ, Hua AY, Haase CM, Miller BL, Levenson RW. Increased
+subjective experience of non-target emotions in patients with frontotemporal
+dementia and Alzheimer’s disease. Curr Opin Behav Sci. (2017) 15:77–84. doi: 10.
+1016/j.cobeha.2017.05.017
+21. Pressman PS, Chen KH, Casey J, Sillau S, Chial HJ, Filley CM, et al.
+Incongruences between facial expression and self-reported emotional reactivity in
+frontotemporal dementia and related disorders. J Neuropsychiatry Clin Neurosci.
+(2023) 35(2):192–201. doi: 10.1176/appi.neuropsych.21070186
+22. Fei Z, Yang E, Yu L, Li X, Zhou H, Zhou W. A novel deep neural network-based
+emotion analysis system for automatic detection of mild cognitive impairment in the
+elderly. Neurocomputing. (2022) 468:306–16. doi: 10.1016/j.neucom.2021.10.038
+23. Hu T, Zhao X, Wu M, Li Z, Luo L, Yang C, et al. Prevalence of depression in
+older
+adults:
+a
+systematic
+review and
+meta-analysis.
+Psychiatry Res.
+(2022)
+311:114511. doi: 10.1016/j.psychres.2022.114511
+24. Padayachey U, Ramlall S, Chipps J. Depression in older adults: prevalence
+and risk factors in a primary health care sample. S Afr Fam Pract (2004). (2017)
+59(2):61–6. doi: 10.1080/20786190.2016.1272250
+25. Zenebe Y, Akele B, Necho M. Prevalence and determinants of depression among
+old age: a systematic review and meta-analysis. Ann Gen Psychiatry. (2021) 20(1):1–9.
+doi: 10.1186/s12991-021-00375-x
+26. Steffens DC, Skoog I, Norton MC, Hart AD, Tschanz JT, Plassman BL, et al.
+Prevalence of depression and its treatment in an elderly population: the cache
+county study. Arch Gen Psychiatry. (2000) 57(6):601–7. doi: 10.1001/archpsyc.57.
+6.601
+27. Canadian Institute for Health Information. Depression among Seniors in
+Residential Care. Canada: Canadian Institute for Health Information (2010).
+Available
+online
+at:
+https://secure.cihi.ca/free_products/ccrs_depression_among_
+seniors_e.pdf (cited August 13, 2023)
+28. Dafsari FS, Jessen F. Depression—an underrecognized target for prevention of
+dementia in Alzheimer’s disease. Transl Psychiatry. (2020) 10(1):160. doi: 10.1038/
+s41398-020-0839-1
+29. Ma L. Depression, anxiety, and apathy in mild cognitive impairment: current
+perspectives. Front Aging Neurosci. (2020) 9:95–102. doi: 10.3389/fnagi.2020.00009
+30. Muliyala KP, Varghese M. The complex relationship between depression
+and dementia. Ann Indian Acad Neurol. (2010) 13(Suppl2):S69. doi: 10.4103/0972-
+2327.74248
+31. Park SH, Kwak MJ. Performance of the geriatric depression scale-15 with older
+adults aged over 65 years: an updated review 2000–2019. Clin Gerontol. (2021)
+44(2):83–96. doi: 10.1080/07317115.2020.1839992
+32. Katsikitis M, Pilowsky I. A controlled quantitative study of facial expression in
+Parkinson’s disease and depression. J Nerv Ment Dis. (1991) 179(11):683–8. doi: 10.
+1097/00005053-199111000-00006
+33. Gehricke JG, Shapiro D. Reduced facial expression and social context in major
+depression: discrepancies between facial muscle activity and self-reported emotion.
+Psychiatry Res. (2000) 95(2):157–67. doi: 10.1016/S0165-1781(00)00168-2
+34. Stolicyn A, Steele JD, Seriès P. Prediction of depression symptoms in individual
+subjects with face and eye movement tracking. Psychol Med. (2022) 52(9):1784–92.
+doi: 10.1017/s0033291720003608
+35. Greden JF, Genero N, Price HL, Feinberg M, Levine S. Facial electromyography
+in depression: subgroup differences. Arch Gen Psychiatry. (1986) 43(3):269–74.
+doi: 10.1001/archpsyc.1986.01800030087009
+36. Sayette MA, Cohn JF, Wertz JM, Perrott MA, Parrott DJ. A psychometric
+evaluation of the facial action coding system for assessing spontaneous expression.
+J Nonverbal Behav. (2001) 25:167–85. doi: 10.1023/A:1010671109788
+37. Cuculo V, D’Amelio A. OpenFACS: an open source FACS-based 3D face
+animation system. In: Lecture Notes in Computer Science. Milan: International
+Conference on Image and Graphics (2019). p. 232–42. doi: 10.1007/978-3-030-
+34110-7_20
+38. van der Struijk S, Huang H-H, Mirzaei MS, Nishida T. Facsvatar. Proceedings of
+the 18th International Conference on Intelligent Virtual Agents (2018). doi: 10.1145/
+3267851.3267918
+39. Ekman P, Rosenberg EL. What the Face Reveals: Basic and Applied Studies of
+Spontaneous Expression Using the Facial Action Coding System (FACS). 2nd ed.
+Oxford: Oxford Academic (2005). doi: 10.1093/acprof:oso/9780195179644.001.0001
+40. Brick TR, Hunter MD, Cohn JF. Get the FACS fast: automated FACS face
+analysis beneﬁts from the addition of velocity. 2009 3rd International Conference on
+Affective Computing and Intelligent Interaction and Workshops IEEE (2009). p. 1–7.
+doi: 10.1109/acii.2009.5349600
+41. Cohn JF, Zlochower AJ, Lien J, Kanade T. Automated face analysis by feature point
+tracking has high concurrent validity with manual facs coding. In: Ekman P, Rosenberg
+EL, editors. What the Face Reveals: Basic and Applied Studies of Spontaneous Expression
+Using the Facial Action Coding System (FACS). 2nd ed. Oxford: Oxford University Press
+(2005). p. 371–88. doi: 10.1093/acprof:oso/9780195179644.003.0018
+Jiang et al.
+10.3389/fdgth.2024.1335289
+Frontiers in Digital Health
+10
+frontiersin.org
+
+42. Pantic M, Rothkrantz LJ. Automatic analysis of facial expressions: the state of the
+art. IEEE Trans Pattern Anal Mach Intell. (2000) 22(12):1424–45. doi: 10.1109/34.
+895976
+43. Lewinski P. Automated facial coding software outperforms people in recognizing
+neutral faces as neutral from standardized datasets. Front Psychol. (2015) 6:1386.
+doi: 10.3389/fpsyg.2015.01386
+44. Skiendziel T, Rösch AG, Schultheiss OC. Assessing the convergent validity
+between the automated emotion recognition software noldus FaceReader 7 and
+facial action coding system scoring. PLoS One. (2019) 14(10):e0223905. doi: 10.
+1371/journal.pone.0223905
+45. Dupré D, Krumhuber EG, Küster D, McKeown GJ. A performance comparison
+of eight commercially available automatic classiﬁers for facial affect recognition. PLoS
+One. (2020) 15(4):e0231968. doi: 10.1371/journal.pone.0231968
+46. Kulke L, Feyerabend D, Schacht A. A comparison of the affectiva iMotions facial
+expression analysis software with EMG for identifying facial expressions of emotion.
+Front Psychol. (2020) 11:329. doi: 10.3389/fpsyg.2020.00329
+47. iMotions. Facial Expression Analysis: The Complete Pocket Guide. Copenhagen:
+iMotions (2020). Available online at: https://imotions.com/blog/facial-expressionanalysis/ (cited August 13, 2023)
+48. Bandini A, Orlandi S, Escalante HJ, Giovannelli F, Cincotta M, Reyes-Garcia CA,
+et al. Analysis of facial expressions in Parkinson’s disease through video-based
+automatic methods. J Neurosci Methods. (2017) 281:7–20. doi: 10.1016/j.jneumeth.
+2017.02.006
+49. Wang X, Wang Y, Zhou M, Li B, Liu X, Zhu T. Identifying psychological
+symptoms based on facial movements. Front Psychiatry. (2020) 11:607890. doi: 10.
+3389/fpsyt.2020.607890
+50. Sperandeo R, Di Sarno AD, Longobardi T, Iennaco D, Mosca LL, Maldonato
+NM. Toward a technological oriented assessment in psychology: a proposal for the
+use of contactless devices for heart rate variability and facial emotion recognition in
+psychological diagnosis. In: Miglino O, Ponticorvo M, editors. PSYCHOBIT.
+Aachen: CEUR-WS.org (2019). p. 1–7.
+51. Monkaresi H, Bosch N, Calvo RA, D’Mello SK. Automated detection of
+engagement using video-based estimation of facial expressions and heart rate. IEEE
+Trans Affect Comput. (2016) 8(1):15–28. doi: 10.1109/taffc.2016.2515084
+52. Viola P, Jones M. Rapid object detection using a boosted cascade of simple
+features. Proceedings of the 2001 IEEE Computer Society Conference on Computer
+Vision and Pattern Recognition. CVPR 2001; IEEE Dec 8, 2001 1. p. I–I. doi: 10.
+1109/cvpr.2001.990517
+53. Loijens L, Krips O. FaceReader Methodology Note. Wageningen: Noldus
+Information Technology Inc (2019). Available online at: https://www.noldus.com/
+resources/pdf/noldus-white-paper-facereader-methodology.pdf
+(cited
+August
+13,
+2023)
+54. Lewinski P, Den Uyl TM, Butler C. Automated facial coding: validation of basic
+emotions and FACS AUs in FaceReader. J Neurosci Psychol Econ. (2014) 7(4):227.
+doi: 10.1037/npe0000028
+55. Algaraawi N, Morris T. Study on aging effect on facial expression recognition. In:
+Ao SI, Gelman L, Hukins DWL, Hunter A, Korsunsky AM, editors. Proceedings of the
+World Congress on Engineering. London and Hong Kong: Newswood Limited (2016)
+1. p. 465–70. Available online at: http://www.iaeng.org/publication/WCE2016/
+56. Monk E. The Monk Skin Tone Scale. Cambridge, MA: SocArXiv (2023).
+Available online at: osf.io/preprints/socarxiv/pdf4c
+57. Taati B, Zhao S, Ashraf AB, Asgarian A, Browne ME, Prkachin KM, et al.
+Algorithmic bias in clinical populations—evaluating and improving facial analysis
+technology in older adults with dementia. IEEE Access. (2019) 7:25527–34. doi: 10.
+1109/access.2019.2900022
+58. Buolamwini J, Gebru T. Gender shades: intersectional accuracy disparities in
+commercial
+gender
+classiﬁcation.
+Conference
+on
+Fairness,
+Accountability
+and
+Transparency PMLR (2018). p. 77–91
+59. Abrami A, Gunzler S, Kilbane C, Ostrand R, Ho B, Cecchi G. Automated
+computer vision assessment of hypomimia in Parkinson disease: proof-of-principle
+pilot study. J Med Internet Res. (2021) 23(2):e21037. doi: 10.2196/21037
+60. Meghdadi AH, Stevanović Karić M, McConnell M, Rupp G, Richard C,
+Hamilton J, et al. Resting state EEG biomarkers of cognitive decline associated with
+Alzheimer’s disease and mild cognitive impairment. PLoS One. (2021) 16(2):
+e0244180. doi: 10.1371/journal.pone.0244180
+61. Özbek Y, Fide E, Yener GG. Resting-state EEG alpha/theta power ratio
+discriminates
+early-onset
+Alzheimer’s
+disease
+from
+healthy
+controls.
+Clin
+Neurophysiol. (2021) 132(9):2019–31. doi: 10.1016/j.clinph.2021.05.012
+62. Gaubert S, Raimondo F, Houot M, Corsi MC, Naccache L, Diego Sitt J, et al.
+EEG evidence of compensatory mechanisms in preclinical Alzheimer’s disease.
+Brain. (2019) 142(7):2096–112. doi: 10.1093/brain/awz150
+63. Palmiero M, Piccardi L. Frontal EEG asymmetry of mood: a mini-review. Front
+Behav Neurosci. (2017) 11:224. doi: 10.3389/fnbeh.2017.00224
+64. Kisley MA, Wood S, Burrows CL. Looking at the sunny side of life: age-related
+change in an event-related potential measure of the negativity bias. Psychol Sci. (2007)
+18(9):838–43. doi: 10.1111/j.1467-9280.2007.01988.x
+65. Tsolaki AC, Kosmidou VE, Kompatsiaris IY, Papadaniil C, Hadjileontiadis L,
+Tsolaki M. Age-induced differences in brain neural activation elicited by visual
+emotional stimuli: a high-density EEG study. Neuroscience. (2017) 340:268–78.
+doi: 10.1016/j.neuroscience.2016.10.059
+66. Güntekin B, Hanoğlu L, Aktürk T, Fide E, Emek-Savaş DD, Ruşen E, et al.
+Impairment in recognition of emotional facial expressions in Alzheimer’s disease is
+represented by EEG theta and alpha responses. Psychophysiology. (2019) 56(11):
+e13434. doi: 10.1111/psyp.13434
+67. Lazarou I, Adam K, Georgiadis K, Tsolaki A, Nikolopoulos S, (Yiannis)
+Kompatsiaris I, et al. Can a novel high-density EEG approach disentangle the
+differences of visual event related potential (N170), elicited by negative facial
+stimuli, in people with subjective cognitive impairment? J Alzheimers Dis. (2018) 65
+(2):543–75. doi: 10.3233/jad-180223
+68. Batty M, Taylor MJ. Early processing of the six basic facial emotional expressions.
+Cogn Brain Res. (2003) 17(3):613–20. doi: 10.1016/s0926-6410(03)00174-5
+69. Eimer M, Holmes A. Event-related brain potential correlates of emotional face
+processing. Neuropsychologia. (2007) 45(1):15–31. doi: 10.1016/j.neuropsychologia.
+2006.04.022
+70. Lu G, Yang F, Taylor JA, Stein JF. A comparison of photoplethysmography and
+ECG recording to analyse heart rate variability in healthy subjects. J Med Eng Technol.
+(2009) 33(8):634–41. doi: 10.1080/03091900903150998
+71. Benezeth Y, Li P, Macwan R, Nakamura K, Gomez R, Yang F. Remote heart rate
+variability for emotional state monitoring. 2018 IEEE EMBS International Conference
+on Biomedical & Health Informatics (BHI) IEEE (2018). p. 153–6. doi: 10.1109/bhi.
+2018.8333392
+72. Cheng YC, Huang YC, Huang WL. Heart rate variability in patients with
+dementia or neurocognitive disorders: a systematic review and meta-analysis. Aust
+N Z J Psychiatry. (2022) 56(1):16–27. doi: 10.1177/0004867420976853
+73. Benedetto S, Caldato C, Greenwood DC, Bartoli N, Pensabene V, Actis P.
+Remote heart rate monitoring-assessment of the facereader rPPg by noldus. PLoS
+One. (2019) 14(11):e0225592. doi: 10.1371/journal.pone.0225592
+74. Castaneda D, Esparza A, Ghamari M, Soltanpur C, Nazeran H. A review on
+wearable photoplethysmography sensors and their potential future applications in
+health care. Int J Biosens Bioelectron. (2018) 4(4):195. doi: 10.15406/ijbsbe.2018.04.
+00125
+75. McCraty R. Science of the Heart: Exploring the Role of the Heart in Human
+Performance.
+Boulder
+Creek,
+CA:
+HeartMath
+Research
+Center,
+Institute
+of
+HeartMath (2015). doi: 10.13140/RG.2.1.3873.5128
+76. Pham P, Wang J. Understanding emotional responses to mobile video
+advertisements via physiological signal sensing and facial expression analysis.
+Proceedings of the 22nd International Conference on Intelligent User Interfaces
+(2017). p. 67–78. doi: 10.1145/3025171.3025186
+77. McDuff DJ. Crowdsourcing affective responses for predicting media effectiveness
+(Doctoral dissertation). Massachusetts Institute of Technology.
+78. Lei J, Sala J, Jasra SK. Identifying correlation between facial expression and heart
+rate and skin conductance with iMotions biometric platform. J Emerg Forensic Sci Res.
+(2017) 2(2):53–83.
+79. Nagasawa T, Masui K, Doi H, Ogawa-Ochiai K, Tsumura N. Continuous
+estimation
+of
+emotional
+change
+using
+multimodal
+responses
+from
+remotely
+measured biological information. Artif Life Robot. (2022) 27(1):19–28. doi: 10.1007/
+s10015-022-00734-1
+80. Sun Y, Ayaz H, Akansu AN. Multimodal affective state assessment using fNIRS+
+EEG and spontaneous facial expression. Brain Sci. (2020) 10(2):85. doi: 10.3390/
+brainsci10020085
+81. Koelstra S, Patras I. Fusion of facial expressions and EEG for implicit affective
+tagging. Image Vis Comput. (2013) 31(2):164–74. doi: 10.1016/j.imavis.2012.10.002
+82. Wang XW, Nie D, Lu BL. Emotional state classiﬁcation from EEG data using
+machine learning approach. Neurocomputing. (2014) 129:94–106. doi: 10.1016/j.
+neucom.2013.06.046
+83. Liu ZT, Xie Q, Wu M, Cao WH, Li DY, Li SH. Electroencephalogram
+emotion recognition based on empirical mode decomposition and optimal
+feature selection. IEEE Trans Cogn Dev Syst. (2018) 11(4):517–26. doi: 10.1109/
+TCDS.2018.2868121
+84. Philip NY, Rodrigues JJ, Wang H, Fong SJ, Chen J. Internet of things for in-home
+health monitoring systems: current advances, challenges and future directions. IEEE J Sel
+Areas Commun. (2021) 39(2):300–10. doi: 10.1109/jsac.2020.3042421
+Jiang et al.
+10.3389/fdgth.2024.1335289
+Frontiers in Digital Health
+11
+frontiersin.org

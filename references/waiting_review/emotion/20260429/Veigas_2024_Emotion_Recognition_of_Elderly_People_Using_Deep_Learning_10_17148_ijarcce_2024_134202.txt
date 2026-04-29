@@ -1,0 +1,409 @@
+ISSN (O) 2278-1021, ISSN (P) 2319-5940
+IJARCCE
+International Journal of Advanced Research in Computer and Communication Engineering
+Impact Factor 8.102Peer-reviewed & Refereed journalVol. 13, Issue 4, April 2024
+DOI:  10.17148/IJARCCE.2024.134202
+© IJARCCE                This work is licensed under a Creative Commons Attribution 4.0 International License                 1337
+Emotion Recognition of Elderly People
+Using Deep Learning
+
+Dr. John Prakash Veigas 1, A Navya2, Adithya Shetty3, Ananya S Adappa4, Aksha5
+Associate Professor, ISE, A. J Institute of Engineering and Technology, Mangalore, India1
+ISE, A. J Institute of Engineering and Technology, Mangalore, India 2-5
+
+Abstract: Currently, many countries around the world are moving towards becoming an aging society. The mental health
+of the elderly is one of the key challenges in an aging society. An elderly population is a special group that needs to be
+taken care of closely. A key area of concern for the elderly is that of mental health and many technologies can be applied
+in this area. One possible tool is facial expression recognition (FER) that can be used to detect emotions of the elderly
+for the purpose of mental health care. Emotion recognition in the field of human-computer interaction refers to that the
+computer has the corresponding perceptual ability to predict the emotional state of human beings in advance by observing
+human expressions, behaviours and emotions, so as to ensure that computers can communicate emotionally with humans.
+This project proposes a reminder system to help patients or old people to take medication. It also helps the users to take
+appointment from the needy doctor and send notification about the appointment confirmation and notify the care taker
+about the appointment date and time well in advance. This project recognizes the emotions of elder people using deep
+learning technique and send the notification to care taker so that care taker can respond to elder people very quickly. This
+project uses Django framework to build backend of the system and uses MySQL for persistent data storage. Android
+application enables a graphical user interface were end user will interact with application.
+
+Keywords: Mental health, facial expression recognition, emotions, human expressions, detect emotions.
+
+I.
+INTRODUCTION
+
+According to the WHO, the number of people aged 60 years or more in the population is gradually increasing, where in
+2030 projections indicate that there will be 1.4 billion elderly people and in 2050, it will reach 2.1 billion. There are those
+who see this milestone from two perspectives. The first of them we can understand that being able to achieve this
+longevity is a success for humanity since the elderly can contribute to society through knowledge, skills and experiences.
+On the other hand, the second perspective states that population aging is the most important medical and social
+demographic problem in the world. The WHO emphasizes that it is necessary to deconstruct these ideas and attitudes
+related to age, as it can lead to discrimination and directly affect the way the elderly and society face aging.
+
+Population aging is a global phenomenon that has been growing steadily in recent years. About half of the current
+population of elderly people over 75 years old suffers from physical and/or mental disabilities, with dementia being one
+of the major challenges affecting the quality of life of the elderly and also of their caregivers. It is important to clarify
+that along with the aging process, changes in perception can damage the recognition of facial emotions. Basic emotions
+can be understood as involuntary physiological responses shared by human beings, visually distinguishable and shaped
+by lifelong experiences. Therefore, the ability to express and recognize emotions through facial expressions is considered
+a fundamental stage of basic communication and an essential skill to get along in society. Not being able to express
+emotions such as anger, sadness or disgust can result in social isolation or negatively affect non-verbal communication.
+In this sense, by decreasing the ability to express emotions, older people may have difficulty communicating important
+messages such as discomfort associated with treatments and others complications.
+
+With this problem, technology has become a strongly to increase the quality of life of the elderly whether they have any
+cognitive impairment or not. Although the technological barrier is still a very present point in older generations, current
+devices and software have broken paradigms and have been adapted to achieve this audience. Basically, what we have is
+a context in which the increase in life expectancy generates more demands for assistance, care and trained professionals,
+which are required for longer and longer periods of time. These very specific health resources become unfeasible when
+we talk about large-scale policies. Assistive technologies are the only solution for this problem. In addition to supporting
+possible responses to health, assistive technologies seek to integrate these elderly people in a society that is sometimes
+distant and in which isolation has become not only social but digital.
+
+
+ISSN (O) 2278-1021, ISSN (P) 2319-5940
+IJARCCE
+International Journal of Advanced Research in Computer and Communication Engineering
+Impact Factor 8.102Peer-reviewed & Refereed journalVol. 13, Issue 4, April 2024
+DOI:  10.17148/IJARCCE.2024.134202
+© IJARCCE                This work is licensed under a Creative Commons Attribution 4.0 International License                 1338
+II.
+PROBLEM STATEMENT
+
+The development of emotion recognition detection technology within the artificial intelligence field has garnered
+significant attention, with a primary focus on leveraging facial expressions to extract rich emotional information. This
+not only holds substantial promise for enhancing human-computer interaction but also plays a pivotal role in advancing
+pattern recognition capabilities. In line with this, our goal is to create an Android application that harnesses the power of
+deep learning models to accurately identify and classify the emotions of elderly individuals. This involves uploading
+facial images of the elderly to our server, where a deep learning model, specifically constructed using Convolutional
+Neural Networks (CNN), processes the images after pre-processing a diverse emotion dataset. The application goes
+beyond emotion recognition and extends its functionality to assist in healthcare management for the elderly. The system
+efficiently manages the intake of medicines by monitoring and providing timely reminders to the users. Additionally, it
+helps in organizing and scheduling patient appointments with healthcare professionals, ensuring that elderly individuals
+receive the necessary medical attention. The notification feature alerts designated caregivers about the medicine intake
+schedule and upcoming doctor appointments, facilitating a proactive and supportive caregiving approach. This integrated
+system, encompassing emotion recognition and healthcare management, strives to enhance the overall well-being of
+elderly individuals while providing valuable support to their caregivers. It exemplifies the transformative potential of
+artificial intelligence in addressing crucial aspects of healthcare and human interaction.
+
+
+III.
+OBJECTIVES AND EXPECTED OUTCOMES
+
+Objectives outline goals to be achieved, while expected outcomes depict anticipated results. They provide direction and
+clarity, guiding efforts towards desired achievements, fostering accountability, and measuring success effectively.
+
+A.
+Objectives
+The main objectives of this project as follows:
+
+• To develop an Android application to recognize elder people’s facial expression using deep learning methodology.
+• To develop a system that process people’s medicine data and to send notification to care taker about medicine intake.
+• To develop a system that process patients appointment data and send notification to caretaker regarding the upcoming
+doctor appointment.
+• To assist the care taker in managing the older people by providing current patients mental status and by providing
+useful notification regarding medicine intake and appointment.
+
+B.
+Expected Outcomes
+Expected outcome of this project is as follows:
+
+• This application should create a deep learning model using Keras framework to classify dataset images.
+• This application should have a graphical user interface to help end user to use the system easily.
+• This application should classify input facial images into different emotion classes.
+• This application should manage appointment and System should pre-process individual images to clean the facial
+emotion dataset.
+• This application should manage appointment and medicine data to provide timely notification to care taker.
+
+IV.
+SYSTEM DESIGN
+
+System Design is defined as a process of creating an architecture for different components, interfaces, and modules of
+the system and providing corresponding data helpful in implementing such elements in systems. System Design is the
+core concept behind the design of any distributed systems. System Design involves identifying sources of data, it is an
+intuition towards characterizing, creating, and planning a framework to fulfil the necessity and indeed the prerequisites
+of particular businesses.
+
+A.
+Data Flow Diagram
+The Fig 1 initiates with a start symbol, indicating the initiation of the image upload. The next step involves inputting
+credentials. This could involve a username, password, or other access control mechanism to ensure only authorized users
+can upload images to the database. The flowchart then checks if the entered credentials are correct. If not, the process
+likely terminates or directs the user to try again. If the credentials are correct, the next step involves uploading the
+appointment data associated with the image. This could include information such as the patient's name, date of birth,
+appointment date, and doctor's name. Next, the medical image itself is uploaded to the database.
+
+ISSN (O) 2278-1021, ISSN (P) 2319-5940
+IJARCCE
+International Journal of Advanced Research in Computer and Communication Engineering
+Impact Factor 8.102Peer-reviewed & Refereed journalVol. 13, Issue 4, April 2024
+DOI:  10.17148/IJARCCE.2024.134202
+© IJARCCE                This work is licensed under a Creative Commons Attribution 4.0 International License                 1339
+The flowchart doesn't specify the image format (e.g., DICOM, JPEG), but medical databases typically use standardized
+formats to ensure compatibility and image integrity.
+
+Depending on the specific database, this step might involve classifying the image into different categories based on its
+content. For instance, the image could be classified by body part (e.g., X-ray of the chest, MRI of the brain), medical
+condition (e.g., fracture, tumor), or imaging modality (e.g., CT scan, ultrasound). This step, also potentially specific to
+certain databases, could involve analysing the image to detect emotions related to the patient's condition. For example,
+an algorithm might analyse facial expressions in an ultrasound image to detect fetal distress. Finally, any relevant
+medication data associated with the patient or appointment is uploaded to the database. This could include medication
+names, dosages, and administration times. Once all data is uploaded, the system might generate a notification to inform
+relevant personnel (e.g., doctors, radiologists) that the image and associated data are now available in the database. The
+process ends with an end symbol, signifying the successful upload of the medical image and associated data to the
+database.
+
+
+Fig 1: Flow diagram
+
+Overall, this flowchart outlines a fairly standard process for uploading medical images to a database, ensuring secure
+access, proper data association, and potential for further analysis or notifications. However, it's important to remember
+that specific details and functionalities might vary depending on the specific database and its intended use.
+
+B.
+System Architecture
+System architecture is the conceptual structure and design of a computer system, which includes hardware components,
+software components, networks, and how they interact to achieve specified capabilities and goals. It provides a framework
+for effectively designing, integrating, and managing complex systems. System architecture is fundamentally concerned
+with establishing the system's components, their responsibilities and linkages, as well as the means for communication
+and data exchange between them.
+
+ISSN (O) 2278-1021, ISSN (P) 2319-5940
+IJARCCE
+International Journal of Advanced Research in Computer and Communication Engineering
+Impact Factor 8.102Peer-reviewed & Refereed journalVol. 13, Issue 4, April 2024
+DOI:  10.17148/IJARCCE.2024.134202
+© IJARCCE                This work is licensed under a Creative Commons Attribution 4.0 International License                 1340
+It tries to guarantee that the system satisfies its performance, scalability, reliability, security, and other quality standards.
+The design often begins with a requirements study, which identifies stakeholders' demands and limitations. This
+knowledge directs the design process, which may include selecting acceptable hardware platforms, deciding software
+frameworks and programming languages, and creating protocols for communication between various components.
+
+
+
+Fig 2: System Architecture
+
+As shown in the Fig 2 the architecture of proposed system. User will communicate with the system using web application.
+Every uploaded test image will be processed by the deep learning model and predict its class. Deep learning module has
+Four main functionalities such as create model, train model, saving the model weight and classification.
+
+Dataset needed for the proposed system is obtained from the Internet and augmented to create more copies using different
+augmentation methods such as scaling, zooming and rotation. A CNN model is built to train the system by extracting
+image features. DL model predicts the type of user emotion from input image.  System also provide notification to elder
+people regarding medicine intake and doctor appointments.
+
+V.
+SYSTEM IMPLEMENTATION
+
+A crucial phase in the system development life cycle is successful implementation of new system design. Implementations
+simply mean converting new system design into operation. The term implementation has different meanings, ranging
+from the conversion of a basic application to a complete replacement of computer system.
+
+Implementation is used here to mean the process of converting a new or revised system design into an operational one.
+
+A.
+Model Used
+
+The model used in this project is Customized Convolution Neural Network (CNN).
+
+
+ISSN (O) 2278-1021, ISSN (P) 2319-5940
+IJARCCE
+International Journal of Advanced Research in Computer and Communication Engineering
+Impact Factor 8.102Peer-reviewed & Refereed journalVol. 13, Issue 4, April 2024
+DOI:  10.17148/IJARCCE.2024.134202
+© IJARCCE                This work is licensed under a Creative Commons Attribution 4.0 International License                 1341
+
+
+Fig 3: Customized Convolution Neural Network
+
+The Fig 3 convolutional neural network (CNN) architecture is meticulously crafted for image classification, adept at
+translating 48x48 pixel grayscale input images into meaningful representations for accurate categorization. Beginning
+with an input layer, it sequentially employs convolutional layers (conv1-conv5) to extract features, escalating from
+rudimentary to intricate representations using progressively increasing filter counts (64 to 256). Max pooling layers
+interspersed within the network compress spatial dimensions, fortifying robustness by spotlighting essential features
+while discarding redundancies. Strategically placed dropout layers combat overfitting by randomly deactivating neurons
+during training, enhancing generalization. Fully connected layers consolidate high-level features for classification,
+culminating in a SoftMax layer with two output neurons for binary classification tasks. This architecture, adhering to
+conventional CNN paradigms, melds convolutional and pooling layers for feature refinement, supplemented by fully
+connected layers for classification. Its adaptability permits customization to suit diverse task complexities and
+computational constraints, ensuring efficacy in discerning intricate patterns within image data.
+
+B.
+Data Used
+All photos have been registered and resized to 48*48 pixels. This dataset contains 35,685 images, 48x48-pixel dimension
+of faces displaying a range of emotions 7 emotions.
+Emotion labels in the dataset are as follows:
+0: 4593 images- Angry
+1: 705 images- Disgust
+2: 5121 images- Fear
+3: 8989 images- Happy
+4: 6077 images- Sad
+5: 4002 images- Surprise
+6: 6198 images- Neutral
+
+
+
+Fig 4: Dataset
+
+Face Expression Recognition (FER) dataset comprises images depicting various emotions such as happiness, sadness,
+disgust, fear, surprise, anger, and neutrality. These datasets are vital for training Convolutional Neural Network (CNN)
+models to recognize human emotions from static images.
+
+They encompass diverse attributes including gender, ethnicity, and age, facilitating the development of robust emotion
+recognition models. By leveraging CNN architectures, one can analyse these datasets to accurately classify emotions.
+
+
+ISSN (O) 2278-1021, ISSN (P) 2319-5940
+IJARCCE
+International Journal of Advanced Research in Computer and Communication Engineering
+Impact Factor 8.102Peer-reviewed & Refereed journalVol. 13, Issue 4, April 2024
+DOI:  10.17148/IJARCCE.2024.134202
+© IJARCCE                This work is licensed under a Creative Commons Attribution 4.0 International License                 1342
+VI.
+RESULT AND DISCUSSION
+
+Result and discussion are the process of examining the outcomes of a particular activity, project, or situation to understand
+its performance, effectiveness, and impact.
+
+A.
+Screenshots
+Fig 5 showcases a login interface with email and password fields against a futuristic backdrop, inviting contemplation on
+human-machine interaction's future. Admin-exclusive access allows data management, with login redirecting to the admin
+dashboard.
+
+
+
+
+Fig  5:  Admin login                                                                     Fig 6: Add Doctor (Admin)
+
+Fig 6 displays admin panel for an "Emotion Recognition" system, facilitating healthcare professional management. Userfriendly controls and an "Add Doctor" option ensure streamlined database expansion. The interface efficiently maintains
+a directory of healthcare professionals within the emotion recognition framework.
+
+
+
+
+
+
+Fig 7: User Login                                            Fig 8: User Profile                         Fig 9: Detect emotion page (user)
+
+Fig 7 portrays a login screen for a mobile app or website, featuring a background image of an elderly woman embraced
+warmly. Input fields for email and password are displayed below. Fig 8 reveals the user profile/dashboard of "EMOTION!"
+app, indicating its focus on emotion recognition. Personalized details like name, gender, contact, and location are provided
+below.  Fig 9 unveils "EMOTION!", a mobile app centred on analysing emotions through image processing. The top bar
+displays a username alongside the tagline "Explore your journey with us!", promising a personalized experience.
+
+
+ISSN (O) 2278-1021, ISSN (P) 2319-5940
+IJARCCE
+International Journal of Advanced Research in Computer and Communication Engineering
+Impact Factor 8.102Peer-reviewed & Refereed journalVol. 13, Issue 4, April 2024
+DOI:  10.17148/IJARCCE.2024.134202
+© IJARCCE                This work is licensed under a Creative Commons Attribution 4.0 International License                 1343
+
+
+
+
+
+Fig 10: Medicine Reminder Added            Fig 11: Doctor Appointment Added          Fig 12: Emotion Detection (fearful)
+
+In Fig 10, a medicine reminder app facilitates setting medication reminders by allowing users to input date, time, dosage,
+and medication details. Notifications are sent two hours prior to intake, including tablet name and dosage instructions,
+aiding in timely medication and reducing missed doses. Fig 11 depicts an appointment reminder app enabling efficient
+schedule management by inputting appointment details like date, time, and doctor's information. Notifications, sent two
+hours before appointments, ensure users are prepared, enhancing organization and punctuality in healthcare commitments.
+In Fig 12 the app enables users to detect emotions via facial analysis from photos or live camera feeds. It accurately
+identifies emotions like "Fearful" based on facial expressions. The presence of a "Detect Emotion" button suggests realtime analysis or image uploads. This feature promotes self-awareness and emotional exploration through facial emotion
+detection.
+
+
+
+
+Fig 13: Medicine Reminder Notification                              Fig 14: When negative emotion detected SMS sent
+
+Fig 13 displays a medicine reminder notification from the "Emotion Recognition" app, prompting the user to take their
+"ockacet" medication at 01:10 PM, two hours in advance. This feature integrates with the user's medication schedule,
+aiding in timely dosage adherence. Fig 14 showcases a messaging app screenshot featuring a conversation with "Mom."
+Automated messages inform the user about their parent's emotional states, indicating "Sad" on Sunday and "Fearful" today
+at 8:15 AM, potentially providing updates on the well-being of an elderly or vulnerable parent.
+
+VII.
+CONCLUSION
+
+The deep learning approach for automatic recognition of facial expressions in older individuals shows its potential to
+significantly decrease caretaker strain while improving the quality of care for the elderly. The system efficiently handles
+facial emotion datasets using Convolutional Neural Networks (CNNs), allowing the extraction of complex emotional
+clues from photos of elderly people. The dataset is thoroughly pre-processed before it is processed to optimize it for
+further deep learning model training. This algorithm, trained on pre-processed data, improves its accuracy in recognizing
+facial expressions, offering caretakers with real-time insights into the mental states of the elderly under their care.
+
+ISSN (O) 2278-1021, ISSN (P) 2319-5940
+IJARCCE
+International Journal of Advanced Research in Computer and Communication Engineering
+Impact Factor 8.102Peer-reviewed & Refereed journalVol. 13, Issue 4, April 2024
+DOI:  10.17148/IJARCCE.2024.134202
+© IJARCCE                This work is licensed under a Creative Commons Attribution 4.0 International License                 1344
+Furthermore, the system's capability goes beyond emotion recognition, including features for continuous caretaker
+assistance. By including reminders for upcoming medical appointments and medication schedules, the system assures
+immediate action and commitment to medications. This thorough approach to elder care management addresses not just
+the urgent need for emotional support and monitoring, but also the broader range of healthcare requirements necessary
+for the well-being of older people. By providing timely notifications and complete understanding of the emotional wellbeing of the elderly, the proposed system provides a supportive and caring environment. It provides caretakers with the
+information they need to better predict and meet the needs of older adults, eventually improving the quality of care given.
+
+REFERENCES
+
+[1]. M Alexandra Israelsson, Anja Seiger, Petri Laukka, “Blended Emotions can be Accurately Recognized from Dynamic
+Facial and Vocal Expressions”, Journal of Nonverbal Behavior, 17 May 2023, pp.267–284.
+[2]. Vandana Singha, Swati Prasad b’ “Speech emotion recognition system using gender dependent convolution neural
+network”, Elsevier, January 2023, pp. 2533-2540.
+[3]. S. Jothimani , K. Premalatha, “THFN: Emotional health recognition of elderly people using a Two-Step Hybrid
+feature fusion network along with Monte-Carlo dropout”, Elsevier, 8 June 2023.
+[4]. P. Sreevidya1, S. Veni1 , O. V. Ramana Murthy, “Elder emotion classification through multimodal fusion of
+intermediate layers and cross-modal transfer learning”, ORIGINAL PAPER, Jan 2022, pp. 1281–1288.
+[5]. Anna C.Y. Low, VincentY. S. Oh, Eddie M.W.Tong, Damian Scarf1 & Ted Rufman, “Older adults have difficulty
+decoding emotions from the eyes whereas easterners have difculty decoding emotion from the mouth”,
+Scientificreports, May 6 2022.
+[6]. Leila Ben Letaifa, Maria Ines Torres, Raquel Justo, “Adding dimensional features for emotion recognition on
+speech”, EasyChair Preprint, No 4989, February 8, 2021.
+[7]. Diana S. Cortes1, ChristinaTornberg, Tanja Bänziger, HillaryAnger Elfenbein, Håkan Fischer1, Petri Laukka,
+“Efects of aging on emotion recognition from dynamic multimodal expressions and vocalizations”, Scientific
+Reports, Jan 2021.
+[8]. Fiza Mughal, William Raffe, Jaime Garcia, “Emotion Recognition Techniques for Geriatric Users: A Snapshot”,
+IEEE, 22 September 2020.
+[9]. Md. Zia Uddin, Erik G. Nilsson, “Emotion recognition using speech and neural structured learning to facilitate edge
+intelligence”, Elsevier, 17 June 2020.
+[10].
+Mariana Juliao ,Alberto Abad, Helena Moniz, “Exploring Text and Audio Embeddings for Multi-Dimension
+Elderly Emotion Recognition” October 29 2020, pp. 2067-2071.
+[11].
+Gizem Sogancıo glu , Oxana Verkholyak, Heysem Kaya, Dmitrii Fedotov, Tobias Cadee ́ Albert Ali Salah1
+Alexey Karpov, “Is Everything Fine, Grandma? Acoustic and Linguistic Modeling for Robust Elderly Speech
+Emotion Recognition”, INTERSPEECH 2020, pp.2097-2100.
+[12].
+Boateng, George, Kowatsch, Tobias, “Speech Emotion Recognition among Elderly Individuals using
+Multimodal Fusion and Transfer Learning”, ETH Zurich, October 2020.
+[13].
+Yuan-Yuan Lin, Jun-Yuan Yang, Chuz-Yi Kuo, Chun-Yu Huang, Chih-Yuan Hsu, ChihChin Liu, “Use
+Empirical Mode Decomposition and Ensemble Deep Learning to Improve the Performance of Emotional Voice
+Recognition”, IEEE, 04 December 2020.
+[14].
+Kaixin Ma, Xinyu Wang, Xinru Yang, Mingtong Zhang, Jeffrey M. Girard, LouisPhilippe Morency,
+“ElderReact: A Multimodal Dataset for Recognizing Emotional Response in Aging Adults” ICMI, October 18, 2019.
+pp. 349-357.
+[15].
+Shaosong Dou , Zhiquan Feng, Xiaohui Yang, Jinglan Tian, “Real-time multimodal emotion recognition system
+based on elderly accompanying robot”, Journal of Physics: Conference Series, October 27 2019.
+[16].
+Sarah Abdi, Alice Spann, Jacinta Borilovic, Luc de Witte1 and Mark Hawley, “Understanding the care and
+support needs of older people: a scoping review and categorisation using the WHO international classification of
+functioning, disability and health framework (ICF)”, BMC Geriatrics, 22 July 2019.
+[17].
+Nora Algaraawi, Tim Morris, “Study on Aging Effect on Facial Expression Recognition”, Proceedings of the
+World Congress on Engineering 2016, January 2016, pp. 978-988.
+[18].
+Devika Verma, Debajyoti Mukhopadhyay, “Age Driven Automatic Speech Emotion Recognition System”,
+International Conference on Computing, Communication and Automation, 2016, pp. 1005-1010.
+[19].
+Aire Mill, Ju ̈ ri Allik, Anu Realo, Raivo Valk, “Age-Related Differences in Emotion Recognition Ability:A
+Cross-Sectional Study”, American Psychological Association, Vol. 9, No. 5, October 2009, pp. 619 – 630.
+[20].
+Silke Paulmann, Marc D. Pell b, Sonja A. Kotz, “How aging affects the recognition of emotional speech”,
+Elsevier, 3 March 2007 pp. 262–269.

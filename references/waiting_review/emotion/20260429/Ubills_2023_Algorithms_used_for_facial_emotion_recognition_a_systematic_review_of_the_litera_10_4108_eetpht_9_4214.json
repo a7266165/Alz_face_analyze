@@ -1,0 +1,26 @@
+{
+  "title": "Algorithms used for facial emotion recognition: a systematic review of the literature",
+  "authors": [
+    "José Armando Tiznado Ubillús",
+    "José Herrera",
+    "Luis Rivera",
+    "Marysela Ladera‐Castañeda",
+    "César Augusto Atoche Pacherres",
+    "Miguel Ángel Atoche Pacherres",
+    "Carmen Lucila Infante Saavedra"
+  ],
+  "year": 2023,
+  "abstract": "INTRODUCTION: We currently live in a society that is constantly changing and technology has developed algorithms that allow facial emotion recognition, because facial expression transmits people's mood, feelings and state of soul. However, it is required that future research can improve the quality of emotion detection by improving the quality of the data set and the model used, for this reason, it is necessary to investigate other machine learning algorithms in the recognition of facial emotions, as they exist. identification deficiencies that limit the discrimination of extracted structural features.OBJECTIVE: The purpose of the article was to analyze the most used algorithms for facial emotion recognition, through a systematic literature review, according to the PRISMA method.METHOD: A search for information was carried out in articles published in open access such as: Scopus, Web of Science (WOS) and Association for Computing Machiner (ACM) in the period 2022 and 2023, totaling 38 selected articles.RESULTS: The results obtained indicate that the algorithms most used by the authors are SVM and SoftMax with a total of 17.65% each.CONCLUSION: It is concluded that the SVM and SoftMax algorithms are the most predominant, playing a crucial role in achieving optimal levels of precision in the training of the models. These algorithms, with their robustness and ability to deal with complex data, have proven to be fundamental pillars in the field of facial emotion recognition.",
+  "doi": "10.4108/eetpht.9.4214",
+  "arxiv_id": null,
+  "venue": "EAI Endorsed Transactions on Pervasive Health and Technology",
+  "citation_count": 1,
+  "source": "openalex",
+  "pdf_url": "https://publications.eai.eu/index.php/phat/article/download/4214/2627",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4387904866"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.4108/eetpht.9.4214"
+}

@@ -1,0 +1,25 @@
+{
+  "title": "A MediaPipe Holistic Behavior Classification Model as a Potential Model for Predicting Aggressive Behavior in Individuals with Dementia",
+  "authors": [
+    "Ioannis Galanakis",
+    "Rigas Filippos Soldatos",
+    "Nikitas Ν. Karanikolas",
+    "Athanasios Voulodimos",
+    "Ioannis Voyiatzis",
+    "Μαρία Σαμαράκου"
+  ],
+  "year": 2024,
+  "abstract": "This paper introduces a classification model that detects and classifies argumentative behaviors between two individuals by utilizing a machine learning application, based on the MediaPipe Holistic model. The approach involves the distinction between two different classes based on the behavior of two individuals, argumentative and non-argumentative behaviors, corresponding to verbal argumentative behavior. By using a dataset extracted from video frames of hand gestures, body stance and facial expression, and by using their corresponding landmarks, three different classification models were trained and evaluated. The results indicate that Random Forest Classifier outperformed the other two by classifying argumentative behaviors with 68.07% accuracy and non-argumentative behaviors with 94.18% accuracy, correspondingly. Thus, there is future scope for advancing this classification model to a prediction model, with the aim of predicting aggressive behavior in patients suffering with dementia before their onset.",
+  "doi": "10.3390/app142210266",
+  "arxiv_id": null,
+  "venue": "Applied Sciences",
+  "citation_count": 6,
+  "source": "openalex",
+  "pdf_url": "https://www.mdpi.com/2076-3417/14/22/10266/pdf?version=1730998400",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4404135810"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.3390/app142210266"
+}

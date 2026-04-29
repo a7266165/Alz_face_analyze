@@ -1,0 +1,28 @@
+{
+  "title": "Reliability of Emotion Analysis from Human Facial Expressions Using Multi-task Cascaded Convolutional Neural Networks",
+  "authors": [
+    "Toshiya Akiyama",
+    "Allan Paulo Blaquera",
+    "Leah Anne Christine Bollos",
+    "Gil P. Soriano",
+    "Hirokazu Ito",
+    "Ryuichi Tanioka",
+    "Hidehiro Umehara",
+    "Kyoko Osaka",
+    "Tetsuya Tanioka"
+  ],
+  "year": 2025,
+  "abstract": "Life support robots in care settings must be able to read a person's emotions from facial expressions to achieve empathic communication. This study aims to determine the degree of agreement between Multi-task Cascaded Convolutional Neural Networks (MTCNN) results and human subjective emotion analysis as a function to be installed in this type of robot. Forty university students talked with PALRO robot for 10 minutes. Thirteen area of interest videos were used to assess the validity identified by MTCNN was facial expression was happy or combination of happy and other emotions. Twenty university students and 20 medical professionals identified which of the 7 emotions (angry, disgust, fear, happy, sad, surprise, neutral) were present. Fleiss' kappa coefficient was calculated. Kappa coefficients of the emotion analysis for seven emotions ranged from 0.21 to 0.28. Kappa coefficient for \"Happy\" was the highest (0.52 to 0.57) with moderate agreement. Among female university students, only \"Surprise\" had a moderate agreement with Fleiss' kappa coefficient of 0.48. MTCNN emotion analysis and human emotion analysis were in moderate agreement for the identification of \"Happy\" emotions. The comparison of the agreement between the results of emotion analysis from facial expressions using non-contact MTCNN and subjective human facial expression analysis suggested that the use of MTCNN may be effective in understanding subjects' happy feelings. J. Med. Invest. 72 : 93-101, February, 2025.",
+  "doi": "10.2152/jmi.72.93",
+  "arxiv_id": null,
+  "venue": "The Journal of Medical Investigation",
+  "citation_count": 1,
+  "source": "openalex",
+  "pdf_url": "https://www.jstage.jst.go.jp/article/jmi/72/1.2/72_93/_pdf",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4409672159"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.2152/jmi.72.93"
+}

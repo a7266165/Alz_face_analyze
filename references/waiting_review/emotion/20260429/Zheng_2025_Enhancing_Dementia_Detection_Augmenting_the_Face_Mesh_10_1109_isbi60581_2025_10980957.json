@@ -1,0 +1,25 @@
+{
+  "title": "Enhancing Dementia Detection: Augmenting the Face Mesh",
+  "authors": [
+    "Chuheng Zheng",
+    "Mondher Bouazizi",
+    "Tomoaki Ohtsuki",
+    "Momoko Kitazawa",
+    "Toshiro Horigome",
+    "Taishiro Kishimoto"
+  ],
+  "year": 2025,
+  "abstract": "Alzheimer's disease (AD) stands as a prevalent form of dementia, primarily impacting the elderly, and presently lacking any known cure. Early screening and intervention have demonstrated efficacy for both current and prospective treatments. With the global population aging, early detection of AD has become imperative. Language-based approaches for dementia detection have received considerable attention in research due to dementia's nature of hurting cognitive and language functions. Facial features, on the other hand, have been comparatively neglected despite their potential in identifying AD, due to a lack of usable dataset. AD patients show different patterns while displaying facial expressions because of Apathy, a phenomenon common in AD patients. This makes facial features non-negligible in dementia detection. The face mesh, comprising 478 landmarks, serves as a rich and informative facial representation. This study concentrates on leveraging face mesh data for AD detection. We explored data augmentation techniques to address the challenges of over-fitting, particularly impactful in training neural networks on a small dataset. Deep learning methods, including transformer, Convolutional Neural Networks (CNN), and Long Short-Term Memory (LSTM) networks, were employed to classify dementia patients and healthy subjects. By augmenting the dataset by rotation, shift, and scaling, we improved the performance of the deep learning methods. The combined use of 1D CNN networks and data augmentation method reported the highest accuracy of 76%. These results confirmed the effectiveness of our data augmentation methods. They also underscore the potential of face-related features in enhancing early detection approaches for AD.",
+  "doi": "10.1109/isbi60581.2025.10980957",
+  "arxiv_id": null,
+  "venue": null,
+  "citation_count": 1,
+  "source": "openalex",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4410295643"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.1109/isbi60581.2025.10980957"
+}

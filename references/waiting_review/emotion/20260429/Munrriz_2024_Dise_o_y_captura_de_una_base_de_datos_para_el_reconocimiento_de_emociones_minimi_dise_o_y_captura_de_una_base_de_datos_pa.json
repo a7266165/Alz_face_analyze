@@ -1,0 +1,24 @@
+{
+  "title": "Diseño y captura de una base de datos para el reconocimiento de emociones minimizando sesgos",
+  "authors": [
+    "Aránzazu Jurío Munárriz",
+    "Rubén Pascual Casas",
+    "Iris Domínguez Catena",
+    "Daniel Paternain Dallo",
+    "Mikel Galar"
+  ],
+  "year": 2024,
+  "abstract": "El reconocimiento de emociones a partir de expresiones faciales (FER) es un campo de investigación importante para la interacción persona-máquina. Sin embargo, los conjuntos de datos utilizados para entrenar modelos FER a menudo contienen sesgos demográficos que pueden conducir a la discriminación en el modelo final. En este trabajo, presentamos el diseño y la captura realizados para la creación de una nueva base de datos para FER, donde tratamos de minimizar los sesgos desde el propio diseño. La base de datos se ha creado utilizando diferentes métodos de captura. Para comprobar la reducción de los sesgos alcanzada, analizamos diferentes métricas de sesgo representacional y estereotípico sobre la base de datos generada y la comparamos frente a otras bases de datos estándar en la literatura de FER.",
+  "doi": null,
+  "arxiv_id": null,
+  "venue": "Academica-e (Universidad Pública de Navarra)",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://academica-e.unavarra.es/bitstreams/94add096-dae7-4988-a8a5-58b79ba3dfe2/download",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W7135602132"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "title:diseño y captura de una base de datos para el reconocimiento de emociones minimizando sesgos"
+}

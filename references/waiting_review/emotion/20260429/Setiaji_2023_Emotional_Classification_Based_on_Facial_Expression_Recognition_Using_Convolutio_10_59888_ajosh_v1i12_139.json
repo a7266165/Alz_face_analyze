@@ -1,0 +1,24 @@
+{
+  "title": "Emotional Classification Based on Facial Expression Recognition Using Convolutional Neural Network Method",
+  "authors": [
+    "Arif Pami Setiaji",
+    "Gerry Firmansyah",
+    "Habibullah Akbar",
+    "Budi Tjahjono",
+    "Agung Mulyo Widodo"
+  ],
+  "year": 2023,
+  "abstract": "In recent years, the development of human-computer interaction technology has reached remarkable levels, particularly in the field of facial expression recognition. This technology utilizes human facial images to identify and classify emotional expressions such as happiness, sadness, fear, and more through computer image processing. Active research in facial expression recognition yields substantial benefits for individual and societal advancement, especially in the context of its application within Smart City environments. This study demonstrates that well- configured Convolutional Neural Network (CNN) models empowered by TensorFlow exhibit higher accuracy compared to models utilizing PyTorch. The TensorFlow model achieves the highest accuracy of 93% in recognizing emotional expressions, whereas the PyTorch model achieves 69% accuracy. The TensorFlow model also displays lower accuracy loss and shorter training times compared to the PyTorch model. In the context of calculating happiness indices within Smart City environments, the appropriate choice of technology significantly influences measurement accuracy and efficiency. Therefore, the TensorFlow platform, proven to deliver superior performance in this study, can be a strategic choice for integrating facial expression detection technology into happiness index measurements in such locations",
+  "doi": "10.59888/ajosh.v1i12.139",
+  "arxiv_id": null,
+  "venue": "Asian Journal of Social and Humanities",
+  "citation_count": 1,
+  "source": "openalex",
+  "pdf_url": "https://ajosh.org/index.php/jsh/article/download/139/157",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4387101497"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.59888/ajosh.v1i12.139"
+}

@@ -1,0 +1,22 @@
+{
+  "title": "Facial emotion recognition tool for teleoperated robot reminiscence group therapy for people with dementia",
+  "authors": [
+    "Liu Xiangyu",
+    "Yamazaki Ryuji",
+    "Kase Hiroko"
+  ],
+  "year": 2023,
+  "abstract": "Background: Historically, questionnaires and laboratory tests have been used to verify reminiscence group therapy (RGT) efforts which are widely used methods for the nonpharmacological treatment of dementia.Today, facial expression recognition tools may be applied in a noncontact, more objective, and efficient manner.Objective: We propose to enhance such applications with more accurate databases and higher performance-trained models to aid PWD in the future.Method: Our study used the OpenCV-based AI facial emotion recognition tool to explore the feasibility of emotional improvement for dementia RGT.Data from two intervention experiments of teleoperated robot RGT conducted on people with dementia (PWD) were analyzed.Experiments were conducted on six PWD in Tokorozawa, Saitama, and eight PWD in Nakameguro, Tokyo.The Emo-Rec application showed a difference in trends between the crossover method and the controlled trial.Results: The trend for Experiment Tokorozawa was relatively flat compared with that of Experiment Nakameguro.The overall group means were mostly below 10, indicating that RGT was relaxing and enjoyable, and that participants' moods improved over time. Conclusion:Based on our data analysis of long-term interventions, we believe that a facial emotion recognition tool is more objective for quantifying participants' emotions, without the need to use other instruments.More importantly, it does not suffer from cognitive barriers for self-reports, questionnaires, or interviews.",
+  "doi": "10.4017/gt.2023.22.1.827.07",
+  "arxiv_id": null,
+  "venue": "Gerontechnology",
+  "citation_count": 1,
+  "source": "openalex",
+  "pdf_url": "https://journal.gerontechnology.org/addCount.aspx?aid=3344&download=87da20de0e8b49088d05113a1fb570f8.pdf",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4384920457"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.4017/gt.2023.22.1.827.07"
+}

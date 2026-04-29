@@ -1,0 +1,22 @@
+{
+  "title": "Analysis of Facial Cues for Cognitive Decline Detection Using In-the-Wild Data",
+  "authors": [
+    "Fatimah Alzahrani",
+    "Steve Maddock",
+    "Heidi Christensen"
+  ],
+  "year": 2025,
+  "abstract": "The development of automatic methods for early cognitive impairment (CI) detection has a crucial role to play in helping people obtain suitable treatment and care. Video-based analysis offers a promising, low-cost alternative to resource-intensive clinical assessments. This paper investigates visual features (eye blink rate (EBR), head turn rate (HTR), and head movement statistical features (HMSFs)) for distinguishing between neurodegenerative disorders (NDs), mild cognitive impairment (MCI), functional memory disorders (FMDs), and healthy controls (HCs). Following prior work, we improve the multiple thresholds (MTs) approach specifically for EBR calculation to enhance performance and robustness, while the HTR and HMSFs are extracted using methods from previous work. The EBR, HTR, and HMSFs are evaluated using an in-the-wild video dataset captured in challenging environments. This method leverages clinically validated cues and automatically extracts features to enable classification. Experiments show that the proposed approach achieves competitive performance in distinguishing between ND, MCI, FMD, and HCs on in-the-wild datasets, with results comparable to audiovisual-based methods conducted in a lab-controlled environment. The findings highlight the potential of visual-based approaches to complement existing diagnostic tools and provide an efficient home-based monitoring system. This work advances the field by addressing traditional limitations and offering a scalable, cost-effective solution for early detection.",
+  "doi": "10.3390/app15116267",
+  "arxiv_id": null,
+  "venue": "Applied Sciences",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://www.mdpi.com/2076-3417/15/11/6267/pdf?version=1748934375",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4411001512"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.3390/app15116267"
+}

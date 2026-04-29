@@ -1,0 +1,7146 @@
+University of Southern Denmark
+Emotion recognition and Artificial Intelligence
+A Systematic Review (2014-2023) and Research Recommendations
+Khare, Smith; Blanes-Vidal, Victoria; Nadimi, Esmaeil; Acharya, U Rajendra
+Published in:
+Information Fusion
+DOI:
+10.1016/j.inffus.2023.102019
+Publication date:
+2024
+Document version:
+Final published version
+Document license:
+CC BY-NC-ND
+Citation for pulished version (APA):
+Khare, S., Blanes-Vidal, V., Nadimi, E., & Acharya, U. R. (2024). Emotion recognition and Artificial Intelligence:
+A Systematic Review (2014-2023) and Research Recommendations . Information Fusion, 102, Article 102019.
+https://doi.org/10.1016/j.inffus.2023.102019
+Go to publication entry in University of Southern Denmark's Research Portal
+Terms of use
+This work is brought to you by the University of Southern Denmark.
+Unless otherwise specified it has been shared according to the terms for self-archiving.
+If no other license is stated, these terms apply:
+            • You may download this work for personal use only.
+            • You may not further distribute the material or use it for any profit-making activity or commercial gain
+            • You may freely distribute the URL identifying this open access version
+If you believe that this document breaches copyright please contact us providing details and we will investigate your claim.
+Please direct all enquiries to puresupport@bib.sdu.dk
+Download date: 29. Apr. 2026
+
+,QIRUPDWLRQ )XVLRQ 
+
+ 
+
+$YDLODEOH RQOLQH  6HSWHPEHU 
+  7KH $XWKRU
+V
+ 3XEOLVKHG E\ (OVHYLHU %9 7KLV LV DQ RSHQ DFFHVV DUWLFOH XQGHU WKH && %<1&1' OLFHQVH
+KWWS
+FUHDWLYHFRPPRQVRUJOLFHQVHVE\
+QFQG
+
+Contents lists available at ScienceDirect
+Information Fusion
+journal homepage: www.elsevier.com/locate/inffus
+Emotion recognition and artificial intelligence: A systematic review
+(2014–2023) and research recommendations
+Smith K. Khare a,∗, Victoria Blanes-Vidal a, Esmaeil S. Nadimi a, U. Rajendra Acharya b
+a Applied AI and Data Science Unit, Mærsk Mc-Kinney Møller Institute, Faculty of Engineering, University of Southern Denmark, Denmark
+b School of Mathematics, Physics and Computing, University of Southern Queensland, Springfield, Australia
+A R T I C L E
+I N F O
+Keywords:
+Emotion recognition
+Speech
+Facial images
+Electroencephalogram
+Electrocardiogram
+Eye tracking
+Galvanic skin response
+Artificial intelligence
+Machine learning
+Deep learning
+A B S T R A C T
+Emotion recognition is the ability to precisely infer human emotions from numerous sources and modalities
+using questionnaires, physical signals, and physiological signals. Recently, emotion recognition has gained
+attention because of its diverse application areas, like affective computing, healthcare, human–robot interactions, and market research. This paper provides a comprehensive and systematic review of emotion
+recognition techniques of the current decade. The paper includes emotion recognition using physical and
+physiological signals. Physical signals involve speech and facial expression, while physiological signals include
+electroencephalogram, electrocardiogram, galvanic skin response, and eye tracking. The paper provides an
+introduction to various emotion models, stimuli used for emotion elicitation, and the background of existing
+automated emotion recognition systems. This paper covers comprehensive searching and scanning of wellknown datasets followed by design criteria for review. After a thorough analysis and discussion, we selected
+142 journal articles using PRISMA guidelines. The review provides a detailed analysis of existing studies
+and available datasets of emotion recognition. Our review analysis also presented potential challenges in the
+existing literature and directions for future research.
+1. Introduction
+Emotion is a dynamic cognitive and physiological condition that develops in reaction to inputs, like experiences, thoughts, or interactions
+with people. It includes subjective experience, cognitive processes,
+behavioral influences, physiological responses, and communication.
+Therefore, emotion recognition is crucial in the application areas such
+as marketing, human–robot interaction, healthcare, mental health monitoring, and security [1]. The study of emotions for healthcare includes
+vast neurological disorders like sleep disorders [2], schizophrenia [3],
+evaluation of sleep quality [4], and Parkinson’s disease [5]. Human
+emotions can play a key role in detecting physiological conditions like
+fatigue [6], drowsiness [7], depression [3], and pain [8]. The experts
+also suggested that variation in emotions are of great importance in
+the study of autism spectral disorder [9], attention deficit hyperactivity
+disorder [10], and panic disorder [11]. The study of human emotion is
+also crucial for human–robot interaction and brain-computer evaluation, where machines are designed to behave like humans for various
+applications [1]. Therefore, a detailed study of human emotions and
+automated human emotion recognition is crucial.
+∗Corresponding author.
+E-mail address: smkh@mmmi.sdu.dk (S.K. Khare).
+1.1. Paradigms of emotion
+Distinct brain parts induce different emotions [12]. There are three
+types of emotional responses: reactional, hormonal, and automatic
+[13]. According to psychology, emotions are responses to stimuli,
+associated with qualitative physiological changes [13]. Two basic approaches used to study the nature of emotions are discrete method and
+the multidimensional approach [13].
+1.1.1. Discrete emotions theory
+According to this theory, emotions are different and discrete categories, each with its ensemble of cognitive, psychological, and behavioral factors. Emotions can be positive or negative. According to
+proponents of this hypothesis, there exist a few fundamental emotions that are generally recognized across cultures. There are six basic
+emotions namely: happiness, sadness, anger, surprise, fear, and disgust [14]. Robert Plutchik provided a comprehensive emotional model
+called Plutchik’s wheel of emotions [15]. Plutchik’s wheel consists
+of eight emotions namely: fear, joy, sadness, trust, anger, surprise,
+anticipation, and disgust. Other associated emotions, which combines
+these eight primary emotions are derived by positional intensities. The
+https://doi.org/10.1016/j.inffus.2023.102019
+Received 25 August 2023; Received in revised form 8 September 2023; Accepted 10 September 2023
+
+,QIRUPDWLRQ )XVLRQ 
+
+ 
+
+
+S.K. Khare et al.
+Fig. 1. Plutchik’s wheel of emotions [15].
+Fig. 2. 2D VA emotion model.
+intensity of the emotions increases as we move towards the center of
+the wheel and vice-versa. Fig. 1 provides an overview of Plutchik’s
+wheel of emotions [15].
+1.1.2. Multidimensional emotions theory
+The multidimensional approach for emotions acknowledges that
+emotions are complicated and impacted by numerous elements such as
+personal experiences, cultural background, and individual variations.
+It gives a framework for comprehending the richness and complexity
+of emotional experiences and allows for a more in-depth examination
+of emotional states. It is categorized as a 2-dimensional (2D) and 3dimensional (3D) emotional space model. In the 2D emotional space
+model, emotions are divided into valence (V), which can be positive
+(Pos) or negative (Neg) and arousal (A), i.e., high activation or low
+activation. Russell’s 2D emotional space model that maps using valence
+and arousal is shown in Fig. 2 [16].
+Similarly, the 3D emotional space model maps various continuous
+dimensions, such as V (Pos or Neg), arousal (high or low activation),
+and dominance (D) (feeling in control or feeling controlled). The 3D
+emotional space model proposed by Mehrabian and Russell is shown
+in Fig. 3 [17].
+Fig. 3. 3D VAD emotion model.
+2. Emotion sensing modalities
+Emotion sensing is a technique used to extract human emotions.
+Over the years, various methods have been adopted to study human
+emotions. These techniques are broadly classified into three categories,
+namely: questionnaires, physical, and physiological, as shown in Fig. 4.
+2.1. Questionnaires
+The questionnaire and self-reports are intended to begin people
+thinking about the various emotional intelligence competencies as they
+pertain to them. Various techniques have been developed based on
+manual assessment of emotions, including positive and negative affect
+schedule (PANAS) [18], self-assessment manikin (SAM) [19], photographic affect meter (PAM) [20], and experience sampling method
+(ESM) [21]. PANAS is a psychological technique for assessing and
+measuring a person’s positive and negative emotions. The PANAS questionnaire is divided into two sections: the positive affect scale and
+the negative affect scale [18]. SAM is a nonverbal pictorial evaluation
+approach that directly evaluates the valence, arousal, and dominance
+associated with an individual’s emotive reaction to a wide range of
+stimuli [19]. PAM is a novel affect measurement technique in which
+users select the photo that best matches their present mood from a large
+selection [20]. ESM is a research technique used in psychology and
+related fields to collect real-time data on individuals’ experiences, behaviors, and psychological states in their natural environments. It aims
+to capture momentary or near-real-time assessments of participants’
+experiences and contexts [21].
+2.2. Physical signals
+Physical signals for emotion recognition include facial expressions,
+speech, text, gestures, and body postures [22]. Speech and facial expressions are the most commonly employed mechanisms for emotion
+identification among physical signals [22]. As a result, we chose to limit
+our review study to only physical activities based on speech and facial
+expressions.
+2.3. Physiological signals
+Physiological signals are the most widely used source for emotion
+identification. The advantage of physiological signals is that they are
+activated unintentionally, so cannot be controlled easily by the subject.
+Other benefits include efficient and low-cost data collection, fewer
+
+,QIRUPDWLRQ )XVLRQ 
+
+ 
+
+
+S.K. Khare et al.
+Fig. 4. Branching representation and classification of emotion sensing techniques.
+errors caused by light and shadow acquisition, and less invasion of
+user privacy [22–24]. Electroencephalogram (EEG), electrocardiogram
+(ECG), electromyogram (EMG), galvanic skin response (GSR), respiration (RSP), skin temperature, photoplethysmography, and eye tracking
+(ET) are the most commonly employed physiological signals for emotion recognition [22]. Among physiological signals, the most often
+utilized modalities for detecting human emotions are EEG, GSR, ECG,
+and ET. As a result, these four physiological modalities were included
+in our review analysis.
+3. Overview of automated emotion recognition systems
+Automated emotion recognition systems involve several steps for
+predicting accurate emotional states. The schematic view of the steps
+in an automated emotion recognition system is shown in Fig. 5. The
+brief discussion about each step is discussed as follows:
+3.1. Source
+This first step refers to the part of the body, used for measuring
+the responses to various inputs. Since our review covers two physical
+signals (speech and facial expressions) and four physiological signals
+(EEG, ECG, GSR, and ET), therefore, acquisition sources are limited to
+eyes, speech, brain, heart, skin, and face.
+3.2. Stimuli
+Stimuli are any items, events, or conditions that cause an organism, such as a person or an animal, to respond or react. Stimuli are
+commonly employed in psychology and research to elicit responses or
+behaviors for studying and understanding various psychological processes. Stimuli can include situations, scenarios, or social interactions
+that elicit emotional, cognitive, or behavioral responses. Well-known
+stimuli for eliciting the targeted emotions are virtual reality (VR),
+images, video games, music, audio/video clips, audio, and/or videos
+[25–27]. Based on the type of stimulus various emotions are elicited
+and are ranked manually using a questionnaire using SAM, PANAS,
+PAM, ESM, or other similar techniques.
+3.3. Input signals
+Input signals are pre-processed for effective analysis. Pre-processing
+refers to the steps or procedures performed on raw data prior to analysis
+or further processing. Pre-processing is critical in data analysis because
+it improves data quality, reduces noise or extraneous information, and
+prepares the data for effective analysis and modeling. The specific
+pre-processing steps are decided by the nature of the data and the
+goals of the study. Typically, the steps involved in pre-processing
+are data cleaning (removal of artifacts and other noise sources), data
+integration, data transformation, data sampling, and data scaling.
+3.4. Feature extraction
+In data analysis and machine learning (ML), feature extraction
+refers to translating raw data into a set of relevant and representative characteristics that may be used for further modeling. It seeks
+to extract from data important information or patterns that encapsulate the key traits or properties of the underlying phenomenon.
+The goal of feature extraction is to find and choose a subset of attributes that best capture the subtle details in the data while rejecting
+redundant or unnecessary data. This procedure reduces the data’s
+dimensionality, making it more understandable and suited for analysis
+or modeling activities. The most common features include statistical features, nonlinear features, frequency-domain features, entropy
+features, time–frequency-based features, image-vision-based features,
+fractal dimensions, nonlinear decomposition, domain-specific features,
+and deep learning (DL) features.
+3.5. Feature selection
+The process of choosing a subset of pertinent characteristics from a
+set of features that are present in a dataset is known as feature selection.
+It attempts to choose the most discriminative and informative features
+that contribute the most to the analysis or prediction while avoiding
+duplicate or unnecessary features. The choice of features is crucial since
+it may speed up computation, reduce overfitting, boost interpretability,
+and enhance model performance. The most common feature selection techniques include dimensionality reduction (principle component
+analysis or independent component analysis), statistical or univariate analysis (chi-squared test, ANOVA, or correlation), regularization
+techniques (Lasso (L1 regularization) and Ridge (L2 regularization)),
+feature selection algorithms or wrapper methods (recursive feature
+elimination, sequential feature selection, and tree-based methods, or
+ensemble based methods).
+3.6. Classification
+It is a crucial step in an automated detection system that is used
+to categorize the values of the variables to its subsequent classes. It
+involves decision-making using ML or DL techniques. ML techniques
+involve, among others, support vector machine (SVM), k-nearest neighbor (KNN), decision tree (DT), artificial neural network (ANN), random
+forest (RF), logistic regression, linear discriminant analysis are some
+of the most widely used techniques. Convolutional neural network
+(CNN), long-short term memory (LSTM) networks, deep neural networks (DNN), multilayer perceptron (MLP), recurrent neural network
+
+,QIRUPDWLRQ )XVLRQ 
+
+ 
+
+
+S.K. Khare et al.
+Fig. 5. Schematic diagram of steps involved in an automated emotion recognition system.
+(RNN), generative adversarial networks (GAN), gated recurrent units,
+self-organizing maps, deep reinforcement learning, deep transfer learning, autoencoders (AE), transformers, and deep belief network (DBN)
+are some of the state-of-the-art DL models.
+3.7. Model evaluation
+An ML or classification model’s quality and efficacy are assessed
+using performance measures. These metrics give numerical evaluations
+of the model’s performance regarding predictions and generalizability
+to new data. Particular challenge, kind of data, and the required
+assessment standards influence the choice of performance indicators.
+Some famous indicators of success for ML/DL models are accuracy
+(ACC), recall, specificity, precision, confusion matrix, area under the
+receiver operating characteristic curve (AUC-ROC), and F-1 score.
+4. Motivation and highlights of the review study
+In the last decade, several review papers have been published for
+emotion recognition and decision-making. We have performed a comprehensive search by scanning the relevant review articles published
+recently, and identified significant limitations, before designing our
+systematic review as shown in Fig. 6.
+4.1. Existing emotion recognition review studies
+Hasnul et al. [28] presented a review of ECG-based emotion recognition and their applications. Their review strategy did not employ
+PRISMA guidelines and was limited to ECG signals. The authors further discuss the application areas confined to healthcare with limited
+discussion on challenges and future directions. Bota et al. [29] carried
+out a comprehensive review on emotion recognition using physiological signals and ML techniques. Their review study failed to employ
+a systematic review strategy using PRISMA guidelines. Their review
+study did not discuss application areas, presented limited discussion,
+and limited future directions. Singh and Goel [30] presented a systematic review of emotion recognition using speech signals following
+PRISMA guidelines. Their method covered the application of ML and DL
+techniques, but failed to cover research challenges and comprehensive
+research directions. Kamble and Sengupta [31] presented a review
+on emotion recognition using EEG signals without following PRISMA
+guidelines. They presented a detailed analysis of feature extraction
+methods and decision-making using ML and DL techniques. Their review method did not explore research challenges and future directions.
+Zhang et al. [32] presented a review of EEG signals and ML techniques
+for emotion recognition without PRISMA guidelines. The authors presented a comprehensive study on existing methods, open challenges,
+and future directions. Adyapady and Annappa [33] provided a comprehensive review of facial image-based emotion recognition using
+ML and DL techniques. Their emotion detection review method does
+not involve PRISMA guidelines. The authors discussed various techniques, datasets, and a few applications of emotion recognition. Ba and
+Hu [34] performed a systematic review following PRISMA guidelines
+on emotion recognition using wearables in education. Their review
+study showed that portable and accurate wearable devices adopting
+electro-dermal activity and heart rate signals are common for emotion
+detection in education.
+4.2. Motivation for the current review study
+Human emotions are important markers for different states of conditions and behavioral analysis. Recently, several review studies have
+been conducted, focusing on numerous applications and detection techniques. After doing a comprehensive literature analysis on human
+emotion recognition review articles, the following gaps have been
+identified.
+• Many emotion recognition studies have been performed without
+PRISMA guidelines [28,29,31–33].
+• The majority of the review articles previously published for emotion recognition focused on a single modality i.e., either physiological signal, speech, or facial images [28,31–33].
+• The emotion recognition studies on physiological signals are confined to EEG signals or ML techniques [31,32].
+
+,QIRUPDWLRQ )XVLRQ 
+
+ 
+
+
+S.K. Khare et al.
+Fig. 6. Comparison and uniqueness of our review study with existing review papers published for emotion recognition.
+• A little discussion on research challenges and applications
+[28–33].
+• Limited directions for future research [28–33].
+The above-listed gaps motivate us to write a comprehensive and systematic review of emotion recognition using different modalities. We
+have also focused on a detailed discussion of datasets, feature extraction
+techniques, and inclusion of artificial intelligence (AI). Our review
+study presents a detailed analysis and comprehensive summary of existing feature extraction and classification techniques. In addition, our
+review study includes a detailed analysis of current research gaps, potential application areas, and directions for future research in emotion
+recognition.
+4.3. Salient features of our systematic review
+The uniqueness and salient features of our review study are listed
+as follows and shown in Fig. 7:
+1. Comprehensive use of datasets: Our review study explores
+a comprehensive search strategy of different databases. The
+authors have scanned renowned databases, including Web of
+Science, MEDLINE, PubMed/PubMed Central, IEEE Explore, Scopus, Wiley, and others for selecting the most relevant research
+studies.
+2. Systematic review: Our developed review study follows strict
+PRISMA guidelines for selecting relevant research articles.
+3. Time window: We have considered a time window of last
+10 years, for scanning and selecting the articles included in the
+review.
+4. Multi-modal emotion recognition: We have included physiological signals (EEG, ECG, ET, and GSR) and physical activity
+(speech and facial expression). In addition, we have used AI comprised of ML and DL techniques used for emotion recognition.
+5. Diverse emotion model: We have included articles on discrete and multi-dimensional emotional models to develop our
+review study. Also, we have confined our search for articles to
+peer-reviewed journals.
+Fig. 7. Highlights and key points included in the review method for emotion
+recognition.
+6. Datasets: We have also presented a comprehensive analysis
+of the available datasets used for emotion recognition using
+different modalities.
+7. Analysis: We have presented a detailed analysis and discussion
+of existing studies included in the current review.
+8. Challenges and future Directions: We identified current challenges, presented a detailed discussion and future directions for
+research. We also explored the application areas of emotion
+recognition in various fields.
+5. Review method
+The current systematic review uses the recommended reporting
+elements for systematic reviews and meta-analyses (PRISMA) guidelines [35]. The review protocol includes search strategies, selection
+criteria, selection standards, and data extraction. The details of search,
+selection, and extraction strategies are covered in the following subsections:
+
+,QIRUPDWLRQ )XVLRQ 
+
+ 
+
+
+S.K. Khare et al.
+Table 1
+Criteria adopted for inclusion and exclusion for article selection.
+Inclusion
+(i) emotion recognition
+(ii) classification of emotions using EEG signals
+(iii) emotion recognition and EEG signals
+(iv) detection of emotion using EEG signals
+(v) emotion recognition using physiological signals
+(vi) detection of emotions using ECG signals
+(vii) emotion recognition using ECG signals
+(viii) automated emotion recognition using physiological signals
+(ix) machine learning and deep learning for emotion recognition
+(x) GSR and emotion classification
+(xi) galvanic skin response for emotion detection
+(xii) automated emotion classification using GSR
+(xiii) eye tracking and emotion classification
+(xiv) emotion detection using eye tracking
+(xv) automated emotion detection and eye tracking
+(xvi) speech and emotion classification
+(xvi) speech-based emotion recognition
+(xvii) automated emotion detection using speech
+(xviii) facial images and emotion classification
+(xix) automated system for emotion classification using facial images
+(xx) emotion and facial images
+(xxi) automated human emotion recognition
+(xxii) deep learning based emotion detection using facial images
+Exclusion
+(i) extension or repeated articles
+(iii) articles published before 2014
+(iii) conference articles
+(iv) non-English research articles
+(v) book chapters
+(vi) non-peer reviewed articles
+(vii) articles with statistical analysis
+5.1. Search strategy and selection criteria
+The search for relevant emotion recognition studies starts with
+modalities like physiological signals, including EEG, ECG, GSR, and
+ET, speech signals, and facial images. We have also looked for AI,
+including ML and DL. We searched famous electronic databases, which
+include Web of Science, MEDLINE, PubMed/PubMed Central, IEEE
+Explore, Scopus, and Wiley to locate the desired articles on emotion
+recognition. The authors limited their articles search to English language and journal articles. The search window for articles is adjusted
+to the last 10 years, covering articles published between December
+2013 to July 2023. The focus of the search was limited to physiological signals, emotion recognition or classification, facial images,
+and AI. The key terms used to scan the relevant physiological signals covers ‘‘electroencephalogram’’, ‘‘electrocardiogram’’, ‘‘galvanic
+skin response’’, ‘‘eye tracking’’, ‘‘electrooculogram’’, ‘‘EEG’’, ‘‘GSR’’,
+‘‘EOG’’, ‘‘ET’’, ‘‘ECG’’, ‘‘EKG’’, and ‘‘speech’’. The search criteria for
+emotions includes ‘‘emotion classification’’, ‘‘emotion detection’’, ‘‘emotion recognition’’, ‘‘emotion identification’’, and ‘‘emotion charting’’.
+The search for image-based emotion recognition include ‘‘facial images’’, ‘‘images’’, ‘‘facial data’’, and ‘‘faces’’. Finally, ‘‘deep learning’’,
+‘‘machine learning’’, ‘‘automated recognition’’, ‘‘classification’’, and ‘‘artificial intelligence’’ have been used for searching artificial intelligence.
+The search criteria for scanning and selecting appropriate research
+articles for emotion recognition was tedious and time-consuming.
+Therefore, we have adopted inclusion and exclusion criteria for selecting relevant articles for our review study. Table 1 shows the adopted
+criteria for including and excluding the research articles. Initially, in
+stage one, authors reviewed the title, keywords, and abstract of articles.
+After discussion, the authors decided to finalize the inclusion/exclusion
+criteria for the articles. After initial screening, the full text of the
+remaining articles was examined and analyzed in stage two.
+5.2. Results
+Fig. 8 shows the PRISMA guidelines used for screening and selecting relevant emotion recognition articles. We have categorized article
+shortlisting into three steps: identification, screening, and inclusion.
+Initially, a total of 14 257 articles were identified from six prestigious
+databases and registers, including Web of Science, PubMed, MEDLINE,
+Inspec, Scopus, and others. Based on the relevance of the study, we
+selected 3846 articles, and discarded the remaining before screening.
+During the screening stage, we retrieved 968 articles, of which 234
+were screened for further assessment and excluded others. During the
+final inclusion stage, out of 234 articles, 92 were excluded based on the
+exclusion criteria, and 142 were selected for review. The distribution
+includes 44 articles based on EEG, 20 articles on ECG-based emotion
+recognition, 16 articles for GSR-based emotion recognition, 6 articles
+on ET, and 28 articles each for speech- and facial image-based emotion
+recognition. However, some articles are common for EEG-, ECG-, and
+GSR-based emotion recognition. Fig. 9 shows the distribution of articles
+based on time and publishers. The time-based analysis reveals that the
+highest number of articles belongs to the year 2022, whereas, Elsevier
+is the mostly preferred publisher followed by IEEE.
+6. Summary of emotion recognition studies using EEG signals
+The authors have selected 44 articles based on EEG-based emotion
+recognition. In addition, 5 articles used EEG signals along with ECG and
+GSR modalities taking a total count to 49. Table A.3 presents a detailed
+summary of the EEG-based emotion recognition automated system.
+6.1. Highlights of EEG-based emotion recognition
+The time-based analysis reveals that the highest number of 12 studies have been reported from the year 2020, followed by 2021 and 2019
+with 9 studies each. Elicitation of emotions from audio and video stimuli has been most widely preferred during EEG acquisition. EEG-based
+emotion recognition has been conducted mostly on public EEG datasets
+over private datasets. DEAP, SEED/SSED IV, and DREAMER have been
+used most with individual occurrences of 22, 16, and 9 times, respectively. Classification of emotions based on V/A/D is preferred over
+discrete emotions and positive (Pos)/Negative (Neg)/Neutral (Neu).
+Classification of four basic emotions in the discrete model is highly preferred over other discrete classification models. Extraction of nonlinear
+and statistical features is preferred for direct feature extraction. For
+frequency domain features, power spectral density (PSD) is the most
+commonly used technique for EEG-based emotion recognition. Decomposition techniques like wavelet-based decomposition, empirical mode
+decomposition (EMD), and variational mode decomposition (VMD)
+have been used the most to extract relevant features. In addition, shorttime Fourier transforms (STFT), Cohen’s class, and S-transform have
+been utilized to extract time-frequency representation (TFR). The validation using k-fold cross-validation (FCV), particularly 10 FCV has been
+preferred over leave one subject out/ leave one out validation (LOSO)
+and holdout validation. ML models are used higher than DL models for
+the classification of emotion. The detailed distribution summary of the
+decision-making model is shown in Fig. 10. It is evident from Fig. 10
+that SVM and its variant have been used the most, followed by KNN and
+extreme learning machine (ELM) classifier. In DL taxonomy, CNN has
+been used ten times followed by LSTM-based decision-making models.
+6.2. Details of the EEG-based emotion datasets
+Table B.9 presents the details of the EEG datasets used by the EEGbased emotion recognition studies. A total of 21 diverse EEG-based
+emotion datasets have been used by included studies. It includes 15
+publicly available datasets and 6 private datasets. One study each
+used music, games, and VR as an elicitor, 2 studies used images, and
+remaining used AV stimulus.
+
+,QIRUPDWLRQ )XVLRQ 
+
+ 
+
+
+S.K. Khare et al.
+Fig. 8. Overview of the PRISMA guidelines followed during the selection of the articles in the systematic review.
+Fig. 9. Details of the papers included after PRISMA guidelines (a) Publisher-based distribution and (b) Time-based analysis (Year-wise distribution).
+
+,QIRUPDWLRQ )XVLRQ 
+
+ 
+
+
+S.K. Khare et al.
+Fig. 10. Summary of distribution for emotion recognition studies using EEG signals.
+7. Summary of emotion recognition studies using ECG signals
+A total of 23 articles have been discussed for ECG-based emotion
+recognition as shown in Table A.4. Out of 23 articles, 20 articles
+are related to only ECG-based emotion recognition and articles are
+combined with EEG- and GSR-based studies.
+7.1. Highlights of ECG-based emotion recognition
+The year-wise distribution of ECG-based emotion recognition reveals that four articles belongs to the years 2017, 2020, and 2021, respectively. The year 2022 has three articles, two articles each for 2019
+and 2023, and one for 2014, 2015, and 2018, respectively. Audio/video
+and video-only based emotion elicitation have been the most common
+choice, followed by images and music-based emotions contributing
+equally to emotion elicitation. The researchers preferred public ECG
+datasets over private ones for emotional state detection. From the
+public datasets, five times DREAMER dataset has been used, three each
+in the case of AMIGOS and ASCERTAIN, WESAD and MAHNOB-HCI
+each used twice, and others once. Classification of V/A/D has been
+the highest, followed by discrete emotion (four class) classification.
+Extraction of features directly from ECG signals is preferred the most.
+These include nonlinear features (NLF), statistical features (STSF), timedomain features (TDF), heart rate variability (HRV), frequency-domain
+features (FDF), and rhythmic features. In addition, wavelet-based decomposition and EMD methods have been used for extracting representative features. The validation of the classification model mostly
+used ten-FCV, followed by holdout and LOSO CV. The distribution of
+decision-making models for ECG emotion classification is shown in
+Fig. 11. As evident from Fig. 11, 15 times ML models have been used
+for emotion recognition and 8 times the usage of DL models. SVM and
+KNN are most efficient in ECG classification in ML taxonomy, while
+CNN is more common in DL taxonomy.
+7.2. Details of the ECG-based emotion datasets
+A total of 18 ECG-based emotion datasets have been used in all the
+articles included in our review. The details of the ECG-based emotion
+datasets are shown in Table B.10. Emotion recognition studies explored
+Fig. 11. Summary of distribution for emotion recognition studies using ECG signals.
+privately developed datasets over public ECG datasets. Audio/video
+stimuli have been the most preferred choice to elicit emotions, followed
+by music and image-based stimuli. The acquisition system used three
+electrode settings. V/A/D emotion classification type has been adopted
+the most, followed by discrete emotion classification.
+8. Summary of emotion recognition studies using GSR signals
+A total of 18 articles have been discussed for GSR-based emotion
+recognition as shown in Table A.5. Out of 18 articles, 16 articles used
+only GSR-based emotion recognition, and 2 articles combined with
+EEG- and ECG-based studies.
+8.1. Highlights of GSR-based emotion recognition
+Time-based analysis of GSR-based emotion recognition included in
+the review shows that the highest number of articles (4 articles) were
+from 2020. The year 2016 and 2017 includes three research articles
+each, while the years 2018, 2019, 2021, and 2022 reported two articles
+each, respectively. There are no articles from 2014, 2015, and 2023.
+Elicitation of emotions using audio/video and music-based stimuli was
+adopted most frequently. The DEAP and ASCERTAIN datasets were
+used three times each, while the other one time. Researchers adopted
+private GSR datasets for emotion recognition (11 times) over public
+datasets (9 times). The classification of emotions in terms of V/A and
+discrete emotions contributed equally. Direct extraction of STSF, NLF,
+rhythmic features, and entropy features from GSR signals have been
+used for the classification. Also, decomposition techniques like wavelet
+decomposition, DWT, and EMD to extract information from GSR have
+been used. The validation strategy also includes holdout and k-fold CV.
+The classification strategies adopted for emotion recognition are shown
+in Fig. 12. It has been observed from Fig. 12 that ML models have
+been used more often than that DL models. Within ML models, SVM
+and their variants have been the most common classification strategy
+(7 times), followed by KNN and ensemble techniques (ET) used two
+times each. CNN models, a combination of CNN with long-short-term
+memory (LSTM) have been the favorites in DL models. Audio/video
+stimuli have been the most preferred choice to elicit emotions, followed
+by music stimuli (see Fig. 12).
+
+,QIRUPDWLRQ )XVLRQ 
+
+ 
+
+
+
+S.K. Khare et al.
+Fig. 12. Summary of distribution for emotion recognition studies using GSR signals.
+8.2. Details of the GSR-based emotion datasets
+A total of 14 GSR-based emotion datasets have been used in all the
+articles included in our review. The details of the GSR-based emotion
+datasets are shown in Table B.11. Emotion recognition studies explored
+privately developed datasets over public datasets. Audio/video stimuli
+have been the most preferred choice to elicit emotions, followed by
+music and image-based stimuli. The acquisition system used three
+electrode settings. Classification of emotions from discrete emotion
+models was explored the most, followed by V/A/D and affect states.
+9. Summary of emotion recognition studies using ET signals
+The detailed summary of ET-based emotion recognition is shown in
+Table A.6. A total of 6 articles have been selected and included in our
+review analysis.
+9.1. Highlights of ET-based emotion recognition
+Year-wise distribution of the articles shows that the highest number of three articles was published in 2021. In addition, the years
+2019, 2020, and 2023 reported one article each. Three articles have
+used video-based emotion elicitation, two articles reported image-based
+emotion elicitation, and one article used virtual reality. Five articles
+used the private ET emotion dataset, while only one ET dataset is
+publicly available. All the articles have explored discrete emotion
+classification, four of them using four basic emotion categories. STSF,
+FDF, and NLP features have been extracted directly from ET signals.
+One article used signal transformation using FFT and STFT. Holdout
+validation and LOSO CV was the most prevalent for model validation.
+The breakout of decision-making models for classification is shown in
+Fig. 13. It is seen from Fig. 13 that for ET-based emotion classification,
+DL models have been preferred over ML techniques.
+9.2. Details of the ET-based emotion datasets
+The details of the ET-based emotion dataset are shown in Table B.12. The summary shows that emotion recognition has used independent datasets for their analysis. Also, out of the six datasets used
+Fig. 13. Summary of distribution for emotion recognition studies using ET signals.
+for emotion recognition, five are privately developed, while one is
+public. This limits the applicability and usability of ET-based emotion
+recognition. Elicitation of emotions from videos was used three times,
+images were used twice, and virtual reality was explored once.
+10. Summary of emotion recognition studies using speech signals
+For speech-based emotion recognition, we have selected 28 journal
+articles. The summary of these articles used in the review analysis is
+shown in Table A.7.
+10.1. Highlights of speech-based emotion recognition
+As evident from the summary of Table A.7, one article each has
+been included from the years 2014, 2015, and 2017, respectively.
+The highest articles, i.e. 8, have been reported from the year 2019,
+followed by 6 articles in 2020, 5 in 2021, and 3 each in the years
+2018 and 2022, respectively. The audio/video or audio based have
+been used the most for emotion elicitation. The dataset analysis reveals
+that EMO-DB, RAVDEES, CASIA, and IEMOCAP datasets have been
+the most preferred choices for model testing. The highest strength of
+speech-based emotion recognition is that multiple datasets have been
+used for method verification. Public speech emotion datasets have been
+selected over private datasets. Discrete type classification of emotions
+has been adopted for all the studies. Power spectral density (PSD),
+Mel-frequency cepstrum coefficients (MFCC), Mel spectrogram (MSG),
+STFT, and variants of wavelet transform (WT) have been adopted the
+most for feature extraction. Model validation using holdout CV was
+preferred the most for speech, followed by k-FCV, and the least with
+LOSO CV, respectively. The summary and distribution of the classification techniques used for emotion recognition are shown in Fig. 14.
+The distribution shown in Fig. 14 reveals that DL models have an edge
+over ML models for speech-based emotion recognition. The usage of the
+SVM classifier was reported 7 times and the extreme learning machine
+(ELM) classifier 2 times in ML-based decision-making. For DL models,
+CNN was used 10 times, followed by LSTM and BiLSTM 3 times.
+
+,QIRUPDWLRQ )XVLRQ 
+
+ 
+
+
+S.K. Khare et al.
+Fig. 14. Summary of distribution for emotion recognition studies using speech signals.
+10.2. Details of the speech-based emotion datasets
+The detailed summary of the speech-based emotion dataset is shown
+in Table B.13. The details revealed that 19 datasets have been utilized
+in speech-based emotion recognition studies. Among these, 11 datasets
+are publicly available, while 8 datasets are private. Emotion classification using speech-preferred discrete emotion models with several
+emotions varying from 3 to 12.
+11. Summary of emotion recognition studies using facial images
+The review included 28 articles on the recognition of emotions using
+facial images. Table A.8 presents a summary of facial image-based
+emotion recognition.
+11.1. Highlights of facial images-based emotion recognition
+The summary provided in Table A.8 reveals that the highest number
+of articles have been from the years 2019 and 2020, respectively. Facial
+image-based emotion recognition has one article each from the years
+2015, 2016, and 2017, respectively. A total of 2, 4, and 5 articles have
+been extracted from the years 2023, 2021, and 2022. The datasets CK+
+and JAFFE have been the most commonly used facial image datasets.
+In addition, FER2013, RAF-DB, and AffectNet have also been used in
+many studies. The facial image-based emotion recognition studies have
+validated their model on multiple datasets. The majority of the facial
+image datasets are publicly available. A discrete emotion model is used
+for classification with several emotions varying from 2 to 10. Features
+based on geometric or texture of facial patterns are preferred. The
+validation of the model using holdout CV followed by k-FCV strategies
+is most common. The distribution of decision-making models for facial
+images is shown in Fig. 15. Out of 28 articles, as many as 20 articles
+have preferred DL models for classification, 7 used ML models, while
+the status of one article is unknown. For ML models, the SVM classifier
+has been the most preferred, while CNN has an upper edge over other
+DL models.
+Fig. 15. Summary of distribution for emotion recognition studies using facial images.
+11.2. Details of the facial image-based emotion datasets
+The details of facial image datasets used for emotion recognition
+is shown in Table B.14. A total of 24 datasets have been used in
+the studies included in our review, 21 datasets are publicly available,
+while only 3 datasets are private. All the datasets used discrete emotion
+classification.
+12. Discussion
+Emotion recognition using physiological signals like EEG, ECG, and
+GSR has been majorly classified as valence, arousal, and dominance as
+evident from Tables A.3, A.4, and A.5. In the case of the ET signals,
+speech, and images, discrete emotion classification has been preferred
+as shown in Tables A.6, A.7, and A.8. Audio/video-based elicitation
+has been the most common and preferred technique. The following
+subsection presents the discussion on individual modalities for emotion
+recognition.
+12.1. Takeaways from EEG-based emotion recognition studies
+EEG signals are nonlinear and non-stationary with multi-frequency
+components [36–38]. Therefore, to extract meaningful information
+from multi-frequency EEG signals, decomposition techniques have been
+highly preferred [36–39]. As evident from Table A.3, decomposition
+techniques like discrete wavelet transform (DWT), tunable Q wavelet
+transform (TQWT), flexible analytic wavelet transform (FAWT), dualtree complex wavelet transform (DT-CWT), EMD, VMD, and MVMD
+have been extensively used to extract desired frequency bands and
+instantaneous information about time and frequency [40–55]. The
+features extracted from the sub-components of these decomposition
+methods are further used for classification using ML-based techniques.
+In addition, due to high temporal resolution and presence of multifrequency components, transforming time-series EEG to TFR using
+STFT, smoothed pseudo-Wigner Ville distribution (SPWVD), S-trans
+form, Wigner Ville distribution (WVD), and quadratic time-frequency
+distribution (QTFD) have also been preferred [56–64]. The TFR obtained from these techniques is combined with DL models like CNN for
+
+,QIRUPDWLRQ )XVLRQ 
+
+ 
+
+
+S.K. Khare et al.
+emotion recognition. The analysis shows that the highest accuracy of
+100% has been achieved for valence, arousal, and dominance classification on the DREAMER dataset [54]. Similarly, an accuracy of 99.56%,
+99.67%, and 99.55% for arousal, dominance, and valence has been
+achieved on the DEAP dataset using LOSO CV [54]. Nonlinear decomposition techniques provide an effective representation of EEG signals,
+due to which it has obtained the highest classification accuracy [54]. In
+addition, extraction of TFR from EEG signals using SPWVD and TORbased on S-T in combination with CNN has resulted in an accuracy
+of 93.01% and 94.58% for discrete emotion classification on private
+EEG datasets [58,61]. Thus, the summary of Table A.3 reveals that the
+decomposition techniques with ML models and the combination of TFR
+with DL models have resulted in the highest performance, in terms of
+accuracy, for emotion recognition.
+12.2. Takeaways from ECG-based emotion recognition studies
+ECG signals are quasi-stationary with a high signal-to-noise ratio
+(SNR) compared to EEG signals. Therefore, direct feature extraction can
+help to extract representative and meaningful information from ECG
+signals. Thus ECG-based studies have preferred direct feature extraction
+in terms of NLF, STSF, rhythmic, TDF, and FDF [53,65–75]. Since
+ECG is quasi-stationary and contains mixed frequency components,
+wavelet, and EMD-based decomposition have also attained high accuracy [65,76–78]. SVM and KNN-based ML techniques have successfully
+classified different emotions due to their ability to draw accurate
+boundaries between distinct emotion classes. Due to the rhythmic
+nature and high SNR of ECG signals, DL techniques have extracted
+representative features, which has resulted in high system performance
+[53,73,74,79–83]. The highest accuracy of 100% has been achieved
+for discrete emotion classification using rhythmic features clubbed with
+SVM classifier on a private dataset [66]. In another study, researchers
+obtained 100% accuracy for classifying discrete emotions as well as
+the classification of valence and arousal [77]. The authors in [77] used
+wavelet-based features and a probabilistic neural network (PNN) classifier. The combination of CNN and LSTM has resulted in an accuracy of
+98.73% and 90.5% using DL models on public AMIGOS and DREAMER
+datasets [82].
+12.3. Takeaways from GSR-based emotion recognition studies
+Like EEG and ECG signals, GSR signals are also non-stationary
+and nonlinear. Therefore, extracting meaningful and representative
+information from them is preferred. Features are extracted in the
+form of NLF, STSF, entropy, TDF, FDF, and/or rhythms [53,67,84–90].
+Decomposition techniques based on EMD and wavelets were explored,
+due to their ability to extract crucial characteristics required for the
+classification of emotions [77,85,91–93]. Extraction of features or decomposition makes it easy for classifiers to draw decision boundaries
+for different emotions. Therefore, ML models like SVM and KNN have
+yielded very high classification accuracy. Also, transforming a signal
+to another domain and applying DL models has been effective for
+emotion recognition [53,82,94,95]. The highest accuracy of 100% has
+been obtained for features based on Poincare plots (PCP), Lyapunov
+exponent (LE), and approximate entropy (APEN) using PNN classifier
+on the DEAP dataset [87]. Similarly, the study based on EMD and
+TDF using SVM classifier has also achieved the perfect classification of
+emotions on a private dataset [91]. In addition, statistical features [89],
+wavelet analysis [77], NLF [90], and DWT [93] have also achieved
+high accuracy for emotion detection. Thus, direct extraction of STSF,
+entropy, TDF, FDF, and NLF can provide accurate emotion representation using GSR signals. Also, wavelets and decomposition techniques
+can extract discriminative characteristics from GSR signals for emotion
+recognition.
+12.4. Takeaways from ET-based emotion recognition studies
+The summary of Table A.6 reveals that NLF, STSF, and FDF of
+ET signals can provide a better emotion representation [96–99]. In
+addition, DL models can also extract representative features, which
+has resulted in high accuracy [96,97,99]. The highest accuracy of 92%
+has been achieved with STSF and deep multi-layer perceptron (DMLP)
+classifier for valence state on the eSEE-d public dataset. However, more
+analysis is still required to confirm these findings. Also, validation of
+the model using holdout CV is prone to over-fitting thus, may not yield
+the same performance during LOSO or k-FCV.
+12.5. Takeaways from speech-based emotion recognition studies
+Speech signals have prosody, non-stationary, language specificity,
+and are context dependent. In addition, speech signals are non-station
+ary, and some of them have periodicity [100]. Therefore, the representation of speech in spectral features using MFCC, MFC, STFT,
+and WT has been effective for emotion recognition [101–112]. Statistical features have provided a discriminant representation of speech
+signals, due to which it has obtained the effective classification of emotions [103,109,113,114]. The speech-based emotion recognition has attained higher accuracy when CNN models have been clubbed with spectral representation including simultaneous time and frequency information [107,109–112,114–117]. As mentioned earlier, due to prosody and
+context dependency features of speech, attention-based CNN, LSTM,
+and BiLSTM have also remained effective in speech-based emotion
+classification [110,118–121]. The highest accuracy of 100% has been
+achieved on EMO-DB and CASIA public datasets using MFCC features
+and linear discriminant analysis classifier [105].
+12.6. Takeaways from facial image-based emotion recognition studies
+Facial images for emotion recognition involves facial characteristics.
+Therefore, techniques like face extraction, geometric features, texture
+features, and binary patterns have been the most effective [122–132].
+Similarly, as emotions are recognized using images, CNN models have
+been the most effective decision-making models due to their ability
+to extract spatio-temporal characteristics. Attention-modules with CNN
+have also been proven effective to detect face geometry for emotion
+recognition [129,133–136]. The highest accuracy of 100% has been
+achieved on JAFFE public image dataset using convolutional features
+and the CNN model [137]. Similarly, an accuracy of 99.36% has been
+obtained on the CK+ dataset using the CNN model [138]. An accuracy
+of 99.59% has been achieved on the MMI dataset using optical flow
+spatial–temporal feature (OFSTF) clubbed with the CNN model [136].
+12.7. Overall summary of automated emotion recognition system
+The graphical representation of the automated emotion recognition
+for all the modalities used in the current review is shown in Fig. 16. The
+summary reveals that physiological (EEG, ECG, ET, and GSR) and physical (speech) signals extensively explored feature extraction. Nonlinear
+decomposition is mostly used for extracting meaningful information
+from EEG, ECG, and GSR signals. Physiological signals (EEG, ECG, GSR,
+and ET) contain multi-components, that are nonstationary and nonlinear nature. Therefore, decomposition techniques like EMD, VMD, and
+wavelet transform (DWT, TQWT, FAWT, and others) provide effective
+representation of various emotional states. Also, nonlinear and statistical features from the multi-components of EEG, ECG, GSR, and ET have
+yielded the most representative characteristics for emotion recognition.
+Frequency-domain features for speech and direct feature extraction for
+ET are widely used. Deep features have been used the most for facial
+images. The use of Mel-frequency cepstrum coefficients for speech and
+face extraction for images has provided the discriminative features for
+emotion recognition. Finally, for decision-making, the SVM-based ML
+
+,QIRUPDWLRQ )XVLRQ 
+
+ 
+
+
+S.K. Khare et al.
+Fig. 16. Graphical representation and summary of included modalities emotion recognition.
+modality has been the most effective and preferred classifier for EEG,
+ECG, GSR, and ET signals. The review studies suggest that, for speech
+signals and facial images, decision-making using CNN-based DL models
+may result in the highest performance. The CNN models have inbuild
+convolutional layers, which reduces the high dimensionality of images
+without losing its information. Therefore, CNN models can effectively
+extract features from images and learn to recognize patterns, making
+them well suited for emotion recognition. Also, feature extraction
+and transformation techniques are widely used for time-series input
+signals, including EEG, ECG, GSR, speech, and ET. The overall analysis
+has revealed that information fusion helps to improve the system’s
+performance. The study shows that fusion of EEG with ECG/GSR, and
+ECG with GSR or by fusing different features provided higher accuracy
+than due to single modality [71,82,84,88,92,93]. Therefore, featureand sensor-level fusion obtained from multiple sources can be the better
+option for emotion recognition.
+The overall summary of the modalities covered in our review study
+for emotion recognition with their strengths and weaknesses/future
+recommendations are shown in Table 2. It is noteworthy to mention
+that the summary is drawn based on our observations from the papers
+included in the systematic review.
+13. Challenges
+After a thorough investigation of automated emotion recognition
+systems, we have identified potential challenges in existing studies. The
+major challenges in automated emotion recognition systems are listed
+below:
+13.1. Datasets
+Most of the datasets used for emotion recognition are available
+publicly. However, the majority of them have been utilized to their
+maximum capacity, resulting in the highest classification accuracy.
+In addition, the available datasets have been acquired with a single
+modality i.e., either for EEG, ECG, ET, GSR, speech, or facial images.
+Therefore, there still exists a research gap in analyzing emotion recognition using multiple modalities from the same subject. Also, the lack of
+availability of public emotion datasets for healthcare, brain-computer
+interfaces, and other applications limits such analysis.
+13.2. Adaptive analysis and classification
+The physiological and physical signals are nonlinear, multi-frequ
+ency components, and vary spontaneously [39,139,140]. Accurate and
+effective analysis of such signals can be accomplished with feature
+extraction and decomposition techniques. But, to extract meaningful
+information from such signal, tuning of parameters is required [46,47].
+However, our review study shows that few studies have been explored
+for an adaptive analysis of these signals. These data-driven models
+have been tested on private EEG datasets [46,47]. Therefore, adaptive
+analysis can be used for extracting representative information from
+EEG, ECG, ET, GSR, and/or speech signals. Similarly, for classification,
+ML and/or DL models require extensive tuning of hyper-parameters
+for optimal performance. Empirical and pre-fixed settings of tuning
+hyper-parameters may not yield desired performance.
+13.3. Lack of generalization
+The acquisition of physiological and physical signals has been done
+with different systems. The varying system specifications and acquisition time, results in the generation of sequences of different lengths.
+Our review analysis shows that research studies for emotion recognition
+using EEG, ECG, GSR, and speech signals have been analyzed with
+different segment lengths. The changing duration of signals to be
+analyzed may not yield desired performance. The lack of information
+and generalization on the selection of signal length makes it difficult for
+the stakeholders to trust the decision given by the developed models.
+13.4. Lack of trust in automated decision-making
+It is difficult to trust the outcome of such an automated system, especially when the findings contrast or conflict with previous knowledge
+or expectations. As a result, stakeholders, specialists, and physicians
+are hesitant to rely on existing models to make decisions. This is
+why, despite several significant technological improvements in signal
+processing, feature engineering, and AI, these models fail to gain the
+faith of experts. Furthermore, there are few occasions when real-time
+support systems for decision-making are used in research facilities. This
+is due to the inability of present emotion identification techniques
+to explain the predictions provided by decision support systems. To
+create confidence in automated systems, the models must explain the
+judgments made by the automated system to experts.
+14. Future recommendations and research directions
+Our review study has identified unresolved research challenges in
+current emotion recognition systems. Future research should concentrate on innovative ways to increase our understanding of numerous modalities and applications. The following explains the potential
+directions for future research directions.
+
+,QIRUPDWLRQ )XVLRQ 
+
+ 
+
+
+S.K. Khare et al.
+Table 2
+Summary of emotion recognition studies included in the review with their strengths, limitations, and future directions.
+Modality
+Strengths
+Future recommendations
+EEG
+• Well studied
+• Comprehensive analysis of TDF, FDF, STSF, NLF, and TFR features
+• Explored ML and DL models
+• Attained maximum accuracy
+• Validation of multiple datasets
+• Availability of public datasets
+• Uncertainty in performance
+• Exhaustive use of available datasets
+• Tested on cleaned and pre-processed data
+• Lack of adaptivity
+• Lack of explainability
+• Non-uniformity in EEG segment length selection
+• Limited usage of hyperparameter tuning
+• Limited usage of fusion techniques
+ECG
+• Well studied
+• Attained maximum accuracy
+• Validation of multiple datasets
+• Availability of public datasets
+• Uncertainty in performance
+• Exhaustive use of available datasets
+• Tested on cleaned and pre-processed data
+• Lack of adaptivity
+• Explored mainly ML models
+• Lack of explainability
+• Non-uniformity in ECG segment length selection
+• Limited usage of hyperparameter tuning
+• Limited usage of fusion techniques
+GSR
+• Well studied
+• Attained maximum accuracy
+• Validation of multiple datasets
+• Availability of public datasets
+• Uncertainty in performance
+• Exhaustive use of available datasets
+• Tested on cleaned and pre-processed data
+• Lack of adaptivity
+• Explored mainly ML models
+• Lack of explainability
+• Non-uniformity in GSR segment length selection
+• Limited usage of hyperparameter tuning
+• Limited usage of fusion techniques
+ET
+• Usage of datasets generated from different stimuli
+• Usage of direct feature extraction
+• Generation of simple models
+• Uncertainty in performance
+• Limited public datasets
+• Lack of adaptivity
+• Lack of explainability
+• Limited usage of hyperparameter tuning
+Speech
+• Comprehensive analysis of feature extraction techniques
+• Models are generated and validated on multiple datasets
+• Availability of public datasets
+• Usage of ML and DL techniques
+• Non-data driven models
+• Frequency-domain feature centric
+• Uncertainty in performance
+• Lack of adaptivity
+• Lack of explainability
+• Limited usage of hyperparameter tuning
+Facial images
+• Models are generated and validated on multiple datasets
+• Availability of public datasets
+• Usage of ML and DL techniques
+• Non-data driven models
+• Uncertainty in performance
+• Lack of adaptivity
+• Lack of explainability
+• Limited usage of hyperparameter tuning
+14.1. Application of human emotion recognition
+Emotion recognition covers many applications, including braincomputer interfaces, robotics, and healthcare. However, with the recent
+technological advancements and rise in electronic gadget usage, emotion recognition can help to accelerate in various fields. Some of them
+are listed below:
+14.1.1. Detection and monitoring of medical conditions
+Human emotion can reveal crucial information for health conditions
+and numerous disorders. Research has been conducted on variations
+of emotions in Parkinson’s disease (PD), schizophrenia, Alzheimer’s
+disease (AZD), attention deficit hyperactivity disorder (ADHD), Autism
+spectrum disorder (ASD), epilepsy, and depression. Changes in the emotional states have been witnessed during PD. Variations in emotional
+states during PD were observed using facial expressions, speech, and
+EEG signals [141–144]. Few researches have also been conducted on
+variations in emotions during schizophrenia. Studies have observed
+that facial expressions, auditory, and EEG signals measure emotional
+states in schizophrenia [145–147]. Reading the Mind in the Eyes Test,
+facial expression, eye blinks, and contextual features shows variation
+in emotions in AZD [148–151]. Facial expressions, text, EEG signals,
+and emoji-based studies have shown emotional changes in depression
+[152–154]. Changes in the emotional states in ADHD from facial processing and social cognition have been studied [155–157]. The study of
+emotions from facial expressions, video games, speech signals, and EEG
+has been used to detect ASD [158–161]. Similarly, facial expressions
+and social cognition can be detected in seizures and epilepsy [162,163].
+Therefore, a thorough investigation can be explored for the detection
+of various disorders from emotions. However, very few studies are
+available due to the lack of availability of public datasets. Fig. 17 shows
+an automated emotion-based physiological and neurological disorder
+detection system.
+14.1.2. Children health
+The study and analysis of emotions in children can also play a
+crucial role in their health monitoring. Studies revealed that emotional
+development and regulation can be crucial in children with dyslexia
+[164–166], depression [167,168], anxiety [169,170], and autism [171–
+173]. Therefore, the study of facial expressions, speech, and physiological signals can be used to detect autism, depression, anxiety, and
+dyslexia. Also, emotion recognition can play a crucial role to teach
+children with autism and dyslexia.
+14.1.3. Environmental health studies
+Another potential application of human emotions recognition is
+in environmental health studies. It is known that the physical environment can have an influence on emotions and, ultimately, affect
+
+,QIRUPDWLRQ )XVLRQ 
+
+ 
+
+
+S.K. Khare et al.
+Fig. 17. Overview of the emotion-based automated disorder detection system.
+mental health. For instance, environmental stressors (e.g. air and noise
+pollution) can be linked to a series of negative emotions, e.g., annoyance, anger, disappointment, dissatisfaction, helplessness, anxiety,
+and agitation [174,175]. However, a deep understanding of the mental
+effects due to various environmental factors has been limited by, among
+others, the difficulty in measuring complex emotional states in humans.
+14.1.4. Human-robot interactions
+The rise in AI has boosted the development of human-modeled
+machines. The applications of human emotions have attracted researchers to investigate human-machine interfaces and sentimental
+analysis. Human-machine interfaces can infer and understand human
+emotions, making them more successful in human interactions; the
+models should be able to interpret human emotions and adapt their
+behavior appropriately, resulting in an acceptable reaction to those
+sentiments.
+14.1.5. Patience assistance
+Emotion can be pivotal in patient monitoring and assistance. Effective analysis of emotion can help to sense and detect loneliness, mood
+variations, and suicidal cues.
+14.1.6. Driving assistance
+Emotion recognition can also be used to detect driver’s fatigue. Facial expressions, eye movements, and/or EEG can be used in real-time
+driver fatigue monitoring.
+14.1.7. Education
+Accurate and effective analysis of emotions can help to study students’ level of satisfaction in education.
+14.1.8. Marketing
+A camera with AI systems in shopping malls can be used to read the
+real-time emotions of customers, which may be used for marketing.
+14.1.9. Recruitment
+Automated analysis of an automatic emotion recognition system can
+be used for recruitment. Analysis of emotions during interviews can be
+used to monitor the stress level of candidates.
+14.1.10. Business models
+People show numerous expressions and thoughts about various
+products. Retailers can use customers’ thoughts and feeling to improve
+the in-store experience. Its purpose is to compare data from typical
+satisfaction evaluations to data from emotion recognition technologies
+to determine whether emotion recognition can offer a complete picture
+or perhaps replace satisfaction measurements [176,177].
+14.1.11. E-learning
+We have seen a drastic increase in electronic gadgets and internet
+services usage since the COVID era. Online environments and virtual
+classrooms can provide uninterrupted learning, and emotion detection
+technology assists in identifying students’ emotional and understanding
+levels in real-time. This information may be used to create class content
+based on children’s diverse learning capacities [178,179].
+14.2. Generation of multimodal public datasets
+Human emotions can be studied to detect various disorders, but
+such studies have not been explored to their maximum capacity. One
+reason is that lack of available and diverse datasets. Therefore, the
+development of such datasets and making them available freely to
+the research community can boost emotion-based physiological disorder detection. Also, instead of focusing on a uni-modal dataset, the
+development of a multi-modal dataset can enrich and explore higher
+possibilities for extended emotion recognition studies. Accessibility and
+authorization criteria must be simple and fast so that specialists can
+avoid waiting for a long period. Data collecting methodologies and processes should be made accessible so that other research organizations
+can replicate them and gather more data for study.
+14.3. Development of wearable emotion recognition systems
+Physical signals, including speech, gesture, facial expression, text,
+posture, etc. are susceptible to false positives. Such signals can be
+voluntarily changed resulting in false emotion classifications [47,180].
+Our review analysis shows that EEG signals have been widely preferred for emotion recognition, but usage of numerous EEG sensors
+for acquisition introduce system complexity. Emotions have also been
+detected using ECG signals, which use only three channels [65,67,81,
+181]. Thus, the usage of ECG signals for emotion recognition is advantageous in terms of the number of sensors and high signal-to-noise
+ratio [39]. The human central nervous system is built in such a way
+that alterations in one organ influence another. As a result, the brainheart relationship, brain-eyes interaction, and brain–heart–eyes–muscle
+communication may be critical and beneficial in analyzing changes in
+many organs [39,182]. Photoplethysmography (PPG) signals provide a
+better representation of brain-heart interaction [183,184]. PPGs have
+the advantage of not requiring specific setups or many electrodes for
+signal collection. The sensors are attached to wristwatches, fingers, or
+other wearable devices that are more accessible, less expensive, and
+more practical than other physiological signals.
+
+,QIRUPDWLRQ )XVLRQ 
+
+ 
+
+
+S.K. Khare et al.
+Fig. 18. Taxonomy of information fusion.
+14.4. Distributed learning models
+Huge volumes of data are being produced due to expansion in AI
+and big data technology. The AI is booming due to the extraction of
+valuable information from a large volume of data and has the potential
+for the advancement of human society. The current automated emotion recognition models are developed using centralized ML. However,
+data acquired from different regions can have subjective changes, geographical variations, and instrumental differences, which may provide
+dynamic variations in the performance of traditional ML models. Also,
+traditional ML uses centralized learning model, which suffers privacy
+issues and communication load. To overcome this federated learning
+(FL) can be used. The main goal of FL is to move model training from
+a central server to client devices, allowing many client datasets to work
+together on model training while protecting data privacy and lowering
+communication costs. It uses a ‘‘data stationary, model moving’’ learning mode compared to centralized learning’s ‘‘model stationary, data
+moving’’ method [185,186].
+14.5. Information fusion
+Information fusion, also known as data fusion, is a process that
+combines, integrates, and analyzes data from numerous sources to
+provide a more detailed and precise representation of the desired
+phenomenon. The primary purpose of information fusion is to extract
+subtle information from diverse often imperfect data sources, resulting
+in enhanced decision-making, increased comprehension, and improved
+performance in a variety of applications. There are various levels and
+types of information fusion as shown in Fig. 18 and discussed below:
+14.5.1. Sensor-level fusion
+This level includes integrating unprocessed data from each sensor
+without any processing or analytics. It is used to enhance data quality,
+decrease noise, and deal with missing or incorrect data from certain
+sensors [187].
+14.5.2. Feature-level fusion
+This level combines data from several sources that have been preprocessed and important characteristics extracted before being integrated [188]. This method seeks to minimize the data’s dimensionality
+and establish a single feature representation for subsequent analysis.
+14.5.3. Model fusion
+Model fusion or model ensemble technique increases predictive
+model performance and generalization [189]. Model fusion is based on
+the notion of combining predictions from various independent models
+in a manner to get a final, more robust prediction. Combining the capabilities of different models can frequently result in improved overall
+prediction precision while reducing the risk of over-fitting.
+14.5.4. Data-level fusion
+Data-level fusion includes both sensor-level and feature-level fusion [190]. It entails integrating raw data from numerous sensors and
+then extracting important characteristics from the combined data.
+14.5.5. Hybrid fusion
+Hybrid level combines two or more level of fusion techniques
+e.g., feature-level and decision-level fusions. Suppose the classification
+of physical signals is accomplished using feature-level fusion with a
+single decision-making classifier. On the other hand, analysis of physiological signals can be accomplished using decision-level fusion. The final decision is generated by integrating feature-level and decision-level
+fusions to generate the desired performance [191,192].
+14.6. Application of explainability
+Explainable Artificial Intelligence (XAI) is a strategy for developing
+AI systems that tries to give explicit and intelligible explanations for
+the AI model’s decisions. The decision-making in AI models, such as
+SVM, may be complicated to comprehend. This lack of transparency
+creates issues, particularly in essential applications such as healthcare,
+where knowing the logic behind AI choices is critical for trust, accountability, and safety. These issues are addressed by XAI approaches,
+which make AI models more visible and interpretable. Clients, programmers, and stakeholders can understand how the AI system arrived
+at a certain outcome by giving human-readable explanations. The
+explanations provided by XAI approaches are transparent, which is
+critical for model trust, bias and fairness, debugging, and improvement. For ML models, techniques include feature visualization (learning
+patterns in the data), rule-based models (explicit rules for decisionmaking), local explanations (local explanations focus on explaining
+specific predictions or decisions), and feature importance (LIME (Local
+Interpretable Model-agnostic Explanations) and SHAP (SHapley Additive exPlanations)) [193]. For CNN, heat-maps (class activation map
+(CAM)) including Grad-CAM, Grad-CAM++, SMOOTHGRAD, U-CAM,
+Eigen-CAM, and Score-CAM have been used for explanations [184]. An
+overview of traditional ML models and XAI models is shown in Fig. 19.
+14.7. Uncertainty quantification
+Uncertainty quantification (UQ) is a collection of mathematical
+and computational tools for assessing and characterizing uncertainty
+in computational models, simulations, and data analysis [194–196].
+Understanding the uncertainty associated with the results is critical
+in many scientific and technical domains because precise predictions
+are dependent on it [194]. Uncertainty can arise from various sources
+including model formulation (from simplifications, assumptions, or approximations), input data (noise, missing data, or measurement errors),
+model parameters (fixed parameters), approximations, and initial and
+boundary conditions [197]. The sources of uncertainty can be measured
+using UQ, which aims to address the following questions:
+
+,QIRUPDWLRQ )XVLRQ 
+
+ 
+
+
+S.K. Khare et al.
+Fig. 19. Illustrative representation of XAI model (A) Traditional ML model and (B) XAI model with explanations.
+Fig. 20. Illustrative uncertainty quantification of deterministic model (A) Traditional model with fixed parameter setting and (B) An UQ of the model with distributed parameter
+settings.
+• How do uncertainties in input parameters affect the model’s
+predictions?
+• What are the sources of uncertainty in the model and its input
+parameters?
+• How reliable are the model predictions?
+• How can we improve the model and reduce uncertainties?
+UQ entails estimating probability distributions, statistical moments
+(mean, variance, etc.), and confidence intervals that indicate the uncertainty associated with the results. Some well-known techniques used for
+UQ involve Bayesian inference, variance-based methods, Monte Carlo
+methods, probabilistic collocation, ensemble modeling, and bootstrapping [194,198]. The graphical overview of uncertainty quantification
+of a deterministic model is shown in Fig. 20.
+15. Conclusion
+Emotion recognition is crucial in multiple fields, including healthcare, E-learning, online shopping, etc. Our paper has presented a
+fine-grained analysis of human emotions. This comprehensive analysis
+of emotion recognition systems shows that decomposition techniques
+provide insight information that extracts representative features from
+physiological signals. The SVM-based ML decision-making has been
+proven the most effective and preferred emotion recognition model.
+The ability of DL models to automatically extract and classify deep
+features is gaining popularity and has been increasing in the usage of
+CNN models. Our review analysis shows that feature fusion and data
+fusion help to improve the overall system performance. Hence, information fusion should be used in future emotion recognition models.
+Emotions can be very helpful in certain healthcare applications, such as
+Alzheimer’s disease, Parkinson’s disease, depression, and schizophrenia
+detection, as well as in e-learning, market analysis, and human–robot
+interactions. However, these fields have seen limited research in human emotion recognition systems, due to the lack of available public
+datasets. Therefore, our review recommends developing and providing
+accessible public datasets for increasing the applications of human
+emotions research studies. The review shows that deep learning models
+have gained popularity over traditional ML. Therefore, combination
+of hybrid DL techniques using CNN, autoencoders, LSTM, and transformer models may be adopted for emotion recognition applications.
+Also, accurate versatile models can be designed using federated meta
+learning to train the automated systems on different datasets for a
+particular application. Finally, we highlight the importance of model
+explainability and uncertainty quantification in emotion recognition to
+strengthen the trust and overall impact of AI models.
+
+,QIRUPDWLRQ )XVLRQ 
+
+ 
+
+
+S.K. Khare et al.
+Table A.3
+Summary of emotion recognition studies using EEG signals included in the review.
+Ref.
+Year
+Sub.
+Dataset
+Dataset name
+Status
+Length
+NCH
+Emotion (Classes)
+Feature extraction
+Classification
+Validation
+Accuracy (%)
+Decision
+type
+[199]
+2019
+20
+AV
+–
+Private
+10 s
+1
+Discrete (4)
+DF with NLF
+LSSVM
+10 FCV
+90.63
+ML
+[40]
+2019
+20
+AV
+–
+Private
+10 s
+1
+Discrete (4)
+TQWT with STSF
+ELM
+10 FCV
+87.1
+ML
+[41]
+2022
+23
+AV
+DREAMER
+Public
+–
+14
+V/A (9)
+DWT and EMD with STSF
+Ensemble ML
+10 FCV
+93.79 (A)
+94.5 (V)
+ML
+15
+AV
+SEED
+Public
+–
+12
+Pos/Neg/Neu (3)
+81.39 (A)
+79.71 (V)
+20
+Music
+MUSEC
+Public
+–
+27
+V/A (2)
+81.96 (A)
+82.27 (V)
+43
+AV
+INTERFACES
+Public
+–
+4
+V/A (3)
+59.67 (A)
+59.67 (V)
+[200]
+2014
+16
+Image
+–
+Private
+30 s
+64
+Discrete (5)
+NLF
+QDA
+8 FCV
+47.5
+ML
+[201]
+2018
+32
+AV
+DEAP
+Public
+12 s
+32
+V/A (2)
+LF and NLF
+SVM
+LOSO CV
+59.06
+ML
+15
+AV
+SEED
+Public
+12 s
+62
+Pos/Neg (2)
+83.33
+[42]
+2022
+32
+AV
+DEAP
+Public
+–
+32
+V/A (2)
+VMD
+DNN
+Holdout
+61.25 (A)
+62.5 (V)
+DL
+[43]
+2017
+32
+AV
+DEAP
+Public
+4 s
+10
+DWT with ENT
+KNN
+10 FCV
+86.75
+ML
+[56]
+2021
+32
+AV
+DEAP
+Public
+3 s
+32
+V/A/D (3)
+PCC
+CNN
+Holdout
+70.25 (A)
+74.92 (V)
+DL
+V/A (2)
+74.92 (A)
+78.22 (V)
+[202]
+2019
+32
+AV
+DEAP
+Public
+63 s
+32
+V/A/D (3)
+MBFM
+CapsNet
+10 FCV
+68.28 (A)
+66.73 (V)
+67.25 (D)
+DL
+[203]
+2019
+32
+AV
+DEAP
+Public
+1 s
+32
+V/A (2)
+PSD
+LSTM
+10 FCV
+74.38 (A)
+81.1 (V)
+DL
+[204]
+2020
+15
+AV
+SEED
+Public
+12 s
+62
+Pos/Neg/Neu (3)
+DGCNN
+LOSO CV
+79.95
+DL
+23
+AV
+DREAMER
+Public
+–
+14
+V/A/D (9)
+PSD
+84.54 (A)
+86.23 (V)
+85.02 (D)
+32
+AV
+DEAP
+Public
+2 s
+8
+V/A (2)
+72.81
+[205]
+2020
+15
+AV
+SEED
+Public
+1.5 s
+8
+Pos/Neg (2)
+Windowing
+CNN
+LOSO CV
+86.56
+DL
+11
+AV
+LUMED
+Public
+0.6 s
+8
+Valence (2)
+81.8
+[44]
+2020
+20
+AV
+–
+Private
+–
+16
+V/A (2)
+EMD with NLF
+SVM
+Holdout
+74.88 (A)
+82.63 (V)
+ML
+[57]
+2020
+15
+AV
+SEED
+Public
+1 s
+32
+Pos/Neg/Neu (3)
+STFT
+CNN
+Holdout
+90.59
+DL
+32
+AV
+DEAP
+Public
+1 s
+32
+V/A (9)
+82.84
+[45]
+2016
+32
+AV
+DEAP
+Public
+3 s
+32
+V/A (4)
+EMD and SaENT
+SVM
+10 FCV
+94.98 (BC)
+ML
+93.20 (MC)
+[46]
+2021
+20
+AV
+–
+Private
+10 s
+1
+Discrete (4)
+AVMD with NLF
+ELM
+10 FCV
+97.24
+ML
+[47]
+2020
+20
+AV
+–
+Private
+10 s
+1
+Discrete (4)
+ATQWT with STSF
+LSSVM
+10 FCV
+95.7
+ML
+[58]
+2021
+20
+AV
+–
+Private
+10 s
+16
+Discrete (4)
+SPWVD
+CNN
+Holdout
+93.01
+DL
+[206]
+2022
+15
+AV
+SEED
+Public
+–
+62
+Pos/Neg/Neu (3)
+DE
+RGNN
+LOSO CV
+85.3
+DL
+15
+AV
+SEED IV
+Public
+62
+Discrete (4)
+73.84
+[207]
+2015
+15
+AV
+SEED
+Public
+1 s
+62
+Pos/Neg/Neu (3)
+DE
+DBN
+Holdout
+86.08
+DL
+[59]
+2019
+27
+AV
+MAHNOB-HCI
+Public
+10 s
+32
+Valence
+PSD and NetP
+GELM
+10 FCV
+68
+ML
+15
+AV
+SEED
+Public
+10 s
+62
+Pos/Neg/Neu (3)
+DE and NetP
+88
+[48]
+2019
+15
+AV
+SEED
+Public
+1 s
+1
+Pos/Neg/Neu (3)
+FAWT and IPF
+RF
+10 FCV
+92.84
+ML
+32
+AV
+DEAP
+Public
+1 s
+1
+Discrete (2)
+80.64
+1 s
+1
+Discrete (4)
+72.07
+[208]
+2019
+32
+AV
+DEAP
+Public
+1 s
+32
+Discrete (2)
+PSD
+CNN
+10 FCV
+100
+DL
+[49]
+2020
+15
+AV
+SEED
+Public
+5 s
+62
+Pos/Neg/Neu (3)
+DT-CWT
+SRU
+Holdout
+83.13
+DL
+32
+AV
+DEAP
+Public
+1 s
+32
+V/A (9)
+90.91 (V)
+90.87 (A)
+[60]
+2022
+15
+AV
+SEED
+Public
+1 s
+62
+Pos/Neg/Neu (3)
+STFT and DE
+LSTM
+LOSO CV
+90.92
+DL
+37
+AV
+CMEED
+Public
+1 s
+30
+V/A (2)
+94.21 (V)
+88.03 (A)
+[209]
+2021
+32
+AV
+DEAP
+Public
+1 s
+32
+V/A (9)
+Windowing
+DFR
+10 FCV
+97.69 (V)
+97.53 (A)
+DL
+23
+AV
+DREAMER
+Public
+1 s
+14
+V/A/D (9)
+89.03 (A)
+90.41 (V)
+89.89 (D)
+[210]
+2023
+32
+AV
+DEAP
+Public
+6.25 s
+1
+V/A (9)
+Windowing
+ACRNN
+10 FCV
+93.72 (V)
+93.38 (A)
+DL
+23
+AV
+DREAMER
+Public
+9.76 s
+1
+V/A/D (9)
+97.98 (A)
+97.93 (V)
+89.23(D)
+[61]
+2020
+20
+AV
+–
+Private
+10 s
+1
+Discrete (4)
+TOR-based on S-TF
+AlexNet (CNN)
+Holdout
+94.58
+DL
+[62]
+2018
+32
+AV
+DEAP
+Public
+4 s
+23
+V/A/D (9)
+QTFDs
+SVM
+10 FCV
+87 (V)
+88.4 (A)
+ML
+[211]
+2019
+15
+AV
+SEED
+Public
+–
+62
+Pos/Neg (2)
+NLF
+SVM
+LOSO CV
+89
+ML
+32
+AV
+DEAP
+Public
+–
+32
+V/A/D (9)
+72
+[212]
+2020
+10
+AV
+–
+Private
+14
+Discrete (3)
+PSD and WE ENT
+RVM
+10 FCV
+91.18
+ML
+[63]
+2021
+23
+AV
+DREAMER
+Public
+–
+14
+V/A (2)
+THFM
+CNN
+88.20 (V)
+90.43 (A)
+DL
+15
+AV
+SEED
+Public
+–
+62
+Pos/Neg (2)
+88.45 (V)
+32
+AV
+DEAP
+Public
+–
+32
+V/A (2)
+10 FCV
+76.61 (V)
+77.72 (A)
+40
+AV
+AMIGOS
+Public
+–
+14
+V/A (2)
+87.39 (V)
+90.54 (A)
+[50]
+2021
+28
+CG
+GAMEEMO
+Public
+3.74 s
+1
+Discrete (4)
+TQWT and FFP
+SVM
+10 FCV
+99.82
+ML
+(continued on next page)
+
+,QIRUPDWLRQ )XVLRQ 
+
+ 
+
+
+S.K. Khare et al.
+Table A.3 (continued).
+Ref.
+Year
+Sub.
+Dataset
+Dataset name
+Status
+Length
+NCH
+Emotion (Classes)
+Feature extraction
+Classification
+Validation
+Accuracy (%)
+Decision
+type
+[51]
+2022
+23
+AV
+DREAMER
+Public
+2 s
+4
+V/A/D (3)
+MVMD and ResNet18
+SVM
+10 FCV
+99.03 (A)
+95.17 (D)
+94.53 (V)
+ML
+40
+AV
+AMIGOS
+Public
+4
+V/A/D (3)
+96.68 (A)
+97.45 (D)
+95.58 (V)
+[52]
+2017
+32
+AV
+DEAP
+Public
+5 s
+8
+V/A (2)
+EMD and STSF
+SVM
+LOSO CV
+69.10 (V)
+71.99 (A)
+ML
+[213]
+2022
+15
+AV
+SEED IV
+Public
+4 s
+62
+Discrete (4)
+NL, PSD, and DEC
+GFIL
+LOSO CV
+79.17
+ML
+[214]
+2020
+32
+AV
+DEAP
+Public
+10 s
+14
+V/A/D (3)
+PSD, ENT, WT, and FD
+SVM
+5 FCV
+78.96 (A)
+77.60 (D)
+77.62 (V)
+ML
+[215]
+2018
+32
+AV
+DEAP
+Public
+–
+18
+V/A (2)
+MEMD and STSF
+KNN
+LOSO CV
+51.01 (A)
+67 (V)
+ML
+[64]
+2020
+15
+AV
+SEED
+Public
+1 s
+62
+Pos/Neg/Neu (3)
+STFT, DE and rhythms
+CNN
+5 FCV
+91.68
+DL
+[216]
+2016
+32
+DEAP
+Public
+4 s
+19
+Discrete (4)
+FFT and rhythms
+SVM
+10 FCV
+59.13
+ML
+Pos/Neg/Neu (3)
+72.36
+[53]
+2019
+23
+AV
+MPED
+Private
+1 s
+62
+Discrete (2)
+PSD, NLF, and NL DEC
+LSTM
+Holdout
+78.79
+DL
+Discrete (7)
+42.1
+[67]
+2018
+58
+AV
+ASCERTAIN
+Public
+8
+V/A (2)
+STSF
+NB
+LOSO CV
+60 (A)
+61 (V)
+ML
+[84]
+2020
+21
+AV
+–
+Private
+–
+4
+Discrete (4)
+STSF
+KNN
+10 FCV
+75
+ML
+23
+AV
+DREAMER
+Public
+10 s
+4
+V/A/D (3)
+98.82 (A)
+98.99 (D)
+98.56 (V)
+[217]
+2021
+32
+AV
+DEAP
+Public
+10 s
+19
+Discrete (4)
+Rhythms
+Deep CNN
+10 FCV
+98.45 (A)
+98.69 (D)
+98.91 (V)
+DL
+23
+AV
+DASPS
+Public
+10 s
+14
+V/A (2)
+57.14
+23
+AV
+DREAMER
+Public
+–
+4
+V/A/D (3)
+100 (A)
+100 (D)
+100 (V)
+[54]
+2021
+32
+AV
+DEAP
+Public
+–
+19
+Discrete (4)
+TQWT with PP and STSF
+SVM
+LOSO CV
+99.56 (A)
+99.67 (D)
+99.55 (V)
+ML
+28
+CG
+GAMEEMO
+Public
+–
+1
+Discrete (4)
+100
+[218]
+2022
+25
+VR
+VREED
+Public
+4 s
+64
+Pos/Neg (2)
+DE
+SVM
+Holdout
+76.22
+ML
+[55]
+2022
+165
+Image
+ICBrainDB
+Public
+3 s
+128
+Discrete (4)
+TQWT with HOG, and LBP
+KNN
+10 FCV
+90.77
+ML
+[82]
+2020
+40
+AV
+AMIGOS
+Public
+1 s
+3
+V/A(4)
+Filtering
+CNN-LSTM
+Holdout
+98.8 (Fused)
+74.65 (EEG)
+DL
+23
+AV
+DREAMER
+Public
+3
+V/A/D (4)
+90.5 (Fused)
+48.54 (EEG)
+[71]
+2021
+20
+AV
+–
+Private
+–
+14
+V/A (4)
+STSF and rhythms
+SVM
+10 FCV
+82.63 (V)
+74.88 (A)
+EEG
+ML
+85.38 (V)
+77.52 (A)
+Fused
+
+,QIRUPDWLRQ )XVLRQ 
+
+ 
+
+
+
+S.K. Khare et al.
+Table A.4
+Summary of emotion recognition studies using ECG signals included in the review.
+Ref.
+Year
+Sub.
+Dataset
+Dataset name
+Status
+Length
+NCH
+Emotion (Classes)
+Feature extraction
+Classification
+Validation
+Accuracy (%)
+Decision
+type
+[65]
+2021
+40
+AV
+AMIGOS
+Public
+20 s
+3
+V/A (2)
+WST, TDF, and FDF
+Ensemble
+10 FCV
+88.8 (A)
+88.9 (V)
+ML
+[66]
+2017
+69
+Video
+–
+Private
+20 s
+3
+Discrete (2)
+Rhythmic features
+SVM
+10 FCV
+100
+ML
+Image
+100
+AV
+100
+[67]
+2018
+58
+AV
+ASCERTAIN
+Public
+3
+V/A (2)
+NLF and rhythmic features
+Naïve Bayes
+LOSO CV
+60 (V)
+59 (A)
+ML
+[68]
+2017
+69
+Video
+–
+Private
+20 s
+3
+Discrete (5)
+Rhythmic features
+SVM
+10 FCV
+73.8
+ML
+Image
+62.4
+AV
+72.8
+[69]
+2014
+60
+AV
+–
+Private
+3.6 s
+3
+Discrete (6)
+NLF
+FKNN
+Holdout
+92.87
+ML
+[76]
+2014
+30
+AV
+–
+Private
+–
+3
+Discrete (6)
+EMD with HHT
+KNN
+Holdout
+40.14
+ML
+EMD
+29.92
+EMD with DFT
+52.11
+[70]
+2020
+–
+Music
+Augsburg university database
+Public
+–
+Discrete (4)
+Rhythmic features
+FHMM
+Holdout
+95
+ML
+[79]
+2022
+23
+Image
+–
+Private
+20 s
+3
+V/A (2)
+Filtering
+CNN
+10 FCV
+76.19 (V)
+80.95 (A)
+DL
+23
+AV
+DREAMER
+Public
+20 s
+3
+V/A (2)
+97.56 (V)
+96.34 (A)
+[53]
+2019
+23
+AV
+MPED
+Private
+1 s
+3
+Pos/Neg/Neu (3)
+FFT and NLF
+LSTM
+Holdout
+53.2
+DL
+Discrete (2)
+55.24
+Discrete (7)
+25.1
+23
+AV
+DREAMER
+Public
+1 s
+3
+V/A (5)
+–
+87.7 (V)
+87.4 (A)
+[80]
+2023
+15
+AV
+WESAD
+Public
+1 s
+3
+Affect state (4)
+–
+CNN with CBAM
+Holdout
+97.5
+DL
+58
+AV
+ASCERTAIN
+Public
+1 s
+3
+V/A(7)
+–
+78.7 (V)
+76.3 (A)
+[219]
+2017
+24
+AV
+MAHNOB-HCI
+Public
+–
+3
+V/A(2)
+HRV
+SVM
+–
+60.83 (V)
+65.73 (A)
+ML
+[81]
+2021
+15
+AV
+–
+Private
+3
+Discrete (4)
+Filtering and CWT
+CNN-LSTM
+LOSO CV
+71.67
+DL
+[86]
+2021
+58
+ASCERTAIN
+Public
+4 s
+3
+V/A (4)
+Heart rate variability
+SVM
+10 FCV
+78.32 (V)
+76.83 (A)
+ML
+[71]
+2021
+20
+AV
+–
+Private
+–
+3
+V/A (2)
+STSF and rhythmic features
+SVM
+10 FCV
+76.65 (V)
+70.15 (A)
+ML
+EEG-ECG
+85.38 (V)
+77.52 (A)
+[72]
+2015
+27
+Audio
+–
+Private
+88 s
+3
+V/A (2)
+NLF and LF
+QDA
+LOSO CV
+84.72 (V)
+84.26 (A)
+ML
+[220]
+2020
+86
+AV
+BioVid Emo DB
+Public
+68 s
+3
+Discrete (5)
+Filtering
+SVM
+Holdout
+80.89
+ML
+[73]
+2022
+23
+AV
+DREAMER
+Public
+–
+3
+V/A/D (–)
+TDF, FDF, and NLF
+CNN
+10 FCV
+95.16 (V)
+85.56 (A)
+77.54 (D)
+DL
+[82]
+2020
+40
+AV
+AMIGOS
+Public
+1 s
+3
+V/A (4)
+Filtering and segmentation
+CNN-LSTM
+Holdout
+98.8 (Fused)
+98.73 (ECG)
+DL
+23
+AV
+DREAMER
+Public
+1 s
+3
+V/A/D (4)
+90.8 (Fused)
+90.5 (ECG)
+[74]
+2023
+24
+AV
+MAHNOB-HCI
+Public
+15 s
+3
+V/A (2)
+MRF and HRV
+BiLSTM
+10 FCV
+83.61 (A)
+78.28 (V)
+DL
+[77]
+2017
+11
+Music
+–
+Private
+–
+16
+Discrete (5)
+WDEC and DCT
+PNN
+Holdout
+100 (Discrete)
+100 (V) 100
+(A)
+ML
+[75]
+2020
+61
+Music
+–
+Private
+60 s
+3
+Discrete (4)
+TDF, FDF, and NLF
+LS-SVM
+LOSO CV 10 FCV
+68.1 (LOSO)
+80.51 (10
+FCV)
+ML
+[83]
+2022
+40
+AV
+AMIGOS
+Public
+20 s
+3
+V/A (4)
+Windowing
+SL CNN
+10 FCV
+88.9 (A)
+87.5 (V)
+DL
+23
+AV
+DREAMER
+Public
+60 s
+3
+V/A (4)
+85.9 (A)
+85 (V)
+25
+AV
+SWELL
+Public
+60 s
+3
+Discrete (4)
+93.3 (Stress)
+96.7 (A)
+97.3 (V)
+15
+AV
+WESAD
+Public
+5 s
+3
+Discrete (4)
+96.9
+[78]
+2019
+25
+AV
+–
+Private
+20 s
+2
+Discrete (4)
+Rhythmic and EMD
+Extra tree
+10 FCV
+70.09
+ML
+CRediT authorship contribution statement
+Smith K. Khare: Conceptualization, Methodology, Writing – original draft, Validation, Editing. Victoria Blanes-Vidal: Validation, Reviewing and editing. Esmaeil S. Nadimi: Validation, Reviewing and
+editing. U. Rajendra Acharya: Conceptualization, Validation, Reviewing and editing.
+Declaration of competing interest
+The authors declare that they have no known competing financial interests or personal relationships that could have appeared to
+influence the work reported in this paper.
+Data availability
+No data was used for the research described in the article
+Appendix A. Summary of the emotion recognition studies
+See Tables A.3–A.8.
+Appendix B. Summary of the emotion datasets
+See Tables B.9–B.14.
+Appendix C. Abbreviations
+See Table C.15.
+
+,QIRUPDWLRQ )XVLRQ 
+
+ 
+
+
+S.K. Khare et al.
+Table A.5
+Summary of emotion recognition studies using GSR signals included in the review.
+Ref.
+Year
+Sub.
+Dataset
+Dataset name
+Status
+Length
+Emotion (Classes)
+Feature extraction
+Classification
+Validation
+Accuracy (%)
+Decision
+type
+[77]
+2017
+11
+Music
+–
+Private
+–
+Discrete (5)
+WDEC and DCT
+PNN
+Holdout
+99.59 (Discrete)
+99.52 (V)
+99.66 (A)
+ML
+[84]
+2020
+21
+–
+Private
+–
+Discrete (4)
+STSF
+KNN
+10 FCV
+72.61 (GSR)
+79.76 (Fused)
+ML
+[85]
+2017
+32
+AV
+DEAP
+Public
+3 s
+V/A/D (2)
+DWT and EMD based STSF
+RF
+10 FCV
+89.29 (V)
+81.81 (A)
+ML
+[86]
+2021
+58
+AV
+ASCERTAIN
+Public
+4 s
+V/A (4)
+TDF and FDF
+SVM
+10 FCV
+60.05 (V)
+55.63 (A)
+ML
+Fused features
+76.81 (V)
+75.24 (A)
+[87]
+2020
+32
+AV
+DEAP
+Public
+3 s
+V/A/D (4)
+PCP, LE, and APEN
+PNN
+5 FCV
+100 (V) 100
+(A)
+ML
+[94]
+2019
+100
+AV
+MDSTC dataset
+Private
+1 s
+Discrete (6)
+Spectrogram
+CNN-LSTM
+Holdout
+Recall: 80.07
+DL
+[91]
+2020
+37
+AV
+–
+Private
+–
+Discrete (3)
+EMD and TDF
+SVM
+10 FCV
+100
+ML
+[221]
+2018
+39
+AV
+–
+Private
+–
+Discrete (3)
+filtering
+SVM
+Holdout
+75.65
+ML
+[88]
+2016
+30
+AV
+–
+Private
+–
+Discrete (4)
+STSF
+RF
+10 FCV
+75 (Fused
+features)
+ML
+[95]
+2022
+62
+AV
+MERTI-Apps
+Public
+1.1 s
+V/A (2)
+Windowing and filtering
+1D AE
+Holdout
+81.33 (A)
+80.25 (V)
+DL
+32
+AV
+DEAP
+Public
+1.1 s
+V/A (3)
+79.18 (A)
+74.84 (V)
+[89]
+2021
+34
+Audio
+–
+Private
+–
+Discrete (4)
+STSF
+ANN
+10 FCV
+99.4
+ML
+15
+AV
+WESAD
+Public
+–
+Discrete (4)
+99.4
+[92]
+2016
+11
+Music
+–
+Private
+10 s
+V/A (3)
+DWT
+PNN
+Holdout
+95.10 (Dis)
+97.90 (V)
+95.80 (A)
+ML
+Discrete (5)
+Fused 100
+(Dis) 100
+(V) 100
+(A)
+[90]
+2017
+35
+Music
+–
+Private
+10 s
+Discrete (4)
+NLF
+LSSVM
+5 FCV
+99.98
+ML
+[222]
+2022
+58
+AV
+ASCERTAIN
+Public
+V/A (4)
+–
+SVM
+–
+99.67
+ML
+[93]
+2016
+11
+Music
+–
+Private
+–
+V/A (3)
+DWT with matching pursuit
+PNN
+Holdout
+69.93 (Dis)
+81.82 (V)
+79.02 (A)
+ML
+Discrete (5)
+Fused 99.64
+(Dis)
+99.51 (V)
+99.44 (A)
+Pos/Neg/Neu (3)
+60.24
+[53]
+2019
+23
+AV
+MPED
+Private
+1 s
+Discrete (2)
+FFT and NLF
+LSTM
+Holdout
+63.37
+DL
+Discrete (7)
+31.19
+[67]
+2018
+58
+AV
+ASCERTAIN
+Public
+–
+V/A (2)
+NLF and rhythmic features
+NB
+LOSO CV
+68 (V) 66 (A)
+ML
+[82]
+2020
+40
+AV
+AMIGOS
+Public
+1 s
+V/A (4)
+Filtering and segmentation
+CNN-LSTM
+Holdout
+98.8 (Fused)
+63.67 (GSR)
+DL
+Table A.6
+Summary of emotion recognition studies using ET signals included in the review.
+Ref.
+Year
+Sub.
+Dataset
+Dataset
+Status
+Length
+Emotion
+Feature
+Classification
+Validation
+Accuracy
+Decision
+name
+(Classes)
+extraction
+(%)
+type
+[96]
+2021
+16
+Image
+–
+Private
+–
+Discrete (4)
+FFT and STFT
+with FDF
+DGCNN
+Holdout
+87.97
+DL
+[97]
+2023
+48
+Video
+eSEE-d
+Public
+–
+Discrete (4)
+STSF
+DMLP
+10 FCV
+92 (V) 81
+(A)
+DL
+[223]
+2021
+10
+Virtual reality
+–
+Private
+–
+Discrete (4)
+–
+SVM
+LOSO CV
+59.19
+ML
+[98]
+2019
+10
+Video
+–
+Private
+–
+Discrete (4)
+–
+–
+–
+–
+[224]
+2020
+30
+Video
+–
+Private
+–
+Discrete (3)
+NLF
+SVM
+LOSO CV
+80
+ML
+[225]
+2021
+10
+Image
+–
+Private
+–
+Discrete (8)
+NLF and FDF
+DGNN
+Holdout
+88.1
+DL
+
+,QIRUPDWLRQ )XVLRQ 
+
+ 
+
+
+S.K. Khare et al.
+Table A.7
+Summary of emotion recognition studies using SPEECH signals included in the review.
+Ref.
+Year
+Sub.
+Dataset
+Dataset name
+Status
+Length
+Emotion (Classes)
+Feature extraction
+Classification
+Validation
+Accuracy
+Decision
+(%)
+type
+[101]
+2020
+24
+AV
+RAVDESS
+Public
+10 ms
+Discrete (8)
+MFCC and MS
+CNN
+Holdout
+78.2
+DL
+[102]
+2020
+7
+Audio
+LDC
+Public
+Discrete (4)
+MFCC and LPCC
+SVM
+Holdout
+90.08
+ML
+[103]
+2020
+24
+AV
+RAVDESS
+Public
+10 ms
+Discrete (8)
+DWT, MFCC, and STSF
+Decision Tree
+Holdout
+85
+ML
+10
+AV
+IEMOCAP
+Private
+–
+Discrete (4)
+86.1
+[113]
+2020
+24
+Acted
+RAVDESS
+Public
+10 ms
+Discrete (8)
+STSF
+1D CNN
+5 FCV
+71.61
+DL
+10
+Audio
+EMO-DB
+Public
+–
+Discrete (7)
+64.3
+[226]
+2014
+10
+Audio
+EMO-DB
+Public
+–
+Discrete (7)
+Spectral analysis
+KNN
+Holdout
+50
+ML
+[104]
+2019
+330
+AV
+AFEW
+Public
+40 ms
+Discrete (7)
+FFT and MSG
+CNN
+Holdout
+60.59
+DL
+[105]
+2022
+10
+Audio
+EMO-DB
+Public
+2 s
+Discrete (7)
+MFCC and BLS
+LDA
+Holdout
+100
+ML
+4
+Audio
+CASIA
+Private
+2 s
+Discrete (6)
+100
+[106]
+2015
+10
+Audio
+EMO-DB
+Public
+–
+Discrete (6)
+Fourier parameters and MFCC
+SVM
+Holdout
+88.88
+ML
+4
+Audio
+CASIA
+Private
+–
+Discrete (6)
+79
+16
+Audio
+EESDB
+Public
+–
+Discrete (4)
+50.67
+[107]
+2019
+10
+AV
+IEMOCAP
+Private
+–
+Discrete (4)
+SG and MFCC
+CNN
+5 FCV
+73.6
+DL
+10
+Audio
+EMO-DB
+Public
+25 ms
+Discrete (7)
+92.45
+[108]
+2019
+24
+AV
+RAVDESS
+Public
+25 ms
+Discrete (8)
+MFCC and SCF
+Bagged tree
+10 FCV
+75.69
+ML
+10
+Audio
+IITKGP-SEHSC
+Private
+25 ms
+Discrete (8)
+84.11
+42
+AV
+eNTERFACE
+Public
+–
+Discrete (6)
+89.6
+[118]
+2019
+4
+Audio
+CASIA
+Private
+–
+Discrete (6)
+–
+LSTM
+Holdout
+92.8
+DL
+AV
+GEMEP
+Private
+–
+Discrete (12)
+57
+[227]
+2019
+4
+Audio
+CASIA
+Private
+–
+Discrete (6)
+FFT
+DNN-SVM
+Holdout
+72.92
+DL
+24
+AV
+RAVDESS
+Public
+0.5 s
+Discrete (8)
+77.02
+[119]
+2020
+10
+AV
+IEMOCAP
+Private
+0.5 s
+Discrete (4)
+clustering
+BiLSTM
+Holdout
+72.25
+DL
+10
+Audio
+EMO-DB
+Public
+0.5 s
+Discrete (7)
+85.57
+10
+Audio
+EMO-DB
+Public
+–
+Discrete (7)
+89.65
+[120]
+2021
+24
+AV
+RAVDESS
+Public
+–
+Discrete (8)
+PSF and EE
+SVM
+7 FCV
+82.59
+ML
+14
+AV
+SAVEE
+Public
+–
+Discrete (7)
+77.74
+4
+Audio
+CASIA
+Private
+–
+Discrete (6)
+90.28
+[109]
+2018
+14
+AV
+SAVEE
+Public
+–
+Discrete (7)
+MFCC and STSF
+BEL
+Holdout
+76.4
+DL
+51
+Audio
+FAU
+Private
+–
+Discrete (7)
+71.05
+[115]
+2022
+10
+AV
+IEMOCAP
+Private
+10 ms
+Discrete (4)
+SIT
+CNN (ResNet152)
+Holdout
+82.25
+DL
+10
+Audio
+EMO-DB
+Public
+10 ms
+Discrete (7)
+5 FCV
+96.14
+[116]
+2019
+10
+Audio
+EMO-DB
+Public
+–
+Discrete (7)
+STFT
+CNN
+Holdout
+77.33
+DL
+[228]
+2021
+2
+Audio
+TESS
+Public
+2–3 s
+Discrete (6)
+EMD with ENT
+LDA
+10 folf CV
+93.3
+ML
+[110]
+2021
+10
+AV
+IEMOCAP
+Private
+20 ms
+Discrete (4)
+MFCC, ZCR, spectral spread, and centroid
+LSTM
+Holdout
+72.5
+DL
+[121]
+2019
+10
+Audio
+EMO-DB
+Public
+20 ms
+Discrete (7)
+PSCF
+ELM
+Holdout
+91.02
+ML
+14
+AV
+Amritaemo Arabic database
+Private
+20 ms
+Discrete (6)
+86.98
+[229]
+2017
+10
+AV
+IEMOCAP
+Private
+25 ms
+Discrete (4)
+Log FT
+CNN
+LOSO CV
+64.78
+DL
+[230]
+2022
+18
+Audio
+Turkish SER dataset
+Private
+5 s
+Discrete (3)
+TQWT and SLP
+SVM
+10 FCV
+96.41
+ML
+45
+Audio
+English SER dataset
+Private
+5 s
+Discrete (3)
+94.97
+[114]
+2019
+10
+AV
+IEMOCAP
+Private
+–
+Discrete (4)
+STFT and SG
+CNN
+5 FCV
+81.75
+DL
+24
+AV
+RAVDESS
+Public
+–
+Discrete (8)
+79.5
+[111]
+2020
+24
+AV
+RAVDESS
+Public
+–
+Discrete (8)
+MEL spectrogram
+MLP
+–
+83.8
+DL
+10
+AV
+IEMOCAP
+Private
+–
+Discrete (4)
+CNN-SVM
+81.3
+10
+Audio
+EMO-DB
+Public
+–
+Discrete (7)
+SVM
+95.1
+14
+AV
+SAVEE
+Public
+–
+Discrete (7)
+SVM
+82.1
+[117]
+2018
+31
+AV
+BAUM
+Public
+10 ms
+Discrete (12)
+LMSG
+CNN
+LOSO CV
+44.61
+DL
+10
+Audio
+EMO-DB
+Public
+10 ms
+Discrete (7)
+87.31
+42
+AV
+eNTERFACE
+Public
+10 ms
+Discrete (6)
+79.25
+8
+AV
+RML
+Public
+10 ms
+Discrete (6)
+75.34
+[231]
+2018
+4
+Audio
+CASIA
+Private
+Discrete (6)
+PSF
+ELM
+LOSO CV
+89.6
+ML
+[112]
+2021
+24
+AV
+RAVDESS
+Public
+–
+Discrete (8)
+Spectrum and spectrogram
+CNN
+10 FCV
+85
+DL
+10
+Audio
+EMO-DB
+Public
+–
+Discrete (7)
+95
+14
+AV
+SAVEE
+Public
+–
+Discrete (7)
+82
+[232]
+2021
+24
+AV
+RAVDESS
+Public
+–
+Discrete (8)
+TQWT with TSP
+SVM
+10 FCV
+87.43
+ML
+10
+Audio
+EMO-DB
+Public
+–
+Discrete (7)
+90.09
+14
+AV
+SAVEE
+Public
+–
+Discrete (7)
+84.79
+6
+Audio
+EMOVO
+Public
+–
+Discrete (7)
+79.08
+
+,QIRUPDWLRQ )XVLRQ 
+
+ 
+
+
+S.K. Khare et al.
+Table A.8
+Summary of emotion recognition studies using IMAGE signals included in the review.
+Ref.
+Year
+Sub.
+Dataset name
+Status
+No. of
+images
+Emotion
+(Classes)
+Feature extraction
+Classification
+Validation
+Accuracy (%)
+Decision
+type
+[122]
+2022
+70
+KDEF
+Public
+4900
+Discrete (7)
+FLC
+SVM
+Holdout
+85
+ML
+201
+CK+
+Public
+3368
+Discrete (7)
+RF
+97.86
+[233]
+2022
+201
+CK+
+Public
+3368
+Discrete (7)
+GM-WLBP, GLCM and GLRM
+CNN-LSTM
+Holdout
+91.42
+DL
+10
+JAFFE
+Public
+213
+Discrete (7)
+92.85
+[123]
+2022
+337
+CMU Multi-PIE
+Public
+750K+
+Discrete (5)
+Face extraction using MTCNN
+MTCNN
+Holdout
+90
+DL
+–
+AffectNet
+Public
+1M
+Discrete (8)
+90
+[138]
+2022
+10
+JAFFE
+Public
+213
+Discrete (7)
+Normalization, scaling, and
+augmentation
+CNN
+Holdout
+95.65
+DL
+118
+CK+
+Public
+3150
+Discrete (7)
+99.36
+[124]
+2023
+10
+JAFFE
+Public
+213
+Discrete (7)
+RetinaFace
+CNN
+Holdout
+98.44
+DL
+–
+FER2013
+Public
+35,887
+Discrete (7)
+74.64
+≈450 000
+AffectNet
+Public
+1M
+Discrete (8)
+62.78
+19
+MMI
+Public
+4756
+Discrete (6)
+99.02
+–
+RAF-DB
+15 539
+Discrete (7)
+72.84
+[234]
+2020
+≈35,887
+FER2013
+Public
+35,953
+Discrete (7)
+Reinforcement learning
+CNN
+Holdout
+72.35
+DL
+–
+ExpW
+91 793
+Discrete (7)
+50.61
+[125]
+2019
+123
+CK+
+Public
+309
+Discrete (7)
+Geometric and texture
+features
+DAGSVM
+–
+91.11
+ML
+10
+JAFFE
+Public
+213
+Discrete (7)
+63.33
+52
+MUG
+Public
+304
+Discrete (6)
+82.28
+[235]
+2021
+–
+CK+
+Public
+918
+Discrete (7)
+–
+MobileNet CNN
+Holdout
+98.5
+DL
+[236]
+2019
+97
+CK+
+Public
+8150
+Discrete (7)
+Gaussian normalization
+CNN with RB
+Holdout
+93.24
+DL
+10
+JAFFE
+Public
+213
+Discrete (7)
+95.23
+[126]
+2019
+450 000
+AffectNet
+Public
+220K+
+Discrete (8)
+MTCNN
+Generater CAE
+Holdout
+74.8
+DL
+–
+RAF-DB
+15 539
+Discrete (7)
+81.83
+[133]
+2021
+123
+CK+
+Public
+593
+Discrete (7)
+SIFT, HOG, and LBP
+Attention
+CNN
+Holdout
+98
+DL
+–
+FER2013
+Public
+35,887
+Discrete (7)
+70.02
+10
+JAFFE
+Public
+213
+Discrete (7)
+92.8
+–
+FERG
+Public
+55,767
+Discrete (7)
+99.3
+[127]
+2020
+SAVEE
+Public
+480
+Discrete (7)
+Facial graphs
+ANN
+Holdout
+90
+ML
+[237]
+2020
+95
+SFEW
+Public
+700
+Discrete (7)
+GGPI
+GAN
+Holdout
+27.24
+DL
+100
+BU-3DFE
+Public
+21 000
+Discrete (7)
+81.95
+270
+CMU Multi-PIE
+Public
+7655
+Discrete (6)
+92.09
+[128]
+2019
+123
+CK+
+Public
+593
+Discrete (7)
+Appearance and
+geometric features
+CNN
+10 FCV
+96.46
+DL
+10
+JAFFE
+Public
+213
+Discrete (7)
+91.27
+[238]
+2019
+–
+FER2013
+Public
+35,887
+Discrete (7)
+Normalization, equalization,
+and image edge
+CNN
+Holdout
+88.56 (fused)
+DL
+–
+LFW
+Public
+13 000
+Discrete (7)
+10
+JAFFE
+Public
+213
+Discrete (7)
+98.52
+[129]
+2020
+123
+CK+
+Public
+593
+Discrete (7)
+Cropping and facial feature
+extraction
+CNN with attention
+Holdout
+98.9
+DL
+–
+FER2013
+Public
+35,887
+Discrete (7)
+75.82
+35
+NCUFE
+Private
+26,950
+Discrete (7)
+94.33
+80
+Oulu-CASIA
+Public
+2880
+Discrete (6)
+94.63
+[239]
+2020
+27
+CK+
+Public
+450
+Discrete (7)
+Expressional vector
+CNN
+Holdout
+85
+DL
+337
+CMU Multi-PIE
+Public
+750K+
+Discrete (5)
+78
+1573
+NIST
+Public
+3248
+–
+96
+[134]
+2019
+–
+AffectNet
+Public
+300K
+Discrete (8)
+Position level features
+BiRNN
+Holdout
+–
+DL
+[240]
+2021
+123
+CK+
+Public
+593
+Discrete (7)
+MSWGT
+SVM
+–
+98.9
+ML
+10
+JAFFE
+Public
+213
+Discrete (7)
+97.1
+18
+FEEDTUM
+Public
+–
+Discrete (7)
+95.8
+[241]
+2016
+20
+–
+Private
+700
+Discrete (7)
+BOWT
+SVM
+10 FCV
+96.77
+ML
+[135]
+2020
+–
+Downloaded
+Private
+23,164
+Discrete (8)
+–
+ResNet-MldrNet
+5 FCV
+67.75
+DL
+[242]
+2023
+–
+FER2013
+Public
+35,887
+Discrete (7)
+Gray scale
+CNN
+Holdout
+54
+DL
+[136]
+2019
+67
+RaFD
+Public
+1608
+Discrete (8)
+OFSTF
+CNN with
+inception
+Holdout
+99.17
+DL
+123
+CK+
+Public
+593
+Discrete (7)
+98.38
+88
+MMI
+Public
+5042
+Discrete (9)
+99.59
+[130]
+2020
+67
+Turkey student DB
+Private
+–
+Discrete (7)
+Facial features
+–
+–
+–
+[137]
+2021
+70
+KDEF
+Public
+4900
+Discrete (7)
+Convolutional-based
+features
+CNN (DenseNet121)
+Holdout 10 FCV
+98.78 (Holdout)
+96.51 (10 FCV)
+DL
+10
+JAFFE
+Public
+213
+Discrete (7)
+100 (Holdout)
+99.52 (10 fold CV)
+[131]
+2015
+–
+CK+
+Public
+329
+Discrete (6)
+Salient facial patches
+SVM
+10 FCV
+94.09
+ML
+10
+JAFFE
+Public
+183
+Discrete (6)
+91.79
+[243]
+2017
+2,64,683
+SocialMedia
+Public
+2 mil.
+Discrete (10)
+Generic and special features
+SVM
+Holdout
+–
+ML
+[132]
+2022
+–
+UNBC-McMaster
+Public
+88 427
+Discrete (2)
+Aligned face crop
+LSTM
+LOSO CV
+90.3
+DL
+123
+CK+
+Public
+593
+Discrete (7)
+97.2
+
+,QIRUPDWLRQ )XVLRQ 
+
+ 
+
+
+S.K. Khare et al.
+Table B.9
+Details of the EEG datasets used for emotion recognition.
+Ref.
+Subjects
+Dataset
+Dataset
+name
+Status of
+dataset
+Recorder
+NCH
+Samp.
+Freq.
+Type of
+classification
+Evoked emotions
+Selfassessment
+[199]
+20
+AV
+–
+Private
+EEG
+traveler
+24
+256
+Discrete
+emotions
+Happy, fear, sad, and relax
+SAM
+[244]
+23
+AV
+DREAMER
+Public
+Emotive
+EPOC
+14
+128
+V/A/D
+Amusement, surprise,
+excite- ment, happiness,
+calmness, anger, disgust,
+fear, and sadness
+SAM
+[207,
+245]
+15
+AV
+SEED
+Public
+ESI
+NeuroScan
+System
+62
+200
+Pos/Neu/Neg
+Positive, neutral, and
+negative
+PQES,
+FAM, UL
+[246]
+20
+Music
+MUSEC
+Public
+g.USBamp
+62
+1200
+V/A
+Favored Melody, favored
+Song, non-favored Melody,
+non-favored Song
+–
+[247]
+32
+AV
+DEAP
+Public
+Biosemi
+ActiveTwo
+32
+128
+V/A/D/liking
+LALV, HALV, LAHV, and
+HAHV
+SAM
+[248]
+43
+AV
+INTER-
+FACES
+Public
+OpenBCI
+8
+250
+V/A
+Happiness, Excitement, and
+Fear
+SAM
+[200]
+16
+Images
+–
+Private
+g.USBamp
+64
+512
+V/A/D
+Happy, curious, angry, sad,
+and quiet
+SAM
+[249]
+11
+AV
+LUMED
+Public
+Neuroelectrics
+Enobio 8
+8
+500
+V (Neg and
+Pos)
+Positive, neutral, and
+negative
+–
+[44]
+20
+AV
+–
+Private
+Emotiv
+Epoc
+16
+–
+V/A
+Happy, relaxed, angry, sad
+and disgust
+SAM
+[250]
+15
+AV
+SEED IV
+Public
+ESI
+NeuroScan
+System
+62
+200
+Discrete
+emotions
+Happiness, sadness, fear,
+and neutral
+PANAS
+[251]
+27
+AV
+MAHNOB-
+HCI
+Public
+Biosemi
+Active II s
+32
+1024
+Valence
+Amusement, joy, neutral,
+sadness, fear, and disgust
+SAM
+[252,
+253]
+37
+AV
+CMEED
+Public
+NuAmps 40
+32
+128
+V/A
+Positive, neutral, and
+negative
+SAM
+[212]
+10
+AV
+–
+Private
+Emotiv
+EPOC
+14
+Discrete
+emotions
+Happiness, neutral, and
+sadness
+SAM
+[254]
+40
+AV
+AMIGOS
+Public
+Emotiv
+EPOC
+14
+128
+V/A/D
+Neutral, Disgust,
+Happiness, Surprise, Anger,
+Fear and Sadness
+SAM
+[255]
+28
+Games
+GAMEEMO
+Public
+EMOTIV
+EPOC
+14
+128
+Discrete
+emotions
+Funny, Boring, Horror,
+Calm
+SAM
+[256]
+23
+AV
+MPED
+Private
+ESI
+NeuroScan
+System
+62
+1000
+Discrete
+emotions
+Joy, funny, anger, fear,
+sadness, disgust, and
+neutral
+PANAS,
+SAM, and
+DES
+[257]
+58
+AV
+ASCER-
+TAIN
+Public
+Neuro Sky
+EEG
+8
+32
+V/A
+Arousal, Valence,
+Engagement Liking,
+Familiarity
+SAM
+[258]
+23
+AV
+DASPS
+Public
+Emotiv
+EPOC
+14
+128
+V/A
+LALV, HALV, LAHV, and
+HAHV
+SAM and
+HAM-A
+[259]
+25
+VR
+VREED
+Public
+Wireless
+EEG device
+64
+1000
+Neg and Pos
+Neg and Pos
+–
+[260]
+165
+Image
+ICBrainDB
+Public
+Brain
+Products
+actiChamp
+128
+1000
+Discrete
+emotions
+Happy, angry, sad, and
+neutral
+–
+[71]
+20
+AV
+–
+Private
+Emotive
+EPOC
+14
+128
+V/A
+LALV, HALV, LAHV, and
+HAHV
+SAM
+
+,QIRUPDWLRQ )XVLRQ 
+
+ 
+
+
+S.K. Khare et al.
+Table B.10
+Details of the ECG datasets used for emotion recognition.
+Ref.
+Subjects
+Dataset
+Dataset
+name
+Status of
+dataset
+Recorder
+NCH
+Samp.
+Freq.
+Type of
+classification
+Evoked emotions
+Selfassessment
+[254]
+40
+AV
+AMIGOS
+Public
+SHIMMER
+3
+256
+V/A/D
+Neutral, Disgust,
+Happiness, Surprise,
+Anger, Fear and Sadness
+SAM
+[66]
+69
+Image
+Video
+AV
+–
+Private
+Radio
+frequency
+type device
+3
+960
+Discrete
+emotions
+Happy, neutral, and
+anger
+–
+[257]
+58
+AV
+ASCER-
+TAIN
+Public
+–
+3
+–
+V/A
+Arousal, Valence,
+Engagement Liking,
+Familiarity
+SAM
+[69]
+60
+AV
+–
+Private
+Power Lab
+data
+Acquisition
+3
+1000
+Discrete
+Happiness, sadness, fear,
+disgust, surprise and
+neutral
+SAM
+[261]
+–
+Music
+Augsburg
+university
+database
+Public
+–
+–
+256
+Discrete
+Joy, anger, sadness, and
+pleasure
+–
+[79]
+23
+Image
+–
+Private
+MP150
+system
+3
+1000
+V/A
+Calm, relaxed, content,
+glad, delighted, bored,
+annoyed, depressed,
+others, gloomy, afraid,
+angry, excited
+SAM
+[244]
+23
+AV
+DREAMER
+Public
+SHIMMER
+3
+256
+V/A/D
+Amusement, surprise,
+excite- ment, happiness,
+calmness, anger, disgust,
+fear, and sadness
+SAM
+[256]
+23
+AV
+MPED
+Private
+BIOPAC
+System
+3
+250
+Discrete
+emotions
+Joy, funny, anger, fear,
+sadness, disgust, and
+neutral
+PANAS,
+SAM, and
+DES
+[262]
+15
+AV
+WESAD
+Public
+RespiBAN
+Professional
+3
+700
+Affect state
+Neutral, stress,
+amusement
+PANAS,
+STAI, and
+SAM
+[251]
+24
+AV
+MAHNOB-
+HCI
+Public
+Biosemi
+active II
+3
+256
+Valence
+Amusement, joy,
+neutral, sadness, fear,
+and disgust
+SAM
+[81]
+15
+AV
+–
+Private
+ECG
+monitor
+(PC-80B)
+3
+154
+Discrete
+emotions
+Relax, scary, disgust,
+and joy
+SAM
+[71]
+20
+AV
+–
+Private
+–
+3
+128
+V/A
+Happy, relaxed, angry,
+sad, and disgusted
+SAM
+[72]
+27
+Audio
+–
+Private
+BIOPAC inc.
+3
+500
+V/A
+Low-medium valence
+and medium-high
+valence
+SAM
+[263]
+86
+AV
+BioVid
+Emo DB
+Public
+Nexus-32
+3
+512
+Discrete
+emotions
+Amusement, sadness,
+anger, disgust and fear
+SAM
+[77]
+11
+Music
+–
+Private
+PowerLab
+16
+400
+Discrete
+emotions
+Peacefulness, happiness,
+sadness, rest, and scary
+–
+[75]
+61
+Music
+–
+Private
+NeXus-10
+3
+2048
+Discrete
+emotions
+Joy, tension, sadness,
+and peacefulness
+GEMS-9
+[264]
+25
+AV
+SWELL
+Public
+TMSI MOBI
+device
+3
+2048
+Affect state
+Valence, arousal, and
+stress
+SAM
+[78]
+25
+AV
+–
+Private
+SpikerShield
+Heart
+2
+1000
+Discrete
+emotions
+Joy; sadness; pleasure;
+anger; fear; and neutral
+SAM
+
+,QIRUPDWLRQ )XVLRQ 
+
+ 
+
+
+S.K. Khare et al.
+Table B.11
+Details of the GSR datasets used for emotion recognition.
+Ref.
+Subjects
+Dataset
+Dataset
+name
+Status of
+dataset
+Recorder
+Samp.
+Freq.
+Type of
+classification
+Evoked emotions
+Selfassessment
+[77]
+11
+Music
+clips
+–
+Private
+PowerLab
+400
+Discrete
+emotions
+Peacefulness, happiness,
+sadness, rest, and scary
+–
+[84]
+21
+–
+Private
+Shimmer
+256
+Discrete
+emotions
+Happy, angry, sad, and
+relaxed
+SAM
+[247]
+32
+AV
+DEAP
+Public
+Biosemi
+ActiveTwo
+128
+V/AD/liking
+LALV, HALV, LAHV, and
+HAHV
+SAM
+[94]
+100
+AV
+MDSTC
+Private
+Customized
+physiological
+sensor device
+200
+Discrete
+emotions
+Surprise, angry, disgust,
+happy, fear, and sad
+SAM
+[91]
+37
+AV
+–
+Private
+Bluno Nano,
+DFRobot
+500
+Discrete
+emotions
+Amusement, sadness, and
+neutral
+SAM
+[257]
+58
+AV
+ASCER-
+TAIN
+Public
+–
+256
+V/A
+Arousal, Valence, Engagement
+Liking, Familiarity
+SAM
+[221]
+39
+AV
+–
+Private
+–
+–
+Discrete
+Positive, negative, and neutral
+PANAS
+[88]
+30
+AV
+–
+Private
+BIOPAC MP150
+1000
+Discrete
+Neutral, sadness, fear and
+pleasure
+SAM
+[265]
+62
+AV
+MERTI-
+Apps
+Public
+BIOPAC MP150
+1000
+V/A
+Happy, angry, sad, and scared
+SAM
+[89]
+34
+Audio
+–
+Private
+MySignals
+hardware
+260
+Discrete
+Relax, stressed, partially
+stressed, and happy
+–
+[262]
+15
+AV
+WESAD
+Public
+RespiBAN
+Professional
+700
+Affect state
+Neutral, stress, amusement
+PANAS,
+STAI, and
+SAM
+[90]
+35
+Music
+–
+Private
+PowerLab
+400
+Discrete
+emotions
+Happiness, sadness,
+peacefulness, and scary
+–
+[256]
+23
+AV
+MPED
+Private
+BIOPAC System
+250
+Discrete
+emotions
+Joy, funny, anger, fear,
+sadness, disgust, and neutral
+PANAS,
+SAM, and
+DES
+[254]
+40
+AV
+AMIGOS
+Public
+Shimmer
+256
+V/A/D
+Neutral, Disgust, Happiness,
+Surprise, Anger, Fear, and
+Sadness
+SAM
+Table B.12
+Details of the ET datasets used for emotion recognition.
+Ref.
+Subjects
+Dataset
+Dataset
+name
+Status of
+dataset
+Recorder
+Samp.
+Freq.
+Type of
+classification
+Evoked emotions
+Selfassessment
+[96]
+16
+Image
+–
+Private
+Tobii pro
+eye-tracker
+600
+Discrete
+emotions
+Calm, happy, nervous, and sad
+–
+[97]
+48
+Video
+eSEE-d
+Public
+Pupil Labs
+240
+Discrete
+emotions
+Anger, disgust, sadness and
+tenderness
+SAM
+[223]
+10
+Virtual
+reality
+–
+Private
+Pupil Labs
+Discrete
+emotions
+–
+–
+[98]
+10
+Video
+–
+Private
+Tobii TX300
+eye-tracker
+300
+Discrete
+emotions
+Joy, love, inspiration, and
+serenity
+–
+[224]
+30
+Video
+–
+Private
+EyeTribe
+60
+Discrete
+emotions
+Pleasant, neutral, and
+unpleasant
+SAM
+[225]
+10
+Image
+–
+Private
+Eye-Tracking
+600
+Discrete
+emotions
+Angry, disgust, fear, sad,
+expect, happy, surprised, trust
+SAM
+
+,QIRUPDWLRQ )XVLRQ 
+
+ 
+
+
+S.K. Khare et al.
+Table B.13
+Details of the SPEECH datasets used for emotion recognition.
+Ref.
+Subjects
+Dataset
+Dataset
+name
+Status of
+dataset
+Recorder
+Samp.
+Freq.
+Type of
+classification
+Evoked emotions
+Selfassessment
+[266]
+24
+Audio
+video
+RAVDESS
+Public
+Rode NTK
+48 K
+Discrete
+emotions
+Calm, happy, sad, angry,
+fearful, surprise, and disgust
+expressions
+SAM
+[267]
+7
+Audio
+LDC
+Public
+WAVES+
+22.05
+K
+Discrete
+emotions
+Disgust, panic, anxiety, hot
+anger, cold anger, despair,
+sadness, elation, happy,
+interest, boredome, shame,
+pride, and contempt
+–
+[268]
+10
+Audio
+video
+IEMOCAP
+Private
+VICON motion
+capture system
+48 K
+Discrete
+emotions
+Anger, happiness, sadness,
+neutrality
+SAM
+[269]
+10
+Audio
+EMO-DB
+Public
+Tascam DA-P1
+16 K
+Discrete
+emotions
+Disgust, sadness, happiness,
+boredom, fear, neutral, and
+anger
+–
+[270]
+330
+Audio
+video
+AFEW
+Public
+–
+–
+Discrete
+emotions
+Happiness, surprise, anger,
+disgust, fear, sadness and
+neutral
+–
+[271]
+4
+Audio
+CASIA
+Private
+RODE K2
+16 K
+Discrete
+emotions
+Angry, happy, fear, sadness,
+surprise and neutral
+–
+[272]
+16
+Audio
+EESDB
+Public
+Cooleditpro
+–
+Discrete
+emotions
+Angry, disgust, fear, happy,
+neutral, sad, and surprise
+–
+[273]
+10
+Audio
+IITKGP-
+SEHSC
+Private
+SHURE dynamic
+cardioid
+microphone
+C660N
+16 K
+Discrete
+emotions
+Happy, Sad, Angry,
+Sarcastic, Fear, Neutral,
+Disgust, and Surprise
+–
+[274]
+42
+Audio
+video
+eNTERFACE
+Public
+D1/DV PAL
+48 K
+Discrete
+emotions
+Anger, Disgust, fear,
+happiness, sadness, and
+surprise
+–
+[275]
+Audio
+video
+GEMEP
+Private
+SENNHEISER
+41 K
+Discrete
+emotions
+Amusement, pride, joy,
+relief, interest, pleasure, hot
+anger, panic fear, despair,
+irritation, anxiety, sadness
+SAM
+[276–
+278]
+14
+Audio
+video
+SAVEE
+Public
+Surrey
+audio-visual
+expressed emotion
+database
+44.1 K
+Discrete
+emotions
+Anger, Disgust, Fear,
+Happiness, Sadness,Surprise,
+and Neutral
+–
+[279]
+51
+Audio
+FAU
+Private
+SHURE UHF-serie
+16 K
+Discrete
+emotions
+Angry, Emphatic, Positive,
+Neutral, and Rest
+SAM
+[280]
+2
+Audio
+TESS
+Public
+–
+–
+Discrete
+emotions
+Anger, disgust, fear,
+happiness, pleasant surprise,
+sadness, and neutral
+–
+[121]
+14
+Audio
+video
+Amritaemo
+Arabic
+database
+Private
+Adobe Audition
+software
+16 K
+Discrete
+emotions
+Anger, happy, sad, disgust,
+surprise, and neutral
+SAM
+[230]
+18
+Audio
+Turkish SER
+dataset
+Private
+–
+–
+Discrete
+emotions
+Positive, negative, and
+neutral
+–
+[230]
+45
+Audio
+English SER
+dataset
+Private
+–
+–
+Discrete
+emotions
+Interesting, boring, and
+neutral
+–
+[281]
+31
+Audio
+video
+BAUM
+Public
+–
+48 K
+Discrete
+emotions
+Happiness, sadness, fear,
+anger, disgust, confusion,
+boredom, and interest
+–
+[282]
+8
+Audio
+video
+RML
+Public
+–
+44.1 K
+Discrete
+emotions
+Anger, disgust, fear, joy,
+sadness, and surprise
+–
+[283]
+6
+Audio
+EMOVO
+Public
+Marantz PMD670
+48 K
+Discrete
+emotions
+Neutral, Anger, Disgust,
+Fear, Happiness, Sadness,
+Surprise
+SAM
+
+,QIRUPDWLRQ )XVLRQ 
+
+ 
+
+
+S.K. Khare et al.
+Table B.14
+Details of the IMAGE datasets used for emotion recognition.
+Ref.
+Subjects
+Dataset
+Dataset
+name
+Status of
+dataset
+Type of
+classification
+Evoked emotions
+Selfassessment
+[284]
+70
+KDEF
+Public
+4900
+Discrete emotions
+Angry, Fearful, Disgusted, Sad, Happy,
+Surprised, and Neutral
+–
+[285]
+210
+CK+
+Public
+8150
+Discrete emotions
+Angry, Contempt, Disgust, Fear, Happy,
+Sadness, and Surprise
+FACS
+[286]
+10
+JAFFE
+Public
+213
+Discrete emotions
+Happiness, sadness, surprise, anger, disgust,
+fear, and neutral
+–
+[287,
+288]
+337
+CMU
+Multi-PIE
+Public
+750K+
+Discrete emotions
+Neutral, smile, surprise, squint, disgust, and
+scream
+–
+[289]
+–
+AffectNet
+Public
+1M
+Discrete emotions
+Neutral, happy, sad, surprise, fear, disgust,
+anger and contempt
+SAM
+[290]
+–
+FER2013
+Public
+31K+
+Discrete emotions
+Angry, Disgust, Fear, Happy, Sad, Surprise,
+Neutral
+–
+[291]
+88
+MMI
+Public
+5042
+Discrete emotions
+Anger, fear, and sadness, happiness, surprise
+and disgust
+FACS
+[292,
+293]
+–
+RAF-DB
+Public
+29 672
+Discrete emotions
+Disgust, happy, sad, anger, fear, and surprise
+SAM
+[294]
+–
+ExpW
+Public
+91 793
+Discrete emotions
+Angry, disgust, fear, happy, sad, surprise, and
+neutral
+–
+[295]
+52
+MUG
+Public
+304
+Discrete emotions
+Disgust, happy, sad, anger, fear, and surprise
+FACS
+[296]
+–
+FERG
+Public
+55K+
+Discrete emotions
+Angry, Disgust, Fear, Happy, Sad, Surprise,
+Neutral
+FACS
+[276–
+278]
+–
+SAVEE
+Public
+480
+Discrete emotions
+Anger, Disgust, Fear, Happiness, Sadness,
+Surprise, Neutral
+–
+[297]
+95
+SFEW
+Public
+700
+Discrete emotions
+Anger, Disgust , Fear, Happiness , Sadness,
+Surprise, and Neutral
+SAM
+[298]
+100
+BU-3DFE
+Public
+21K
+Discrete emotions
+Anger, Disgust , Fear, Happiness , Sadness,
+Surprise, and Neutral
+SAM
+[299]
+5749
+LFW
+Public
+13 233
+Discrete emotions
+Angry, Disgust, Fear, Happy, Sad, Surprise,
+Neutral
+SAM
+[129]
+35
+NCUFE
+Private
+26,950
+Discrete emotions
+Anger, disgust, fear, happiness, sadness,
+surprise, and neural
+–
+[300]
+80
+Oulu-CASIA
+Public
+2880
+Discrete emotions
+Anger, disgust, fear, happiness, sadness, and
+surprise
+–
+[301]
+1573
+NIST
+Public
+3248
+–
+–
+–
+[302]
+18
+FEEDTUM
+Public
+–
+Discrete emotions
+Neutral, anger, disgust, fear, happiness,
+sadness and surprise
+–
+[135,
+303]
+–
+Downloaded
+Private
+23,164
+Discrete emotions
+Happy, sadness, surprise, anger, disgust, fear,
+and neutral
+–
+[304]
+67
+RaFD
+Public
+1608
+Discrete emotions
+Anger, disgust, fear, happiness, sadness,
+surprise, contempt, and neutral
+SAM
+[130]
+67
+Turkey
+student DB
+Private
+–
+Discrete emotions
+Disgust, sadness, happiness, fear, contempt,
+anger, and surprise
+FACS
+[243]
+2,64,683
+SocialMedia
+Public
+21 mil.
+Discrete emotions
+Amusement, awe, contentment, excitement,
+anger, disgust, fear, and sadness
+SAM
+[305]
+–
+UNBC-
+McMaster
+Public
+48,398
+Discrete emotions
+Pain and no-pain
+FACS
+
+,QIRUPDWLRQ )XVLRQ 
+
+ 
+
+
+S.K. Khare et al.
+Table C.15
+Abbreviations used in the review method.
+A
+Adaptive VMD (AVMD)
+Adaptive TQWT (ATQWT)
+Approximate entropy (APEN)
+Artificial intelligence (AI)
+Artificial neural network (ANN)
+Arousal (A)
+Attention-based convolutional recurrent neural network (ARCNN)
+Audio/Video (AV)
+Autoencoder (AE)
+B
+Binary class (BC)
+BiOrthogonal wavelet transform (BOWT)
+Brain emotional learning (BEL)
+Broad learning system (BLS)
+C
+Capsule Net (CapsNet)
+Continuous wavelet transform (CWT)
+Convolutional autoencoder (CAE)
+Convolutional neural network (CNN)
+Convolutional Block Attention Module (CBAM)
+Cross validation (CV)
+D
+Decomposition (DEC)
+Deep forest (DFR)
+Deep belief networks (DBN)
+Deep learning (DL)
+deep multilayer perceptron (DMLP)
+Deep neural network (DNN)
+Differential Emotions Scale (DES)
+Differential entropy (DE)
+Directed Acyclic Graph (DAG)
+Discrete cosine transform (DCT)
+Discrete Fourier transform (DFT)
+Discrete wavelet transform (DWT)
+Dominance (D)
+Dual filtering (DF)
+Dual-tree complex wavelet transform (DT-CWT)
+Dynamic graph neural network (DGNN)
+Dynamical Graph CNN (DGCNN)
+E
+Empirical mode decomposition (EMD)
+Energy effective (EE)
+Entropy (ENT)
+Extreme learning machine (ELM)
+F
+Facial Action Coding System (FACS)
+Facial landmark coordinates (FLC)
+Familiarity (FAM)
+Fast Fourier transform (FFT)
+Fine KNN (FKNN)
+Flexible analytic wavelet transform (FAWT)
+Fold cross validation (FCV)
+Fourier transform (FT)
+Fractal dimension (FD)
+Fractal Firat pattern (FFP)
+Frequency-domain features (FDF)
+Fuzzy Hidden Markov Model (FHMM)
+(continued on next page)
+Table C.15 (continued).
+G
+Generalized low-rank model (GLRM)
+Generative adversarial network (GAN)
+Geneva Emotional Music Scale (GEMS)
+Geometry Guided Pose-Invariant (GGPI)
+Geometric Mean based Weighted Local Binary Pattern (GM-WLBP)
+Graph ELM (GELM)
+Gray Level Co-occurrence Matrix (GLCM)
+Graph-regularized least square regression with feature importance learning
+(GFIL)
+H
+Hamilton Anxiety Rating Scale (HAM-A)
+Heart rate variability (HRV)
+High arousal (HA)
+High valence (HV)
+Hilbert Huang transform (HHT)
+Histogram of oriented gradients (HOG)
+I
+Information potential feature (IPF)
+K
+K nearest neighbor (KNN)
+L
+Leave one subject out (LOSO)
+Least square SVM (LSSVM)
+Linear features (LF )
+Linear discriminant analysis (LDA)
+Linear Predictive correlation coefficient (LPCC)
+Local binary pattern (LBP)
+Log Mel-spectrograms (LMSG)
+Long short term memory (LSTM)
+Low arousal (LA)
+Low valence (LV)
+Lyapunov exponents (LE)
+M
+Machine learning (ML)
+Mel-frequency cepstrum coefficients (MFCC)
+Mel spectrogram (MSG)
+Modulation spectral (MS)
+Morphological features (MRF)
+Multiband feature matrix (MBFM)
+Multiclass (MC)
+Multilevel stationary wavelet gradient transform (MSWGT)
+Multi Task Convolutional Neural Network (MTCNN)
+Multivariate EMD (MEMD)
+Multivariate VMD (MVMD)
+N
+Naïve Bayes (NB)
+Negative (Neg)
+Network pattern (NetP)
+Neutral (Neu)
+Nonlinear features (NLF)
+O
+One (1)-dimensional (1D)
+Optical flow Spatial-Temporal feature (OFSTF)
+(continued on next page)
+
+,QIRUPDWLRQ )XVLRQ 
+
+ 
+
+
+
+S.K. Khare et al.
+Table C.15 (continued).
+P
+Pearson’s Correlation Coefficient (PCC)
+Philippot questionnaire: emotion state (PQES)
+Poincare plots (PCP)
+Positive and Negative Affect Schedule (PANAS)
+Positive (Pos)
+Power spectral density (PSD)
+Prime pattern (PP)
+Probabilistic neural network (PNN)
+Prosodic and spectral features (PSF)
+Prosodic, spectral and cepstral features (PSCF)
+Q
+Quadratic discriminant analysis (QDA)
+Quadratic time-frequency distributions (QTFDs)
+R
+Random forest (RF)
+Regularized Graph Neural Networks (RGNN)
+Relevance vector machine (RVM)
+Residual block (RB)
+S
+S-transform (S-TF)
+Scale-invariant feature transform (SIFT)
+Sample Entropy (SaENT)
+Self-Assessment Manikin (SAM)
+Selflearned (SL)
+Short-time Fourier transform (STFT)
+Showlace pattern (SLP)
+Simple Recurrent Units (SRU)
+Smoothed Pseudo Wigner Ville distribution (SPWVD)
+Speech-to-image transform (SIT)
+Spectrogram (SG)
+Spectral centroids featurs (SCF)
+State-Trait Anxiety Inventory (STAI)
+Statistical features (STSF)
+Support vector machine (SVM)
+T
+Time-domain features (TDF)
+Time order representation (TOR)
+Topographic and holographic feature maps (THFM)
+Tunable Q wavvelet transform (TQWT)
+Twine shuffle pattern (TSP)
+U
+Understandable level (UL)
+V
+Valence (V)
+Variational mode decomposition (VMD)
+Virtual reality (VR)
+W
+Wavelet decomposition (WDEC)
+Wavelet energy (WE)
+Wavelet scattering transform (WST)
+Wavelet transform (WT)
+Z
+Zero-crossing rate (ZCR)
+References
+[1] K. Kamble, J. Sengupta, A comprehensive survey on emotion recognition based
+on electroencephalograph (EEG) signals, Multimedia Tools Appl. (2023) 1–36.
+[2] R.E. Dahl, A.G. Harvey, Sleep in children and adolescents with behavioral
+and emotional disorders, Sleep Med. Clin. 2 (3) (2007) 501–511, http://dx.
+doi.org/10.1016/j.jsmc.2007.05.002, Sleep in Children and Adolescents. URL
+https://www.sciencedirect.com/science/article/pii/S1556407X07000513.
+[3] T.E. Feinberg, A. Rifkin, C. Schaffer, E. Walker, Facial discrimination and
+emotional recognition in schizophrenia and affective disorders, Arch. Gen.
+Psychiatry 43 (3) (1986) 276–279, http://dx.doi.org/10.1001/archpsyc.1986.
+01800030094010.
+[4] I.B. Mauss, A.S. Troy, M.K. LeBourgeois, Poorer sleep quality is associated with
+lower emotion-regulation ability in a laboratory paradigm, Cogn. Emot. 27
+(3) (2013) 567–576, http://dx.doi.org/10.1080/02699931.2012.727783, PMID:
+23025547. arXiv:https://doi.org/10.1080/02699931.2012.727783.
+[5] M.N. Dar, M.U. Akram, R. Yuvaraj, S. Gul Khawaja, M. Murugappan, EEG-based
+emotion charting for Parkinson’s disease patients using Convolutional Recurrent
+Neural Networks and cross dataset learning, Comput. Biol. Med. 144 (2022)
+105327, http://dx.doi.org/10.1016/j.compbiomed.2022.105327, URL https://
+www.sciencedirect.com/science/article/pii/S0010482522001196.
+[6] J. Sun, J. Han, Y. Wang, P. Liu, Memristor-based neural network circuit of
+emotion congruent memory with mental fatigue and emotion inhibition, IEEE
+Trans. Biomed. Circuits Syst. 15 (3) (2021) 606–616, http://dx.doi.org/10.
+1109/TBCAS.2021.3090786.
+[7] S.S. Jasim, A.K.A. Hassan, Modern drowsiness detection techniques: A review,
+Int. J. Electr. Comput. Eng. 12 (3) (2022) 2986.
+[8] P. Lucey, J.F. Cohn, I. Matthews, S. Lucey, S. Sridharan, J. Howlett, K.M.
+Prkachin, Automatically detecting pain in video through facial action units,
+IEEE Trans. Syst. Man Cybern. B 41 (3) (2011) 664–674, http://dx.doi.org/10.
+1109/TSMCB.2010.2082525.
+[9] N. Jamil, N.H.M. Khir, M. Ismail, F.H.A. Razak, Gait-based emotion detection of
+children with autism spectrum disorders: a preliminary investigation, Procedia
+Comput. Sci. 76 (2015) 342–348.
+[10] S. López-Martín, J. Albert, A. Fernández-Jaén, L. Carretié, Emotional distraction
+in boys with ADHD: Neural and behavioral correlates, Brain Cogn. 83 (1)
+(2013) 10–20, http://dx.doi.org/10.1016/j.bandc.2013.06.004, URL https://
+www.sciencedirect.com/science/article/pii/S0278262613000845.
+[11] T. Kircher, V. Arolt, A. Jansen, M. Pyka, I. Reinhardt, T. Kellermann, C.
+Konrad, U. Lueken, A.T. Gloster, A.L. Gerlach, A. Ströhle, A. Wittmann, B.
+Pfleiderer, H.-U. Wittchen, B. Straube, Effect of cognitive-behavioral therapy
+on neural correlates of fear conditioning in panic disorder, Biol. Psychiat. 73
+(1) (2013) 93–101, http://dx.doi.org/10.1016/j.biopsych.2012.07.026, Structural and Functional Activity with Stress and Anxiety. URL https://www.
+sciencedirect.com/science/article/pii/S0006322312006701.
+[12] T. Dalgleish, The emotional brain, Nat. Rev. Neurosci. 5 (7) (2004) 583–589.
+[13] T.S. Rached, A. Perkusich, Emotion recognition based on brain-computer
+interface systems, in: R. Fazel-Rezai (Ed.), Brain-Computer Interface Systems,
+IntechOpen, Rijeka, 2013, http://dx.doi.org/10.5772/56227, Ch. 13.
+[14] P. Ekman, An argument for basic emotions, Cogn. Emot. 6 (3–4) (1992)
+169–200.
+[15] R. Plutchik, H. Kellerman, Theories of Emotion, Vol. 1, Academic Press, 2013.
+[16] G.F. Wilson, C.A. Russell, Real-time assessment of mental workload using
+psychophysiological measures and artificial neural networks, Hum. Factors 45
+(4) (2003) 635–644.
+[17] A. Mehrabian, Pleasure-arousal-dominance: A general framework for describing
+and measuring individual differences in temperament, Curr. Psychol. 14 (1996)
+261–292.
+[18] V. Tran, Positive affect negative affect scale (PANAS), in: Encyclopedia of
+Behavioral Medicine, Springer, 2020, pp. 1708–1709.
+[19] M.M. Bradley, P.J. Lang, Measuring emotion: The self-assessment manikin
+and the semantic differential, J. Behav. Ther. Exp. Psychiatry 25 (1) (1994)
+49–59, http://dx.doi.org/10.1016/0005-7916(94)90063-9, URL https://www.
+sciencedirect.com/science/article/pii/0005791694900639.
+[20] J.P. Pollak, P. Adams, G. Gay, PAM: A photographic affect meter for frequent,
+in situ measurement of affect, CHI ’11, Association for Computing Machinery,
+New York, NY, USA, 2011, pp. 725–734, http://dx.doi.org/10.1145/1978942.
+1979047.
+[21] S. Kang, C.Y. Park, A. Kim, N. Cha, U. Lee, Understanding emotion changes
+in mobile experience sampling, CHI ’22, Association for Computing Machinery,
+New York, NY, USA, 2022, http://dx.doi.org/10.1145/3491102.3501944.
+[22] L. Shu, J. Xie, M. Yang, Z. Li, Z. Li, D. Liao, X. Xu, X. Yang, A review of
+emotion recognition using physiological signals, Sensors 18 (7) (2018) 2074.
+[23] H. Perry Fordson, X. Xing, K. Guo, X. Xu, Emotion recognition with knowledge
+graph based on electrodermal activity, Front. Neurosci. 16 (2022) 911767.
+[24] F. Larradet, R. Niewiadomski, G. Barresi, D.G. Caldwell, L.S. Mattos, Toward
+emotion recognition from physiological signals in the wild: approaching the
+methodological issues in real-life data collection, Front. Psychol. 11 (2020)
+1111.
+[25] D. Grühn, N. Sharifian, 7 - Lists of emotional stimuli, in: H.L. Meiselman (Ed.), Emotion Measurement, Woodhead Publishing, 2016, pp. 145–164,
+http://dx.doi.org/10.1016/B978-0-08-100508-8.00007-2,
+URL
+https://www.
+sciencedirect.com/science/article/pii/B9780081005088000072.
+[26] G.N. Yannakakis, A. Paiva, Emotion in games, in: Handbook on Affective
+Computing, Vol. 2014, Oxford University Press, 2014, pp. 459–471.
+[27] R. Somarathna, T. Bednarz, G. Mohammadi, Virtual reality for emotion elicitation – a review, IEEE Trans. Affect. Comput. (2022) 1–21, http://dx.doi.org/
+10.1109/taffc.2022.3181053.
+
+,QIRUPDWLRQ )XVLRQ 
+
+ 
+
+
+S.K. Khare et al.
+[28] M.A. Hasnul, N.A.A. Aziz, S. Alelyani, M. Mohana, A.A. Aziz, Electrocardiogrambased emotion recognition systems and their applications in healthcare—A
+review, Sensors 21 (15) (2021) http://dx.doi.org/10.3390/s21155015, URL
+https://www.mdpi.com/1424-8220/21/15/5015.
+[29] P.J. Bota, C. Wang, A.L.N. Fred, H. Plácido Da Silva, A review, current
+challenges, and future possibilities on emotion recognition using machine
+learning and physiological signals, IEEE Access 7 (2019) 140990–141020,
+http://dx.doi.org/10.1109/ACCESS.2019.2944001.
+[30] Y.B. Singh, S. Goel, A systematic literature review of speech emotion recognition
+approaches, Neurocomputing 492 (2022) 245–263, http://dx.doi.org/10.1016/
+j.neucom.2022.04.028, URL https://www.sciencedirect.com/science/article/pii/
+S0925231222003964.
+[31] K. Kamble, J. Sengupta, A comprehensive survey on emotion recognition based
+on electroencephalograph (EEG) signals, Multimedia Tools Appl. (2023) 1–36.
+[32] J. Zhang, Z. Yin, P. Chen, S. Nichele, Emotion recognition using multi-modal
+data and machine learning techniques: A tutorial and review, Inf. Fusion
+59 (2020) 103–126, http://dx.doi.org/10.1016/j.inffus.2020.01.011, URL https:
+//www.sciencedirect.com/science/article/pii/S1566253519302532.
+[33] R.R. Adyapady, B. Annappa, A comprehensive review of facial expression
+recognition techniques, Multimedia Syst. 29 (1) (2023) 73–103.
+[34] S. Ba, X. Hu, Measuring emotions in education using wearable devices: A
+systematic review, Comput. Educ. 200 (2023) 104797, http://dx.doi.org/10.
+1016/j.compedu.2023.104797.
+[35] D. Moher, A. Liberati, J. Tetzlaff, D.G. Altman, P. Group*, Preferred reporting
+items for systematic reviews and meta-analyses: the PRISMA statement, Ann.
+Intern. Med. 151 (4) (2009) 264–269.
+[36] S.K. Khare, V. Bajaj, G.R. Sinha, Automatic drowsiness detection based on
+variational non-linear chirp mode decomposition using electroencephalogram
+signals, in: Modelling and Analysis of Active Biopotential Signals in Healthcare,
+Volume 1, in: 2053-2563, IOP Publishing, 2020, http://dx.doi.org/10.1088/
+978-0-7503-3279-8ch5, 5–1 to 5–25.
+[37] S.K. Khare, V. Bajaj, A self-learned decomposition and classification model
+for schizophrenia diagnosis, Comput. Methods Programs Biomed. 211 (2021)
+106450,
+http://dx.doi.org/10.1016/j.cmpb.2021.106450,
+URL
+https://www.
+sciencedirect.com/science/article/pii/S0169260721005241.
+[38] S.K. Khare, N.B. Gaikwad, V. Bajaj, VHERS: A novel variational mode decomposition and Hilbert transform-based EEG rhythm separation for automatic ADHD
+detection, IEEE Trans. Instrum. Meas. 71 (2022) 1–10, http://dx.doi.org/10.
+1109/TIM.2022.3204076.
+[39] S.K. Khare, S. March, P.D. Barua, V.M. Gadre, U.R. Acharya, Application
+of data fusion for automated detection of children with developmental and
+mental disorders: A systematic review of the last decade, Inf. Fusion 99
+(2023) 101898, http://dx.doi.org/10.1016/j.inffus.2023.101898, URL https://
+www.sciencedirect.com/science/article/pii/S1566253523002142.
+[40] A.H. Krishna, A.B. Sri, K.Y.V.S. Priyanka, S. Taran, V. Bajaj, Emotion classification using EEG signals based on tunable-q wavelet transform, IET Sci.
+Meas. Technol. 13 (3) (2019) 375–380, http://dx.doi.org/10.1049/iet-smt.
+2018.5237, arXiv:https://ietresearch.onlinelibrary.wiley.com/doi/pdf/10.1049/
+iet-smt.2018.5237.
+URL
+https://ietresearch.onlinelibrary.wiley.com/doi/abs/
+10.1049/iet-smt.2018.5237.
+[41] K.S. Kamble, J. Sengupta, Ensemble machine learning-based affective computing
+for emotion recognition using dual-decomposed EEG signals, IEEE Sens. J. 22
+(3) (2022) 2496–2507, http://dx.doi.org/10.1109/JSEN.2021.3135953.
+[42] P. Pandey, K. Seeja, Subject independent emotion recognition from EEG using
+VMD and deep learning, J. King Saud Univ. - Comput. Inf. Sci. 34 (5) (2022)
+1730–1738, http://dx.doi.org/10.1016/j.jksuci.2019.11.003, URL https://www.
+sciencedirect.com/science/article/pii/S1319157819309991.
+[43] Z. Mohammadi, J. Frounchi, M. Amiri, Wavelet-based emotion recognition
+system using EEG signal, Neural Comput. Appl. 28 (2017) 1985–1990.
+[44] T. Chen, S. Ju, F. Ren, M. Fan, Y. Gu, EEG emotion recognition model
+based on the LIBSVM classifier, Measurement 164 (2020) 108047, http://dx.
+doi.org/10.1016/j.measurement.2020.108047, URL https://www.sciencedirect.
+com/science/article/pii/S0263224120305856.
+[45] Y. Zhang, X. Ji, S. Zhang, An approach to EEG-based emotion recognition using combined feature extraction method, Neurosci. Lett. 633 (2016)
+152–157, http://dx.doi.org/10.1016/j.neulet.2016.09.037, URL https://www.
+sciencedirect.com/science/article/pii/S0304394016307200.
+[46] S.K. Khare, V. Bajaj, An evolutionary optimized variational mode decomposition
+for emotion recognition, IEEE Sens. J. 21 (2) (2021) 2035–2042, http://dx.doi.
+org/10.1109/JSEN.2020.3020915.
+[47] S.K. Khare, V. Bajaj, G.R. Sinha, Adaptive tunable Q wavelet transform-based
+emotion identification, IEEE Trans. Instrum. Meas. 69 (12) (2020) 9609–9617,
+http://dx.doi.org/10.1109/TIM.2020.3006611.
+[48] V. Gupta, M.D. Chopda, R.B. Pachori, Cross-subject emotion recognition using
+flexible analytic wavelet transform from EEG signals, IEEE Sens. J. 19 (6) (2019)
+2266–2274, http://dx.doi.org/10.1109/JSEN.2018.2883497.
+[49] C. Wei, L. lan Chen, Z. zhen Song, X. guang Lou, D. dong Li, EEG-based
+emotion recognition using simple recurrent units network and ensemble learning, Biomed. Signal Process. Control 58 (2020) 101756, http://dx.doi.org/10.
+1016/j.bspc.2019.101756, URL https://www.sciencedirect.com/science/article/
+pii/S1746809419303374.
+[50] T. Tuncer, S. Dogan, A. Subasi, A new fractal pattern feature generation function
+based emotion recognition method using EEG, Chaos Solitons Fractals 144
+(2021) 110671, http://dx.doi.org/10.1016/j.chaos.2021.110671, URL https://
+www.sciencedirect.com/science/article/pii/S0960077921000242.
+[51] P.
+V.,
+A.
+Bhattacharyya,
+Human
+emotion
+recognition
+based
+on
+time–
+frequency analysis of multivariate EEG signal, Knowl.-Based Syst. 238 (2022)
+107867, http://dx.doi.org/10.1016/j.knosys.2021.107867, URL https://www.
+sciencedirect.com/science/article/pii/S0950705121010455.
+[52] N. Zhuang, Y. Zeng, L. Tong, C. Zhang, H. Zhang, B. Yan, Emotion recognition
+from EEG signals using multidimensional information in EMD domain, BioMed
+Res. Int. 2017 (2017).
+[53] T. Song, W. Zheng, C. Lu, Y. Zong, X. Zhang, Z. Cui, MPED: A multi-modal
+physiological emotion database for discrete emotion recognition, IEEE Access 7
+(2019) 12177–12191, http://dx.doi.org/10.1109/ACCESS.2019.2891579.
+[54] A.
+Dogan,
+M.
+Akay,
+P.D.
+Barua,
+M.
+Baygin,
+S.
+Dogan,
+T.
+Tuncer,
+A.H.
+Dogru,
+U.R.
+Acharya,
+PrimePatNet87:
+Prime
+pattern
+and
+tunable
+q-factor wavelet transform techniques for automated accurate EEG emotion recognition, Comput. Biol. Med. 138 (2021) 104867, http://dx.doi.
+org/10.1016/j.compbiomed.2021.104867, URL https://www.sciencedirect.com/
+science/article/pii/S0010482521006612.
+[55] E. Deniz, N. Sobahi, N. Omar, A. Sengur, U.R. Acharya, Automated robust
+human emotion classification system using hybrid EEG features with ICBrainDB
+dataset, Health Inf. Sci. Syst. 10 (1) (2022) 31.
+[56] M.R. Islam, M.M. Islam, M.M. Rahman, C. Mondal, S.K. Singha, M. Ahmad,
+A. Awal, M.S. Islam, M.A. Moni, EEG channel correlation based model for
+emotion recognition, Comput. Biol. Med. 136 (2021) 104757, http://dx.doi.
+org/10.1016/j.compbiomed.2021.104757, URL https://www.sciencedirect.com/
+science/article/pii/S0010482521005515.
+[57] F.
+Wang,
+S.
+Wu,
+W.
+Zhang,
+Z.
+Xu,
+Y.
+Zhang,
+C.
+Wu,
+S.
+Coleman,
+Emotion
+recognition
+with
+convolutional
+neural
+network
+and
+EEG-based
+EFDMs, Neuropsychologia 146 (2020) 107506, http://dx.doi.org/10.1016/j.
+neuropsychologia.2020.107506, URL https://www.sciencedirect.com/science/
+article/pii/S0028393220301780.
+[58] S.K. Khare, V. Bajaj, Time–frequency representation and convolutional neural
+network-based emotion recognition, IEEE Trans. Neural Netw. Learn. Syst. 32
+(7) (2021) 2901–2909, http://dx.doi.org/10.1109/TNNLS.2020.3008938.
+[59] P. Li, H. Liu, Y. Si, C. Li, F. Li, X. Zhu, X. Huang, Y. Zeng, D. Yao, Y. Zhang,
+P. Xu, EEG based emotion recognition by combining functional connectivity
+network and local activations, IEEE Trans. Biomed. Eng. 66 (10) (2019)
+2869–2881, http://dx.doi.org/10.1109/TBME.2019.2897651.
+[60] X. Du, C. Ma, G. Zhang, J. Li, Y.-K. Lai, G. Zhao, X. Deng, Y.-J. Liu, H.
+Wang, An efficient LSTM network for emotion recognition from multichannel
+EEG signals, IEEE Trans. Affect. Comput. 13 (3) (2022) 1528–1540, http:
+//dx.doi.org/10.1109/TAFFC.2020.3013711.
+[61] S.
+Khare,
+A.
+Nishad,
+A.
+Upadhyay,
+V.
+Bajaj,
+Classification
+of
+emotions
+from
+EEG
+signals
+using
+time-order
+representation
+based
+on
+the
+S-transform
+and
+convolutional
+neural
+network,
+Electron.
+Lett.
+56
+(25)
+(2020)
+1359–1361,
+http://dx.doi.org/10.1049/el.2020.2380,
+arXiv:https://
+ietresearch.onlinelibrary.wiley.com/doi/pdf/10.1049/el.2020.2380. URL https:
+//ietresearch.onlinelibrary.wiley.com/doi/abs/10.1049/el.2020.2380.
+[62] R. Alazrai, R. Homoud, H. Alwanni, M.I. Daoud, EEG-based emotion recognition using quadratic time-frequency distribution, Sensors 18 (8) (2018) http:
+//dx.doi.org/10.3390/s18082739, URL https://www.mdpi.com/1424-8220/18/
+8/2739.
+[63] A.
+Topic,
+M.
+Russo,
+Emotion
+recognition
+based
+on
+EEG
+feature
+maps
+through deep learning network, Eng. Sci. Technol. Int. J. 24 (6) (2021)
+1442–1454, http://dx.doi.org/10.1016/j.jestch.2021.03.012, URL https://www.
+sciencedirect.com/science/article/pii/S2215098621000768.
+[64] S. Hwang, K. Hong, G. Son, H. Byun, Learning CNN features from DE features
+for EEG-based emotion recognition, Pattern Anal. Appl. 23 (2020) 1323–1335.
+[65] A. Sepúlveda, F. Castillo, C. Palma, M. Rodriguez-Fernandez, Emotion recognition from ECG signals using wavelet scattering and machine learning, Appl. Sci.
+11 (11) (2021) http://dx.doi.org/10.3390/app11114945, URL https://www.
+mdpi.com/2076-3417/11/11/4945.
+[66] K.N. Minhad, S.H.M. Ali, M.B.I. Reaz, Happy-anger emotions classifications
+from electrocardiogram signal for automobile driving safety and awareness, J.
+Transp. Health 7 (2017) 75–89, http://dx.doi.org/10.1016/j.jth.2017.11.001,
+Road Danger Reduction. URL https://www.sciencedirect.com/science/article/
+pii/S2214140516303693.
+[67] R. Subramanian, J. Wache, M.K. Abadi, R.L. Vieriu, S. Winkler, N. Sebe,
+ASCERTAIN: Emotion and personality recognition using commercial sensors,
+IEEE Trans. Affect. Comput. 9 (2) (2018) 147–160, http://dx.doi.org/10.1109/
+TAFFC.2016.2625250.
+[68] K. NISA’MINHAD, S.H.M. Ali, M.B.I. Reaz, A design framework for human
+emotion recognition using electrocardiogram and skin conductance response
+signals, J. Eng. Sci. Technol. 12 (11) (2017) 3102–3119.
+[69] J. Selvaraj, M. Murugappan, K. Wan, S. Yaacob, Classification of emotional
+states from electrocardiogram signals: a non-linear approach based on hurst,
+Biomed. Eng. Online 12 (1) (2013) 1–18.
+
+,QIRUPDWLRQ )XVLRQ 
+
+ 
+
+
+S.K. Khare et al.
+[70] S.-T.
+Pan,
+W.-C.
+Li,
+Fuzzy-HMM
+modeling
+for
+emotion
+detection
+using
+electrocardiogram
+signals,
+Asian
+J.
+Control
+22
+(6)
+(2020)
+2206–
+2216,
+http://dx.doi.org/10.1002/asjc.2375,
+arXiv:https://onlinelibrary.wiley.
+com/doi/pdf/10.1002/asjc.2375. URL https://onlinelibrary.wiley.com/doi/abs/
+10.1002/asjc.2375.
+[71] T. Chen, H. Yin, X. Yuan, Y. Gu, F. Ren, X. Sun, Emotion recognition based on
+fusion of long short-term memory networks and SVMs, Digit. Signal Process.
+117 (2021) 103153, http://dx.doi.org/10.1016/j.dsp.2021.103153, URL https:
+//www.sciencedirect.com/science/article/pii/S1051200421001925.
+[72] M. Nardelli, G. Valenza, A. Greco, A. Lanata, E.P. Scilingo, Recognizing
+emotions induced by affective sounds through heart rate variability, IEEE Trans.
+Affect. Comput. 6 (4) (2015) 385–394, http://dx.doi.org/10.1109/TAFFC.2015.
+2432810.
+[73] S. Nita, S. Bitam, M. Heidet, A. Mellouk, A new data augmentation convolutional neural network for human emotion recognition based on ECG
+signals, Biomed. Signal Process. Control 75 (2022) 103580, http://dx.doi.
+org/10.1016/j.bspc.2022.103580, URL https://www.sciencedirect.com/science/
+article/pii/S1746809422001021.
+[74] F.E. Oğuz, A. Alkan, T. Schöler, Emotion detection from ECG signals with
+different learning algorithms and automated feature engineering, Signal Image
+Video Process. (2023) 1–9.
+[75] Y.-L. Hsu, J.-S. Wang, W.-C. Chiang, C.-H. Hung, Automatic ECG-based emotion
+recognition in music listening, IEEE Trans. Affect. Comput. 11 (1) (2020) 85–99,
+http://dx.doi.org/10.1109/TAFFC.2017.2781732.
+[76] J. S, M. Murugappan, K. Wan, S. Yaacob, Electrocardiogram-based emotion
+recognition system using empirical mode decomposition and discrete Fourier
+transform, Expert Syst. 31 (2) (2014) 110–120, http://dx.doi.org/10.1111/exsy.
+12014.
+[77] An accurate emotion recognition system using ECG and GSR signals and
+matching pursuit method.
+[78] T. Dissanayake, Y. Rajapaksha, R. Ragel, I. Nawinne, An ensemble learning
+approach for electrocardiogram sensor based human emotion recognition,
+Sensors 19 (20) (2019) http://dx.doi.org/10.3390/s19204495, URL https://
+www.mdpi.com/1424-8220/19/20/4495.
+[79] D.S. Hammad, H. Monkaresi, ECG-based emotion detection via parallelextraction of temporal and spatial features using convolutional neural network,
+Trait. Signal 39 (1) (2022).
+[80] T. Fan, S. Qiu, Z. Wang, H. Zhao, J. Jiang, Y. Wang, J. Xu, T. Sun, N.
+Jiang, A new deep convolutional neural network incorporating attentional
+mechanisms for ECG emotion recognition, Comput. Biol. Med. 159 (2023)
+106938, http://dx.doi.org/10.1016/j.compbiomed.2023.106938, URL https://
+www.sciencedirect.com/science/article/pii/S0010482523004031.
+[81] A.N. Khan, A.A. Ihalage, Y. Ma, B. Liu, Y. Liu, Y. Hao, Deep learning framework
+for subject-independent emotion detection using wireless signals, PLOS ONE 16
+(2) (2021) 1–16, http://dx.doi.org/10.1371/journal.pone.0242946.
+[82] M.N. Dar, M.U. Akram, S.G. Khawaja, A.N. Pujari, CNN and LSTM-based
+emotion charting using physiological signals, Sensors 20 (16) (2020) http:
+//dx.doi.org/10.3390/s20164551, URL https://www.mdpi.com/1424-8220/20/
+16/4551.
+[83] P. Sarkar, A. Etemad, Self-supervised ECG representation learning for emotion
+recognition, IEEE Trans. Affect. Comput. 13 (3) (2022) 1541–1554, http://dx.
+doi.org/10.1109/TAFFC.2020.3014842.
+[84] A. Raheel, M. Majid, M. Alnowami, S.M. Anwar, Physiological sensors based
+emotion recognition while experiencing tactile enhanced multimedia, Sensors
+20 (14) (2020) http://dx.doi.org/10.3390/s20144037, URL https://www.mdpi.
+com/1424-8220/20/14/4037.
+[85] D. Ayata, Y. Yaslan, M. Kamasak, Emotion recognition via galvanic skin
+response: Comparison of machine learning algorithms and feature extraction
+methods, Istanb. Univ. - J. Electr. Electron. Eng. 17 (2017) ISSN: 1303–0914.
+[86] Application
+of
+fractional
+Fourier
+transform
+in
+feature
+extraction
+from
+ELECTROCARDIOGRAM
+and
+GALVANIC
+SKIN
+RESPONSE
+for
+emotion
+recognition.
+[87] A. Goshvarpour, A. Goshvarpour, The potential of photoplethysmogram and
+galvanic skin response in emotion recognition using nonlinear features, Phys.
+Eng. Sci. Med. 43 (1) (2020) 119–134.
+[88] C. Li, C. Xu, Z. Feng, Analysis of physiological for emotion recognition with
+the IRS model, Neurocomputing 178 (2016) 103–111, http://dx.doi.org/10.
+1016/j.neucom.2015.07.112, Smart Computing for Large Scale Visual Data
+Sensing and Processing. URL https://www.sciencedirect.com/science/article/
+pii/S0925231215016045.
+[89] A Shrewd Artificial Neural Network-Based Hybrid Model for Pervasive Stress
+Detection of Students Using Galvanic Skin Response and Electrocardiogram
+Signals.
+[90] A. Goshvarpour, A. Abbasi, A. Goshvarpour, S. Daneshvar, Discrimination
+between different emotional states based on the chaotic behavior of galvanic
+skin responses, Signal Image Video Process. 11 (2017) 1347–1355.
+[91] J. Domínguez-Jiménez, K. Campo-Landines, J. Martínez-Santos, E. Delahoz,
+S. Contreras-Ortiz, A machine learning model for emotion recognition from
+physiological signals, Biomed. Signal Process. Control 55 (2020) 101646,
+http://dx.doi.org/10.1016/j.bspc.2019.101646, URL https://www.sciencedirect.
+com/science/article/pii/S1746809419302277.
+[92] Fusion framework for emotional electrocardiogram and galvanic skin response
+recognition: Applying wavelet transform.
+[93] A. Goshvarpour, A. Abbasi, A. Goshvarpour, S. Daneshvar, A novel signalbased fusion approach for accurate music emotion recognition, Biomed. Eng.:
+Appl. Basis Commun. 28 (06) (2016) 1650040, http://dx.doi.org/10.4015/
+S101623721650040X, arXiv:https://doi.org/10.4015/S101623721650040X.
+[94] X. Sun, T. Hong, C. Li, F. Ren, Hybrid spatiotemporal models for sentiment classification via galvanic skin response, Neurocomputing 358 (2019)
+385–400, http://dx.doi.org/10.1016/j.neucom.2019.05.061, URL https://www.
+sciencedirect.com/science/article/pii/S0925231219307672.
+[95] D.-H. Kang, D.-H. Kim, 1D convolutional autoencoder-based PPG and GSR
+signals for real-time emotion classification, IEEE Access.
+[96] Y.
+Li,
+J.
+Deng,
+Q.
+Wu,
+Y.
+Wang,
+Eye-tracking
+signals
+based
+affective
+classification employing deep gradient convolutional neural networks, 2021.
+[97] V. Skaramagkas, E. Ktistakis, D. Manousos, E. Kazantzaki, N.S. Tachos, E.
+Tripoliti, D.I. Fotiadis, M. Tsiknakis, eSEE-d: Emotional state estimation based
+on eye-tracking dataset, Brain Sci. 13 (4) (2023) 589.
+[98] N. Baharom, N. Jayabalan, M. Amin, S. Wibirama, Positive emotion recognition
+through eye tracking technology, J. Adv. Manuf. Technol. (JAMT) 13 (2(1)) (1
+1). URL https://jamt.utem.edu.my/jamt/article/view/5683.
+[99] D. Bethge, L. Chuang, T. Grosse-Puppendahl, Analyzing transferability of
+happiness detection via gaze tracking in multimedia applications, in: ACM
+Symposium on Eye Tracking Research and Applications, in: ETRA ’20 Adjunct,
+Association for Computing Machinery, New York, NY, USA, 2020, http://dx.
+doi.org/10.1145/3379157.3391655.
+[100] Y. Stylianou, Voice transformation: A survey, in: 2009 IEEE International
+Conference on Acoustics, Speech and Signal Processing, 2009, pp. 3585–3588,
+http://dx.doi.org/10.1109/ICASSP.2009.4960401.
+[101] A. Christy, S. Vaithyasubramanian, J. A., M. Praveena, Multimodal speech
+emotion recognition and classification using convolutional neural network
+techniques, Int. J. Speech Technol. 23 (2020) 381–388, http://dx.doi.org/10.
+1007/s10772-020-09713-y.
+[102] M. Jain, S. Narayan, P. Balaji, B.K. P, A. Bhowmick, K. R, R.K. Muthu, Speech
+emotion recognition using support vector machine, 2020, arXiv:2002.07590.
+[103] A. Koduru, H. Valiveti, A. Budati, Feature extraction algorithms to improve
+the speech emotion recognition rate, Int. J. Speech Technol. 23 (2020) 45–55,
+http://dx.doi.org/10.1007/s10772-020-09672-4.
+[104] M. Ren, W. Nie, A. Liu, Y. Su, Multi-modal Correlated Network for emotion
+recognition in speech, Vis. Inform. 3 (3) (2019) 150–155, http://dx.doi.org/10.
+1016/j.visinf.2019.10.003, URL https://www.sciencedirect.com/science/article/
+pii/S2468502X19300488.
+[105] Z. Yang, Y. Huang, Algorithm for speech emotion recognition classification
+based on Mel-frequency Cepstral coefficients and broad learning system, Evol.
+Intell. 15 (2021) 2485–2494, http://dx.doi.org/10.1007/s12065-020-00532-3.
+[106] K. Wang, N. An, B.N. Li, Y. Zhang, L. Li, Speech emotion recognition using
+Fourier parameters, IEEE Trans. Affect. Comput. 6 (1) (2015) 69–75, http:
+//dx.doi.org/10.1109/TAFFC.2015.2392101.
+[107] S. Tripathi, A. Kumar, A. Ramesh, C. Singh, P. Yenigalla, Deep learning based
+emotion recognition system using speech features and transcriptions, 2019,
+arXiv:1906.05681.
+[108] A. Bhavan, P. Chauhan, Hitkul, R.R. Shah, Bagged support vector machines for emotion recognition from speech, Knowl.-Based Syst. 184 (2019)
+104886, http://dx.doi.org/10.1016/j.knosys.2019.104886, URL https://www.
+sciencedirect.com/science/article/pii/S0950705119303533.
+[109] Z.-T. Liu, Q. Xie, M. Wu, W.-H. Cao, Y. Mei, J.-W. Mao, Speech emotion
+recognition based on an improved brain emotion learning model, Neurocomputing 309 (2018) 145–156, http://dx.doi.org/10.1016/j.neucom.2018.05.005,
+URL https://www.sciencedirect.com/science/article/pii/S0925231218305344.
+[110] H. Xu, H. Zhang, K. Han, Y. Wang, Y. Peng, X. Li, Learning alignment for
+multimodal emotion recognition from speech, 2020, arXiv:1909.05645.
+[111] M. Farooq, F. Hussain, N.K. Baloch, F.R. Raja, H. Yu, Y.B. Zikria, Impact
+of feature selection algorithm on speech emotion recognition using deep
+convolutional neural network, Sensors 20 (21) (2020) http://dx.doi.org/10.
+3390/s20216008, URL https://www.mdpi.com/1424-8220/20/21/6008.
+[112] Mustaqeem, S. Kwon, Optimal feature selection based speech emotion recognition using two-stream deep convolutional neural network, Int. J. Intell. Syst.
+36 (9) (2021) 5116–5135, http://dx.doi.org/10.1002/int.22505, arXiv:https://
+onlinelibrary.wiley.com/doi/pdf/10.1002/int.22505. URL https://onlinelibrary.
+wiley.com/doi/abs/10.1002/int.22505.
+[113] D. Issa, M. Fatih Demirci, A. Yazici, Speech emotion recognition with deep convolutional neural networks, Biomed. Signal Process. Control 59 (2020) 101894,
+http://dx.doi.org/10.1016/j.bspc.2020.101894, URL https://www.sciencedirect.
+com/science/article/pii/S1746809420300501.
+[114] Mustaqeem, S. Kwon, A CNN-assisted enhanced audio signal processing for
+speech emotion recognition, Sensors 20 (1) (2020) http://dx.doi.org/10.3390/
+s20010183, URL https://www.mdpi.com/1424-8220/20/1/183.
+[115] A. Bakhshi, A. Harimi, S. Chalup, CyTex: Transforming speech to textured images for speech emotion recognition, Speech Commun. 139 (2022) 62–75, http:
+//dx.doi.org/10.1016/j.specom.2022.02.007,
+URL
+https://www.sciencedirect.
+com/science/article/pii/S0167639322000310.
+
+,QIRUPDWLRQ )XVLRQ 
+
+ 
+
+
+S.K. Khare et al.
+[116] A. Badshah, N. Rahim, N. Ullah, J. Ahmad, K. Muhammad, M. Lee, S. Kwon,
+S. Baik, Deep features-based speech emotion recognition for smart affective
+services, Multimedia Tools Appl. 78 (2019) 5571–5589, http://dx.doi.org/10.
+1007/s11042-017-5292-7.
+[117] S. Zhang, S. Zhang, T. Huang, W. Gao, Speech emotion recognition using deep
+convolutional neural network and discriminant temporal pyramid matching,
+IEEE Trans. Multimed. 20 (6) (2018) 1576–1590, http://dx.doi.org/10.1109/
+TMM.2017.2766843.
+[118] Y. Xie, R. Liang, Z. Liang, C. Huang, C. Zou, B. Schuller, Speech emotion
+classification using attention-based LSTM, IEEE/ACM Trans. Audio Speech Lang.
+Process. 27 (11) (2019) 1675–1685, http://dx.doi.org/10.1109/TASLP.2019.
+2925934.
+[119] Mustaqeem, M. Sajjad, S. Kwon, Clustering-based speech emotion recognition
+by incorporating learned features and deep BiLSTM, IEEE Access 8 (2020)
+79861–79875, http://dx.doi.org/10.1109/ACCESS.2020.2990405.
+[120] S. Kanwal, S. Asghar, Speech emotion recognition using clustering based GAoptimized feature set, IEEE Access 9 (2021) 125830–125842, http://dx.doi.org/
+10.1109/ACCESS.2021.3111659.
+[121] Z. Xiao, E. Dellandréa, W. Dou, L. Chen, Multi-stage classification of emotional
+speech motivated by a dimensional emotion model, Multimedia Tools Appl. 46
+(2010) 119–145, http://dx.doi.org/10.1007/s11042-009-0319-3.
+[122] H.A. Shehu, W.N. Browne, H. Eisenbarth, An anti-attack method for emotion
+categorization from images, Appl. Soft Comput. 128 (2022) 109456, http://
+dx.doi.org/10.1016/j.asoc.2022.109456, URL https://www.sciencedirect.com/
+science/article/pii/S1568494622005695.
+[123] S. Kuruvayil, S. Palaniswamy, Emotion recognition from facial images with
+simultaneous occlusion, pose and illumination variations using meta-learning,
+J. King Saud Univ. - Comput. Inf. Sci. 34 (9) (2022) 7271–7282, http://
+dx.doi.org/10.1016/j.jksuci.2021.06.012, URL https://www.sciencedirect.com/
+science/article/pii/S1319157821001452.
+[124] I. Haider, H.-J. Yang, G.-S. Lee, S.-H. Kim, Robust human face emotion
+classification using triplet-loss-based deep CNN features and SVM, Sensors
+23 (10) (2023) http://dx.doi.org/10.3390/s23104770, URL https://www.mdpi.
+com/1424-8220/23/10/4770.
+[125] D. Sen, S. Datta, R. Balasubramanian, Facial emotion classification using
+concatenated geometric and textural features, Multimedia Tools Appl. 78 (2019)
+10287–10323, http://dx.doi.org/10.1007/s11042-018-6537-9.
+[126] J. Deng, G. Pang, Z. Zhang, Z. Pang, H. Yang, G. Yang, cGAN based facial
+expression recognition for human-robot interaction, IEEE Access 7 (2019)
+9848–9859, http://dx.doi.org/10.1109/ACCESS.2019.2891668.
+[127] A.K. Hassan, S.N. Mohammed, A novel facial emotion recognition scheme based
+on graph mining, Def. Technol. 16 (5) (2020) 1062–1072, http://dx.doi.org/
+10.1016/j.dt.2019.12.006, URL https://www.sciencedirect.com/science/article/
+pii/S2214914719307627.
+[128] J.-H. Kim, B.-G. Kim, P.P. Roy, D.-M. Jeong, Efficient facial expression recognition algorithm based on hierarchical deep neural network structure, IEEE Access
+7 (2019) 41273–41285, http://dx.doi.org/10.1109/ACCESS.2019.2907327.
+[129] J. Li, K. Jin, D. Zhou, N. Kubota, Z. Ju, Attention mechanism-based CNN
+for facial expression recognition, Neurocomputing 411 (2020) 340–350, http:
+//dx.doi.org/10.1016/j.neucom.2020.06.014, URL https://www.sciencedirect.
+com/science/article/pii/S0925231220309838.
+[130] G. Tonguç, B. Ozaydın Ozkara, Automatic recognition of student emotions from
+facial expressions during a lecture, Comput. Educ. 148 (2020) 103797, http:
+//dx.doi.org/10.1016/j.compedu.2019.103797, URL https://www.sciencedirect.
+com/science/article/pii/S0360131519303471.
+[131] S.L. Happy, A. Routray, Automatic facial expression recognition using features
+of salient facial patches, IEEE Trans. Affect. Comput. 6 (1) (2015) 1–12,
+http://dx.doi.org/10.1109/TAFFC.2014.2386334.
+[132] P. Rodriguez, G. Cucurull, J. Gonzàlez, J.M. Gonfaus, K. Nasrollahi, T.B. Moeslund, F.X. Roca, Deep pain: Exploiting long short-term memory networks for
+facial expression classification, IEEE Trans. Cybern. 52 (5) (2022) 3314–3324,
+http://dx.doi.org/10.1109/TCYB.2017.2662199.
+[133] S. Minaee, M. Minaei, A. Abdolrashidi, Deep-emotion: Facial expression recognition using attentional convolutional network, Sensors 21 (9) (2021) http:
+//dx.doi.org/10.3390/s21093046, URL https://www.mdpi.com/1424-8220/21/
+9/3046.
+[134] W. Xiaohua, P. Muzi, P. Lijuan, H. Min, J. Chunhua, R. Fuji, Two-level
+attention with two-stage multi-task learning for facial emotion recognition,
+J. Vis. Commun. Image Represent. 62 (2019) 217–225, http://dx.doi.org/10.
+1016/j.jvcir.2019.05.009, URL https://www.sciencedirect.com/science/article/
+pii/S1047320319301646.
+[135] T. Rao, M. Xu, D. Xu, Learning multi-level deep representations for image
+emotion classification, Neural Process. Lett. 51 (2016) 2043–2061.
+[136] N. Sun, Q. Li, R. Huan, J. Liu, G. Han, Deep spatial-temporal feature fusion
+for facial expression recognition in static images, Pattern Recognit. Lett. 119
+(2019) 49–61, http://dx.doi.org/10.1016/j.patrec.2017.10.022, Deep Learning
+for Pattern Recognition. URL https://www.sciencedirect.com/science/article/
+pii/S0167865517303902.
+[137] M.A.H. Akhand, S. Roy, N. Siddique, M.A.S. Kamal, T. Shimamura, Facial
+emotion recognition using transfer learning in the deep CNN, Electronics 10
+(9) (2021) http://dx.doi.org/10.3390/electronics10091036, URL https://www.
+mdpi.com/2079-9292/10/9/1036.
+[138] A. Khattak, M.Z. Asghar, M. Ali, U. Batool, An efficient deep learning technique for facial emotion recognition, Multimedia Tools Appl. 81 (2) (2022)
+1649–1683, http://dx.doi.org/10.1007/s11042-021-11298-w.
+[139] M. Maithri, U. Raghavendra, A. Gudigar, J. Samanth, P.D. Barua, M. Murugappan, Y. Chakole, U.R. Acharya, Automated emotion recognition: Current
+trends and future perspectives, Comput. Methods Programs Biomed. 215
+(2022) 106646, http://dx.doi.org/10.1016/j.cmpb.2022.106646, URL https://
+www.sciencedirect.com/science/article/pii/S0169260722000311.
+[140] U. Raghavendra, A. Gudigar, Y. Chakole, P. Kasula, D.P. Subha, N.A. Kadri,
+E.J. Ciaccio, U.R. Acharya, Automated detection and screening of depression using continuous wavelet transform with electroencephalogram signals,
+Expert Syst. 40 (4) (2023) e12803, http://dx.doi.org/10.1111/exsy.12803,
+arXiv:https://onlinelibrary.wiley.com/doi/pdf/10.1111/exsy.12803. URL https:
+//onlinelibrary.wiley.com/doi/abs/10.1111/exsy.12803.
+[141] M.N. Dar, M.U. Akram, R. Yuvaraj, S. Gul Khawaja, M. Murugappan, EEG-based
+emotion charting for Parkinson’s disease patients using Convolutional Recurrent
+Neural Networks and cross dataset learning, Comput. Biol. Med. 144 (2022)
+105327, http://dx.doi.org/10.1016/j.compbiomed.2022.105327, URL https://
+www.sciencedirect.com/science/article/pii/S0010482522001196.
+[142] M. Murugappan, W. Alshuaib, A.K. Bourisly, S.K. Khare, S. Sruthi, V. Bajaj,
+Tunable Q wavelet transform based emotion classification in Parkinson’s disease
+using Electroencephalography, PLOS ONE 15 (11) (2020) 1–17, http://dx.doi.
+org/10.1371/journal.pone.0242014.
+[143] S. Righi, G. Gronchi, S. Ramat, G. Gavazzi, F. Cecchi, M.P. Viggiano, Automatic
+and controlled attentional orienting toward emotional faces in patients with
+Parkinson’s disease, Cogn. Affect. Behav. Neurosci. 23 (2) (2023) 371–382.
+[144] J. Skibińska, R. Burget, Parkinson’s disease detection based on changes of
+emotions during speech, in: 2020 12th International Congress on Ultra Modern
+Telecommunications and Control Systems and Workshops (ICUMT), 2020, pp.
+124–130, http://dx.doi.org/10.1109/ICUMT51630.2020.9222446.
+[145] W.-L. Chu, M.-W. Huang, B.-L. Jian, K.-S. Cheng, Analysis of EEG entropy during
+visual evocation of emotion in schizophrenia, Ann. Gen. Psychiatry 16 (2017)
+1–9.
+[146] D.I.
+Leitman,
+P.
+Laukka,
+P.N.
+Juslin,
+E.
+Saccente,
+P.
+Butler,
+D.C.
+Javitt, Getting the cue: Sensory contributions to auditory emotion recognition
+impairments
+in
+schizophrenia,
+Schizophr.
+Bull.
+36
+(3)
+(2008)
+545–556,
+http://dx.doi.org/10.1093/schbul/sbn115,
+arXiv:https://academic.
+oup.com/schizophreniabulletin/article-pdf/36/3/545/5311926/sbn115.pdf.
+[147] M.K. Mandal, U. Habel, R.C. Gur, Facial expression-based indicators of
+schizophrenia: Evidence from recent research, Schizophr. Res. 252 (2023)
+335–344, http://dx.doi.org/10.1016/j.schres.2023.01.016, URL https://www.
+sciencedirect.com/science/article/pii/S0920996423000282.
+[148] N. Liu, Z. Yuan, Y. Chen, C. Liu, L. Wang, Learning implicit sentiments in
+Alzheimer’s disease recognition with contextual attention features, Front. Aging
+Neurosci. 15 (2023) 1122799.
+[149] W. Maturana, I. Lobo, J. Landeira-Fernandez, D.C. Mograbi, Nondeclarative
+associative learning in Alzheimer’s disease: An overview of eyeblink, fear, and
+other emotion-based conditioning, Physiol. Behav. 268 (2023) 114250, http:
+//dx.doi.org/10.1016/j.physbeh.2023.114250, URL https://www.sciencedirect.
+com/science/article/pii/S0031938423001750.
+[150] I. Ferrer-Cairols, L. Ferré-González, G. García-Lluch, C. Peña-Bautista, L.
+Álvarez-Sánchez, M. Baquero, C. Cháfer-Pericás, Emotion recognition and
+baseline cortisol levels relationship in early Alzheimer disease, Biol. Psychol.
+177 (2023) 108511, http://dx.doi.org/10.1016/j.biopsycho.2023.108511, URL
+https://www.sciencedirect.com/science/article/pii/S0301051123000285.
+[151] M. Brandt, F. de Oliveira Silva, J.P.S. Neto, M.A.T. Baptista, T. Belfort, I.B.
+Lacerda, M.C.N. Dourado, Facial expression recognition of emotional situations
+in mild and moderate Alzheimer’s disease, J. Geriatr. Psychiatry Neurol.
+0 (0) (0) 08919887231175432. PMID: 37160761. http://dx.doi.org/10.1177/
+08919887231175432.
+[152] S. Gupta, A. Singh, J. Ranjan, Multimodal, multiview and multitasking depression detection framework endorsed with auxiliary sentiment polarity and
+emotion detection, Int. J. Syst. Assur. Eng. Manag. (2023) 1–16.
+[153] M. Tadalagi, A.M. Joshi, AutoDep: automatic depression detection using facial
+expressions based on linear binary pattern descriptor, Med. Biol. Eng. Comput.
+59 (6) (2021) 1339–1354.
+[154] H. Chang, Y. Zong, W. Zheng, C. Tang, J. Zhu, X. Li, Depression assessment
+method: an EEG emotion recognition framework based on spatiotemporal neural
+network, Front. Psychiatry 12 (2022) 837149.
+[155] Ü. Aydin, R. Cañigueral, C. Tye, G. McLoughlin, Face processing in young adults
+with autism and ADHD: An event related potentials study, Front. Psychiatry 14
+(2023) 1080681.
+[156] L. Sacco, L. Morellini, C. Cerami, The diagnosis and the therapy of social
+cognition deficits in adults affected by ADHD and MCI, Front. Neurol. 14 (2023)
+1162510.
+
+,QIRUPDWLRQ )XVLRQ 
+
+ 
+
+
+S.K. Khare et al.
+[157] E. McKay, K. Cornish, H. Kirk, Impairments in emotion recognition and positive
+emotion regulation predict social difficulties in adolescent with ADHD, Clin.
+Child Psychol. Psychiatry 28 (3) (2023) 895–908, http://dx.doi.org/10.1177/
+13591045221141770, PMID: 36440882.
+[158] S. Le Sourn-Bissaoui, M. Aguert, P. Girard, C. Chevreuil, V. Laval, Emotional
+speech comprehension in children and adolescents with autism spectrum disorders, J. Commun. Disord. 46 (4) (2013) 309–320, http://dx.doi.org/10.1016/
+j.jcomdis.2013.03.002, URL https://www.sciencedirect.com/science/article/pii/
+S0021992413000105.
+[159] R. Matin, D. Valles, A speech emotion recognition solution-based on support
+vector machine for children with autism spectrum disorder to help identify human emotions, in: 2020 Intermountain Engineering, Technology and Computing
+(IETC), 2020, pp. 1–6, http://dx.doi.org/10.1109/IETC47856.2020.9249147.
+[160] M. Derbali, M. Jarrah, P. Randhawa, Autism spectrum disorder detection:
+Video games based facial expression diagnosis using deep learning, Int. J. Adv.
+Comput. Sci. Appl. 14 (1) (2023).
+[161] N.F. Harun, N. Hamzah, N. Zaini, M.M. Sani, H. Norhazman, I.M. Yassin,
+EEG classification analysis for diagnosing autism spectrum disorder based on
+emotions, J. Telecommun. Electron. Comput. Eng. (JTEC) 10 (1–2) (2018)
+87–93.
+[162] S. Pick, J.D. Mellers, L.H. Goldstein, Explicit facial emotion processing in
+patients with dissociative seizures, Psychosom. Med. 78 (7) (2016) 874–885.
+[163] J. Amlerova, A.E. Cavanna, O. Bradac, A. Javurkova, J. Raudenska, P. Marusic, Emotion recognition and social cognition in temporal lobe epilepsy and
+the effect of epilepsy surgery, Epilepsy Behav. 36 (2014) 86–89, http://
+dx.doi.org/10.1016/j.yebeh.2014.05.001, URL https://www.sciencedirect.com/
+science/article/pii/S1525505014001619.
+[164] L.W. Carawan, B.A. Nalavany, C. Jenkins, Emotional experience with dyslexia
+and self-esteem: the protective role of perceived family support in late
+adulthood, Aging Ment. Health 20 (3) (2016) 284–294, http://dx.doi.org/
+10.1080/13607863.2015.1008984, PMID: 25660279. arXiv:https://doi.org/10.
+1080/13607863.2015.1008984.
+[165] E.
+Anyanwu,
+A.
+Campbell,
+Childhood
+emotional
+experiences
+leading
+to
+biopsychosocially-induced dyslexia and low academic performance in adolescence, Int. J. Adolesc. Med. Health 13 (3) (2001) 191–204, http://dx.doi.org/
+10.1515/IJAMH.2001.13.3.191, [cited 2023-08-03].
+[166] M. Doikou-Avlidou, The educational, social and emotional experiences of
+students with dyslexia: The perspective of postsecondary education students,
+Int. J. Spec. Educ. 30 (1) (2015) 132–145.
+[167] P.M.
+Cole,
+J.
+Luby,
+M.W.
+Sullivan,
+Emotions
+and
+the
+development
+of
+childhood depression: Bridging the gap, Child Dev. Perspect. 2 (3) (2008)
+141–148,
+http://dx.doi.org/10.1111/j.1750-8606.2008.00056.x,
+arXiv:https:
+//srcd.onlinelibrary.wiley.com/doi/pdf/10.1111/j.1750-8606.2008.00056.x.
+URL
+https://srcd.onlinelibrary.wiley.com/doi/abs/10.1111/j.1750-8606.2008.
+00056.x.
+[168] S.
+Siener,
+K.A.
+Kerns,
+Emotion
+regulation
+and
+depressive
+symptoms
+in
+preadolescence, Child Psychiatry Hum. Dev. 43 (2012) 414–430.
+[169] C. Suveg, J. Zeman, Emotion regulation in children with anxiety disorders,
+J. Clin. Child Adolesc. Psychol. 33 (4) (2004) 750–759, http://dx.doi.org/10.
+1207/s15374424jccp3304_10, PMID: 15498742.
+[170] D.K. Hannesdottir, T.H. Ollendick, The role of emotion regulation in the
+treatment of child anxiety disorders, Clin. Child Fam. Psychol. Rev. 10 (2007)
+275–293.
+[171] F.M. Talaat, Real-time facial emotion recognition system among children with
+autism based on deep learning and IoT, Neural Comput. Appl. 35 (17) (2023)
+12717–12728.
+[172] L. Berkovits, A. Eisenhower, J. Blacher, Emotion regulation in young children
+with autism spectrum disorders, J. Autism Dev. Disord. 47 (2017) 68–79.
+[173] C. Ryan, C.N. Charragáin, Teaching emotion recognition skills to children with
+autism, J. Autism Dev. Disord. 40 (12) (2010) 1505–1511.
+[174] V. Blanes-Vidal, J. Bælum, E.S. Nadimi, P. Løfstrøm, L.P. Christensen, Chronic
+exposure to odorous chemicals in residential areas and effects on human
+psychosocial health: Dose–response relationships, Sci. Total Environ. 490
+(2014) 545–554, http://dx.doi.org/10.1016/j.scitotenv.2014.05.041, URL https:
+//www.sciencedirect.com/science/article/pii/S0048969714007189.
+[175] M.L. Cantuaria, J. Brandt, V. Blanes-Vidal, Exposure to multiple environmental
+stressors, emotional and physical well-being, and self-rated health: An analysis
+of relationships using latent variable structural equation modelling, Environ.
+Res. 227 (2023) 115770, http://dx.doi.org/10.1016/j.envres.2023.115770, URL
+https://www.sciencedirect.com/science/article/pii/S0013935123005625.
+[176] P. Weichbroth, W. Sroka, A note on the affective computing systems and
+machines: A classification and appraisal, Procedia Comput. Sci. 207 (C) (2022)
+3798–3807, http://dx.doi.org/10.1016/j.procs.2022.09.441.
+[177] D. Caruelle, P. Shams, A. Gustafsson, L. Lervik-Olsen, Affective computing
+in marketing: practical implications and research opportunities afforded by
+emotionally intelligent machines, Mark. Lett. 33 (1) (2022) 163–169.
+[178] L. Cen, F. Wu, Z.L. Yu, F. Hu, Chapter 2 - A real-time speech emotion
+recognition system and its application in online learning, in: S.Y. Tettegah, M.
+Gartmeier (Eds.), Emotions, Technology, Design, and Learning, in: Emotions and
+Technology, Academic Press, San Diego, 2016, pp. 27–46, http://dx.doi.org/
+10.1016/B978-0-12-801856-9.00002-5, URL https://www.sciencedirect.com/
+science/article/pii/B9780128018569000025.
+[179] M. Zembylas, M. Theodorou, A. Pavlakis, The role of emotions in the experience
+of online learning: Challenges and opportunities, Educ. Media Int. 45 (2) (2008)
+107–117.
+[180] O.S. Lih, V. Jahmunah, E.E. Palmer, P.D. Barua, S. Dogan, T. Tuncer,
+S. García, F. Molinari, U.R. Acharya, EpilepsyNet: Novel automated detection of epilepsy using transformer model with EEG signals from 121
+patient population, Comput. Biol. Med. 164 (2023) 107312, http://dx.doi.
+org/10.1016/j.compbiomed.2023.107312, URL https://www.sciencedirect.com/
+science/article/pii/S0010482523007771.
+[181] F. Panahi, S. Rashidi, A. Sheikhani, Application of fractional Fourier transform in feature extraction from ELECTROCARDIOGRAM and GALVANIC SKIN
+RESPONSE for emotion recognition,
+Biomed.
+Signal Process.
+Control 69
+(2021) 102863, http://dx.doi.org/10.1016/j.bspc.2021.102863, URL https://
+www.sciencedirect.com/science/article/pii/S1746809421004602.
+[182] H.W. Loh, C.P. Ooi, S.L. Oh, P.D. Barua, Y.R. Tan, F. Molinari, S. March,
+U.R. Acharya, D.S.S. Fung, Deep neural network technique for automated
+detection of ADHD and CD using ECG signal, Comput. Methods Programs
+Biomed. 241 (2023) 107775, http://dx.doi.org/10.1016/j.cmpb.2023.107775,
+URL https://www.sciencedirect.com/science/article/pii/S0169260723004418.
+[183] O. Faust, W. Hong, H.W. Loh, S. Xu, R.-S. Tan, S. Chakraborty, P.D. Barua,
+F. Molinari, U.R. Acharya, Heart rate variability for medical decision support
+systems: A review, Comput. Biol. Med. 145 (2022) 105407.
+[184] H.W. Loh, S. Xu, O. Faust, C.P. Ooi, P.D. Barua, S. Chakraborty, R.-S. Tan,
+F. Molinari, U.R. Acharya, Application of photoplethysmography signals for
+healthcare systems: An in-depth review, Comput. Methods Programs Biomed.
+216 (2022) 106677.
+[185] J. Zhou, G. Fang, N. Wu, Survey on security and privacy-preserving in federated
+learning, J. Xihua Univ. (Nat. Sci. Ed.) 39 (4) (2020) 9–17.
+[186] F. Liu, M. Li, X. Liu, T. Xue, J. Ren, C. Zhang, A review of federated metalearning and its application in cyberspace security, Electronics 12 (15) (2023)
+3295.
+[187] A. Noore, R. Singh, M. Vasta, Fusion, sensor-level, in: S.Z. Li, A. Jain (Eds.),
+Encyclopedia of Biometrics, Springer US, Boston, MA, 2009, pp. 616–621,
+http://dx.doi.org/10.1007/978-0-387-73003-5_156.
+[188] A. Ross, Fusion, feature-level, in: S.Z. Li, A. Jain (Eds.), Encyclopedia of
+Biometrics, Springer US, Boston, MA, 2009, pp. 597–602, http://dx.doi.org/
+10.1007/978-0-387-73003-5_157.
+[189] L. Osadciw, K. Veeramachaneni, Fusion, decision-level, in: S.Z. Li, A. Jain (Eds.),
+Encyclopedia of Biometrics, Springer US, Boston, MA, 2009, pp. 593–597,
+http://dx.doi.org/10.1007/978-0-387-73003-5_160.
+[190] H.A. Ignatious, H. El-Sayed, P. Kulkarni, Multilevel data and decision fusion
+using heterogeneous sensory data for autonomous vehicles, Remote Sens.
+15 (9) (2023) http://dx.doi.org/10.3390/rs15092256, URL https://www.mdpi.
+com/2072-4292/15/9/2256.
+[191] Y. Cimtay, E. Ekmekcioglu, S. Caglar-Ozhan, Cross-subject multimodal emotion
+recognition based on hybrid fusion, IEEE Access 8 (2020) 168865–168878,
+http://dx.doi.org/10.1109/ACCESS.2020.3023871.
+[192] Y. Tan, Z. Sun, F. Duan, J. Solé-Casals, C.F. Caiafa, A multimodal emotion
+recognition method based on facial expressions and electroencephalography,
+Biomed. Signal Process. Control 70 (2021) 103029, http://dx.doi.org/10.
+1016/j.bspc.2021.103029, URL https://www.sciencedirect.com/science/article/
+pii/S1746809421006261.
+[193] S.K. Khare, U.R. Acharya, Adazd-Net: Automated adaptive and explainable
+Alzheimer’s disease detection system using EEG signals, Knowl.-Based Syst.
+(2023) 110858, http://dx.doi.org/10.1016/j.knosys.2023.110858, URL https:
+//www.sciencedirect.com/science/article/pii/S0950705123006081.
+[194] M. Abdar, F. Pourpanah, S. Hussain, D. Rezazadegan, L. Liu, M. Ghavamzadeh,
+P. Fieguth, X. Cao, A. Khosravi, U.R. Acharya, et al., A review of uncertainty
+quantification in deep learning: Techniques, applications and challenges, Inf.
+Fusion 76 (2021) 243–297.
+[195] R. Alizadehsani, M. Roshanzamir, S. Hussain, A. Khosravi, A. Koohestani, M.H.
+Zangooei, M. Abdar, A. Beykikhoshk, A. Shoeibi, A. Zare, et al., Handling of
+uncertainty in medical data using machine learning and probability theory
+techniques: A review of 30 years (1991–2020), Ann. Oper. Res. (2021) 1–42.
+[196] S. Seoni, V. Jahmunah, M. Salvi, P.D. Barua, F. Molinari, U.R. Acharya,
+Application of uncertainty quantification to artificial intelligence in healthcare: A review of last decade (2013–2023), Comput. Biol. Med. (2023)
+107441, http://dx.doi.org/10.1016/j.compbiomed.2023.107441, URL https://
+www.sciencedirect.com/science/article/pii/S001048252300906X.
+[197] G. Dandy, W. Wu, A. Simpson, M. Leonard, A review of sources of uncertainty in optimization objectives of water distribution systems, Water 15 (1)
+(2023) http://dx.doi.org/10.3390/w15010136, URL https://www.mdpi.com/
+2073-4441/15/1/136.
+[198] V. Jahmunah, E. Ng, R.-S. Tan, S.L. Oh, U.R. Acharya, Uncertainty quantification in DenseNet model using myocardial infarction ECG signals, Comput.
+Methods Programs Biomed. 229 (2023) 107308.
+[199] S. Taran, V. Bajaj, Emotion recognition from single-channel EEG signals using
+a two-stage correlation and instantaneous frequency-based filtering method,
+Comput. Methods Programs Biomed. 173 (2019) 157–165, http://dx.doi.org/10.
+1016/j.cmpb.2019.03.015, URL https://www.sciencedirect.com/science/article/
+pii/S016926071930118X.
+
+,QIRUPDWLRQ )XVLRQ 
+
+ 
+
+
+S.K. Khare et al.
+[200] R. Jenke, A. Peer, M. Buss, Feature extraction and selection for emotion
+recognition from EEG, IEEE Trans. Affect. Comput. 5 (3) (2014) 327–339,
+http://dx.doi.org/10.1109/TAFFC.2014.2339834.
+[201] X. Li, D. Song, P. Zhang, Y. Zhang, Y. Hou, B. Hu, Exploring EEG features in
+cross-subject emotion recognition, Front. Neurosci. 12 (2018) http://dx.doi.org/
+10.3389/fnins.2018.00162, URL https://www.frontiersin.org/articles/10.3389/
+fnins.2018.00162.
+[202] H. Chao, L. Dong, Y. Liu, B. Lu, Emotion recognition from multiband
+EEG signals using CapsNet, Sensors 19 (9) (2019) http://dx.doi.org/10.3390/
+s19092212, URL https://www.mdpi.com/1424-8220/19/9/2212.
+[203] X. Xing, Z. Li, T. Xu, L. Shu, B. Hu, X. Xu, SAE+LSTM: A new framework for emotion recognition from multi-channel EEG, Front. Neurorobot.
+13
+(2019)
+http://dx.doi.org/10.3389/fnbot.2019.00037,
+URL
+https://www.
+frontiersin.org/articles/10.3389/fnbot.2019.00037.
+[204] T. Song, W. Zheng, P. Song, Z. Cui, EEG emotion recognition using dynamical
+graph convolutional neural networks, IEEE Trans. Affect. Comput. 11 (3) (2020)
+532–541, http://dx.doi.org/10.1109/TAFFC.2018.2817622.
+[205] Y. Cimtay, E. Ekmekcioglu, Investigating the use of pretrained convolutional
+neural network on cross-subject and cross-dataset EEG emotion recognition,
+Sensors 20 (7) (2020) http://dx.doi.org/10.3390/s20072034, URL https://
+www.mdpi.com/1424-8220/20/7/2034.
+[206] P. Zhong, D. Wang, C. Miao, EEG-based emotion recognition using regularized
+graph neural networks, IEEE Trans. Affect. Comput. 13 (3) (2022) 1290–1301,
+http://dx.doi.org/10.1109/TAFFC.2020.2994159.
+[207] W.-L. Zheng, B.-L. Lu, Investigating critical frequency bands and channels
+for EEG-based emotion recognition with deep neural networks, IEEE Trans.
+Auton. Ment. Dev. 7 (3) (2015) 162–175, http://dx.doi.org/10.1109/TAMD.
+2015.2431497.
+[208] J.X. Chen, P.W. Zhang, Z.J. Mao, Y.F. Huang, D.M. Jiang, Y.N. Zhang, Accurate
+EEG-based emotion recognition on combined features using deep convolutional
+neural networks, IEEE Access 7 (2019) 44317–44328, http://dx.doi.org/10.
+1109/ACCESS.2019.2908285.
+[209] J. Cheng, M. Chen, C. Li, Y. Liu, R. Song, A. Liu, X. Chen, Emotion recognition
+from multi-channel EEG via deep forest, IEEE J. Biomed. Health Inf. 25 (2)
+(2021) 453–464, http://dx.doi.org/10.1109/JBHI.2020.2995767.
+[210] W. Tao, C. Li, R. Song, J. Cheng, Y. Liu, F. Wan, X. Chen, EEG-based
+emotion recognition via channel-wise attention and self attention, IEEE Trans.
+Affect. Comput. 14 (1) (2023) 382–393, http://dx.doi.org/10.1109/TAFFC.
+2020.3025777.
+[211] F. Yang, X. Zhao, W. Jiang, P. Gao, G. Liu, Multi-method fusion of cross-subject
+emotion recognition based on high-dimensional EEG features, Front. Comput.
+Neurosci. 13 (2019) http://dx.doi.org/10.3389/fncom.2019.00053, URL https:
+//www.frontiersin.org/articles/10.3389/fncom.2019.00053.
+[212] Q. Gao, C.-h. Wang, Z. Wang, X.-l. Song, E.-z. Dong, Y. Song, EEG based emotion
+recognition using fusion feature extraction method, Multimedia Tools Appl. 79
+(2020) 27057–27074.
+[213] Y. Peng, F. Qin, W. Kong, Y. Ge, F. Nie, A. Cichocki, GFIL: A unified framework
+for the importance analysis of features, frequency bands, and channels in EEGbased emotion recognition, IEEE Trans. Cogn. Dev. Syst. 14 (3) (2022) 935–947,
+http://dx.doi.org/10.1109/TCDS.2021.3082803.
+[214] R. Nawaz, K.H. Cheah, H. Nisar, V.V. Yap, Comparison of different feature
+extraction methods for EEG-based emotion recognition, Biocybern. Biomed.
+Eng. 40 (3) (2020) 910–926, http://dx.doi.org/10.1016/j.bbe.2020.04.005, URL
+https://www.sciencedirect.com/science/article/pii/S0208521620300553.
+[215] A. Mert, A. Akan, Emotion recognition from EEG signals by using multivariate
+empirical mode decomposition, Pattern Anal. Appl. 21 (2018) 81–89.
+[216] J. Zhang, M. Chen, S. Zhao, S. Hu, Z. Shi, Y. Cao, ReliefF-based EEG sensor
+selection methods for emotion recognition, Sensors 16 (10) (2016) http://dx.
+doi.org/10.3390/s16101558, URL https://www.mdpi.com/1424-8220/16/10/
+1558.
+[217] D. Maheshwari, S. Ghosh, R. Tripathy, M. Sharma, U.R. Acharya, Automated
+accurate emotion recognition system using rhythm-specific deep convolutional
+neural network technique with multi-channel EEG signals, Comput. Biol. Med.
+134
+(2021)
+104428,
+http://dx.doi.org/10.1016/j.compbiomed.2021.104428,
+URL https://www.sciencedirect.com/science/article/pii/S0010482521002225.
+[218] H. Uyanık, S.T.A. Ozcelik, Z.B. Duranay, A. Sengur, U.R. Acharya, Use
+of differential entropy for automated emotion recognition in a virtual reality environment with EEG signals, Diagnostics 12 (10) (2022) http://
+dx.doi.org/10.3390/diagnostics12102508, URL https://www.mdpi.com/2075-
+4418/12/10/2508.
+[219] M.B.H. Wiem, Z. Lachiri, Emotion classification in arousal valence model using
+MAHNOB-HCI database, Int. J. Adv. Comput. Sci. Appl. 8 (3) (2017).
+[220] Z. Wang, X. Zhou, W. Wang, C. Liang, Emotion recognition using multimodal
+deep learning in multiple psychophysiological signals and video, Int. J. Mach.
+Learn. Cybern. 11 (4) (2020) 923–934.
+[221] D.B. Setyohadi, S. Kusrohmaniah, S.B. Gunawan, P. Pranowo, Galvanic skin
+response data classification for emotion detection, Int. J. Electr. Comput. Eng.
+(IJECE) 8 (5) (2018) 31–41.
+[222] S. Dutta, B.K. Mishra, A. Mitra, A. Chakraborty, An analysis of emotion
+recognition based on GSR signal, ECS Trans. 107 (1) (2022) 12535.
+[223] J.Z. Lim, J. Mountstephens, J. Teo, Exploring pupil position as an eye-tracking
+feature for four-class emotion classification in VR, J. Phys. Conf. Ser. 2129 (1)
+(2021) 012069, http://dx.doi.org/10.1088/1742-6596/2129/1/012069.
+[224] P. Tarnowski, M. Kołodziej, A. Majkowski, R. Rak, Eye-tracking analysis for
+emotion recognition, Comput. Intell. Neurosci.
+2020 (2020) 1–13, http://dx.
+doi.org/10.1155/2020/2909267.
+[225] Q. Wu, N. Dey, F. Shi, R.G. Crespo, R.S. Sherratt, Emotion classification on
+eye-tracking and electroencephalograph fused signals employing deep gradient
+neural networks, Appl. Soft Comput. 110 (2021) 107752, http://dx.doi.org/10.
+1016/j.asoc.2021.107752, URL https://www.sciencedirect.com/science/article/
+pii/S1568494621006736.
+[226] S. Demircan, H. Kahramanli Örnek, Feature extraction from speech data for
+emotion recognition, J. Adv. Comput. Netw. 2 (2014) 28–30, http://dx.doi.
+org/10.7763/JACN.2014.V2.76.
+[227] L. Sun, B. Zou, S. Fu, J. Chen, F. Wang, Speech emotion recognition based on
+DNN-decision tree SVM model, Speech Commun. 115 (2019) 29–37, http://dx.
+doi.org/10.1016/j.specom.2019.10.004,
+URL
+https://www.sciencedirect.com/
+science/article/pii/S016763931930127X.
+[228] P. Krishnan, A.N. Joseph Raj, V. R, Emotion classification from speech signal
+based on empirical mode decomposition and non-linear features, Complex Intell.
+Syst. 7 (2021) 1919–1934, http://dx.doi.org/10.1007/s40747-021-00295-z.
+[229] H.M. Fayek, M. Lech, L. Cavedon, Evaluating deep learning architectures
+for speech emotion recognition, Neural Netw. 92 (2017) 60–68, http://dx.
+doi.org/10.1016/j.neunet.2017.02.013, Advances in Cognitive Engineering Using Neural Networks. URL https://www.sciencedirect.com/science/article/pii/
+S089360801730059X.
+[230] D. Tanko, S. Dogan, F. Burak Demir, M. Baygin, S. Engin Sahin, T. Tuncer,
+Shoelace pattern-based speech emotion recognition of the lecturers in distance
+education: ShoePat23, Appl. Acoust. 190 (2022) 108637, http://dx.doi.org/
+10.1016/j.apacoust.2022.108637, URL https://www.sciencedirect.com/science/
+article/pii/S0003682X22000111.
+[231] Z.-T. Liu, M. Wu, W.-H. Cao, J.-W. Mao, J.-P. Xu, G.-Z. Tan, Speech emotion
+recognition based on feature selection and extreme learning machine decision tree, Neurocomputing 273 (2018) 271–280, http://dx.doi.org/10.1016/
+j.neucom.2017.07.050, URL https://www.sciencedirect.com/science/article/pii/
+S0925231217313565.
+[232] T. Tuncer, S. Dogan, U.R. Acharya, Automated accurate speech emotion recognition system using twine shuffle pattern and iterative neighborhood component
+analysis techniques, Knowl.-Based Syst. 211 (2021) 106547, http://dx.doi.org/
+10.1016/j.knosys.2020.106547,
+URL
+https://www.sciencedirect.com/science/
+article/pii/S0950705120306766.
+[233] Z. ullah, L. Qi, D. Binu, B.R. Rajakumar, B. Mohammed Ismail, 2-D canonical
+correlation analysis based image super-resolution scheme for facial emotion
+recognition, Multimedia Tools Appl. 81 (10) (2022) 13911–13934, http://dx.
+doi.org/10.1007/s11042-022-11922-3.
+[234] H. Li, H. Xu, Deep reinforcement learning for robust emotional classification in
+facial expression recognition, Knowl.-Based Syst. 204 (2020) 106172, http://dx.
+doi.org/10.1016/j.knosys.2020.106172,
+URL
+https://www.sciencedirect.com/
+science/article/pii/S0950705120304081.
+[235] K. Chowdary, T. Nguyen, D. Hemanth, Deep learning-based facial emotion
+recognition for human–computer interaction applications, Neural Comput. Appl.
+(2021) 1–18, http://dx.doi.org/10.1007/s00521-021-06012-8.
+[236] D.K. Jain, P. Shamsolmoali, P. Sehdev, Extended deep neural network for
+facial emotion recognition, Pattern Recognit. Lett. 120 (2019) 69–74, http://
+dx.doi.org/10.1016/j.patrec.2019.01.008, URL https://www.sciencedirect.com/
+science/article/pii/S016786551930008X.
+[237] F. Zhang, T. Zhang, Q. Mao, C. Xu, Geometry guided pose-invariant facial
+expression recognition, IEEE Trans. Image Process. 29 (2020) 4445–4460,
+http://dx.doi.org/10.1109/TIP.2020.2972114.
+[238] H. Zhang, A. Jolfaei, M. Alazab, A face emotion recognition method using
+convolutional neural network and image edge computing, IEEE Access 7 (2019)
+159081–159089, http://dx.doi.org/10.1109/ACCESS.2019.2949741.
+[239] N.D.
+Mehendale,
+Facial
+emotion
+recognition
+using
+convolutional
+neural
+networks (FERC), SN Appl. Sci. 2 (2020) 1–8.
+[240] R. Kumar, S. Muniasamy, N. Arumugam, Facial emotion recognition using
+subband selective multilevel stationary wavelet gradient transform and fuzzy
+support vector machine, Vis. Comput. 37 (2021) 1–15, http://dx.doi.org/10.
+1007/s00371-020-01988-1.
+[241] Y.-D. Zhang, Z.-J. Yang, H.-M. Lu, X.-X. Zhou, P. Phillips, Q.-M. Liu, S.-H.
+Wang, Facial emotion recognition based on biorthogonal wavelet entropy, fuzzy
+support vector machine, and stratified cross validation, IEEE Access 4 (2016)
+8375–8385, http://dx.doi.org/10.1109/ACCESS.2016.2628407.
+[242] K. Sarvakar, R. Senkamalavalli, S. Raghavendra, J. Santosh Kumar, R. Manjunath, S. Jaiswal, Facial emotion recognition using convolutional neural
+networks, Mater. Today: Proc. 80 (2023) 3560–3564, http://dx.doi.org/10.
+1016/j.matpr.2021.07.297, SI:5 NANO 2021. URL https://www.sciencedirect.
+com/science/article/pii/S2214785321051567.
+[243] S. Zhao, H. Yao, Y. Gao, R. Ji, G. Ding, Continuous probability distribution
+prediction of image emotions via multitask shared sparse regression, IEEE
+Trans. Multimed. 19 (3) (2017) 632–645, http://dx.doi.org/10.1109/TMM.
+2016.2617741.
+
+,QIRUPDWLRQ )XVLRQ 
+
+ 
+
+
+S.K. Khare et al.
+[244] S. Katsigiannis, N. Ramzan, DREAMER: A database for emotion recognition
+through EEG and ECG signals from wireless low-cost off-the-shelf devices, IEEE
+J. Biomed. Health Inf. 22 (1) (2018) 98–107, http://dx.doi.org/10.1109/JBHI.
+2017.2688239.
+[245] R.-N. Duan, J.-Y. Zhu, B.-L. Lu, Differential entropy feature for EEG-based
+emotion classification, in: 6th International IEEE/EMBS Conference on Neural
+Engineering (NER), IEEE, 2013, pp. 81–84.
+[246] S.
+Sangnark,
+P.
+Autthasan,
+P.
+Ponglertnapakorn,
+P.
+Chalekarn,
+T.
+Sudhawiyangkul, M. Trakulruangroj, S. Songsermsawad, R. Assabumrungrat, S.
+Amplod, K. Ounjai, T. Wilaiprasitporn, Revealing preference in popular music
+through familiarity and brain response, IEEE Sens. J. (2021) 1.
+[247] S. Koelstra, C. Muhl, M. Soleymani, J.-S. Lee, A. Yazdani, T. Ebrahimi, T. Pun,
+A. Nijholt, I. Patras, DEAP: A database for emotion analysis using physiological
+signals, IEEE Trans. Affect. Comput. 3 (1) (2012) 18–31, http://dx.doi.org/10.
+1109/T-AFFC.2011.15.
+[248] P. Lakhan, N. Banluesombatkul, V. Changniam, R. Dhithijaiyratn, P. Leelaarporn, E. Boonchieng, S. Hompoonsup, T. Wilaiprasitporn, Consumer grade brain
+sensing for emotion recognition, IEEE Sens. J. 19 (21) (2019) 9896–9907,
+http://dx.doi.org/10.1109/JSEN.2019.2928781.
+[249] E. Ekmekcioglu, Y. Cimtay, Loughborough university multimodal emotion
+dataset-2,
+2021,
+http://dx.doi.org/10.6084/m9.figshare.12644033.v5,
+URL
+https://figshare.com/articles/dataset/Loughborough_University_Multimodal_
+Emotion_Dataset_-_2/12644033.
+[250] W. Zheng, W. Liu, Y. Lu, B. Lu, A. Cichocki, EmotionMeter: A multimodal
+framework for recognizing human emotions, IEEE Trans. Cybern. (2018) 1–13,
+http://dx.doi.org/10.1109/TCYB.2018.2797176.
+[251] M. Soleymani, J. Lichtenauer, T. Pun, M. Pantic, A multimodal database for
+affect recognition and implicit tagging, IEEE Trans. Affect. Comput. 3 (1) (2012)
+42–55, http://dx.doi.org/10.1109/T-AFFC.2011.25.
+[252] G. Zhao, Y. Zhang, Y. Ge, Y. Zheng, X. Sun, K. Zhang, Asymmetric hemisphere
+activation in tenderness: evidence from EEG signals, Sci. Rep. 8 (1) (2018)
+8029.
+[253] G. Zhao, Y. Zhang, Y. Ge, Frontal EEG asymmetry and middle line power
+difference in discrete emotions, Front. Behav. Neurosci. 12 (2018) 225.
+[254] J.A. Miranda-Correa, M.K. Abadi, N. Sebe, I. Patras, AMIGOS: A dataset for
+affect, personality and mood research on individuals and groups, IEEE Trans.
+Affect. Comput. 12 (2) (2021) 479–493, http://dx.doi.org/10.1109/TAFFC.
+2018.2884461.
+[255] T.B. Alakus, M. Gonen, I. Turkoglu, Database for an emotion recognition
+system based on EEG signals and various computer games - GAMEEMO,
+Biomed. Signal Process. Control 60 (2020) 101951, http://dx.doi.org/10.
+1016/j.bspc.2020.101951, URL https://www.sciencedirect.com/science/article/
+pii/S1746809420301075.
+[256] T. Song, W. Zheng, C. Lu, Y. Zong, X. Zhang, Z. Cui, MPED: A multi-modal
+physiological emotion database for discrete emotion recognition, IEEE Access 7
+(2019) 12177–12191, http://dx.doi.org/10.1109/ACCESS.2019.2891579.
+[257] R. Subramanian, J. Wache, M.K. Abadi, R.L. Vieriu, S. Winkler, N. Sebe,
+ASCERTAIN: emotion and personality recognition using commercial sensors,
+IEEE Trans. Affect. Comput. 9 (2) (2018) 147–160, http://dx.doi.org/10.1109/
+TAFFC.2016.2625250.
+[258] A. Baghdadi, Y. Aribi, R. Fourati, N. Halouani, P. Siarry, A.M. Alimi, DASPS:
+A database for anxious states based on a psychological stimulation, 2019,
+arXiv:1901.02942.
+[259] M. Yu, S. Xiao, M. Hua, H. Wang, X. Chen, F. Tian, Y. Li, EEG-based emotion
+recognition in an immersive virtual reality environment: From local activity
+to brain network features, Biomed. Signal Process. Control 72 (2022) 103349,
+http://dx.doi.org/10.1016/j.bspc.2021.103349, URL https://www.sciencedirect.
+com/science/article/pii/S1746809421009460.
+[260] R. Ivanov, F. Kazantsev, E. Zavarzin, A. Klimenko, N. Milakhina, Y.G. Matushkin, A. Savostyanov, S. Lashin, ICBrainDB.: an integrated database for
+finding associations between genetic factors and EEG markers of depressive
+disorders, J. Pers. Med. 12 (1) (2022) 53.
+[261] J. Wagner, J. Kim, E. Andre, From physiological signals to emotions: Implementing and comparing selected methods for feature extraction and classification,
+in: 2005 IEEE International Conference on Multimedia and Expo, 2005, pp.
+940–943, http://dx.doi.org/10.1109/ICME.2005.1521579.
+[262] P. Schmidt, A. Reiss, R. Duerichen, C. Marberger, K. Van Laerhoven, Introducing
+WESAD, a multimodal dataset for wearable stress and affect detection, in: Proceedings of the 20th ACM International Conference on Multimodal Interaction,
+ICMI ’18, Association for Computing Machinery, New York, NY, USA, 2018, pp.
+400–408, http://dx.doi.org/10.1145/3242969.3242985.
+[263] L. Zhang, S. Walter, X. Ma, P. Werner, A. Al-Hamadi, H.C. Traue, S.
+Gruss,
+‘‘BioVid
+Emo
+DB’’:
+A
+multimodal
+database
+for
+emotion
+analyses
+validated by subjective ratings, in: 2016 IEEE Symposium Series on Computational Intelligence (SSCI), 2016, pp. 1–6, http://dx.doi.org/10.1109/SSCI.2016.
+7849931.
+[264] S. Koldijk, M. Sappelli, S. Verberne, M.A. Neerincx, W. Kraaij, The SWELL
+knowledge work dataset for stress and user modeling research, in: Proceedings
+of the 16th International Conference on Multimodal Interaction, ICMI ’14,
+Association for Computing Machinery, New York, NY, USA, 2014, pp. 291–298,
+http://dx.doi.org/10.1145/2663204.2663257.
+[265] J.-H. Maeng, D.-H. Kang, D.-H. Kim, Deep learning method for selecting
+effective models and feature groups in emotion recognition using an Asian
+multimodal database, Electronics 9 (12) (2020) http://dx.doi.org/10.3390/
+electronics9121988, URL https://www.mdpi.com/2079-9292/9/12/1988.
+[266] S.R. Livingstone, F.A. Russo, The Ryerson Audio-Visual Database of Emotional
+Speech and Song (RAVDESS): A dynamic, multimodal set of facial and vocal
+expressions in North American English, PLOS ONE 13 (5) (2018) 1–35, http:
+//dx.doi.org/10.1371/journal.pone.0196391.
+[267] E. Chen, Z. Lu, H. Xu, L. Cao, Y. Zhang, J. Fan, A large scale speech sentiment
+corpus, in: Proceedings of the Twelfth Language Resources and Evaluation
+Conference, European Language Resources Association, Marseille, France, 2020,
+pp. 6549–6555, URL https://aclanthology.org/2020.lrec-1.806.
+[268] C. Busso, M. Bulut, C.-C. Lee, A. Kazemzadeh, E. Mower, S. Kim, J.N. Chang,
+S. Lee, S.S. Narayanan, IEMOCAP: Interactive emotional dyadic motion capture
+database, Lang. Resour. Eval. 42 (2008) 335–359.
+[269] F. Burkhardt, A. Paeschke, M. Rolfes, W.F. Sendlmeier, B. Weiss, et al., A
+database of German emotional speech, in: Interspeech, Vol. 5, 2005, pp.
+1517–1520.
+[270] A. Dhall, R. Goecke, S. Lucey, T. Gedeon, Collecting large, richly annotated
+facial-expression databases from movies, IEEE MultiMedia 19 (3) (2012) 34–41,
+http://dx.doi.org/10.1109/MMUL.2012.26.
+[271] W. Bao, Y. Li, M. Gu, M. Yang, H. Li, L. Chao, J. Tao, Building a Chinese
+natural emotional audio-visual database, in: 2014 12th International Conference
+on Signal Processing (ICSP), 2014, pp. 583–587, http://dx.doi.org/10.1109/
+ICOSP.2014.7015071.
+[272] K. Wang, Q. Zhang, S. Liao, A database of elderly emotional speech, in: Proc.
+Int. Symp. Signal Process. Biomed. Eng Informat, 2014, pp. 549–553.
+[273] S.G. Koolagudi, R. Reddy, J. Yadav, K.S. Rao, IITKGP-SEHSC : Hindi speech
+corpus for emotion analysis, in: 2011 International Conference on Devices
+and Communications (ICDeCom), 2011, pp. 1–5, http://dx.doi.org/10.1109/
+ICDECOM.2011.5738540.
+[274] O. Martin, I. Kotsia, B. Macq, I. Pitas, The eNTERFACE’ 05 audio-visual emotion
+database, in: 22nd International Conference on Data Engineering Workshops
+(ICDEW’06), 2006, p. 8, http://dx.doi.org/10.1109/ICDEW.2006.145.
+[275] T. Bänziger, M. Mortillaro, K.R. Scherer, Introducing the Geneva Multimodal
+expression corpus for experimental research on emotion perception, Emotion
+12 (5) (2012) 1161.
+[276] S. Haq, P. Jackson, Speaker-dependent audio-visual emotion recognition, in:
+Proc. Int. Conf. on Auditory-Visual Speech Processing (AVSP’08), Norwich, UK,
+2009.
+[277] S. Haq, P. Jackson, in: W. Wang (Ed.), Machine Audition: Principles, Algorithms
+and Systems, IGI Global, Hershey PA, 2010, pp. 398–423, Ch. Multimodal
+Emotion Recognition.
+[278] S. Haq, P. Jackson, J. Edge, Audio-visual feature selection and reduction for
+emotion classification, in: Proc. Int. Conf. on Auditory-Visual Speech Processing
+(AVSP’08), Tangalooma, Australia, 2008.
+[279] A. Batliner, S. Steidl, E. Nöth, Releasing a thoroughly annotated and processed
+spontaneous emotional database: the FAU Aibo Emotion Corpus, 2008.
+[280] M.K. Pichora-Fuller, K. Dupuis, Toronto emotional speech set (TESS), 2020,
+http://dx.doi.org/10.5683/SP2/E8H2MF.
+[281] S. Zhalehpour, O. Onder, Z. Akhtar, C.E. Erdem, BAUM-1: A spontaneous audiovisual face database of affective and mental states, IEEE Trans. Affect. Comput.
+8 (3) (2017) 300–313, http://dx.doi.org/10.1109/TAFFC.2016.2553038.
+[282] Y. Wang, L. Guan, Recognizing human emotional state from audiovisual signals,
+IEEE Trans. Multimed. 10 (5) (2008) 936–946, http://dx.doi.org/10.1109/
+TMM.2008.927665.
+[283] G. Costantini, I. Iaderola, A. Paoloni, M. Todisco, EMOVO corpus: an Italian
+emotional speech database, in: Proceedings of the Ninth International Conference on Language Resources and Evaluation (LREC’14), European Language
+Resources Association (ELRA), Reykjavik, Iceland, 2014, pp. 3501–3504, URL
+http://www.lrec-conf.org/proceedings/lrec2014/pdf/591_Paper.pdf.
+[284] D. Lundqvist, A. Flykt, A. Öhman, Karolinska directed emotional faces, Cogn.
+Emot. (1998).
+[285] P. Lucey, J.F. Cohn, T. Kanade, J. Saragih, Z. Ambadar, I. Matthews, The
+Extended Cohn-Kanade Dataset (CK+): A complete dataset for action unit and
+emotion-specified expression, in: 2010 IEEE Computer Society Conference on
+Computer Vision and Pattern Recognition - Workshops, 2010, pp. 94–101,
+http://dx.doi.org/10.1109/CVPRW.2010.5543262.
+[286] M. Lyons, S. Akamatsu, M. Kamachi, J. Gyoba, Coding facial expressions
+with Gabor wavelets, in: Proceedings Third IEEE International Conference on
+Automatic Face and Gesture Recognition, 1998, pp. 200–205, http://dx.doi.org/
+10.1109/AFGR.1998.670949.
+[287] R. Gross, I. Matthews, J. Cohn, T. Kanade, S. Baker, Multi-PIE, in: 2008 8th
+IEEE International Conference on Automatic Face & Gesture Recognition, 2008,
+pp. 1–8, http://dx.doi.org/10.1109/AFGR.2008.4813399.
+[288] R. Gross, I. Matthews, J. Cohn, T. Kanade, S. Baker, Multi-PIE, Image Vis.
+Comput. 28 (5) (2010) 807–813, http://dx.doi.org/10.1016/j.imavis.2009.08.
+002, Best of Automatic Face and Gesture Recognition 2008. URL https://www.
+sciencedirect.com/science/article/pii/S0262885609001711.
+
+,QIRUPDWLRQ )XVLRQ 
+
+ 
+
+
+S.K. Khare et al.
+[289] A. Mollahosseini, B. Hasani, M.H. Mahoor, AffectNet: A database for facial
+expression, valence, and arousal computing in the wild, IEEE Trans. Affect. Comput. 10 (1) (2019) 18–31, http://dx.doi.org/10.1109/TAFFC.2017.
+2740923.
+[290] I.J. Goodfellow, D. Erhan, P.L. Carrier, A. Courville, M. Mirza, B. Hamner, W.
+Cukierski, Y. Tang, D. Thaler, D.-H. Lee, et al., Challenges in representation
+learning: A report on three machine learning contests, in: Neural Information Processing: 20th International Conference, ICONIP 2013, Daegu, Korea,
+November 3-7, 2013. Proceedings, Part III 20, Springer, 2013, pp. 117–124.
+[291] M. Pantic, M. Valstar, R. Rademaker, L. Maat, Web-based database for facial
+expression analysis, in: 2005 IEEE International Conference on Multimedia and
+Expo, 2005, p. 5, http://dx.doi.org/10.1109/ICME.2005.1521424.
+[292] S. Li, W. Deng, J. Du, Reliable crowdsourcing and deep locality-preserving
+learning for expression recognition in the wild, in: 2017 IEEE Conference on
+Computer Vision and Pattern Recognition (CVPR), IEEE, 2017, pp. 2584–2593.
+[293] S. Li, W. Deng, Reliable crowdsourcing and deep locality-preserving learning
+for unconstrained facial expression recognition, IEEE Trans. Image Process. 28
+(1) (2019) 356–370.
+[294] Z. Zhang, P. Luo, C.C. Loy, X. Tang, From facial expression recognition to
+interpersonal relation prediction, Int. J. Comput. Vis. 126 (2018) 550–569.
+[295] N. Aifanti, C. Papachristou, A. Delopoulos, The MUG facial expression database,
+in: 11th International Workshop on Image Analysis for Multimedia Interactive
+Services WIAMIS 10, 2010, pp. 1–4.
+[296] D. Aneja, A. Colburn, G. Faigin, L. Shapiro, B. Mones, Modeling stylized
+character expressions via deep learning, in: Computer Vision–ACCV 2016: 13th
+Asian Conference on Computer Vision, Taipei, Taiwan, November 20-24, 2016,
+Revised Selected Papers, Part II 13, Springer, 2017, pp. 136–153.
+[297] A. Dhall, R. Goecke, S. Lucey, T. Gedeon, Static facial expression analysis in
+tough conditions: Data, evaluation protocol and benchmark, in: 2011 IEEE
+International Conference on Computer Vision Workshops (ICCV Workshops),
+2011, pp. 2106–2112, http://dx.doi.org/10.1109/ICCVW.2011.6130508.
+[298] L. Yin, X. Wei, Y. Sun, J. Wang, M. Rosato, A 3D facial expression database for
+facial behavior research, in: 7th International Conference on Automatic Face
+and Gesture Recognition (FGR06), 2006, pp. 211–216, http://dx.doi.org/10.
+1109/FGR.2006.6.
+[299] G.B. Huang, M. Mattar, T. Berg, E. Learned-Miller, Labeled faces in the wild:
+A database forstudying face recognition in unconstrained environments, in:
+Workshop on Faces in’Real-Life’Images: Detection, Alignment, and Recognition,
+2008.
+[300] G. Zhao, X. Huang, M. Taini, S.Z. Li, M. Pietikäinen, Facial expression
+recognition from near-infrared videos, Image Vis. Comput. 29 (9) (2011)
+607–619, http://dx.doi.org/10.1016/j.imavis.2011.07.002, URL https://www.
+sciencedirect.com/science/article/pii/S0262885611000515.
+[301] C.I. Watson, NIST special database 18. NIST Mugshot Identification Database
+(MID), 2008.
+[302] F. Wallhoff, B. Schuller, M. Hawellek, G. Rigoll, Efficient recognition of
+authentic dynamic facial expressions on the feedtum database, in: 2006 IEEE
+International Conference on Multimedia and Expo, 2006, pp. 493–496, http:
+//dx.doi.org/10.1109/ICME.2006.262433.
+[303] Q. You, J. Luo, H. Jin, J. Yang, Building a large scale dataset for image emotion
+recognition: The fine print and the benchmark, in: Proceedings of the AAAI
+Conference on Artificial Intelligence, Vol. 30, 2016.
+[304] O. Langner, R. Dotsch, G. Bijlstra, D.H. Wigboldus, S.T. Hawk, A. Van Knippenberg, Presentation and validation of the Radboud Faces Database, Cogn. Emot.
+24 (8) (2010) 1377–1388.
+[305] P. Lucey, J.F. Cohn, K.M. Prkachin, P.E. Solomon, I. Matthews, Painful data:
+The UNBC-McMaster shoulder pain expression archive database, in: 2011 IEEE
+International Conference on Automatic Face & Gesture Recognition (FG), 2011,
+pp. 57–64, http://dx.doi.org/10.1109/FG.2011.5771462.

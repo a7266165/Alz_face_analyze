@@ -1,0 +1,764 @@
+1.  Introduction
+In the health and medical fields, treating acute illnesses
+became important around 1950; however, population
+composition, nutritional status, and public health have
+changed considerably since then. In recent years, the
+number of elderly and chronically ill people has been
+increasing worldwide [1], which has led to a paradigm
+shift from a cure-focused approach to a care-centered
+approach using patient’s quality of life (QOL) as an outcome measure. This results in an increasing number of
+studies focusing on QOL [2]. Meanwhile, there is no
+fundamental cure for dementia; thus, the goal of care is
+to promote well-being and maximize QOL [3, 4], which
+has become increasingly important in recent years [5, 6].
+
+The World Health Organization (WHO) defines
+QOL as individuals’ perception of their position in life in
+the context of the culture and value systems in which
+they live and in relation to their goals, expectations, standards and concerns. The WHO recommends the WHO-
+QOL-100 QOL assessment [7], which comprises six domains (physical health, psychological health, level of
+independence, social relationships, environment, and
+spirituality) [8]. To assess QOL, individuals answer a
+wide range of questions, spending approximately 30
+minutes thinking back over the previous two weeks.
+However, for persons with dementia and declined
+self-awareness and language skills, assessments based
+on self-rating are difficult. Thus, the QoL in Alzheimer’s
+Copyright: ©2025 The Author(s). This is an open
+access article distributed under the terms of the
+Creative Commons BY 4.0 International (Attribution) License (https://
+creativecommons.org/licenses/by/4.0/legalcode), which permits the
+unrestricted distribution, reproduction and use of the article provided
+the original source and authors are credited.
+Received on May 15, 2024; revised on November 21, 2024 and
+January 22, 2025; accepted on February 19, 2025.
+  * National Institute of Advanced Industrial Science and Technology
+(AIST), Tsukuba, Ibaraki, Japan.
+** University of Tsukuba, Tsukuba, Ibaraki, Japan.
+  # Central2, 1–1–1 Umezono, Tsukuba, Ibaraki 305–8568, Japan.
+    E-mail: k.matsuda@aist.go.jp
+Smile Detection in Real-World Dementia Care Setting:
+A Pilot Study Toward Objective Evaluation of the Quality of Life of Persons with Dementia
+Keiji Matsuda,*,**, # Kenji Nishida,** Toru Yamada*,** Katsuo Yamanaka**
+Abstract
+Quality of life (QOL) measurement is essential in evaluating effective interventions for persons
+with dementia. Essentially, QOL is assessed based on self-ratings. As the disease progresses, persons with dementia cannot perform these self-ratings; however, their emotional expressions can be observed. Thus,
+proxy-rating is used, which involves another person such as a caregiver, who answers from the perspective of
+the person studied or evaluates the emotional state from the person’s facial expressions. However, the results of
+proxy-rating differ from those of self-rating. This is considered to be partly due to the subjectivity of the caregiver who performs the rating. Thus, an objective method is needed to evaluate the QOL of persons with dementia. A pilot study was conducted to detect objectively the smiles of persons with dementia, because conventional QOL assessments include facial expression‐related items, and smile is strongly related to pleasantness or
+friendliness. To detect smiles, we developed an image processing method including tilt correction of the facial
+image and face detection of a specified person among many faces regardless of the facial expressions presented.
+To verify the effectiveness of the proposed method, we measured smiles before and after a day care intervention
+program that involved 1 hour of physical exercises and 2 hours of cognitive stimulation, which has been shown
+to improve QOL. We developed an experimental protocol to quantify the changes in the smiles of 11 persons
+with dementia at a day care facility. A facility staff member induced each person to smile using simple words
+while recording video. Each recorded video was then processed to calculate the increase in detection of smiles
+evoked by the staff member. By comparing the differences before and after participating in the day care program, we confirmed that the frequency of smile detection increased significantly after the program.
+Keywords: Facial expression, Smile, Dementia, Quality of life, Support vector machine, Image processing.
+Adv Biomed Eng. 14: pp. 241–250, 2025.
+Advanced Biomedical Engineering
+14: 241–250, 2025.
+DOI:10.14326/abe.14.241
+Original Paper
+
+Disease (QoL-AD) assessment was developed, which is
+answered by a proxy of the patient [9]. The QoL-AD
+comprises 13 items (physical health, energy level, mood,
+living situation, memory, family, marriage, friends, oneself, ability in daily living, ability to do things for fun,
+money, and one’s whole life). In addition, the Quality of
+Life in Late-Stage Dementia (QUALID) scale [10] was
+developed to evaluate QOL by observing the facial expressions or behaviors caused by positive and negative
+emotions. This assessment comprises 11 items (smiles,
+appears sad, cries, discomfort, physically uncomfortable,
+discontent, irritable, enjoys eating, enjoys touching, enjoys interacting, and emotionally calm), and the patient
+or the proxy rates the assessment items by thinking back
+over the last two weeks.
+
+However, ratings by proxy or observation tend to
+deviate from self-rating [6, 11]. Such deviation is understandable because the caregiver (proxy) is subjectively
+influenced by the burden caused by the patient’s behavioral and psychological symptoms [6]. To adequately
+assess the QOL of persons with dementia, any objective
+method for QOL evaluation may be a useful substitute.
+While the conventional QOL assessments rely on awareness by self or by the proxy, a few items including mood
+and energy level in QoL-AD and facial expressions in
+QUALID are assessed by the proxy based on the patient’s facial appearance. Dementia frequently causes
+depression or apathy as the disease progresses [12],
+which can cause reduction in the degree and frequency
+of facial expressions, e.g., smiles. However, to the best
+of our knowledge, no previous study has reported the
+relationship between the changes in facial expressions
+and progression of dementia. Thus, in this study, we explored the possibility that objective detection of facial
+expressions based on imaging technology can be used as
+a substitute for the assessment items related to emotions
+and facial expressions in conventional QOL assessments.
+
+In Japan, many elderly individuals choose to live in
+their own homes, either alone or with their families, and
+use care services as required. Others opt to reside in
+nursing homes or hospitals. In such living arrangements,
+images that include the facial expression of the elderly
+subject frequently feature other people coming and going. It is crucial to identify the elderly person’s face accurately in these images, regardless of their facial expression or posture change (such as tilting the head). In
+addition, it is important to detect the elderly person’s
+smile without being influenced by the posture or other
+factors.
+
+Images frequently contain private information about
+the intended subject and other persons present in the image. Thus, it is important to maintain the confidentiality
+of the raw image data and not to share it outside the location at which the image was captured. To ensure privacy,
+we should detect the smile of the target person and only
+share that as anonymized numerical data.
+
+Given the current economic situation in elderly care
+in Japan, it is unlikely to obtain substantial increase in
+funding to improve the QOL of the elderly. If the system
+that implements the above techniques is too expensive, it
+may not be widely adopted or it may contribute to further
+disparities in QOL. To avoid this, we have implemented
+a system using affordable, general purpose technologies,
+and we have ensured that all the technologies have licenses that permit commercial use. These efforts allow
+the system to be used commercially and contribute to the
+business development of elderly care.
+
+Generally, one can recognize other persons’ emotions from their facial expressions, and generate appropriate facial expressions associated with one’s emotions.
+Previous studies including persons with dementia reported that the ease of recognition varies according to the
+kind of emotion, and happiness is the easiest to recognize
+[13, 14]. Also, comparing the facial expressions in response to scenarios evoking various emotions, smile is
+most easily generated [15]. These studies suggest that the
+smile is strongly associated with happiness and is the
+facial expression that is most easily expressed and recognized even in persons with dementia. To explore the
+possibility of objective QOL evaluation in persons with
+dementia, we developed a specialized technical procedure to detect smiles in real-world dementia care settings
+in order to evaluate the changes in persons using the dementia care programs. The remainder of this paper is
+organized as follows. Section 2 describes the proposed
+method comprising face detection, person identification,
+and tilt correction of the detected face. The experimental
+protocol used to detect the smiles of persons with dementia who used a day care facility is also described in
+Section 2. Section 3 demonstrates the change in the frequency of smile detection in persons with dementia before and after the day care program comprising physical
+exercises and cognitive stimulation. Finally, we discuss
+the strengths and limitations of the proposed method.
+2.  Methods
+2.1  Face and smile detection
+Facial expression recognition methods are categorized
+into conventional machine learning methods and the
+more recent deep learning methods such as transfer
+learning using a trained feature extraction network [16].
+In this study, we employed conventional machine learning method using gradient local autocorrelation (GLAC)
+features, which has demonstrated effective recognition
+of curved features in localized regions [17, 18]. Thus, we
+Advanced Biomedical Engineering. Vol. 14, 2025.
+(242)
+
+expected high facial expression recognition performance. In the proposed method, face detection in a still
+face image was performed using the OpenCV program
+library, comprising the cv::FaceDetectorYN Class and
+face_detection_yunet_2022mar.onnx [19] as an inference model for face detection, and the cv::FaceRecognizerSF Class and face_recognition_sface_2021dec.onnx [20] as an inference model for tilt correction and face
+identification. Note that the open source programs used
+in the proposed system are licensed under the BSD License for OpenCV, the MIT License for face_detection_
+yunet_2022mar.onnx, and the Apache 2.0 License for
+face_recognition_sface_2021dec.onnx. Thus, the system
+is free for both commercial and noncommercial uses.
+The acquired grayscale face image was reduced to 40 ×
+40 pixels after tilt correction. The reduced image was
+then divided into 4 × 4 regions, and 333 GLAC features
+were calculated for each region. As a result, a 5328-dimensional feature vector x was obtained for each face
+image. The smile discriminant’s value (SDV) was then
+calculated as a scalar value y as follows (Fig. 1):
+
+(1)
+where w and h denote a 5328-dimensional weighting
+vector and a constant for bias, respectively. Smile was
+detected using the criterion y > 0 under h = 0. The
+weighting vector w was generated using a two-class support vector machine (SVM) on a training dataset containing smiling faces and faces expressing other emotions
+(anger, disgust, fear, sadness, surprise, and neutrality).
+To detect the smiling face selectively among various facial expressions including neutral expression, a dataset
+published in the literature [21] with the corresponding
+URL [22] and additional smiling and neutral face images
+obtained by web crawling were used as the training data.
+2.2  SDV Evaluation
+We evaluated SDV using data from videos of frontal
+view faces from the AIST Face Expression Database
+2017 [23]. The videos in this dataset include 8 subjects
+(four males and four females) showing 11 facial expressions, comprising anger (with a closed mouth), anger
+(with an open mouth), disgust (with a closed mouth),
+disgust (with an open mouth), excitement, fear, happiness, relaxation, sadness, sleepiness, and surprise. In total, 88 short videos were used for analysis. Each video
+showed the change from a neutral face expression to a
+full blown emotional expression. The total duration of
+each video was 2.5 s, and the onset of emotional expression took 0.5 s.
+
+The time course curves of the changes in SDV for
+various facial expressions averaged across eight participants were compared for the evaluation. Positive SDVs
+were associated with smiling due to the principle of the
+two-class SVM. The difference patterns of change in
+SDV were then classified into three types of facial expressions. The first type consisted of happiness, excitement, and relaxation, which exhibited increases in SDV
+from that of neutral expression to above the zero line
+(Fig. 2). For this type, the weighting vectors successfully
+detected smiles. The second type comprised sadness and
+sleepiness, which showed no significant changes in SDV
+from that of the neutral facial expression (Fig. 3). The
+third type consisted of surprise, anger (with a closed
+mouth), anger (with an open mouth), disgust (with a
+closed mouth), disgust (with an open mouth), and fear
+(Fig. 4) showing decreases in SDV from the neutral facial expression. These decreases are rational, because the
+weighting vector was generated to distinguish the anger,
+disgust, fear, sadness, surprise, and neutral expressions
+from the smile expression. Thus, there may be more negative values for this type of expression than for the simple neutral expression. Figures 2 to 4 show the specificity of the weighting vector w for various smile facial
+Input image
+Grayscale
+40×40 pixels
+Divided to
+4×4 regions
+333 GLAC feacures
+for each region
+GLAC feacure
+5328(16x333)
+dimension
+Fig. 1  Schematic illustration of SDV. The SDV y is calculated using the weighting vector w generated by
+SVM. We detect the smile using the criterion y > 0
+under h = 0.
+Fig. 2  Time series of changes in SDV averaged across
+eight subjects as they changed from a neutral facial
+expression to excitement, happiness, and relaxation
+expressions. The colored line and band represent
+mean and 95% confidence interval, respectively.
+Keiji Matsuda, et al: Smile Detection in Real-World Dementia Care Setting: A Pilot Study Toward Objective Evaluation of the Quality of Life of Persons with Dementia
+(243)
+
+expressions. However, we do not attempt to categorize
+each facial expression to any emotion for reasons to be
+discussed below.
+2.3  Correction of SDV affected by tilted faces
+To train the SVM, we used facial images in the upright
+position. Consequently, the trained weighting vector frequently failed to calculate the SDV for tilted facial images. Therefore, we corrected the images of tilted faces to
+become upright prior to calculating the SDV. A line was
+constructed to join the positions of the two eyes in the
+originally detected face, and the face image was rotated
+until the line became horizontal. To evaluate the effect of
+this tilt correction process, tilted facial images were generated by rotating an upright smiling face image for up to
+± 20° in increments of 1°. Then, the SDV of the corrected and uncorrected images at each rotation angle were
+compared (Fig. 5). The result showed that correction by
+rotation realized more stable SDV detection than without
+correction. Note that the slight difference in SDV between corrected and uncorrected images at 0° was
+caused by a difference in cropping of the original and
+corrected images (i.e., the eye positions in the original
+upright face were not aligned horizontally).
+2.4  Identification of faces of multiple peoples with
+various expressions
+When this system is used in the clinical setting, the face
+of the study subject must be differentiated from those of
+other persons present in the image, even when all subjects have different expressions. To realize such personal
+identification, we obtained a 128-dimensional vector for
+each face image using cv::FaceRecognizerSF, and the
+cosine similarities of one vector against the other vectors
+were calculated. The cosine similarity (ranging from −1
+to 1) has a value of 1 when two vectors are identical. We
+expect that the cosine similarities of various facial expressions of a subject against the neutral facial image of
+the same person are higher than the cosine similarities of
+various facial expressions of the subject against the neutral facial images of the other persons. Thus, the two
+populations of cosine similarities can be discriminated
+using an appropriate threshold.
+
+The AIST Face Expression Database 2017 contains
+2.5-s (75 frames) videos showing each of the 8 subjects
+expressing 11 emotions, as well as the still images of
+Fig. 3  Time series of changes in SDV averaged across
+eight subjects as they changed from a neutral facial
+expression to sadness and sleepiness expressions.
+The colored line and band represent mean and 95%
+confidence interval, respectively.
+Fig. 4  Time series of changes in SDV averaged across
+eight subjects as they changed from a neutral facial
+expression to anger, disgust, fear, and surprise expressions. The colored line and band represent mean
+and 95% confidence interval, respectively.
+Fig. 5  Effect of face tilting correction. The orange and blue
+lines show the SDV before and after tilting correction, respectively. The series of images at the bottom
+and top show the images before and after correction,
+respectively, at the given rotation angles. The corresponding SDVs are marked by orange crosses and
+blue circles, respectively.
+Advanced Biomedical Engineering. Vol. 14, 2025.
+(244)
+
+their neutral facial expression. Using the videos and still
+images, we calculated 6,600 (75 × 11 × 1 × 8) cosine
+similarities for 75 frames and 11 expressions of each of
+the 8 subjects against the neutral facial image of the same
+subject, and 46,200 (75 × 11 × 7 × 8) cosine similarities
+for 75 frames and 11 expressions of each of the 8 subjects against the neutral facial image of each of the other
+7 subjects. Figure 6 shows the histograms of the cosine
+similarities calculated against the facial image for the
+same subject and the cosine similarities calculated
+against the facial images of the other subjects. As can be
+seen in the figure, the two populations are distinctly distributed. We determined a cosine similarity value of 0.6
+as the threshold such that each subject showing various
+expressions can be recognized correctly at 90% accuracy. Figure 7 shows the time series of changes in cosine
+similarity of various facial expressions against neutral
+facial expression. The red and blue lines indicate the
+changes in cosine similarity calculated against the same
+subject and that calculated against all other subjects, respectively. The cosine similarities calculated against the
+same subject were greater than 0.8 during the initial period of neutral facial expression, and decreased gradually
+when emotions were expressed, and was distributed stably above 0.6 (even taking into account the standard deviation) at the final period of emotional expression. The
+accuracy of personal identification could be increased by
+registering a larger number persons’ faces, but this may
+also increase time and labor costs. Nevertheless, the
+threshold of 0.6 is effective for recognizing faces with
+various emotional expressions. Using this threshold, we
+developed an algorithm that effectively identifies the
+face of a specific person in a video that features many
+people coming and going.
+2.5  Identifying a specific face with various expressions
+The video clips obtained in day care facilities frequently
+feature many people coming and going, and various objects (other than faces) may be incorrectly detected as
+faces. To identify a person’s face with various facial expressions in such clips, we designed an algorithm (Fig.
+8) to perform face detection and recognition using the
+OpenCV program library. We generated the 128-dimensional face feature vector for each facial image obtained,
+which was given an identification number (ID), and we
+made a list of face feature vectors with these IDs. Then,
+for a new facial image captured, we generate the facial
+feature vector of the image, and calculate the cosine similarities of this vector against the vectors in the list.
+When the highest cosine similarity is less than 0.6, a new
+ID is assigned to the vector and added to the vector list.
+When the highest value is greater than or equal to 0.6, the
+vector is assigned the ID of the vector on the list which
+maximizes the similarity. However, the vector is only
+added to the list if the highest value is less than 0.8.
+
+In data acquisition from participants using the protocol described in Section 2.6, the faces assigned the most
+frequently appearing ID in each video clip was considered to be the face of the participant. To examine this
+procedure for participant identification, all recognized
+faces were displayed with their IDs in each frame of the
+recorded videos. As a result, we confirmed that other
+persons, such as facility staff, were not assigned the par-
+Fig. 6  Difference in histograms of cosine similarities
+among individuals showing various expressions.
+Red histogram: cosine similarities of 75 × 11 images
+of each subject against the neutral facial image of
+the same person (8 subjects; total 6,600). Blue histogram: cosine similarities of 75 × 11 × 7 images of
+each subject against the neutral facial image of each
+of the other persons (8 subjects; total 46,200).
+Fig. 7  Time series of changes in cosine similarity of various facial expressions of each subject against the
+neutral facial image of the same person (red), and
+against the neutral facial image of each of the other
+persons (blue). Line and band represent mean and
+standard deviation of cosine similarities calculated
+from the videos of 11 different facial expressions of
+each subject.
+Keiji Matsuda, et al: Smile Detection in Real-World Dementia Care Setting: A Pilot Study Toward Objective Evaluation of the Quality of Life of Persons with Dementia
+(245)
+
+ticipant’s ID in all the video frames.
+2.6  Data acquisition protocol
+This study was approved by the institutional review
+board of the Institute of Human Sciences, University of
+Tsukuba (2022-199A). In addition, written informed
+consent was obtained from a family member of each
+participant as proxy, due to the participants’ cognitive
+impairment. Eleven participants with dementia who used
+the day care facility participated in the data acquisition
+study. The participants were aged 66 to 91 years (mean:
+82.1; SD: 7.9 years), and all participants were female.
+Based on the Dementia Assessment Sheet for Community-based Integrated Care System-21 items [24], six participants had low level dementia, and five participants
+had medium level dementia. The mean Mini-Mental
+State Examination [25] score was 17.5 with SD of 5.6. In
+addition, the mean length of participation in the day care
+program was 1.78 years, with SD of 1.48 years. Note that
+no participants had severe dementia that is known to reduce facial expression and the ability to respond to the
+experimenter. For all participants who agreed to participate, the experimenter conducted the protocol once, as
+described below. The day care program included 1 hour
+of physical exercises and 2 hours of cognitive stimulation including the Cognitive Stimulation Therapy Japanese version developed by Yamanaka et al. [26].
+
+To record the facial expression of each participant
+before and after the day care program, we recorded two
+short videos with sound using an Apple iPad. First, we
+asked each participant for permission to record before
+conducting the following protocol.
+P1:	The participant was asked to remove the surgical
+mask, worn as a precaution against COVID-19,
+without assistance.
+P2:	Started recording.
+P3:	The participant was asked to look at the lens of the
+iPad.
+P4:	Waited approximately 2 s.
+P5:	The participant was asked to smile.
+P6:	Waited approximately 2 s.
+P7:	The participant was asked to put on the mask without assistance.
+P8:	Ended recording.
+The required time, including moving to the recording
+location, was less than 120 s, which was short enough to
+record multiple participants at the facility. P3, P5, and P7
+in the above protocol are shown in Fig. 9 at the corresponding event timing.
+3.  Results
+We used both image and sound data to manually detect
+the time at which the participant was asked to smile (Step
+5 in the data acquisition protocol), and this time was set
+Fig. 9  An example of time series of the changes in SDV
+before and after the day care program. The time of
+asking the subject to smile is 0 seconds. Based on
+the frequencies of positive SDV during two periods
+shown by gray bands, the increases from the initial
+phase to the smiling phase were calculated. P3, P5,
+and P7 in the protocol described in the text are
+shown at the corresponding event timing.
+Capture a face image.
+Get ID of the face image.
+Similarity >= 0.8
+0.6 > Similarity
+0.8 > Similarity >= 0.6
+Add the vector with ID to the list.
+Get a new ID.
+Generate facial feature
+vector of the image.
+Calculate cosine similarities to the
+listed other images' vector with ID.
+Give the ID of the opponent vector
+of the maximum similarity.
+Maximum
+similarity
+Fig. 8  Flowchart to assign IDs to detected faces. Face images with high cosine similarities to each other were
+assigned an identical ID. The faces assigned the
+most frequently appearing ID in each video were
+considered to be the faces of each participant.
+Advanced Biomedical Engineering. Vol. 14, 2025.
+(246)
+
+at 0 s. Although the experimental protocol specified to
+wait 2 s for the smile to appear, this time was often longer in practice because the experimenter waited for the
+full emergence of the smile. For each time course of
+SDV data, we set two separate sections with the same
+duration‐the initial phase and the smiling phase (shown
+in Fig. 9) ‐to calculate the difference in frequency of
+positive SDVs between the two sections, which was assumed to be the measure of each participant’s smile
+evoked in our experiment. To evaluate the stability of
+this measure for different durations and times of onset of
+the smiling phase, we used the Wilcoxon signed-rank
+test to evaluate the difference in the measure between
+before and after the day care program. To calculate the
+frequency of evoked smile, the durations of the two sections were identically divided into 0.5, 1, 1.5, and 2 s, the
+onset time of the initial phase was set at 0 s, and the onset
+time of the smile phase at 3 or 4 s. To measure the smile
+regardless of the initial expression, the duration of the
+initial phase was set to 0 s. Under the conditions of these
+durations and onset times, differences in the frequency of
+evoked smiles for the 11 participants were calculated.
+Figure 10 shows the median differences in evoked smile
+frequency before and after the day care program, p values, and effect sizes. Compared with the measure that
+used only the frequency of positive SDV in the smile
+phase, the measure using a value calculated by subtracting SDV-positive rate in the smile phase by that in the
+initial phase yielded significant increases (p < 0.05) with
+moderate level of effect sizes (r > 0.3). Late onset of the
+smile phase at 4 s resulted in larger effect sizes than earlier onset at 3 s. Longer durations yielded larger effect
+sizes. However, in some cases, the participants were
+asked to wear the mask (Step 7 in the data acquisition
+protocol) before the end of the section of the smile phase.
+Thus, we used all the results for the 2-s durations as reference. As typical results, Fig. 11 shows box plots of the
+values obtained by subtracting the SDV-positive frequencies in the smile phases (4−5.5 s) by those in the
+initial phase (0−1.5 s) for 11 participants before and after
+the day care program based on head tilting-corrected and
+-uncorrected SDVs. The uncorrected SDV did not show
+statistically significant difference between before and
+after the day care program (Wilcoxon signed-rank test,
+p = 0.3652). In contrast, the corrected SDV showed a
+significant increase (p = 0.0244).
+4.  Discussion
+This study developed and evaluated a method to detect
+smiles in real-world dementia care settings. The proposed method includes correction of head tilting in facial
+images and personal identification of multiple people in
+Fig. 10  Median differences in smile detection rate before
+and after day care program, p values, and effect
+sizes of 11 participants, for various durations and
+onset times of the initial and smiling phases. The
+horizontal lines in the middle and bottom graphs
+indicate p = 0.05 and r = 0.3, respectively. The results for the 1,5-s duration of initial and smiling
+phases and onset of smiling phase at 4 s are presented as box plots in Fig. 11.
+Fig. 11  Box plots of the increase in detection rate of
+evoked smiles before and after the day care program in 11 participants (individual points). Corrected: SDV calculated using head tilting-corrected
+facial images. Uncorrected: SDV calculated using
+head tilting-uncorrected facial images. The increase in smile detection rate using corrected images is significantly higher after the day care program
+(Wilcoxson signed-rank test; p = 0.0244).
+Keiji Matsuda, et al: Smile Detection in Real-World Dementia Care Setting: A Pilot Study Toward Objective Evaluation of the Quality of Life of Persons with Dementia
+(247)
+
+each image. The evaluation results confirmed the effectiveness of the proposed head tilt correction (Section
+2.3), as shown in Fig. 11. Thus, we believe that this correction technique is applicable to automatic preprocessing for smile detection, and it may contribute to real-time
+detection. As discussed in Section 2.5, the personal identification algorithm worked successfully. Most of the
+video data showed multiple people, with only three videos showing a single person. Thus, without the developed personal identification process, it is possible that
+the other 19 cases could have been mistaken for another
+person. This demonstrates that the personal identification
+algorithm (Sections 2.4 and 2.5) effectively analyzes
+videos captured in crowded situations.
+
+In this study, we tested the effectiveness of using the
+values obtained by subtracting the frequencies of
+SDV-positive cases in the smile phase (4−5.5 s) by those
+in the initial phase (0−1.5 s) for the analysis of the differences between before and after the day care program for
+two calculation conditions: durations of the initial and
+smiling phases, and the interval between their onset. Significant differences in the smile detection rate between
+before and after the day care program were detected with
+moderate level of effect sizes for certain ranges of the
+conditions (Fig. 10). These results support the validity of
+the proposed method and suggest that the day care program resulted in an increase in smiles among participants. The larger effect size when the smiling phase
+started at 4 s rather than 3 s may be attributed to a delayed response, which may be prolonged by reduced
+hearing and comprehension abilities. Considering these
+personal differences in facial expressions and the diversity of the groups, such assessment of the effectiveness in
+demonstrating statistical differences for the calculation
+conditions (shown in Fig. 10) should be conducted in
+each group to evaluate the method further. For more severe cases of limited facial expressions, the detection of
+usual smiles using the training data for healthy persons
+may not be suitable. Evaluation of smile in such persons
+may be important in our future work. The results of this
+study demonstrated that after the day care program that
+included physical exercises and cognitive stimulation,
+the frequency of smiles in the participants increased. As
+discussed in Section 1, several QOL assessment items
+are related to facial expressions, especially smiling. The
+increase in objective smile detection suggests higher
+scores for these items. A meta-analytic review concluded, based on 17 previous studies, that QoL-AD scores in
+persons with dementia were improved by cognitive stimulation [27], and the results of that study are congruent
+with the findings of the current study. While QoL-AD
+assessed recent changes in QOL in persons with dementia, the current method identified changes in SDV before
+and after a single intervention. In addition, the proposed
+method can replace some components of the known
+QOL assessments. However, it would be beneficial to
+assess the effectiveness of each intervention to enrich the
+contents. The current method integrates the established
+face recognition and facial expression detection methods, similar to previous studies that employed commercial software to analyze expressions in persons with dementia [28–30]. However, to the best of our knowledge,
+this is the first study to detect the smiles of a specific
+person in a video showing multiple people in a real-world dementia care setting and evaluate the differences between before and after the program.
+
+This study has several limitations that must be considered. First, we adopted an experimental protocol that
+included asking the participants to smile. Stimuli such as
+pictures of pets or grandchildren can evoke smiles, but
+the variability of these methods poses difficulties in controlling the degree of stimulation. Thus, for simplification in this pilot study, the participants were asked to
+smile. The experimenters (caregivers) who are familiar
+with most participants asked the participants to smile
+while displaying friendly smiles. Therefore, we do not
+consider the participants’ smiles to be totally faked. If all
+participants are showing fake smiles, there should be no
+difference in the frequency of smiles before and after the
+day care program. However, Figs. 10 and 11 show significant increases in SDV. Second, we focused only on
+the items related to emotional states in the QOL assessments. In addition, we did not detect facial expressions
+other than smiles. We focused on smile to evaluate the
+emotional state because the goal of this study was to objectively evaluate the QOL of people, including those
+without sufficient self-awareness. However, the emotional implications of facial expressions other than smiling vary according to the person’s cultural background,
+despite the technical feasibility of detecting those facial
+expressions. Therefore, in the future, other facial expressions that are related to the relevant items in the QOL
+assessments should be investigated using appropriate
+procedures.
+
+In this study, the effect of a single type of intervention was evaluated in only 11 participants. Thus, further
+evaluations should be performed in the future with a
+larger number of experiments, participants, and types of
+intervention. To obtain high quality data, the experimental protocol should also be improved such that anyone
+can conduct experiments easily under identical conditions.
+
+QOL is related to the perception of one’s daily living
+under the influence of external cultural and internal value
+systems, as well as mental and physical health [31].
+From this perspective, the correlation between QOL and
+Advanced Biomedical Engineering. Vol. 14, 2025.
+(248)
+
+smiles evoked using the experimental protocol should be
+reconsidered. However, some objective measurements
+are needed to track changes in well-being of persons
+with dementia and declining cognitive function. Therefore, the experimental protocol should be improved to
+detect smiles in daily life.
+
+If simpler and more natural protocols are developed
+to detect smile using SDV measurements, we expect that
+it will be possible to conduct SDV measurements in
+more facilities. This would allow integration of data
+from multiple locations and monitoring of individuals
+living in remote areas if anonymized numerical data are
+transferred securely using a reliable and stable data communication protocol to maintain confidentiality.
+
+Although the above issues should be considered in
+the future, the current study represents the first successful evaluation of such intervention techniques in a real-world dementia care setting using smile detection
+technology. The techniques used for objective evaluation
+in this study should be improved to establish reliable
+technology for caregivers.
+Conflicts of Interest
+The authors declare no conflicts of interest with any
+companies or commercial organizations per the definition of Japanese Society for Medical and Biological Engineering.
+Acknowledgement
+This research was supported by grant-in-aid for scientific
+research (20H01765) from the Ministry of Education,
+Culture, Sports, Science, and Technology (MEXT) in
+Japan. We appreciate the staff members of the day care
+facility for providing opportunity to collect data from
+persons with dementia. We also appreciate Ms. Shiori
+Harata for providing academic knowledge on QOL evaluation.
+References
+  1.
+Huber M, Knottnerus JA, Green L, van der Horst H, Jadad AR,
+Kromhout D, Leonard B, Lorig K, Loureiro MI, van der Meer
+JWM, Schnabel P, Smith R, van Weel C, Smid H: How should we
+define health? Br Med J. 343, 1–3, 2011.
+  2.
+Haraldstad K, Wahl A, Andenæs R, Andersen JR, Andersen MH,
+Beisland E et al.: A systematic review of quality of life research
+in medicine and health sciences. Qual Life Res. 28(10), 2641–
+2650, 2019.
+  3.
+Beerens HC, Zwakhalen SM, Verbeek H, Ruwaard D, Ambergen
+AW, Leino-Kilpi H, Stephan A, Zabalegui A, Soto M, Saks K,
+Bökberg C, Sutcliffe CL, Hamers JP, RightTimePlaceCare Consortium: Change in quality of life of people with dementia recently admitted to long-term care facilities. J Adv Nurs. 71(6),
+1435–1447, 2015.
+  4.
+Ettema TP, Dröes RM, de Lange J, Ooms ME, Mellenbergh GJ,
+Ribbe MW: The concept of quality of life in dementia in the different stages of the disease. Int Psychogeriatr. 17(3), 353–370,
+2005.
+  5.
+Crespo M, Hornillos C, Gómez MM: Assessing quality of life of
+nursing home residents with dementia: Feasibility and limitations
+in patients with severe cognitive impairment. Int Psychogeriatr.
+25(10), 1687–1695, 2013.
+  6.
+Dichter MN, Meyer G: Quality of life of people with dementia in
+nursing homes. In: Schussler S, Lohrmann C (eds.) Dementia in
+Nursing Homes, Springer International Publishing, pp. 139–157,
+2017
+  7.
+WHOQOL-100 WHOQOL-BREF <https://www.who.int/tools/
+whoqol> [accessed on October 30, 2014].
+  8.
+Programme on mental health: WHOQOL user manual, 2012 revision<https://www.who.int/publications/i/item/WHO-HIS-HSI-
+Rev.2012-3> [accessed on October 30, 2024].
+  9.
+Logsdon RG, Gibbons LE, McCurry SM, Teri L: Quality of life
+in Alzheimer’s disease: Patient and caregiver reports. J Mental
+Health Aging. 5(1), 21–32, 1995.
+10.
+Weiner MF, Martin-Cook K, Svetlik DA, Saine K, Foster B, Fontaine CS: The quality of life in late-stage dementia (QUALID)
+scale. J Am Med Directors Assoc. 1(3), 114–116, 2000.
+11.
+Römhild J, Fleicsher S, Meyer G, Stephan A, Zwakhalen S, Leino-Klipi H, Zabalengui A, Saks K, Soto-Martin M, Sutcliffe C,
+Rahm Hallberg I, Berg A, Right Time Place Care Consortium:
+Inter-rater agreement of quality of life-Alzheimer’s disease
+(QoL-AD) self-rating and proxy rating scale: Secondary analysis
+of Right Time Place Care data. Health Qual Life Outcomes. 16,
+131, 2018.
+12.
+Steinberg M. et al.: Point and 5-year period prevalence of neuropsychiatric symptoms in dementia: the Cache County Study. Int J
+Geriatr Psychiatry. 23(2), 170–177,2008.
+13.
+Hwang S, Hwang J, Jeong H: Study on Associating Emotions in
+Verbal Reactions to Facial Expressions in Dementia. Healthcare
+(Basel). 10(6), 1022, 2022.
+14.
+Maki Y, Yoshida H, Yamaguchi T, Yamaguchi H: Relative preservation of the recognition of positive facial expression “happiness” in Alzheimer disease. Int Psychogeriatr. 25(1), 105–110,
+2013.
+15.
+Sato W, Hyniewska S, Minemoto K, Yoshikawa S: Facial expressions of basic emotions in Japanese laypeople. Front Psychol.
+10(259), 2019.
+16.
+Khan AR: Facial emotion recognition using conventional machine learning and deep learning methods: current achievements,
+analysis and remaining challenges. Information. 13(6), 268,
+2022.
+17.
+Kobayashi T, Otsu N: Image feature extraction using gradient
+local auto-correlations. Eur Conf Comput Vision. 5302, 346–
+358, 2008.
+18.
+Kobayashi T: Glac-code <https://staff.aist.go.jp/takumi.kobayashi/
+code/glac.zip> [accessed on February 27, 2024].
+19.
+opencv_zoo/models/face_detection_yunet< <https://github.com/
+opencv/opencv_zoo/tree/main/models/face_detection_yunet>
+[accessed on August 30, 2022].
+20.
+opencv_zoo/model/face_recognition_sface< <https://github.com/
+opencv/opencv_zoo/tree/main/models/face_recognition_sface>
+[accessed on February 27, 2024].
+21.
+Merget D, Eckl T, Schwoerer M, Tiefenbacher P, Rigoll G: Capturing facial videos with Kinect 2.0: A multithreaded open source
+Keiji Matsuda, et al: Smile Detection in Real-World Dementia Care Setting: A Pilot Study Toward Objective Evaluation of the Quality of Life of Persons with Dementia
+(249)
+
+tool and database. IEEE Winter Conference on Applications of
+Computer Vision (WACV), 2016.
+22.
+The FaceGrabber database and software <https://www.ce.cit.
+tum.de/en/mmk/facegrabber/> [accessed on February 27, 2024].
+23.
+Fujimura T, Umemura H: Development and validation of a facial
+expression database based on the dimensional and categorical
+model of emotions. Cogn Emot. 32(8), 1663–1670, 2018.
+24.
+Awata, Shuichi et al.: Development of the dementia assessment
+sheet for community-based integrated care system. Geriatr
+Gerontol Int. 16(1), 123–131, 2016.
+25.
+Folstein, M F et al.: “Mini-mental state”. A practical method for
+grading the cognitive state of patients for the clinician. J Psychiatric Res. 12(3), 189–198, 1975.
+26.
+Yamanaka K, Kawano Y, Noguchi D, Nakaaki S, Watanabe N,
+Amano T, et al.: Effects of cognitive stimulation therapy Japanese
+version (CST-J) for people with dementia: A single-blind, controlled clinical trial. Aging Mental Health. 17(5), 579–586, 2013.
+27.
+Woods B, Rai HK, Elliott E, Aguirre E, Orrell M, Spector A:
+Cognitive stimulation to improve cognitive functioning in people
+with dementia. Cochrane Database of Syst Rev. 1(1), CD005562,
+2023.
+28.
+Garrido S, Stevens CJ, Chang E, Dunne L, Perz J.: Musical Features and Affective Responses to Personalized Playlists in People
+with Probable Dementia. Am J Alzheimers Dis Other Demen.
+34(4), 247–253, 2019.
+29.
+Otaka E, Osawa A, Kato K et al.: Positive emotional responses to
+socially assistive robots in people with dementia: pilot study.
+JMIR Aging. 7, e52443, 2024
+30.
+Tadokoro K, Yamashita T, Kawano S, et al.: Immediate Beneficial Effect of Makeup Therapy on Behavioral and Psychological
+Symptoms of Dementia and Facial Appearance Analyzed by Artificial Intelligence Software. J Alzheimers Dis. 83(1), 57–63,
+2021.
+31.
+Chao SF, Yu MH, Tung YH: Environment pro-files, social participation patterns, depressive symptoms and quality of life of disabled older adults: A longitudinal investigation. Aging Mental
+Health. 28(1), 62–72, 2024.
+Keiji Matsuda
+Keiji Matsuda received his master’s degree in
+science and engineering from the University of
+Tsukuba, Japan 1989. He worked at the Electrotechnical Laboratory (ETL) in Japan from 1989 to
+2001. Since its reorganization, he has worked at
+the National Institute of Advanced Industrial Science and Technology (AIST), Japan, since 2001. His current position is
+carrier expert. He is also a researcher (non-full-time) at the University
+of Tsukuba. His research focuses on image processing engineering. He
+has developed and released eye-tracking software (iRecHS2) utilizing
+image processing techniques. He is a member of the Japanese Society
+for Medical and Biological Engineering.
+Kenji Nishida
+Kenji Nishida received a B.E. in electrical engineering in 1981 from Keio University and received
+a Ph.D. in Engineering in 2009 from the University
+of Tsukuba, Japan. He worked for the Electrotechnical Laboratory (ETL) in Japan for 20 years as a
+research scientist from 1981 to 2001 (1985–1989,
+he was sent to the Institute for New-Generation Computing Technology (ICOT)), Japan. As an organization of the National Institute of Advanced Industrial Science and Technology (AIST), Japan, he was assigned to NeuroScience Research Institute as a senior research scientist
+from 2001 to 2018. From April 2018 to 2024, he worked for the Tokyo
+Institute of Technology in Japan as a specially-appointed associate
+professor. Currently, he is a researcher (non-full-time) for the University of Tsukuba and also for the Graduate Institute for Entrepreneurial
+Studies in Japan. His research interests include facial expression detection, behavioral analysis, and other aspects of human measurement.
+Toru Yamada
+Toru Yamada received his Ph.D. in physics from
+the University of Tsukuba, Japan, in 1991. He was
+employed at the Electrotechnical Laboratory in
+Japan from 1992 and retired from his position of
+senior research scientist at the National Institute of
+Advanced Industrial Science and Technology
+(AIST), Japan, in 2023. He has been a researcher (non-full-time) at the
+University of Tsukuba, as well as a technical staff member of AIST,
+since 2023. His interests have covered developments in optical and
+spectroscopic measurement methods for subjects of the origin of life
+and molecular structure, structural dynamics of membrane proteins,
+functional near-infrared spectroscopy, and automatic measurement of
+facial expression changes.
+Katsuo Yamanaka
+Katsuo Yamanaka received his Ph.D. from the
+University of Tsukuba, Japan, in 1995. Soon thereafter, he began his career as a faculty member at
+the University of Tsukuba and is an associate professor at the Institute of Human Sciences. He received the 2017 Best Faculty Member award from
+the university. His specialty is clinical geropsychology, and he acquired
+the national qualification of Certified Psychologist in 2019. He has
+been studying strategies to improve the sociopsychological status of
+people with dementia and methods to measure the effectiveness of
+those strategies. He has also been studying adult intelligence testing for
+a long time. He has been a board member of the Japanese Society of
+Clinical Geropsychology since 2018 and a councilor of the Japanese
+Society of Geriatric Psychiatry since 2022.
+Advanced Biomedical Engineering. Vol. 14, 2025.
+(250)

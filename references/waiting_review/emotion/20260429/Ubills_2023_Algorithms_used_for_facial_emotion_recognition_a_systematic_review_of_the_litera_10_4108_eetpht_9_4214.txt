@@ -1,0 +1,2323 @@
+EAI Endorsed Transactions
+on Pervasive Health and Technology                             Research Article
+
+
+
+
+1
+
+
+
+
+
+EAI Endorsed Transactions on
+Pervasive Health and Technology
+Volume 9 | 2023
+
+Algorithms used for facial emotion recognition: a
+systematic review of the literature
+José Armando Tiznado Ubillús 1,*, José Alfredo Herrera Quispe 2, Luis Antonio Rivera Escriba 3,
+Marysela Ladera-Castañeda 4, César Augusto Atoche Pacherres 5, Miguel Ángel Atoche Pacherres 6,
+Carmen Lucila Infante Saavedra
+1 Universidad Nacional Mayor de San Marcos, Lima, Perú.
+2 Universidad Nacional Mayor de San Marcos, Lima, Perú.
+3 Universidade Estadual do Norte Fluminense, Brasil
+4 Universidad Nacional Federico Villarreal, Lima, Perú
+5 Universidad Nacional de Piura, Piura, Perú
+6 Universidad César Vallejo, Lima, Perú.
+7 Universidad Nacional de Piura, Piura, Perú
+Abstract
+
+INTRODUCTION: We currently live in a society that is constantly changing and technology has developed algorithms
+that allow facial emotion recognition, because facial expression transmits people's mood, feelings and state of soul.
+However, it is required that future research can improve the quality of emotion detection by improving the quality of the
+data set and the model used, for this reason, it is necessary to investigate other machine learning algorithms in the
+recognition of facial emotions, as they exist. identification deficiencies that limit the discrimination of extracted structural
+features.
+OBJECTIVE: The purpose of the article was to analyze the most used algorithms for facial emotion recognition, through a
+systematic literature review, according to the PRISMA method.
+METHOD: A search for information was carried out in articles published in open access such as: Scopus, Web of Science
+(WOS) and Association for Computing Machiner (ACM) in the period 2022 and 2023, totaling 38 selected articles.
+RESULTS: The results obtained indicate that the algorithms most used by the authors are SVM and SoftMax with a total
+of 17.65% each.
+CONCLUSION: It is concluded that the SVM and SoftMax algorithms are the most predominant, playing a crucial role in
+achieving optimal levels of precision in the training of the models. These algorithms, with their robustness and ability to
+deal with complex data, have proven to be fundamental pillars in the field of facial emotion recognition.
+
+Keywords: Facial emotion; computer vision; Deep Learning; Machine Learning, Algorithm.
+Received on 21 February 2023, accepted on 12 October 2023, published on 24 October 2023
+
+Copyright © 2023 Ubillús et al., licensed to EAI. This is an open access article distributed under the terms of the CC BY-NC-SA 4.0,
+which permits copying, redistributing, remixing, transformation, and building upon the material in any medium so long as the
+original work is properly cited.
+
+doi: 10.4108/eetpht.9.4214
+
+
+*Corresponding author. Email: jose.tiznado@unmsm.edu.pe
+
+
+1. Introduction
+People convey emotions through facial expressions by
+contracting and relaxing their facial muscles (1). In other
+words, facial expression faithfully conveys people's mood,
+feelings, and state of mind. Joy, sadness, fear, attraction,
+rejection, and all feelings are transmitted through the
+
+
+ Tiznado Ubillús et al.
+
+
+2
+
+
+
+
+
+expression on our face. On the other hand, for facial
+emotion recognition, artificial intelligence (AI) has been
+successfully applied in various cases, combined with
+computer vision (2). Similarly, we have a machine that
+imitates cognitive functions associated with the human
+mind,
+such
+as
+learning
+and
+problem-solving
+(3).
+Additionally, Machine Learning (ML) and Deep Learning
+(DL), as parts of artificial intelligence (AI), aim to reduce
+the aspect of human engineering. One of the most common
+approaches to this is artificial neural networks, which are a
+mathematical system based on how neurons work in the
+human brain (3).
+Facial Emotion Recognition (FER) through the field of
+Human-Computer Interaction (HCI) is applied in areas such
+as
+autopilot
+systems,
+education, medical
+treatment,
+psychological treatment, surveillance, and psychological
+analysis in computer vision (2). For example, in the learning
+process, humans have aspects related to negative emotions
+with cognitive teaching processes, which can result in low
+academic performance that can affect the learner when it is
+not synchronized with the activity (4).
+We currently live in a constantly changing society, and with
+the desire to develop technology without limits, artificial
+intelligence is positioned as one of the areas having the
+greatest impact. Furthermore, selecting the appropriate tools
+that meet the intended requirements, such as using the
+Python programming language (5).
+Technology allows for the identification of the emotional
+recognition profile in pediatric subjects with Attention
+Deficit Hyperactivity Disorder (ADHD) using a database of
+images of children (6). The new adaptation method for
+cross-domain emotion classification uses Convolutional
+Neural Networks (CNN) to enable emotion classification
+(7). The CoSTGA model (8) leverages the benefits of
+merging representations of semantic trend features and
+multi-head attention. Another method allows designing and
+identifying facial expressions characterized by the mouth,
+facial pose, and visual speech using a supervised learning
+method based on Machine Learning (ML), specifically
+Support Vector Machine (SVM) based on labels in the upper
+and lower face regions (9). The Efficient-SwishNet model is
+lightweight, efficient, and effective in developing a facial
+emotion recognition system that handles variations in
+lighting, face angle, gender, race, background scenarios, and
+uses a dataset of people from diverse geographic regions
+(10).
+There is an educational theory framework supported by
+communication processes that allows for the improvement
+of teaching strategies by implementing facial recognition
+patterns to capture emotions through artificial vision devices
+or cameras in the classroom, marked with biometric
+techniques, where the goal is to analyze and collect
+information that allows for adjustments in teaching and
+learning processes (11).
+In this context, future research is expected to improve the
+quality of emotion detection by improving the quality of the
+dataset and the model used (12). Machine learning
+algorithms have played a vital role in facial emotion
+recognition systems from images. These algorithms are
+considered the main part of such systems. However, it is
+necessary to investigate other machine learning algorithms
+in facial emotion recognition (13) because deficiencies in
+identification limit the discrimination of extracted structural
+features. The goal is to obtain more discriminative structural
+information from expression images adaptively, without
+relying on landmarks and without the need for prior
+knowledge to design a fixed facial structure (14).
+There are specific limitations regarding datasets (iMiGUE
+and GroupWalk), so it is proposed to solve specific tasks to
+optimize the data extracted by emotions on Saturdays during
+the interview and also techniques related to general
+perception, both positive and negative. Regarding the
+GroupWalk dataset, there are limitations related to sample
+quality and image resolution. Although the variation in
+camera placement blurs the motion caused by distortions in
+the videos, when these artifacts are directly written into the
+image, the accuracy of the models could be affected (15).
+We still lack datasets for other specific tasks in the
+literature. For example, for scenarios in nature, a security
+camera viewpoint would be ideal, as it would allow the
+reuse of this footage for emotion recognition.
+Technology has developed algorithms that allow for facial
+emotion recognition; however, it is necessary to investigate
+other machine learning algorithms in facial emotion
+recognition because there are identification deficiencies that
+limit the discrimination of extracted structural features.
+Therefore, the purpose of this article was to analyze the
+most commonly used algorithms for facial emotion
+recognition through a systematic literature review, following
+the PRISMA method.
+2. Theory
+2.1. Emotions and Their Characteristics:
+Darwin (1899)(16) relates emotions to muscular activity and
+describes how different emotions trigger the action of
+various muscles, such as the raising of eyebrows and the
+downturned
+corners
+of
+the
+mouth
+in
+individuals
+experiencing pain or anxiety. However, it is concluded that
+these muscular responses were limited to a single muscle.
+Emotions are a psychologically vital process, underlying
+human behavior motivation (17). Emotions serve as our
+internal compass, being psychophysiological reactions to
+significant internal or external events for the organism and
+fulfill three main functions: i) Adaptive, it is the primary
+system for evolution and adaptation to environmental
+conditions available to humans, preparing the organism for
+action: fight, flight, caring for offspring, ii) They serve to
+communicate one's own mood to peers, predict and
+influence their behavior, iii) Motivational, they facilitate
+motivated behaviors to achieve a goal (17).
+2.2. Expressions:
+Muscular movements of expression are partly related to
+imaginary objects and partly to imaginary sensory
+impressions. In this proposition lies the key to understanding
+all expressive muscular movements (16). Therefore,
+expressions and gestures can be parameterized to generate a
+
+ Algorithms used for facial emotion recognition: a systematic review of the literature
+
+
+
+3
+valuation scale and allow for the adjustment of a valence
+factor, with the purpose of more accurately detecting the
+meaning of facial expression, be it neutral, pleasant or
+unpleasant, sad, happy, angry, to name a few, and it can be
+sensed by some expression recognizer implement through
+patterns of artificial intelligence for subsequent analysis
+(11). Subsequently, these facial expressions become a key
+mechanism for conveying and understanding emotions, an
+inevitable part of human-computer interaction, and a key
+technology in the field of artificial intelligence (14).
+Furthermore, ELsayed et al. (2023) argue that there are
+various categories of emotions that can be classified as
+anger, happiness, fear, surprise, contempt, disgust, and
+sadness (18).
+2.3. Gestures:
+Darwin (1899)(16) mentions that when observing infants,
+they exhibit many emotions with extraordinary strength,
+while after life, some of our expressions cease to have the
+pure source and simply stop flowing. Thus, the author
+proposes the three Principles that explain most of the
+expressions and gestures involuntarily used by humans and
+lower animals under the influence of various emotions and
+sensations.
+In
+conclusion,
+specific
+movements
+of
+characteristics and gestures are truly expressive of certain
+states of mind (16).
+2.4. Types of Emotions and Expressions:
+The model proposed by Ekman defined the six basic human
+emotions as happiness, anger, disgust, fear, sadness, and
+surprise. In the dimensional model, emotion is assessed
+through continuous numerical scales to determine valence
+and arousal (2). In contrast, Goleman (2021) identified
+seven matching expressions: happiness, sadness, anger, fear,
+surprise, contempt, and disgust. This implies that there is a
+relationship between expressions and emotions according to
+arguments from both authors (19).
+
+Table 1: Relationship between emotions and expressions
+
+Happi
+ness
+Ir
+a
+Disg
+ust
+Fe
+ar
+Sadn
+ess
+Surp
+rise
+Conte
+mpt
+Ekma
+n
+X
+X
+X
+X
+X
+X
+
+Gole
+man
+X
+X
+X
+X
+X
+X
+X
+
+Next, we proceed to mention the classifications that
+according to Goleman (2021) mentions it in the types of
+expressions:
+- Happiness: it is described as a much more relaxed
+expression and where the individual is smiling: the
+expression of the mouth will be lifted, to expose the teeth or
+it can be closed and you can identify a wrinkle from the
+nose to the outer lip, lifting the cheeks. The lower eyelid is
+usually wrinkled or twitching, and in a genuine smile (19).
+- Sadness: Involves in identifying that the inner corners of
+the individual's eyebrows are raised upward and inward,
+creating wrinkles, also the lips are pursed, and the jaw is
+usually tense and pulled upward. Of all the expressions, this
+is the most difficult to fake (19).
+- Anger: It is expressed by low eyebrows, designed to hood
+the eyes and are usually close together, creating wrinkles
+between them and then tense and the eyes are usually
+looking intensely at the object with much anger, tight lips
+and intense gaze. It may include square opening of the
+mouth and lower jaw forced forward (19).
+- Fear: It is determined in being able to notice that the
+eyebrows that are raised and tucked inward. They are
+usually straight rather than curved or arched. The eyes will
+be wide open, although white will only be seen at the top of
+the iris and not all the way around. The mouth is usually
+open, but there is tension around the lips, tightening it (19).
+- Surprise: Characterized by raised and rounded eyebrows:
+the arches will be curved. The skin under the eyebrows is
+stretched as a result of the elevation of the eyebrows and
+wrinkles are often seen on the forehead. The eyes are wide
+open and the whites of the eyes are often visible. The mouth
+hangs regularly open with the teeth separated(19). This
+expression is confirmed by Darwin (1899), in the
+astonishment expressed by the wide open eyes and mouth
+and by the raised eyebrows.
+- Contempt: Darwin (1899) describes contempt as an
+expression that generates a slight protrusion of the lips up
+the nose. And Goleman (2021), shares the same idea of the
+expression in the slight upward movement of one side of the
+mouth in a kind of grimace.
+- Disgust: Disgust is usually characterized by a lowering of
+the eyebrows, with a wrinkle between the two. The upper lip
+has usually been raised, allowing it to rise toward the
+nostrils to protect them. The cheeks are also raised toward
+the ears and the nose is usually wrinkled. The upper teeth
+are likely to be visible when the mouth is opened (19).
+2.5.
+Emotional perception
+This consists of the ability to perceive, identify, appraise and
+express emotions. It would be the most basic level of
+emotional intelligence: being able to feel in our body the
+different signals that indicate one emotional state or another
+(20).
+2.6.
+Facial emotional recognition (FER)
+Huang et al. (2023) state that FER is applied in the field of
+Human-Computer Interaction (HCI) in areas such as
+autopilot, education, medical treatment, psychological
+treatment, surveillance, and psychological analysis in
+computer vision (2).
+2.7. Artificial Intelligence (AI)
+Despite the growing interest in AI in academia, industry,
+and public institutions, there is no standard definition of
+what AI entails. Some approaches have described AI in
+relation to human intelligence or intelligence in general (21).
+Artificial intelligence has been successfully applied in
+several fields, one of which is computer vision (2). Artificial
+intelligence (AI) is a branch of computer science, in which a
+machine mimics the cognitive functions associated with the
+human mind (3).
+
+
+ Tiznado Ubillús et al.
+
+
+4
+
+
+
+
+
+2.8.
+Taxonomy of Artificial Intelligence:
+Machine Learning (ML) is an application of AI, based on
+the idea that we should let machines learn by themselves.
+What this means is that more data is available for machines
+to analyze and "learn". Going deeper into ML, Deep
+Learning (DL) is about reducing the human engineering
+aspect (3).  Deep Learning (DL) focuses on making the
+machine classify information with the same method as the
+human brain. Learning technique or model applying neural
+networks that includes layers with higher difficulty (22) (23)
+(2). In (Gokani, 2017) (3) artificial intelligence along with
+hierarchical relationship it has with machine learning, on the
+other hand Samoili, et al. (2020) (21) propose a taxonomy of
+domain and subdomain related perception and subdomains
+with computational vision.
+
+Table 2: Artificial Intelligence Taxonomy
+Matrix
+Domain
+Subdomain
+Artificial
+Intelligenc
+e
+Learning
+Machine
+Learning
+Deep
+Learning
+Neural
+Network
+s
+Perceptio
+n
+Compute
+r Vision
+Face
+recognitio
+n
+
+
+2.8.1.
+Neural Networks:
+Neural networks, also known as Artificial Neural Networks
+(ANN) or Simulated Neural Networks (SNN), are a subset
+of machine learning and form the backbone of Deep
+Learning algorithms. Their name and structure are inspired
+by the human brain and mimic the way biological neurons
+signal each other.
+Artificial Neural Networks (ANNs) are made up of layers of
+nodes, containing an input layer, one or more hidden layers
+and an output layer. Each node, or artificial neuron, is
+connected to another and has an associated weight and
+threshold. If the output of an individual node is above the
+specified threshold value, that node is activated and sends
+data to the next layer in the network. Otherwise, no data is
+passed to the next layer of the network.
+Neural networks rely on training data to learn and improve
+their accuracy over time. However, once these learning
+algorithms are fine-tuned, they are powerful computing and
+artificial intelligence tools, allowing us to classify and
+cluster data at high speed. Voice recognition or image
+recognition tasks can take minutes versus hours for manual
+identification by human experts. One of the best known
+neural networks is Google's search algorithm.
+Types of neural networks
+The perceptron is the oldest neural network, created by
+Frank Rosenblatt in 1958. Forward propagating neural
+networks or Multilayer Perceptrons (MLP) are the networks
+we have mainly focused on in this paper. They consist of an
+input layer, a hidden layer(s) and an output layer. Although
+these neural networks are also known as MLPs, it is
+important to note that they are actually made up of sigmoid
+neurons, not perceptrons, since most real-world problems
+are nonlinear.
+Convolutional Neural Networks (CNNs) are similar to
+forward propagation networks, but are typically used for
+image recognition, pattern recognition and/or computer
+vision. These networks leverage the principles of linear
+algebra, particularly matrix multiplication, to identify
+patterns within an image.
+Recurrent Neural Networks (RNN) are identified by their
+feedback loops. These learning algorithms are primarily
+used with time series data to make predictions about future
+outcomes, for example, stock market predictions or sales
+forecasts.
+Neural Networks Versus Deep Learning
+Deep Learning and neural networks tend to be used
+interchangeably in conversation, which can be confusing. It
+is worth noting that "Deep" in Deep Learning only refers to
+the depth of layers in a neural network. A neural network
+that consists of more than three layers (including inputs and
+output) can be considered a Deep Learning algorithm. A
+neural network that has only two or three layers is a basic
+neural network (24).
+2.8.2. Convolutional Neural Networks (CNN)
+CNN extracts image information through the input layer and
+then uses convolution kernels to perform convolution
+operations on the image information and add bias values to
+form a local feature map (14).
+Neural networks are a subset of machine learning and the
+core of deep learning algorithms. They are composed of
+layers of nodes, which include an input layer, one or more
+hidden layers, and an output layer. Each node is connected
+to another and has an associated weight and threshold. If the
+output of an individual node is above the specified threshold
+value, that node becomes active and sends data to the next
+layer in the network. Otherwise, no data is passed to the next
+network layer (25).
+Convolutional neural networks are distinguished from other
+neural networks by their superior performance with image,
+speech, or audio signal inputs. They consist of three main
+types of layers:
+- Convolutional layer
+- Clustering layer
+- Fully connected layer
+The convolutional layer is the first layer of a convolutional
+network. While convolutional layers may be followed by
+other convolutional layers or grouping layers, the final layer
+is the fully connected layer. With each layer, the CNN
+increases in complexity, identifying larger and larger parts
+of the image. The first layers focus on simple features, such
+as colors and edges. As the image data progresses through
+the layers, the CNN begins to recognize larger elements or
+shapes until it finally identifies the expected object (25).
+Convolutional layer
+The convolutional layer is the main building block of a
+CNN, and is where most of the computations are performed.
+It requires a few components, such as input data, a filter, and
+
+ Algorithms used for facial emotion recognition: a systematic review of the literature
+
+
+
+5
+a feature map. Suppose the input is a color image composed
+of a 3D pixel array. The feature detector is a twodimensional (2D) array of weights representing a portion of
+the image. Although its size can vary, the size of the filter is
+usually a 3x3 matrix; this also determines the size of the
+receptive field (25).
+A Convolutional Neural Network (CNN) has one or more
+convolutional layers, they are grouping layers and fully
+connected and are used in image recognition. CNN can be
+applied to 2D and 3D data arrays, and uses image processing
+after collecting data that have different formats, i.e., natural,
+false, grayscale(18).
+Layer grouping
+Layer clustering, also known as subsampling, allows for
+dimensionality reduction by reducing the number of input
+parameters. Similar to the convolutional layer, the grouping
+operation sweeps the entire input with a filter, but the
+difference is that this filter has no weight. Instead, the kernel
+applies an aggregation function to the values within the
+receptive field and thus fills the output matrix. There are two
+main types of grouping:
+Maximum clustering: as the filter traverses the input, it
+selects the pixel with the highest value to send to the output
+matrix. This approach is more commonly used than average
+clustering.
+Average clustering: as the filter moves through the input, it
+calculates the average value within the receptive field to
+send to the output matrix.
+Although a lot of information is lost in the clustering layer,
+clustering has a number of benefits for the CNN. It helps
+reduce complexity, improves efficiency and limits the risk
+of overfitting.
+Fully connected layer
+The name fully connected layer accurately describes the
+layer itself. As mentioned above, the pixel values of the
+input image are not directly connected to the output layer in
+partially connected layers. However, in the fully connected
+layer, each node of the output layer is directly connected to a
+node of the previous layer (25).
+2.9.
+Descriptors
+Descriptors are specific values that are used in digital
+images in order to characterize the objects present. They
+serve, for example, to discard unwanted objects or stains, to
+differentiate the shape of objects (26).
+2.9.1. Histograms of Orientation Gradients (HOG)
+In images of real scenes it is difficult to use basic descriptors
+to detect objects or even people. Therefore, more advanced
+descriptors, such as HOG(26) types, are used. The HOG
+technique is based on the accumulation of gradient
+directions across the image pixel for a certain region called
+"Cell". In the following histogram construction it considers
+a dimension that provides a series of feature vectors to be
+considered as input for the classification process (13).
+In the model the image is represented by means of the
+HOGs (27).
+2.9.2. Haar Cascade
+Haar descriptors are among the most efficient descriptors
+used, due to their low computational cost. They are used by
+the famous Viola-Jones face detection algorithm (26).
+2.9.3. Transfer Learning Driven Facial Emotion Recognition
+for Advanced Driver Assistance System (TLDFER-ADAS)
+The TLDFER-ADAS technique initially performs contrast
+enhancement procedures to improve image quality (29).
+2.9.4. Local Binary Patterns (LBP)
+Creates binary code at each pixel in the neighborhood
+according to the central pixel value. The feature selection
+algorithm used is derived from LBP for all available images,
+LBP extracts features and CNN classifies images into
+groups according to facial expressions (18).
+It compares the intensity of pixels with their neighbors to
+obtain Local Binary Patterns (LBP) (27).
+2.10.
+Classifiers:
+There are multiple types of classifiers of which the most
+important and the ones with the lowest computational cost
+are going to be cited and explained here (26).
+Type of classifiers:
+- SVM
+- K-Neighbors
+- Neural Networks
+- Adaboost
+Support Vector Machines (SVM)
+The Support Vector Machines algorithm is a linear
+classifier. It uses maximum margin hyperplanes which are
+more robust and give less classification errors. This system
+is efficient in the case of nonlinear data and resistant to
+overfitting (26).
+K-Neighbors
+This algorithm is based on the distance that exists between
+the input sample with the different samples that are already
+classified by classes. Depending on the number of neighbors
+it will determine the class of the sample. This will
+correspond to the most dominant class among the K-nearest
+neighbors (26).
+Neural Networks
+There are different types of neural networks. In this case, the
+pattern recognition ones have been investigated, since this
+will be the type of classifier that will be used to classify the
+different emotions that we have. Artificial neural networks
+have an established number of neurons, which can vary
+according to the user's choice and makes the model fit better
+to what is desired. However, having a greater number of
+neurons does not mean that the result obtained is better. In
+our case, we will explain later the number of neurons we
+spent to perform the different tests and we will see how a
+higher number of neurons does not mean a better result (26).
+AdaBoost
+Boosting classification is used to increase the performance
+of decision trees. This technique is used because it improves
+on difficult decisions, i.e. as it goes through the different
+
+
+ Tiznado Ubillús et al.
+
+
+6
+
+
+
+
+
+learning stages, it discards errors and then later focuses on
+those and has a better hit rate (26).
+The Adaboost classifier operates under the cascade classifier
+architecture. The cascade is organized in stages. For each
+stage, a set of positive samples and negative samples are
+prepared, from which a number of weak classifiers are
+selected that together form a strong classifier. The weak
+classifiers are chosen from within the representation feature
+space (Haar, LBP or HOG) (27).
+Softmax
+It is commonly used in image classification tasks to measure
+the difference between the predicted probability distribution
+and the probability distribution of the actual labels by crossentropy (28).
+Fast Learning Network (FLN) is a novel proposed dualparallel forward parallel artificial neural network. The FLN
+algorithm is based on least-squares methods (13).
+2.11. Viola-Jones Algorithm
+Viola-Jones is an algorithm that has been defined as one of
+the most efficient face detectors currently available, thanks
+to its low computational cost and high hit rate. This
+algorithm was created in 2001 by Paul Viola and Michael
+Jones. It was originally created to detect objects
+competitively in real time. It is used to detect people,
+although it can also be trained to detect other types of
+objects (26) (22).
+2.12. MobileNetV3 Model
+It is a lightweight network proposed by the Google team.
+Unlike other networks, MobileNetV3 adopts depthseparable convolution instead of traditional convolution,
+resulting in a significant decrease in parameters and a
+substantial reduction in computational costs (28).
+2.13. Databases
+After an extensive study of the database to be used, the one
+that had the most subjects and provided the best conditions
+was chosen (26).
+2.13.1. Cohn-Kanade (CK+)
+Facial expressions. It contains 593 sequences from 123
+subjects, of which 327 sequences, seven basic expressions
+(14).
+2.13.2. Facial Emotion Recognition (FER)
+Traditional FER has first-order feature descriptors based on
+geometry and appearance, as well as higher-order feature
+descriptors, such as the covariance matrix (14).
+2.13.3. RAF-DB
+It is provided by the Laboratory of Pattern Recognition and
+Intelligent Systems (PRIS Lab) of Beijing University of
+Posts and Telecommunications. The database consists of
+more than 300,000 facial images extracted from the Internet,
+which are classified into seven categories: surprise, fear,
+disgust, anger, sadness, happiness and neutrality (2).
+3. Methods
+For the search of information in scientific papers, following
+the systematic review of the literature, according to the
+PRISMA method, the most relevant papers were selected to
+identify the issues related to facial emotion recognition, the
+degree of accuracy, which data sets are the most used, what
+kind of emotions exist in both positive and negative ones
+and what indicators could be added to the new emotions.
+These issues are part of the research questions, as shown in
+Table 3.
+
+Table 3: Research questions
+ID
+Research Questions
+Q1
+What are the techniques and algorithm are used for
+facial emotion recognition?
+Q2
+What is the degree of pressure on the methods, model
+and dataset in which is used for facial emotion
+recognition?
+Q3
+What are the datasets for facial emotion recognition?
+Q4
+What are the classifications and characteristics of
+facial emotion types?
+Q5
+How are positive and negative emotions classified?
+Q6
+Is there an indicator that relates facial coloration and
+facial emotion recognition?
+
+The information gathering process was carried out through
+different databases such as: Scopus, Web of Science (WOS),
+Association for Computing Machiner (ACM) and other
+papers through manual search. The keywords or search
+engines that allowed us to access the required information
+were: "Emotions", "Facial Emotion", "Computer Vision",
+"deep
+learning",
+"machine
+learning",
+"detection",
+"recognition",
+"identification",
+"classification",
+using
+Boolean AND, OR and NOT indicators in the search
+process. The search results have been applied to the "titleabs-key" field in Scopus and in the "All Fields" field in Web
+Of Science (WOS) and also in the "All" field in Association
+for Computing Machiner (ACM).
+The search equation being those shown below:
+(("Emotions" OR "Facial Emotion") AND ("Computer
+Vision" OR "deep learning" OR "machine learning") AND
+("detection" OR "recognition" OR "identification" OR
+"classification") AND NOT ("Sentiment analysis" OR
+"musical" OR "Speech" OR "pet" OR "dog")).
+Inclusion criteria were: i) open access and full-text papers,
+ii) papers published in indexed journals in the period from
+January 2022 to June 2023.
+The exclusion criteria were papers that: i) contained gray
+literature, ii) only the ABSTRACT was accessible, iii) were
+duplicated, iv) were not in line with the research objective.
+
+Figure 1. Flow chart according to Prisma.
+
+ Algorithms used for facial emotion recognition: a systematic review of the literature
+
+
+
+7
+
+4. Results and Discussion
+In the analysis of the results of the review papers, a total of
+38 papers selected between 2022 and 2023 were obtained,
+focused on the topic of facial emotion recognition.
+4.1. Proposed techniques and algorithm used for
+facial emotion recognition
+
+4.1.1. Techniques and Taxonomy
+The results are shown in Table 4 where 36.84% of the
+papers use Deep Learning for the development of the
+techniques and complementation model that they apply in
+their research projects.
+
+Table 4: Results of the Artificial Intelligence Techniques
+Technique
+N
+%
+ [DL - Deep Learning]
+14
+36.84%
+ [CNN - Convolutional Neural Networks]
+11
+28.95%
+ [ML - Maching Learning]
+11
+28.95%
+ [DCNN - Deep Convolutional Neural
+Network]
+1
+2.63%
+ [DNN - Deep Neural Network]
+1
+2.63%
+
+38
+100.0
+%
+
+Table 5 shows that the majority using the Deep Learning
+technique also use the method, model and dataset called
+MobileNetV3 (30) and ResNet-18 (23).
+
+Table 5: Results of the Artificial Intelligence Techniques
+Technique
+Method / Model / data set
+Author
+Year
+[CNN - Convolutional Neural
+Networks]
+[[TLF-ResNet18 SVM + JAFFE]
+Haider et al. (35)
+(2023)
+
+[[TLF-ResNet18] SVM +
+AFFECTNET 8 Emociones]
+Haider et al. (35)
+(2023)
+
+[[TLF-ResNet18] SVM + MMI]
+Haider et al. (35)
+(2023)
+
+[[TLF-ResNet18] SVM +
+AFFECTNET 7 Emociones]
+Haider et al. (35)
+(2023)
+
+[AFER]
+ELsayed et al. (34)
+(2023)
+
+[CNN + ARs] + Precisión ojo
+izquierdo
+Assiri, B., & Hossain,
+M. A. (32)
+(2023)
+
+[MobileNetV3]
+Kit et al. (30)
+(2023)
+
+
+Liang et al. (28)
+(2023)
+
+[NVIDIA Jetson Nano + VGG-19] +
+CK+
+Dudekula, U., &
+Purnachand, N. (40)
+(2023)
+
+[NVIDIA Jetson Nano + Xception] +
+CK+
+Dudekula, U., &
+Purnachand, N. (40)
+(2023)
+
+[VGGNet ]
+Won et al. (41)
+(2023)
+
+RACN + CK+
+Hao et al. (14)
+(2023)
+[DCNN - Deep Convolutional
+Neural Network]
+[AlexNet + MLF-W-FER +
+PreEntrenada] + FC8
+Shahzad et al. (42)
+(2023)
+
+[VGG-16 + MLF-W-FER +
+PreEntrenada] + FC8
+Shahzad et al. (42)
+(2023)
+[DL - Deep Learning]
+[AFORET + RVA]
+Chatterjee et al. (36)
+(2022)
+
+[Efficient-SwishNet]
+Dar et al. (10)
+(2022)
+
+[Inception-V3] + FER-2013
+Gupta et al. (37)
+(2023)
+
+
+ Tiznado Ubillús et al.
+
+
+8
+
+
+
+
+
+
+[MobileNet] + Eye Tracking + Affect
+Recognition + OpenCV
+Rogers, T., & Al Madi,
+N. (43)
+(2023)
+
+[MobileNetV3]
+Kit et al. (30)
+(2023)
+
+[ResNet-18]
+Chaudhari et al. (23)
+(2022)
+
+[ResNet-50] + RAF-DB
+Gupta et al. (37)
+(2023)
+
+[ResNet18]
+Kim et al. (38)
+(2023)
+
+[ResNet18] + Pytorch
+Ran et al. (39)
+(2023)
+
+[VGG19] + CK+
+Gupta et al. (37)
+(2023)
+
+[Viola-Jones + FER-2013]
+Alsharekh, M. F. (22)
+(2022)
+
+[Xception + TLDFER-ADAS]
+Mustafa Hilal et al. (29) (2022)
+[ML - Maching Learning]
+[AFFECTNET]
+Haider et al. (35)
+(2023)
+
+[AFORET + RVA]
+Chatterjee et al. (36)
+(2022)
+
+[CNN + ARs] + Precisión punta de la
+nariz
+Assiri, B., & Hossain,
+M. A. (32)
+(2023)
+
+[Viola-Jones + CK+]
+Alsharekh, M. F. (22)
+(2022)
+
+4.1.2. Taxonomy:
+Gokani (2017) mentions the concepts of artificial
+intelligence (3) along with hierarchical relationship it has
+with machine learning, instead (21) a taxonomy of domain
+and subdomain related to perception and subdomains of
+computational vision is proposed.
+
+
+Table 6: Artificial Intelligence Taxonomy Result
+Matrix
+Domain
+Subdomain
+Artificial
+Intelligence
+Learning
+Machine Learning
+Deep Learning
+Neural Networks
+[CNN]
+[DCNN]
+[DNN]
+[PoseNet]
+Perception
+Computer Vision
+face recognition
+Descriptors
+[TLDFER-ADAS]
+[HOG]
+
+
+4.1.3. Most frequently used algorithms for facial
+emotion recognition
+It is determined that the most frequent algorithms by the
+authors are SVM and SoftMax with a total of 17.65% for
+each one, the same that they use for their classification in
+their implementation of the proposed project for the system.
+
+Table 7: Frequency result of the most used Algorithm in
+facial emotion recognition.
+Algorithm
+N
+%
+ [SoftMax]
+3
+17.65%
+ [SVM]
+3
+17.65%
+ [KNN]
+2
+11.76%
+ [AlexNet]
+1
+5.88%
+ [Angle-GMLVQ]
+1
+5.88%
+ [ArcFace]
+1
+5.88%
+ [ARs]
+1
+5.88%
+ [FLN]
+1
+5.88%
+ [LDA]
+1
+5.88%
+ [SENet]
+1
+5.88%
+ [Viola-Jones]
+1
+5.88%
+ [Yolo]
+1
+5.88%
+
+17
+100.00%
+
+Figure 1: Statistical graph of the most frequent algorithm.
+
+
+4.1.4. Descriptors most used in facial emotion recognition.
+
+The most frequently used descriptors by the researchers are
+Histograms of Orientation Gradients (HOG) as shown in
+Table 8 (13).
+
+
+9
+Table 8: Frequency result of the most frequently used descriptors in facial emotion recognition.
+Descriptors
+Author
+Year
+N
+%
+[HOG]
+Alsemawi et al.
+2023
+3
+33%
+ELsayed et al.
+2023
+0%
+Merchán et al.
+2014
+0%
+[HAAR]
+ELsayed et al.
+2023
+2
+22%
+Merchán et al.
+2014
+0%
+[AdaBoost]
+Merchán et al.
+2014
+1
+11%
+[LBP-CNN]
+ELsayed et al.
+2023
+1
+11%
+[LBP]
+Merchán et al.
+2014
+1
+11%
+[TLDFER-
+ADAS]
+Mustafa Hilal et al.
+2022
+1
+11%
+9
+100%
+Method, model and dataset for using the best degree of
+pressure in facial emotion recognition.
+A review of all the papers was applied where it was
+determined that the best method, model and dataset is
+[VGG19+ our network] + CK+ with an accuracy degree of
+99.20%.
+Table 9: Result of Methods and Models with accuracies for facial emotion detection.
+Data Set
+Author
+Method / Model / DataSet
+Accuracy
+AFEW - Acted Facial
+Expressions in the Wild
+Singh et al., 2023 (44)
+[3D-CNN] + AFEW
+38,12%
+[Híbrido 3D-CNN + ConvLSTM] + AFEW
+43,86%
+AFFECTNET
+Haider et al., 2023 (35)
+[[TLF-ResNet18]
+SVM
++
+AFFECTNET
+7
+Emociones]
+66,37%
+CK+
+Alsharekh, M. F., 2023 (22)
+[Viola-Jones + CK+]
+90,98%
+Assiri, B., & Hossain, M. A.,
+2023 (32)
+[CNN + ARs] + Precisión punta de la nariz
+94,51%
+Dudekula, U., & Purnachand,
+N. 2023 (40)
+[NVIDIA Jetson Nano + Entorno en tiempo real +
+OpenCV] + CK+
+95,60%
+[NVIDIA Jetson Nano + VGG-19] + CK+
+98,40%
+[NVIDIA Jetson Nano + Xception] + CK+
+97,10%
+Gupta et al., 2023 (37)
+[VGG19] + CK+
+90,14%
+Han, B., & Hu, M., 2023 (45)
+[VGG19+ nuestra red] + CK+
+99,20%
+FER2013
+Alsharekh, M. F., 2022 (22)
+[Viola-Jones + FER-2013]
+89,20%
+Gupta et al., 2023 (37)
+[Inception-V3] + FER-2013
+89,11%
+JAFFEE
+Haider et al., 2023 (35)
+[[TLF-ResNet18 SVM + JAFFE]
+98,44%
+KDEF
+Alsharekh, M. F., 2022 (22)
+[Viola-Jones + KDEF]
+94,04%
+MLF-W-FER
+ELsayed et al., 2023 (34)
+[AFER]
+70,76%
+Shahzad et al., 2023 (42)
+[AlexNet + MLF-W-FER + PreEntrenada] + FC8
+55,64%
+[VGG-16 + MLF-W-FER + PreEntrenada] + FC8 56,73%
+MMI
+Haider et al., 2023 (35)
+[[TLF-ResNet18] SVM + MMI]
+99,02%
+Han, B., & Hu, M., 2023 (45)
+[VGG19+ nuestra red] + MMI
+98%
+RAF-DB
+Gupta et al., 2023 (37)
+[ResNet-50] + RAF-DB
+92,32%
+SAVEE
+Singh et al., 2023 (44)
+[3DCNN + ConvLSTM] + SAVEE
+98,83%
+[3DCNN] + SAVEE
+97,92%
+4.3. Data Sets for Facial Emotion Recognition
+This time the best dataset is used which is CK+ with a frequency most used by the authors representing 16.67%.
+Table 10: Result of the papers focused on the datasets with frequency of usefulness in facial emotions.
+N° DataSet
+N %
+N° DataSet
+Freq. %
+
+ Tiznado Ubillús et al.
+10
+1
+CK+
+10 16.67%
+17 FemNAT-CD
+1
+1.67%
+2
+FER2013
+6
+10.00%
+18 FERET
+1
+1.67%
+3
+AFFECTNET
+4
+6.67%
+19 FERG
+1
+1.67%
+4
+FER
+4
+6.67%
+20 FERPlus
+1
+1.67%
+5
+RAF-DB
+4
+6.67%
+21 GroupWalk
+1
+1.67%
+6
+JAFFEE
+2
+3.33%
+22 iMiGUE
+1
+1.67%
+7
+KDEF
+2
+3.33%
+23 LFW - Labeled Faces in the Wild 1
+1.67%
+8
+MMI
+2
+3.33%
+24 M-LFW-FER
+1
+1.67%
+9
+MS-Celeb-1M
+2
+3.33%
+25 MLF-W-FER
+1
+1.67%
+10 AFEW - Acted Facial Expressions in the Wild 1
+1.67%
+26 MORPH
+1
+1.67%
+11 AfeW/AfeW-VA
+1
+1.67%
+27 SAMM
+1
+1.67%
+12 BoLD
+1
+1.67%
+28 SAVEE
+1
+1.67%
+13 CAER/CAER-S
+1
+1.67%
+29 SMIC
+1
+1.67%
+14 CASME II
+1
+1.67%
+30 SMIC-HS
+1
+1.67%
+15 Cohn Kanade
+1
+1.67%
+31 SMIC-NIR
+1
+1.67%
+16 EMOTIC
+1
+1.67%
+32 SMIC-VIS
+1
+1.67%
+33 Yale Face
+1
+1.67%
+43 71.67%
+17
+28.33%
+Total
+60
+100.00%
+Figure 2: Statistical plot of data set related to emotions.
+Table 11: Description of the characteristics of the Emotions data set.
+Dataset
+Author
+Images /
+Video
+Quantity
+Classification
+Yale Face
+Alsemawi et al., 2023
+Images
+165
+11 expressions
+SAVEE
+Singh et al., 2023
+Video
+480
+Video contains audio and visual
+information
+RAF-DB
+Hao et al., 2023
+Images
+29672
+7 basic facial expressions
+Huang et al., 2023
+Images
+300000
+7 categories
+Liang et al., 2023
+Images
+31000
+6 expressions
+MMI
+Haider et al. 2023
+Video
+236
+M-LFW-FER
+ELsayed et al., 2023
+Images
+4757
+3 emotions with facial mask
+KDEF
+Alsharekh, M. F., 2022
+Images
+490
+7 emotional expressions
+JAFFEE
+Haider et al., 2023
+Images
+213
+6 facial expressions (six basic and one
+neutral)
+iMiGUE
+Costa et al., 2023
+Video
+360
+Categorical: 2 classes - 72 adults-50% M
+and 50% F
+GroupWalk
+Costa et al., 2023
+Video
+45
+45 video clips
+FERPlus
+Liang et al., 2023
+Images
+25060
+8 expressions
+FERG
+Dar et al., 2022
+Images
+55767
+7 types of expressions
+FERET
+Merchán et al., 2014
+Images
+1000
+Neutral
+FER2013
+Haider et al., 2023
+Images
+35 953
+6 different facial expressions
+Hao et al., 2023
+Images
+35887
+7 facial expressions
+Alsharekh, M. F., 2022
+Images
+33000
+6 basic emotions 1 neutral
+Mustafa Hilal et al., 2022
+Images
+35527
+FER
+Chaudhari et al., 2022
+Images
+35953
+6 basic emotions 1 neutral
+
+ Algorithms used for facial emotion recognition: a systematic review of the literature
+11
+EMOTIC
+Costa et al., 2023
+Images
+23571
+26 classes
+Cohn Kanade
+Merchán et al., 2014
+Images
+1000
+23 Expressions
+CK+
+Assiri, B., & Hossain, M. A.,
+2023
+Images
+1000
+ELsayed et al., 2023
+Images
+327
+7 facial emotions without facial mask
+Hao et al., 2023
+Video
+593
+7 basic expressions
+Won et al., 2023
+Video
+593
+7 facial expressions
+Alsharekh, M. F., 2022
+Video
+593
+7 basic emotions
+Mustafa Hilal et al., 2022
+Images
+636
+CASME II
+Ran et al., 2023
+Video
+257
+7 classes
+CAER/CAER
+-S
+Costa et al., 2023
+Video /
+Images
+13201
+videoclips
+70000 Images
+6 classes + neutral
+BoLD
+Costa et al., 2023
+Video
+26164
+videoclips
+26,164 video clips
+AFFECTNET
+Huang et al., 2023
+Images
+456349
+11 emotions
+Kim et al., 2023
+Images
+0,4 millones
+AfeW/AfeW-
+VA
+Costa et al., 2023
+Video
+1426
+videoclips /
+600
+videoclips
+1426 video clips / 600 video clips
+4.4. Classification and characteristics of the types
+of facial emotions
+It is described that there are 2 types of basic emotions that
+share the same characteristic with facial expressions.
+Table 12: Results of the papers that determined the number of emotions found.
+N°
+Author
+Year Emotions Expressions
+N°
+Author
+Year Emotions Expressions
+1
+Alsemawi et al.
+(2023)
+11
+10
+Hao et al. (14)
+(2023)
+7
+2
+Alsharekh, M. F.
+(2022)
+6
+7
+11
+Huang et al.(2)
+(2023)
+11
+3
+Assiri, B., & Hossain,
+M. A.
+(2023)
+5
+12
+Kim et al. (38)
+(2023)
+8
+4
+Chatterjee et al.
+(2022)
+7
+13
+Liang et al. (28)
+(2023)
+8
+5
+Chaudhari et al.
+(2022)
+7
+14
+Marcos et al.(4)
+(2022)
+6
+Costa et al.
+(2023)
+7
+15
+Pauli et al.(46)
+(2023)
+6
+7
+Dar et al.
+(2022)
+7
+16
+Ran et al.(39)
+(2023)
+7
+8
+ELsayed et al.
+(2023)
+7
+17
+Rogers, T., & Al
+Madi, N.(43)
+(2023)
+7
+9
+Haider et al.
+(2023)
+8
+18
+Won et al.(41)
+(2023)
+7
+4.4.1. Identification of the types of emotions being
+classified
+It is described that there are seven types of emotion
+classifications.
+Table 13: Results of the papers focused on the types of emotion classifications.
+Autor
+Neutral
+Happy
+Sad
+Surprise
+Fear
+Disgust
+Ira
+Normal
+Alsemawi et al.
+YES
+YES
+YES
+Assiri, B., & Hossain, M. A.
+YES
+YES
+YES
+YES
+YES
+Chatterjee et al.
+YES
+YES
+YES
+YES
+YES
+YES
+YES
+Haider et al.
+Hao et al.
+YES
+YES
+YES
+YES
+YES
+YES
+YES
+Kim et al.
+YES
+YES
+YES
+YES
+YES
+Pauli et al.
+Rogers, T., & Al Madi, N.
+
+ Tiznado Ubillús et al.
+12
+4.4.2. How positive and negative emotions are classified
+This advantage can be considered a bias in the recognition
+of positive emotions since they are in the minority compared
+to negative emotions in the set of basic emotions (positive:
+joy and surprise, although the valence of surprise remains
+controversial; negative: anger, sadness, fear, disgust) (31-
+35). However, Marcos et al. (2022) classifies positive
+emotions (joy and enthusiasm), with some negative
+emotions (frustration and worry) and (boredom and concern)
+(36-39).
+Table 14: Results of the papers focused on positive and negative emotions.
+Author
+P/ N
+Rating / Positive
+Rating / Negative
+Marcos et al., 2022
+YES
+[Joy and enthusiasm]
+[frustration and worry], [boredom and worry].
+Pauli et al., 2023
+YES
+[anger, disgust, fear, sadness]
+Ran et al., 2023
+YES
+[Happiness]
+[Disgust, sadness and fear]
+Shahzad et al., 2023
+YES
+[Neutral]
+[Neutral]
+Won et al., 2023
+YES
+[Surprise, neutral, natural]
+4.5.
+Proposal of an indicator that relates facial
+coloration and facial emotion recognition.
+In one of his contributions to physiology, documented by Sir
+Charles Bell in 1806 in the first edition of his work and later
+in the third edition of "Anatomy and Philosophy of
+Expression", a seemingly small but crucial detail is revealed.
+Bell notes that the muscles around the eyes contract
+involuntarily during intense respiratory efforts, thus playing
+a role in protecting these delicate organs from blood
+pressure. However, Mr. Bain's more profound approach
+stands out in two of his works, where he considers
+expression as an intrinsic component of feeling (16,40-43).
+The physiological signaling approach is highlighted in the
+study by Lozano et al. (2020). Their Artificial Neural
+Network identifies the dominant dimension of the emotional
+circumflex model and ensures consistency among the
+various emotions detected by the different modules of the
+system. For example, in the case of a user's partial emotions,
+such as fear (facial detection), aroused (behavioral
+detection), and nervous (physiological signals), a coherent
+connection is established in the analysis (44-47).
+In this study, we seek to test the additional hypothesis that
+facial color is capable of communicating emotion
+effectively, even without the influence of facial movements.
+The idea put forward is that a face can convey emotional
+information to observers by altering blood flow or blood
+composition in the network of blood vessels closest to the
+skin surface, as illustrated in Figure 3 (1).
+Figure 3: Image Emotions are the execution of a series of calculations by the nervous system.
+Source (Benitez-Quiroz et al., 2018).
+Darwin (1899) highlights an intriguing feature: facial
+flushing as a response to embarrassment, when skin tone
+allows it and it is visible. Furthermore, he raises the question
+of how far this blushing extends into the body.
+It also records that, in relation to facial blushing in
+Australians, four informants maintain that those with dark
+skin tones, similar to Africans, rarely show blushing. A fifth
+informant, however, suggests that intense blushing is only
+observed in individuals with very dirty skin. Three observers
+
+ Algorithms used for facial emotion recognition: a systematic review of the literature
+13
+confirm that blushing does occur. Mr. S. Wilson adds that
+this occurs in situations of strong emotions and when the
+skin is not excessively dark from prolonged exposure and
+lack of cleansing. Mr. Liang also reports that embarrassment
+often causes blushing, which sometimes extends to the neck.
+He adds that embarrassment also manifests itself in eye
+movements from side to side. Since Mr. Liang was a teacher
+in a native school, his observations possibly focused more
+on children, who tend to blush more than adults.
+The research by Benitez-Quiroz et al. (2018) presents the
+possibility of identifying emotions from changes in facial
+color by modulating blood flow. The study classifies these
+emotions into four categories: first, images corresponding to
+expressions of happiness, anger and surprise are provided in
+pairs. The left image of each pair shows diagnostic facial
+colors; second, visual examples of emotions such as anger,
+disgust, happiness and happiness mixed with disgust,
+sadness and extreme surprise are presented; third and fourth
+are samples of trials conducted with two-alternative and sixalternative forced choice methods.(48-52)
+Figure 4: Proposal of a new model to measure the level of embarrassment.
+Source:  Own elaboration
+Figure 5: Proposal of a new model to measure the level of shame.
+Source: Own elaboration
+Figure 6: Proposal of a new model to see the relationship between basic emotions and positive or negative emotions
+according to the information.
+
+ Tiznado Ubillús et al.
+14
+Source: Own elaboration
+5. Conclusions
+This research has immersed itself in an in-depth and
+comprehensive analysis of a diverse set of papers
+exploring the intricate relationships between artificial
+intelligence techniques and the challenge of facial
+emotion recognition. These studies have employed and
+adapted HOG classifiers and descriptors to address the
+complex task of interpreting human facial expressions in
+emotional terms. It is noteworthy that a remarkable 33%
+of these papers have been developed by outstanding
+researchers, including Alsemawi et al. (2023) (13),
+ELsayed et al. (2023) (34), and Merchán et al. (2014)
+(27).
+In the choice of algorithms, SVM and SoftMax have
+emerged as the predominant choices, playing a crucial
+role in achieving optimal levels of accuracy in model
+training. These algorithms, with their robustness and
+ability to deal with complex data, have proven to be
+fundamental pillars in the field of facial emotion
+recognition.
+It is noteworthy to mention that emotions are effectively
+analyzed in surveillance, smart homes, computer games,
+tracking of depressive patients, psychoanalysis (48). It is
+important to track emotional micro-expressions getting
+peculiarities such as face movements in space-time from
+videos (49). It is highlighted the idea that the use of facial
+recognition can be focused in three areas such as:
+robotized machines, marketing and safe citizenship (53-
+55). In the marketing of services, technology applied to
+the
+recognition
+of
+emotions
+and
+facial features
+significantly helps physicians, both in the diagnosis of the
+various types of autism, as well as in the treatment to
+optimize the quality of life of children and young people
+suffering from this disability (56-57).
+There are models, methods, and sets of databases that
+allow for maximum accuracy in this task. The synergy
+between [VGG19 + our network] and the CK+ database
+has proven to be exceptionally successful, achieving a
+staggering 99.20% accuracy. This achievement highlights
+the
+crucial
+importance
+of
+finding
+the
+optimal
+configuration for optimal performance in facial emotion
+interpretation.
+There is an interesting trend in the literature: a more
+accentuated focus on negative emotions such as anger,
+sadness, fear and disgust, compared to positive emotions
+such as joy and surprise. However, it is essential to
+mention that the valence of the emotion surprise still
+persists as an area of debate and discussion in the
+scientific community (31).
+Facial emotion recognition provides us with an in-depth
+and comprehensive overview of the techniques, methods,
+and emerging trends in this discipline. With the
+convergence of psychology and technology, this research
+not only expands our knowledge of how machines can
+capture and understand human emotions, but also opens
+new doors to explore how this understanding can be
+applied in various fields and applications, such as humancomputer interaction, mental health, and artificial
+intelligence. Given that there are many realities, it is
+advisable to proceed with caution in order to decide
+moderately (47). The path traced by these studies
+promises to further unravel the mysteries of facial
+expressions and their connections with human emotions,
+generating a profound and lasting impact on the field of
+science and technology.
+References
+[1]
+Benitez-Quiroz CF, Srinivasan R, Martinez AM. Facial
+color is an efficient mechanism to visually transmit
+emotion. Proc Natl Acad Sci USA. 2018;115(14):3581-
+3586. doi:10.1073/PNAS.1716084115
+[2]
+Huang Z, Chiang C, Chen J, Chen Y, Chung H, Cai Y, Hsu
+H. A study on computer vision for facial emotion
+
+ Algorithms used for facial emotion recognition: a systematic review of the literature
+15
+recognition. Sci Rep. 2023;13(1). doi:10.1038/s41598-023-
+35446-4
+[3]
+Gokani J. The Evolution of Banking: AI. Stanford
+University MS&E 238 Blog. Published August 4, 2017.
+https://mse238blog.stanford.edu/2017/08/jgokani/theevolution-of-banking-ai/
+[4]
+Marcos JM, Gallego RE, De Alda JAGO. The interplay of
+prior knowledge, emotions and learning in a science
+experiment activity. [Conocimiento previo, emociones y
+aprendizaje en una actividad experimental de ciencias]
+Enseñanza
+De
+Las
+Ciencias.
+2022;40(1):107-124.
+doi:10.5565/rev/ensciencias.3361
+[5]
+Ferron LM. Jumping the Gap: developing an innovative
+product from a Social Network Analysis perspective.
+AWARI
+2021;2:e026-e026.
+https://doi.org/10.47909/awari.128
+[6]
+Cáceres YMM. Management of pain reduction in
+mechanically ventilated care subjects. Interdisciplinary
+Rehabilitation
+/
+Rehabilitacion
+Interdisciplinaria
+2023;3:59-59. https://doi.org/10.56294/ri202359
+[7]
+Camargo JL, Baca LDH, Valencia ET, Aquino REA,
+Miranda AGR, Camargo LGL. Facial recognition proposal
+with the use of python. Paper presented at the Iberian
+Conference on Information Systems and Technologies,
+CISTI,
+2022-June.
+doi:10.23919/CISTI54924.2022.9819984
+[8]
+Buongiorno M, Vaucheret E, Giacchino M, Mayoni P,
+Polin A, Pardo-Campos M. Facial emotion recognition in
+children
+with
+attention-deficit/hyperactivity
+disorder.
+[Reconocimiento de emociones faciales en niños con
+trastorno por déficit de atención/hiperactividad] Rev
+Neurol.
+2020;70(4):127-133.
+doi:10.33588/rn.7004.2019268
+[9]
+Simhan L, Basupi G. None Deep Learning Based Analysis
+of Student Aptitude for Programming at College Freshman
+Level.
+Data
+and
+Metadata
+2023;2:38-38.
+https://doi.org/10.56294/dm202338
+[10] Zeng R, et al. CNN-Based Broad Learning for Cross-
+Domain Emotion Classification. Tsinghua Sci Technol.
+2023;28(2):360-369. doi:10.26599/TST.2022.9010007
+[11] Ujjappanahalli KS, Sonawane VR, Gandhewar N.
+Novedosa optimización de algoritmos híbridos de
+selección de características para la técnica de clasificación
+de imágenes mediante RBFNN y MFO. Salud, Ciencia y
+Tecnología
+2022;2:241-241.
+https://doi.org/10.56294/saludcyt2022241
+[12] Kakuba S, Poulose A, Han DS. Deep Learning-Based
+Speech Emotion Recognition Using Multi-Level Fusion of
+Concurrent Features. IEEE Access. 2022;10:125538-
+125551. doi:10.1109/ACCESS.2022.3225684
+[13] Coutinho KR. Digital humanities project proposal:
+Clipping of online and printed journals on education and
+institutes of education, science, and technology. Advanced
+Notes
+in
+Information
+Science
+2023;3:137-55.
+https://doi.org/10.47909/anis.978-9916-9906-1-2.42
+[14] Fernández CPP, Valencia JGB. Case study of the narrative
+displays of the self of a young Paralympic athlete:
+signifying the place of the body and technology from the
+visualization
+of
+narrative
+folds
+graphs.
+AWARI
+2020;1:e020-e020. https://doi.org/10.47909/awari.81
+[15] Diez RCÁ, Esparza RMV, Bañuelos-García VH, Santillán
+MTV, Félix BIL, Luna VA, et al. Economía plateada y
+emprendimiento, un área innovadora de futuro: Un marco
+de referencia académico, científico y empresarial para la
+construcción de nuevos conocimientos. Iberoamerican
+Journal of Science Measurement and Communication
+2022;2. https://doi.org/10.47909/ijsmc.45
+[16] Kumar VP. Towards trainable man-machine interfaces:
+combining top-down constraints with bottom-up learning
+in facial analysis [Doctoral dissertation, Massachusetts
+Institute
+of
+Technology].
+https://dspace.mit.edu/handle/1721.1/29243
+[17] Cirulli A, Godoy A. Gender, transsexuality and labor
+insertion. Community and Interculturality in Dialogue
+2022;2:28-28. https://doi.org/10.56294/cid202228
+[18] Dar T, Javed A, Bourouis S, Hussein HS, Alshazly H.
+Efficient-SwishNet Based System for Facial Emotion
+Recognition.
+IEEE
+Access.
+2022;10:71311-71328.
+doi:10.1109/ACCESS.2022.3188730
+[19] Sánchez CMC, León LAG, Yanes RCA, Oloriz MAG.
+Metaverse: the future of medicine in a virtual world.
+Metaverse Basic and Applied Research 2022;1:4-4.
+https://doi.org/10.56294/mr20224
+[20] Mancilla Monsalve JL. Uso de patrones de reconocimiento
+de las emociones para apoyar la didáctica de enseñanza
+aprendizaje.
+Dictamen
+Libre.
+2019;14(24):15-42.
+doi:10.18041/2619-4244/dl.24.5463
+[21] Parra AL, Escalona E, Gollo O. Estudio piloto comparativo
+de medidas antropométricas en bipedestación entre Tablas
+antropométricas
+y
+un
+Antropómetro
+Harpenden.
+Interdisciplinary
+Rehabilitation
+/
+Rehabilitacion
+Interdisciplinaria
+2023;3:48-48.
+https://doi.org/10.56294/ri202348
+[22] Artanto H, Arifin F. Emotions and gesture recognition
+using affective computing assessment with deep learning.
+https://www.researchgate.net/publication/373581660_Emo
+tions_and_gesture_recognition_using_affective_computing
+_assessment_with_deep_learning
+[23] Alsemawi MRM, Mutar MH, Ahmed EH, Hanoosh HO,
+Abbas AH. Emotions recognition from human facial
+images based on fast learning network. Indonesian Journal
+of
+Electrical
+Engineering
+and
+Computer
+Science.
+2023;30(3):1478-1487. doi:10.11591/ijeecs.v30.i3.pp1478-
+1487
+[24] Martins DL. Data science teaching and learning models:
+focus on the Information Science area. Advanced Notes in
+Information
+Science
+2022;2:140-8.
+https://doi.org/10.47909/anis.978-9916-9760-3-6.100
+[25] Hao M, Yuan F, Li J, Sun Y. Facial expression recognition
+based on regional adaptive correlation. IET Computer
+Vision. 2023;17(4):445-460. doi:10.1049/cvi2.12179
+[26] Soto IBR, Leon NSS. How artificial intelligence will shape
+the future of metaverse. A qualitative perspective.
+Metaverse Basic and Applied Research 2022;1:12-12.
+https://doi.org/10.56294/mr202212
+[27] Costa W, Talavera E, Oliveira R, Figueiredo L, Teixeira
+JM, Lima JP, Teichrieb V. A survey on datasets for
+emotion recognition from vision: Limitations and in-thewild applicability. Appl Sci (Switzerland). 2023;13(9).
+doi:10.3390/app13095697
+[28] Darwin C. The Expression of Emotion in Man and
+Animals.
+Project
+Gutenberg.
+https://www.gutenberg.org/files/1227/1227-h/1227-h.htm
+Published 1899.
+[29] Florentin GNB. The human dimension in nursing. An
+approach according to Watson’s Theory. Community and
+Interculturality
+in
+Dialogue
+2023;3:68-68.
+https://doi.org/10.56294/cid202368
+[30] Valderrama B. Emociones: una taxonomía para el
+Desarrollo
+Emocional.
+Arandu
+UTIC.
+
+ Tiznado Ubillús et al.
+16
+https://www.utic.edu.py/revista.ojs/index.php/revistas/artic
+le/view/14 Published 2021.
+[31] Elsayed Y, Elsayed A, Abdou MA. An automatic
+improved facial expression recognition for masked faces.
+Neural
+Comput
+Appl.
+2023;35(20):14963-14972.
+doi:10.1007/s00521-023-08498-w
+[32] Mohammed AF, Nahi HA, Mosa AM, Kadhim I. Secure Ehealthcare System Based on Biometric Approach. Data and
+Metadata
+2023;2:56-56.
+https://doi.org/10.56294/dm202356
+[33] Goleman B. Psicología Oscura 6 libros en 1: Introducción
+a la Psicología, Como analizar a las Personas,
+Manipulación, Persuasión, Secretos de la Psicología
+Oscura, Inteligencia Emocional y TCC, Abuso Emocional
+y
+Narcisista.
+Amazon.
+https://psicologiaymente.com/biografias/daniel-goleman
+Published 2021.
+[34] Matos J. Un curso de emociones. 1st ed. Ediciones Urano
+S.A.U.; 2020.
+[35] Samoili S, Lopez Cobo M, Gomez Gutierrez E, De Prato
+G, Martinez-Plumed F, Delipetrev B. AI WATCH.
+Defining Artificial Intelligence. European Commission.
+2020. doi:10.2760/382730
+[36] Benito PV. Contemporary art and networks: Analysis of
+the Venus Project using the UCINET software. AWARI
+2022;3. https://doi.org/10.47909/awari.166
+[37] Alsharekh MF. Facial Emotion Recognition in Verbal
+Communication Based on Deep Learning. Sensors.
+2022;22(16). doi:10.3390/S22166105
+[38] Chaudhari A, Bhatt C, Krishna A, Mazzeo PL. ViTFER:
+Facial Emotion Recognition with Vision Transformers.
+Appl Syst Innov. 2022;5(4). doi:10.3390/ASI5040080
+[39] Andrade-Girón D, Carreño-Cisneros E, Mejía-Dominguez
+C, Marín-Rodriguez W, Villarreal-Torres H. Comparación
+de Algoritmos Machine Learning para la Predicción de
+Pacientes con Sospecha de COVID-19. Salud, Ciencia y
+Tecnología
+2023;3:336-336.
+https://doi.org/10.56294/saludcyt2023336.
+[40] Pancholi BK, Modi PS, Chitaliya NG. Un nuevo algoritmo
+multiumbral para la segmentación de imágenes de
+resonancia magnética. Salud, Ciencia y Tecnología
+2023;3:408-408.
+https://doi.org/10.56294/saludcyt2023408.
+[41] Bartual González R, Ignacio J, Herruzo H, Sebastia JP.
+Detección facial y reconocimiento anímico mediante las
+expresiones
+faciales.
+https://riunet.upv.es/handle/10251/85959.
+Publicado
+en
+2017.
+[42] Silva LF da, Padilha RC. Digital technologies as
+potentiating tools in the dissemination of information in
+museum spaces: Impact of the Covid-19 pandemic on
+museums. Advanced Notes in Information Science
+2023;3:156-84.
+https://doi.org/10.47909/anis.978-9916-
+9906-1-2.41
+[43] Merchán F, Galeano S, Poveda H. Mejoras en el
+Entrenamiento de Esquemas de Detección de Sonrisas
+Basados en AdaBoost. I+D Tecnológico. 2014;10(2):17-
+30.
+https://revistas.utp.ac.pa/index.php/idtecnologico/article/view/21/html
+[44] Liang X, Liang J, Yin T, Tang X. A lightweight method
+for face expression recognition based on improved
+MobileNetV3. IET Image Processing. 2023;17(8):2375-
+2384. doi:10.1049/ipr2.12798
+[45] Mustafa Hilal A, Elkamchouchi DH, Alotaibi SS, Maray
+M, Othman M, Abdelmageed AA, Zamani AS, Eldesouki
+MI. Manta Ray Foraging Optimization with Transfer
+Learning
+Driven
+Facial
+Emotion
+Recognition.
+Sustainability. 2022;14(21). doi:10.3390/SU142114308
+[46] Araujo-Inastrilla CR, Vitón-Castillo AA. Blockchain in
+health sciences: Research trends in Scopus. Iberoamerican
+Journal of Science Measurement and Communication
+2023;3. https://doi.org/10.47909/ijsmc.56
+[47] Kit NC, Ooi C, Tan W, Tan Y, Cheong S. Facial emotion
+recognition using deep learning detector and classifier. Int
+J
+Electr
+Comput
+Eng.
+2023;13(3):3375-3383.
+doi:10.11591/ijece.v13i3.pp3375-3383
+[48] Gonzalez-Argote J. Uso de la realidad virtual en la
+rehabilitación.
+Interdisciplinary
+Rehabilitation
+/
+Rehabilitacion
+Interdisciplinaria
+2022;2:24-24.
+https://doi.org/10.56294/ri202224
+[49] Fernández-Ríos M, Redolat R, Serra E, González-Alcaide
+G. Una revisión sistemática acerca del reconocimiento
+facial de las emociones en la Enfermedad de Alzheimer:
+una perspectiva evolutiva y de género. Anales de
+Psicología / Annals of Psychology. 2021;37(3):478-492.
+doi:10.6018/ANALESPS.439141
+[50] Nascimento PVB do, Araújo GMD. Requirement of
+telematic
+data
+in
+Brazilian
+criminal
+investigation:
+Diagnosis, process flow and chain of custody supported by
+blockchain technology. Advanced Notes in Information
+Science 2023;4. https://doi.org/10.47909/anis
+[51] Assiri B, Hossain MA. Face emotion recognition based on
+infrared thermal imagery by applying machine learning
+and parallelism. Math Biosci Eng. 2023;20(1):913-929.
+doi:10.3934/MBE.2023042
+[52] Montano M de las NV, Álvarez MK. The educational and
+pedagogical intervention in scientific research. Community
+and
+Interculturality
+in
+Dialogue
+2023;3:70-70.
+https://doi.org/10.56294/cid202370
+[53] Lozano E, Directores M, María, López T, Antonio B,
+Caballero F. Detección facial de emociones orientada a
+mejorar la calidad de vida y cuidado de personas mayores
+en
+ambientes
+inteligentes.
+Nature.
+https://doi.org/10.1038/NATURE.2012.9872.
+[54] Elsayed Y, Elsayed A, Abdou MA. An automatic
+improved facial expression recognition for masked faces.
+Neural Comput Appl. 2023;35(20). doi:10.1007/s00521-
+023-08498-w
+[55] Rivas LM, Cruz LM. Revisión de ensayos clínicos sobre la
+eficacia de la rehabilitación cognitiva en pacientes con
+lesión cerebral traumática. Interdisciplinary Rehabilitation
+/
+Rehabilitacion
+Interdisciplinaria
+2022;2:25-25.
+https://doi.org/10.56294/ri202225
+[56] Haider I, Yang H, Lee G, Kim S. Robust human face
+emotion classification using triplet-loss-based deep CNN
+features
+and
+SVM.
+Sensors.
+2023;23(10).
+doi:10.3390/s23104770
+[57] Chatterjee S, Das AK, Nayak J, Pelusi D. Improving Facial
+Emotion
+Recognition
+Using
+Residual
+Autoencoder
+Coupled
+Affinity
+Based
+Overlapping
+Reduction.
+Mathematics. 2022;10(3). doi:10.3390/MATH10030406
+[58] Gupta S, Kumar P, Tekchandani RK. Facial emotion
+recognition based real-time learner engagement detection
+system in online learning context using deep learning
+models.
+Multimedia
+Tools
+and
+Applications.
+2023;82(8):11365-11394. doi:10.1007/S11042-022-13558-
+9
+[59] Chandran R. Human-Computer Interaction in Robotics: A
+bibliometric evaluation using Web of Science. Metaverse
+Basic
+and
+Applied
+Research
+2022;1:22-22.
+https://doi.org/10.56294/mr202222
+
+ Algorithms used for facial emotion recognition: a systematic review of the literature
+17
+[60] Kim S, An BS, Lee EC. Comparative analysis of AI-based
+facial identification and expression recognition using upper
+and lower facial regions. Appl Sci. 2023;13(10).
+doi:10.3390/app13106070
+[61] Ran Y, Zheng W, Zong Y, Liu J. Adaptive spatio-temporal
+attention neural network for cross-database microexpression recognition. Virtual Reality and Intelligent
+Hardware.
+2023;5(2):142-156.
+doi:10.1016/j.vrih.2022.03.006
+[62] Tiwari P, Chaudhary S, Majhi D, Mukherjee B. Comparing
+research trends through author-provided keywords with
+machine extracted terms: A ML algorithm approach using
+publications data on neurological disorders. Iberoamerican
+Journal of Science Measurement and Communication
+2023;3. https://doi.org/10.47909/ijsmc.36
+[63] Thwaini MH. Anomaly Detection in Network Traffic using
+Machine Learning for Early Threat Detection. Data and
+Metadata
+2022;1:34-34.
+https://doi.org/10.56294/dm202272
+[64] Dudekula U, Purnachand N. Analysis of facial emotion
+recognition rate for real-time application using NVIDIA
+jetson nano in deep learning models. Indonesian Journal of
+Electrical
+Engineering
+and
+Computer
+Science.
+2023;30(1):598-605. doi:10.11591/ijeecs.v30.i1.pp598-605
+[65] Won H, Heo YS, Kwak N. Image recommendation system
+based on environmental and human face information.
+Sensors. 2023;23(11). doi:10.3390/s23115304
+[66] Shahzad HM, Bhatti SM, Jaffar A, Akram S, Alhajlah M,
+Mahmood A. Hybrid facial emotion recognition using
+CNN-based features. Appl Sci (Switzerland). 2023;13(9).
+doi:10.3390/app13095572
+[67] Zaina RZ, Ramos VFC, Araujo GM de. Automated triage
+of financial intelligence reports. Advanced Notes in
+Information
+Science
+2022;2:24-33.
+https://doi.org/10.47909/anis.978-9916-9760-3-6.115
+[68] Rogers T, Al Madi N. On the pursuit of developer
+happiness: Webcam-based eye tracking and affect
+recognition in the IDE. Paper presented at the Eye
+Tracking Research and Applications Symposium (ETRA).
+doi:10.1145/3588015.3590129
+[69] Telmo F de A, Autran M de MM, Silva AKA da. Scientific
+production on open science in Information Science: a study
+based on the ENANCIB event. AWARI 2021;2:e027-e027.
+https://doi.org/10.47909/awari.127
+[70] Singh R, Saurav S, Kumar T, Saini R, Vohra A, Singh S.
+Facial expression recognition in videos using hybrid CNN
+&
+ConvLSTM.
+Int
+J
+Inf
+Technol
+(Singapore).
+2023;15(4):1819-1830. doi:10.1007/s41870-023-01183-0
+[71] Han B, Hu M. The facial expression data enhancement
+method induced by improved StarGAN V2. Symmetry.
+2023;15(4). doi:10.3390/sym15040956
+[72] Calcagno MRF. Independent care performed by nursing
+professionals
+in
+the
+prevention
+of
+delirium.
+Interdisciplinary
+Rehabilitation
+/
+Rehabilitacion
+Interdisciplinaria
+2023;3:55-55.
+https://doi.org/10.56294/ri202355
+[73] Pauli R, Kohls G, Tino P, Rogers JC, Baumann S,
+Ackermann
+K,
+De
+Brito
+SA.
+Machine
+learning
+classification of conduct disorder with high versus low
+levels of callous-unemotional traits based on facial
+emotion
+recognition
+abilities.
+Eur
+Child
+Adolesc
+Psychiatry. 2023;32(4):589-600. doi:10.1007/s00787-021-
+01893-5
+[74] Montano M de las NV, Martínez M de la CG, Lemus LP.
+Rehabilitation of occupational stress from the perspective
+of Health Education. Community and Interculturality in
+Dialogue
+2023;3:71-71.
+https://doi.org/10.56294/cid202371
+[75] Ibraheem IK. Enhancing Intrusion Detection Systems
+using Ensemble Machine Learning Techniques. Data and
+Metadata
+2022;1:33-33.
+https://doi.org/10.56294/dm202271
+[76] Aznarte JL, Pardos MM, Lacruz López JM. On the use of
+facial recognition technologies in university: The UNED
+case. RIED-Rev Iberoam Educ Dist. 2022;25(1):261-277.
+doi:10.5944/ried.25.1.31533
+[77] Khan
+AR.
+Facial
+Emotion
+Recognition
+Using
+Conventional Machine Learning and Deep Learning
+Methods: Current Achievements, Analysis and Remaining
+Challenges.
+Information
+(Switzerland).
+2022;13(6).
+doi:10.3390/INFO13060268
+[78] Li Z, Zhang Y, Xing H, Chan K. Facial micro-expression
+recognition using double-stream 3D convolutional neural
+network with domain adaptation. Sensors. 2023;23(7).
+doi:10.3390/s23073577
+[79] Gupta B. Understanding Blockchain Technology: How It
+Works and What It Can Do. Metaverse Basic and Applied
+Research
+2022;1:18-18.
+https://doi.org/10.56294/mr202218
+[80] Martínez J, Vega J. ROS System Facial Emotion Detection
+Using Machine Learning for a Low-Cost Robot Based on
+Raspberry Pi. Electronics (Switzerland). 2023;12(1).
+doi:10.3390/ELECTRONICS12010090
+[81] Talaat FM. Real-time facial emotion recognition system
+among children with autism based on deep learning and
+IoT. Neural Comput Appl. 2023. doi:10.1007/S00521-023-
+08372-9

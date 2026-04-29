@@ -1,0 +1,759 @@
+Digital detection of Alzheimer’s
+disease using smiles and
+conversations with a chatbot
+Haruka Takeshige-Amano1, Genko Oyama1, Mayuko Ogawa1, Keiko Fusegi2,
+Taiki Kambe1, Kenta Shiina1, Shin-ichi Ueno1, Ayami Okuzumi1, Taku Hatano1,
+Yumiko Motoi1, Ito Kawakami3, Maya Ando2, Sachiko Nakayama2, Yoshinori Ishida4,
+Shun Maei5, Xiangxun Lu5, Tomohisa Kobayashi5, Rina Wooden5, Susumu Ota5,
+Ken Morito6, Yoshitaka Ito6, Yoshihiro Nakajima6, Asako Yoritaka2, Tadafumi Kato3 &
+Nobutaka Hattori1,7
+In super-aged societies, dementia has become a critical issue, underscoring the urgent need for tools
+to assess cognitive status effectively in various sectors, including financial and business settings. Facial
+and speech features have been tried as cost-effective biomarkers of dementia including Alzheimer’s
+disease (AD). We aimed to establish an easy, automatic, and extensive screening tool for AD using a
+chatbot and artificial intelligence. Smile images and visual and auditory data of natural conversations
+with a chatbot from 99 healthy controls (HCs) and 93 individuals with AD or mild cognitive impairment
+due to AD (PwA) were analyzed using machine learning. A subset of 8 facial and 21 sound features
+successfully distinguished PwA from HCs, with a high area under the receiver operating characteristic
+curve of 0.94 ± 0.05. Another subset of 8 facial and 20 sound features predicted the cognitive test
+scores, with a mean absolute error as low as 5.78 ± 0.08. These results were superior to those obtained
+from face or auditory data alone or from conventional image depiction tasks. Thus, by combining
+spontaneous sound and facial data obtained through conversations with a chatbot, the proposed
+model can be put to practical use in real-life scenarios.
+People over 60 years old are projected to account for one-sixth of the global population by 2030, and their
+number will double by 20501. The number of patients with dementia is increasing rapidly in super-aged societies,
+particularly in Japan. One in nine people over the age of 64 years is estimated to have cognitive decline2. The
+burden of dementia extends beyond healthcare, impacting various sectors of society, including financial and
+business settings. According to the Bank of Japan, more than 60% of household financial assets in Japan are held
+by individuals over the age of 60 years. Although their economic activities are vital, their financial capacity cannot
+be assessed based solely on their age. This underscores the urgent need for tools that can evaluate cognitive status
+effectively, anywhere, and by anyone, especially in financial or business contexts.
+Alzheimer’s disease (AD) accounts for 50–75% of dementia cases. Facial expressions and speech are sometimes
+distinctive in patients with AD and thus may be valuable biomarkers for the development of a cost-effective
+AD screening method2–6. Facial features of AD include hypomimia, reduced facial emotion expressivity7, and
+changes in facial action units, eye movement, and lip activity8,9. AD patients also reportedly move their face
+and eyes in the same direction simultaneously10. Features of speech include temporal features, such as longer
+speech and phonation times, more pauses, a lower speech rate, a lower articulation rate, shorter-duration phrasal
+segments11–16, impaired emotional prosody17, and poorer speech signals18, whereas phonological features
+include changes in spectral features, such as mel-frequency cepstral coefficients (MFCCs)19, the amplitude of
+sound and the harmonics/noise ratio16, parameters f2 and f316, formants20 and syllables14.
+Recently, artificial intelligence (AI) has been attracting attention as a tool to discriminate patients with
+AD from healthy controls (HCs) on the basis of these features. AI analyses of facial features to detect AD or
+dementia have been reported in several papers (Supplementary Table 1)2,5,6. Efforts to establish acoustic
+1Department of Neurology, Faculty of Medicine, Juntendo University, 2-1-1 Hongo, Bunkyo-Ku, Tokyo 113-8421,
+Japan. 2Department of Neurology, Faculty of Medicine, Juntendo University Koshigaya Hospital, Saitama, Japan.
+3Department of Psychiatry, Faculty of Medicine, Juntendo University, Tokyo, Japan. 4Department of Neurology,
+Takeda Sogo Hospital, Fukushima, Japan. 5 IBM Consulting, IBM Japan, Ltd., Tokyo, Japan. 6GLORY Ltd., Tokyo,
+Japan. 7Neurodegenerative Disorders Collaborative Laboratory,  RIKEN Center for Brain Science, Saitama, Japan.
+email: g_oyama@juntendo.ac.jp; nhattori@juntendo.ac.jp
+OPEN
+Scientific Reports |        (2024) 14:26309
+1
+| https://doi.org/10.1038/s41598-024-77220-0
+www.nature.com/scientificreports
+
+measures to diagnose AD using AI began approximately a decade ago, with many more reports compared with
+the number on facial features3. Previous studies performed to detect AD using machine learning are detailed in
+Supplementary Table 213,15,19–31 (adapted from reference3). There is also a recent study that used speech data to
+predict the progression from mild cognitive impairment (MCI) to AD within 6 years32. However, there are no
+studies that used both facial and auditory data. In AI analyses, machine learning algorithms make judgements
+on the basis of manually selected features, whereas deep learning algorithms learn the features by autonomously.
+Previous studies reporting high accuracy used deep learning, although this has a high risk of overfitting3,5,6.
+Additionally, most studies on auditory features used data obtained during cognitive tests and tasks, which are
+stressful for people with cognitive decline. Other studies used interviews with medical staff, which can only be
+performed in certain situations.
+In our study, using machine learning, we aimed to develop an easy, automatic, and extensive tool to screen
+patients with AD that is enjoyable, i.e., does not induce stress. We analyzed smile images and acoustic and visual
+data extracted from videos of natural conversations with a chatbot and analyzed these data according to patients’
+diagnoses and cognitive test scores.
+Methods
+Study design
+In this cross-sectional study, individuals with AD or MCI due to AD (PwA) were recruited from among visitors
+to the outpatient clinic of the Neurology or Psychiatry Department of Juntendo University Hospital, Juntendo
+Koshigaya Hospital, or Takeda General Hospital from June 1, 2022, to December 31, 2022. The diagnoses of
+AD and MCI due to AD were made according to the National Institute on Aging and Alzheimer’s Association
+criteria33. HCs (i.e., those without any neurological diseases) were recruited by a recruitment company
+(https://3h-ct.co.jp/) during the same study period and matched to patients by age and sex. The sex of HCs was
+controlled by exact matching with PwA, and we restricted the age difference between matched PwA and HCs to
+within 5 years. The inclusion criteria for participation were as follows: (1) aged over 65 years; (2) native Japanese
+speaker; and (3) ability to use the application. The exclusion criteria were as follows: (1) speech problems so
+severe that speech was undetectable by a tablet microphone; and (2) inability to use the application. General
+information such as age, sex, and past medical history were obtained using the application.
+This study consisted of two sessions: an application session, which comprised a cognitive test and a
+conversation with a chatbot, and a cognitive assessment session that comprised the Mini-Mental State
+Examination-Japanese (MMSE-J), the Hasegawa Dementia Scale-Revised (HDS-R), the Japanese version of the
+Montreal Cognitive Assessment (MoCA-J), the Trail Making Test (TMT), the Neuropsychiatric Inventory (NPI),
+and the Geriatric Depression Scale (GDS). The tests in the cognitive assessment session were administered by
+licensed psychologists.
+The order of the application and cognitive assessment sessions was randomized to control for potential order
+effects. Both sessions were conducted in a quiet brightly lit room of the hospital during one visit, except in a few
+cases in which the patient was unable to complete the sessions in one day. Both PwA and HCs were tested in
+the same environment. The application section was completed by the participants themselves, who followed the
+staff’s instructions. Sample photos from the experiment are shown in Supplementary Fig. 1. All participants were
+using the application for the first time and were required to finish all of the tasks in one session. Participants who
+left midway during the experiment were excluded.
+Equipment and online application
+An iOS mobile application was developed to collect data during the testing session. The application was built
+using the Amazon Web Service (AWS, Seatle, WA, USA), including the AWS lambda and the AWS Application
+Programming Interface (API) Gateway. Unstructured (i.e., video, figure, and sound) data were stored in the
+Simple Cloud Storage (S3) of the AWS using the WebRTC protocol (an open source-project for real-time
+communication in applications; https://webrtc.org/), and structured (i.e., text answers) data were stored in the
+AWS Relational Database Service. We used a facial expression recognition Application Programming Interface,
+supported by GLORY Ltd. (Tokyo, Japan).The iOS application was installed on an iPad device (Apple, Cupertino,
+CA, USA). The application consisted of three parts: a smile test session, a chatbot talk session, and a cognitive
+test session. Assuming that older adults may possess less technical knowledge and fewer digital skills, we
+implemented visually simple and intuitive designs with voice guidance. We also introduced elements such as
+speech bubble text displays to support further actions, waveform displays during voice recording, and tutorials
+for all measurements, enhancing visual and auditory aspects to provide an easily understandable interface. Tasks
+appear one at a time: the next task appears after finishing the previous one. Participants were asked to remove
+their surgical masks they were wearing to prevent COVID-19 infection, in order to properly assess their faces
+and voices during the application session. Sample images of the user interface are shown in Supplementary
+Fig. 2.
+In the smile test session, the participant was provided with audio and visual instructions to smile and then
+return to a neutral face. For each instruction, facial expressions were captured for 15 s (smile test video). The
+smile test session was performed twice for each participant. If there were problems with the facial data (e.g., face
+out of frame), the smile test session was repeated once.
+The application cognitive test included 35 questions. One additional external question taken from the Cookie
+Theft picture from the Boston Diagnostic Aphasia Examination Third Edition (BDAE-3) was also used.
+Among the 35 cognitive questions, 11 had multiple-choice answers, which accounted for 15 points; 18
+required audio responses, totaling 30 points; and 6 involved on-screen interactions, such as drawing and moving
+objects, which accounted for 6 points. These questions were formulated on the basis of the MMSE, MoCA-J,
+and TMT and spanned several cognitive domains: memory: 4 questions (12 points); language: 11 questions
+Scientific Reports |        (2024) 14:26309
+2
+| https://doi.org/10.1038/s41598-024-77220-0
+www.nature.com/scientificreports/
+
+(11 points); attention: 4 questions (8 points); calculation: 1 question (1 point); executive function: 5 questions
+(9 points); and orientation: 10 questions (10 points). Of the 35 cognitive questions, 11 (15 points) were scored
+automatically, and the remaining 24 were scored manually by a psychologist. Detailed information on the 35
+cognitive questions is provided in Supplementary Table 3.
+The additional external question, which used the Cookie Theft picture from the Boston Diagnostic Aphasia
+Examination Third Edition, was designed to evaluate speech fluency and executive function. In the task, a
+drawing of a complicated kitchen scene is shown, in which a woman is wiping dishes, and two children are trying
+to obtain cookies from a cupboard. Auditory data from an image-description task including this picture have
+been used in previous studies to discriminate patients with AD from HCs13,19,25,28,29,34, partially because there is
+an accessible databank that includes these data. In the present study, this stimulus appeared on the participants’
+tablets, and they were asked to orally describe it. Responses were recorded for up to 5 min and transformed
+into audio features, which were compared with the features generated from the chatbot questions. Details of the
+external question are provided in Supplementary Table 4. At the end of the application session, the total score
+and standard deviation were provided as feedback to the participants.
+The chatbot session included seven questions that were inserted before and after the cognitive testing
+session. The chatbot asked general questions, for example about the participants’ hobbies, favorite foods, and
+impressions of the cognitive test. All questions in the chatbot session were answered orally, and both audio and
+facial expression data were recorded (chatbot talk video). The maximum answer time (response time), which
+was controlled by the app, was 5 min for each chatbot question. After finishing a question, the participants
+pressed the “next” button to move to the next one. Psychologists reminded the participants to press the button.
+The questions used in the cognitive test and chatbot sessions are listed in Supplementary Tables 3–5 in the
+supplementary materials. The data collection, processing, and analysis steps are shown in Supplementary Fig. 3.
+Video data and facial expression features
+As described in the previous section, two types of videos were recorded: a smile test video and a chatbot talk video.
+The recording conditions were as follows: resolution, 1,280 × 960 pixels; frame rate, 30 fps; and compression
+format H.264 (approximately 2,300 kbps).
+We used the smile index35 to evaluate the facial features in the smile test video. The processing of the smile
+index consists of two steps. First, the system extracts a facial area from the image using a deep learning-based
+model trained on a general facial image dataset, primarily depicting healthy people. Next, the system calculates
+the smile index from the aforementioned facial image using another deep learning-based model trained on a
+dataset containing thousands of smiling and neutral faces, mostly of healthy people. In particular, the latter
+model is trained to output the degree of smiling corresponding to the input face image, and the smile index
+obtained as the output takes scalar values ranging from 0 (neutral) to 100 (smiling).
+A smiling section of video was defined as a section with a relatively high smile index. The boundaries of the
+smiling section were determined using a method that identifies a region in which there is a significant change in
+the smile state, as indicated by the difference between local smile indexes.
+Sections in which participants were instructed to smile were designated as instructed smiling sections, and
+sections in which participants were instructed to make a straight face were designated as instructed straight-face
+sections (Fig. 1). Participants with fewer than two adequate-quality videos were excluded from the analysis.
+We used two videos per participant to calculate the smile index using four types of smile-related features: (1)
+duration of smiling face in the smiling section; (2) time taken to smile following the instruction in the smiling
+section, indicated by the rising angle of the smile index; (3) amplitude and fluctuation of the smile index in
+the smiling and instructed smiling sections, calculated from the average, maximum, minimum, and standard
+deviation values of the smile index; and (4) difference in the strength of the smile index between smiling and
+non-smiling sections and between instructed smiling and instructed straight-face sections.
+To evaluate the facial features in the chatbot talk video, we used the smile index as detailed above, as well as
+the orientation index, which indicates the angles (elevation, azimuth, and rotation) of the face; the eye-opening
+index, which indicates the degree of eyes opening; and the blink index, which denotes the blink behavior
+Fig. 1.  Composition of sections considered when extracting of facial features from the smile test.
+
+Scientific Reports |        (2024) 14:26309
+3
+| https://doi.org/10.1038/s41598-024-77220-0
+www.nature.com/scientificreports/
+
+estimated from the eye-opening index. A total of 48 facial features were extracted from the video data for further
+analyses according to previous reports and the experiences of neurologists.
+Audio data and sound features
+The audio data were recorded at a 12-kHz sampling rate in MPEG-4 audio format. To prevent effects of
+background noise, we applied sound overlap processing to eliminate the noise. First, all audio files were manually
+checked, and the start and end times of the overlapping sections were tagged. Second, the overlapping sound
+sections were wiped according to the tagged times and saved as a new sound file. Finally, all sound features were
+extracted from the new audio data.
+We previously defined three types of sound features: linguistic, prosodic, and acoustic features35. Linguistic
+features are related to the lexical content of speech and include the statistics of filled pauses, parts of speech, and
+vocabulary richness. Prosodic features are related to the pitch, speech rate, and phonation time. Acoustic features
+are related to the statistics of formants (f0, f1, and f2), shimmers (variations in sound wave amplitudes), jitter
+(variations in sound wave frequencies), and MFCCs. In this study, audio answer data were saved for individual
+questions. To average the responses in the chatbot session, we combined the audio answer data from the entire
+chatbot session. All sound features were calculated from these combined data and processed using open-source
+library packages (Librosa = 0.8.1, https://github.com/librosa/librosa; Pydub = 0.25.1, ​h​t​t​p​s​:​/​/​g​i​t​h​u​b​.​c​o​m​/​j​i​a​a​r​o​
+/​p​y​d​u​b​​; Parselmouth = 0.4.3, https://github.com/YannickJadoul/Parselmouth; and Spacy = 3.4.4, ​h​t​t​p​s​:​/​/​g​i​t​h​u​b​
+.​c​o​m​/​e​x​p​l​o​s​i​o​n​/​s​p​a​C​y​​)​. For the assessments, a total of 110 sound features, comprising 53 linguistic features, 6
+prosodic features, and 51 acoustic features, were extracted from the audio data as suggested by previous reports
+and on an empirical basis according to neurology specialists (H. T-A., G.O., N.H.).
+Statistical analysis
+We applied the Mann-Whitney U test to evaluate the differences in sound and facial expression features between
+PwA and HCs. Significant (P ≤ 0.01) features were then used for classification model building.
+We applied Pearson’s correlation test to examine the relationships between features and the application
+cognitive test score. Features with a correlation of 0.1 or higher were used in the regression model building.
+The statistical analysis and model building were performed using open-source library packages (scipy version
+1.7.1 and scikit-learn version 1.0.1) in Python version 3.8.
+Results
+Participant characteristics
+We screened a total of 209 participants, comprising 105 individuals with PwA and 104 HC participants who
+were considered to have no neurological diseases. Of these participants, 104 PwA and 104 HCs participated and
+completed the cognitive tests.
+Eight participants were removed because of possible depression, i.e., when the GDS test score was ≥ 10, or
+because the GDS score was unavailable. Additionally, two participants with facial paralysis were removed, and
+another six participants’ data were unusable because of inadequate recording quality for the audio or video data
+(e.g., the recording was made while wearing a mask). Finally, 192 participants with full data available (93 PwA
+and 99 HCs) were included in the analysis. The demographic data of participants are shown in Table 1.
+Validation
+Validity
+In the current study, cognitive tests were conducted in two sessions: the application cognitive test, comprised of
+tasks extracted from the MMSE, HDS-R, MoCa-J and TMT, and conventional tests were conducted in a second
+session by licensed psychologists. The application cognitive test is simpler and can be executed without medical
+staff. The AI analysis of smile and chatbot data aimed to estimate the application cognitive test score for future
+HC
+PwA
+p-value
+Number
+99
+93
+-
+Age [years], mean ± SD
+78.4 ± 4.5
+79.9 ± 5.1
+0.03
+Sex (Male/Female), mean ± SD
+49/50
+42/51
+-
+App cognitive test, mean ± SD
+38.9 ± 5.6
+24.3 ± 9.1
+< 0.01
+MMSE-J, mean ± SD
+27.6 ± 1.6
+20.8 ± 4.9
+< 0.01
+MoCA-J, mean ± SD
+25.7 ± 2.5
+16.5 ± 5.2
+< 0.01
+HDS-R, mean ± SD
+28.5 ± 1.6
+20.2 ± 5.9
+< 0.01
+TMT-A [sec], mean ± SD
+49.6 ± 22.1
+90.3 ± 47.8
+< 0.01
+TMT-B [sec], mean ± SD
+102.3 ± 46.5
+211.6 ± 83.2
+< 0.01
+GDS, mean ± SD
+1.9 ± 2.0
+2.8 ± 2.3
+< 0.01
+Table 1.  Demographic data of the participants. Abbreviations: MMSE-J, Mini-mental State Examination-
+Japanese; MoCA-J, Japanese version of the Montreal Cognitive Assessment; HDS-R, Hasegawa Dementia
+Scale-Revised; TMT, Trail Making Test; GDS, Geriatric Depression Scale, HC; healthy control, PwA; persons
+with Alzheimer’s disease or mild cognitive impairment due to Alzheimer’s disease.
+
+Scientific Reports |        (2024) 14:26309
+4
+| https://doi.org/10.1038/s41598-024-77220-0
+www.nature.com/scientificreports/
+
+studies. Before using this score, its validity and reliability were examined in conventional tests by psychologists.
+Validity was evaluated across two sessions: the first session involved a mobile application-based cognitive test,
+and the second session involved cognitive assessments, including the MMSE-J, HDS-R, MoCA-J, TMT, NPI, and
+GDS. These assessments were conducted by licensed psychologists.
+We applied the Pearson correlation test to assess the relationships between the mobile application cognitive
+test results and the MMSE-J, HDS-R, MoCa-J, and TMT scores.
+The NPI data were not used in this study because they were only acquired from the PwA group. In addition,
+NPI data were available for only 75 participants who were accompanied by their caregivers.
+The mobile application cognitive test score strongly correlated with the MMSE, HDS-R, and MoCa-J scores,
+as well as the times required to complete the TMT-A and TMT-B (Supplementary Table 6). Therefore, our
+mobile application cognitive test had high validity.
+Reliability
+Reliability refers to the consistency and stability of test scores over time and across different testing conditions.
+We evaluated internal consistency using Cronbach’s alpha, which was 0.91, indicating good internal consistency
+and reliability of the mobile application cognitive test. We also confirmed the internal correlation of the test
+between the score of a single question and the total score of the remaining questions. The internal correlation
+coefficients ranged from 0.59 to 0.24 (P < 0.01) for all questions except Question 2: “Where are we now? Which
+city /town?” Question 2 was thus excluded because the participants may not have been familiar with the location
+of the hospital. These results showed that the mobile application cognitive test had adequate internal consistency
+and reliability.
+PwA versus HCs
+Confounding test
+We applied the confounding test to identify confounding variables, that is, factors that can influence both the
+independent (i.e., sound and facial features) and dependent variables (i.e., dementia stage) and could lead to
+inaccurate relationships between the variables of interest. We evaluated the following potentially confounding
+variables:
+•	 demographic factors: age and sex.
+•	 socioeconomic factors: education.From the results in Supplementary Fig. 4, we can conclude that age, sex,
+and education were not confounding factors in our dataset. Therefore, we used all data in the statistical anal­
+ysis and model building.
+Significant facial and sound features between PwA and HCs
+The Mann-Whitney U test was used to evaluate differences in sound and facial expression features between PwA
+and HCs. Of the 158 features, 81 (comprising 19 facial and 62 sound features) showed a significant difference
+between the groups (P ≤ 0.01). The complete results of the Mann-Whitney U test are provided in Supplementary
+Table 7.
+The significant sound features included prosodic features, such as the MFCCs and f2, and linguistic features,
+such as silence time and the Brunet index of vocabulary. The above-mentioned features all had medium-to-large
+effect sizes for the differences between PwA and HCs. In the correlation analysis between these features and
+cognitive decline, the frequency of particles and nouns, number of words, and the Brunet index of vocabulary
+showed a large effect size, indicating a reduction in lexical richness.
+Significant differences were observed for facial features between the smiling and non-smiling sections. The
+smile features, including the difference in average and maximum smile values between the smiling and nonsmiling sections, had a medium effect size when comparing with the PwA and HCs. This difference showed a
+positive correlation with the mobile application cognitive test score, which indicated reduced smile expression
+in PwA. The 81 features that showed a significant group difference (p < 0.01) were used to build the classification
+model for differentiating PwA from HCs.
+Classification model
+We developed classification models for PwA and HC using a combination of audio and facial features. We selected
+features that were significant (P ≤ 0.01) in the Mann-Whitney U test. In addition, to account for collinearity,
+features with a correlation of 0.5 or higher with other features were excluded. Finally, 29 features, including 8
+facial features and 21 sound features, were used for model predictions.
+Data splitting was performed using 10-fold cross-validation. Performance metrics included the area under
+the receiver operating characteristic curve, precision, recall, accuracy, and specificity (Table 2). We compared the
+performance of the linear (i.e., logistic regression) and nonlinear (random forest, XGBoost [eXtreme Gradient
+Boosting]36, and Light GBM [Gradient Boosting Machine]) models37.
+The random forest and logistic regression algorithms using the facial and sound features showed the best
+classification performance. The receiver operating characteristic (ROC) curves of the random forest and logistic
+regression models are shown in Fig. 2.
+Cognitive score study
+Regression model
+We built regression models to predict the mobile application cognitive test scores from the sound and/or face
+features in all participants. Features with a correlation coefficient of ≥ 0.1 with the mobile application cognitive
+test score were selected to build the regression model. To account for collinearity, features with a correlation
+Scientific Reports |        (2024) 14:26309
+5
+| https://doi.org/10.1038/s41598-024-77220-0
+www.nature.com/scientificreports/
+
+coefficient of 0.5 or higher with other features were excluded. In total, 28 features, including 8 facial features and
+20 sound features, were used for model prediction.
+Data splitting was performed using 10-fold cross-validation, and the regression performance was evaluated
+using the mean absolute error (MAE) and the correlation coefficient between the predicted and actual values. We
+compared the regression results among different feature groups and algorithms. The model performance results
+are shown in Table 3. The Light GBM and ridge regression algorithms using a combination of the sound and
+facial features had the best the mobile application cognitive test score prediction performance. The distributions
+of the cognitive test score predictions are shown in Fig. 3.
+Fig. 2.  Receiver operating characteristic (ROC) curve of the machine learning algorithms. (A) Random
+forest algorithm using facial and sound feature sets (No. 3 in Table 2). (B) Logistic regression algorithm using
+facial and sound feature sets (No. 6 in Table 2). These algorithms had the best classification performance. The
+horizontal axis is the false-positive rate, and the vertical axis is the true-positive rate. The light blue lines are
+the ROC curves of the cross-validation, and the dark blue lines are the averaged ROC curves. The green dashed
+line indicates the performance of a random classifier.
+
+No
+Algorithm
+Feature set
+AUC
+Accuracy
+Precision
+Recall
+Specificity
+1
+Random Forest
+only facial
+0.76 ± 0.11
+0.72 ± 0.10
+0.72 ± 0.13
+0.72 ± 0.16
+0.72 ± 0.16
+2
+only sound
+0.92 ± 0.06
+0.85 ± 0.07
+0.85 ± 0.09
+0.85 ± 0.11
+0.85 ± 0.10
+3
+facial + sound
+0.94 ± 0.05
+0.86 ± 0.08
+0.88 ± 0.10
+0.84 ± 0.11
+0.88 ± 0.12
+4
+Logistic Regression
+only facial
+0.78 ± 0.11
+0.70 ± 0.10
+0.70 ± 0.11
+0.71 ± 0.14
+0.70 ± 0.14
+5
+only sound
+0.86 ± 0.07
+0.78 ± 0.08
+0.78 ± 0.11
+0.78 ± 0.13
+0.78 ± 0.13
+6
+facial + sound
+0.94 ± 0.05
+0.85 ± 0.08
+0.85 ± 0.10
+0.86 ± 0.11
+0.85 ± 0.11
+7
+XGBoost
+only facial
+0.74 ± 0.1
+0.67 ± 0.10
+0.67 ± 0.12
+0.65 ± 0.16
+0.69 ± 0.13
+8
+only sound
+0.91 ± 0.07
+0.83 ± 0.07
+0.84 ± 0.09
+0.83 ± 0.11
+0.84 ± 0.10
+9
+facial + sound
+0.93 ± 0.05
+0.85 ± 0.08
+0.86 ± 0.10
+0.84 ± 0.13
+0.86 ± 0.12
+10
+Light GBM
+only facial
+0.73 ± 0.11
+0.68 ± 0.10
+0.68 ± 0.12
+0.67 ± 0.14
+0.69 ± 0.15
+11
+only sound
+0.84 ± 0.10
+0.83 ± 0.09
+0.83 ± 0.11
+0.84 ± 0.13
+0.82 ± 0.13
+12
+facial + sound
+0.93 ± 0.05
+0.85 ± 0.08
+0.85 ± 0.10
+0.84 ± 0.12
+0.85 ± 0.12
+Table 2.  Model performance using different combinations of machine learning algorithms (random forest,
+logistic regression, XGBoost, and light GBM) and feature sets (facial expression only, sound only, and both) for
+PwA classification. Abbreviations: XGBoost, eXtreme Gradient Boosting; GBM, Gradient Boosting Machine;
+PwA, persons with Alzheimer’s disease or mild cognitive impairment due to Alzheimer’s disease; AUC, area
+under the receiver operating characteristic curve.
+
+Scientific Reports |        (2024) 14:26309
+6
+| https://doi.org/10.1038/s41598-024-77220-0
+www.nature.com/scientificreports/
+
+Correlation test
+We applied Spearman’s correlation test to examine correlations between the mobile application cognitive
+test score and all 158 features. Of the 158 features, 19 facial features and 60 sound features were positively
+or negatively correlated (|r| ≥ 0.2) with cognitive test scores across the entire dataset. When we analyzed the
+groups separately, 2 facial features and 37 sound features were positively or negatively correlated (|r| ≥ 0.2)
+with cognitive test scores in the HC group. In contrast, 6 facial features and 22 sound features were positively or
+negatively correlated with the cognitive test score in the PwA group. This suggests that the feature values of HCs
+and PwA have distinct characteristics. The complete results of the correlation test are provided in Supplementary
+Tables 8–10, and detailed feature definitions are listed in Supplementary Table 11.
+Fig. 3.  Distribution of the mobile application cognitive test score prediction using different algorithms. (A)
+light gradient boosting machine algorithm with facial and sound feature sets (No. 12 in Table 3). (B) Ridge
+regression algorithm with facial and sound feature sets (No. 6 in Table 3). The horizontal axis (observation)
+is the true application cognitive test scores, and the vertical axis (prediction) is the predicted application
+cognitive test scores. The blue lines show the correlation between the true and predicted values, and the green
+dashed lines indicate the score distribution when the correlation coefficient = 1.
+
+No
+Base Algorithm
+Feature set
+Correlation
+MAE
+1
+Random Forest
+only facial
+0.44 ± 0.01
+7.45 ± 0.07
+2
+only sound
+0.70 ± 0.01
+6.01 ± 0.05
+3
+facial + sound
+0.71 ± 0.01
+5.82 ± 0.05
+4
+Ridge Regression
+only facial
+0.49 ± 0.01
+7.30 ± 0.03
+5
+only sound
+0.69 ± 0.00
+5.90 ± 0.09
+6
+facial + sound
+0.71 ± 0.01
+5.78 ± 0.08
+7
+XGBoost
+only facial
+0.39 ± 0.02
+7.82 ± 0.11
+8
+only sound
+0.66 ± 0.01
+6.24 ± 0.10
+9
+facial + sound
+0.67 ± 0.01
+6.05 ± 0.09
+10
+Light GBM
+only facial
+0.40 ± 0.01
+7.58 ± 0.03
+11
+only sound
+0.70 ± 0.01
+5.81 ± 0.09
+12
+facial + sound
+0.71 ± 0.01
+5.71 ± 0.09
+Table 3.  Model performance using different combinations of machine learning algorithms (random forest,
+ridge regression, XGBoost, and light GBM) and feature sets (facial expression only, sound only, and both) for
+cognitive score prediction (regression). Abbreviations: XGBoost, eXtreme Gradient Boosting; GBM, Gradient
+Boosting Machine; MAE, mean absolute error.
+
+Scientific Reports |        (2024) 14:26309
+7
+| https://doi.org/10.1038/s41598-024-77220-0
+www.nature.com/scientificreports/
+
+In the HC group, for facial features, the average smile score was strongly positively correlated with the mobile
+application cognitive test score. In the PwA group, the standard deviation of facial movement was strongly
+negatively correlated with the mobile application cognitive test score. For the sound features, in the HC group, the
+mobile application cognitive test score was significantly positively correlated with the frequency of adposition,
+verb, and adjective use and significantly negatively correlated with the proportion of silence time. In the PwA
+group, the mobile application cognitive test score was significantly positively correlated with the frequency of
+adjective use and negatively correlated with the use of pronouns.
+Cookie theft question
+We also evaluated the sound features derived from both chatbot questions and the Cookie Theft question.
+Using the same data-splitting and feature-engineering method used for the previous models, we assessed the
+performance of both the classification and regression models. Our analysis revealed that the models using sound
+features from the chatbot questions performed as well as, or better than, those using features from the Cookie
+Theft question. The complete model performance results are shown in Supplementary Table 12.
+t-distributed stochastic neighbor embedding (t-SNE) analysis
+We performed t-SNE analysis to obtain an overview of the features. The results are shown in Supplementary
+Tables 13 and Supplementary Fig. 5. Dimension 1 had the highest correlation with facial expression features,
+and dimension 2 had the highest correlation with speech features. In dimension 1, there was a tendency for the
+values of HCs to be small, and for the variation in the values of the patients to be large. Similarly, in dimension
+2, the values for patients tended to be small, and the values for healthy participants tended to have a wide range.
+Discussion
+We developed a robust method for distinguishing between PwA and age- and sex-matched HCs using only
+smiles and casual conversations with a chatbot, analyzed via machine learning. This method successfully detected
+PwA, shown by the high area under the ROC curve value of 0.94 ± 0.05, and it also estimated cognitive test
+scores with high accuracy, with a low MAE of 5.78 ± 0.08. Our study is notable in detecting PwA and estimating
+cognitive test scores with high accuracy by combining visual and auditory features, whereas previous reports
+only focused on one feature type. Analyses using combined features were superior to those using either visual or
+auditory features in the current study. Additionally, the t-SNE plot revealed that the dimensions characterizing
+participants differed between the speech and facial expression features, suggesting that combining these features
+may be more effective for detecting cognitive functions. Another strength of our study is the usage of machine
+learning: previous studies reporting high accuracy tended to use deep learning, which has a higher risk of
+overfitting3,5,6 (Supplementary Table 1).
+We introduced an innovative approach for evaluating cognitive status using a tablet application that did not
+induce stress in patients. Our screening tablet application asked examinees to simply smile and have a casual
+conversation with a chatbot. This constitutes a simple, automatic, and highly versatile screening approach
+without the need for human intervention or time-consuming and costly examinations, such as magnetic
+resonance imaging, single-photon emission computed tomography, or demanding cognitive assessments.
+Previous studies aiming to detect AD using sound features captured auditory data from cognitive test tasks, such
+as reading or repeating tasks, or from the Cookie theft question, in which participants describe the scene in a
+particular picture. Our comparison between the Cookie Theft question and chatbot questions showed that the
+models using the sound features from the chatbot questions performed as well as, or better than, those using
+features from the Cookie Theft question, which suggests that free-conversation (i.e., chatbot) questions are more
+effective at capturing cognition-related sound features than is the structured Cookie Theft question. Our study is
+noteworthy in this regard, pointing to the possibility of flexibility in crafting questions for specific cases.
+Furthermore, to the best of our knowledge, no study on the facial expressions and sounds of PwA have
+examined whether age or sex are confounding factors, even though facial and sound features are greatly
+influenced by these factors. The use of data matching strengthens the robustness of our study findings.
+The features that were significantly correlated with app cognitive test scores in this study were informative.
+For instance, the smile score was strongly correlated with the app cognitive test score in HCs. Strong engagement
+in social and mental activities in later life reportedly protects against dementia38. It has been shown that older
+people with larger social networks have better cognitive status regardless of their pathological status39. The
+higher smile scores in our study may indicate greater mental and social activity of the participants, which could
+result in good cognitive status. In PwA, the standard deviation for facial movement negatively correlated with
+the app cognitive test score. This may reflect the “head-turning sign” or “saving appearances responses”, which
+are characteristic of AD.
+The recent development of disease-modifying therapy has made early diagnosis of AD more important than
+it has been in the past. This new tool could contribute greatly to screening for AD and referring patients to
+medical institutions early in the course of the disease. Furthermore, consumer issues involving individuals with
+AD have become increasingly serious problems. It can be difficult for businesspersons to notice cognitive decline
+in their clients because politeness is usually retained in the early stages of AD. The tool we assessed in this study
+could aid screening for cognitive impairment in older clients in business settings, thus facilitating an active and
+safe society for everyone.
+Our study has several limitations relating to the acquisition of data and the model algorithms used. Regarding
+the acquisition of data, our sample was limited to individuals aged over 65 years. The PwA were diagnosed
+according to clinical diagnostic criteria, without confirmation via biomarker or pathology analysis. However,
+all patients were diagnosed by specialists. Although, the HCs self-declared their cognitive status, none of the
+participants had significant cognitive impairment (i.e., scored below 21 points on the HDS-R). For both the
+Scientific Reports |        (2024) 14:26309
+8
+| https://doi.org/10.1038/s41598-024-77220-0
+www.nature.com/scientificreports/
+
+PwA and HC groups, we recruited only those who were able to use a tablet. Thus, severe PwA cases were not
+included. However, because our aim was to establish a screening tool, we considered it most appropriate to focus
+on mild-to-moderate PwA. Notably, many older Japanese adults are reluctant to use tablets and computers,
+which may have impacted our results. Regarding the model algorithms used, although ensemble models, such as
+random forest, XGBoost, and Light GBM, achieved the highest accuracy, they also present a risk of overfitting. In
+contrast, logistic regression and ridge regression models have a lower risk of overfitting, and we found that these
+models had slightly lower accuracy; therefore, the latter models may have better generalizability.
+The utility of spontaneous sound and facial data offers practical applications for the proposed models in
+real-life scenarios. Future studies could explore additional features and modalities to enhance the performance
+of the screening tool.
+Data availability
+Data is provided within the manuscript or supplementary information files. Anonymized data will be shared
+with qualified researchers upon request to the corresponding authors (GO and NH).
+Received: 10 May 2024; Accepted: 21 October 2024
+References
+	 1.	 W. H. Organization (ed M Steverson) (World Health Organization, 2022).
+	 2.	 Zheng, C. et al. Detecting dementia from face-related features with automated computational methods. Bioengineering. ​h​t​t​p​s​:​/​/​d​o​
+i​.​o​r​g​/​1​0​.​3​3​9​0​/​b​i​o​e​n​g​i​n​e​e​r​i​n​g​1​0​0​7​0​8​6​2​​ (2023).
+	 3.	 Martínez-Nicolás, I., Llorente, T. E., Martínez-Sánchez, F. & Ten Meilán, J. J. G. Years of research on automatic voice and speech
+analysis of people with Alzheimer’s disease and mild cognitive impairment: A systematic review article. Front. Psychol. 12, 620251.
+https://doi.org/10.3389/fpsyg.2021.620251 (2021).
+	 4.	 de la Fuente Garcia, S., Ritchie, C. W. & Luz, S. Artificial intelligence, speech, and language processing approaches to monitoring
+Alzheimer’s disease: A systematic review. J. Alzheimers Dis. 78, 1547–1574. https://doi.org/10.3233/jad-200888 (2020).
+	 5.	 Umeda-Kameyama, Y. et al. Screening of Alzheimer’s disease by facial complexion using artificial intelligence. Aging 13, 1765–
+1772. https://doi.org/10.18632/aging.202545 (2021).
+	 6.	 Jiang, Z. et al. Automated analysis of facial emotions in subjects with cognitive impairment. PLoS ONE 17, e0262527. ​h​t​t​p​s​:​/​/​d​o​i​.​o​
+r​g​/​1​0​.​1​3​7​1​/​j​o​u​r​n​a​l​.​p​o​n​e​.​0​2​6​2​5​2​7​​ (2022).
+	 7.	 Cannavacciuolo, A. et al. Facial emotion expressivity in patients with Parkinson’s and Alzheimer’s disease. J. Neural. Transm. 131,
+31–41. https://doi.org/10.1007/s00702-023-02699-2 (2024).
+	 8.	 Tanaka, H. et al. in Adjunct of the 2019 International Conference on Multimodal Interaction Article 5 (Association for Computing
+Machinery, 2019).
+	 9.	 Molitor, R. J., Ko, P. C. & Ally, B. A. Eye movements in Alzheimer’s disease. J. Alzheimers Dis. 44, 1–12. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​3​2​3​3​/​j​a​
+d​-​1​4​1​1​7​3​​ (2015).
+	10.	 Nam, U., Lee, K., Ko, H., Lee, J. Y. & Lee, E. C. Analyzing facial and eye movements to screen for Alzheimer’s disease. Sensors.
+https://doi.org/10.3390/s20185349 (2020).
+	11.	 Hoffmann, I. et al. Temporal parameters of spontaneous speech in Alzheimer’s disease. Int. J. Speech Lang. Pathol. 12, 29–34.
+https://doi.org/10.3109/17549500903137256 (2010).
+	12.	 Qiao, Y. et al. Computer-assisted speech analysis in mild cognitive impairment and Alzheimer’s disease: A pilot study from
+Shanghai. China. J Alzheimers Dis 75, 211–221. https://doi.org/10.3233/jad-191056 (2020).
+	13.	 König, A. et al. Automatic speech analysis for the assessment of patients with predementia and Alzheimer’s disease. Alzheimers
+Dement 1, 112–124. https://doi.org/10.1016/j.dadm.2014.11.012 (2015).
+	14.	 Martínez-Sánchez, F., Meilán, J. J., García-Sevilla, J., Carro, J. & Arana, J. M. Oral reading fluency analysis in patients with
+Alzheimer disease and asymptomatic control subjects. Neurologia 28, 325–331. https://doi.org/10.1016/j.nrl.2012.07.012 (2013).
+	15.	 López-de-Ipiña, K. et al. On the selection of non-invasive methods based on speech analysis oriented to automatic Alzheimer
+disease diagnosis. Sensors 13, 6730–6745. https://doi.org/10.3390/s130506730 (2013).
+	16.	 Meilán, J. J. et al. Speech in Alzheimer’s disease: Can temporal and acoustic parameters discriminate dementia?. Dement Geriatr.
+Cogn. Disord. 37, 327–334. https://doi.org/10.1159/000356726 (2014).
+	17.	 Horley, K., Reid, A. & Burnham, D. Emotional prosody perception and production in dementia of the Alzheimer’s type. J. Speech
+Lang. Hear. Res. 53, 1132–1146. https://doi.org/10.1044/1092-4388(2010/09-0030) (2010).
+	18.	 Nasrolahzadeh, M., Mohammadpoory, Z. & Haddadnia, J. A novel method for early diagnosis of Alzheimer’s disease based on
+higher-order spectral estimation of spontaneous speech signals. Cogn. Neurodyn. 10, 495–503. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​0​0​7​/​s​1​1​5​7​1​-​0​1​
+6​-​9​4​0​6​-​0​​ (2016).
+	19.	 Fraser, K. C., Meltzer, J. A. & Rudzicz, F. Linguistic features identify Alzheimer’s disease in narrative speech. J. Alzheimers Dis. 49,
+407–422. https://doi.org/10.3233/jad-150520 (2016).
+	20.	 Khodabakhsh, A. & Demiroglu, C. Analysis of speech-based measures for detecting and monitoring Alzheimer’s disease. Methods
+Mol. Biol. 1246, 159–173. https://doi.org/10.1007/978-1-4939-1985-7_11 (2015).
+	21.	 Khodabakhsh, A., Yesil, F., Guner, E. & Demiroglu, C. Evaluation of linguistic and prosodic features for detection of Alzheimer’s
+disease in Turkish conversational speech. EURASIP J. Audio Speech Music Process. 2015, 9. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​1​8​6​/​s​1​3​6​3​6​-​0​1​5​-​0​0​
+5​2​-​y​​ (2015).
+	22.	 López-de-Ipiña, K. et al. Feature selection for automatic analysis of emotional response based on nonlinear speech modeling
+suitable for diagnosis of Alzheimer׳s disease. Neurocomputing 150, 392–401. https://doi.org/10.1016/j.neucom.2014.05.083 (2015).
+	23.	 Nasrolahzadeh, M., Mohammadpoory, Z. & Haddadnia, J. Higher-order spectral analysis of spontaneous speech signals in
+Alzheimer’s disease. Cogn. Neurodyn. 12, 583–596. https://doi.org/10.1007/s11571-018-9499-8 (2018).
+	24.	 Gosztolya, G. et al. Identifying mild cognitive impairment and mild Alzheimer’s disease based on spontaneous speech using ASR
+and linguistic features. Comput. Speech Lang. 53, 181–197. https://doi.org/10.1016/j.csl.2018.07.007 (2019).
+	25.	 Konig, A. et al. Use of speech analyses within a mobile application for the assessment of cognitive impairment in elderly people.
+Curr. Alzheimer Res. 15, 120–129. https://doi.org/10.2174/1567205014666170829111942 (2018).
+	26.	 Chien, Y. W. et al. An automatic assessment system for Alzheimer’s disease based on speech using feature sequence generator and
+recurrent neural network. Sci. Rep. 9, 19597. https://doi.org/10.1038/s41598-019-56020-x (2019).
+	27.	 Yoshii, K. et al. Screening of mild cognitive impairment through conversations with humanoid robots: Exploratory pilot study.
+JMIR Form. Res. 7, e42792. https://doi.org/10.2196/42792 (2023).
+	28.	 Agbavor, F. & Liang, H. Artificial intelligence-enabled end-to-end detection and assessment of Alzheimer’s disease using voice.
+Brain Sci. https://doi.org/10.3390/brainsci13010028 (2022).
+Scientific Reports |        (2024) 14:26309
+9
+| https://doi.org/10.1038/s41598-024-77220-0
+www.nature.com/scientificreports/
+
+	29.	 Agbavor, F. & Liang, H. Predicting dementia from spontaneous speech using large language models. PLOS Digit. Health 1,
+e0000168. https://doi.org/10.1371/journal.pdig.0000168 (2022).
+	30.	 Kim, T. M. et al. Comparison of AI with and without hand-crafted features to classify Alzheimer’s disease in different languages.
+Comput. Biol. Med. 180, 108950. https://doi.org/10.1016/j.compbiomed.2024.108950 (2024).
+	31.	 Fristed, E. et al. A remote speech-based AI system to screen for early Alzheimer’s disease via smartphones. Alzheimers Dement 14,
+e12366. https://doi.org/10.1002/dad2.12366 (2022).
+	32.	 Amini, S. et al. Prediction of Alzheimer’s disease progression within 6 years using speech: A novel approach leveraging language
+models. Alzheimer’s Dementia. https://doi.org/10.1002/alz.13886 (2022).
+	33.	 McKhann, G. M. et al. The diagnosis of dementia due to Alzheimer’s disease: Recommendations from the National Institute
+on Aging-Alzheimer’s Association workgroups on diagnostic guidelines for Alzheimer’s disease. Alzheimers Dement 7, 263–269.
+https://doi.org/10.1016/j.jalz.2011.03.005 (2011).
+	34.	 Hernández-Domínguez, L., Ratté, S., Sierra-Martínez, G. & Roche-Bergua, A. Computer-based evaluation of Alzheimer’s disease
+and mild cognitive impairment patients during a picture description task. Alzheimers Dement 10, 260–268. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​0​1​
+6​/​j​.​d​a​d​m​.​2​0​1​8​.​0​2​.​0​0​4​​ (2018).
+	35.	 Ogawa, M. et al. Can AI make people happy? The effect of AI-based chatbot on smile and speech in Parkinson’s disease. Parkinson.
+Relat. Disord. 99, 43–46. https://doi.org/10.1016/j.parkreldis.2022.04.018 (2022).
+	36.	 Chen, T. & Guestrin, C. XGBoost: A scalable tree boosting system. in Proceedings of the 22nd ACM SIGKDD International
+Conference on Knowledge Discovery and Data Mining (2016).
+	37.	 Ke, G. et al. LightGBM: A highly efficient gradient boosting decision tree. in Nips’17 3149–3157 (2017).
+	38.	 Laura, F., Stephanie, P.-B. & Bengt, W. An active and socially integrated lifestyle in late life might protect against dementia. Lancet
+Neurol. 3, 343–353. https://doi.org/10.1016/S1474-4422(04)00767-7 (2004).
+	39.	 Bennett, D. A., Schneider, J. A., Tang, Y., Arnold, S. E. & Wilson, R. S. The effect of social networks on the relation between
+Alzheimer’s disease pathology and level of cognitive function in old people: A longitudinal cohort study. Lancet Neurol. 5, 406–412.
+https://doi.org/10.1016/s1474-4422(06)70417-3 (2006).
+Acknowledgements
+We thank Sarina Iwabuchi, PhD, and Michael Irvine, PhD, from Edanz (https://jp.edanz.com/ac) for editing a
+draft of this manuscript.
+Author contributions
+HTA, GO, MO, KF, TK, RW, SO, KM and NH were involved in the study concept and design. HTA, GO, MO,
+KF, TK, KS, SIU, AO, TH, YM, IK, MA, SN, YI, RW, AY, TK and NH participated in data acquisition. HTA, GO,
+SM, XL, TK, KM, YI, YN participated in the data analysis and interpretation and drafting of the manuscript. All
+authors reviewed the manuscript. GO and NH obtained funding and accept responsibility for the conduct of the
+research, final approval, and acquisition of data.
+Funding
+The funders had no role in the study design, data collection or analysis, decision to publish, or manuscript prepa­
+ration. The Department of Neurodegenerative and Demented Disorders was supported by grants from GLORY
+Ltd., Mitsubishi UFJ Trust and Banking Corporation.
+Declarations
+Competing interests
+This study was supported by grants from GLORY Ltd., and Mitsubishi UFJ Trust and Banking Corporation. All
+the remaining authors declare no conflict of interest.
+Additional information
+Supplementary Information The online version contains supplementary material available at ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​
+0​.​1​0​3​8​/​s​4​1​5​9​8​-​0​2​4​-​7​7​2​2​0​-​0​​.​
+Correspondence and requests for materials should be addressed to G.O. or N.H.
+Reprints and permissions information is available at www.nature.com/reprints.
+Publisher’s note  Springer Nature remains neutral with regard to jurisdictional claims in published maps and
+institutional affiliations.
+Open Access   This article is licensed under a Creative Commons Attribution 4.0 International License, which
+permits use, sharing, adaptation, distribution and reproduction in any medium or format, as long as you give
+appropriate credit to the original author(s) and the source, provide a link to the Creative Commons licence, and
+indicate if changes were made. The images or other third party material in this article are included in the article’s
+Creative Commons licence, unless indicated otherwise in a credit line to the material. If material is not included
+in the article’s Creative Commons licence and your intended use is not permitted by statutory regulation or
+exceeds the permitted use, you will need to obtain permission directly from the copyright holder. To view a copy
+of this licence, visit http://creativecommons.org/licenses/by/4.0/.
+© The Author(s) 2024
+Scientific Reports |        (2024) 14:26309
+10
+| https://doi.org/10.1038/s41598-024-77220-0
+www.nature.com/scientificreports/

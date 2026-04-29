@@ -1,0 +1,25 @@
+{
+  "title": "Mental states and personality based on real-time physical activity and facial expression recognition",
+  "authors": [
+    "Yating Huang",
+    "Deng-yue Zhai",
+    "Jingze Song",
+    "Xuanheng Rao",
+    "Xiao Sun",
+    "Jinpeng Tang"
+  ],
+  "year": 2023,
+  "abstract": "Introduction: To explore a quick and non-invasive way to measure individual psychological states, this study developed interview-based scales, and multi-modal information was collected from 172 participants. Methods: We developed the Interview Psychological Symptom Inventory (IPSI) which eventually retained 53 items with nine main factors. All of them performed well in terms of reliability and validity. We used optimized convolutional neural networks and original detection algorithms for the recognition of individual facial expressions and physical activity based on Russell's circumplex model and the five factor model. Results: < 0.01), valence was significantly correlated with IPSI and SCL-90, and physical activity was significantly correlated with gender, age, and factors of the scales. Discussion: Our research demonstrates that mental health can be monitored and assessed remotely by collecting and analyzing multimodal data from individuals captured by digital tools.",
+  "doi": "10.3389/fpsyt.2022.1019043",
+  "arxiv_id": null,
+  "venue": "Frontiers in Psychiatry",
+  "citation_count": 10,
+  "source": "openalex",
+  "pdf_url": "https://www.frontiersin.org/articles/10.3389/fpsyt.2022.1019043/pdf",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4313823914"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.3389/fpsyt.2022.1019043"
+}

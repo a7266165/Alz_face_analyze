@@ -1,0 +1,22 @@
+{
+  "title": "Seamless Monitoring of Stress Levels Leveraging a Universal Model for Time Sequences",
+  "authors": [
+    "Davide Gabrielli",
+    "Bardh Prenkaj",
+    "Paola Velardi"
+  ],
+  "year": 2024,
+  "abstract": "Monitoring the stress level in patients with neurodegenerative diseases can help manage symptoms, improve patient's quality of life, and provide insight into disease progression. In the literature, ECG, actigraphy, speech, voice, and facial analysis have proven effective at detecting patients' emotions. On the other hand, these tools are invasive and do not integrate smoothly into the patient's daily life. HRV has also been proven to effectively indicate stress conditions, especially in combination with other signals. However, when HRV is derived from less invasive devices than the ECG, like wristbands and smartwatches, the quality of measurements significantly degrades. This paper presents a methodology for stress detection from a wristband based on a universal model for time series, UniTS, which we finetuned for the task and equipped with explainability features. We cast the problem as anomaly detection rather than classification to favor model adaptation to individual patients and allow the clinician to maintain greater control over the system's predictions. We demonstrate that our proposed model considerably surpasses 12 top-performing methods on three benchmark datasets. Furthermore, unlike other state-of-the-art systems, UniTS enables seamless monitoring, as it shows comparable performance when using signals from invasive or lightweight devices.",
+  "doi": "10.48550/arxiv.2407.03821",
+  "arxiv_id": null,
+  "venue": "arXiv (Cornell University)",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://arxiv.org/pdf/2407.03821",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4400434090"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.48550/arxiv.2407.03821"
+}

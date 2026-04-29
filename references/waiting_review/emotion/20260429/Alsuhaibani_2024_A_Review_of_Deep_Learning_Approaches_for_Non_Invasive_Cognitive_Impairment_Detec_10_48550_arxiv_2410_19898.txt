@@ -1,0 +1,2980 @@
+1
+A Review of Deep Learning Approaches for
+Non-Invasive Cognitive Impairment Detection
+MUATH ALSUHAIBANI
+, ALI POURRAMEZAN FARD
+, JIAN SUN
+, FARIDA FAR POOR
+, PETER S.
+PRESSMAN, AND MOHAMMAD H. MAHOOR
+.
+Abstract—This review paper explores recent advances in deep
+learning approaches for non-invasive cognitive impairment detection. We examine various non-invasive indicators of cognitive
+decline, including speech and language, facial, and motoric
+mobility. The paper provides an overview of relevant datasets,
+feature-extracting techniques, and deep-learning architectures
+applied to this domain. We have analyzed the performance of
+different methods across modalities and observed that speech
+and language-based methods generally achieved the highest
+detection performance. Studies combining acoustic and linguistic
+features tended to outperform those using a single modality.
+Facial analysis methods showed promise for visual modalities
+but were less extensively studied. Most papers focused on binary
+classification (impaired vs. non-impaired), with fewer addressing
+multi-class or regression tasks. Transfer learning and pre-trained
+language models emerged as popular and effective techniques,
+especially for linguistic analysis. Despite significant progress,
+several challenges remain, including data standardization and
+accessibility, model explainability, longitudinal analysis limitations, and clinical adaptation. Lastly, we propose future research
+directions, such as investigating language-agnostic speech analysis methods, developing multi-modal diagnostic systems, and
+addressing ethical considerations in AI-assisted healthcare. By
+synthesizing current trends and identifying key obstacles, this
+review aims to guide further development of deep learningbased cognitive impairment detection systems to improve early
+diagnosis and ultimately patient outcomes.
+Index Terms—Alzheimer’s Disease, Cognitive Impairment Detection, Deep Learning Models
+I. INTRODUCTION
+Cognitive impairment poses significant challenges for individuals, families, and healthcare systems worldwide [1]. As
+the population of older adults in the United States grows, the
+prevalence of cognitive impairment related to Alzheimer’s disease (AD), AD-related dementia (ADRD), and mild cognitive
+impairment (MCI), which often progresses to AD/ADRD, is
+expected to rise, necessitating cost-effective screening tools
+and early treatment strategies. Current diagnostic methods
+include clinical evaluations, neuropsychological assessments,
+and advanced neuroimaging techniques such as Magnetic Resonance Imaging (MRI), Positron Emission Tomography (PET),
+and Computed Tomography (CT) scans [2]. While effective,
+these diagnostic methods are expensive and require specialized
+personnel. Alternatively, scientists have explored cost-effective
+M. Alsuhaibani, A.P. Fard, J. Sun, F. Far Poor, and M.H. Mahoor are
+with the Ritchie School of Engineering and Computer Science, University
+of Denver, Denver, CO 80210, USA
+P.S. Pressman is with the Department of Neurology, Behavioral Neurology
+Section, University of Colorado Anschutz Medical Center, Aurora, CO 80045,
+USA
+methods, particularly those leveraging innovative technologies
+powered by artificial intelligence (AI) and machine learning
+(ML).
+In recent years, deep learning models have made remarkable progress in diverse domains, including Computer Vision
+(CV) and Natural Language Processing (NLP), with various
+implications for healthcare [3]. Unlike traditional machine
+learning approaches that separate feature extraction and model
+learning, deep learning builds end-to-end systems in which
+neural networks concurrently learn and extract discriminant
+features directly from the data during the training process.
+Deep learning models are enhancing various domains, including the detection of pathological indicators among clinically
+diagnosed patients [4], and may enhance detection in early
+disease stages [5], [6]. Furthermore, machine learning methods can assist in utilizing non-invasive data. Deep learning
+techniques hold particular promise for reducing healthcare
+costs in disease diagnosis and treatment. The ability of deep
+learning-based methods to handle complex data and capture
+subtle changes is crucial for the early detection of indicators
+for cognitive impairment.
+This review paper explores recent research articles that
+primarily utilized or developed deep learning methods for
+detecting cognitive impairment using various non-invasive data
+modalities (e.g., speech and language, facial video, eye gaze,
+and motoric mobility). Despite the availability of review papers on deep learning methods for detecting cognitive impairment [7], [8], to the best of our knowledge, none specifically
+discuss the use of various non-invasive data modalities. Hence,
+we focused on studies that employed deep learning-based
+methods for non-invasive cognitive impairment detection. The
+main criteria for including research articles in this review are
+the data modalities used and the adaptation of deep learning
+methods in feature extraction or detection decisions.
+We begin by discussing the advantages and limitations of
+different integrated non-invasive modalities. We then review
+studies that utilized various modalities to propose cognitive
+impairment detection systems. Ultimately, we provide a comprehensive outline of existing trends and future directions in
+deep learning methods for cognitive impairment detection,
+concluding with the overall impact of these methods on early
+detection of cognitive decline. This knowledge can lead to better insights into disease progression across large populations.
+The organization of this review paper is as follows. Sec. II
+discusses non-invasive data as indicators of cognitive decline
+from a medical perspective and elaborates on the rationale
+behind using deep learning for analyzing such data. Sec. III
+arXiv:2410.19898v1  [cs.LG]  25 Oct 2024
+
+2
+introduces the datasets containing modalities captured through
+non-invasive techniques. Sec. IV reviews articles that utilized
+various modalities of non-invasive data to detect cognitive
+impairment. Sect. V presents the evaluation performances of
+the reviewed studies. Sec. VI discusses the challenges and
+suggests future research directions. Finally, Sec. VII concludes
+the paper with a summary of our thoughts and findings.
+II. COGNITIVE IMPAIRMENT INDICATORS
+In this section, we investigate the medically supported motivations behind using diverse non-invasive modalities and their
+features for detecting cognitive status, leveraging deep learning
+algorithms. Specifically, we focus on Speech & Language,
+Facial, and Motoric Mobility indicators.
+Progressive neurodegenerative cognitive conditions encompass a spectrum of cognitive decline stages, beginning with
+prodromal disease, and progressing through subjective cognitive impairment, Mild Cognitive Impairment (MCI) and
+progressing to dementia [1]. The cognitive stage of patients
+can be assessed by examining certain predetermined factors
+while they engage in specific tasks (i.e., answer questions,
+and perform executive functions). This evaluation process
+involves observing how an individual performs and responds
+during these tasks, which helps to identify their cognitive
+stage. By carefully analyzing their behavior and reactions,
+it is possible to determine their cognitive development stage,
+based on those established evaluation criteria. Determining an
+individual’s cognitive status offers valuable insight into the
+current challenges and guides the implementation of appropriate interventions.
+At present, there exists no cure for neurodegenerative cognitive impairment. However, several therapies and lifestyle
+interventions, depending on the cause and the stages of the impairment, may slow the cognitive decline and improve patient
+and caregiver quality of life [1]. For example, the Food and
+Drug Administration (FDA) has approved two IV medications
+that selectively act on the beta-amyloid protein associated with
+Alzheimer’s disease that significantly reduces clinical decline
+on multiple scales, but would have no effect on cognitive
+impairment associated with other proteins [9]. Typically, an
+evaluation of cognitive impairment begins when the patient or
+others who know the patient well describe changes in everyday
+life associated with these changes. In addition to gathering
+personal history, the clinician will typically perform or order
+cognitive testing to be done that better describes the severity
+and nature of the cognitive change. Depending on the findings
+of these initial tests, medical imaging may be ordered, such
+as Computed tomography (CT), magnetic resonance imaging
+(MRI), or positron emission tomography (PET). Blood tests
+and sometimes tests of cerebrospinal fluid (CSF) may also be
+ordered.
+Through this process, medical providers further specify
+which aspect of cognition (i.e., cognitive domain) is primarily
+impaired. Examples may include disorders of language (aphasia), memory (amnesia), planning and attention (executive dysfunction), knowledge (agnosia), and more. These assessments
+implicate specific brain regions affected, such as the medial
+temporal lobes for memory processing and the parietal lobes
+for sensory information and spatial awareness [10].
+While these methods can provide valuable insights into the
+patient’s cognitive status, they require time and expertise to
+administer. An aging population creates a greater demand for
+evaluations than can be readily met, leading to delays in assessments and, consequently, delays in appropriate treatments
+and recommendations.
+Deep learning applications have expanded to detect subtle
+behavioral and cognitive ability changes in cognitively impaired patients using non-invasively collected data modalities,
+such as speech, facial expressions, and motoric mobility. In the
+following, we discuss three primary non-invasive indicators of
+cognitive impairments, paralleling the medical explanations,
+focusing on speech & language, facial, and motoric mobility
+modalities.
+1) Speech Indicators: Speech is the most extensively studied modality in deep learning for detecting cognitive status,
+primarily due to the early availability of public datasets such as
+the Pitt Corpus [11]. These datasets have enabled researchers
+to develop various methods for identifying cognitive impairment at different stages. Additionally, studies have shown that
+both acoustic and linguistic features are crucial in identifying
+pathology characteristics. Acoustic features, signal representations related to sound perception, are theoretically languageagnostic, although variations in sounds and pronunciations
+across different languages and accents can affect them. On the
+other hand, linguistic features are derived from the meaning
+and understanding of the speech. These features encompass
+aspects such as syntax, semantics, and pragmatics, which are
+intrinsic to a specific language. While acoustic features capture
+how something is said, linguistic features focus on what is
+being said, providing deeper insights into the speaker’s intent,
+context, and the conveyed message.
+From a technical perspective, the analysis of human speech
+can be categorized into acoustic features (i.e., formats, pitch,
+and phonemes) and linguistic features (i.e., morphemes, words,
+phrases/sentences, and contextual meaning). Speech generation, which involves physical mechanisms and linguistic
+output, provides rich indicators for detecting cognitive impairment. However, these abnormalities are not directly observable
+by human perception and require technical integrations for detection. We will review acoustic and linguistic characteristics
+and features in the following.
+Acoustic Perspective: Human speech includes formats,
+a local maxima in the speech spectrum, which define the
+acoustic resonance of the vocal tract. Voiced sounds emerge as
+air traverses the vocal tract, with the brain controlling various
+muscles involved in sound generation.
+The features embedded within voices possess the potential
+to disclose the speaker’s medical condition. To illustrate,
+studies have linked specific acoustic features to cognitive declines in speech signals, including vocal cord deficiencies [12].
+However, it is not a straightforward indication of the individual’s medical condition, especially for older adults. To clarify,
+seniors usually exhibit changes in acoustic characteristics after
+age 60, due to a combination of cognitive and more peripheral
+
+3
+Raw Speech
+Camera
+Microphone
+Movement Measuring
+ Devices
+Transcript
+Gait
+Facial
+Handwriting
+Intermedium
+Modalities
+Features
+Modeling
+Decision
+Daily Activities
+Classification
+RNN
+CNN
+Transformer
+Linguistic Features
+Facial Features
+Skeleton Joint
+ Positions
+1-5 papers
+6-10 papers
+10-15 papers
++15 papers
+Subject
+Regression
+Traditional ML
+Acoustic Features
+Motoric Mobility
+Fig. 1: An overview of the reviewed papers (better viewed in colors)
+changes [13]–[15]. Likewise, the baseline pitch often varies
+based on the speaker’s gender.
+As a result, pre-trained deep machine learning models
+such as wav2vec2.0 [16] and VGGish [17] for extracting
+acoustic features might introduce bias stemming from the
+general population. Therefore, it is crucial to analyze these
+features in conjunction with other conditions, taking into
+account appropriate adjustments for age-related changes. This
+is achievable by leveraging recent deep learning methods that
+are proven to be effective at processing complex and large
+datasets including speech. These methods enable the analysis
+of acoustic features to detect anomalies that are imperceptible
+to the human ear.
+Many research studies have utilized predefined acoustic
+features versus those that investigated the use of raw speech
+data with deep learning methods to detect cognitive status.
+Predefined acoustic features are interpretable by researchers as
+related to cognitive decline. However, subtle nuances of speech
+may be overlooked. Whereas, utilizing raw speech with deep
+learning models can increase the modeling complexity and
+potentially reveal novel patterns in the speech.
+Linguistic Perspective: Words are structured into sentences
+that express thoughts within speech. From a medical perspective, the analysis of linguistic patterns can detect deviations in
+language usage that suggest cognitive decline [18]. Different
+aspects of speech relate to different aspects of cognition, supported by different anatomical substrates and compromised by
+different disease processes. For example, complex grammatical
+construction is subserved by the left frontal operculum. When
+this area is compromised it can result in grammatically simplified or incorrect phrasing, as is related to the nonfluent variant
+of primary progressive aphasia (nfvPPA), a neurodegenerative
+condition most commonly related to an abnormal convolution
+of a protein called tau [19]. By identifying such grammatical
+errors in speech, then, an algorithm may implicate a brain
+region, a neurological syndrome, and predict histopathological
+findings under a microscope.
+While conditions such as nfvPPA are rare and specific
+to language, subtle changes such as increased pause length
+and changes in linguistic coherence may signify the presence
+of more common conditions such as Alzheimer’s disease.
+Several groups worldwide have demonstrated some ability to
+predict MCI or Alzheimer’s disease [20]; however, more work
+remains to be done to ensure the results are reproducible across
+different cultures, languages, and populations.
+Due to the power of Large Language Models (LLMs)
+
+4
+in natural language processing and understanding, they are
+widely used to detect cognitive impairment by analyzing linguistic features such as grammar and word choice. While these
+features may vary with personal knowledge and experience,
+deep learning models can leverage extensive speech datasets
+to identify patterns that indicate cognitive impairment across
+diverse populations.
+Merging Perspectives: Merging speech and language approach allows for a comprehensive assessment of cognitive
+health based on speech, providing valuable insights for early
+detection and monitoring. To illustrate, while both the acoustic
+and linguistic aspects of speech generation depend on the
+brain, they offer different perspectives on speech analysis,
+ensuring gaining a more comprehensive understanding of
+cognitive health.
+2) Facial Indicators: Interactions between clinical personnel and patients are crucial for detecting cognitive impairment.
+As part of this delicate act of clinical communication, careful
+interpretation of paralinguistic as well as linguistic signals
+is required. Facial expressions, whether intentional or not,
+are emphasized in tasks involving affective reception and
+expression, as the neurodegenerative process may disrupt
+the physiological linkage between subjectively experienced
+and expressed emotion [21]. Those with neurodegenerative
+conditions, particularly forms of behavioral variant frontotemporal dementia (bvFTD) also struggle to interpret the facial
+expressions of others accurately [22], and similar difficulties
+are also reported in conditions as common as Alzheimer’s
+disease, albeit to a lesser extent [23].
+In studying these issues, it is important to distinguish
+between facial expressions originating from natural (spontaneous) reactions and those elicited by stimuli when assessing
+cognitively impaired subjects. As cognitive impairments can
+severely affect comprehension of facial expressions, utilizing
+computer vision techniques to extract facial features can be
+a fundamental step for detecting cognitive impairment using
+facial indicators. Recent studies have investigated the effectiveness of facial indicators through the development of several
+models that extract explainable facial features such as head
+poses, facial expressions, and Facial Action Coding System
+(FACS), occurring either intentionally or unintentionally [24].
+3) Motoric Mobility Indicators: Many forms of neurodegenerative conditions that impact cognition also impair motor
+control [25]. Physical challenges with normal aging observed
+and evaluated in clinical settings are often linked to cognitive
+status [26]. In addition to changes of healthy aging as well as
+motor controls more common in specific conditions such as
+Parkinson’s disease, many neurodegenerative conditions may
+ultimately involve loss of motor control in addition to cognitive changes. Furthermore, many cognitive processes such
+as processing speed or visuospatial awareness may become
+apparent in movement measures.
+Studies have shown variations in pressure, stroke, and speed
+in handwriting, as well as alterations in drawing patterns,
+might reflect the early stages of cognitive impairments impacting frontal, occipital, or parietal lobes [27]. Some drawing tasks are designed to evaluate the precision of vertical
+and horizontal lines within these shapes. These abnormalities
+are considered during neuropsychological assessments, where
+subjects are asked to replicate various shapes [28].
+Recent advancements in wearable and non-wearable measuring devices, allow for the continuous, non-intrusive monitoring of physical movements. Such data collection supports
+ongoing monitoring and early detection of cognitive changes.
+Ultimately, deep machine learning algorithms can analyze this
+captured data to identify abnormal movement patterns indicative of neurological, musculoskeletal, or other issues. Recently,
+using deep learning methods to detect cognitive conditions
+has become increasingly popular. These methods analyze
+different activities such as handwriting, drawing, and walking
+to identify early symptoms of cognitive impairment [29].
+4) Multi-modal Indicators: Studies have investigated how
+combining various modalities may enhance the performance
+of detecting and longitudinal assessment of cognitive impairment [30]. Integrating different modalities has the potential to
+improve detection performance by capturing more indicators,
+and introducing different combinations of indicators that may
+be more powerful than an individual indicator in isolation.
+However, these integrations and interactions also increase the
+complexity of the technical models and data management. To
+the best of our knowledge, there is currently no established
+framework for fusing different modalities, particularly when
+considering the temporal aspects of features.
+With that in mind, AI techniques can enhance the detection of cognitive impairments in clinical settings, resulting
+in more effective and accurate diagnoses. This improvement
+in precision and sensitivity can significantly enhance overall
+performance.
+III. DATASETS
+In this section, we review some existing datasets used
+in studies for detecting MCI and AD/ADRD using noninvasive data collection methods. We categorize the datasets
+based on the type of captured data from the individuals as
+follows: 1- Speech-based datasets, containing the speech
+recordings and/or transcripts of human subjects. 2- Visualbased datasets, capturing the human subjects’ visual appearance such as facial. 3- Movement-measuring-based datasets,
+capturing individuals’ behaviors using wearable and nonwearable measuring sensors while performing a specific task.
+4- Multi-modal datasets, presenting more than one data
+modality of the individuals, including speech, movement, or
+visual appearance.
+We explore the datasets and provide a brief introduction
+for each category based on their publication year to ensure
+a consistent representation. While the primary focus of this
+section is on publicly available datasets, we also briefly discuss
+private datasets at the end of each category. The private
+datasets are collected for a specific study and usually are not
+available to the research community.
+A. Speech-based Datasets
+In this section, we review the existing speech-based datasets
+in chronological order of their release. Some studies have
+considered speech modality out of multimodal datasets.
+
+5
+These datasets are introduced later as multimodal datasets in
+Sec. III-D.
+1) Pitt Corpus:
+Pitt Corpus is a repository of audio
+recordings, including longitudinal neuropsychological assessments conducted at the Pittsburgh University School of
+Medicine [11]. The dataset required participants’ responses
+to four tasks including the Cookie Theft photo description,
+a Word Fluency task, Story Recall, and Sentence Construction. Participants in the study were screened for cognitive
+impairment and thereby, they were labeled into two conditions:
+Control and AD patients. Overall, Pitt Corpus comprises 101
+individuals for the Healthy Control (HC) group aged 46.2-81.9
+with balanced gender representation and 181 AD patients aged
+50-88.7 but with two-thirds females. The dataset is publicly
+available with manual transcripts of the speech.
+2) WLS Dataset: Wisconsin Longitudinal Study (WLS) is
+a long-term and large-scale study of random graduates from
+Wisconsin high schools in 1957. Each participant completed
+six surveys spanning from 1957 to 2011. Notably, the surveys
+in 2004 and 2011 included responses to cognitive tasks [31].
+The participants’ responses to the cognitive tasks were audiorecorded, with a total number of 1264 in 2004 and 1370 in
+2011. To be more specific, in the 2011 survey, the participants
+were asked to describe the Cookie Theft image.
+Despite the extensive volume of the data and long-term
+nature of WLS research, this dataset has two main issues: 1- A
+large majority of the recorded responses belong to HC participants, exacerbating class imbalance issues for deep machine
+learning applications. 2- The dataset lacks clinical cognitive
+impairment scores although these may still be inferred from
+linguistic cognitive tests.
+3) ADReSS: Alzheimer’s Dementia Recognition through
+Spontaneous Speech (ADReSS) Challenge is a publicly introduced dataset for cognitive impairment detection challenge at INTERSPEECH 2020 [32]. The dataset contains
+audio recordings and manual transcripts of participants describing the Cookie Theft picture. To be more detailed, the
+ADReSS dataset comprises two categories: healthy controls
+and Alzheimer’s, with each group consisting of 156 participants. The participants’ ages range from 50 to 80 years, with
+a balanced representation of both genders in both groups.
+The ADReSS dataset includes the AD labels along with
+the Mini-Mental State Examination (MMSE) scores of the
+participants. These labels and scores help in developing classification and regression systems. Furthermore, the dataset
+presents training and test subsets to ensure a standardized
+evaluation of methods.
+4) ADReSSo: Alzheimer’s Dementia Recognition through
+Spontaneous Speech only (ADReSSo) is a speech-based Challenge introduced at INTERSPEECH 2021 [33]. Specifically,
+the ADReSSo provides two distinct datasets: the prognostic
+dataset and the diagnostic dataset. The prognostic dataset
+contains audio recordings of AD patients performing a semantic fluency task. Whereas, the diagnostic dataset includes
+audio recordings of AD patients and NC individuals describing
+the Cookie Theft picture. Notably, compared to ADReSS,
+the ADReSSo included the prognostic dataset to serve as a
+baseline for cohort study. Additionally, the dataset contains
+only audio recordings of the participants’ responses.
+Similar to the ADReSS dataset, the ADReSSo’s diagnostic
+dataset provides AD labels and MMSE scores. On the contrary,
+the ADReSSo’s prognostic dataset serves as a predictor of
+the progression of cognitive decline in cognitively impaired
+individuals over time.
+5) NCMMSC2021: National Conference on Man-Machine
+Speech Communication 2021 Alzheimer’s Disease Recognition Challenge (NCMMSC2021) is a public dataset for the
+AD Recognition Challenge at the NCMMSC 2021. The dataset
+is in Mandarin which includes speech recordings and corresponding transcripts from subjects participating in three tasks:
+picture description, fluency test, and free conversation during
+interviews. Overall, this dataset contains 280 participants as
+follows: 26 AD patients, 53 MCIs, and 44 NCs [34].
+6) Private datasets: Some studies have collected their data
+domestically for various reasons, although this process can be
+costly and unreasonable for a specific study. In the following,
+we briefly describe the data-collecting process of some of the
+speech-based studies.
+Nishikawa et al. [35] recruited 30 older adults to take speech
+recordings of participants and then transcribed the speech.
+The participants took the MMSE to evaluate their cognitive
+status. They split the subjects into the MCI and NC groups by
+referring to the MMSE scores. Subjects with the MMSE score
+range of [23, 27] are labeled as MCI, while the resting ones
+fall into the NC group. There are 15 MCIs and 15 NCs. After
+removing the silence section of the speech data, they cut the
+data into 3-second clips with a sampling frequency of 48 kHz
+for further study.
+B. Visual Datasets
+Visual datasets are collections of images or videos that
+capture non-invasive indicators of cognitive impairment, such
+as variations in participants’ facial or body appearance. Unlike
+other speech-based datasets, almost all visual datasets are selfcollected and created for specific studies. It is important to
+note that some datasets used for visual data also contain other
+modalities. Therefore, we will introduce them as multi-modal
+datasets in Sec. III-D.
+1) Private datasets: Gait data encompass the body motions. These motions can be captured using various ways;
+however, here, we focus on gait captured by visual devices.
+You et al. [36] collected skeleton joint positions from 35
+NC, 35 individuals with MCI, and 17 with AD, in a lab
+environment, using Microsoft Kinect V2.0 cameras. In detail,
+they deployed 8 and 6 devices in the Neurology and Geriatrics
+Departments, respectively, and set the tilt angle as 27 degrees.
+Additionally, electroencephalogram (EEG) data were acquired
+with patients’ eyes closed and open for 8 minutes each.
+You et al. [37] conducted a study by collecting gait data
+from 53 individuals with MCI or AD and 35 in the control
+group, both aged over 46 years old. The data collection took
+place at Keio University School of Medicine, utilizing Kinect
+cameras. Participants were instructed to walk the length and
+back between two devices positioned 10 meters apart.
+
+6
+Eye gaze data is a projection of where a person is looking
+collected using visual recording devices. For instance, Zuo et
+al. [38] collected eye-tracking data for cognitive impairment
+classification, including a total of 106 participants, consisting
+of 38 with AD and 68 classified as normal, at the Tianjin
+Huanhu Hospital, Tianjin, China. They employed a noninvasive eye-tracking system with stereo stimuli to record
+and analyze visual reactions associated with various emotions
+through gaze tracking.
+C. Movement-measuring-based Datasets
+In
+this
+section,
+we
+review
+the
+existing
+Movementmeasuring-based datasets in chronological order. Unlike
+speech-based
+datasets,
+most
+movement-measuring-based
+datasets are private to certain research groups.
+1) Private datasets: While these datasets might not be as
+comprehensive as the publicly available datasets, reviewing
+such datasets gives readers a wider overview of how using
+measuring movement data might contribute to the detection
+of AD.
+Gait Data: Bringas et al. [56] conducted a private study
+involving 35 patients diagnosed with AD from the AFAC
+daycare center of Santander, Spain. Patient mobility data were
+gathered using accelerometer sensors from smartphones. The
+dataset comprised 6-hour durations for each of the 35 patients,
+representing various stages of Alzheimer’s disease: 7 in the
+early stage, 18 in the moderate stage, and 10 in the severe
+stage.
+Aoki et al. [57] utilized a private dataset and MMSE
+alongside a Kinect sensor to capture whole-body movements
+for cognitive assessment. The study introduced a dual-task
+paradigm, combining movement analysis with a cognitive task
+(counting down from 100 by ones) to explore distinguishing
+gait features between healthy and cognitively impaired older
+adults.
+Shahzad et al. [58] conducted a study on gait biomarkers
+for MCI screening, analyzing human walking patterns during
+cognitive tasks. Using data from inertial sensors with triaxial
+accelerometers and gyroscopes on a 10-meter walkway, the
+study incorporated cognitive tasks such as down-counting and
+naming animals.
+Ghoraani et al. [59] conducted a study involving 78 participants, including 32 healthy individuals, 26 with MCI, and
+20 with AD, where a Zenomat system from ProtoKinetics
+LLC and a GAITRite system from CIR Systems, PA where
+utilized. Additionally, gait features were extracted using the
+ProtoKinetics Movement Analysis Software (PKMAS) for the
+Zenomat system and the GAITRite software for the GAITRite
+system.
+Daily-life activities: Narasimhan et al. [60] employed nonwearable sensors installed in the residences of older adults
+to capture data related to sleep duration, cooking time, and
+walking speed simulating the longitudinal activity trend for
+10 older adults, incorporating 4 assessment time points per
+individual.
+Writing-Drawing-based activities, including copying text,
+loop series, and drawings, are another type of activity often
+used in research on the detection of cognitive impairment.
+El-Yacoubi et al. [61] gathered handwriting data from three
+groups, totaling 144 participants aged over 60, at a hospital
+in Paris. The sampling rate employed was 125Hz, with the
+dataset comprising x and y positions, pressure, and in-air
+trajectory up to 2 cm. The participants undertook seven tasks,
+including copying text, loop series, and drawings. Cilia et
+al. [29] conducted six handwriting tasks at an Italian hospital,
+involving a total of 181 participants. Among them, 90 were
+identified as cognitively impaired, while the remaining 91
+served as healthy controls.
+D. Multi-Modal Datasets
+Multi-modal datasets present more than one type of participant data, usually including speech, sensor data, or visual
+appearance. In the following, we review some of the public
+multi-modal datasets available for non-invasive recognition of
+AD.
+1) PROMPT Dataset: Project for Objective Measures using
+Computational Psychiatry Technology (PROMPT) Dataset is a
+public Japanese dataset collected by Keio Medical School [49],
+divided into Dementia patients, Bipolar disorder patients,
+Depression patients, and NC. Each subject underwent three
+language tasks including free talk, questions and answers, and
+picture description tasks while recording subjects’ speech and
+video during the interview. The PROMPT dataset contains
+facial expressions, body movements, speech, and daily life
+activity from subjects, and supports various research plans.
+2) I-CONECT Dataset: Internet-Based Conversational Engagement Clinical Trial (I-CONECT; NCT02871921) dataset
+is a longitudinal study of 187 socially isolated older adults.
+The clinical trial randomly split the participants into two
+categories: control and experimental groups. The experimental
+group underwent 30-minute semi-structured interviews four
+times a week for six months and then twice a week for
+six more months, whereas the control group received weekly
+checkup phone calls [62]. Moreover, The participants are
+assessed three times during the study (baseline, 6 month, and
+12 month) with the MoCA score and a label of MCI or NC.
+The dataset contains audio-video recordings of the interviews that were conducted using user-friendly devices (i.e.,
+webcams). In addition, the phone check-ups are recorded. The
+videos capture the faces of the participants and record their
+responses to the interviewers. Particularly, the participants are
+over the age of 75 and live in either Portland (Oregon), Atlanta
+(Georgia), or Detroit (Michigan) in the United States. The
+experimental group consists of a total of 68 individuals, with
+an equal balance of cognitive conditions, specifically 34 each
+from MCI and NC. Although the dataset representations show
+diversified gender, they fall short in terms of racial and ethnic
+variety [52].
+Table I summarized the general information of the datasets
+discussed in Sec III. We should emphasize that those datasets
+are not the only publicly available datasets of non-invasive
+data. However, researchers have developed DL models utilizing those datasets.
+
+7
+TABLE I: The general information of the discussed datasets.
+Dataset
+Longitudinal
+Data Modality
+Language
+Conditions Distribution
+Studies
+Pitt [11]
+Yes
+Speech, Text
+English
+101 HC and 181 AD
+[39]–[41]
+WLS [31]
+Yes
+Speech
+English
+[42]
+ADReSS [32]
+No
+Speech, Text
+English
+156 HC and 156 AD
+[42]–[45]
+ADReSSo [33]
+No
+Speech
+English
+[46]–[48]
+NCMMSC2021
+No
+Speech, Text
+Chinese
+26 AD, 53 MCI, and 44 NC
+[34]
+PROMPT [49]
+Yes
+Speech, Text,
+Video, Biosignal
+Japanese
+[50], [51]
+I-CONECT [52]
+Yes
+Speech, Text,
+Video
+English
+34 MCI and 34
+NC
+[53]–[55]
+IV. MODELING AND DATA MODALITIES
+In this section, we review common machine-learning models
+utilized for detecting cognitive impairment and related conditions. We categorize these models into traditional machine
+learning models and deep machine learning models. While
+numerous studies have applied traditional machine learning
+models to cognitive impairment recognition tasks, we focused
+on studies that either directly used deep learning models or
+compared their performance with traditional machine learning
+approaches for building detection systems.
+In traditional machine learning methods, feature extraction is conducted separately from classification or recognition
+tasks. This means that, based on the data modality, specific
+features are extracted first, independently of the learning task.
+Once features are extracted, classifiers such as K-nearest
+neighbors (kNN), Support Vector Machines (SVM), Random
+Forests (RF), or Multilayer Perceptrons (MLP), among others, are trained. These traditional machine learning models
+are widely adopted in the field due to their straightforward
+implementation via open-source software libraries.
+In deep machine learning approaches, an end-to-end system is often built in which a neural network model learns and
+extracts discriminative features suitable for a particular task.
+These features are learned directly from the data during the
+training process.
+One of the commonly used deep learning architectures is
+Convolutional Neural Networks (CNNs), which are particularly effective at extracting and capturing hierarchical features from images. CNNs extract low-level features through
+initial layers and progressively capture high-level features
+through deeper layers. CNN architectures such as ResNet [63],
+VGG [64], and MobileNetV2 [65] are commonly used models
+for various tasks.
+Recurrent Neural Networks (RNNs) are another type of
+neural network that consider the sequential nature of data.
+They integrate input data across time steps, making them
+suitable for time series or sequential data. The two main
+architectures of RNNs are Gated Recurrent Units (GRU) [66]
+and Long Short-Term Memory (LSTM) [67] networks. These
+architectures can process sequential data in both forward
+and backward directions, providing a more comprehensive
+understanding of the sequences.
+Transformers, developed in 2017 [68], revolutionized many
+fields, especially NLP, by adopting a sequence-to-sequence
+approach with an attention mechanism. Initially introduced
+for machine translation [68], Transformers have since become useful in various applications including vision tasks.
+Notable Transformer models include Generative Pre-trained
+Transformer (GPT) [69], Bidirectional Encoder Representations from Transformers (BERT) [70] for NLP, and Vision
+Transformers (ViT) [71] for computer vision. The Transformer
+encoder is mainly used for feature extraction and classification
+whereas the Transformer decoder is utilized for data generation.
+A. Speech-based Modality
+Speech has emerged as a prominent non-invasive modality
+for
+detecting
+cognitive
+impairment.
+The
+appeal
+of
+speech-based methods lies in the data availability and costeffectiveness.
+1) Acoustic-based: Speech is usually recorded using mono
+or stereo microphones with various sampling frequencies (e.g.,
+16 kHz, 22 kHz, and 44.1 kHz) and stored as raw audio (wave
+files) or compressed (mp3 files). Then acoustic features are
+extracted from the signal waveforms. Researchers have taken
+various approaches to extract features that best represent the
+speech data. In the following, we discuss data preprocessing
+and feature extraction techniques, then review studies based
+on the adopted machine-learning techniques.
+a) Data Preprocessing and Feature Extraction: Effective
+data preprocessing and feature extraction steps are crucial for
+enhancing the performance of cognitive impairment detection
+models using speech signals. Feature extraction for acoustic
+data involves deriving informative components from the preprocessed speech signals.
+Preprocessing of speech signals is essential across various
+studies. Several studies have preprocessed the speech signals
+by implementing noise removal and amplitude enhancement
+mehods [72]. Most studies processed speech signals by splitting audio recordings into shorter frames [35], [83].
+Spectral acoustic features are descriptions of energy distribution across speech frequencies during a specific time.
+Notably, these features carry physical information about the
+speech. For example, Mel-Frequency Cepstral Coefficients
+
+8
+TABLE II: A summary of the reviewed studies that utilized acoustic features
+Evaluation∗(%)
+Authors (Year)
+Dataset
+Language
+Features
+Classification Models
+ACC
+F1
+AUC
+Kumar et al.(2022) [72]
+RF
+87.6
+87.5
+-
+Liu et al.(2021) [73]
+Pitt
+CNN-Bi-LSTM-attention
+82.6
+82.9
+-
+Meghanani et al.(2021) [74]
+ADReSS
+English
+Spectral Acoustic Features
+CNN-LSTM
+64.7
+-
+-
+Rodrigues Makiuchi et al.(2021) [50]
+PROMPT
+Japanese
+80.8
+-
+-
+Warnita et al.(2018) [75]
+Pitt
+GCNN
+73.6
+-
+-
+Syed et al.(2020) [76]
+ADReSS
+English
+Bi-LSTM
+74.6
+-
+-
+Nishikawa et al.(2021) [35]
+private
+Japanese
+Acoustic Feature Sets
+CNN-LSTM
+90.8
+89.7
+91
+Chlasta and Wolk (2021) [77]
+ADReSS
+DemCNN
+63.6
+69.2
+-
+Gauder et al.(2021) [47]
+ADReSSo
+English
+DL Audio Models
+CNN
+78.9
+-
+-
+Nishikawa et al.(2022) [78]
+private
+Japanese
+89.4
+84.4
+-
+Pranav et al.(2023) [79]
+ViT
+85.7
+92.3
+-
+Bertini et al.(2022) [80]
+Pitt
+English
+90.7
+88.5
+-
+Berini et al.(2021) [81]
+Italian
+log Mel-spectrogram
+Autoencoder + MLP
+90.6
+90.7
+-
+Pan et al.(2020) [82]
+private
+English
+Raw Speech
+SincNet, Bi-LSTM, Attention layer
+-
+87.3
+-
+∗Accuracy (ACC), Area Under the Curve (AUC)
+(MFCC) are extensively used because of their efficacy in
+capturing spectral dynamics [35], [72], [78], [84]. MFCCs
+often combine with other features such as jitter, shimmer, fundamental frequency, formants, noise-to-harmonic ratio (HNR),
+and gammatone cepstral coefficients (GTCC). Log-Mel spectrograms are another spectral feature that has a graphical
+representation of time and spectrum of the speech [74], [78]–
+[81], [85].
+Predefined feature sets are introduced to capture various
+useful information of the speech signals. These feature sets are
+mainly presented as challenges at the interspeech conference.
+For example, the Interspeech 2009 (IS09) emotion challenge
+feature set is proposed to show the emotional information of
+the speech. Sequential challenges at the Interspeech presented
+extended and other feature sets for paralinguistics analysis of
+the speech such as IS10 and ComParE. Studies have extracted
+these features for cognitive impairment detection [34], [45],
+[48], [50], [75], [76], [86].
+Similarly, the Geneva Minimalistic Acoustic Parameter Set
+(GeMAPS) feature sets consist of voice parameters with an
+extended set and are referred to as eGeMAPS [87]. This
+feature set is utilized in cognitive status detection in [47],
+[76], [88]. Advanced acoustic representations like i-vectors
+have been applied to capture speaker-specific variations and
+environmental context [89].
+The availability of public libraries made these feature extraction applicable across different approaches. For instance,
+OpenSMILE [90] and Librosa [91] are among the leading
+libraries in extracting different acoustic features.
+Deep learning audio models are advanced models that
+extract useful features of given speeches. These models are
+pre-trained on large audio datasets to represent generalized
+features of the speech. There are few leading models utilized for this purpose [92]. For example, Bag-of-Audio-Words
+(BoAW) [93], VGGish, wav2vec2.0 [16], and x-vector [94]
+are used in extracting different dimensions of the speech
+signal [34], [43]–[48], [77], [86], [88], [95].
+Raw speech signals refer to the speech’s waveform. This
+method omits the feature extraction step of the speech. Few
+studies adopted this approach in detecting cognitive impairment [82].
+Feature selection is a method to utilize the most important
+features out of the selected features. The feature selection is
+used to reduce the vector representation of the feature vectors.
+There are many methods in feature selection; however, we are
+referring to ones used in studies that detect the cognitive status
+of individual speeches [35]. The Mann-Whitney U-test and
+SVM feature selection are among the used methods in these
+studies.
+These
+feature
+representations
+capture
+speech
+nuances
+among studied individuals, highlighting patterns that may
+indicate cognitive decline.
+b) Modeling Techniques: The choice of modeling techniques plays a significant role in the performance of cognitive impairment detection systems. These techniques can be
+broadly categorized into traditional machine learning methods
+and deep learning methods.
+Traditional Machine Learning Methods
+Kumar et al. [72] compared the performance of traditional
+ML models such as SVM and RF against various deep learning
+models. They assessed the effectiveness of these models using
+the extracted features. Syed et al. [76] analyzed dementia
+detection using static modeling techniques like Support Vector Classifier (SVC) and RF. They further compared these
+methods with dynamic modeling approaches, underscoring
+the superior performance of dynamic modeling for capturing
+acoustic speech feature variations over time.
+Deep Learning Methods
+The transition towards deep learning has been driven by its
+superior performance in handling complex features and large
+datasets.
+Warnita et al. [75] explored CNN and Time-Delay Neural
+Network (TDNN) models with a gating mechanism for AD detection. Their approach demonstrated the ability of GCNNs to
+capture temporal information effectively. Nishikawa et al. [35]
+implemented a 1D CNN-LSTM model, combining convolutional layers’ feature extraction capabilities with LSTM’s
+temporal sequence modeling strength.
+Meghanani et al. [74] compared CNN-LSTM, ResNet-
+LSTM, and pBLSTM-CNN architectures for AD classification, highlighting the robustness of deep learning methods over
+traditional models. Liu et al. [73] combined CNN layers for
+local context modeling with Bi-LSTM layers for global context
+modeling, followed by attention pooling for AD detection,
+
+9
+demonstrating a comprehensive approach to modeling speech
+data. Kumar et al. [72] also implemented a Parallel Recurrent
+Convolutional Neural Network (PRCNN) to distinguish speech
+segments based on the speaker’s cognitive condition.
+Berini et al. [81] implemented an Autoencoder with GRU
+layers as an encoder and decoder of the network. Subsequently,
+they implemented an MLP as a classifier. Similarly, they
+proposed the same architecture in a later study that used a
+different dataset [80].
+Rodrigues Makiuchi et al. [50] used Gated Convolutional
+Neural Networks (GCNN) for dementia detection, showing
+that GCNN can effectively model the correlation between lowlevel descriptors across time frames. Chlasta and Wolk [77]
+proposed the DemCNN sequential architecture with multiple
+Conv1D layers, which outperformed traditional classifiers like
+SVM and MLP. Pranav et al. [79] demonstrated the superiority
+of ViT over traditional classifiers such as Random Forest when
+classifying Alzheimer’s detection using log-Mel spectrograms.
+In summary, robust data preprocessing and feature extraction coupled with advanced modeling techniques are essential
+for effective cognitive impairment detection using speech data.
+The evolving deep learning methods, especially those integrating convolutional, recurrent, and attention architectures,
+have shown substantial improvements over traditional machine
+learning models, offering promising directions for future research and application in this domain. Table II summarizes the
+reviewed studies and includes the evaluation performance of
+each approach which will be discussed later.
+2) Language-based: In recent years, we have observed a
+great advancement in the field of NLP. The success is mostly
+due to new modeling approaches such as Transformers and
+other algorithms for creating language models using deep
+neural networks and robust word embedding methods. These
+include pretrained LLMs such as GPT and BERT that are successfully applied in various tasks in NLP including sentence
+and text classification, sentiment and emotion classification
+to text generation, and language translation. In this section,
+we review the papers that utilized language as the main
+data modality for the detection of cognitive impairment and
+AD/ADRD. We first review the data preprocessing of the
+transcripts and then focus on modeling methods that build the
+detection system.
+a) Data Preprocessing and feature extractions:
+Researchers have applied methods to prepare and/or represent the
+language data. The first step in data preprocessing is transcribing the participants’ speech especially when the dataset does
+not already include manual transcriptions. Various methods
+employ pretrained deep learning methods to transcribe spoken words. This preprocessing step can significantly impact
+the performance of the detection system. Automated Speech
+Recognition (ASR) is a machine-learning application that
+helps convert human-recorded speech into text.
+Converting the words (aka tokens) into embedded vectors
+is essential in language preprocessing before implementing
+the deep learning models. In the following, we review the
+well-known and commonly used word embedding algorithms.
+Considering the tokenization of generating word embedding
+from transcripts, it has a special integration that removes stop
+words. Also, the performing of lemmatization ensures all the
+words in the transcript are valid [39].
+Word Embeddings are multi-dimensional vectors that hold
+words’ representations by capturing useful information from
+meaning and contextual usage. The word embedding generation can be categorized based on their integration methods. Word embedding systems are either Count-based or
+prediction-based method. Most studies have extracted word
+embeddings as the initial part of their work.
+Count-based
+methods
+represent
+words
+by
+their
+cooccurrence in a large corpus or mutual information of two
+words. Word2Vec [107], GloVe [108], and FastText [109]
+are among the well-introduced models in the field of NLP.
+Meghanani et al. [97] have extracted word embeddings by
+utilizing the GloVe model. Similarly, Chen et al. [102] investigated applying word embeddings from Word2Vec and GloVe.
+Interestingly, Khan et al. [39] investigated the possibility of
+initializing the word embeddings randomly and then performing the detection of participants’ cognitive conditions on the
+transcripts while comparing. However, word embeddings from
+GloVe provided the model with more reliable vectors to have
+an overall better detection.
+Prediction-based methods generate the word embeddings
+during predicting the language tasks and update the word
+embedding vectors in the training process. These methods are
+utilized in deep learning models and gained more attention
+after the introduction of Transformers.
+Several studies have compared the detecting algorithms
+by extracting the word embedding from different pretrained
+LLMs such as BERT [70], GPT [69] and then applying the
+same classifier [96], [110]. Although studies consider different
+datasets in their studies, they extracted the word embeddings of
+transcripts by utilizing the same language models [42]. Others
+have integrated different detecting methods while considering
+the same word embeddings [98].
+The method of implementing word embeddings goes for
+non-English languages as well with the consideration that
+the pretrained models have been trained using the targeted
+language. Studies have extracted word embeddings to detect
+the cognitive conditions of participants from different languages. For example, [99] have extracted word embeddings on
+Portuguese transcripts, whereas [101] have utilized the fasttext
+Multilanguage model to extract word embeddings of Chinese
+and English transcripts.
+The low-level linguistic features of transcripts are not exclusive on word embeddings. Studies have integrated other
+features that are linked to the word representation in the transcripts. The extraction of sentence embeddings has been studied in the detection of cognitive conditions from participants’
+transcripts. The extraction of sentence-level representation is
+adopted in [54], [106] and part-of-speech (PoS) features [104],
+[106].
+The take on the hesitation and gap filler words is the consideration of speech pauses from linguistic feature perspectives.
+Yuan et al. [98] have encoded the pauses of participants in
+the transcripts, where the pauses exceeding 50 ms are given
+unique characters. Consequently, pauses under 0.5s, between
+0.5s and 2s, and over 2s are assigned different characters.
+
+10
+TABLE III: A summary of the reviewed studies that utilized linguistic features
+Evaluation ∗(%)
+Authors (Year)
+Dataset
+Language
+Features
+Classification Model
+ACC
+F1
+AUC
+Searle et al.(2020) [96]
+SVM
+81
+-
+-
+Meghanani et al.(2021) [97]
+CNN
+83.3
+-
+-
+Yuan et al.(2021) [98]
+89.6
+-
+-
+Liu et al.(2022) [85]
+ADReSS
+88
+-
+-
+Guo et al.(2021) [42]
+ADReSS, WLS
+fine-tuning LLM
+97.9
+-
+99.2
+Roshanzamir et al.(2021) [50]
+augmentation layer with Bi-LSTM or LR
+88.08
+-
+-
+Fritsch et al.(2019) [41]
+Pitt
+English
+LSTM
+85.6
+-
+-
+Casanova et al.(2020) [99]
+private
+Portuguese
+RNN model
+-
+75
+-
+Liu et al.(2022) [100]
+Pitt, ADReSS
+English/Chinese
+93.5
+90.2
+-
+Tsai et al.(2021) [101]
+Pitt, NTUHV
+English/Chinese
+Transformer encoder
+84
+-
+92
+Chen et al.(2019) [102]
+BiGRU, CNN, attention layer
+97.4
+-
+-
+Khan et al.(2022) [39]
+Pitt
+Word Embeddings
+parallelized (CNN, CNN+Bi-LSTM, Bi-LSTM)
+93.3
+92.2
+85.7
+AI-Atroshi et al.(2022) [103]
+Private
+Hungarian
+GMM, DBN
+MLP
+90.3
+90.2
+-
+Wen et al.(2023) [104]
+Pitt
+PoS
+self-attention + attention layer + CNN
+92.2
+95.5
+97.1
+Alkenani et al.(2021) [105]
+Pitt, ADBC
+lexicosyntactics, n-gram
+several ML
+-
+-
+98.1
+Wang et al.(2021) [106]
+Pitt
+PoS, sentence embeddings
+C-attention
+91.5
+94.5
+97.7
+Fard et al.(2024) [54]
+I-CONECT
+English
+Sentence embeddings
+Transformer encoder
+85.2
+-
+84.8
+∗Accuracy (ACC), Area Under the Curve (AUC)
+BERT [70] and ERNIE [111] are fine-tuned based on the
+updated transcripts of the participants after encoding the
+pauses.
+Linguistic patterns are utilized to find patterns among cognitive impairment participants by calculating the lexicosyntactic
+feature and character n-gram spaces. Alkenani et al. [105]
+selected the feature spaces of lexicosyntactic features by
+finding the correlation based on the inter-correlations and
+target correlations according to a certain threshold.
+The perplexity values are calculated from transliterations of
+the participants based on both cognitive conditions as in [41].
+Similarly, Colla et al. [112] have calculated the perplexity of
+participants’ transcripts to detect cognitive impairment.
+Searle et al. [96] have calculated the Term Frequency-
+Inverse Document Frequency (TF-IDF) to down-wight the
+common cross-document words and increase the weights of
+rare cross-document but frequent intra-document words. This
+method integrates bag-of-words (BoW) to detect cognitive
+impairment. However, it omits the consideration of words’
+sequential representation.
+Saltz et al. [113] introduced a vocabulary size of typetoken ratio (TTR) of semi-structured interview transcripts.
+They compared the TTR to evaluate semi-structured interview
+transcripts based on the cognitive conditions of participants.
+Several language models are integrated with BERT [70], XL-
+Net [114], and ELECTRA [115] to extract linguistic features.
+The global contextual representation of the extracted features is desired to present an overall representation of the
+participants’ generated sentences. This technique is crucial
+especially when the word vectors are extracted either from
+count-based word embeddings or LLMs models. The extraction of local features is essential as they show the dependency
+of words’ vectors that are close to each other. Moreover,
+modeling techniques aim to capture overall patterns among
+each condition.
+b) Modeling Techniques: In this section, we review the
+adopted ML models for detecting the cognitive status of
+individuals. We review deep learning models by categorizing
+the models as convolutional-, recurrent-, and attention-based
+methods. Lastly, we review studies that integrated multiple
+models in their detection system.
+Convolutional-based: Meghanani et al. [97] investigated
+a CNN layer applied to the word embedding and fasttext
+model that uses a bag of n-grams to capture the local word
+orderings. They fused the results from two different models by
+utilizing Bootstrap aggregation. Furthermore, the RNN model
+is integrated in [99] by applying CNN architecture to have
+sentence segmentation of the transcripts.
+Recurrent-based: the LSTM cells are a great method for
+extracting the sequential dependency of linguistic features.
+Another integration of LSTM is bidirectional-LSTM, which
+is explained in the name as it calculates the dependency of
+the sequential vectors in both directions of 1D data stream.
+Hong et al. [116] adapted two layers of bi-LSTM that take
+the word vectors after that the hidden 64 cells are passed
+into an attention layer to have the final context vector. Also,
+Roshanzamir et al. [110] integrated an augmentation layer
+in their method while implementing a bi-LSTM to capture
+sequential information from the word embeddings.
+Attention-based: the attention mechanism effectively extracts contextual representation from multiple vectors. Hong et
+al. [116] proposed different attention layers that are added
+together to have a final context vector. They used multi-weight
+attention to better capture semantic and grammatical features
+in each sentence.
+The Transformers are integrated to capture the self-attention
+from sequential input vectors. Tsai et al. [101] implemented
+a transformer encoder with one layer of self-attention with
+four heads to classify a sequence of words from their word
+embeddings. They have initialized their model to classify the
+transcripts based on the cognitive conditions. Similarly, Fard et
+al. [54] have proposed a framework that utilized Transformer
+encoder modules to capture the sentence cross attention of
+participants’ transcripts from sentence embeddings. They also
+proposed a loss function, InfoLoss, to enhance the cognitive
+detection of participants in their framework.
+Multi-models: studies have implemented several deep
+learning models with different architectures and have an overall decision of AD/ADRD prediction. Khan et al. [39] have
+integrated three DL models in parallel (CNN, CNN followed
+by bi-LSTM, and bi-LSTM) then concatenate to a dense layer
+to make the final prediction. Another integration is conducted
+
+11
+in [100], where two modules are trained on the same data.
+The first one is the G-Net Module to extract common features
+and the other one is the P-Net Module to purify the extracted
+features. These modules are transformer-based architecture.
+Chen et al. [102] implemented a 1D CNN layer followed by
+an attention layer to capture local features during Linguistic
+feature extraction, whereas the implementation of Bi-GRU to
+extract the global features of the transcripts before predicting
+the cognitive condition. They concatenated the local and
+global features before predicting the participants’ conditions.
+Moreover, Wang et al. [106] integrated the CNN layer and
+Attention layer to propose a C-attention network these models
+use a transformer encoder backbone network. This ensures
+the efficiency of extracted local features among part-of-speech
+(PoS) and sentence embedding features.
+Language-based models consider the generated words or
+sentences of participants in detecting their cognitive status.
+The detection methods are achieved by transcribing the speech
+of participants, feature extraction (i.e., word embeddings),
+modeling integration, and classification/regression assigning.
+Using linguistic features, these methods with different approaches can distinguish the participants based on their cognitive conditions. Although there are attempts to detect cognitive impairment in various languages, it still requires more
+investigation on linguistic biomarkers across languages. For
+better organization, Table III illustrates the reviewed studies
+and contains the evaluation of these approaches.
+3) Acoustic and Linguistic Intergration: In this section, we
+cover studies that utilized acoustic and linguistic features of individual speech to detect cognitive impairment. These studies
+proposed methods to integrate or investigate the feasibility of
+selected features in the detection systems. In general, merging
+two different types of features in deep learning models helps
+boost the performance [124].
+a) Data preprocessing and feature extraction: The preprocessing steps and features extraction methods have been
+introduced previously in Sec.IV-A1a for acoustic methods and
+in Sec.IV-A2a for linguistic methods.
+b) Modeling Techniques: The modeling techniques employed in these studies can be divided into traditional machine
+learning methods and deep learning methods, each offering
+unique benefits in processing and analyzing speech data for
+cognitive impairment detection.
+Traditional Machine Learning Methods
+Traditional machine learning models such as logistic regression (LR), SVM, and RF remain valuable due to their robustness on small datasets and ease of implementation. Studies
+by Syed et al. [86], Edwards et al. [118], and Campbell et
+al. [89] have effectively utilized these models either standalone
+or as classification heads following feature extraction with
+deep learning backbones.
+Deep Learning Methods
+The rise of deep learning methodologies marks a significant advancement in speech data analysis. RNNs, particularly LSTM and GRU, are adept at handling sequential data.
+Rohanian et al. [120] and Mahajan et al. [122] successfully
+implemented RNNs to process linguistic and acoustic data,
+respectively. Bi-directional LSTM variants further enhance
+performance by utilizing contextual information from both
+directions in a sequence [123].
+CNNs are powerful for extracting crafted features through
+various convolutional and pooling layers, followed by fully
+connected layers. They leverage the hierarchical pattern extraction capabilities from structured data, highlighted in the
+research conducted by Koo et al. [44] and Mittal et al. [117].
+Transformer-based models like BERT and its variants (e.g.,
+RoBERTa [125], DistilBERT [126]) reflect the latest developments in contextual language understanding, as demonstrated
+by [121], [127]. These models excel in capturing contextual
+nuances within linguistic data, capitalizing on attention mechanisms for improved abstraction and prediction accuracy.
+Hybrid models that combine acoustic and linguistic features
+via techniques like feature fusion, late fusion, and feature
+aggregation represent cutting-edge integrations in this research
+field. Feature fusion is critical in multi-modal learning to enhance model performance. Techniques such as concatenation,
+averaging, majority voting, attention mechanisms, and gating
+mechanisms are widely used. For example, Koo et al. [44]
+and Wang et al. [48] employed attention layers to weight and
+sum features from different modalities effectively. The gating
+mechanism, as presented in works by Rohanian et al. [120]
+and Ilias et al. [121], similarly boosts the fusion of speech
+features. Late fusion involves collecting prediction scores from
+different branches and choosing the optimal result. Pappagari et al. [88] demonstrated the efficacy of this technique by
+combining scores from multiple acoustic and linguistic models
+to determine the best overall prediction.
+Mahajan and Baths [122] and Wang et al. [48] exemplify
+these sophisticated systems, which enhance prediction performance by effectively synthesizing heterogeneous data types.
+By leveraging and integrating these extracted features and
+modeling techniques, researchers can achieve robust and accurate detection of cognitive impairments from combined
+acoustic and linguistic speech data, as highlighted in the
+various reviewed studies. Thus, these studies underscore the
+progress and potential of speech-based screening tools for
+cognitive impairments, paving the way for impactful clinical
+applications. Table IV summarizes these studies and includes
+the evaluation of these studies, which is discussed later in the
+paper.
+B. Visual Modality
+In this section, we review papers that utilize visual modals in
+detecting cognitively impaired participants by applying Deep
+Learning methods. These methods utilized different sources
+of datasets. Thus, this section will discuss the studies’ data
+preprocessing and modeling techniques. The visual modality
+is mainly considering a facial or body video of participants.
+1) Data Preprocessing and feature extraction: The preprocessing and feature extraction of visual data depend on the
+type of the data. We discuss the different types of features
+that are sourced from a visual representation of participants.
+The video frames require feature extraction of most of the
+data causing the models to distinguish between cognitively
+impaired and normal cognitive participants. Feature extraction
+
+12
+TABLE IV: A summary of the reviewed studies that utilized acoustic and linguistic features
+Features
+Evaluation (%)
+Autors (Year)
+Dataset
+Language
+Acoustic
+Linguistic
+Fusion
+Classification Model
+ACC
+F1
+AUC
+Mittal et al.(2021) [117]
+raw speech
+WE
+Late fusion
+acoustic (CNN),
+linguistic (FastText-CNN,
+BERT, sentenceBERT)
+85.3
+84.4
+92.1
+Zolnoori et al.(2023) [84]
+Pitt
+MFCC, formant frequencies,
+voice intensity
+semantic disfluency, lexical
+diversity, syntactic, WE
+JMIM for feature
+selection
+LSTM, CNN, traditional
+ML
+89.6
+Edwards et al.(2020) [118]
+ComParE
+FastText, word2vec,
+Sent2Vec, StarSpace
+92.6
+92.3
+Syed et al.(2020) [86]
+speech paralinguistics,
+VGGish, ComParE, IS10
+WE
+SVM
+85.4
+Balagopalan et al.(2021) [119]
+lexico-syntactic feature
+SVM, RF, BERT
+83.3
+83.3
+83.3
+Syed et al.(2021) [45]
+IS10, ComParE, other
+paralinguistic
+syntactic, readability, lexical,
+WE
+pooling function
+SVM, LR
+91.7
+Rohanian et al.(2020) [120]
+prosodic, voice quality,
+spectral
+WE
+Gated Layer
+Bi-LSTM
+79.2
+Ilias and Askounis (2022) [121]
+log Mel-spectrograms
+WE
+BERT, ViT, Co-Attention
+with shifting gate
+90
+Li et al.(2023) [95]
+Whisper features,
+wav2vec2.0, wavLM
+BERT
+weighted sum or
+maximum layer, attention
+pool
+MLP
+91.4
+91.4
+Campbell et al.(2020) [89]
+i-vector, x-vector, rhythmic
+features
+WE
+averaging scores
+linguistic: RNN, acoustic:
+SVM
+82.4
+81.9
+90.2
+Cummins et al.(2020) [43]
+BoAW of MFCC, log-Mel,
+ComParE feature sets
+WE, Bi-LSTM: words and
+sentences
+acoustic
+Bi-LSTM with attention
+85.2
+85.4
+Mahajan and Baths (2021) [122]
+ADReSS
+English
+raw speech
+GloVe and PoS
+Dense layer
+acoustic (dense layers +
+GRU), linguistic (CNN +
+Bi-LSTM + attention)
+72.9
+Pan et al.(2021) [46]
+84.5
+Rohanian et al.(2021) [123]
+feature set from CONVAREP
+GloVe after ASR, word
+probabilities, disfluencies,
+unfiled pauses
+Gating
+Bi-LSTM
+84
+Pappagari et al.(2021) [88]
+x-vector, VGGish, eGeMAPS
+BERT embeddings
+Acoustic (ResNet-34),
+Linguistic (fine-tune
+BERT)
+84.1
+Wang et al.(2021) [48]
+ADReSSo
+English
+EMobase, IS10, VGGish,
+x-vector
+TTR, PoS
+CNN and multi-head
+attention
+80.3
+82.5
+WE: word embedding.
+can be achieved directly by deep learning models or by using
+predefined features from the visual data.
+Facial Attribute: facial videos are utilized in several studies
+by targeting predefined facial features or facial measures. Auction units and facial expressions are examples of predefined
+facial features whereas facial landmarks and head poses are
+for facial measures. Also, in more specific facial features,
+eye gaze, eye blink rate, and lip movements are calculated
+from extracted facial landmarks to distinguish the participants
+regarding their cognitive status. Other studies have integrated
+holistic facial features of participants in their methodologies.
+The availability of pretrained deep learning models in
+extracting facial features has encouraged researchers to adopt
+these models during the detection of the cognitive status of
+participants. Although these models reached a state-of-the-art
+(SOTA) performance on public datasets, it should be important
+to mention that these datasets have an underrepresentation of
+older adults which is essential in features that differ with the
+subject’s age.
+Fei et al. [24] have proposed a framework from a modified
+version of MobileNetV2 [65] in extracting FER features from
+each frame of the videos. They have pretrained the model on
+a privately labeled elderly facial expression dataset, which is
+an advancement over other studies because it has fewer bias
+samples against elderly facial expressions. Similarly, Jiang et
+al. [128] have extracted the FER of participants’ faces while
+viewing a sequence of images.
+Studies have calculated temporal facial features by tracking
+facial landmarks during the face recording of participants. This
+tracking result measures a useful aspect of facial representation
+of cognitive status. Alzahrani et al. [129] calculated an eye
+blink rate using six facial landmarks for each eye to distinguish
+participants’ cognitive status. Moreover, Tanaka et al. [130]
+used facial landmarks around the participants’ lips to segment
+their speech responses.
+Zheng et al. [51] applied pre-trained models to extract
+face mesh using MediaPipe [131], an open-source library that
+provides trained DL models for various computer vision tasks.
+They also extracted Histogram of Oriented Gradients (HOG)
+features from video frames using OpenFace Library [132]
+involving detecting facial landmarks as well. They feature
+engineered the features from the video frames. They also
+extracted Action Units (AU) intensities from the HOG and
+then calculated the mean and variances of the AU intensities.
+Other studies have integrated non-defined facial features
+in implementing deep learning models. These methods follow either embedding facial features or end-to-end detection
+frameworks. Firstly, embedded features can be extracted by
+utilizing an unsupervised learning approach to the data. Alsuhaibani et al. [55], for example, implemented a convolutional autoencoder to extract embedding facial features of
+participants from video frames. Secondly, the direct integration
+of data into the deep learning detection model would learn
+general facial representation during the detection task. Sun et
+al. [53] detection method involves a direct projection of
+spatial-temporal features into the proposed MC-ViViT model.
+Gait Pattern: the body’s behavioral observations are collected with either video-based systems or sensor-based systems. In this section, we review gaits captured from the camera
+system whereas we review later in Sec IV-C body features that
+are captured using sensors. These observations are intended to
+find abnormalities in walking or hand swing, and human gait
+in general. Studies have extracted the body skeleton points
+from depth cameras, commercially known as Kinect. After
+extracting the features, the body skeleton points are presented
+in a vector at each time instant.
+You et al. [36] identified key points from gait and EEG
+data, with the EEG data being downsampled from 5000Hz
+
+13
+to 250Hz for improved processing speed. During the data
+preprocessing stage, coordinate transformation was applied to
+the collected gait data. You et al. [37] analyzed gait patterns
+by extracting 25 joint points, with Special features of gait
+including average speed, half-of-gait cycle and variation, stride
+length and variation, hand swing, and head posture variation.
+Aoki et al. [57] employed the Hilbert-Huang transform, to
+analyze time series data, in the preprocessing of sensor data.
+The collected sensor data were then segmented into sequences
+of coordinates representing body joints.
+Gaze Tracking: Zuo et al. [38] utilized visual attention
+heatmaps generated during a 3D visual task, using a noninvasive eye-tracking system. The patterns captured in these
+heatmaps function as the fundamental features used to train a
+model.
+2) Modeling Techniques: In this section, we review the
+methods adopted by studies that utilized visual modalities in
+detecting cognitive impairment. We first start with traditional
+machine learning models and then deep learning models.
+Since models are limited to certain dimensions, studies have
+integrated splitting techniques for training the models and
+merging decision-making for participants’ cognitive condition
+prediction. Splitting a full video into segments before training
+the deep learning model is the method implemented in [51],
+[53], [55]. No window size is proven to be the best in detecting
+cognitive impairments from facial features. The window sizes
+of the data affect the DL models since the models’ weights
+are updated based on the training batches. The global decision
+in detecting participants’ cognitive impairments occurs after
+merging the window labels. The majority voting method is
+integrated into making a decision more often than averaging
+the confidence of all segments [51], [53], [55].
+This raises an issue of an imbalance of the number of
+segments within a participant’s data or from the classes.
+works integrated different methods to overcome this issue.
+the imbalance issue of the number of samples from subjects
+with different cognitive conditions is considered in [53], [55].
+Sun et al. [53] proposed a loss function to overcome the interand intra-class imbalance in the dataset. The proposed loss
+function moderated during their model training was able to
+boost the model toward more balance of the dataset. On the
+other hand, [55] integrated the weighted cross entropy loss
+function while training the model. Fei et al. [24] selected periods of the emotional occurrence of each participant manually
+which presented the most intense facial expression during the
+video. They integrated a traditional ML model (i.e., SVM)
+to classify the participants’ cognitive conditions. Zheng et
+al. [51] explored two different sizes of segmentation within
+a video to be presented, namely 1024 or 512 frames within a
+segment. Introducing the segmentation increased the number
+of instances because they considered the mean and variances
+of AU intensities. Note that the PROMPT dataset [49] contains
+videos with a frame rate of 30 fps.
+Zuo et al. [38] focused on gaze tracking, utilizing a multilayered comparison convolutional neural network (MC-CNN)
+for classification between individuals with AD and NC, utilizing similarity between pairs of heatmaps associated with AD
+and normal cognitive states.
+These attempts to detect cognitive impairment using visual modalities and deep machine learning approaches are,
+however, still limited compared to other modalities such as
+speech and language. Although it has a late start compared
+to language, it gained momentum in recent years with the
+advancement of computational powers. Similar to other modalities, temporal information must be considered; however, visual modalities have a more dimensional representation. Thus,
+extracting features such as AU, FER, and skeleton joint points
+are widely adopted in the visual aspect. Consequently, endto-end detection frameworks are rarely implemented. This
+is because they increase the model complexity dramatically.
+Table V shows a summary of these studies along with the
+evaluation of their approach.
+C. Other Data Modalities
+In this section, we review research that utilized data modalities other than speech, and videos. The data modalities include
+those acquired by wearable and non-wearable measuring devices to detect cognitive impairment or AD/ADRD. These data
+mainly capture the motoric mobility of subjects. We discuss
+the essential aspects such as the activities under consideration,
+the feature extraction process, and the methodologies implemented in each case.
+1) Data Preprocessing and Feature Extraction: In this
+section, we describe the process of extracting features to
+maintain a vital role in the automated pipeline for detecting
+cognitive impairment. This primary process, dependent on the
+type of data employed, is fundamental for identifying patterns
+indicative of cognitive conditions.
+Gait Data: Key points that are extracted from gait data, are
+the main features utilized for detecting cognitive impairment.
+Bringas et al. [56] recorded acceleration changes in the X,
+Y, and Z axes over time, along the temporal dimension, to
+predict the AD stage. Ghoraani et al. [59] used the PKMAS to
+extract gait features from the Zenomat system and GAITRite
+software for the GAITRite system. Shahzad et al. [58] collected specifically mobility data, including a combination of a
+triaxial accelerometer and triaxial gyroscope.
+Handwriting: Handwriting-related features are utilized in
+the study of cognitive impairment assessments. El-Yacoubi et
+al. [61] analyzed text-based features, including horizontal and
+vertical velocities, the first derivative representing acceleration,
+second derivatives indicating jerk, direction and curvature, and
+the duration of pen-lifts. Cilia et al. [29] utilized handwritingrelated features, including peak vertical velocity and acceleration, average absolute velocity, normalized jerk, and pen
+pressure, alongside the analysis of other features such as the
+number of strokes, age, and education.
+Daily Routines: Narasimhan et al. [60] identified a set of
+12 features associated with diverse daily activities such as
+mobility, morning care, personal hygiene/grooming, eating,
+and memory, alongside health assessment score observed
+at the assessment time point, containing both physical and
+cognitive/behavioral aspects.
+2) Modeling Techniques: In Sec. III-C and Sec. IV-C1 we
+described the data source and the feature extraction processes,
+
+14
+TABLE V: A summary of the reviewed studies that utilized visual and motoric mobility modalities
+Evaluation (%)
+Autors
+Dataset
+Modality
+Features
+Classification Model
+ACC
+F1
+AUC
+Sun et al.(2024) [53]
+Facial
+raw sequence of frames
+ViViT with multi-branch classifier
+90.6
+93
+60.4
+Alsuhaibani et al.(2024) [55]
+I-CONECT
+AutoEncoder for facial features, interation
+features
+Transformer encoder
+87.5
+89
+87
+Zheng et al.(2023) [51]
+PROMPT
+Face Mesh
+LSTM
+79
+81
+-
+Fei et al.(2022) [24]
+emotion occurance
+SVM
+73.3
+-
+-
+Zuo et al.(2023) [38]
+Eye gaze
+heatmaps from eye gaze
+multi-layed comparison CNN
+83
+81
+-
+You et al.(2020) [36]
+Gait and EEG
+AST-GCN to extract features from gait,
+ST-CNN to extract features from EEG
+93.1
+-
+-
+You et al.(2021) [37]
+body movement statical measurement
+FC, LSTM, MLP
+90.5
+-
+-
+Ghoraani et al.(2021) [59]
+PKMAS
+86
+88
+-
+Shahzad et al.(2022) [58]
+SVM
+70
+-
+-
+Bringas et al.(2020) [56]
+daily activity
+sequence of accelerater data
+CNN
+90.9
+89.7
+-
+El-Yacoubi et al.(2019) [61]
+horizontal and vertical velocities,
+acceleration, and jerk, direction and
+curvature, pen-lift duration
+Bayes’ classifer
+74.3
+-
+-
+Cilia et al.(2021) [29]
+Handwriting
+peak vertical velocity and acceleration,
+jerk, pen pressure, strikes, age, education
+SVM, DT, NN
+90.4
+-
+-
+Narasimhan et al.(2020) [60]
+private
+daily activity
+sleep duration, cooking time, and walking
+speed
+LSTM
+77.5
+-
+respectively. In this section, we review the prediction methodology of the research that utilized movement measured data
+for the detection of cognitive impairment. From a high-level
+perspective, the following section studies two main categories:
+traditional machine learning methods and deep learning methods.
+Traditional Machine Learning Methods: In the following, we review the research that utilized traditional machine
+learning algorithms including SVM, Decision Tree (DT), and
+Bayesian networks to predict cognitive impairment.
+Ghoraani et al. [59] focused on gait data, utilizing an SVM
+to distinguish between MCI and AD based on gait data and
+MoCA scores separately. The analysis utilized a three-channel
+SVM model, and the ultimate prediction was performed via
+majority voting. Shahzad et al. [58] focused on gait data.
+The proposed approach involved combining sensor data with a
+cognitive task, specifically a 10-meter walkway with a subject
+wearing inertial sensors consisting of mobility data gathered
+using a triaxial accelerometer and triaxial gyroscope. The
+analysis utilized a multi-kernel SVM to distinguish between
+individuals with MCI and NC. El-Yacoubi et al. [61] proposed
+a Bayesian classifier aiming to detect AD based on handwriting patterns. Cilia et al. [29] conducted a handwriting study
+and proposed an ensembled classifier that included DT, Neural
+Networks (NN), and SVM to predict cognitive impairments
+Deep Learning Methods: In the following, we review the
+research that utilized deep learning models to predict cognitive
+impairment.
+Narasimhan et al. [60] focused on daily routines, combining
+activities tracking data with health assessment records as input
+to an LSTM model to predict the stage of AD. You et al. [36]
+conducted a gait data analysis and proposed a deep model
+including attention-based spatial-temporal graph convolutional
+networks (AST-GCN) as well as a spatial-temporal convolutional network (ST-CNN) to distinguish between HC and MCI
+or AD.
+Bringas et al. [56] focused on gait data and proposed an
+MLP where the input for the network was a 10804 × 3 tensor,
+corresponding to the time dimension and axes (x, y, z), to
+predict and specify the stage of AD. You et al. [37] focused on
+gait data and proposed 1-dimensional CNN, where the input is
+1 hour of accelerometer data and the output is the probability
+scores concerning MCI and AD.
+These studies have attempted to detect cognitive impairment
+using data collected through measuring devices. Meanwhile,
+Table V summarizes these studies, as discussed in this section,
+while also mentioning the evaluation results.
+V. PERFORMANCE EVALUATION
+In this section, we discuss the performance of the methods
+reviewed in Section IV through common evaluation metrics
+across all the studies. We will further explore these methods
+and analyze the justifications for their results.
+Researchers use various methods to evaluate their models,
+typically through test subsets within the dataset or by applying
+statistical evaluation methods. Cross-validation, a common
+statistical evaluation method, is used to evaluate models for
+detecting cognitive conditions, with 5-fold, 10-fold, and leaveone-out being the most frequently employed methods. Some
+studies, such as Bertini et al. [80], empirically selected 20-fold
+cross-validation. The number of folds considers the data bias,
+variance, and computational complexity. Ideally, it depends on
+the dataset size; thus, the number of folds should be increased
+when the dataset size is small. On the other hand, fewer folds
+are sufficient for large datasets. Typically, 5 to 10 folds are
+standard in machine learning.
+The evaluation metrics in studies using DL models include accuracy, area under the receiver operating characteristic
+(ROC) curve (AUC), F-score, precision, recall, sensitivity, and
+specificity, while classification error rate and ROC are rarely
+used. The root mean squared error (RMSE) is the only metric
+used for regression tasks. Most classification tasks focus on
+binary detection, with accuracy being widely reported despite
+its limitations on imbalanced datasets. Therefore, accuracy is
+often supplemented by other metrics that account for false
+positives (FP) and false negatives (FN), with the F1 score
+being the second most commonly used metric among the
+reviewed studies.
+The evaluation of methods and approaches for cognitive
+impairment detection can be better understood by considering the various modalities and distinct performance metrics
+
+15
+used across different studies. In the following sections, we
+discuss detection performance categorized by their modalities
+by briefly mentioning the approach and the evaluation results.
+A. Acoustic Modality
+Syed
+et
+al.
+[76]
+employed
+Bi-LSTM
+with
+IS10paralinguistics feature sets on the ADReSS dataset, achieving a
+classification accuracy of 74.55%. This performance highlights
+the potential of traditional feature sets in conjunction with
+deep learning models, specifically the importance of paralinguistic features in detecting cognitive impairments. Chlasta
+and Wolk [77] utilized the VGGish model to extract features
+with a DemCNN model on the same dataset, resulting in a
+lower accuracy of 63.6%. However, their precision, recall,
+and specificity metrics all scored 69.2%, indicating a balanced
+performance across these metrics. This suggests that while the
+overall accuracy was lower, the model maintained consistent
+detection capabilities for both classes. Meghanani et al. [74]
+achieved a classification accuracy of 64.58% with a CNN-
+LSTM model using MFCCs, and their derivatives. Including
+spectrogram-based features and temporal dynamics through
+LSTM layers improves the performance compared to the Dem-
+CNN detecting model using features extracted from VGGish.
+Gauder et al. [47] reported an accuracy of 78.87% on
+the ADReSSo dataset using a multi-feature approach that included eGeMAPS, Trill, Allosaurus, and Wav2vec2.0 features
+processed through a series of 1D CNNs. This indicates that
+a multi-faceted approach to extract comprehensive acoustic
+features can substantially enhance the model’s performance in
+detecting cognitive impairments.
+Several studies using the Pitt dataset have shown varying
+levels of success. Liu et al. [73] used spectral features of
+phonemes with a CNN-Bi-LSTM-attention pool-FC layer and
+achieved an accuracy of 82.59%, with a recall of 85.24% and
+a precision of 82.94%, suggesting their model was effective
+in identifying subtle variations in phonetic features related
+to cognitive impairments. Furthermore, Kumar et al. [72]
+reported an accuracy of 87.6% by employing a RF classifier
+with an extensive set of 44 acoustic features while the PRCNN
+achieved an accuracy of 85% and an F1-score of 85.1%
+using 62 features within 25ms segments. Similarly, Warnita et
+al. [75] reported an accuracy of 73.6% using GCNN utilizing
+sets of Interspeech features. Additionally, Bertini et al. [80]
+achieved a classification accuracy of 90.7% and an F1-score
+of 88.5% using an Autoencoder with GRU encoder and MLP
+to classify log-Mel spectrogram images, emphasizing the value
+of advanced feature extraction and autoencoder methodologies
+in enhancing classification performance. Similarly, Pranav et
+al. [79] employed a ViT on log-Mel spectrograms, attaining
+an accuracy of 85.7% and an F1-score of 92.3%.
+Utilizing non-English datasets, Bertini et al. [81] have
+implemented an Autoencoder with GRU encoder and MLP
+to classify log-Mel spectrogram features on a private Italian
+dataset with a detection accuracy of 90.6% and an F1 of
+90.7%. Moreover, Nishikawa et al. [35] reported a classification accuracy of 90.8% with a 1-d CNN-LSTM model on a
+private Japanese dataset. In addition, using another approach,
+Nishikawa et al. [78] achieved an accuracy of 89.4% using
+ViT b16, demonstrating consistency and robustness across different languages and feature sets. On the other hand, Rodrigues
+Makiuchi et al. [50] have utilized the PROMPT dataset [49]
+using GCNN to achieve a detection accuracy of 80.8% among
+Japanese individuals.
+Overall, studies that extracted comprehensive acoustic features achieved better performance compared to studies that
+used a few types of acoustic features. Although studies that
+utilized acoustic feature sets achieved an adequate detecting
+performance, they are on the lower scale of detecting cognitive
+conditions. Log Mel-spectrogram contains an indication of the
+speaker’s cognitive status. Thus, advanced computer vision
+models reached a high detection performance. Table. II shows
+the studies results of acoustic feature approaches.
+B. Linguistic Modality
+In utilizing the ADReSS dataset, Searle et al. [96] implemented an SVM classifier on features on DistilBERT word
+embeddings and TF-IDF and achieved an accuracy of 81%.
+This study combines statistical linguistic analysis with modern
+embeddings for cognitive impairment detection. Additionally,
+the integration of LASSO regression yielded an RMSE of
+4.58, demonstrating substantial precision in regression tasks.
+Meghanani et al. [97] also utilized word embeddings in
+conjunction with a CNN, highlighting the potential of convolutional networks to capture spatial patterns within linguistic
+features, reaching an accuracy performance of 83.3%.
+Moreover, Yuan et al. [98] achieved an accuracy of 89.6%
+by fine-tuning LLMs like BERT and ERNIE, which encoded participants’ pauses into transcripts. This suggests that
+leveraging large pre-trained models and fine-tuning them for
+domain-specific tasks significantly enhances detection capabilities. Liu et al. [127] also reported an accuracy of 88% by
+fine-tuning DistilBERT with logistic regression on the same
+dataset, reinforcing the efficacy of using compact and powerful
+Transformer models in cognitive impairment classification.
+Saltz et al. [113] utilized multiple word embeddings (BERT,
+XLNet, ELECTRA) and type-token-ratio, and obtained varied
+results across different datasets (ADReSS, Pitt, UW). Specifically, they achieved accuracies of 76%, 90%, and 74% on
+the Pitt dataset, augmented ADReSS, and UW, respectively,
+highlighting the robustness of their proposed methods across
+different datasets. Guo et al. [42] achieved an accuracy of
+97.9% using fine-tuned BERT, aided by integrating WLS
+controls with the ADReSS dataset. The AUC of 99.2% further
+demonstrates this model’s exceptional discriminative ability
+due to supplementary training samples.
+For the Pitt dataset, several studies highlighted varying
+successes. Fritsch et al. [41] achieved an accuracy of 85.6%
+using an LSTM model, while Chen et al. [102] reported an
+accuracy of 97.42% by utilizing a combination of BiGRU and
+CNN models to extract global and local contextual features
+via GLoVe embeddings. This indicates the potential of sophisticated architectures to capture nuanced linguistic features.
+Roshanzamir et al. [110] implemented an augmentation layer
+with Bi-LSTM or logistic regression and achieved an accuracy
+
+16
+of 88.08%, with precision and recall scores of 87.23% and
+90.57%, respectively. This study underscores the importance
+of augmentation in improving model robustness and performance. Liu et al. [100] and Tsai et al. [101] also achieved
+accuracies of 93.5% and 84%, respectively, using transformer
+encoders, reaffirming the versatility and effectiveness of Transformer architectures on cognitive impairment detection.
+Additionally, Khan et al. [39] applied a stacked DNN
+combining CNN, Bi-LSTM, and MLP, achieving 93.31%,
+92.2%, and 85.7% for accuracy F1, and AUC, respectively,
+indicating that hybrid models leveraging both local and sequential features are highly effective. Wen et al. [104] further
+verified the efficacy of combining syntactic features with
+attention mechanisms and CNNs, achieving an accuracy of
+92.2%. Wang et al. [106] utilized POS tags and sentence
+embeddings in a C-attention model, achieving an accuracy of
+91.5% and an AUC of 97.7%, emphasizing the effectiveness
+of contextual and syntactic features in cognitive impairment
+detection. Similarly, Fard et al. [54] have generated sentence
+embeddings and utilized a Transformer encoder with proposed
+infoLoss for calculating the cost function to achieve an accuracy of 85.16% and an AUC of 84.75% on the I-CONECT
+dataset.
+In studies involving multiple datasets, Alkenani et al. [105]
+reported an AUC of 98.1% and 99.47% on spoken and writing
+datasets, respectively, using lexicosyntactic and n-gram features in stacked fusion models, demonstrating the efficacy of
+ensemble learning across different linguistic contexts. Finally,
+studies on non-English datasets showed promising results with
+Casanova et al. [99] achieving 75% accuracy using RNNs
+for Portuguese data, and AI-Atroshi et al. [103] achieving
+accuracies of 90.28% and 86.76% on Hungarian data using
+MLP with Gaussian mixture model and deep belief network.
+Overall, we can conclude that large language models have
+the lead in detection performance. Nevertheless, other attempts
+using various combinations of features and classification models also demonstrated impressive detection performance. In
+addition, fine-tuning LLMs with control participants from
+other datasets helped the study stand out in the evaluation
+results. Table. III shows the overall approaches of linguistic
+features and their results.
+C. Acoustic and Linguistic Modalities
+In studies utilizing the ADReSS dataset, Campbell et
+al. [89] employed RNN for linguistic features and SVM for
+acoustic features, achieving an accuracy of 82.41% using
+an averaging score fusion approach. Cummins et al. [43]
+improved these results, obtaining an 85.2% accuracy with Bi-
+LSTM models, leveraging attention mechanisms tailored for
+different acoustic features. Edwards et al. [118] reached an
+accuracy of 92.6%, underscoring the effectiveness of linguistic
+models using embeddings like FastText.
+Koo et al. [44] experimented with CNN and Bi-LSTM
+models but evaluated them differently, achieving a comparative
+baseline increment, whereas Rohanian et al. [120] achieved
+an accuracy of 79.2% with Bi-LSTM models using gated
+layer aggregation, both for classification and regression tasks.
+Syed et al. [86] highlighted the strengths of traditional SVM
+models, achieving 85.42% accuracy, with regression RMSE of
+4.3.
+Later studies further diversified approaches. Balagopalan et
+al. [119] successfully showed BERT’s ability in classification
+with an accuracy of 83.32% while employing linear and ridge
+regression with an RMSE of 4.56. Meanwhile, Mahajan and
+Baths [122] resulted in an accuracy of 72.92% after applying
+dense layer fusion. Syed et al. [45] detecting cognitive impairment with accuracy reaching 91.67% using an SVM model,
+emphasizing the efficacy of linguistic features.
+The research by Ilias and Askounis [121] used ViT and
+co-attention gates, achieving an RMSE of 3.61, while Li et
+al. [95] combined Whisper, BERT, and task-correlated features
+to attain an accuracy of 91.41% with a solid AUC of 91.38%.
+Moreover, Rohanian et al. [123] used Bi-LSTM with gating
+and disfluency features, achieving an accuracy of 84%, and
+Pappagari et al. [88] combined ResNet-34 for acoustic and
+fine-tuned BERT models for linguistics, highlighting superior
+linguistic performance and achieving RMSE scores of 3.85.
+Studies by Mittal et al. [117] and Zolnoori et al. [84] on
+the Pitt dataset demonstrated deep models with late fusion,
+yielding accuracy figures of 85.3% and 89.55%, respectively,
+the latter leveraging JMIM selection techniques.
+Overall, these studies collectively demonstrate that optimal performance in cognitive impairment detection is attained through deep learning architectures that effectively fuse
+acoustic-linguistic features, where advanced word embeddings
+like BERT frequently act as significant enhancers. The outcomes suggest room for continued exploration into model
+architectures and feature fusion methodologies to further refine and personalize cognitive health assessments. Table. IV
+presents the reviewed studies of their approaches and evaluation results.
+D. Visual Modality
+Several studies have concentrated on using facial features
+to detect cognitive impairment, leveraging the advancement of
+deep-learning techniques. Zheng et al. [51] utilized face mesh,
+Histograms of Oriented Gradients, and Action Units extracted
+from facial images, achieving an accuracy of 79% with an
+LSTM for face mesh and HOG. Similarly, Alsuhaibani et
+al. [55] applied transformer encoders on latent facial and
+interaction features from the I-CONECT dataset, reaching an
+accuracy of 87.5%. Using autoencoders likely facilitated the
+extraction of high-level abstract features, which, when combined with the transformer encoder models, led to enhanced
+predictive capabilities. The F1-score of 89% underscores the
+model’s reliability in distinguishing cognitive impairment.
+Continuing with the I-CONECT dataset, Sun et al. [53]
+demonstrated the efficacy of a ViViT model with a multibranch classifier applied to sequences of video frames, achieving an accuracy of 90.63%. However, this study reported an
+AUC of 60.42%. On the other hand, Fei et al. [24] employed
+MobileNetV2 for facial expression recognition and emotion
+occurrence, paired with an SVM, yielding an accuracy of
+73.3%. This indicates that while deep CNNs like MobileNetV2
+
+17
+can effectively extract facial expressions, additional advanced
+feature processing might be necessary to improve cognitive
+impairment classification outcomes.
+Gait analysis has also been a key focus on visual modalities.
+Aoki et al. [57] utilized the Hilbert-Huang Transform for gait
+features from Kinect captured videos, classified using an SVM
+classifier, achieving an AUC of 74.7%. This transformation
+likely enhanced the interpretability of non-linear and nonstationary gait patterns associated with cognitive changes.
+You et al. [36] integrated features from gait and EEG data
+using AST-GCN for gait and ST-CNN for EEG, yielding a
+classification accuracy of 93.09% for HC vs MCI. The excellent performance suggests that combining multiple modalities
+can significantly improve the granularity and accuracy of
+cognitive impairment detection. You et al. [37] investigated
+gait features by rearranging data points and analyzing average
+speed, stride length, and other gait cycle variations, using FC,
+LSTM, and MLP models. This study reported an accuracy of
+90.48%, with a recall of 92% and a specificity of 88.24%.
+From eye gaze data, Zuo et al. [38] created heatmaps
+of individuals, implementing a multi-layer comparison CNN.
+With an accuracy of 83%, the study highlights eye gaze as a
+significant predictor, endorsed by an F1 score of 81%, offering
+valuable insights into eye gaze association with cognitive
+status.
+Overall, studies utilizing visual modalities have shown
+promise in adopting this modality for cognitive impairment
+detection. However, further studies are required to ensure the
+robustness of these studies. Table. V shows the conducted
+studies methods and their evaluation results.
+E. Other Data Modalities
+In handwriting analysis, El-Yacoubi et al. [61] extracted
+features such as horizontal and vertical velocities, acceleration,
+and jerk among others. Utilizing a Bayes classifier, the study
+achieved an accuracy of 74.3%, highlighting the critical role
+of velocity-based features in enhancing detection performance.
+Moreover, Cilia et al. [29] explored peak vertical velocity
+and pen pressure, employing a combination of SVM, DT,
+and neural networks. Achieving a 90.4% accuracy, the study
+demonstrated the potential of integrating multiple classifiers
+for nuanced cognitive assessment, especially distinguishing
+patient handwriting from healthy individuals using SVM.
+By capturing gaits from motion measuring devices, Ghoraani et al. [59] instrumented gait analysis with PKMAS
+for feature extraction alongside statistical feature selection
+methods. The SVM classifier achieved an accuracy of 86% in
+distinguishing healthy subjects from those with MCI and AD.
+Shahzad et al. [58] also investigated gaits features by utilizing
+a multi-kernel SVM, resulting in an accuracy of 70%.
+For daily activities, Bringas et al. [56] adopted a CNN
+to analyze accelerometer data from daily activities. These
+features were subsequently classified using an MLP, resulting
+in an accuracy of 90.91% with an F1 score of 89.7%. This
+emphasizes the model’s robust classification capabilities.
+Ultimately, motoric mobility ability is an indicator of cognitive conditions by using deep learning methods. However, it
+lacks more studies across various measuring devices. Table. V
+shows the reviewed studies along with their evaluation results.
+VI. CHALLENGES AND FUTURE DIRECTIONS
+In Sec. IV & V, we reviewed and explained the growth and
+success of deep machine learning methods using non-invasive
+indicators including speech, vision, and movement-measured
+data for the detection of cognitive impairments, such as
+AD/ADRD. Despite their success, several challenges still exist
+that should be addressed to realize the full potential of noninvasive indicators. This section categorizes these challenges
+and suggests future research directions to advance the field.
+A. Challenges
+We classify the existing challenges into three main categories: data-related, methodological, and medical adaptation.
+Each category presents unique obstacles that need to be dealt
+with to improve the efficacy and reliability of ML-based
+cognitive impairment detection methods.
+1) Data-Related Challenges: Despite the success of deep
+learning models in various domains [133]–[136], in general,
+these models have a heavy reliance on data. Specifically, for
+medical applications, the dependency on vast amounts of highquality labeled and unlabeled data poses several challenges
+including the standardization, diversity, and data accessibility
+used for training and validating deep learning models. In the
+following, we delve into these data-related challenges.
+Standardization: Medical researchers often capture various
+indicators of cognitive decline. Next, these indicators are
+examined by technical researchers with the ultimate goal
+of utilizing and integrating them into deep machine-learning
+methods for developing AD/MCI detection systems. This process needs to be standardized. Specifically, standardizing data
+collection is crucial as it reduces preprocessing requirements
+and ensures consistency [137]. This standardization improves
+data quality, making preprocessing more efficient and reliable.
+For instance, gaits patterns are captured using either camerabased systems [57] or motion sensing-based systems [58].
+Although they extracted different feature maps, the movement
+indicators should align with the neuroscientific explanation for
+abnormalities due to cognitive decline.
+Diversity: Deep learning models often face challenges due
+to data imbalance, where the majority class dominates the
+dataset. This issue can lead to biased models performing well
+in the majority class. Thus, it makes the sensitivity or the
+specificity values skewed [138]. Despite various strategies being used to cope with this issue, such as data augmentation and
+re-sampling techniques [139], and algorithmic methods [133],
+[140], a balanced dataset leads to investigating the data features rather than resolving the issues. Addressing this issue is
+crucial for developing reliable detection methods.
+Most public datasets (see Sec. III for more details) consider
+a balanced representation of different conditions and genders
+of individuals. However, the diverse demographic representation of race and ethnicity is either limited as it is mentioned in
+the I-CONECT dataset [52] or not acknowledged [11], [49].
+
+18
+Data Accessibility: The data accessibility strengthens the
+development of deep learning models in general. As we
+discussed in Sec. III, some modalities do not have available public datasets to researchers. Thus, this is essential in
+configuring and comparing the developed DL-based systems.
+Due to several reasons, such as privacy concerns, intellectual
+property rights, or institutional policies, researchers across
+various laboratories would not be able to gain access to
+restricted or proprietary datasets.
+This lack of access to data creates barriers to entry for many
+research groups, particularly those with limited resources, as
+they are unable to leverage valuable data that could drive
+significant advancements in their work. This limitation not
+only restrains innovation but also hinders the collaborative
+nature of scientific research, where sharing data and results
+can lead to more rapid and meaningful developments.
+Generalization and bias are critical considerations in studies
+that aim to be utilized as screening tools. Generalization refers
+to the ability of a model to perform well on new, unseen
+data, outside of the original study sample. This is crucial
+in cognitive impairment detection to ensure that findings can
+be reliably applied to diverse populations beyond the study’s
+participants. Bias may arise from factors such as overrepresentation of certain demographic groups (e.g., age, gender, race),
+which can skew results and reduce the model’s effectiveness
+across different populations from clinical settings.
+2) Methodological Challenges: We classify the methodological challenges into the following categories: Unexplainability of Deep learning methods, Longitudinal analysis, Computational complexity, and Transfer learning issues in medical
+settings.
+Unexplainability-Related Issues: Overall, deep learning
+techniques are hardly explainable [141], causing significant
+issues for applications that require transparency and interpretability, such as healthcare and cognitive impairment studies [142], [143]. Primarily, certain modalities, such as visual
+ones (see Sec IV-B), are still being explored, and without
+explainable indicators, the conclusions from these studies may
+be unclear. Robust validation of public datasets is essential for
+reliable detection of cognitive impairments. Likewise, despite
+the high detection performance reported by many research (see
+Sec. V), it is crucial, from a medical standpoint, to identify
+and explain the indicators of cognitive conditions.
+Longitudinal Analysis Issue: Longitudinal studies track
+features over time, offering crucial insights into the progression of cognitive impairment from a neurological perspective.
+However, datasets, such as the ADReSS, capture only a
+single recording per subject [32]. In contrast, datasets like the
+Pitt Corpus offer a more comprehensive view over several
+years [11]. Besides, most studies proposed to use a noninvasive modality for detecting AD (see Sec. IV), do not
+consider the timing of when data was collected.
+Computational Complexity: Many studies on cognitive
+detection systems using non-invasive data prioritize cognitive
+status detection over computational complexity. These studies
+harness various DL methods in their detection systems regardless of the computational complexities. For instance, Syed et
+al. [86] enhanced the detection performance of their approach
+by fusing five LLMs. However, this performance achievement
+consequently came at the cost of computational resources.
+Meanwhile, XnODR/XnIDR takes XNOR operation to lower
+the computational complexity, but they cause information
+loss for high-resolution images [144]. Therefore, DL studies
+generally consider the computational complexities a key factor
+for comparison.
+Transfer Learning-Related Issues: Transfer learning in
+deep learning approaches has shown promise in handling
+complex tasks [145]–[147]. However, adapting these models
+to specific cognitive impairment datasets remains a challenge
+that requires further exploration due to some existing issues
+including data heterogeneity, and domain specificity.
+Data heterogeneity is an integral part of many cognitive
+impairment datasets, indicating these datasets provide more
+than one data modality (see Sec.III for more details about
+existing datasets and the available data modalities). Usually,
+this heterogeneity makes it hard to apply previously trained
+models to these datasets [148].
+Likewise, in general, medical data (including cognitive data)
+might contain complex and nuances patterns that require more
+complex deep learning models to be captured. Hence, generalpurpose models (e.g. models trained on ImageNet [149]) often
+show poor performance when applied to non-invasive cognitive data [150]. In addition, proposing DL models that perform
+well across different datasets in a specific task requires a
+meticulous approach to model selection, architecture tuning,
+and robust evaluation strategies.
+3) Medical Adaptation Challenges: Integration of deep
+learning detection systems in clinical settings faces a few
+technical challenges above the regulation of introducing a
+new detecting method. While there are free programs for
+preprocessing brain images [151], non-invasive indicators are
+not yet well-represented in clinical settings. This gap poses a
+challenge for medical staff in utilizing these screening methods
+alongside existing diagnostic tools.
+Although DL-detecting systems have achieved high detecting performance across various modalities, they still lack
+interpretability. Specifically, a reasonable understanding of the
+specific features that cause the model to reach such a detection
+level is absent. Consequently, Explainable AI (XAI) can
+bridge this gap. Incorporating XAI facilitates the adaptation
+of these DL methods as screening tools. As a result, medical
+personnel might have a better understanding and trust in the
+models [152], [153].
+B. Future Research Directions
+We acknowledge that deep learning models are demonstrating competitive performance in detecting cognitive impairment. This article explores and investigates deep learning
+approaches, emphasizing their overall detecting performance
+over other techniques such as traditional machine learning
+algorithms. However, several future research directions can
+further enhance this field.
+Investigating Language-Agnostic Methods in Speech
+Analysis: Speech recordings and their transcripts are intrinsically coupled to the spoken language. Research on detection
+
+19
+systems that integrate linguistic or acoustic features has predominantly focused on language-specific methods, often overlooking language-agnostic approaches. For instance, while gap
+filler words have been studied as linguistic features [98], more
+research is needed to understand their implications across different spoken languages comprehensively. Ultimately, adopting this method would also be beneficial in addressing the
+diversity challenge.
+Proposing Qualitative Datasets: Although several publicly
+accessible datasets exist for research on cognitive impairment detection using non-invasive data, more comprehensive
+datasets should be created. The data collection should ensure
+a reliable and comprehensive representation of the population the impairment, and various data modalities by using
+consistent, efficient, and accurate methods and technologies.
+Consequently, enhancing the quality and diversity of datasets
+will support more robust model development.
+Most current public datasets capture useful measurements
+of the studied participants. Nevertheless, from a data science
+perspective, some datasets lack common practices for creating
+datasets (i.e., data quality, sample size, class distribution, and
+baseline model), which could affect the adoption by deep
+learning researchers. For instance, Pitt Corpus and I-CONECT
+datasets have proposed comprehensive measurements with
+analyses of the participants; however, they still lack the
+introduction of baseline models and the evaluation subsets
+of the datasets. Implementing these practices ensures a fair
+comparison of any subsequent proposed deep learning models.
+The ADReSS dataset adopts these practices, which makes
+results on this dataset more reliable.
+Multi-Modal Cognitive Impairment Diagnosis: The ideal
+goal is a comprehensive analysis of all aspects of participants’
+indicators. This involves the development of AI systems that
+complement rather than replace physicians. These systems
+can serve as cost-effective, highly accurate screening tools,
+supporting medical professionals in their practice. Current
+diagnostic confidence is low and often relies on unverified
+data [1]. Integrating advanced medical imaging such as MRI
+or CT with non-invasive indicators can improve diagnostic
+accuracy and explainability.
+Researchers can propose new multi-modal datasets and
+capture various modalities of the same subjects, including
+advanced brain imaging, speech, facial, and motoric mobility.
+These datasets will ultimately enhance the overall screening
+process and associate abnormal features together. Thus, it will
+help feature fusion.
+Ethical and Explainable Considerations: As deep learning methods continue to evolve in healthcare, addressing
+ethical and privacy concerns remains crucial. Achieving a
+balance between maximizing benefits and minimizing risks is
+essential for the responsible use of AI in cognitive impairment
+detection. While deep learning detection methods necessitate
+training and validation of patient data, certain approaches help
+keep the data decentralized during these processes. Federated
+Learning, for example, is one of the foremost algorithms
+in training deep learning models without centralizing the
+data [154]. By preserving patients’ privacy, deep learning
+models can still learn and explain the desired features during
+training.
+By addressing these challenges and exploring future research directions, we can harness the full potential of noninvasive modalities and deep learning models to improve
+cognitive impairment detection and ultimately enhance the
+quality of life for the aging population.
+VII. CONCLUSION
+In this paper, we explored using deep learning methods as
+a detection method of cognitive impairment by using noninvasive data collection. Given that cognitive decline is on
+a large scale due to the aging population, it is crucial to
+adopt cost-effective screening tools to start a treatment plan
+as early as possible. We discussed the non-invasive indicators
+of cognitive decline and their support from the medical perspective. Specifically, these indicators were categorized into
+Speech, Facial, and Motoric Mobility indicators. In addition,
+we highlighted the significant progress made in leveraging
+deep learning techniques to analyze various non-invasive data
+sources for cognitive impairment detection.
+Notably, speech-based methods, including acoustic and linguistic analyses, have shown leading outcomes in identifying
+subtle changes associated with cognitive decline. Particularly,
+the utilization of SOTA models from computer vision and natural language processing in extracting features and classifying
+conditions allows for a more nuanced understanding of complex datasets. Meanwhile, other modalities have demonstrated
+the potential to provide valuable insights into cognitive status
+detection.
+Although reviewed studies showed promising potential for
+adopting deep learning methods, several challenges hinder further systems improvements. We discussed a range of obstacles
+in detecting cognitive status, focusing on challenges from
+three main perspectives: data, methodological, and clinical
+adaptation. Standardization, diversity, and accessibility are
+among the data-related challenges whereas unexplainability,
+temporal analysis, and computation complexity are related to
+methodological adaptation of the studies. We then suggested
+methods and solutions to overcome these challenges. Ultimately, we proposed future research directions that can help
+the development of such systems.
+REFERENCES
+[1] MAPPING A BETTER.
+alzheimer’s disease facts and figures.
+Alzheimer’s Dement, 20:3708–3821, 2024.
+[2] Peter S Pressman. Alzheimer’s disease. 2024.
+[3] Shahab
+Shamshirband,
+Mahdis
+Fathi,
+Abdollah
+Dehzangi,
+Anthony Theodore Chronopoulos, and Hamid Alinejad-Rokny.
+A review on deep learning approaches in healthcare systems: Taxonomies,
+challenges, and open issues.
+Journal of Biomedical Informatics,
+113:103627, 2021.
+[4] Charlotte J Haug and Jeffrey M Drazen.
+Artificial intelligence and
+machine learning in clinical medicine, 2023. New England Journal of
+Medicine, 388(13):1201–1208, 2023.
+[5] Naomi Nevler, Sunghye Cho, Katheryn AQ Cousins, Sharon Ash,
+Christopher A Olm, Sanjana Shellikeri, Galit Agmon, Carmen
+Gonzalez-Recober, Sharon X Xie, Megan S Barker, et al. Changes
+in digital speech measures in asymptomatic carriers of pathogenic
+variants associated with frontotemporal degeneration.
+Neurology,
+102(2):e207926, 2024.
+
+20
+[6] Ulla Petti, Simon Baker, Anna Korhonen, and Jessica Robin.
+The
+generalizability of longitudinal changes in speech before alzheimer’s
+disease diagnosis.
+Journal of Alzheimer’s Disease, 92(2):547–564,
+2023.
+[7] Protima Khan, Md Fazlul Kader, SM Riazul Islam, Aisha B Rahman,
+Md Shahriar Kamal, Masbah Uddin Toha, and Kyung-Sup Kwak.
+Machine learning and deep learning approaches for brain disease
+diagnosis: principles and recent advances. Ieee Access, 9:37622–37655,
+2021.
+[8] M Khojaste-Sarakhsi, Seyedhamidreza Shahabi Haghighi, SMT Fatemi
+Ghomi, and Elena Marchiori. Deep learning for alzheimer’s disease
+diagnosis: A survey. Artificial intelligence in medicine, 130:102332,
+2022.
+[9] J Cummings, L Apostolova, GD Rabinovici, A Atri, P Aisen, S Greenberg, S Hendrix, D Selkoe, M Weiner, RC Petersen, et al. Lecanemab:
+appropriate use recommendations.
+The journal of prevention of
+Alzheimer’s disease, 10(3):362–377, 2023.
+[10] David B Arciniegas, C Alan Anderson, and Christopher M Filley.
+Behavioral neurology & neuropsychiatry. Cambridge University Press,
+2013.
+[11] James T Becker, Franc¸ois Boiler, Oscar L Lopez, Judith Saxton, and
+Karen L McGonigle.
+The natural history of alzheimer’s disease:
+description of study cohort and accuracy of diagnosis.
+Archives of
+neurology, 51(6):585–594, 1994.
+[12] Emily M Mugler, Matthew C Tate, Karen Livescu, Jessica W Templer,
+Matthew A Goldrick, and Marc W Slutzky. Differential representation
+of articulatory gestures and phonemes in precentral and inferior frontal
+gyri. Journal of Neuroscience, 38(46):9803–9813, 2018.
+[13] Elizabeth Mahon and Margie E Lachman. Voice biomarkers as indicators of cognitive changes in middle and later adulthood. Neurobiology
+of aging, 119:22–35, 2022.
+[14] Francesca Galluzzi and Werner Garavello. The aging voice: a systematic review of presbyphonia. European Geriatric Medicine, 9:559–570,
+2018.
+[15] Miguel Vaca, Elena Mora, and Ignacio Cobeta.
+The aging voice:
+influence of respiratory and laryngeal changes. Otolaryngology–Head
+and Neck Surgery, 153(3):409–413, 2015.
+[16] Alexei Baevski, Yuhao Zhou, Abdelrahman Mohamed, and Michael
+Auli. wav2vec 2.0: A framework for self-supervised learning of speech
+representations. Advances in neural information processing systems,
+33:12449–12460, 2020.
+[17] Shawn Hershey, Sourish Chaudhuri, Daniel PW Ellis, Jort F Gemmeke,
+Aren Jansen, R Channing Moore, Manoj Plakal, Devin Platt, Rif A
+Saurous, Bryan Seybold, et al. Cnn architectures for large-scale audio
+classification.
+In 2017 ieee international conference on acoustics,
+speech and signal processing (icassp), pages 131–135. IEEE, 2017.
+[18] Sander CJ Verfaillie, Rosalinde ER Slot, Ellen Dicks, Niels D Prins,
+Jozefien M Overbeek, Charlotte E Teunissen, Philip Scheltens, Frederik
+Barkhof, Wiesje M van der Flier, and Betty M Tijms. A more randomly
+organized grey matter network is associated with deteriorating language
+and global cognition in individuals with subjective cognitive decline.
+Human brain mapping, 39(8):3143–3151, 2018.
+[19] M-Marsel Mesulam. Primary progressive aphasia. Annals of neurology,
+49(4):425–432, 2001.
+[20] Ronald C Petersen. Mild cognitive impairment. CONTINUUM: lifelong
+Learning in Neurology, 22(2):404–418, 2016.
+[21] Peter S Pressman, Kuan Hua Chen, James Casey, Stefan Sillau, Heidi J
+Chial, Christopher M Filley, Bruce L Miller, and Robert W Levenson.
+Incongruences between facial expression and self-reported emotional
+reactivity in frontotemporal dementia and related disorders.
+The
+Journal of neuropsychiatry and clinical neurosciences, 35(2):192–201,
+2023.
+[22] Peter S Pressman and Bruce L Miller.
+Diagnosis and management
+of behavioral variant frontotemporal dementia. Biological psychiatry,
+75(7):574–581, 2014.
+[23] Peter Pressman, Kelly Gola, Suzanne Shdo, Bruce Miller, and Katherine Rankin.
+Relative preservation of affect recognition in posterior
+cortical atrophy (s18. 006). Neurology, 88(16 supplement):S18–006,
+2017.
+[24] Zixiang Fei, Erfu Yang, Leijian Yu, Xia Li, Huiyu Zhou, and Wenju
+Zhou. A Novel deep neural network-based emotion analysis system
+for automatic detection of mild cognitive impairment in the elderly.
+Neurocomputing, 468:306–316, January 2022.
+[25] Maya Katz, Peter Pressman, and Bradley F Boeve. Early clinical features of the parkinsonian-related dementias. The Behavioral Neurology
+of Dementia, pages 232–244, 2016.
+[26] Caroline N Harada, Marissa C Natelson Love, and Kristen L Triebel.
+Normal cognitive aging. Clinics in geriatric medicine, 29(4):737–752,
+2013.
+[27] Dorene M Rentz, Kathryn V Papp, Danielle V Mayblyum, Justin S
+Sanchez, Hannah Klein, William Souillard-Mandar, Reisa A Sperling,
+and Keith A Johnson.
+Association of digital clock drawing with
+pet amyloid and tau pathology in normal older adults.
+Neurology,
+96(14):e1844–e1854, 2021.
+[28] Ziad S Nasreddine, Natalie A Phillips, Val´erie B´edirian, Simon Charbonneau, Victor Whitehead, Isabelle Collin, Jeffrey L Cummings, and
+Howard Chertkow. The montreal cognitive assessment, moca: a brief
+screening tool for mild cognitive impairment. Journal of the American
+Geriatrics Society, 53(4):695–699, 2005.
+[29] Nicole Dalia Cilia, Claudio De Stefano, Francesco Fontanella, and
+Alessandra Scotto di Freca. Handwriting-Based Classifier Combination
+for Cognitive Impairment Prediction.
+In Alberto Del Bimbo, Rita
+Cucchiara, Stan Sclaroff, Giovanni Maria Farinella, Tao Mei, Marco
+Bertini, Hugo Jair Escalante, and Roberto Vezzani, editors, Pattern
+Recognition. ICPR International Workshops and Challenges, Lecture
+Notes in Computer Science, pages 587–599, Cham, 2021. Springer
+International Publishing.
+[30] Farida Far Poor, Hiroko H Dodge, and Mohammad H Mahoor.
+A
+multimodal cross-transformer-based model to predict mild cognitive
+impairment using speech, language and vision. Computers in Biology
+and Medicine, 182:109199, 2024.
+[31] Pamela Herd, Deborah Carr, and Carol Roan.
+Cohort profile: Wisconsin longitudinal study (wls). International journal of epidemiology,
+43(1):34–41, 2014.
+[32] Saturnino Luz, Fasih Haider, Sofia de la Fuente, Davida Fromm,
+and
+Brian
+MacWhinney.
+Alzheimer’s
+Dementia
+Recognition
+through Spontaneous Speech: The ADReSS Challenge, August 2020.
+arXiv:2004.06833 [cs, eess, stat].
+[33] Saturnino Luz, Fasih Haider, Sofia de la Fuente, Davida Fromm, and
+Brian MacWhinney. Detecting cognitive decline using speech only:
+The ADReSSo Challenge, March 2021. arXiv:2104.09356 [cs, eess].
+[34] Yangwei Ying, Tao Yang, and Hong Zhou.
+Multimodal fusion for
+alzheimer’s disease recognition. Applied Intelligence, 53(12):16029–
+16040, June 2023.
+[35] Kazu Nishikawa, Rin Hirakawa, Hideaki Kawano, Kenichi Nakashi,
+and Yoshihisa Nakatoh. Detecting System Alzheimer’s Dementia by
+1d CNN-LSTM in Japanese Speech.
+In 2021 IEEE International
+Conference on Consumer Electronics (ICCE), pages 1–3, January 2021.
+ISSN: 2158-4001.
+[36] Zeng You, Runhao Zeng, Xiaoyong Lan, Huixia Ren, Zhiyang
+You, Xue Shi, Shipeng Zhao, Yi Guo, Xin Jiang, and Xiping Hu.
+Alzheimer’s Disease Classification With a Cascade Neural Network.
+Frontiers in Public Health, 8, 2020.
+[37] Zhiyang You, Zeng You, Yilong Li, Shipeng Zhao, Huixia Ren, and
+Xiping Hu. Alzheimer’s Disease Distinction Based On Gait Feature
+Analysis. In 2020 IEEE International Conference on E-health Networking, Application & Services (HEALTHCOM), pages 1–6, March
+2021.
+[38] Fangyu Zuo, Peiguang Jing, Jinglin Sun, Jizhong, Duan, Yong Ji, and
+Yu Liu. Deep Learning-based Eye-Tracking Analysis for Diagnosis of
+Alzheimer’s Disease Using 3D Comprehensive Visual Stimuli, March
+2023. arXiv:2303.06868 [cs, eess].
+[39] Yusera Farooq Khan, Baijnath Kaushik, Mohammad Khalid Imam
+Rahmani, and Md Ezaz Ahmed. Stacked Deep Dense Neural Network
+Model to Predict Alzheimer’s Dementia Using Audio Transcript Data.
+IEEE Access, 10:32750–32765, 2022. Conference Name: IEEE Access.
+[40] Sylvester Olubolu Orimaye, Jojo Sze-Meng Wong, and Chee Piau
+Wong.
+Deep language space neural network for classifying mild
+cognitive impairment and Alzheimer-type dementia.
+PLOS ONE,
+13(11):e0205636, November 2018. Publisher: Public Library of Science.
+[41] Julian Fritsch, Sebastian Wankerl, and Elmar N¨oth. Automatic Diagnosis of Alzheimer’s Disease Using Neural Network Language Models.
+In ICASSP 2019 - 2019 IEEE International Conference on Acoustics,
+Speech and Signal Processing (ICASSP), pages 5841–5845, May 2019.
+ISSN: 2379-190X.
+[42] Yue Guo, Changye Li, Carol Roan, Serguei Pakhomov, and Trevor
+Cohen. Crossing the “Cookie Theft” Corpus Chasm: Applying What
+BERT Learns From Outside Data to the ADReSS Challenge Dementia
+Detection Task. Frontiers in Computer Science, 3, 2021.
+[43] Nicholas
+Cummins,
+Yilin
+Pan,
+Zhao
+Ren,
+Julian
+Fritsch,
+Venkata Srikanth Nallanthighal, Heidi Christensen, Daniel Blackburn,
+Bj¨orn W. Schuller, Mathew Magimai-Doss, Helmer Strik, and Aki
+
+21
+H¨arm¨a.
+A Comparison of Acoustic and Linguistics Methodologies
+for Alzheimer’s Dementia Recognition.
+In Interspeech 2020, pages
+2182–2186. ISCA, October 2020.
+[44] Junghyun Koo, Jie Hwan Lee, Jaewoo Pyo, Yujin Jo, and Kyogu
+Lee. Exploiting Multi-Modal Features from Pre-Trained Networks for
+Alzheimer’s Dementia Recognition. In Interspeech 2020, pages 2217–
+2221. ISCA, October 2020.
+[45] Zafi Sherhan Syed, Muhammad Shehram Shah Syed, Margaret Lech,
+and Elena Pirogova. Automated Recognition of Alzheimer’s Dementia
+Using Bag-of-Deep-Features and Model Ensembling.
+IEEE Access,
+9:88377–88390, 2021. Conference Name: IEEE Access.
+[46] Yilin Pan, Bahman Mirheidari, Jennifer M. Harris, Jennifer C. Thompson, Matthew Jones, Julie S. Snowden, Daniel Blackburn, and Heidi
+Christensen. Using the Outputs of Different Automatic Speech Recognition Paradigms for Acoustic- and BERT-Based Alzheimer&#8217;s
+Dementia Detection Through Spontaneous Speech.
+In Interspeech
+2021, pages 3810–3814. ISCA, August 2021.
+[47] Lara Gauder, Leonardo Pepino, Luciana Ferrer, and Pablo Riera.
+Alzheimer Disease Recognition Using Speech-Based Embeddings
+From Pre-Trained Models.
+In Interspeech 2021, pages 3795–3799.
+ISCA, August 2021.
+[48] Ning Wang, Yupeng Cao, Shuai Hao, Zongru Shao, and K.P.
+Subbalakshmi.
+Modular
+Multi-Modal
+Attention
+Network
+for
+Alzheimer&#8217;s Disease Detection Using Patient Audio and Language Data.
+In Interspeech 2021, pages 3835–3839. ISCA, August
+2021.
+[49] Taishiro Kishimoto, Akihiro Takamiya, Kuo-ching Liang, Kei Funaki, Takanori Fujita, Momoko Kitazawa, Michitaka Yoshimura, Yuki
+Tazawa, Toshiro Horigome, Yoko Eguchi, Toshiaki Kikuchi, Masayuki
+Tomita, Shogyoku Bun, Junichi Murakami, Brian Sumali, Tifani Warnita, Aiko Kishi, Mizuki Yotsui, Hiroyoshi Toyoshiba, Yasue Mitsukura, Koichi Shinoda, Yasubumi Sakakibara, and Masaru Mimura.
+The project for objective measures using computational psychiatry
+technology (PROMPT): Rationale, design, and methodology. Contemporary Clinical Trials Communications, 19:100649, September 2020.
+[50] Mariana Rodrigues Makiuchi, Tifani Warnita, Nakamasa Inoue, Koichi
+Shinoda, Michitaka Yoshimura, Momoko Kitazawa, Kei Funaki, Yoko
+Eguchi, and Taishiro Kishimoto.
+Speech Paralinguistic Approach
+for Detecting Dementia Using Gated Convolutional Neural Network.
+IEICE Transactions on Information and Systems, E104.D(11):1930–
+1940, November 2021.
+[51] Chuheng Zheng, Mondher Bouazizi, Tomoaki Ohtsuki, Momoko Kitazawa, Toshiro Horigome, and Taishiro Kishimoto.
+Detecting Dementia from Face-Related Features with Automated Computational
+Methods. Bioengineering, 10(7):862, July 2023.
+[52] Hiroko H Dodge, Kexin Yu, Chao-Yi Wu, Patrick J Pruitt, Meysam Asgari, Jeffrey A Kaye, Benjamin M Hampstead, Laura Struble, Kathleen
+Potempa, Peter Lichtenberg, et al. Internet-based conversational engagement randomized controlled clinical trial (i-conect) among socially
+isolated adults 75+ years old with normal cognition or mild cognitive
+impairment: Topline results. The Gerontologist, 64(4):gnad147, 2024.
+[53] Jian Sun, Hiroko Hayama Dodge, and Mohammad H. Mahoor. MC-
+ViViT: Multi-branch Classifier-ViViT to detect Mild Cognitive Impairment in older adults using facial videos.
+Expert Systems with
+Applications, 238:121929, March 2024.
+[54] Ali Pourramezan Fard, Mohammad H Mahoor, Muath Alsuhaibani,
+and Hiroko H Dodge.
+Linguistic-based mild cognitive impairment
+detection using informative loss. Computers in Biology and Medicine,
+page 108606, 2024.
+[55] Muath Alsuhaibani, Hiroko H Dodge, and Mohammad H Mahoor.
+Mild cognitive impairment detection from facial video interviews by
+applying spatial-to-temporal attention module.
+Expert Systems with
+Applications, page 124185, 2024.
+[56] Santos Bringas, Sergio Salom´on, Rafael Duque, Carmen Lage, and
+Jos´e Luis Monta˜na.
+Alzheimer’s Disease stage identification using
+deep learning models. Journal of Biomedical Informatics, 109:103514,
+September 2020.
+[57] Kota Aoki, Trung Thanh Ngo, Ikuhisa Mitsugami, Fumio Okura,
+Masataka Niwa, Yasushi Makihara, Yasushi Yagi, and Hiroaki Kazui.
+Early Detection of Lower MMSE Scores in Elderly Based on Dual-
+Task Gait. IEEE Access, 7:40085–40094, 2019. Conference Name:
+IEEE Access.
+[58] Ahsan Shahzad, Aresh Dadlani, Hyeonil Lee, and Kiseon Kim. Automated Prescreening of Mild Cognitive Impairment Using Shank-
+Mounted Inertial Sensors Based Gait Biomarkers.
+IEEE Access,
+10:15835–15844, 2022. Conference Name: IEEE Access.
+[59] Behnaz Ghoraani, Lillian N. Boettcher, Murtadha D. Hssayeni, Amie
+Rosenfeld, Magdalena I. Tolea, and James E. Galvin.
+Detection of
+mild cognitive impairment and Alzheimer’s disease using dual-task gait
+assessments and machine learning. Biomedical Signal Processing and
+Control, 64:102249, February 2021.
+[60] Rajaram Narasimhan, Muthukumaran G, Charles McGlade, and Anantha Ramakrishnan.
+Early Detection of Mild Cognitive Impairment
+Progression Using Non-Wearable Sensor Data – a Deep Learning Approach. In 2020 IEEE Bangalore Humanitarian Technology Conference
+(B-HTC), pages 1–6, October 2020.
+[61] Mounˆım A. El-Yacoubi, Sonia Garcia-Salicetti, Christian Kahindo,
+Anne-Sophie Rigaud, and Victoria Cristancho-Lacroix. From aging to
+early-stage Alzheimer’s: Uncovering handwriting multimodal behaviors
+by semi-supervised learning and sequential representation learning.
+Pattern Recognition, 86:112–133, February 2019.
+[62] Kexin Yu, Katherine Wild, Kathleen Potempa, Benjamin M. Hampstead, Peter A. Lichtenberg, Laura M. Struble, Patrick Pruitt, Elena L.
+Alfaro, Jacob Lindsley, Mattie MacDonald, Jeffrey A. Kaye, Lisa C.
+Silbert, and Hiroko H. Dodge.
+The Internet-Based Conversational
+Engagement Clinical Trial (I-CONECT) in Socially Isolated Adults
+75+ Years Old: Randomized Controlled Trial Protocol and COVID-19
+Related Study Modifications. Frontiers in Digital Health, 3, 2021.
+[63] Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun.
+Deep
+residual learning for image recognition. In Proceedings of the IEEE
+conference on computer vision and pattern recognition, pages 770–778,
+2016.
+[64] Karen Simonyan and Andrew Zisserman.
+Very deep convolutional networks for large-scale image recognition.
+arXiv preprint
+arXiv:1409.1556, 2014.
+[65] Mark Sandler, Andrew Howard, Menglong Zhu, Andrey Zhmoginov,
+and Liang-Chieh Chen.
+Mobilenetv2: Inverted residuals and linear
+bottlenecks. In Proceedings of the IEEE conference on computer vision
+and pattern recognition, pages 4510–4520, 2018.
+[66] Kyunghyun
+Cho.
+Learning
+phrase
+representations
+using
+rnn
+encoder-decoder for statistical machine translation.
+arXiv preprint
+arXiv:1406.1078, 2014.
+[67] S Hochreiter.
+Long short-term memory.
+Neural Computation MIT-
+Press, 1997.
+[68] A Vaswani. Attention is all you need. Advances in Neural Information
+Processing Systems, 2017.
+[69] Alec Radford, Jeffrey Wu, Rewon Child, David Luan, Dario Amodei,
+Ilya Sutskever, et al.
+Language models are unsupervised multitask
+learners. OpenAI blog, 1(8):9, 2019.
+[70] Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova.
+Bert: Pre-training of deep bidirectional transformers for language
+understanding. arXiv preprint arXiv:1810.04805, 2018.
+[71] Alexey Dosovitskiy, Lucas Beyer, Alexander Kolesnikov, Dirk Weissenborn, Xiaohua Zhai, Thomas Unterthiner, Mostafa Dehghani,
+Matthias Minderer, Georg Heigold, Sylvain Gelly, et al.
+An image
+is worth 16x16 words: Transformers for image recognition at scale.
+arXiv preprint arXiv:2010.11929, 2020.
+[72] M. Rupesh Kumar, Susmitha Vekkot, S. Lalitha, Deepa Gupta, Varasiddhi Jayasuryaa Govindraj, Kamran Shaukat, Yousef Ajami Alotaibi,
+and Mohammed Zakariah.
+Dementia Detection from Speech Using Machine Learning and Deep Learning Architectures.
+Sensors,
+22(23):9311, January 2022. Number: 23 Publisher: Multidisciplinary
+Digital Publishing Institute.
+[73] Zhaoci Liu, Zhiqiang Guo, Zhenhua Ling, and Yunxia Li. Detecting
+Alzheimer’s Disease from Speech Using Neural Networks with Bottleneck Features and Data Augmentation. In ICASSP 2021 - 2021 IEEE
+International Conference on Acoustics, Speech and Signal Processing
+(ICASSP), pages 7323–7327, June 2021. ISSN: 2379-190X.
+[74] Amit Meghanani, Anoop C. S., and A. G. Ramakrishnan. An Exploration of Log-Mel Spectrogram and MFCC Features for Alzheimer’s
+Dementia Recognition from Spontaneous Speech.
+In 2021 IEEE
+Spoken Language Technology Workshop (SLT), pages 670–677, January
+2021.
+[75] Tifani Warnita, Nakamasa Inoue, and Koichi Shinoda.
+Detecting
+Alzheimer’s Disease Using Gated Convolutional Neural Network from
+Audio Data. In Interspeech 2018, pages 1706–1710. ISCA, September
+2018.
+[76] Muhammad Shehram Shah Syed, Zafi Sherhan, Elena Pirogova, and
+Margaret Lech.
+Static vs. Dynamic Modelling of Acoustic Speech
+Features for Detection of Dementia. International Journal of Advanced
+Computer Science and Applications, 11(10), 2020.
+
+22
+[77] Karol Chlasta and Krzysztof Wołk. Towards Computer-Based Automated Screening of Dementia Through Spontaneous Speech. Frontiers
+in Psychology, 11, 2021.
+[78] Kazu Nishikawa, Kuwahara Akihiro, Rin Hirakawa, Hideaki Kawano,
+and Yoshihisa Nakatoh. Machine learning model for discrimination
+of mild dementia patients using acoustic features. Cognitive Robotics,
+2:21–29, January 2022.
+[79] G. Pranav, K. Varsha, and K. S. Gayathri. Early Alzheimer Detection
+Through Speech Analysis and Vision Transformer Approach.
+In
+Anand Kumar M, Bharathi Raja Chakravarthi, Bharathi B, Colm
+O’Riordan, Hema Murthy, Thenmozhi Durairaj, and Thomas Mandl,
+editors, Speech and Language Technologies for Low-Resource Languages, Communications in Computer and Information Science, pages
+265–276, Cham, 2023. Springer International Publishing.
+[80] Flavio Bertini, Davide Allevi, Gianluca Lutero, Laura Calz`a, and
+Danilo Montesi.
+An automatic Alzheimer’s disease classifier based
+on spontaneous spoken English.
+Computer Speech & Language,
+72:101298, March 2022.
+[81] Flavio Bertini, Davide Allevi, Gianluca Lutero, Danilo Montesi, and
+Laura Calz`a.
+Automatic Speech Classifier for Mild Cognitive Impairment and Early Dementia. ACM Transactions on Computing for
+Healthcare, 3(1):8:1–8:11, October 2021.
+[82] Yilin Pan, Bahman Mirheidari, Zehai Tu, Ronan O’Malley, Traci
+Walker, Annalena Venneri, Markus Reuber, Daniel Blackburn, and
+Heidi Christensen. Acoustic Feature Extraction with Interpretable Deep
+Neural Network for Neurodegenerative Related Disorder Classification.
+In Interspeech 2020, pages 4806–4810. ISCA, October 2020.
+[83] Chonghua Xue, Cody Karjadi, Ioannis Ch. Paschalidis, Rhoda Au, and
+Vijaya B. Kolachalama. Detection of dementia on voice recordings
+using deep learning: a Framingham Heart Study. Alzheimer’s Research
+& Therapy, 13(1):146, August 2021.
+[84] Maryam Zolnoori, Ali Zolnour, and Maxim Topaz.
+ADscreen: A
+speech processing-based screening system for automatic identification
+of patients with Alzheimer’s disease and related dementia. Artificial
+Intelligence in Medicine, 143:102624, September 2023.
+[85] Sheng-Ya Lin, Ho-Ling Chang, Jwu-Jia Hwang, Thiri Wai, Yu-Ling
+Chang, and Li-Chen Fu. Automatic Audio-based Screening System for
+Alzheimer’s Disease Detection. In 2022 IEEE International Conference
+on Systems, Man, and Cybernetics (SMC), pages 2770–2775, October
+2022. ISSN: 2577-1655.
+[86] Muhammad Shehram Shah Syed, Zafi Sherhan Syed, Margaret Lech,
+and Elena Pirogova. Automated Screening for Alzheimer’s Dementia
+Through Spontaneous Speech. In Interspeech 2020, pages 2222–2226.
+ISCA, October 2020.
+[87] Florian Eyben, Klaus R Scherer, Bj¨orn W Schuller, Johan Sundberg,
+Elisabeth Andr´e, Carlos Busso, Laurence Y Devillers, Julien Epps, Petri
+Laukka, Shrikanth S Narayanan, et al. The geneva minimalistic acoustic
+parameter set (gemaps) for voice research and affective computing.
+IEEE transactions on affective computing, 7(2):190–202, 2015.
+[88] Raghavendra Pappagari, Jaejin Cho, Sonal Joshi, Laureano Moro-
+Vel´azquez, Piotr ˙Zelasko, Jes´us Villalba, and Najim Dehak. Automatic
+Detection and Assessment of Alzheimer Disease Using Speech and
+Language Technologies in Low-Resource Scenarios.
+In Interspeech
+2021, pages 3825–3829. ISCA, August 2021.
+[89] Edward L. Campbell, Laura Doc´ıo-Fern´andez, Javier Jim´enez Raboso,
+and Carmen Garc´ıa-Mateo.
+Alzheimer’s Dementia Detection from
+Audio and Text Modalities, August 2020. arXiv:2008.04617 [cs, eess].
+[90] Florian Eyben, Martin W¨ollmer, and Bj¨orn Schuller. Opensmile: the
+munich versatile and fast open-source audio feature extractor.
+In
+Proceedings of the 18th ACM international conference on Multimedia,
+pages 1459–1462, 2010.
+[91] Brian McFee, Colin Raffel, Dawen Liang, Daniel PW Ellis, Matt
+McVicar, Eric Battenberg, and Oriol Nieto. librosa: Audio and music
+signal analysis in python. In SciPy, pages 18–24, 2015.
+[92] Ambuj Mehrish, Navonil Majumder, Rishabh Bharadwaj, Rada Mihalcea, and Soujanya Poria. A review of deep learning techniques for
+speech processing. Information Fusion, 99:101869, 2023.
+[93] Stephanie Pancoast and Murat Akbacak. Bag-of-audio-words approach
+for multimedia event classification. In Interspeech, pages 2105–2108,
+2012.
+[94] David Snyder, Daniel Garcia-Romero, Gregory Sell, Daniel Povey, and
+Sanjeev Khudanpur. X-vectors: Robust dnn embeddings for speaker
+recognition.
+In 2018 IEEE international conference on acoustics,
+speech and signal processing (ICASSP), pages 5329–5333. IEEE, 2018.
+[95] Jinchao Li, Kaitao Song, Junan Li, Bo Zheng, Dongsheng Li, Xixin
+Wu, Xunying Liu, and Helen Meng. Leveraging Pretrained Representations With Task-Related Keywords for Alzheimer’s Disease Detection.
+In ICASSP 2023 - 2023 IEEE International Conference on Acoustics,
+Speech and Signal Processing (ICASSP), pages 1–5, June 2023.
+[96] Thomas Searle, Zina Ibrahim, and Richard Dobson. Comparing Natural
+Language Processing Techniques for Alzheimer’s Dementia Prediction
+in Spontaneous Speech. In Interspeech 2020, pages 2192–2196. ISCA,
+October 2020.
+[97] Amit Meghanani, C. S. Anoop, and Angarai Ganesan Ramakrishnan.
+Recognition of Alzheimer’s Dementia From the Transcriptions of
+Spontaneous Speech Using fastText and CNN Models. Frontiers in
+Computer Science, 3, 2021.
+[98] Jiahong Yuan, Xingyu Cai, Yuchen Bian, Zheng Ye, and Kenneth
+Church. Pauses for Detection of Alzheimer’s Disease. Frontiers in
+Computer Science, 2, 2021.
+[99] Edresson Casanova, Marcos Treviso, Lilian H¨ubner, and Sandra
+Alu´ısio.
+Evaluating Sentence Segmentation in Different Datasets
+of Neuropsychological Language Tests in Brazilian Portuguese.
+In
+Proceedings of the Twelfth Language Resources and Evaluation Conference, pages 2605–2614, Marseille, France, May 2020. European
+Language Resources Association.
+[100] Ning Liu, Zhenming Yuan, and Qingfeng Tang. Improving Alzheimer’s
+Disease Detection for Speech Based on Feature Purification Network.
+Frontiers in Public Health, 9, 2022.
+[101] Austin Cheng-Yun Tsai, Sheng-Yi Hong, Li-Hung Yao, Wei-Der
+Chang, Li-Chen Fu, and Yu-Ling Chang. An efficient context-aware
+screening system for Alzheimer’s disease based on neuropsychology
+test.
+Scientific Reports, 11(1):18570, September 2021.
+Number: 1
+Publisher: Nature Publishing Group.
+[102] Jun Chen, Ji Zhu, and Jieping Ye. An Attention-Based Hybrid Network for Automatic Detection of Alzheimer’s Disease from Narrative
+Speech.
+In Interspeech 2019, pages 4085–4089. ISCA, September
+2019.
+[103] Chiai AI-Atroshi, J. Rene Beulah, Kranthi Kumar Singamaneni,
+C. Pretty Diana Cyril, S. Neelakandan, and S. Velmurugan.
+Automated speech based evaluation of mild cognitive impairment
+and Alzheimer’s disease detection using with deep belief network model.
+International Journal of Healthcare Management,
+0(0):1–11,
+July
+2022.
+Publisher:
+Taylor
+&
+Francis
+eprint:
+https://doi.org/10.1080/20479700.2022.2097764.
+[104] Bingyang Wen, Ning Wang, Koduvayur Subbalakshmi, and Rajarathnam Chandramouli.
+Revealing the Roles of Part-of-Speech Taggers in Alzheimer Disease Detection: Scientific Discovery Using
+One-Intervention Causal Explanation.
+JMIR Formative Research,
+7(1):e36590, May 2023. Company: JMIR Formative Research Distributor: JMIR Formative Research Institution: JMIR Formative Research
+Label: JMIR Formative Research Publisher: JMIR Publications Inc.,
+Toronto, Canada.
+[105] Ahmed H. Alkenani, Yuefeng Li, Yue Xu, and Qing Zhang. Predicting
+Alzheimer’s Disease from Spoken and Written Language Using Fusion-
+Based Stacked Generalization.
+Journal of Biomedical Informatics,
+118:103803, June 2021.
+[106] Ning Wang, Mingxuan Chen, and K. P. Subbalakshmi. Explainable
+CNN-attention Networks (C-Attention Network) for Automated Detection of Alzheimer’s Disease, January 2021. arXiv:2006.14135 [cs].
+[107] Tomas Mikolov, Kai Chen, Greg Corrado, and Jeffrey Dean. Efficient
+estimation of word representations in vector space.
+arXiv preprint
+arXiv:1301.3781, 2013.
+[108] Jeffrey Pennington, Richard Socher, and Christopher D Manning.
+Glove: Global vectors for word representation. In Proceedings of the
+2014 conference on empirical methods in natural language processing
+(EMNLP), pages 1532–1543, 2014.
+[109] Piotr Bojanowski, Edouard Grave, Armand Joulin, and Tomas Mikolov.
+Enriching word vectors with subword information. Transactions of the
+association for computational linguistics, 5:135–146, 2017.
+[110] Alireza
+Roshanzamir,
+Hamid
+Aghajan,
+and
+Mahdieh
+Soleymani Baghshah.
+Transformer-based deep neural network
+language models for Alzheimer’s disease risk assessment from
+targeted speech.
+BMC Medical Informatics and Decision Making,
+21(1):92, March 2021.
+[111] Yu Sun, Shuohuan Wang, Yukun Li, Shikun Feng, Hao Tian, Hua Wu,
+and Haifeng Wang. Ernie 2.0: A continual pre-training framework for
+language understanding. In Proceedings of the AAAI conference on
+artificial intelligence, volume 34, pages 8968–8975, 2020.
+[112] Davide Colla, Matteo Delsanto, Marco Agosto, Benedetto Vitiello, and
+Daniele P Radicioni. Semantic coherence markers: The contribution
+of perplexity metrics. Artificial Intelligence in Medicine, 134:102393,
+2022.
+
+23
+[113] Ploypaphat Saltz, Shih Yin Lin, Sunny Chieh Cheng, and Dong
+Si. Dementia Detection using Transformer-Based Deep Learning and
+Natural Language Processing Models. In 2021 IEEE 9th International
+Conference on Healthcare Informatics (ICHI), pages 509–510, August
+2021. ISSN: 2575-2634.
+[114] Zhilin Yang, Zihang Dai, Yiming Yang, Jaime Carbonell, Russ R
+Salakhutdinov, and Quoc V Le.
+Xlnet: Generalized autoregressive
+pretraining for language understanding. Advances in neural information
+processing systems, 32, 2019.
+[115] Kevin Clark, Minh-Thang Luong, Quoc V Le, and Christopher D
+Manning. Electra: Pre-training text encoders as discriminators rather
+than generators. arXiv preprint arXiv:2003.10555, 2020.
+[116] Sheng-Yi Hong, Li-Hung Yao, Wen-Ting Cheah, Wei-Der Chang,
+Li-Chen Fu, and Yu-Ling Chang.
+A Novel Screening System for
+Alzheimer’s Disease Based on Speech Transcripts Using Neural Network. In 2019 IEEE International Conference on Systems, Man and
+Cybernetics (SMC), pages 2440–2445, October 2019.
+ISSN: 2577-
+1655.
+[117] Amish Mittal, Sourav Sahoo, Arnhav Datar, Juned Kadiwala, Hrithwik
+Shalu, and Jimson Mathew.
+Multi-Modal Detection of Alzheimer’s
+Disease from Speech and Text, July 2021. arXiv:2012.00096 [cs].
+[118] Erik Edwards, Charles Dognin, Bajibabu Bollepalli, and Maneesh
+Singh.
+Multiscale System for Alzheimer’s Dementia Recognition
+Through Spontaneous Speech. In Interspeech 2020, pages 2197–2201.
+ISCA, October 2020.
+[119] Aparna Balagopalan, Benjamin Eyre, Jessica Robin, Frank Rudzicz,
+and Jekaterina Novikova. Comparing Pre-trained and Feature-Based
+Models for Prediction of Alzheimer’s Disease Based on Speech.
+Frontiers in Aging Neuroscience, 13, 2021.
+[120] Morteza Rohanian, Julian Hough, and Matthew Purver. Multi-Modal
+Fusion with Gating Using Audio, Lexical and Disfluency Features
+for Alzheimer’s Dementia Recognition from Spontaneous Speech. In
+Interspeech 2020, pages 2187–2191. ISCA, October 2020.
+[121] Loukas Ilias and Dimitris Askounis.
+Multimodal Deep Learning
+Models for Detecting Dementia From Speech and Transcripts. Frontiers
+in Aging Neuroscience, 14, 2022.
+[122] Pranav Mahajan and Veeky Baths.
+Acoustic and Language Based
+Deep Learning Approaches for Alzheimer’s Dementia Detection From
+Spontaneous Speech. Frontiers in Aging Neuroscience, 13, 2021.
+[123] Morteza Rohanian, Julian Hough, and Matthew Purver. Alzheimer’s
+Dementia Recognition Using Acoustic, Lexical, Disfluency and Speech
+Pause Features Robust to Noisy Inputs, June 2021. arXiv:2106.15684
+[cs, eess].
+[124] Jing Gao, Peng Li, Zhikui Chen, and Jianing Zhang. A survey on deep
+learning for multimodal data fusion. Neural Computation, 32(5):829–
+864, 2020.
+[125] Yinhan Liu, Myle Ott, Naman Goyal, Jingfei Du, Mandar Joshi,
+Danqi Chen, Omer Levy, Mike Lewis, Luke Zettlemoyer, and Veselin
+Stoyanov. Roberta: A robustly optimized bert pretraining approach.
+arXiv preprint arXiv:1907.11692, 2019.
+[126] Victor Sanh, Lysandre Debut, Julien Chaumond, and Thomas Wolf.
+Distilbert, a distilled version of bert: smaller, faster, cheaper and lighter.
+arXiv preprint arXiv:1910.01108, 2019.
+[127] Ning Liu, Kexue Luo, Zhenming Yuan, and Yan Chen. A Transfer
+Learning Method for Detecting Alzheimer’s Disease Based on Speech
+and Natural Language Processing. Frontiers in Public Health, 10, 2022.
+[128] Zifan Jiang, Salman Seyedi, Rafi U Haque, Alvince L Pongos, Kayci L
+Vickers, Cecelia M Manzanares, James J Lah, Allan I Levey, and
+Gari D Clifford. Automated analysis of facial emotions in subjects
+with cognitive impairment. Plos one, 17(1):e0262527, 2022.
+[129] Fatimah Alzahrani, Bahman Mirheidari, Daniel Blackburn, Steve Maddock, and Heidi Christensen.
+Eye blink rate based detection of
+cognitive impairment using in-the-wild data. In 2021 9th International
+Conference on Affective Computing and Intelligent Interaction (ACII),
+pages 1–8. IEEE, 2021.
+[130] Hiroki Tanaka, Hiroyoshi Adachi, Hiroaki Kazui, Manabu Ikeda,
+Takashi Kudo, and Satoshi Nakamura. Detecting dementia from face
+in human-agent interaction.
+In Adjunct of the 2019 International
+Conference on Multimodal Interaction, pages 1–6, 2019.
+[131] Camillo Lugaresi, Jiuqiang Tang, Hadon Nash, Chris McClanahan, Esha Uboweja, Michael Hays, Fan Zhang, Chuo-Ling Chang,
+Ming Guang Yong, Juhyun Lee, et al. Mediapipe: A framework for
+building perception pipelines. arXiv preprint arXiv:1906.08172, 2019.
+[132] Tadas Baltrusaitis, Amir Zadeh, Yao Chong Lim, and Louis-Philippe
+Morency. Openface 2.0: Facial behavior analysis toolkit. In 2018 13th
+IEEE international conference on automatic face & gesture recognition
+(FG 2018), pages 59–66. IEEE, 2018.
+[133] Ali Pourramezan Fard and Mohammad H Mahoor. Ad-corre: Adaptive
+correlation-based loss for facial expression recognition in the wild.
+IEEE Access, 10:26756–26768, 2022.
+[134] Ali Pourramezan Fard, Joe Ferrantelli, Anne-Lise Dupuis, and Mohammad H Mahoor. Sagittal cervical spine landmark point detection in xray using deep convolutional neural networks. IEEE Access, 10:59413–
+59427, 2022.
+[135] Ali Pourramezan Fard and Mohammad H Mahoor. Facial landmark
+points detection using knowledge distillation-based neural networks.
+Computer Vision and Image Understanding, 215:103316, 2022.
+[136] Ali Pourramezan Fard, Hojjat Abdollahi, and Mohammad Mahoor.
+Asmnet: A lightweight deep neural network for face alignment and
+pose estimation.
+In Proceedings of the IEEE/CVF Conference on
+computer vision and pattern recognition, pages 1521–1530, 2021.
+[137] Emily Lin, Jian Sun, Hsingyu Chen, and Mohammad H Mahoor. Data
+quality matters: Suicide intention detection on social media posts using
+a roberta-cnn model. arXiv preprint arXiv:2402.02262, 2024.
+[138] Justin M Johnson and Taghi M Khoshgoftaar. Survey on deep learning
+with class imbalance. Journal of Big Data, 6(1):1–54, 2019.
+[139] Ali Mollahosseini, Behzad Hasani, and Mohammad H Mahoor. Affectnet: A database for facial expression, valence, and arousal computing
+in the wild. IEEE Transactions on Affective Computing, 10(1):18–31,
+2017.
+[140] Ali Pourramezan Fard, Mohammad H Mahoor, Sarah Ariel Lamer, and
+Timothy Sweeny. Ganalyzer: Analysis and manipulation of gans latent
+space for controllable face synthesis. arXiv preprint arXiv:2302.00908,
+2023.
+[141] Roman V Yampolskiy.
+Unexplainability and incomprehensibility of
+artificial intelligence. arXiv preprint arXiv:1907.03869, 2019.
+[142] W James Murdoch, Chandan Singh, Karl Kumbier, Reza Abbasi-Asl,
+and Bin Yu.
+Definitions, methods, and applications in interpretable
+machine learning. Proceedings of the National Academy of Sciences,
+116(44):22071–22080, 2019.
+[143] Christoph Molnar, Giuseppe Casalicchio, and Bernd Bischl.
+Interpretable machine learning–a brief history, state-of-the-art and challenges.
+In Joint European conference on machine learning and
+knowledge discovery in databases, pages 417–431. Springer, 2020.
+[144] Jian Sun, Ali Pourramezan Fard, and Mohammad H Mahoor. Xnodr
+and xnidr: Two accurate and fast fully connected layers for convolutional neural networks. Journal of Intelligent & Robotic Systems,
+109(1):17, 2023.
+[145] Tahir Abbas Khan, Areej Fatima, Tariq Shahzad, Khalid Alissa,
+Taher M Ghazal, Mahmoud M Al-Sakhnini, Sagheer Abbas, Muhammad Adnan Khan, Arfan Ahmed, et al.
+Secure iomt for disease
+prediction empowered with transfer learning in healthcare 5.0, the
+concept and case study. IEEE Access, 11:39418–39430, 2023.
+[146] Zhuangdi Zhu, Kaixiang Lin, Anil K Jain, and Jiayu Zhou. Transfer
+learning in deep reinforcement learning: A survey. IEEE Transactions
+on Pattern Analysis and Machine Intelligence, 2023.
+[147] Hamza Kheddar, Yassine Himeur, Somaya Al-Maadeed, Abbes Amira,
+and Faycal Bensaali.
+Deep transfer learning for automatic speech
+recognition: Towards better generalization. Knowledge-Based Systems,
+277:110851, 2023.
+[148] Kaichao You, Yong Liu, Ziyang Zhang, Jianmin Wang, Michael I
+Jordan, and Mingsheng Long. Ranking and tuning pre-trained models:
+A new paradigm for exploiting model hubs.
+Journal of Machine
+Learning Research, 23(209):1–47, 2022.
+[149] Jia Deng, Wei Dong, Richard Socher, Li-Jia Li, Kai Li, and Li Fei-
+Fei.
+Imagenet: A large-scale hierarchical image database.
+In 2009
+IEEE conference on computer vision and pattern recognition, pages
+248–255. Ieee, 2009.
+[150] Yang Wen, Leiting Chen, Yu Deng, and Chuan Zhou. Rethinking pretraining on medical imaging. Journal of Visual Communication and
+Image Representation, 78:103145, 2021.
+[151] Philipp G S¨amann, Juan Eugenio Iglesias, Boris Gutman, Dominik
+Grotegerd, Ramona Leenings, Claas Flint, Udo Dannlowski, Emily K
+Clarke-Rubright, Rajendra A Morey, Theo GM van Erp, et al.
+Freesurfer-based segmentation of hippocampal subfields: A review of
+methods and applications, with a novel quality control procedure for
+enigma studies and other collaborative efforts. Human brain mapping,
+43(1):207–233, 2022.
+[152] Andreas Holzinger, Chris Biemann, Constantinos S Pattichis, and
+Douglas B Kell. What do we need to build explainable ai systems
+for the medical domain? arXiv preprint arXiv:1712.09923, 2017.
+[153] Ahmed Shihab Albahri, Ali M Duhaim, Mohammed A Fadhel, Alhamzah Alnoor, Noor S Baqer, Laith Alzubaidi, Osamah Shihab
+Albahri, Abdullah Hussein Alamoodi, Jinshuai Bai, Asma Salhi, et al.
+
+24
+A systematic review of trustworthy and explainable artificial intelligence in healthcare: Assessment of quality, bias risk, and data fusion.
+Information Fusion, 2023.
+[154] Chen Zhang, Yu Xie, Hang Bai, Bin Yu, Weihong Li, and Yuan Gao. A
+survey on federated learning. Knowledge-Based Systems, 216:106775,
+2021.

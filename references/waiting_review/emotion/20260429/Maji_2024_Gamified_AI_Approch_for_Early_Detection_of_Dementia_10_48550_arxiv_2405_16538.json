@@ -1,0 +1,24 @@
+{
+  "title": "Gamified AI Approch for Early Detection of Dementia",
+  "authors": [
+    "Paramita Kundu Maji",
+    "Soubhik Acharya",
+    "Priti Paul",
+    "Sanjay Chakraborty",
+    "Saikat Basu"
+  ],
+  "year": 2024,
+  "abstract": "This paper aims to develop a new deep learning-inspired gaming approach for early detection of dementia. This research integrates a robust convolutional neural network (CNN)-based model for early dementia detection using health metrics data as well as facial image data through a cognitive assessment-based gaming application. We have collected 1000 data samples of health metrics dataset from Apollo Diagnostic Center Kolkata that is labeled as either demented or non-demented for the training of MOD-1D-CNN for the game level 1 and another dataset of facial images containing 1800 facial data that are labeled as either demented or non-demented is collected by our research team for the training of MOD-2D-CNN model in-game level 2. In our work, the loss for the proposed MOD-1D-CNN model is 0.2692 and the highest accuracy is 70.50% for identifying the dementia traits using real-life health metrics data. Similarly, the proposed MOD-2D-CNN model loss is 0.1755 and the highest accuracy is obtained here 95.72% for recognizing the dementia status using real-life face-based image data. Therefore, a rule-based weightage method is applied to combine both the proposed methods to achieve the final decision. The MOD-1D-CNN and MOD-2D-CNN models are more lightweight and computationally efficient alternatives because they have a significantly lower number of parameters when compared to the other state-of-the-art models. We have compared their accuracies and parameters with the other state-of-the-art deep learning models.",
+  "doi": "10.48550/arxiv.2405.16538",
+  "arxiv_id": null,
+  "venue": "arXiv (Cornell University)",
+  "citation_count": 1,
+  "source": "openalex",
+  "pdf_url": "https://arxiv.org/pdf/2405.16538",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4399115770"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.48550/arxiv.2405.16538"
+}

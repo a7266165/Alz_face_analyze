@@ -1,0 +1,23 @@
+{
+  "title": "Optimizing the interaction of service robots in elderly care institutions using multi-modal emotion recognition system based on transfer learning",
+  "authors": [
+    "Yongguan Ai",
+    "Yuanjun Zhang",
+    "Juan Wang",
+    "N. Xu"
+  ],
+  "year": 2025,
+  "abstract": "As the global population continues to age, the emotional and mental health needs of older adults are becoming increasingly significant. Conventional emotion recognition systems frequently encounter difficulties in adapting to the unique emotional expression characteristics exhibited by this demographic. This paper proposes a multimodal emotion recognition system based on transfer learning, with the objective of enhancing the efficacy of robots in emotion recognition, emotional engagement, and the promotion of mental well-being in older individuals. Initially, public emotion datasets such as AffectNet and IEMOCAP are utilised for pre-training convolutional neural networks (CNN) and bidirectional long short-term memory (Bi-LSTM) models to capture general emotional features. Subsequently, the system is fine-tuned using a home-grown nursing home dataset, employing a hierarchical fine-tuning strategy to optimise the model, with a particular emphasis on enhancing the facial expressions, speech and physiological signals of the elderly. To address the challenges posed by the complexity of the nursing home environment, small batch learning and noise enhancement techniques are incorporated. The experimental results demonstrate the model’s capacity to accurately recognise the emotional states of the elderly by integrating multimodal data, encompassing facial expressions, speech, body language and physiological signals. The effectiveness of the system in promoting emotional engagement and enhancing mental health is further substantiated by heart rate and galvanic skin response monitoring. In terms of emotion recognition accuracy, the experimental group's average recognition accuracy for multiple emotions reaches 84.1%, with an F1 score of 82.5%, precision of 83.2% and recall of 81.8%. In addition, the experimental group performs better than the control group in improving mental health and mobilising emotions. However, the study is confronted with challenges such as domain adaptation issues, the necessity for fine-tuning, and data limitations specific to older individuals, which are addressed by hierarchical fine-tuning and data augmentation techniques.",
+  "doi": "10.1007/s44163-025-00280-2",
+  "arxiv_id": null,
+  "venue": "Discover Artificial Intelligence",
+  "citation_count": 2,
+  "source": "openalex",
+  "pdf_url": "https://link.springer.com/content/pdf/10.1007/s44163-025-00280-2.pdf",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4410242506"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.1007/s44163-025-00280-2"
+}

@@ -1,0 +1,1121 @@
+i
+
+
+
+Julia Ruoranen
+MEMORY DISORDER DETECTION WITH
+FACE EXPRESSION ANALYSIS
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Faculty of Information Technology and Communication Sciences
+Bachelor’s Thesis
+May 2023
+
+ABSTRACT
+Julia Ruoranen: Memory disorder detection using face expression analysis
+Bachelor’s Thesis
+Tampere University
+Bachelor’s Programme in Computing and Electrical Engineering
+May 2023
+
+
+Facial expressions are people’s way of communicating and interact with each other. Without
+saying a word person can message his/her emotions by them. When there happen some changes
+in facial expressions it can affect person’s social interaction and relationships. Changes in facial
+expressions occur with memory disorder. Of the individual symptoms, apathy in particular reduces
+the intensity of the facial expressions, making the face expressionless.
+The purpose of this thesis was to explore how the facial expression recognition program could
+be applied when searching memory disorder. The focus is on apathy as a symptom because it
+correlates clearest with changes in facial expressions. The idea was to recognize facial expressions from two video clips. The difference between the clips was that the first one had spontaneous reactions for a funny video and second one expressionless reaction to the same video. Recognized expressions were analyzed and the differences between the videos were spotted to show
+how the apathic facial expressions differ from normally produced facial expressions.
+The program was built by using Python facial expressions analysis toolbox (PyFeat) which
+contains tools for analyzing and visualizing facial expressions. Detector for facial expression analysis was built by using PyFeat’s pretrained detectors (face, facial landmarks, pose, action units
+and emotions). This detector recognized expressions from the videos and produces data of face
+and facial landmark location, action units’ prediction values and emotional reactions’ prediction
+values.
+Biggest differences between the videos were found in action units’ and emotions’ prediction
+values. Action unit values showed that movement in any action unit area were minimum since the
+values stayed in 0.5 and under the whole video. While comparing the certain action units which
+produces emotional reaction of happiness (the emotion which was tried to trigger with the video)
+the spontaneous video’s values were high most time of the video while the apathic video showed
+no movement in these action units during the video. Emotion prediction values showed as well
+that the maintaining emotion in the spontaneous video was happiness but in the apathic video the
+maintaining emotion was neutral. Neutral facial expression was there to describe where there is
+no visible emotion in the face.
+ Neutral expression is main thing to focus when trying to find out if the memory disorder exists.
+Important thing to notice is that some reference data is needed when analyzing someone’s facial
+expression changes since people have differences in facial expressiveness in usual. In the future
+the concrete differences need to be identified if the facial expression analysis is wanted to be
+used as a memory disorder detection method.
+
+
+Keywords: facial expressions, memory disorders, apathy, facial expression analysis, computer
+vision, neural network
+
+
+The originality of this thesis has been checked using the Turnitin OriginalityCheck service.
+
+
+
+
+
+TIIVISTELMÄ
+Julia Ruoranen: Kasvonilmeiden analyysi muistisairauden etsinnässä
+Kandidaatin tutkielma
+Tampereen yliopisto
+Tieto- ja sähkötekniikan kandidaattiohjelma
+Toukokuu 2023
+
+Kasvonilmeet ovat kommunikoinnin ja viestinnän keino ihmisten välillä. Niiden avulla ihmiset
+kykenevät viestimään omista tunnetiloistaan ilman sanallista viestiä. Kun ilmeissä tapahtuu
+muutoksia, voi se vaikuttaa ihmisen vuorovaikutukseen ja sosiaalisiin suhteisiin. Muistisairaudet
+ovat yksi ilmeissä tapahtuvien muutosten aiheuttajista. Yksittäisistä oireista erityisesti apatia
+vähentää ilmeiden voimakkuutta tehden kasvoista ilmeettömämmät.
+Työn tarkoituksena oli tutkia, miten kasvonilmeitä tunnistavaa ohjelmaa voisi hyödyntää
+muistisairauden etsimisessä. Keskittymiskohtana oireista toimi nimenomaan apatia, koska
+aiemmissa tutkimuksissa oli löydetty selkeää korrelaatiota apatian ja kasvonilmeiden muutosten
+välille. Ohjelman ideana oli tunnistaa kasvonilmeet kahdesta videoklipistä. Analysoitavat
+videoklipit oli luotu siten, että ensimmäisessä videossa oli spontaani reaktio ja toisessa
+ilmeettömämpi reaktio hauskaan videoon. Analyysin tuloksia tutkimalla etsittiin eroja videoiden
+välillä, jotta pystytään esittämään, miten apaattiset kasvonilmeet eroavat tavallisista
+kasvonilmeistä.
+Ohjelma rakennettiin käyttäen Python Facial Expression Analysis Toolbox:ia (PyFeat), joka
+sisältää malleja ja työkaluja kasvonilmeiden tunnistamiseen ja analysointiin. PyFeat:in avulla
+luotiin ns. etsintätyökalu, joka koostui PyFeat:n omista esiharjoitetuista etsintäkomponenteista.
+Etsintätyökalu tunnistaa kasvonilmeet ja tuottaa dataa kasvojen ja kasvonpiirteiden sijainnista
+videolla, pään ja kasvojen asennosta sekä toimintayksiköiden (action units) ja ilmeiden
+ennustearvoista.
+Suurimmat erot videoiden välillä löydettiin toimintayksiköiden ja ilmeiden ennustearvoista.
+Ilmeettömän videon kohdalla missään toimintayksikössä ei tapahtunut aktivoitumista eli
+ennustearvo 0.5 tai alle, mikä viittaa siihen, että kasvoissa ei tapahtunut liikettä ilmeitä tuottavissa
+lihaksissa. Ilon tunnetta tuottavissa toimintayksiköissä oli selkeä ero videoiden välillä:
+spontaanissa videossa toimintayksiköt olivat selkeästi aktiiviset eli ennustearvo yli 0.8 koko
+videon ajan, kun taas ilmeettömän videon kohdalla ennustearvot pysyivät lähellä nollaa. Ilmeiden
+ennustearvoissa ilon tunne oli selkeästi läsnä koko spontaanin videon ajan, apaattisella videolla
+taas koko videon tunnetila on neutraali. Neutraali tunnetila on kuvastamassa tilannetta, jossa
+kasvoilla ei ole mitään näkyvää tunnereaktiota.
+Neutraali tunnetila ja tunnetilojen ennustearvot muutenkin ovat tärkein keskittymiskohta, kun
+yritetään etsiä muistisairauteen viittavia piirteitä. On hyvä kuitenkin muistaa, että jonkinlaista
+referenssimateriaalia tarvitaan, kun analysoidaan kasvonilmeiden muutoksia, sillä kasvojen
+ilmeikkyydessä on lähtökohtaisesti eroja ihmisten välillä. Tulevaisuudessa konkreettisia
+muutoksia pitäisi identifioida tarkemmin, mikäli kasvonilmeiden analyysia halutaan hyödyntää
+muistisairauden etsinnässä.
+
+
+Avainsanat:
+kasvonilmeet,
+muistisairaus,
+apatia,
+kasvonilmeiden
+analyysi,
+konenäkö,
+neuroverkot
+
+
+Tämän julkaisun alkuperäisyys on tarkastettu Turnitin OriginalityCheck –ohjelmalla.
+
+
+
+
+
+
+CONTENTS
+
+1. INTRODUCTION .................................................................................................. 1
+2. RELATED WORK ................................................................................................. 3
+3. FACE DETECTION ............................................................................................... 5
+3.1
+Image processing ................................................................................. 6
+3.2
+Low-level analysis ................................................................................ 7
+3.3
+Neural networks ................................................................................... 9
+3.4
+Convolutional neural network ............................................................. 10
+3.5
+Multitask convolutional neural network ............................................... 12
+4. FACE FEATURE DETECTION AND CLASSIFICATION ..................................... 15
+4.1
+Face feature detection ....................................................................... 15
+4.2
+Residual Masking Network for FER .................................................... 17
+5. DEMO ................................................................................................................. 20
+5.1
+Pretrained detectors ........................................................................... 20
+5.2
+Implementation and results ................................................................ 22
+6. CONCLUSION .................................................................................................... 27
+REFERENCES....................................................................................................... 28
+
+
+
+LIST OF FIGURES
+Figure 1.1 Estimated prevalence of dementia in years 2021 and 2050 [2] .................... 1
+Figure 3.1 FER process ................................................................................................ 5
+Figure 3.2 Image matrix ................................................................................................ 6
+Figure 3.3 Edge Image ................................................................................................. 8
+Figure 3.4 Node’s structure ......................................................................................... 10
+Figure 3.5 NN's structure ............................................................................................ 10
+Figure 3.6 CNN’s structure ......................................................................................... 11
+Figure 3.7 Simple convolutional computation .............................................................. 12
+Figure 3.8 P-net structure ........................................................................................... 13
+Figure 3.9 R-net structure ........................................................................................... 13
+Figure 3.10 O-net structure ......................................................................................... 14
+Figure 4.1 PFLD network structure ............................................................................. 16
+Figure 4.2 RMN's structur ........................................................................................... 18
+Figure 4.3 Residual layer’s structure ........................................................................... 18
+Figure 4.4 Masking block ............................................................................................ 19
+Figure 5.1 Aggregated data from the spontaneous video ............................................ 22
+Figure 5.2 Aggregated data from the apathy video ..................................................... 23
+Figure 5.3 AU Predictions from the spontaneous video .............................................. 24
+Figure 5.4 AU Predictions from the apathy video ........................................................ 24
+Figure 5.5 AU06 and AU12 predictions from both videos ............................................ 25
+Figure 5.6 Emotion predictions from the spontaneous video ....................................... 25
+Figure 5.7 Emotion predictions from the apathy video ................................................ 25
+
+
+
+
+
+LIST OF SYMBOLS AND ABBREVIATIONS
+AD
+Alzheimer’s Disease
+AU
+Action unit
+ASM
+Active shape model
+CI
+Cognitive Impairment
+CNN
+Convolutional Neural Network
+DPM
+Deformable Part Model
+DTM
+Deformable Template Matching
+FACS
+ Facial Action Coding System
+FER
+Facial Expression Recognition
+IOU
+Intersection Over Union
+LLA
+Low-level Analysis
+MD
+Memory Disorder
+NME
+Normalized Mean Error
+NN
+Neural networks
+NMS
+Non-Maximum Suppression
+PFLD
+Practical Facial Landmark Detector
+ReLU
+Rectified Linear Unit
+
+
+
+
+
+ t
+time unit
+
+
+.
+
+1
+
+1. INTRODUCTION
+Facial expressions are one way to communicate with other people. Without saying
+anything people can message to each other what their feelings in certain situations are
+by their face. When the recognition and production of facial expressions weakens it can
+affect persons social relationships significantly.
+
+Neuropsychiatric diseases where damage in certain part of the brain obstructs or decreases the ability to remember, store and maintain memories are called memory disorders. They also affect person’s cognitive capabilities and social behaviours.[1] Since
+the memory disorders occur more in older people, in countries where the population is
+aging the memory disorders come more and more common. Figure 1.1 shows some statistics from year’s 2015 World Alzheimer Report where has been predicted the prevalence of dementia in years 2021 and 2050 [2].
+
+
+Figure 1.1 Estimated prevalence of dementia in years 2021 and 2050 [2]
+One of the cognitive capabilities in which the memory disorder affects are production
+and recognition of facial expressions. The common symptoms such as apathy impair the
+facial expressiveness of neuropsychiatric disorder patients [3]. Since memory disorder
+causes changes in the facial expressions, they could be one of the factors to be observed
+when detecting possible memory disorder. Computer vision-based facial analysis has
+been used in memory disorder research for several years. The research in these studies
+has been focused on finding out the main differences in facial expressions between
+memory disorder patients and healthy people. Some of the studies focus on analysing
+
+2
+
+certain symptoms inside the memory diseases and these symptoms effects in facial expressions and some of them handles the topic more general way.
+
+This thesis examines how the program that analyses face expressions could be applied in the search for memory disorder. The experimental part of this thesis is demo
+program which presents one proposal how the facial expression analysis could be use in
+search of memory disorder. The idea of the demo program is to process facial expressions from video footage and find differences which could be caused by memory disorder. The program is build using traditional facial expression recognition program. Results
+from the program are analysed and compared to find out the main points to focus on in
+facial expression while searching memory disorder. It is important to notice that the
+program in this thesis is simplified and need to be further refined so it can be deployed
+in the detection of memory disorders.
+
+The structure of the thesis is followed. Chapter 2 presents the earlier research where
+facial expression recognition was used to find differences between healthy people and
+people with memory problems and what differences were found. Chapter 3 goes
+through methods and algorithms used when detecting the face from an image. The
+fourth chapter presents how the facial features which are used to create facial expressions can be found from the face and the classification algorithms which could be used
+to classify the facial expressions. The ways of analysing facial expression’s intensity are
+also presented in chapter 4. The demo code implementation is detailed in chapter 5.
+The final chapter summarizes the experimental chapter 5 and handles some problematic
+parts of the topic and discusses about the future of the field.
+
+3
+
+2. RELATED WORK
+Facial expression recognition (FER) is versatile tool that could be applied in different
+fields. Since facial expressions are one way of message emotions, they could be used in
+various psychological and medical research. Related to memory disorders (MD) FER has
+been used to find differences between healthy people and people with MD. Most of
+these studies have had promising results and the correlations between memory disorders and changes in facial expressions has been found [3-6]. The field still needs more
+research before FER could be bring into use in the search of MD.
+
+The studies where facial expressions of the MD patients were analysed were based
+on tasks with some sort of emotional stimuli. The test subjects could have been asked
+to tell positive and negative story [3,6] or the stimuli could have been some visual footage shown to the test subjects [5,7]. In all the studies the participants consisted of
+healthy people and people with MD. In most of the studies the participant group included other cognitive impairment (CI) patients as well. The facial expressions of the test
+subjects were recorded, and the results of healthy and MD/CI patients were compared.
+In that way the correlations between facial expression changes and MD were discovered. Nex few of the studies and parameters to use in them are viewed more closely.
+
+One way to find out how effective person’s facial expression production is to make
+the person mimic different kinds of facial expressions. This research shows how efficient
+the facial expression recognition and the reproduction of those expressions is. Facial
+expression mimicry was research by using three test groups: healthy older adults, adults
+with mild cognitive impairments and adults with Alzheimer’s disease. The main task for
+research targets was to mimic the emotional facial expressions from 49 still pictures displayed to them. The Kinect 3D recording was used to measure the test person’s adequacy of the facial expressions in six basic emotions and was compared to person’s own
+typical emotional facial expressions. There was found no significant differences with
+healthy or MCI groups in frequency nor adequacy of emotional facial expressions. The
+difference in patterns of emotional expression was found in the Alzheimer’s disease
+group (AD group). Even though the frequency which the negative/positive emotions
+were shown was the same with all groups the AD group has difficulties to flexibly adjust
+in the presented stimuli (meaning the picture). In conclusion the result of the research
+shows that the AD group participant only one of the emotional stimuli’s signs, either
+positive or negative. [5]
+
+One of the most common symptoms that appears in neurocognitive disorders is apathy. It is one of the symptoms which can appear in very early stage in the disease progression and in that way affects even in the very beginning of the memory disorder. [3]
+
+4
+
+The general definition of apathy is absence of emotion, concern, interest, and motivation which results in lack of drive and self-initiated behaviour [8]. In this thesis the absence of emotions is the most interesting part because the change in emotions affects
+the emotional facial expressions. There is correlation between apathy and person’s ability to produce facial expressions [3,4]. Even though apathy moderates cognitive deficits
+effect of the facial expressions the apathy itself decreases overall and specific facial expressions [4]. Apathy correlates negatively with basic facial movements which means
+that when the apathy deepens, lack of facial expressions increases [3]. In addition, spontaneous emotional expressions are weakened people with apathy [4]. Since the apathy
+is common symptom in memory disorders it could be used as a parameter in memory
+disorder detection based on facial expression changes.
+
+
+5
+
+3. FACE DETECTION
+Facial expression recognition process can be divided in few different phases. First the
+face needs to be found from the image (or video). When the face is localized from the
+image the face features need to be detected as well. The extracted features are used to
+train the classifier which is used in the end to recognize the facial expressions from the
+real-life data. Figure 3.1 presents the steps of FER.
+
+
+Figure 3.1 FER process
+First step to analyse facial expressions is to find the face from the image. This step is
+called face detection and its main target is to first find out is there a face in the image
+and if the face is founded, show its location and how many faces there are in the image
+[8]. In this thesis the assumption is that the image always contains face and there is
+only one face in the image.
+
+6
+
+There are some challenges which are good to notice when creating the face detector.
+The camera ancle or person’s pose can affect in a way that some of the critical features
+such as the nose or an eye might be invisible to the camera, or some objects might
+cover these areas. Various shape, colour, and size from some structural components
+such as glasses or beards and that they might be in the image or not may also make
+the face detection harder. [8]
+When detecting something from an image, image needs to be processed somehow.
+The basic structure of the image processing in base in every image-related tasks. Chapter 3.1 determines image and image processing and goes through the differences between basic image processing and computer vision. In chapter 3.2 presents shortly
+low-level analysis methods where the characteristics of image which use in detection
+are presented. Since neural networks are mostly used in object detection these days,
+they are presented more closely in chapter 3.3. Chapter 3.4 goes deeper in neural networks presenting convolutional neural network and chapter 3.5 presents the specific
+network structure which the pretrained face detection model has.
+3.1
+Image processing
+Before getting basics of image processing the concept of digital image is good to be clarify. Digital image can determined as a two-dimensional function F(x,y) where x and y
+describes the coordinate values of certain point of an image and F is the intensity value
+at the point (x,y) in an image [9]. Image points are called as pixels and these pixels together form the whole image. When the coordinate values x and y and F values are finite
+the image can be called as digital image [9]. Pixel points together form an image matrix
+where is columns and rows. Example of image matrix is presented in figure 3.2.
+
+
+Figure 3.2 Image matrix
+Grayscale images contains only one image matrix which describes the intensities in
+every point in the image. The most used image colour format is 8-bit colour format [9]
+which means that there are 256 intensity values, and all the pixel values are between 0
+
+7
+
+and 255. In colour images there is more than one image matrix. Most famous colour
+image model is Red-green-blue (RGB) colour model where there are three image matrixes and each of them represents one colour’s information: one matrix is for red, one
+for green and one for blue colour information. By combining these three matrixes the
+true colour information of the image is produced.
+Image processing can be described as a process where certain operations are performed
+to a digital image to find some useful information or deleting some useless information
+such as noise from an image. Image is usually processed with the algorithm in smaller
+parts. Sometimes single intensity values of an image are processed with some algorithm.
+Example for this is grayscaling where the RGB images colour 3D information is transformed in 2D grayscale information. Image can be processed also in bigger windows,
+such as 2x2 or 3x3 pixels. Every value of the area is used with the algorithm to calculate
+one output value for an output matrix. In this thesis the image is processed is processed
+mostly in 2x2 or 3x3 patches.
+The field where image processing is categorised, differs depending on the form of input
+and output data of the process. When output and input data are both in image form,
+the field is called digital image processing. When input data is in image form and output
+data is some description, the field is computer vision. [9] In this thesis both the model
+training and real data analysis are determined in computer vision. In training the image
+data is used to teach the algorithm how the model should classify certain images. After
+training real image data is feed for the model and the model gives a class label and other
+descriptive information.
+The difference between image processing and computer vision is that image processing
+is more focused on processing the whole image and preparing the data for other tasks
+and computer vision focuses more to find information inside the image, like human
+brain analyses the visual information [10]. Basic structure of image processing is same
+as in computer vision, only the goal is different. Image processing is often used as a sub
+method in computer vision-based tasks to make the separation of information easier.
+3.2
+Low-level analysis
+Low-level analysis (LLA) focuses more on pixel information, and it concerns more certain
+components of the face. Different methods in low-level analysis are based on severe
+descriptors in the image such as edges, information about the colour structure from an
+image or motion in the case of continuous image frames or video. The four subcategories in low-level analysis are edges, colour information, grey information, and motion.
+[11]
+Skin colour is one of the features that could separate the human face from the background of an image. Unlike many objects human skin colour is consistent [12] and this
+
+8
+
+feature is same for all skin tones [8]. The colour information of an image is used to localize the area from the image where the face is. Tracking the colour from an image is
+more efficient than tracking certain facial features but at the same time colours can be
+easily affected by changes of light [11]. The colour information itself is not enough when
+searching side-view faces [13]. Th e accuracy of this method is dependent on stabile
+lightning conditions and the face must be photographed from the front.
+More simpler colour information model is grey information of an image (grey images).
+In grey image the information is more limited because the grey scales only describe the
+intensity of the light in certain point of an image. The grey scale values around the face
+shape, edges and facial features are darker and other surrounding regions are lighter
+[11]. These contrasts are used to find the face in general and it could be as well to find
+certain facial features [14]. Compared to the skin colour method the information is only
+two dimensional which make the data computationally simpler. On the other hand, it is
+less efficient to process grey information and the data contains relatively more noise.
+[11] In this thesis the recorded footage is not grey scale so this method can’t be applied
+in this case.
+Edges are part of an image where the intensity values change rapidly. Since there is clear
+signs of what edges represent can they be used as detection method. Edges are one of
+the earliest techniques used in computer vision [11]. The edges of an image could be
+analysed separately from other information by forming so called edge image [15]. In the
+edge image the parts where the intensity changes rapidly the value of the value of the
+pixel is high as seen in Figure 3.2: in black and white pixel it means white.
+
+
+Figure 3.3 Edge Image [14]
+
+The surrounding points are black which means that all the useless information is deleted
+from the picture and the edge information is only information left. Information of this
+picture is used to find the face from an image. Pro of the edge detection method is that
+
+9
+
+there is only needed minimal account of scanning to find the face [16]. The negative side
+is that from noise image the edge detection does not work well because the clear intensity differences are more difficult to find from a noise image which means that the edges
+can’t be found efficiently [11]. This problem can be avoided by using some noise erasing
+filter before the edge detection.
+Last one of the low-level analysis methods is motion-based method. Motion being the
+parameter to use detecting the face there needs to be number of continuous image
+frames or video sequences [11]. Motion could be analysed few different ways. In frame
+variance analysis the face containing moving part is recognized by limiting the gathered
+difference of the frame [11].  The main thing is to analyse if the motion comes from a
+person and if so, find the position of the head. There are few assumptions that could be
+applied in this situation: first the head is smaller part placed in above larger part (the
+body) and second the movement of the head is slow and contiguous. [17]
+Other often used, a bit newer method, is called optical flow. It could be defined as the
+individual pixel’s apparent motion on the image plane [18]. Analysis with optical flow is
+based on estimating the apparent brightness velocity. The face detection starts by detecting the movement of the face and the found information is used to separate the face
+from the images [19]. The positive things in motion-based method are that it uses only
+one main parameter to detect the wanted feature and it could be used in the real-time
+environment. This method could be considered one of the face detection methods when
+creating the demo code because of its focus on especially video footage.
+
+3.3
+Neural networks
+Neural networks (NNs) are part of machine learning and one of the key elements of deep
+learning. NNs got their name and structure from the human brain’s structure [9], more
+specifically from the way neurons are connected and messaging to each other [20]. In
+general, neural network contains nodes, which are connected to each other and together these nodes form layers. Figure 3.3 shows how the nodes are constructed and
+how the output values are calculated: each node has some input xn and weight value wn
+which are calculated together and after all weight values have been added to the inputs
+the bias term b is added to those values and in the end a non-linear activation function
+is used to calculate the final output. In neural networks these nodes are connected to
+each other forming input layer, hidden layer(s) and output layer as shown in figure 3.4.
+
+10
+
+
+
+
+One of the most important functions related to Neural networks is Loss function. Loss
+function is the way to evaluate how good performance the NN has in certain task. The
+intuitive way to calculate the loss to perform the task to every training sample, calculate
+the difference between the correct label and the label from the model, sum these differences together and divide the sum with the number of the samples [21]. The smaller
+Loss function value means better performance of the NN.
+Before NN can be used in a classification task, it needs to be trained. In training the
+network is taught to find certain patterns. In the beginning of the training the weight
+values are initialized randomly [21]. The loss function is used to evaluate the performance of the network in each part of training. The updating in the NN happens in weight
+values: the gradient is calculated from the loss function result and this gradient is used
+to calculate the new weight values. This goes on until the loss function result is minimized. The training referred in this thesis is presented in Chapter 5.
+3.4
+Convolutional neural network
+Convolutional neural networks (CNNs) are neural networks which hidden layers contains
+convolutional layers. The basic architecture of the CNN contains three layers: convolutional layers, pooling layers and fully-connected layers. The basic structure of simple
+CNN is presented in figure 3.5.
+Figure 3.4 Node’s structure
+Figure 3.5 NN's structure
+
+11
+
+
+Figure 3.6 CNN’s structure
+The input matrix is first handled by convolutional layer. The name of the network comes
+from this layers’ convolution operation used in this layer. Discrete convolution can be
+defined mathematically as
+
+                                               𝑦(𝑡) = (𝑥∗𝑊)(𝑡) = ∑𝑥(𝑎)𝑊(𝑡−𝑎)
+∞
+𝑎=−∞
+(3.2)
+
+where x is the input value, W is the kernel and value y is the output [22]. The kernel
+could be described as a matrix or mask which is used as a function in each image pixel
+and its neighbourhood. The kernel covers only part of the input matrix, but it spreads
+along the whole input. Same time when the kernel goes through input matrix, the scalar
+product foreach value are calculated. The example of simple kernel computation in convolutional layer is presented in figure 3.6. During these calculations kernels are taught
+the ‘”fire” when the specific feature is seen at the given position of the input [23].  After
+the activation/feature maps are created using Kernel map the rectified linear unit (ReLU)
+is used as an activation function. Basic functionality of ReLU is that it returns value 0 if
+the input value is less than 0 and otherwise it returns the input value itself. ReLU is used
+in convolutional networks to add non-linearity of the data set [24].
+
+
+12
+
+
+Figure 3.7 Simple convolutional computation
+
+Second layer type in CNN is pooling layer. The main idea of the pooling layer is to reduce
+the number of the dimensionality and thus the computational complexity and number
+of parameters are reduced as well [23]. The convolutional layer produces feature maps
+as an output and these feature maps are handled by the pooling operation. The pooling
+mask as the kernel mask is smaller than the feature maps and it goes through the maps
+same way as the kernel does in convolutional layer.
+There are two most used pooling operation: max-pooling and average pooling. In max
+pooling the pooling mask goes through the feature maps choosing the maximum value
+from each patch. These values form the output maps from the pooling layer. The amount
+of the pooling maps is the same as in convolutional layer although the maps are smaller.
+In average pooling the idea is to calculate the average of the patch values and put these
+average values in the pooling maps.
+Fully connected layer is mostly last layer of CNN before the output layer. In fully connected layers a linear transformation to the input vector is used by using the weight
+matrix. After that non-linearity (usually ReLU) is used to transform the data in more nonlinear form [25]. The structure of the fully connected layer is close to the basic neural
+networks structure. The main idea of the fully connected layer is to take result of the
+convolution/pooling layer and make a classification decision.
+
+3.5
+Multitask convolutional neural network
+In this thesis the pretrained model for face detection is based on multitask convolutional
+neural network (MTCNN). The network uses three different network layers: p-net, R-Net
+and o-net. The whole process starts with resizing the image to different scales and use
+those resized image scales to form image pyramid [26]. After the image pyramid is
+formed the p-net starts to process it. P-net uses a full connected convolution as a basic
+algorithm structure [26]. It is used to find possible target area frames from the image
+pyramid. Figure 3.7 shows that first the 3x3 convolution and 2x2 max pooling is used to
+input data. After that the output data goes twice through 3x3 convolution and after the
+
+13
+
+last convolution the data is divided in face classification, bounding box regression and
+facial landmark localization data.
+
+
+Figure 3.8 P-net structure
+
+After p-net has found candidate frames from the image the R-net goes through the candidates and selects most suitable options and excludes most of the negative examples.
+R-net has more complex structure than p-net: the upper layer contains more constraint
+conditions, and it contains one more full connection layer at the end [26]. As seen from
+figure 3.8 the input data is processed twice using 3x3 convolution and 3x3 max pooling.
+After last convolution layer the data goes in fully connected layer where the data is simplified.
+
+Figure 3.9 R-net structure
+
+Last of the three network layers is output network, shortly o-net. O-net’s structure is
+close to the R-net’s structure which could be noticed when comparing figures 3.8 and
+3.9. O-net continues R-net’s work by finding and selecting the best frame candidates and
+detects five feature key points which outputs of the network [26]. O-net has deeper
+structure since it has more convolutional and pooling layers. The input data is processed
+first two times using 3x3 convolution and 3x3 max pooling and after that the 3x3 convolution and 2x2 max pooling is used. In the end the fully connect network is used to simplify the data and the data is divided in three categories (like in the first two networks).
+
+14
+
+
+Figure 3.10 O-net structure
+During the MTCNN algorithm process different size of rectangular frames are generated
+in face data and find the features from the frames by sliding detection [24]. Since there
+are many frames created there might be multiple frames from the same facial area. To
+make the face detection more efficient the extra frames must be eliminated.
+The Non-Maximum Suppression Algorithm (NMS algorithm) is used to selects the best
+frame of the multiple frames of the same face area and eliminate the other ones. NMS
+selects the candidate frame with highest confidence and calculates the Intersection
+Over Union (IOU) values between the other frames and the candidate frame. The threshold is set and every frame which’s IOU value is bigger than the threshold is eliminated.
+[24] NMS algorithm is used in the R-network to eliminate extra frames.
+The network outputs show the three components what the MTCNN output contains:
+face classification, face candidate frame regression and landmark localization. The main
+content of the algorithm prediction are classification and frame regression. [26]
+In the face classification the learning object is set as a binary classification problem and
+the algorithm uses cross entropy loss function for each sample xi:
+
+                             𝐿𝑖
+𝑑𝑒𝑡= −(𝑦𝑖
+𝑑𝑒𝑡log(𝑝𝑖) + (1 −𝛾𝑖
+𝑑𝑒𝑡)(1 −log (𝑝𝑖)))                       (3.3)
+
+pi is the sample xi predicted by NN probability of the face existence label of {0,1} [26]. 0
+means that the image does not contain face and 1 indicates that the image contains a
+face.
+The predicted target frame is created by using bounding box regression algorithm.  Fourdimension vector (x,y,w,h) is used to create the prediction window around the face area.
+The x and y values of the vector tell where the upper left corner of the window is and w
+and h represent the width and the height of the window. The difference square loss
+function is used to calculate the difference between the predicted frame and the nearest
+ground truth [24]:
+                                                                 𝐿𝑖
+𝑏𝑜𝑥= ‖𝑦𝑖−𝛾𝑖
+𝑏𝑜𝑥‖
+2                                         (3.4)
+As in every NN the MTCNN must be trained before it could be used in face detection
+from real data. The training and the datasets are more closely presented in Chapter 5.
+
+15
+
+4. FACE FEATURE DETECTION AND CLASSIFI-
+CATION
+After the face is found in the picture, the next step is to find the facial features from
+the face. Facial features are parts of the face such as mouth, eyes, or eyebrows. The
+feature extraction can be called the core of the facial expression recognition (replace
+later with FER), because the facial expressions are usually predicted using facial features [27]. The point of extracting facial features is to create the representation of the
+face components with minimum face information loss [28].
+The face feature extraction is important part of the facial expression recognition since
+they are used to produce the facial expressions. The Facial Action Coding System
+(FACS) defines the facial movements of human face by their appearance of the human
+face. These action units (AUs) are the parts of the face which together form certain facial expression [29]. AUs are linked with facial features since most of the actions are related to moving certain feature (for example inner brow raiser). Combined movements
+of the different facial muscles display emotional reaction in face: for example, cheek
+raiser and lip corner puller AUs form together facial expression of joy [29]. When the
+program is analysing the apathy of the facial expressions the AUs and facial features
+are main things to focus on.
+When the face features have been found, the extracted information is used to determine the facial expressions. Classification algorithm is trained with labelled facial data
+and the model is created based on that. After training the classification algorithm need
+to be evaluated to find out the possible mistakes from the training data and correcting
+the model before taking it in real action. Chapter 4.1 presents in the demo program
+used feature detection model and chapter 4.2 presents the classification model used in
+this thesis.
+4.1
+Face feature detection
+Facial features are the part of the face where the focus is when analysing facial expressions. The pretrained practical facial landmark detector (PFLD) [30] is used in this thesis
+to find the facial landmarks. The PFLD’s structure and methodology are next presented
+more closely.
+When the goal is to create detector with good accuracy the loss function’s quality is
+important thing to focus on. The simplest way to calculate the loss is to take the groundtruth landmarks and predicted landmarks and calculate the differences between those.
+The problem with this is that it does not consider the geometric information: the distances between the real 3D world and the applied 2D image could be significantly different. [30] The geometric information must be considered when calculating the loss.
+The general form of the loss function is:
+
+16
+
+                                              ℒ≔1
+𝑀∑∑𝛾𝑛‖𝑑𝑛
+𝑚‖
+𝑁
+𝑛=1
+𝑀
+𝑚=1
+                                                     (4.1)
+where the length of the d is the measurement of the distance of the n-th landmark of
+the m-th input. N is the pre-defined landmark number per face to be found. M is the
+number of the training images which are used in each process. The value γn is the weight
+value. [30] The novel loss function is:
+                               ℒ≔1
+𝑀∑∑(∑𝜔𝑛
+𝑐∑(1 −𝑐𝑜𝑠𝜃𝑘
+𝑛)
+𝐾
+𝑘=1
+𝐶
+𝑐
+) ‖𝑑2
+2‖
+𝑁
+𝑛=1
+                          (4.2)
+𝑀
+𝑚=1
+
+The θ1, θ2 and θ3 (K=3) values represents the angles of the differences between the yaw,
+pitch and roll angles of the ground-truth and the estimations. The value c represents
+which attribute class the sample belongs: profile-face, frontal-face, head-up, headdown, expression and occlusion. The number of samples in class c defines the weighting
+parameter. [30] The complex model of the loss function is taking account the geometrical structure and, in that way, grows the accuracy of the model.
+
+Figure 4.1 PFLD network structure [30]
+The PFLD model consists of two subnetworks. The first one is called Backbone network
+and its main task is to find the facial landmark coordinates from the image. The second
+network is called Auxiliary Network and it focuses on the geometric information estimation [30]. The structure of the whole network is presented in Figure 4.1: the lower
+branch describes the backbone network, and the upper branch describes the auxiliary
+network.
+The backbone network uses several convolutional layers for feature extraction and landmark prediction. Since the human face has strong global structures such as symmetry
+and spacial relationships among facial features (eyes, nose, etc.) they could be used
+when localizing the landmarks. For this reason, the feature maps’ structure is multi-scale
+
+17
+
+instead of single scale. This means that the convolutional operations are executed step
+by step to enlarge the receptive field. [30]
+Since there is bottleneck in terms of processing speed and model size [30] the traditional
+convolutional operations are replaced with MobileNet blocks. MobileNet uses depthwise separable convolution [31]. In standard convolution filters and combines the inputs
+into new outputs in one step. In depthwise separable convolution the standard convolution is factorized: first the depthwise convolution applies a filter in each output and
+after that the 1x1 pointwise convolution is used to combine the filtered results from
+depthwise convolution [31]. The factorization divides the convolutional layer in half: one
+separate layer for filtering and one for combining. The ReLU nonlinearities are used in
+both layers [31]. The convolution factorization reduces computation and model size
+which is the main reason why it is used in the PFLD model.
+ The auxiliary network’s role in the model is to estimate the 3D rotation information
+such as yaw, pitch and roll angles [30].  With this information the posture of the head
+can be determined. There are three steps when calculating the rotation information.
+First one standard face is predefined forming average from number of frontal faces and
+11 landmarks are fixed on the standard face [30]. These fixed landmarks are then used
+to find the corresponding ones from the training samples.
+ The corresponding landmarks and the ones from the training sample are used to the
+rotation matrix estimation. From the rotation matrix the Euler angles (yaw, pitch, and
+roll) can be calculated. [30] The rotation information is estimated from the difference
+between the reference frontal face pose and the real samples pose. By using the landmarks, the difference between the locations of them can be used to determine how the
+head pose differs from the frontal face pose. This gives the opportunity to analyse more
+varied facial data: the face does not have to be filmed right from the front to locate the
+facial landmarks.
+4.2
+Residual Masking Network for FER
+In this thesis, the facial expressions are recognized with pretrained model called Residual Masking Network (RMN). The method is based on basic CNN but the residual masking is added to boost the network’s performance [32]. The basic structure of the RMN is
+presented in figure 4.2.
+
+18
+
+
+Figure 4.2 RMN's structure [32]
+
+ First the input image goes through the 3x3 convolutional layer and 2x2 max-pooling
+layer. The output feature maps from the pooling layer goes through four residual masking blocks. After these four blocks the feature maps goes through average pooling layer
+and last fully-connected layer calculates output values which are some of the seven facial expressions (happy, angry, sad, fear, disgust, surprise, neutral).
+Residual masking blocks are built from two parts: residual layer and masking block. Input
+feature map goes first in residual layer (figure 4.3) where new feature map is calculated.
+[32] The residual layer uses convolutional layers inside it but the difference from traditional neural network is that the information from certain layer is not only used in the
+next layer but also in 2-3 hops away from the next layer. The residual connections are
+used mainly because the extra layers can be skipped when using residual connections
+[33].
+
+Figure 4.3 Residual layer’s structure
+
+After the feature map is produced in residual layer, the same size activation map which
+has value between 0 and 1 is calculated in masking block using 𝐹𝑀 = 𝑀(𝐹𝑅).  Masking
+
+19
+
+box contains encoder and decoder. In encoder side the masking box has convolutional
+and pooling layers and decoder side there are down-sampling and convolutional layers.
+The masking box uses various number pooling and down-sampling layers depending on
+the spatial size of the feature map in residual layer’s input. [32]
+
+
+Figure 4.4 Masking block [32]
+
+The output feature map 𝐹𝑁 comes from the model by calculating the output value from
+the residual layer and from the masking layer together. The formula for the calculation
+is:
+
+                                        𝐹𝑁= 𝐹𝑅+ 𝐹𝑅⊗𝐹𝑀                                                                       (4.3)
+
+where 𝐹𝑅 is the output feature map from residual layer, 𝐹𝑀 is the output of the masking
+box and ⊗ describes element-wise multiplication between masking box and residual
+layer outputs. [32] RMN is also trained and estimated to make it perform as good as
+possible. More about the datasets and training in general is in chapter 5.1.
+
+
+
+20
+
+5. DEMO
+As noticed in the 2nd chapter, one of the most common single symptoms that affects
+facial expressions is apathy.  Because there is clear correlation between apathy and facial expression changes this symptom can be base of our demo program.
+Most of the existing FER programs are based on six universal expression classes: anger,
+disgust, fear, happy, sad, and surprised. Because of that the demo program in this thesis
+classifies and analyses the facial expressions in these six categories. The apathy affects
+especially in the facial expressiveness which means that the apathy reduces production
+of facial expressions. Since the person suffering apathy products fewer facial expressions
+the measurement in the demo program is the intensity of the facial expression. In this
+reason the certain facial expression itself is not as interesting as the intensity of the certain facial expression. The challenge when measuring intensity of the facial expression
+is to find the limit between people with and without apathy.
+The demo code is made by using Python Facial Expression Analysis Toolbox (Py-FEAT).
+The Py-FEAT contains several different pretrained models to face detection, facial landmark detection, Action Unit analysis and emotion recognition [34]. Since the models are
+pretrained they are ready to be used to analyse the facial expressions. The toolbox contains image and video footage which could be use but in this thesis the analysis is made
+by using self-made video footage. Chapter 5.1 contains information about the training
+datasets used training the pretrained detectors and training evaluation in general level.
+The code implementation and FER analysis results are presented in chapter 5.2.
+
+5.1
+Pretrained detectors
+For face detection the used detector is MCNN detector. MCNN network’s structure was
+presented in chapter 3.4, but the environment and training used when developing the
+detector is presented here shortly. The MCNN is created by using Python as programming language and PyCharm as experimental debugging platform. Functions from
+OpenCV library was used to create the face detection boxes around the faces. The training dataset which was used to train the model is called the wider dataset which contains
+61 event categories. The training, evaluating, and testing samples were chosen randomly from each category. The percentual division between the samples were 40 %
+training, 10 % evaluating and 50 % testing. [26]
+Facial landmark detector is in chapter 4.1 presented PFLD model. The detector is trained
+by using two datasets: 300W and AFLW. 300W dataset contains five datasets with 68
+facial landmarks. 3148 images were used in model training and 689 images in model
+
+21
+
+testing. Testing images are divided in common subset images (554) and challenging subset images (135). AFLW contains 24386 images of in-the-wild human faces which are
+from Flickr. These images have extreme poses expressions and occlusions and point is
+to teach the model to find facial landmarks more than just frontal face images. [30]
+Normalized mean error (NME) is used to measure the accuracy in the training process
+30]. General formula for the NME is followed:
+
+                           𝑁𝑀𝐸(𝑆, 𝑆∗) = 1
+𝑁∑
+‖𝑠𝑖−𝑠𝑖
+∗‖2
+2
+𝐿
+𝑁
+𝑖=1
+                                                (5.1)
+
+S describes the ground-truth and S* describes model prediction. The difference between
+ground-truth points and model prediction results are calculated and it is divided by normalized factor L. In this model the predicted points are the facial landmarks. For 300W
+there are two normalizing factors: eye-centre distance and outer-eye-corner distance
+and for ALFW dataset the error is normalized by the ground-truth bounding box over all
+visible facial landmarks [30].
+The residual masking network is used to detect the emotional facial expressions. The
+structure is presented in chapter 4.2 and the network training setup is presented next.
+Two datasets were used in training process: FER2013 and Vietnam Emotion
+(VEMO2020). FER2013 contains total 35887 grey-scale images (28709 train samples,
+3859 validation samples and 3589 test samples). Google image search API was used to
+collect the image data and all of them were labelled in one of the seven emotion categories (6 basic emotions + neutral).  VEMO2020 contains 36470 images divided in two
+parts. First patch of the images is selected from YouTube video frames, Google Image
+and Flickr. The emotion labels have been chosen by group voting (10 persons, 18-23
+years old). Other image patch contains 30000 images which were labelled using professional in emotion labelling. [32]
+The classification is evaluated by using following accuracy metric:
+
+          𝐴𝑐𝑐𝑢𝑟𝑎𝑐𝑦=
+𝑇𝑃+ 𝑇𝑁
+𝑇𝑃+ 𝑇𝑁+ 𝐹𝑃+ 𝐹𝑁                                                 (5.2)
+
+where TP describes amount of true positive labels, TN true negative labels, FP false positive labels and FN false negative labels [32].
+
+22
+
+5.2
+Implementation and results
+The idea of the demo program is to present how FER analysis could be used while searching memory disorder. Apathy was chosen to be the symptom to focus on when analysing
+the data which the program produces. The program analyses two videos: first video
+shows spontaneous emotional reactions and in second one the facial expressions are
+neutralized trying to imitate the lack of facial expressiveness. The reactions for the first
+video were triggered by using funny animal video. To get the two videos as similar as
+possible the same video was watched while filming the second video. The intensity of
+the facial expressions was controlled to mimic the apathy’s effect of facial expressions.
+The program starts by creating the detector. The detector constricts in five partial detectors: face detector, facial landmark detector, AU detector, facial pose detector and
+emotion detector. After the detector is constructed the video paths were saved and the
+predictions of both videos were calculated using the detector. The detector calculates
+the values of the face box (face detector), landmark values and AU & emotion predictions. The data from the detector can be plotted in different ways and the differences
+between the two videotapes can be analysed from the plotted information.
+
+
+Figure 5.1 Aggregated data from the spontaneous video
+
+Figure 5.1 presents aggregated data from one frame (frame 48) of the first video where
+the reactions for the funny content were spontaneous. All data from the detector is presented except for the face pose information. The left image presents the image frame
+from the video where the face is surrounded by the face box and the facial landmarks
+are presented with white lines. In the middle predictions of the action units are presented and in the right there are predictions of the facial expressions. In this frame the
+prediction of the emotions shows that the emotional reaction of the frame is happiness.
+
+23
+
+
+Figure 5.2 Aggregated data from the apathy video
+
+Figure 5.2 presents the same aggregated information from one image frame of the second video where the reactions were imitating more the lack of facial expressions. Since
+both videos were created watching the same video the reaction of same part of the
+video is seen in the same image frame in both videos. In this case the chosen frame from
+the videos was frame 48. The emotional reaction of the apathy video’s image frame is
+categorised as neutral which is the category where the facial expression goes if it can’t
+be categorised in any of the six basic categories. None of the predictions of the AUs
+related to emotional reactions are over 0.50 which means that facial muscles are in neutral stage.
+
+One frame of the video is not good enough when analysing facial expression more general way. Person can only have neutral face in one frame of the video and in some other
+frame the facial expressions are stronger. The data of the AUs and facial expressions is
+needed from the whole video to find the difference. Let’s first compare the whole AU
+information of both videos. Figures 5.3 and 5.4 presents the predicted AUs from the
+videos. The biggest difference between the AU data is that the first video has more specific AU values over 0.6 which means that there are movement in specific AUs which is
+stronger than others. In the second video most of the AU predictions are gathered
+around 0.6 and under which means that there is no significantly strong movement in
+AUs.
+
+24
+
+
+Since the facial expression try to be triggered is happiness the focus should be in the
+AUs which are used to produce facial expression of happiness. These AUs are AU06
+(cheek raiser) and AU12 (lip corner puller) [35]. Figure 5.5 presents the difference between these AUs in first and second video. The blue line presents the prediction of the
+AU06 in first video, the green line AU12 in first video, orange line AU06 in second video
+and red line AU12 in second video. AU predictions from the second video stay under 0.2
+the whole video which means that the activation in happiness producing AUs is not happening. In the first video instead the AUs are clearly repeatedly activating during the
+trigger.
+
+m
+m
+m
+
+
+
+Figure 5.4 AU Predictions from the
+apathy video
+Figure 5.3 AU Predictions from the
+spontaneous video
+
+25
+
+
+
+Figure 5.5 AU06 and AU12 predictions from both videos
+
+The last thing to compare between the videos is the predicted emotions. Figures 5.6 and
+5.7 shows the emotion predictions from both videos. In the first video the strongest
+emotion is happiness. In those parts where the happiness value decreases little the neutral emotion value is stronger. In the second video all the six emotions stay close to zero
+the whole video while the neutral emotion value is stable and close to 1 the whole video.
+
+
+
+
+
+
+
+
+Figure 5.6 Emotion predictions from the
+spontaneous video
+Figure 5.7 Emotion predictions from
+the apathy video
+
+26
+
+It can be concluded from this that in first video the facial expressions are presented normally and in other video the lack of facial expressions is shown as low values of emotion
+predictions and strong value of neutral facial expression. Neutral facial expression describes the situation where there is no certain visible facial expression in the face. Since
+the neutral value stays through the whole video strong, there are very minimum facial
+expressions shown in the whole video. The neutral expression and its relationship with
+other emotions could be the key when figuring out the possibility of existing memory
+disorder.
+
+
+
+27
+
+6. CONCLUSION
+The goal of this thesis was to show how the FER analysis could be used in a search of
+memory disorder. The demo program showed that the information to focus on FER analysis are the predictions of the AUs and the predicted facial expressions. The neutral expression is good addition to estimate the intensity of certain facial expression. By comparing the prediction value of the certain facial expression and neutral facial expression,
+the intensity of the certain facial expression can be estimated. When the certain facial
+expression is weaker the prediction value of that expression gets smaller and at the
+same time the neutral facial expression prediction value gets bigger. The relationship
+between these prediction values shows how strong the facial expression is. The program
+code is available on GitHub1.
+Even though the analysis shows pretty good performance while searching weakening of
+facial expressions there are still few issues to concern about. First, the facial expressiveness is a unique feature and people have differences in intensity of facial expressions.
+This means that there is no universal model to note the apathy but the reference material from the analysed person is needed to determine the state. FER analysis is not efficient detector for person with more restrained facial expression since the difference
+between the facial expressions before and during the apathy is extremely small. Secondly, the trigger selection can be difficult since the concept of funny/sad/infuriating
+content is very subjective. This could be avoided by personating the trigger somehow:
+for example, in few of the apathy studies the emotional reactions were triggered by
+asking the subjects to tell two personal memories/stories (positive and negative).
+The research in this field is still limited and more information of the topic is needed. Up
+to this point the only research done with FER analysis is to find out if the differences in
+memory disorder patients exist at all. Future research should focus more to identifying
+the differences and creating models based on them. After these models are tested and
+approved FER analysis can be used as a detector of memory disorders.
+
+
+
+
+
+
+1https://github.com/rsjuru/FER_co
+de.git
+
+28
+
+REFERENCES
+[1]
+“Memory Disorders”, Premier Health, 2023. Available: https://www.premierhealth.com/services/neuroscience/memory-disorders (visited on 20.02.2023)
+[2]
+“Dementia”, OECD Health Statistics 2021, 2021. Available: https://www.oecdilibrary.org/sites/bf0d1884-en/index.html?itemId=/content/component/bf0d1884en (visited  on 24.02.2023)
+[3]
+R. Zeghari, A. König, R. Guerchouche, G. Sharma, J. Joshi, R. Fabre, P. Robert, & V. Manera, “Correlations Between Facial Expressivity and Apathy in Elderly People With Neurocognitive Disorders: Exploratory Study” JMIR formative
+research, 5(3), e24727, 2021. Available: https://doi.org/10.2196/24727 (visited
+on 07.03.2023)
+[4]
+U. Seidl, U. Lueken, P. A. Thomann, A. Kruse and J.  Schröder ,“Facial Expression in Alzheimer’s Disease: Impact of Cognitive Deficits and Neuropsychiatric
+Symptoms”, American Journal of Alzheimer’s Disease and Other Dementias,
+Updated 01.04.2012, 2012. DOI: 10.1177/1533317512440495
+[5]
+J. Gerłowska, K. Dmitruk & K. Rejdak. Facial emotion mimicry in older adults
+with and without cognitive impairments due to Alzheimer's disease. AIMS neuroscience, 8(2), 226–238, 2021. Available: https://doi.org/10.3934/Neuroscience.2021012 (visited on 07.03.2023)
+[6]
+S.L. Happy, A. Dantcheva, A. Das, R. Zeghari, P. Robert & F. Bremond, “Characterizing the State of Apathy with Facial Expression and Motion Analysis”, IN-
+RIA Sophia Antiplosis Fance & CoBTeK, Memory center CHU, University Cote
+d’Azur, association IA, France, 2019. Available:  http://antitza.com/apathy_1.pdf
+(visited on 07.03.2023)
+[7]
+Z. Jiang, S. Seyedi, R. U. Haque, A. L. Pongos, K. L. Vickers, C. M. Manzanares, J. J. Lah, A. I. Levey, G. D. Clifford, “Automated analysis of facial emotions in subjects with cognitive impairment”, PLOS ONE, San Francisco, California, US, Published: 21.01.2022. Available: https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0262527 (visited on 10.03.2023)
+[8]
+Q. M. Rizvi, “A Review on Face Detection Methods”,Journal of Management Development and Information Technology. 11, 2021. Available: https://www.researchgate.net/publication/257338580_A_Review_on_Face_Detection_Methods (visited on 11.03.2023)
+[9]
+N. Kumar, Digital Image Processing Basics, GeeksForGeeks, Updated:
+22.02.2023. Available: https://www.geeksforgeeks.org/digital-image-processingbasics (visited on 16.04.2023)
+[10]
+Difference between Image Processing and Computer Vision, GeeksForGeeks,
+Updated: 03.11.2022. Available: https://www.geeksforgeeks.org/difference-between-image-processing-and-computer-vision (visited on 18.04.2023)
+
+29
+
+[11]
+M. K. Hasan,Md. S. Ahsan, Abdullah-Al-Mamun,S. H. S. Newaz & G. M. Lee,
+“Human Face Detection Techniques: A Comprehensive Review and Future Research Directions” Electronics, 10(19), 2354. MDPI AG., 2021. Retrieved from
+http://dx.doi.org/10.3390/electronics10192354 (visited on 20.02.2023)
+[12]
+Q. Liu & G. Peng, "A robust skin color-based face detection algorithm," 2010
+2nd International Asia Conference on Informatics in Control, Automation and
+Robotics (CAR 2010), Wuhan, 2010, pp. 525-528, DOI:
+10.1109/CAR.2010.5456614.
+[13]
+S. Naido and R. R. Porle, "Face Detection Using Colour and Haar Features for
+Indoor Surveillance," 2020 IEEE 2nd International Conference on Artificial Intelligence in Engineering and Technology (IICAIET), Kota Kinabalu, Malaysia,
+2020, pp. 1-5. DOI: 10.1109/IICAIET49801.2020.9257813.
+[14]
+H. P. Graf, E. Cosatto, D. Gibbon, M. Kocheisen and E. Petajan, "Multi-modal
+system for locating heads and faces," Proceedings of the Second International
+Conference on Automatic Face and Gesture Recognition, Killington, VT, USA,
+1996, pp. 88-93, DOI: 10.1109/AFGR.1996.557248.
+[15]
+A. Satish & N. Deverajan,  “Simple and Fast Face Detection System Based on
+Edges”,  International journal of universal computer sciences. 1. 54-58., 2010.
+Available: https://www.researchgate.net/publication/225292501_Simple_and_Fast_Face_Detection_System_Based_on_Edges/ (visited on
+24.02.2023)
+[16]
+Computer Vision: Edge Detection, TeachingAI, Updated: 27.04.2020. Available:
+https://teachingai.blog/2020/04/27/computer-vision-edge-detection/ (visited on
+15.02.2023)
+[17]
+ A. Ranftl, F. Alonso-Fernandez and S. Karlsson, "Face Tracking Using Optical
+Flow," 2015 International Conference of the Biometrics Special Interest Group
+(BIOSIG), Darmstadt, Germany, 2015, pp. 1-5, DOI: 10.1109/BI-
+OSIG.2015.7314604.
+[18]
+S. Du, Understanding Optical Flow & RAFT, Towards Data Science, 2020.
+Available: https://towardsdatascience.com/understanding-optical-flow-raftaccb38132fba (visited on 15.02.2023)
+[19]
+B. Ahn, Y. Han and I. S. Kweon, "Real-time facial landmarks tracking using active shape model and LK optical flow," 2012 9th International Conference on
+Ubiquitous Robots and Ambient Intelligence (URAI), Daejeon, Korea (South),
+2012, pp. 541-543, DOI: 10.1109/URAI.2012.6463068.
+[20]
+ “What are neural networks?”, International Business Machines Corporation
+(IBM), 2021. Available: https://www.ibm.com/topics/neural-networks (visited on
+22.02.2023)
+[21]
+V. Bushaev, “How do we ‘train’ neural networks?”, Towards Datascience, Updated: 27.11.2017. Available: https://towardsdatascience.com/how-do-we-trainneural-networks-edd985562b73 (visited on 24.03.2023)
+[22]
+I. Goofellow, Y. Bengio & A. Courville, “Deep learning”, MIT Press, 2016. Available:  https://www.deeplearningbook.org (visited on 26.03.2023)
+
+30
+
+[23]
+K. O’Shea and R. Nasch, An Introduction of Convolutional Neural Networks,
+Cornell University, 2015. Available: https://arxiv.org/abs/1511.08458 (visited on
+23.03.2023)
+[24]
+N. McCullum, The ReLU and Pooling Layers in Convolutional Neural Networks,
+Nick McCullum, 2021. Available: https://www.nickmccullum.com/python-deeplearning/relu-layer-pooling (visited on 24.04.2023)
+[25]
+Fully Connected Layers in Convolutional Neural Networks, Indian Tech Warrior,
+2020. Available: https://indiantechwarrior.com/fully-connected-layers-in-convolutional-neural-networks (visited on 24.04.2023)
+[26]
+N. Zhang, J. Luo and W. Gao, "Research on Face Detection Technology Based
+on MTCNN," 2020 International Conference on Computer Network, Electronic
+and Automation (ICCNEA), Xi'an, China, 2020, pp. 154-158, DOI: 10.1109/IC-
+CNEA50255.2020.00040.
+[27]
+ V. Upadhyay and D. Kotak, "A Review on Different Facial Feature Extraction
+Methods for Face Emotions Recognition System," 2020 Fourth International
+Conference on Inventive Systems and Control (ICISC), Coimbatore, India, 2020,
+pp. 15-19, DOI: 10.1109/ICISC47916.2020.9171172.
+[28]
+S. Rajan, P. Chenniappan, S. Devaraj, N. Madian, “Face expression recognition
+techniques: a comprehensive survey”, The Institution of Engineering and Technology, Published: 07.05.2019. Available: https://doi.org/10.1049/ietipr.2018.6647 (visited on 23.02.2023)
+[29]
+B. Farnsworth, “Facial Action Coding System (FACS) – A Visual Guidebook”,
+Research fundamentals, 2022. Available: https://imotions.com/blog/learning/research-fundamentals/facial-action-coding-system (visited on 15.04.2023)
+[30]
+X. Guo, S. Li, J. Yu, J. Zhang, J. Ma, L. Ma, W. Liu & H. Ling, “A Practical Facial
+Landmark Detector”, Tianjin University, Wuhan University, Tencent AI Lab &
+Temple University, 2019. Available: https://arxiv.org/pdf/1902.10859.pdf (visited
+on 23.03.2023)
+[31]
+A. G. Howard, M. Zhu, B. Chen, D. Kalenichenko, W. Wang, T. Weyand, M. Andreetto, H. Adam, MobileNets: Efficient Convolutional Neural Networks for Mobile Vision Appilications, Google Inc. Published 17.04.2017. Available:
+https://arxiv.org/pdf/1704.04861v1.pdf (visited on 24.03.2023)
+[32]
+L. Pham, T. H. Vu and T. A. Tran, "Facial Expression Recognition Using Residual Masking Network," 2020 25th International Conference on Pattern Recognition (ICPR), Milan, Italy, 2021, pp. 4513-4519, DOI:
+10.1109/ICPR48806.2021.9411919.
+[33]
+S. Sahoo, Residual blocks – Building blocks of ResNet, Towards Data Science,
+2018. Available: https://towardsdatascience.com/residual-blocks-buildingblocks-of-resnet-fd90ca15d6ec (visited on 26.03.2023)
+[34]
+E. Jolly, J. H. Cheong, T. Xie, L. J. Chang, Py-Feat: Python Facial Expression
+Analysis Toolbox, PyFeat, 2022. Available: https://py-feat.org/pages/intro.html
+(visited 16.03.2023)
+
+31
+
+[35]
+E. Jolly, Action Unit Reference, PyFeat 2022. Available: https://pyfeat.org/pages/au_reference.html (visited on 23.03.2023)

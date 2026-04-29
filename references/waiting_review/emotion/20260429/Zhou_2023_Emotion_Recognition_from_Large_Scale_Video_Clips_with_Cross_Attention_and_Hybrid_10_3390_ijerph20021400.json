@@ -1,0 +1,24 @@
+{
+  "title": "Emotion Recognition from Large-Scale Video Clips with Cross-Attention and Hybrid Feature Weighting Neural Networks",
+  "authors": [
+    "Siwei Zhou",
+    "Xuemei Wu",
+    "Fan Jiang",
+    "Qionghao Huang",
+    "Changqin Huang"
+  ],
+  "year": 2023,
+  "abstract": "The emotion of humans is an important indicator or reflection of their mental states, e.g., satisfaction or stress, and recognizing or detecting emotion from different media is essential to perform sequence analysis or for certain applications, e.g., mental health assessments, job stress level estimation, and tourist satisfaction assessments. Emotion recognition based on computer vision techniques, as an important method of detecting emotion from visual media (e.g., images or videos) of human behaviors with the use of plentiful emotional cues, has been extensively investigated because of its significant applications. However, most existing models neglect inter-feature interaction and use simple concatenation for feature fusion, failing to capture the crucial complementary gains between face and context information in video clips, which is significant in addressing the problems of emotion confusion and emotion misunderstanding. Accordingly, in this paper, to fully exploit the complementary information between face and context features, we present a novel cross-attention and hybrid feature weighting network to achieve accurate emotion recognition from large-scale video clips, and the proposed model consists of a dual-branch encoding (DBE) network, a hierarchical-attention encoding (HAE) network, and a deep fusion (DF) block. Specifically, the face and context encoding blocks in the DBE network generate the respective shallow features. After this, the HAE network uses the cross-attention (CA) block to investigate and capture the complementarity between facial expression features and their contexts via a cross-channel attention operation. The element recalibration (ER) block is introduced to revise the feature map of each channel by embedding global information. Moreover, the adaptive-attention (AA) block in the HAE network is developed to infer the optimal feature fusion weights and obtain the adaptive emotion features via a hybrid feature weighting operation. Finally, the DF block integrates these adaptive emotion features to predict an individual emotional state. Extensive experimental results of the CAER-S dataset demonstrate the effectiveness of our method, exhibiting its potential in the analysis of tourist reviews with video clips, estimation of job stress levels with visual emotional evidence, or assessments of mental healthiness with visual media.",
+  "doi": "10.3390/ijerph20021400",
+  "arxiv_id": null,
+  "venue": "International Journal of Environmental Research and Public Health",
+  "citation_count": 33,
+  "source": "openalex",
+  "pdf_url": "https://www.mdpi.com/1660-4601/20/2/1400/pdf?version=1673518850",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4315700326"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.3390/ijerph20021400"
+}
