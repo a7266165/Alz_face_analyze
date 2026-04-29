@@ -11,7 +11,7 @@
     "Yoshinori Yamakawa"
   ],
   "year": 2025,
-  "abstract": "",
+  "abstract": "In recent years, the effects of reading and art on the human brain have been attracting attention. However, it has not been clarified how they affect the brain structure of healthy middle-aged people. This is due to the lack of technology to easily measure the state of brain structure. Therefore, in Study I, by analyzing the correspondence between gray matter volume (GMV) calculated from MRI images of the brain and facial expression data when four types of facial expressions are made (happiness, anger, sadness, and surprise), we constructed an algorithm to estimate brain health from facial expressions and developed a digital application to estimate brain health. In study II, we conducted correlation analysis between the estimated GMV and creative activities and reading habits measured by questionnaire using 113 middle-aged men and women who considered themselves healthy. It was revealed that GMV of the default mode network (DMN) and central executive network (CEN) correlate with creative activity and reading habit, respectively. This is the first study to show that art and reading can affect the brain structure of more people than previously believed using the estimated GMV.",
   "doi": "10.21203/rs.3.rs-7677657/v1",
   "arxiv_id": null,
   "venue": "Research Square",

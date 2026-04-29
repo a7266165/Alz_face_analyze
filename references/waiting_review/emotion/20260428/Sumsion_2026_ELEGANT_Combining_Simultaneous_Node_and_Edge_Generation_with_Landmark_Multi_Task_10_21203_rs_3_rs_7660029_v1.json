@@ -5,7 +5,7 @@
     "Dah Jye Lee"
   ],
   "year": 2026,
-  "abstract": "",
+  "abstract": "Facial Action Units (AUs) have recently been used in dementia detection, pain detection, talking head generation, and even facial reconstruction tasks. The success of each of these applications is at least partially due to the performance of the underlying AU recognition model. The commonly reported metric for comparing AU recognition is the average F1 score. Improving the average F1 score for AU recognition will directly improve the performance of each application that requires AU recognition. To improve the average F1 score, we propose simultaneously generating the nodes and edges for the graph neural network, strategically using landmark data, present additional AU recognition multitask learning methods, and introduce ensemble learning to AU recognition. Although most current solutions for AU recognition generate the nodes and the edges separately, our proposed method demonstrates the improvement that comes from simultaneously generating the nodes and edges. In addition, our method proposes to use the available landmark data in a multi-task learning method. Our solution also applies ensemble learning to AU recognition. Through extensive experimentation, we demonstrate an improvement in the state-of-the-art average F1 score from 66.3 to 67.3 and from 66.9 to 67.8 on the BP4D and DISFA datasets, a considerable improvement in this ﬁeld. These results underscore the substantial improvements our proposed method brings to the application of AU recognition.",
   "doi": "10.21203/rs.3.rs-7660029/v1",
   "arxiv_id": null,
   "venue": "Research Square",
