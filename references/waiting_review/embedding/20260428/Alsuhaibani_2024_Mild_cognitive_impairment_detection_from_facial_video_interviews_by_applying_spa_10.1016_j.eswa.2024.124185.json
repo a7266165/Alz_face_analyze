@@ -6,7 +6,7 @@
     "Mohammad H. Mahoor"
   ],
   "year": 2024,
-  "abstract": "",
+  "abstract": "Early detection of Mild Cognitive Impairment (MCI) leads to early interventions to slow the progression from MCI into dementia. Deep Learning (DL) algorithms could help achieve early non-invasive and low-cost detection of MCI. This paper presents the detection of MCI in older adults using DL models based only on facial features extracted from video-recorded conversations at home. We used the data collected from the I-CONECT behavioral intervention study (NCT02871921), where several sessions of semi-structured interviews between socially isolated older individuals and interviewers were video recorded. We develop a framework that extracts holistic spatial facial features using a convolutional autoencoder and temporal information using transformers. We proposed the Spatial-to-Temporal Attention Module (STAM) to detect the I-CONECT study participants' cognitive conditions (MCI vs. those with normal cognition (NC)) using facial and interaction features. The interaction features of the facial features improved the prediction performance compared with applying facial features solely. The detection accuracy using this combined method reached 88%, whereas the accuracy without applying the segments and sequences information of the facial features within a video on a certain theme was 84%. Overall, the results show that spatiotemporal facial features modeled using DL algorithms have a discriminating power for the detection of MCI.",
   "doi": "10.1016/j.eswa.2024.124185",
   "arxiv_id": null,
   "venue": "Expert Systems with Applications",

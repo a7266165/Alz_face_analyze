@@ -10,7 +10,7 @@
     "Taishiro Kishimoto"
   ],
   "year": 2025,
-  "abstract": "",
+  "abstract": "The development of a cost-effective digital biomarker for detecting dementia is highly needed. While numerous studies have explored dementia detection through speech and natural language analysis, only a few studies have focused on dementia detection using face video recordings, and more in-depth research is needed. In this paper, we propose a method for detecting dementia and mild cognitive impairment (MCI), a pre-dementia stage, by utilizing four types of facial expression features extracted from recorded videos of participants. These features include Action Units, emotion categories, Valence-Arousal, and face embeddings. From the above features obtained from each video frame, various statistical information was extracted and used as features, and predictions were performed using a decision tree-based model. Our method was evaluated using face video recordings during conversations. The method achieved an area under the receiver operating characteristic curve (AUC) of 0.933 for dementia detection and 0.889 for MCI detection. Statistical analysis of facial expression features revealed that participants with dementia had fewer positive emotions, more negative emotions, and lower valence and arousal than healthy participants. These results indicate that the proposed method could serve as an explainable screening tool for the early detection of dementia and MCI.",
   "doi": "10.1109/jbhi.2025.3526553",
   "arxiv_id": null,
   "venue": "IEEE Journal of Biomedical and Health Informatics",
