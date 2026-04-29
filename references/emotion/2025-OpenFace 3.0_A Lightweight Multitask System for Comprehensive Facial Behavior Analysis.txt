@@ -1,0 +1,1344 @@
+arXiv:2506.02891v1  [cs.CV]  3 Jun 2025
+OPENFACE 3.0: A Lightweight Multitask System
+for Comprehensive Facial Behavior Analysis
+Jiewen Hu1, Leena Mathur1, Paul Pu Liang2, Louis-Philippe Morency1
+1 Carnegie Mellon University, 2 Massachusetts Institute of Technology
+https://github.com/CMU-MultiComp-Lab/OpenFace-3.0
+Abstract— In recent years, there has been increasing interest
+in automatic facial behavior analysis systems from computing
+communities such as vision, multimodal interaction, robotics,
+and affective computing. Building upon the widespread utility
+of prior open-source facial analysis systems, we introduce
+OPENFACE 3.0, an open-source toolkit capable of facial landmark detection, facial action unit detection, eye-gaze estimation,
+and facial emotion recognition. OPENFACE 3.0 contributes a
+lightweight unified model for facial analysis, trained with a
+multi-task architecture across diverse populations, head poses,
+lighting conditions, video resolutions, and facial analysis tasks.
+By leveraging the benefits of parameter sharing through a
+unified model and training paradigm, OPENFACE 3.0 exhibits
+improvements in prediction performance, inference speed, and
+memory efficiency over similar toolkits and rivals state-of-theart models. OPENFACE 3.0 can be installed and run with a
+single line of code and operate in real-time without specialized
+hardware. OPENFACE 3.0 code for training models and running
+the system is freely available for research purposes and supports
+contributions from the community.
+I. INTRODUCTION
+Understanding communicative signals from faces is a
+critical ability driving human face-to-face social interactions
+[29]. A slight shift in a person’s eye gaze or tilt of the head,
+for example, are subtle facial behaviors that can substantially
+influence the social meaning being conveyed and interpreted during interactions [48]. Among the computer vision
+community, there has been a growing interest in designing
+systems that can use fine-grained facial behaviors to interpret
+human affective, cognitive, and social signals [6], [2]. Facial
+behavior analysis has been a core component in humancentered artificial intelligence (AI) systems to support human
+well-being, with applications in healthcare such as detecting
+depression [57] and post-traumatic stress [65], applications
+in education such as robots teaching students while adapting
+to facial cues [52], and additional use cases in automotive
+[45], manufacturing, and service industries [23], [31].
+This paper introduces OPENFACE 3.0, a high-performing
+open-source toolkit capable of jointly performing facial
+landmark detection [70], facial action unit (AU) detection
+[21], eye gaze estimation [22], and facial emotion recognition
+[25]. These facial cues play an important role in conveying
+and shaping information during interactions. OPENFACE 3.0
+has been designed to help researchers and developers easily
+integrate these facial signals into their own projects.
+To achieve this, OPENFACE 3.0 contributes a new
+lightweight unified model for facial analysis, trained with
+a multi-task architecture across diverse populations, head
+poses, lighting conditions, video resolutions, and output
+multiple facial analysis tasks. OPENFACE 3.0 achieves prediction performances that either exceed or rival larger stateof-the-art (SOTA) models that were specialized for each individual task. OPENFACE 3.0 also performs a wider variety of
+tasks, in comparison to prior facial analysis toolkits [2], [6],
+[13], [15], [8], [32], and exhibits significant improvements in
+task performance, efficiency, inference speed, and memory
+usage. For example, OPENFACE 3.0 is more accurate, faster,
+and more memory-efficient than OPENFACE 2.0 [6] and
+achieves improved accuracy on non-frontal faces, a crucial
+capability for facial behavior analysis in-the-wild.
+Users can install and run OPENFACE 3.0 with a single
+line of code to extract diverse facial cues in real-time and
+build upon an intuitive Python API to flexibly adapt our
+system to their needs. Our usability studies demonstrated
+that OPENFACE 3.0 is user-friendly, allowing even users
+with limited technical expertise to leverage its capabilities.
+The wide variety of facial analysis tasks performed by
+OPENFACE 3.0, coupled with the performance and efficiency
+improvements of this open-source toolkit, will enable future
+researchers and developers across fields to create new and
+useful applications of facial behavior analysis.
+II. RELATED WORK
+A. Task-Specific Facial Behavior Analysis
+Landmark detection approaches have evolved from traditional statistical models to deep learning approaches, such
+as convolutional neural networks (CNNs) [69] and heatmapbased methods to handle variations in expressions and lighting more effectively than prior models [38], [34]. For AU detection, CNNs replaced earlier handcrafted feature methods,
+with the latest advances incorporating Graph Neural Networks (GNNs) to model relationships among facial regions
+[3], [4], [77], [17], [27], [44], [85], [67], [42], [76]. Recent
+improvements in CNN and Vision Transformer (ViT) architectures have advanced gaze estimation by moving beyond
+traditional geometric models to methods that capture features
+from each eye, using multi-stream processing and dilated
+convolutions to handle varied pose and lighting [63], [79],
+[24], [37], [80], [14]. Similarly, facial emotion recognition
+has progressed from using classical machine learning models
+[61] to developing CNNs and ViTs to process subtle expressions [16], [56], [58], [7], [43], [72], [74]. For comprehensive
+reviews, we refer readers to survey papers on detecting facial
+landmarks [70], AUs [84], gaze [33], and emotion [10].
+
+Fig. 1.
+Visualization of the OPENFACE 3.0 system, a lightweight multi-task modeling approach, trained for efficient facial landmark detection, AU
+detection, gaze estimation, and emotion recognition. During inference, the system first utilizes a face detector and feature extractor to obtain a unified
+facial representation that combines contextual facial information with precise facial landmark data. This unified representation is, then, used as input to
+three separate modules: (1) The AU detection module constructs a similarity graph among action unit feature representations and uses a GCN to update
+each action unit vector. (2) The Gaze Estimation module employs separate fully-connected (FC) layers to analyze yaw and pitch angles for each eye
+independently. (3) The Emotion Recognition module uses an FC layer to classify emotions.
+B. Foundation Models for Computer Vision
+In recent years, vision researchers have focused on training
+foundation models [9] on vast amounts of unlabeled data
+before transferring models to specific downstream tasks via
+fine-tuning. Originally popularized in the natural language
+processing literature [19], [55], it has become common practice to pre-train ViTs [20] or multimodal architectures [40],
+[46], [62], [41], [66] on vast amounts of unlabeled images
+using multitask and self-supervised objectives [12], [20]. In
+recent years, transformer models have been leveraged as
+backbones in multitask learning for facial behavior analysis,
+due to strong feature extraction capabilities [54], [51], [87].
+Our work aligns with this direction, using multi-task learning
+to yield a more generalizable face representation that can be
+transferred to a variety of downstream facial analysis tasks,
+leading to strong task-specific performance, while remaining
+efficient through parameter and dataset sharing.
+C. Facial Analysis Toolkits
+Facial analysis toolkits allow researchers to study facial
+features in data from their respective domains. OPENFACE
+[5] and OPENFACE 2.0 [6] have been among the most
+widely-used open-source facial analysis systems, providing
+robust landmark and AU recognition capabilities. Similarly,
+toolkits such as LibreFace [13], Py-Feat [15], AFFDEX [8]
+and YOLO [32] have gained popularity in recent years. Most
+prior toolkits have specialized models for a small number of
+correlated tasks (e.g., AU and landmark detection). Through
+OPENFACE 3.0 we contribute a new unified multi-task model
+trained with diverse facial analysis tasks, enabling our toolkit
+to effectively perform a wider range of downstream facial
+analysis, compared to capabilities of prior toolkits.
+III. THE OPENFACE 3.0 SYSTEM
+OPENFACE 3.0 employs a multitask framework to enhance efficiency and cross-task learning by training shared
+facial representations across diverse tasks. Figure 1 visualizes
+an overview of the OPENFACE 3.0 architecture. The model
+first utilizes an efficient backbone to extract unified facial
+features that include contextual facial information, as well
+as precise facial landmarks (Section III-A). These unified
+feature representations are, then, used for diverse downstream facial analysis tasks, including AU detection, gaze
+estimation, and emotion recognition (Section III-B). In this
+section, we discuss our model, as well as the training details
+(Sections III-D, III-D) and system interface (Section III-E).
+A. Landmark Detection & Unified Facial Representation
+The first stage includes both a facial landmark detector
+to detect and align facial images and a feature extractor
+that processes these aligned facial images. The resulting
+landmarks are combined with contextual features, creating
+a unified input representation with both precise localization
+from the landmarks and rich contextual information.
+Input facial images are first passed through RetinaFace
+[18], an open-source tool for face detection and alignment
+that predicts face confidence scores and bounding boxes. We
+use RetinaFace MobileNet-0.25 [30], which achieves
+real-time face detection and alignment, even on CPUs.
+Once the face is detected and aligned, we extract facial landmarks, which provides important, localized spatial
+information. For example, landmarks capture subtle facial
+movements, communicating different social behaviors and
+emotions [83]. Similarly landmarks around the eyes partially
+encode information related to eye movement and gaze. We
+
+train a dedicated landmark detection module to extract accurate landmark information. The module includes four stacked
+Hourglass (HG) networks as the backbone [73], [75], takes
+the aligned face as input, and outputs landmark coordinates.
+Each HG generates N heatmaps, where N is the number of
+pre-defined facial landmarks. The normalized heatmap can
+be viewed as the probability distribution over the predicted
+facial landmarks. The final landmark coordinates are decoded
+from the heatmaps using a soft-Argmax operation, ensuring
+smooth and differentiable predictions. (Training details for
+our landmark detection module are in Sections III-D and
+III-D).
+Beyond landmarks, we extract contextual features using
+EfficientNet [64] backbone for facial feature extraction, pretrained on the VGGFace2 dataset [11] for face recognition.
+We use the output of this model’s final hidden layer as the
+contextual facial features for remaining tasks.
+To fully leverage localized, spatial information from landmarks and contextual information from facial features, we
+concatenate both the landmarks and facial features to form
+a unified facial feature representation.
+B. Downstream Tasks: Action Unit Detection, Gaze Estimation, Emotion Recognition
+Our model addresses three downstream tasks that take the
+unified facial feature representation as input: AU detection,
+gaze estimation, and emotion recognition.
+AU detection: Recognizing that relationships among AUs
+will shift as facial muscles move during expressions, we
+develop a dynamic graph-based approach inspired by ME-
+GraphAU [47] to model relationships among AUs. Instead of
+learning a static graphical relation among AUs from training
+data, we train a dynamic graph approach that reconstructs
+a new graph for each input face based on cosine similarity
+metrics among AU features.
+For N action units, the unified representation is passed
+to N independent fully-connected (FC) layers to extract
+vector representations for each individual AU. Our model,
+then, constructs a similarity graph by taking N AU vector
+representations as nodes and assigning weights to edges
+based on cosine similarity between AU vector representations. A Graph Convolutional Network (GCN) layer then
+updates each AU vector, considering both the individual
+characteristics of an AU and other correlated AU features.
+Gaze estimation: We implement four independent FC
+layers to analyze yaw and pitch angles separately for each
+eye. Specifically, we separate computations for left eye yaw,
+left eye pitch, right eye yaw, and right eye pitch. Each layer
+takes the unified representation as input and outputs the
+gaze vector for the corresponding angle. Informed by L2CS-
+NET [1], we compute losses independently for each angle
+in training, allowing for more nuanced model tuning.
+Facial emotion recognition: We use the unified representation from our backbone as input to a FC layer, which
+outputs one of eight emotions. Compared to the resourceintensive transformer models commonly employed in recent
+emotion recognition research, our approach is more efficient.
+C. Three-stage multitask training
+We developed a structured, three-stage training method
+across all four tasks to maximize performance and ensure stable feature extraction. In the first stage, we train the landmark
+detection module independently to accurately extract facial
+landmark information. Once trained, the landmark detection
+module’s parameters are frozen to retain the extracted spatial
+information throughout the subsequent training stages. In
+the second stage, we focus on stabilizing the classifier
+features by training only the task-specific classifiers with a
+frozen backbone. Finally, in the third stage, we unfreeze
+the backbone and task-specific classifiers to fine-tune the
+interactions between the backbone and the task-specific
+layers while keeping the pre-trained landmark detection
+module unchanged. This strategy ensures that the landmark
+information remains robust and unaffected while allowing
+the model to optimize its overall performance across tasks.
+As we introduce more tasks during training, the complexity increases due to imbalances in data size across
+different tasks and the fundamentally different nature of loss
+functions across tasks. To effectively balance these diverse
+loss functions, we employ a homoscedastic uncertaintybased weighting method [36]. Homoscedastic uncertainty
+is a type of uncertainty that remains constant across all
+input data but differs among tasks. This method adjusts the
+weight of each task’s loss function based on task-dependent
+uncertainty. Formally, our method assumes that the output of
+each task with homoscedastic uncertainty follows a Gaussian
+distribution as described below:
+p(ytask | f W(x)) = N(f W(x), σ2
+task)
+where x is the model input, W is the model weights, ytask is
+the model output for a specific task, and σ2
+task is the variance
+of the specific task. The loss is given by:
+L(W, ˆσ2
+au, ˆσ2
+gaze, ˆσ2
+emotion) =
+1
+2ˆσ2au
+LAU(W) +
+1
+2ˆσ2gaze
+Lgaze(W) +
+1
+2ˆσ2
+emotion
+Lemotion(W)
++ log(ˆσ2
+AU) + log(ˆσ2
+gaze) + log(ˆσ2
+emotion)
+Where ˆσtask is learnable task dependent parameter.
+By maximizing the Gaussian likelihood with homoscedastic uncertainty, this method allows for more principled learning across tasks with different units and scales.
+D. Training Objectives
+In this section, we discuss the loss functions for each
+downstream task and OPENFACE 3.0 training details.
+For facial landmark detection, we use the STAR loss
+[86], which reduces semantic ambiguity by decomposing
+prediction error into two principal component directions:
+LST AR(yt, µ, d) =
+1
+√λ1
+d(vT
+1 (yt −µ))+
+1
+√λ2
+d(vT
+2 (yt −µ))
+where yt represents the ground truth coordinates (manual
+annotations), and µ denotes the predicted landmark coordinates obtained through a soft-argmax operation. The distance
+
+function d(·) can be any standard distance measure, such as
+L1-distance or smooth-L1 distance. The terms vT
+1 and vT
+2
+project the prediction error onto the two principal component
+directions of ambiguity, while λ1 and λ2 are adaptive scaling
+factors corresponding to the energy of the principal components. By decomposing the error in this manner, the STAR
+loss helps mitigate ambiguity in facial landmark detection.
+For action unit detection, we use the Weighted Asymmetric Loss [47], which handles class imbalance by assigning
+higher weights to less frequent AUs:
+LW A = −1
+N
+N
+X
+i=1
+wi[yi log(pi) + (1 −yi)pi log(1 −pi)]
+where wi is the weight assigned to the i-th action unit,
+inversely proportional to its occurrence in the training set.
+The term yi is the ground truth label for the i-th action unit,
+and pi is the predicted probability of its occurrence. The term
+(1 −yi)pi log(1 −pi) down-weights the loss for inactivated
+AUs that are easier to predict, thus focusing learning on
+more challenging AUs. This weighting mechanism ensures
+that both frequent and rare AUs are balanced during training.
+For gaze estimation, we apply the Mean Squared Error
+(MSE) loss, which minimizes the squared difference between
+the predicted and true gaze angles.
+For facial emotion recognition, we use a class-weighted
+cross-entropy loss with label smoothing [60] to address the
+common issue of class imbalance. Given a class label y ∈
+{1, . . . , C}, we first apply label smoothing to obtain a soft
+target distribution:
+˜yi = (1 −α)δi,y + α
+C ,
+i ∈{1, . . . , C}
+where α is the label smoothing factor, C is the total number
+of classes, and δi,y = 1 if i = y and 0 otherwise. The final
+loss function is defined as:
+L = −1
+N
+N
+X
+i=1
+C
+X
+j=1
+fj
+min fk
+˜yi,j log pi,j
+where fj is the inverse frequency of class j in the dataset,
+and pi,j is the predicted probability for class j of sample i.
+OPENFACE 3.0 is trained PyTorch using the AdamW
+optimizer with momentum β1 = 0.9 and β2 = 0.999. A
+weight decay of 5×104 is applied to prevent overfitting. For
+the three training stages (Section ), we use different learning
+rates and epoch numbers for different training goals. In the
+first stage, the landmark detection module is trained for 100
+epochs with a learning rate of 0.001. In the second stage,
+parameters of the shared backbone are frozen. The training
+focuses on aligning initialized task-specific layers with the
+unified features extracted by the pre-trained multitasking
+backbone. As only a limited number of parameters are
+updated, the model is trained for 5 epochs with a learning
+rate of 0.001. In the final stage, the training aims to finetune
+the entire model. This stage employs a smaller learning rate
+of 0.0001 and a larger number of epochs (15) to ensure
+fine-grained optimization across all tasks. All training for
+OPENFACE 3.0 was done with a single GTX1080Ti GPU.
+E. OPENFACE 3.0 Interface and Deployment
+OPENFACE 3.0 offers a versatile, well-documented, opensource toolkit for researchers and developers interested in
+analyzing facial behavior in their own datasets. Expertise
+in computer vision or machine learning is not necessary
+for researchers to rapidly leverage OPENFACE 3.0 in their
+projects. OPENFACE 3.0 is capable of processing real-time
+video feeds from webcams, recorded video files, image
+sequences, and individual images. The system’s inference
+speed has been optimized, outperforming off-the-shelf facial
+analysis tools and ensuring that OPENFACE 3.0 can operate
+efficiently in real-time use cases such as social signal processing, human-robot interaction, and multimodal interfaces.
+OPENFACE 3.0 is implemented in PyTorch. We introduce
+a new Python package that can be easily installed via the pip
+command. OPENFACE 3.0 also includes a command line
+interface for added flexibility. To help users quickly deploy
+and utilize the toolkit, we provide sample Python scripts
+to demonstrate how to extract, save, read, and visualize
+facial behavior predictions, making it seamless for users to
+integrate OPENFACE 3.0 into their workflows.
+IV. EXPERIMENTS
+Our experiments are designed to test the performance
+and efficiency of using OPENFACE 3.0. We begin with
+quantitative experiments to benchmark various performance
+metrics of OPENFACE 3.0. All experiments discussed in this
+section were conducted on a machine equipped with an AMD
+Ryzen Threadripper 1920X @ 3.5GHz CPU and an NVIDIA
+GeForce GTX 1080 Ti GPU.
+A. Data and baselines
+In this section, we describe datasets and metrics used to
+evaluate performance on each of the facial analysis tasks
+included in OPENFACE 3.0. For each task, we list SOTA
+baselines to which we compare, as well as lightweight
+(smaller) baseline models that we designate as SOTA small
+models. We include lightweight model baselines to assess the
+feasibility of using OPENFACE 3.0 in resource-constrained
+environments where speed and efficiency are critical (e.g.,
+real-time edge computing, robotics). We also conduct experiments for each task with the widely-used OPENFACE 2.0
+toolkit [6] as a baseline for landmark detection, AU detection,
+and gaze estimation (emotion recognition is not supported by
+OPENFACE 2.0). We conduct experiments, when applicable,
+with Py-Feat [15] and LibreFace [13] – these toolkits cannot
+perform all the downstream tasks. All datasets and models
+discussed below are summarized in Table I and Table II.
+1) Facial landmark detection:
+Datasets: The 300W
+dataset [59] includes 68 landmarks per image and is divided
+into indoor and outdoor conditions, supporting robust training and evaluation. The WFLW dataset [68] provides a diverse array of faces with 98 landmarks, covering variations in
+occlusion, pose, make-up, illumination, blur and expression.
+
+TABLE I
+SUMMARY OF ALL DATASETS STANDARDIZED AND USED TO TRAIN OPENFACE 3.0.
+Datasets
+Size
+Task
+Description
+300W [59]
+4,437 images
+Landmark Detection
+68 manually annotated landmarks per image
+WFLW [68]
+10,000 images
+Landmark Detection
+98 landmarks across diverse faces
+AffectNet [50]
+1,000,000 images
+Emotion Recognition
+8 categorical emotions with valence and arousal scores
+DISFA [49]
+27 hours video
+Action Unit Recognition Intensity of 12 action units on a 6-point scale
+BP4D [81]
+192,000 frames of video Action Unit Recognition 27 action units in 2D and 3D expressions
+MPII Gaze [79]
+213,659 images
+Gaze Estimation
+Gaze estimation in natural environments
+Gaze360 [35]
+200,000 images
+Gaze Estimation
+Gaze directions covering a full 360-degree range
+TABLE II
+COMPARISON OF STATE-OF-THE-ART MODELS ACROSS TASKS.
+Model
+Task
+Parameters(M) Description
+SPIGA [53]
+Landmark Detection
+63.3
+Combines CNNs with Graph Attention Networks to model spatial relationships.
+SLPT [71]
+Landmark Detection
+13.2
+Lightweight model using transformers for subpixel coordinate prediction.
+ME-GraphAU [47]
+Action Unit Recognition
+67.4
+Graph-based approach with dynamic edge features to model AU dependencies.
+LibreFace [13]
+Action Unit Recognition
+22.5
+Toolkit for real-time AU detection with feature-wise knowledge distillation.
+MCGaze [26]
+Gaze Estimation
+83.1
+Models spatial-temporal interactions for robust gaze direction estimation.
+L2CS-Net [1]
+Gaze Estimation
+41.6
+Multi-loss, two-branch CNN architecture for angle-specific gaze prediction.
+DDAMFN [78]
+Emotion Recognition
+4.1
+Uses dual-direction attention mechanism for global and local feature integration.
+EfficientFace [82]
+Emotion Recognition
+1.3
+Lightweight model using depthwise convolutions and label distribution learning.
+Py-Feat [15]
+Landmark, AU, Emotion
+49.3
+A versatile facial analysis toolkit integrating multiple deep learning models.
+OpenFace 2.0 [6]
+Landmark, AU, Gaze
+44.8
+A popular open-source facial analysis toolkit.
+OPENFACE 3.0
+Landmark, AU, Gaze, Emotion
+29.4
+Unified multitask model with an efficient backbone.
+Baselines: SPIGA [53], a SOTA model, combines CNNs
+with Graph Attention Networks (GAT) to capture local
+appearance and spatial relationships among landmarks, enhancing detection accuracy. SLPT [71] is a SOTA lightweight
+model that leverages a local patch transformer to learn
+relationships among landmarks, generating representations
+from small local patches and using attention mechanisms
+to predict landmark subpixel coordinates. We report Py-
+Feat performance for the 300W dataset; Py-Feat’s landmark
+detection cannot perform the WFLW task out-of-the-box.
+LibreFace’s face alignment outputs a 5-point landmark set
+and has not been trained to detect 68 or 98 facial landmarks.
+Metrics: Normalized Mean Error (NME int ocul) is used
+to evaluate landmark detection accuracy. NME measures
+the average Euclidean distance between the predicted and
+ground-truth landmarks, normalized by the inter-ocular distance (distance between the outer eye corners).
+2) Facial action unit recognition: Datasets: DISFA [49]
+contains videos annotated for the intensity of 12 common
+facial AUs, allowing detailed analysis of facial dynamics.
+BP4D [81] includes both 2D and 3D facial expressions
+annotated for 27 action units, covering diverse demographics
+and supporting comprehensive facial expression analysis.
+Baselines: ME-GraphAU [47] is a SOTA model that
+constructs an AU relation graph with multi-dimensional edge
+features to capture dependencies between action units, enhancing recognition accuracy and robustness. LibreFace [13]
+is an open-source facial analysis tool with SOTA lightweight
+models for real-time AU detection, utilizing feature-wise
+knowledge distillation.
+Metrics: The F1 score is used to evaluate the performance
+of AU detection, providing a harmonic mean that balances
+false positives and false negatives.
+3) Eye gaze estimation: Datasets: MPII Gaze [79] contains gaze data collected in natural environments, capturing
+variability in appearance and illumination from participants
+using laptops in everyday settings. Gaze360 [35] includes
+annotated gaze directions spanning a full 360-degree range,
+covering a wide array of head poses and lighting conditions,
+ideal for training models for dynamic real-world scenarios.
+Baselines: MCGaze [26] is a SOTA model that enhances
+gaze estimation accuracy by capturing spatial-temporal interactions between the head, face, and eyes. L2CS-Net [1] is a
+lightweight SOTA model that uses a multi-loss, two-branch
+CNN architecture to predict each gaze angle with separate
+fully connected layers, improving estimation precision. Both
+LibreFace and Py-Feat do not offer gaze estimation.
+Metrics: Difference in angles (dff. in angle) is used to evaluate gaze estimation, computing angular distance between
+predicted and ground-truth gaze directions in 3D space.
+4) Facial emotion recognition: Datasets: AffectNet [50]
+includes a wide range of expressions, with labels for eight
+categorical emotions—neutral, happiness, sadness, surprise,
+fear, disgust, anger, and contempt. This dataset is valuable
+for training robust facial expression recognition systems.
+Baselines: DDAMFN [78] is a SOTA model that uses a
+dual-direction attention mechanism to combine global and
+local features, enhancing expression recognition accuracy.
+EfficientFace [82] is a lightweight SOTA model that employs
+a local-feature extractor and a channel-spatial modulator
+with depthwise convolution to capture both local and global
+features, along with label distribution learning to handle
+complex emotion combinations. Both OPENFACE 2.0 and
+Py-Feat do not provide emotion recognition function.
+Metrics: Accuracy is used to evaluate the performance of
+facial expression recognition.
+
+TABLE III
+OPENFACE 3.0 REPRESENTS OUR MODEL TRAINED INDEPENDENTLY ON EACH TASK. THE HIGHEST-PERFORMING MODEL RESULTS ARE BOLDED,
+AND OPENFACE 3.0 RESULTS THAT OUTPERFORM SOTA SMALL MODELS ARE HIGHLIGHTED IN
+BLUE . OPENFACE 3.0 (MTL) REFERS TO OUR
+MODEL TRAINED WITH MULTITASK LEARNING. OPENFACE 3.0 (MTL W/ UNC.) REFERS TO OUR MODEL TRAINED WITH UNCERTAINTY LOSS DURING
+MULTITASK LEARNING. ACROSS ALL TASKS, OUR APPROACH EITHER EXCEEDS OR PERFORMS COMPARABLY TO SOTA MODELS, SOTA (SMALL
+MODELS), AND OTHER TOOLKITS TRAINED FOR SPECIALIZED TASKS. THE ’-’ SYMBOL INDICATES THE MODEL DOES NOT PERFORM THE TASK.
+Models
+Landmark Detection
+Gaze Estimation
+300W (NME int ocul ↓) WFLW (NME int ocul ↓) MPII (diff. in angle ↓) Gaze360 (diff. in angle ↓)
+OpenFace 2.0
+5.20
+7.11
+9.10
+26.7
+SOTA
+2.99
+4.00
+3.14
+10.0
+SOTA (small models)
+3.17
+4.14
+3.92
+10.4
+LibreFace
+-
+-
+-
+-
+Py-Feat
+4.99
+-
+-
+-
+OPENFACE 3.0
+2.87
+4.02
+4.62
+13.7
+OPENFACE 3.0 (MTL)
+2.87
+4.02
+4.25
+10.7
+OPENFACE 3.0 (MTL w/ unc.)
+2.87
+4.02
+2.56
+10.6
+Models
+Action Unit Detection
+Facial Emotion Recognition
+DISFA (F1 Score ↑)
+BP4D (F1 Score ↑)
+AffectNet (8 emotion ACC ↑)
+OpenFace 2.0
+50
+53
+-
+SOTA
+66
+66
+0.65
+SOTA (small models)
+61
+62
+0.60
+LibreFace
+61
+62
+0.49
+Py-Feat
+54
+55
+-
+OPENFACE 3.0
+56
+57
+0.59
+OPENFACE 3.0 (MTL)
+60
+62
+0.56
+OPENFACE 3.0 (MTL w/ unc.)
+59
+59
+0.60
+B. Results
+Results from experiments with OPENFACE 3.0 and baseline models are summarized in Table III. For each task and
+dataset, the highest-performing model results are bolded, and
+OPENFACE 3.0 results that outperform SOTA small models
+have a blue highlight. Overall, OPENFACE 3.0 achieves
+strong performance across all 4 tasks, either exceeding or
+performing comparably to SOTA models or SOTA (small
+models) that were trained for specialized tasks. In addition,
+OPENFACE 3.0 substantially outperforms OPENFACE 2.0
+across all tasks. These findings indicate that OPENFACE 3.0
+contributes a useful toolkit for researchers and developers
+performing multiple facial analysis tasks.
+Facial landmark detection results: Our model achieves
+NME of 2.87 on the 300W dataset, a substantial improvement when compared to both OPENFACE 2.0 (5.20) and
+SOTA small models (3.17), and comparable to SOTA results
+(2.99). For the WFLW dataset, our model achieves an
+NME of 4.02, a substantial improvements from OPENFACE
+2.0 (7.11), outperforming SOTA small models (4.14), and
+comparable to SOTA results on this task (4.00).
+AU detection results: Our model achieves F1 scores
+of 60% and 62%, respectively on the DISFA and BP4D
+datasets, substantially outperforming the OPENFACE 2.0
+performance (50% and 53%, respectively) and achieving
+comparable performance to SOTA small models (61% and
+62%, respectively). We note that our comparable performance to smaller SOTA models for AU detection indicates
+that OPENFACE 3.0 can be useful in facial analysis contexts
+requiring smaller models to perform diverse tasks. Unlike
+specialized SOTA smaller AU detection models, OPENFACE
+3.0 can also perform landmark detection, gaze estimation,
+and facial emotion recognition when deployed in contexts
+with less compute (e.g., edge devices).
+Gaze estimation results: Our model achieves an angular
+error of 2.56 on MPII Gaze, outperforming both OPENFACE
+2.0 (9.1) and SOTA (3.14). Although performance gains are
+less pronounced on the more challenging Gaze360 dataset,
+our model (10.6) achieves comparable results to both SOTA
+(10.0) and SOTA small models (10.4) that were trained
+specifically for this tak, demonstrating our model’s strong
+performance in this integrated toolkit alongside other tasks.
+Emotion recognition results: Our model attains a competitive accuracy of 0.60 on AffectNet (compared to 0.65
+SOTA and 0.60 SOTA small models) without employing
+advanced transformer-based techniques, demonstrating the
+strong performance of our toolkit’s approach. We also find
+that our model outperforms both the SOTA and SOTA small
+model for emotion recognition when performing inferences
+on non-frontal faces (additional discussion in Section IV-C),
+a key capability for toolkits operating on data in-the-wild.
+Efficiency Comparisons: We anticipate that OPENFACE
+3.0 will be most useful to researchers and developers building real-time facial analysis applications in domains such
+as multimodal data analysis, human-machine interaction,
+and robotics. Therefore, model efficiency while performing
+these 4 downstream tasks is of critical importance. Table IV
+presents the comparison between OPENFACE 3.0 and other
+widely-used facial toolkits (OPENFACE 2.0, LibreFace, Py-
+Feat) in terms of CPU-only processing speed. By employing
+
+a multitasking model with shared features, OPENFACE 3.0
+contains fewer parameters (29.4 million) than OPENFACE
+2.0 (44.4 million) and Py-Feat (49.3 million), and demonstrates a faster processing speed that better supports real-time
+applications. Although LibreFace is slightly faster, OPEN-
+FACE 3.0 performs a broader range of tasks than Libreface
+while maintaining a similar speed – the Libreface toolkit
+supports AU detection and emotion recognition, whereas
+OPENFACE 3.0 performs all 4 facial analysis tasks.
+To qualitatively demonstrate our model’s notable improvements, we visualize the performance of OPENFACE 3.0 and
+OPENFACE 2.0 on several examples in Figure 2. We select
+OPENFACE 2.0 for comparison as it is the toolkit that provides the most similar set of functionalities. These examples
+demonstrate that OPENFACE 3.0 predictions, in particular for
+non-frontal faces, are more accurate than predictions from
+OPENFACE 2.0. Overall, our model balances performance,
+efficiency, and adaptability, making it well-suited for realtime, multi-task facial analysis applications.
+C. Ablation Studies
+In this section, we evaluate the significance of the techniques used in our model, particularly the impact of multitasking and uncertainty weighting. We conduct an ablation
+study across three downstream tasks that utilize the shared
+backbone: AU detection, emotion recognition, and gaze estimation. Our goal is to determine how multitasking influences
+the performance on each task and the interplay between these
+tasks when using a shared backbone.
+Multi-task learning and uncertainty weighting: We
+hypothesize that multitasking with uncertainty weighting
+improves generalization by sharing learned features across
+tasks, benefiting tasks with overlapping data characteristics while balancing task-specific requirements. To assess
+this, we examine the performance of the single-task model
+(OPENFACE 3.0), multitask model (MTL), and multitask
+model with uncertainty weighting (MTL w/ unc.) in Table III.
+Introducing multitasking (MTL) substantially improves
+AU detection, with the F1 score increasing from 56% to 60%
+on the DISFA dataset and from 57% to 62% on BP4D. The
+gaze estimation with the MTL model also improved from
+4.62 angular error to 4.25 angular error on MPII and from
+13.7 angular error on Gaze360 to 10.7 angular error.
+However, multitasking slightly lowers emotion recognition
+accuracy (from 0.59 to 0.56 on AffectNet). This suggests that
+the shared feature in the multitasking model benefits tasks by
+offering additional information learned from various tasks.
+The multitasking setup also introduces trade-offs for tasks,
+likely due to data imbalance and the varying loss functions.
+Uncertainty weighting addresses these trade-offs by introducing task-specific weights, balancing each task’s contribution. With uncertainty weighting (MTL w/ unc.), AU
+detection performance remains stable around an F1 score of
+0.59, while gaze estimation achieved further improvement,
+substantially reducing the angular error from 4.25 in the
+multitasking model to 2.56 on MPII and from 10.7 on
+Gaze360 to 10.6. For emotion recognition, accuracy with
+TABLE IV
+MODEL EFFICIENCY WITH CPU-ONLY PROCESSING.
+Models
+# Params # Operation Processing Time
+(M)
+(GFLOPs)
+Per Frame (ms)
+OpenFace 2.0
+44.8
+7.4
+75
+LibreFace
+22.5
+3.7
+33
+Py-Feat
+49.3
+8.2
+82
+OPENFACE 3.0
+29.4
+4.2
+38
+TABLE V
+PERFORMANCE OF DDAMFN (SOTA), EFFICIENTFACE (SOTA SMALL)
+AND OPENFACE 3.0 FOR EMOTION RECOGNITION ACROSS SAMPLES
+GROUPED BY FACE ORIENTATION.
+Orientation
+DDAMFN
+EfficientFace
+OPENFACE 3.0
+Easy (0°–15°)
+62.74
+58.90
+60.20
+Medium (15°–45°)
+61.99
+55.19
+58.21
+Hard (> 45°)
+57.41
+53.97
+58.64
+the uncertainty weighting model increases slightly to 0.60,
+surpassing the single-task baseline. These results suggest that
+multitasking benefits tasks more fully once data and loss
+imbalances are resolved with uncertainty weighting.
+Angled Faces Analysis: We analyze the model’s performance on non-frontal (angled) faces, a common challenge
+in most in-the-wild facial analysis tasks. In our multitasking
+model, we hypothesize that shared features learned from
+tasks with non-frontal training data—specifically, gaze estimation—will improve performance across all tasks for nonfrontal faces, especially emotion recognition which only has
+a small number of non frontal faces in training data.
+To evaluate this, we divided the AffectNet validation
+set based on face orientation into three categories: Easy
+(0°–15°), Medium (15°–45°), and Hard (>45°). This setup
+allowed us to assess if features learned from non-frontal
+gaze data enhance robustness across orientations in other
+tasks. As seen in Table V, for a specialized SOTA model
+DDAMFN [78] and lightweight model EfficientFace [82] that
+are only trained on emotion data, the accuracy declines as
+orientation becomes more angled. Notably, our multitasking
+model shows stable performance across all angles compared
+to the single-task baselines. OPENFACE 3.0 even exceeds
+the SOTA model on the hard set. This indicates that features
+shared from other tasks contribute to handling non-frontal
+faces across tasks even without explicit emotion labels.
+These results demonstrate that our multitasking model’s
+adaptability can benefit performance in real-world settings
+with varied facial orientations. Future research might explore
+techniques for incorporating more non-frontal data to further
+boost performance on angled faces.
+V. USER STUDY
+We conducted a pilot user study to evaluate the usability
+of OPENFACE 3.0, focusing on the accessibility for users
+with varying background familiarity with computer vision.
+In our study, we recruited 8 graduate students with different familiarity levels with machine learning or computer
+
+Fig. 2.
+Samples of task performance between OPENFACE 3.0 and OPENFACE 2.0. OPENFACE 2.0 does not support emotion recognition.
+vision (beginner, intermediate, advanced) to set up and test
+OPENFACE 3.0 from scratch (details in Appendix VII-.0.b).
+Participants were asked to perform several standard tasks
+with our system, divided into installation and setup, imagebased, and video-based evaluations:
+• Installation and Setup: Install OPENFACE 3.0 using
+our guide and run a demo program to confirm the setup.
+• Image-Based Tests: 1) Extract and overlay left eye gaze
+direction. 2) Identify primary emotion in an image. 3)
+Measure intensity of AU 26 (mouth drop).
+• Video-Based Tests: 1) Track gaze direction with frameby-frame overlays. 2) Identify most common emotions
+across frames. 3) Measure average intensity of AU 12
+(lip corner puller) over time.
+Participants completed the UMUX-LITE [39] and NASA-
+TLX [28] questionnaires after each task. Each questionnaire provides insights into the participant experience, with
+UMUX-LITE capturing general usability and NASA-TLX
+evaluating perceived workload across multiple dimensions.
+The UMUX-LITE scores are based on a 7-point scale, with
+lower scores indicating higher usability. Usability refers to
+participants’ overall satisfaction with the tool’s ability to
+meet their requirements, while Ease of Learning assesses
+participants’ perceived ease of learning how to use OPEN-
+FACE 3.0. The NASA-TLX scores are on a 20-point scale,
+where lower scores reflect lower perceived workload.
+Appendix Table VI summarizes the usability scores for
+each task set in our pilot study. These scores demonstrate
+that installation, overall, was perceived as the easiest task, as
+indicated by both low UMUX-LITE scores and the lowest
+NASA-TLX workload demands. Image-based and videobased tasks, while slightly more challenging, still maintained
+relatively low workload and usability scores, suggesting that
+OPENFACE 3.0 can function as a user-friendly system, even
+for participants with varying levels of experience.
+VI. CONCLUSION
+Processing communicative signals from human faces will
+be a critical component of future AI systems deployed
+in-the-wild to reason about human behavior and interact
+with humans. These systems will need to be lightweight,
+accurate, and capable of performing multiple downstream
+facial analysis tasks, in order to operate effectively on
+both static behavior datasets and real-time human-machine
+interactions. In this paper, we introduce OPENFACE 3.0, a
+new open-source, lightweight, multi-task system for facial
+behavior analysis, capable of jointly performing key downstream tasks: landmark detection, action unit detection, eye
+gaze estimation, and emotion recognition. OPENFACE 3.0
+leverages a unified multitask learning approach trained on
+diverse populations, poses, lighting conditions, and video
+resolutions, making it robust and adaptable to in-the-wild
+contexts. In comparison to prior facial analysis toolkits and
+SOTA models for specialized downstream tasks, OPENFACE
+3.0 performs a wider variety of tasks with improvements in
+task performance, efficiency, inference speed, and memory
+usage. Additionally, OPENFACE 3.0 runs in real-time on
+standard hardware, requiring no specialized equipment.
+Beyond the technical advantages of OPENFACE 3.0, this
+system is available as a fully open-source toolkit, encouraging transparency in facial analysis research and community
+contributions and use in multimodal interaction, robotics,
+and affective computing. Our system is easy to install for
+users, is built upon an intuitive Python API, and can be
+deployed with a single line of code to extract diverse facial
+cues in real-time from images and video streams. We believe
+that the accessibility, efficiency, and strong performance of
+OPENFACE 3.0 will stimulate continued advancements in
+automatic facial behavior analysis.
+
+VII. ETHICAL IMPACT STATEMENT
+The data used by OPENFACE 3.0 does not involve direct
+interaction with human participants or the study of private
+or confidential human data. Our research utilizes publiclyavailable datasets to train models for for facial analysis
+tasks. Our project includes a pilot user study, in which
+graduate students in our community tested the OPENFACE
+3.0 installation process and completed demo tasks; this pilot
+study did not require an IRB review. All surveys conducted
+as part of the user study are anonymous, with no personallyidentifiable information collected.
+a) Potential Risks: The primary risks associated with
+OPENFACE 3.0 stem from potential misuse of facial analysis
+technologies in downstream applications. Computer vision
+systems to predict facial landmarks, action units, eye gaze,
+and emotion have great potential to support humans – for
+example, gaze tracking can improve the effectiveness of
+interactive interfaces and social robot companions for the
+elderly. However, broader risks associated with automated
+facial analysis systems include potential biases in deployed
+models and possible misuse in surveillance applications.
+b) Benefit-Risk Analysis: OPENFACE 3.0 aims to advance research in facial analysis, while prioritizing ethical
+considerations. The project provides a valuable, open-source
+tool for researchers, developers, and educators working on
+applications that require facial analysis. The pilot user study
+helped us refine the installation and usability of the software without posing risks to any participants. OPENFACE
+3.0 facilitates facial analysis research, enables transparent
+development of this research, and provides a more ethical
+alternative to proprietary facial analysis systems.
+ACKNOWLEDGMENTS
+This material is based upon work partially supported
+by National Institutes of Health awards R01MH125740,
+R01MH132225, and R21MH130767. Leena Mathur is supported by the NSF Graduate Research Fellowship Program
+under Grant No. DGE2140739. Any opinions, findings, conclusions, or recommendations expressed in this material are
+those of the authors, do not necessarily reflect the views of
+any sponsors, and no official endorsement should be inferred.
+REFERENCES
+[1] A. A. Abdelrahman, T. Hempel, A. Khalifa, A. Al-Hamadi, and
+L. Dinges. L2cs-net: Fine-grained gaze estimation in unconstrained
+environments. In 2023 8th International Conference on Frontiers of
+Signal Processing (ICFSP), pages 98–102. IEEE, 2023.
+[2] B. Amos, B. Ludwiczuk, and M. Satyanarayanan.
+Openface: A
+general-purpose face recognition library with mobile applications.
+Technical report, CMU-CS-16-118, CMU School of Computer Science, 2016.
+[3] T. Baltruˇsaitis, M. Mahmoud, and P. Robinson. Cross-dataset learning
+and person-specific normalisation for automatic action unit detection.
+In 2015 11th IEEE international conference and workshops on automatic face and gesture recognition (FG), volume 6, pages 1–6. IEEE,
+2015.
+[4] T. Baltrusaitis, P. Robinson, and L.-P. Morency.
+Constrained local
+neural fields for robust facial landmark detection in the wild.
+In
+Proceedings of the IEEE international conference on computer vision
+workshops, pages 354–361, 2013.
+[5] T. Baltruˇsaitis, P. Robinson, and L.-P. Morency. Openface: an open
+source facial behavior analysis toolkit. In 2016 IEEE winter conference
+on applications of computer vision (WACV), pages 1–10. IEEE, 2016.
+[6] T. Baltrusaitis, A. Zadeh, Y. C. Lim, and L.-P. Morency. Openface
+2.0: Facial behavior analysis toolkit. In 2018 13th IEEE International
+Conference on Automatic Face & Gesture Recognition (FG 2018),
+pages 59–66, 2018.
+[7] D. Bhattacharjee and H. Roy. Pattern of local gravitational force (plgf):
+A novel local image descriptor. IEEE transactions on pattern analysis
+and machine intelligence, 43(2):595–607, 2019.
+[8] M. Bishay, K. Preston, M. Strafuss, G. Page, J. Turcot, and M. Mavadati. Affdex 2.0: a real-time facial expression analysis toolkit. arXiv
+preprint arXiv:2202.12059, 2022.
+[9] R. Bommasani, D. A. Hudson, E. Adeli, R. Altman, S. Arora, S. von
+Arx, M. S. Bernstein, J. Bohg, A. Bosselut, E. Brunskill, et al. On
+the opportunities and risks of foundation models.
+arXiv preprint
+arXiv:2108.07258, 2021.
+[10] F. Z. Canal, T. R. M¨uller, J. C. Matias, G. G. Scotton, A. R.
+de Sa Junior, E. Pozzebon, and A. C. Sobieranski. A survey on facial
+emotion recognition techniques: A state-of-the-art literature review.
+Information Sciences, 582:593–617, 2022.
+[11] Q. Cao, L. Shen, W. Xie, O. M. Parkhi, and A. Zisserman. Vggface2:
+A dataset for recognising faces across pose and age. In 2018 13th IEEE
+international conference on automatic face & gesture recognition (FG
+2018), pages 67–74. IEEE, 2018.
+[12] R. Caruana. Multitask learning. Machine learning, 28(1):41–75, 1997.
+[13] D. Chang, Y. Yin, Z. Li, M. Tran, and M. Soleymani. Libreface: An
+open-source toolkit for deep facial expression analysis. In Proceedings
+of the IEEE/CVF Winter Conference on Applications of Computer
+Vision (WACV), pages 8205–8215, January 2024.
+[14] Y. Cheng and F. Lu.
+Gaze estimation using transformer.
+In 2022
+26th International Conference on Pattern Recognition (ICPR), pages
+3341–3347. IEEE, 2022.
+[15] J. H. Cheong, E. Jolly, T. Xie, S. Byrne, M. Kenney, and L. J. Chang.
+Py-feat: Python facial expression analysis toolbox. Affective Science,
+4(4):781–796, 2023.
+[16] V. R. R. Chirra, S. R. Uyyala, and V. K. K. Kolli.
+Virtual facial
+expression recognition using deep cnn with ensemble learning. Journal
+of Ambient Intelligence and Humanized Computing, 12(12):10581–
+10599, 2021.
+[17] C. Corneanu, M. Madadi, and S. Escalera. Deep structure inference
+network for facial action unit recognition.
+In Proceedings of the
+european conference on computer vision (ECCV), pages 298–313,
+2018.
+[18] J. Deng, J. Guo, E. Ververas, I. Kotsia, and S. Zafeiriou. Retinaface:
+Single-shot multi-level face localisation in the wild. In Proceedings of
+the IEEE/CVF conference on computer vision and pattern recognition,
+pages 5203–5212, 2020.
+[19] J. Devlin, M.-W. Chang, K. Lee, and K. Toutanova. Bert: Pre-training
+of deep bidirectional transformers for language understanding.
+In
+NAACL-HLT (1), 2019.
+[20] A. Dosovitskiy, L. Beyer, A. Kolesnikov, D. Weissenborn, X. Zhai,
+T. Unterthiner, M. Dehghani, M. Minderer, G. Heigold, S. Gelly, et al.
+An image is worth 16x16 words: Transformers for image recognition
+at scale. ICLR, 2021.
+[21] P. Ekman and W. V. Friesen. Facial action coding system. Environmental Psychology & Nonverbal Behavior, 1978.
+[22] N. J. Emery.
+The eyes have it: the neuroethology, function and
+evolution of social gaze.
+Neuroscience & biobehavioral reviews,
+24(6):581–604, 2000.
+[23] F. Eyben, M. W¨ollmer, T. Poitschke, B. Schuller, C. Blaschke,
+B. F¨arber, and N. Nguyen-Thien. Emotion on the road—necessity,
+acceptance, and feasibility of affective computing in the car. Advances
+in Human-Computer Interaction, 2010(1):263593, 2010.
+[24] T. Fischer, H. J. Chang, and Y. Demiris. Rt-gene: Real-time eye gaze
+estimation in natural environments. In Proceedings of the European
+conference on computer vision (ECCV), pages 334–352, 2018.
+[25] C. Frith.
+Role of facial expressions in social interactions.
+Philosophical Transactions of the Royal Society B: Biological Sciences,
+364(1535):3453–3458, 2009.
+[26] Y. Guan, Z. Chen, W. Zeng, Z. Cao, and Y. Xiao.
+End-to-end
+video gaze estimation via capturing head-face-eye spatial-temporal
+interaction context. IEEE Signal Processing Letters, 30:1687–1691,
+2023.
+[27] A. Gudi, H. E. Tasli, T. M. Den Uyl, and A. Maroulis. Deep learning
+based facs action unit occurrence and intensity estimation. In 2015
+11th IEEE international conference and workshops on automatic face
+and gesture recognition (FG), volume 6, pages 1–5. IEEE, 2015.
+
+[28] S. G. Hart.
+Nasa-task load index (nasa-tlx); 20 years later.
+In
+Proceedings of the human factors and ergonomics society annual
+meeting, volume 50, pages 904–908. Sage publications Sage CA: Los
+Angeles, CA, 2006.
+[29] M. Haugh and F. Bargiela-Chiappini.
+Face and interaction.
+Face,
+communication and social interaction, pages 1–30, 2009.
+[30] A. G. Howard. Mobilenets: Efficient convolutional neural networks for
+mobile vision applications. arXiv preprint arXiv:1704.04861, 2017.
+[31] T. Hu, S. Jha, and C. Busso. Robust driver head pose estimation in
+naturalistic conditions from point-cloud data. In 2020 IEEE Intelligent
+Vehicles Symposium (IV), pages 1176–1182. Ieee, 2020.
+[32] G. Jocher, A. Chaurasia, and J. Qiu. Ultralytics YOLO, Jan. 2023.
+[33] A. Kar and P. Corcoran. A review and analysis of eye-gaze estimation
+systems, algorithms and performance evaluation methods in consumer
+platforms. IEEE Access, 5:16495–16519, 2017.
+[34] P. Kar, V. Chudasama, N. Onoe, P. Wasnik, and V. Balasubramanian.
+Fiducial focus augmentation for facial landmark detection.
+arXiv
+preprint arXiv:2402.15044, 2024.
+[35] P. Kellnhofer, A. Recasens, S. Stent, W. Matusik, and A. Torralba.
+Gaze360: Physically unconstrained gaze estimation in the wild. In
+Proceedings of the IEEE/CVF international conference on computer
+vision, pages 6912–6921, 2019.
+[36] A. Kendall, Y. Gal, and R. Cipolla.
+Multi-task learning using
+uncertainty to weigh losses for scene geometry and semantics.
+In
+Proceedings of the IEEE conference on computer vision and pattern
+recognition, pages 7482–7491, 2018.
+[37] K. Krafka, A. Khosla, P. Kellnhofer, H. Kannan, S. Bhandarkar,
+W. Matusik, and A. Torralba.
+Eye tracking for everyone.
+In
+Proceedings of the IEEE conference on computer vision and pattern
+recognition, pages 2176–2184, 2016.
+[38] X. Lan, Q. Hu, Q. Chen, J. Xue, and J. Cheng. Hih: Towards more
+accurate face alignment via heatmap in heatmap, 2022.
+[39] J. R. Lewis, B. S. Utesch, and D. E. Maher. Umux-lite: when there’s
+no time for the sus. In Proceedings of the SIGCHI conference on
+human factors in computing systems, pages 2099–2102, 2013.
+[40] L. H. Li, M. Yatskar, D. Yin, C.-J. Hsieh, and K.-W. Chang. Visualbert:
+A simple and performant baseline for vision and language.
+arXiv
+preprint arXiv:1908.03557, 2019.
+[41] P. P. Liang, Y. Lyu, X. Fan, J. Tsaw, Y. Liu, S. Mo, D. Yogatama, L.-
+P. Morency, and R. Salakhutdinov. High-modality multimodal transformer: Quantifying modality & interaction heterogeneity for highmodality representation learning. Transactions on Machine Learning
+Research, 2022.
+[42] H. Liu, R. An, Z. Zhang, B. Ma, W. Zhang, Y. Song, Y. Hu, W. Chen,
+and Y. Ding. Norface: Improving facial expression analysis by identity
+normalization. In European Conference on Computer Vision, pages
+293–314. Springer, 2024.
+[43] J. Liu, H. Wang, and Y. Feng.
+An end-to-end deep model with
+discriminative facial features for facial expression recognition. IEEE
+Access, 9:12158–12166, 2021.
+[44] P. Liu, S. Han, Z. Meng, and Y. Tong. Facial expression recognition via
+a boosted deep belief network. In Proceedings of the IEEE conference
+on computer vision and pattern recognition, pages 1805–1812, 2014.
+[45] S. Liu, K. Koch, Z. Zhou, S. F¨oll, X. He, T. Menke, E. Fleisch, and
+F. Wortmann. The empathetic car: Exploring emotion inference via
+driver behaviour and traffic context.
+Proceedings of the ACM on
+Interactive, Mobile, Wearable and Ubiquitous Technologies, 5(3):1–
+34, 2021.
+[46] J. Lu, D. Batra, D. Parikh, and S. Lee.
+Vilbert: pretraining taskagnostic visiolinguistic representations for vision-and-language tasks.
+In Proceedings of the 33rd International Conference on Neural Information Processing Systems, pages 13–23, 2019.
+[47] C. Luo, S. Song, W. Xie, L. Shen, and H. Gunes. Learning multidimensional edge feature-based au relation graph for facial action unit
+recognition.
+In Proceedings of the Thirty-First International Joint
+Conference on Artificial Intelligence, IJCAI-2022. International Joint
+Conferences on Artificial Intelligence Organization, July 2022.
+[48] L. Mathur, P. P. Liang, and L.-P. Morency. Advancing social intelligence in ai agents: Technical challenges and open questions.
+In
+Proceedings of the 2024 Conference on Empirical Methods in Natural
+Language Processing, pages 20541–20560, 2024.
+[49] S. M. Mavadati, M. H. Mahoor, K. Bartlett, P. Trinh, and J. F.
+Cohn. Disfa: A spontaneous facial action intensity database. IEEE
+Transactions on Affective Computing, 4(2):151–160, 2013.
+[50] A. Mollahosseini, B. Hasani, and M. H. Mahoor. Affectnet: A database
+for facial expression, valence, and arousal computing in the wild. IEEE
+Transactions on Affective Computing, 10(1):18–31, 2017.
+[51] K. Narayan, V. VS, R. Chellappa, and V. M. Patel. Facexformer: A unified transformer for facial analysis. arXiv preprint arXiv:2403.12960,
+2024.
+[52] H. W. Park, I. Grover, S. Spaulding, L. Gomez, and C. Breazeal.
+A model-free affective reinforcement learning approach to personalization of an autonomous social robot companion for early literacy
+education.
+In Proceedings of the AAAI conference on artificial
+intelligence, volume 33, pages 687–694, 2019.
+[53] A. Prados-Torreblanca, J. M. Buenaposada, and L. Baumela. Shape
+preserving facial landmarks with graph attention networks.
+arXiv
+preprint arXiv:2210.07233, 2022.
+[54] L. Qin, M. Wang, C. Deng, K. Wang, X. Chen, J. Hu, and W. Deng.
+Swinface: a multi-task transformer for face recognition, expression
+recognition, age estimation and attribute estimation. IEEE Transactions on Circuits and Systems for Video Technology, 2023.
+[55] A. Radford, J. Wu, R. Child, D. Luan, D. Amodei, and I. Sutskever.
+Language models are unsupervised multitask learners. 2019.
+[56] A. Raghav, M. Gupta, et al. Ensemble learning for facial expression
+recognition. Full Length Article, 2(1):31–1, 2021.
+[57] F. Ringeval, B. Schuller, M. Valstar, N. Cummins, R. Cowie, L. Tavabi,
+M. Schmitt, S. Alisamir, S. Amiriparian, E.-M. Messner, et al. Avec
+2019 workshop and challenge: state-of-mind, detecting depression
+with ai, and cross-cultural affect recognition. In Proceedings of the
+9th International on Audio/visual Emotion Challenge and Workshop,
+pages 3–12, 2019.
+[58] H. Roy and D. Bhattacharjee.
+Local-gravity-face (lg-face) for
+illumination-invariant and heterogeneous face recognition.
+IEEE
+Transactions on Information Forensics and Security, 11(7):1412–1424,
+2016.
+[59] C. Sagonas, E. Antonakos, G. Tzimiropoulos, S. Zafeiriou, and
+M. Pantic.
+300 faces in-the-wild challenge: Database and results.
+Image and vision computing, 47:3–18, 2016.
+[60] A. V. Savchenko, L. V. Savchenko, and I. Makarov.
+Classifying
+emotions and engagement in online learning based on a single facial
+expression recognition neural network. IEEE Transactions on Affective
+Computing, 13(4):2132–2143, 2022.
+[61] K.
+Sikka,
+K.
+Dykstra,
+S.
+Sathyanarayana,
+G.
+Littlewort,
+and
+M. Bartlett. Multiple kernel learning for emotion recognition in the
+wild. In Proceedings of the 15th ACM on International conference on
+multimodal interaction, pages 517–524, 2013.
+[62] W. Su, X. Zhu, Y. Cao, B. Li, L. Lu, F. Wei, and J. Dai. Vl-bert: Pretraining of generic visual-linguistic representations. In International
+Conference on Learning Representations, 2020.
+[63] K.-H. Tan, D. J. Kriegman, and N. Ahuja.
+Appearance-based eye
+gaze estimation. In Sixth IEEE Workshop on Applications of Computer
+Vision, 2002.(WACV 2002). Proceedings., pages 191–195. IEEE, 2002.
+[64] M. Tan and Q. V. Le.
+Efficientnet: Rethinking model scaling for
+convolutional neural networks, 2020.
+[65] L. Tavabi, A. Poon, A. S. Rizzo, and M. Soleymani. Computer-based
+ptsd assessment in vr exposure therapy. In HCI International 2020–
+Late Breaking Papers: Virtual and Augmented Reality: 22nd HCI
+International Conference, HCII 2020, Copenhagen, Denmark, July 19–
+24, 2020, Proceedings 22, pages 440–449. Springer, 2020.
+[66] Y.-H. H. Tsai, S. Bai, P. P. Liang, J. Z. Kolter, L.-P. Morency, and
+R. Salakhutdinov. Multimodal transformer for unaligned multimodal
+language sequences. In ACL, pages 6558–6569, 2019.
+[67] Z. Wang, S. Song, C. Luo, S. Deng, W. Xie, and L. Shen. Multiscale dynamic and hierarchical relationship modeling for facial action
+units recognition. In Proceedings of the IEEE/CVF Conference on
+Computer Vision and Pattern Recognition, pages 1270–1280, 2024.
+[68] W. Wu, C. Qian, S. Yang, Q. Wang, Y. Cai, and Q. Zhou.
+Look
+at boundary: A boundary-aware face alignment algorithm. In CVPR,
+2018.
+[69] Y. Wu, T. Hassner, K. Kim, G. Medioni, and P. Natarajan.
+Facial landmark detection with tweaked convolutional neural networks.
+IEEE transactions on pattern analysis and machine intelligence,
+40(12):3067–3074, 2017.
+[70] Y. Wu and Q. Ji.
+Facial landmark detection: A literature survey.
+International Journal of Computer Vision, 127(2):115–142, 2019.
+[71] J. Xia, W. Qu, W. Huang, J. Zhang, X. Wang, and M. Xu. Sparse local
+patch transformer for robust face alignment and landmarks inherent
+relation learning.
+In Proceedings of the IEEE/CVF conference on
+computer vision and pattern recognition, pages 4052–4061, 2022.
+[72] S. Xie, H. Hu, and Y. Chen. Facial expression recognition with twobranch disentangled generative adversarial network. IEEE Transactions on Circuits and Systems for Video Technology, 31(6):2359–2371,
+2020.
+[73] T. Xu and W. Takano. Graph stacked hourglass networks for 3d human
+pose estimation.
+In Proceedings of the IEEE/CVF conference on
+
+computer vision and pattern recognition, pages 16105–16114, 2021.
+[74] F. Xue, Q. Wang, and G. Guo.
+Transfer: Learning relation-aware
+facial expression representations with transformers. In Proceedings of
+the IEEE/CVF International Conference on Computer Vision, pages
+3601–3610, 2021.
+[75] J. Yang, Q. Liu, and K. Zhang. Stacked hourglass network for robust
+facial landmark localisation. In Proceedings of the IEEE conference
+on computer vision and pattern recognition workshops, pages 79–87,
+2017.
+[76] K. Yuan, Z. Yu, X. Liu, W. Xie, H. Yue, and J. Yang. Auformer: Vision
+transformers are parameter-efficient facial action unit detectors.
+In
+European Conference on Computer Vision, pages 427–445. Springer,
+2024.
+[77] A. Y¨uce, H. Gao, and J.-P. Thiran. Discriminant multi-label manifold
+embedding for facial action unit detection. In 2015 11th IEEE International Conference and Workshops on Automatic face and gesture
+recognition (FG), volume 6, pages 1–6. IEEE, 2015.
+[78] S. Zhang, Y. Zhang, Y. Zhang, Y. Wang, and Z. Song. A dual-direction
+attention mixed feature network for facial expression recognition.
+Electronics, 12(17):3595, 2023.
+[79] X. Zhang, Y. Sugano, M. Fritz, and A. Bulling. Appearance-based
+gaze estimation in the wild. In Proceedings of the IEEE conference
+on computer vision and pattern recognition, pages 4511–4520, 2015.
+[80] X. Zhang, Y. Sugano, M. Fritz, and A. Bulling. It’s written all over
+your face: Full-face appearance-based gaze estimation. In Proceedings
+of the IEEE conference on computer vision and pattern recognition
+workshops, pages 51–60, 2017.
+[81] X. Zhang, L. Yin, J. F. Cohn, S. Canavan, M. Reale, A. Horowitz,
+P. Liu, and J. M. Girard.
+Bp4d-spontaneous: a high-resolution
+spontaneous 3d dynamic facial expression database. Image and Vision
+Computing, 32(10):692–706, 2014.
+[82] Z. Zhao, Q. Liu, and F. Zhou. Robust lightweight facial expression
+recognition network with label distribution training. In Proceedings
+of the AAAI conference on artificial intelligence, volume 35, pages
+3510–3519, 2021.
+[83] C. Zheng, M. Mendieta, and C. Chen. Poster: A pyramid cross-fusion
+transformer network for facial expression recognition. In Proceedings
+of the IEEE/CVF International Conference on Computer Vision, pages
+3146–3155, 2023.
+[84] R. Zhi, M. Liu, and D. Zhang. A comprehensive survey on automatic
+facial action unit analysis. The Visual Computer, 36(5):1067–1093,
+2020.
+[85] Y. Zhou, J. Pi, and B. E. Shi.
+Pose-independent facial action unit
+intensity regression based on multi-task deep transfer learning. In 2017
+12th IEEE International Conference on Automatic Face & Gesture
+Recognition (FG 2017), pages 872–877. IEEE, 2017.
+[86] Z. Zhou, H. Li, H. Liu, N. Wang, G. Yu, and R. Ji. Star loss: Reducing
+semantic ambiguity in facial landmark detection, 2023.
+[87] A. Zhu, K. Li, T. Wu, P. Zhao, W. Zhou, and B. Hong.
+Crosstask multi-branch vision transformer for facial expression and mask
+wearing classification. arXiv preprint arXiv:2404.14606, 2024.
+APPENDIX
+For our pilot study of OPENFACE 3.0 usability, we tested
+the system with 8 graduate students with diverse levels of
+prior experience with computer vision and machine learning.
+Participants were classified based their prior experience:
+• Novice (N = 3): Participants had minimal or no prior
+experience with computer vision tools or machine learning frameworks.
+• Intermediate (N = 3): Participants had some familiarity,
+having used computer vision or machine learning tools
+occasionally for coursework or personal projects.
+• Experienced (N = 2): Participants regularly used computer vision and machine learning tools in their research
+or professional contexts.
+Appendix Table VI contains usability scores in our pilot
+study across each of the 3 tasks that users performed:
+installation and setup, image-based feature extraction and
+visualization, and video-based feature extraction and visualization. The UMUX-LITE [39] scale studies general
+usability of systems (does the system meet a user’s requirements and how easy is it to use?). The NASA-TLX
+[28] studies perceived workload across dimensions, including
+mental demand (mental activity required), physical demand
+(physical activity/strain required), temporal demand (time
+pressure felt while using the system), performance (success
+and satisfaction in performing a task), effort, and frustration.
+Appendix Table VII presents the breakdown of UMUX-
+LITE usability and NASA-TLX workload scores by participant experience levels. Novice participants, on average,
+reported higher workload and lower usability compared to
+experienced participants, particularly in video-based tasks.
+This indicates that while OPENFACE 3.0 remains accessible
+to researchers and developers across varying experience
+levels, novices may require additional guidance or more
+detailed Python package documentation.
+TABLE VI
+OPENFACE 3.0 USABILITY SCORES FOR EACH TASK SET.
+Install
+Image Tasks
+Video Tasks
+UMUX-LITE (1-7)
+Usability
+2
+3
+3
+Ease of Learning
+2
+3
+3
+NASA-TLX (1-20)
+Mental Demand
+5
+10
+12
+Physical Demand
+3
+4
+5
+Temporal Demand
+4
+8
+10
+Performance
+4
+7
+8
+Effort
+5
+9
+10
+Frustration
+3
+5
+6
+TABLE VII
+OPENFACE 3.0 USABILITY SCORES BY PARTICIPANT EXPERIENCE
+LEVELS.
+Novice
+Intermediate
+Experienced
+UMUX-LITE (1-7)
+Usability
+4
+3
+2
+Ease of Learning
+4
+3
+2
+NASA-TLX (1-20)
+Mental Demand
+14
+10
+7
+Physical Demand
+5
+4
+3
+Temporal Demand
+12
+8
+5
+Performance
+10
+7
+5
+Effort
+13
+9
+6
+Frustration
+9
+5
+3

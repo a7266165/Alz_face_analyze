@@ -1,0 +1,1334 @@
+Contents lists available at ScienceDirect
+Machine Learning with Applications
+journal homepage: www.elsevier.com/locate/mlwa
+
+ExpressNet-MoE: A hybrid deep neural network for emotion recognition$
+Deeptimaan Banerjee
+, Prateek Gothwal
+, Ashis Kumer Biswas
+∗
+Computer Science and Engineering, University of Colorado Denver, Denver, 80204, CO, USA
+A R T I C L E  I N F O
+Keywords:
+Adaptive learning
+Convolution Neural Networks
+Facial emotion recognition
+Mixture of Experts
+Generalization
+
+A B S T R A C T
+In many domains, including online education, healthcare, security, and human–computer interaction, facial
+emotion recognition (FER) is essential. Real-world FER is still difficult because of factors like head positions,
+occlusions, illumination shifts, and demographic diversity. Engagement detection system, which is essential
+in virtual learning platforms is severely challenged by these factors. In this article, we propose ExpressNet-
+MoE, a novel hybrid deep learning architecture that combines Convolutional Neural Networks (CNNs) with
+a Mixture of Experts (MoE) framework to address these challenges. The proposed model dynamically selects
+the most relevant expert networks for each input, thereby improving generalization and adaptability across
+diverse datasets. Our methodology involves training ExpressNet-MoE independently on several benchmark
+datasets after preprocessing facial pictures using BlazeFace for face detection and alignment. To maintain
+class distribution, stratified sampling is used to divide each dataset into training and testing groups. Our
+model improves on the accuracy of emotion recognition by utilizing multi-scale feature extraction to collect
+both global and local facial features. ExpressNet-MoE includes numerous CNN-based feature extractors, a MoE
+module for adaptive feature selection, and finally a residual network backbone for deep feature learning.
+To demonstrate efficacy of our proposed model we evaluated it on four widely used datasets: AffectNet7,
+AffectNet8, RAF-DB, and FER-2013; and compared with current state-of-the-art methods. Our model achieves
+accuracies of 74.40% ± 0.45 on AffectNet7, 71.98% ± 0.66 on AffectNet8, 83.41% ± 1.06 on RAF-DB, and
+67.05% ± 2.08 on FER-2013. Overall, the findings indicate that the adaptive expert selection and multi-scale
+feature extraction significantly enhances the robustness of facial emotion recognition across diverse real-world
+conditions and how it may be used to develop end-to-end emotion recognition systems in practical settings.
+Reproducible codes and results are made publicly accessible at https://github.com/DeeptimaanB/ExpressNet-
+MoE.
+1. Introduction
+Facial Emotion Recognition (FER) has become a major component of virtual education (Farman et al., 2023), security (Ghadekar
+et al., 2024), medical industry (Bohi et al., 2024; Huang, Wu, et al.,
+2023), and human–computer interfaces. The ability to sense and respond to human emotions has created new opportunities for developing
+more flexible and intelligent systems. However, since human facial
+expressions are inherently complex, FER in real-world scenarios is a
+difficult task. Variations in head position, occlusion, lighting conditions (Farman et al., 2023; Sajjad et al., 2023; Zhang et al., 2023) and
+demographic variability frequently cause significant performance issues
+in emotion detection frameworks.
+$ This material is based upon work supported by the National Science Foundation, United States under Grant No. 2329919.
+∗Corresponding author.
+E-mail addresses: deeptimaan.banerjee@ucdenver.edu (D. Banerjee), prateek.gothwal@ucdenver.edu (P. Gothwal), ashis.biswas@ucdenver.edu
+(A.K. Biswas).
+URLs: https://ml.cse.ucdenver.edu/people/deeptimaan_banerjee (D. Banerjee), https://ml.cse.ucdenver.edu/people/prateek_gothwal/ (P. Gothwal),
+https://cse.ucdenver.edu/~biswasa (A.K. Biswas).
+The performance of FER frameworks has improved significantly
+over time. There have been multiple ways for FER and its classification,
+including Local Binary Patterns (LBP) and Histogram of Oriented Gradients (HOG), combined with traditional machine learning algorithms
+such as Support Vector Machines (SVM) (Shan et al., 2005, 2009) and
+Random Forests (Nazir et al., 2018; Salhi et al., 2012). Convolution
+Neural Networks (CNNs) have played a pivotal role in learning hierarchical feature representations (Khodaverdian et al., 2021). Moreover,
+transfer learning-based models have further enhanced recognition of
+complex emotional expressions due to the fact that they are pre-trained
+on multiple datasets. However, there are still many challenges in the
+machine learning development pipeline, such as unbalanced datasets
+and intra-class variations, leading to limited generalization.
+https://doi.org/10.1016/j.mlwa.2025.100830
+Received 16 October 2025; Received in revised form 20 December 2025; Accepted 28 December 2025
+Machine Learning with Applications 23 (2026) 100830
+Available online 2 January 2026
+2666-8270/© 2026 The Authors. Published by Elsevier Ltd. This is an open access article under the CC BY-NC license ( http://creativecommons.org/licenses/by-
+nc/4.0/ ).
+
+D. Banerjee et al.
+Hence, we propose ExpressNet-MoE, a novel hybrid Deep CNN architecture. It is a hybrid deep learning model that combines CNNs with
+a layer of mixture of experts (MoE) to overcome the aforementioned
+problems. This method dynamically selects the relevant expert networks for each input, while improving its versatility and generalization
+over a number of datasets. ExpressNet-MoE captures simultaneously
+both global and fine-grained facial features and improves the accuracy
+of the emotion recognition task. The hybrid architecture of the model
+offers the most adaptive feature selection capability, and the choice of
+multiple CNN-based feature extractors makes it a powerful yet flexible
+approach.
+The contributions of our research include the following.
+• Adaptive feature learning: Many existing solutions employ
+static models offering only a fixed set of features. To overcome the
+limitations of static feature extraction models, ExpressNet-MoE
+chooses a Mixture of Experts (MoE) system that emphasizes the
+best expert network in the model for each individual input.
+• Multi-scale feature extraction: Our model extracts both global
+and fine-grained facial expression characteristics using CNNs with
+different filter sizes. The model’s capacity to identify minute
+emotional variations across datasets is enhanced by the choice of
+this hybrid method.
+• Improved generalization across multiple datasets and realworld scenarios: Our testing results showed that the model improves the generalization capability across different datasets due
+to its hybrid architecture. This allows the model to handle realworld issues such as illumination, occlusion, and demographic
+diversity.
+We have evaluated ExpressNet-MoE on three benchmark FER
+datasets which are AffectNet (Mollahosseini et al., 2017), Real-world
+Affective Faces Database or RAF-DB (Li & Deng, 2019; Li et al., 2017),
+and FER-2013 (Goodfellow et al., 2013). Each of these datasets has
+their own set of unique characteristics and problems. The AffectNet
+dataset is well-suited for training and validation since it provides a
+vast and varied collection of facial emotions from real-world situations.
+RAF-DB is reputed for its precise labeling; therefore, it is an ideal
+choice for testing the model’s generalizability. FER-2013 is a highly
+appropriate dataset to test the model’s performance under constrained
+circumstances as it contains grayscale images with poor resolutions and
+possible mislabeling issues. We evaluate our model on these datasets
+to show how it responds to variations in facial expressions, quality of
+images, environmental factors, and demographics.
+Furthermore, ExpressNet-MoE employs deep feature representations, which offers more data-driven manner due to its dynamic MoE
+and transfer learning architecture to comprehend user emotions than
+conventional fixed CNN-based solutions.
+The remainder of this article is organized as follows: Section 2
+reviews related works related to current state-of-the-art emotion recognition methods. Section 3 provides the datasets utilized for both training and evaluation of our proposed model, along with comparing
+its performance with existing work. In Sections 4 and 5, we present
+our proposed methodology and ExpressNet-MoE architecture, and its
+associated machine learning pipeline needed for end-to-end learning.
+Section 6 illustrates the experimental results of the proposed method
+separately for each of the datasets considered in this study. A comparative analysis is described in Section 7. Section 8 provides an insight on
+the model performance and efficacy considerations. Finally, Section 9
+summarizes the study, offers our conclusion and elaborates on future
+work.
+2. Related works
+Understanding facial emotions has become a key element in emotion detection frameworks, particularly in applications such as human–
+computer interaction and online learning. Prior research has extensively investigated improvements in FER model accuracy, scalability,
+and generalization under real-world conditions. Several recent studies proposed architectures that combined attention mechanisms with
+convolutional feature extraction. The Dual-Direction Attention Mixed
+Feature Network (DDAN-MFN) integrated a Mixed Feature Network
+with a Dual-Direction Attention Network to enhance long-range dependency modeling (Zhang et al., 2023). The MFN used convolution and
+bottleneck layers along with MixConv, which leveraged differing kernel
+sizes. The DDAN had an independent dual-direction attention head
+to capture long-range dependence, which significantly enhanced the
+ability of the model to highlight the features of the FER undertaking.
+Similarly, The Generalized Zero-Shot Convolution Neural Network
+(GZS-ConvNet) addressed the generalization problem in FER systems
+(Bhati et al., 2025). The architecture was designed to detect unseen
+facial expressions using an adaptation mechanism. Due to its ability to perform zero-shot categorization, GZS-ConvNet demonstrated
+high performance on a variety of datasets including FER-2013, Affect-
+Net, and RAF-DB, highlighting its suitability for dynamic real-world
+environments. Similarly, the ConvNeXt, a CNN architecture, demonstrated superiority of its FER performance over classical CNN and
+Transformer-based systems (Bohi et al., 2024). The architecture used
+deep convolutions, depthwise convolutions, and a modified activation
+function. The model showed competitive performance on the Affect-
+Net dataset. Face2Nodes, a graph-based FER system used dynamic
+relation-aware graph convolutions to characterize spatial and relational
+relationships between face regions (Jiang et al., 2023). It, thus, allowed
+the system for more structured and expressive emotion representations.
+Their work demonstrated strong performance on the RAF-DB dataset.
+There are few demonstrated efforts exploring techniques to avoid
+overfitting and generalization problems: (i) The work on deep convolution layers for emotion categorization using strategies such as
+max pooling, dropout, and batch normalization (Uniyal & Agarwal,
+2024). Their method underlined the importance of feature extraction
+and regularization to achieve high accuracy on large datasets identical
+to AffectNet and FER-2013. (ii) The use of ensemble modeling with
+VGG and ResNet for emotion and engagement in distance learning
+(Savchenko et al., 2022).
+Multimodal data and attention mechanisms have been successfully
+integrated to improve FER systems. In order to enhance emotion recognition, a multi-modal sentimental privileged information embedding
+(IA-MTM) was introduced that integrated audio and picture characteristics (Sun et al., 2024). Using both visual and aural input, their
+model improved FER performance. The model employed the ResNet18
+architecture for image feature extraction and an audio-decoding network to create a shared feature space. The Cross Similarity Attention
+(CSA) mechanism was introduced to address class imbalance by explicitly increasing inter-class separation while reinforcing intra-class
+similarity (Wang et al., 2024).
+A CNN-based architecture for FER effectively classified facial expressions into positive, negative, and neutral classes using global average pooling and residual depth-wise separable convolutions (Rajavenkatanarayanan et al., 2018). In order to improve feature extraction and learning stability, ResEmoteNet, combined residual networks,
+convolution blocks, and Squeeze and Excitation (SE) blocks (Roy et al.,
+2024). Their model’s capability to mitigate the impacts of vanishing
+and exploding gradients was demonstrated by its strong performance
+on a number of datasets.
+The SE-ResNet architecture combined Squeeze-and-Excitation with
+the ResNet architecture (Huang, Chiang, et al., 2023). The model
+captured the importance of each channel as it integrated the SE block
+into the ResNet architecture. It demonstrated an improved learning
+performance during training and increased accuracy in FER tasks.
+On the other hand, the classical machine learning algorithms, such
+as the Bayesian classifiers and C4.5 trees were also investigated in
+the literature to understand affective states and involvement in online
+learning environments (Dewan et al., 2019). These algorithms analyzed
+Machine Learning with Applications 23 (2026) 100830
+2
+
+D. Banerjee et al.
+motions and facial expressions to help improve the tracking of student
+attention.
+The Deep Convolution Neural Network with Convolution Block
+Attention Module (DCNN-CBAM), made use of the attention mechanism
+which improved the feature representation (Halim et al., 2023). This
+design, which used deep layers and convolution blocks was tailored
+for the AffectNet8 dataset, showed promise in identifying students’
+emotional states during online instruction.
+Transformer-based architectures have also made their way into FER
+because of their capacity to recognize long-range correlations in face
+characteristics. For emotion classification, a Vision Transformer (ViT)
+model was pre-trained on the ImageNet-21k and further fine-tuned on
+the AffectNet dataset (Roka & Rawat, 2023). The findings demonstrated
+that leveraging large-scale datasets alongside data augmentation strategies is vital for managing class imbalance in FER tasks. Similarly, the
+hybrid framework, FER-VT, combined CNNs with attention mechanisms (Huang et al., 2021). It introduced Visual Transformer Attention
+(VTA) for high-level semantic representation and Grid-Wise Attention
+(GWA) for low-level feature extraction.
+Both studies demonstrated a growing trend toward transformerbased approaches in facial emotion recognition systems. These techniques improved upon traditional CNN architectures by enabling more
+accurate representation of long-range spatial dependencies in facial
+imagery. By integrating attention mechanisms across multiple feature
+levels, transformer-based models demonstrated an enhanced ability
+to represent both local and global facial cues. Consequently, these
+architectures gained increasing adoption for FER in complex real-world
+environments.
+FER systems have advanced significantly as outlined above. However, there are still a number of research gaps that prevent their
+practical applications. Due to variances in demography, lighting, and
+face features, many current models have trouble generalizing across
+datasets; they perform well on certain datasets but fall short when
+evaluated on unseen data (Huang, Chiang, et al., 2023; Wang et al.,
+2024; Zhang et al., 2023). Conventional CNN-based FER models are
+limited in their capacity to adapt to a variety of inputs because they
+rely on set feature extractors, which might not be the best for all facial
+expressions (Huang, Chiang, et al., 2023; Uniyal & Agarwal, 2024).
+Furthermore, it is challenging to capture both global face structures
+and fine-grained expression features since the majority of architectures
+do not integrate multi-scale feature extraction (Huang, Chiang, et al.,
+2023; Uniyal & Agarwal, 2024; Wang et al., 2024). Managing occlusions, light fluctuation, and non-frontal head poses—all of which impair
+model performance, this is another crucial issue in real-world FER.
+Dataset imbalances also make it difficult to classify underrepresented emotions like disgust, fear, and contempt, restricting the model’s
+capacity to confidently identify uncommon expressions, which is evident in Bohi et al. (2024), Wang et al. (2024), Zhang et al. (2023).
+Low-resolution grayscale images and mislabeling problems in the popular dataset FER-2013 pose additional difficulties that can have a
+big influence on model learning and generalization. By utilizing a
+Mixture of Experts (MoE) framework for adaptive feature selection,
+incorporating multiple CNN-based extractors for multi-scale learning,
+and improving generalization across datasets by combining deep feature learning and ensemble-based decision-making, ExpressNet-MoE
+directly addresses these limitations. ExpressNet-MoE is a very flexible
+and scalable solution for real-world FER applications since it enhances
+robustness against occlusions, illumination shifts, and dataset bias by
+dynamically choosing expert networks based on input data.
+3. Datasets
+We have used three benchmark datasets which are AffectNet, RAF-
+DB, and FER-2013 to train our model. Each of the aforementioned
+datasets have distinct qualities that will help improve robustness and
+generalizability of the model. AffectNet is perfect for learning complicated emotional variations since it offers a large collection of face
+expressions that have been taken in real-world situations. RAF-DB’s
+extensive collection of extremely diverse photos with well-documented
+annotations will help the model to test its adaptability and generalizability. Furthermore, the grayscale photographs in FER-2013 were
+taken in a variety of settings to help the model adapt to variations in
+lighting and facial expressions.
+In order to balance computational efficiency, and memory constraints, we employed subsets from AffectNet and RAF-DB. Fig. 1
+illustrates the total number of images for every dataset per emotion
+class along with their training and testing splits along with the class
+distributions. AffectNet’s 8-class classification is denoted by AffectNet8,
+whereas AffectNet’s 7-class classification is denoted by AffectNet7. We
+increased the model’s adaptability by utilizing these datasets making
+the model more robust.
+3.1. AffectNet
+AffectNet is one of the biggest datasets for facial expression identification (Mollahosseini et al., 2017). It contains over a million photos
+and about 440,000 samples have annotations. We have chosen as
+subset of this dataset with 28,175 photos from eight different emotional
+categories from the mentioned dataset for this study which are surprise,
+happy, anger, disgust, neutral, fear, sad, and contempt. These photos
+are collected from online sources and are taken from actual real-life
+situations and contain a variety of facial expressions. Because of its vast
+size and computational constraints, a subset of this dataset is generally
+used by many researchers in their works (Bhati et al., 2025; Savchenko
+et al., 2022; Uniyal & Agarwal, 2024).
+For training, we have used 22,540 images, and 5635 were set aside
+for testing. The selected dataset includes a wide range of age groups,
+ethnicity, and lighting conditions, making it ideal for improving generalization and the model’s adaptability. To make a 7-class classification
+on the AffectNet dataset, we remove the Contempt category and made
+a training set of 19,944 images and a testing set of 4987. Although
+AffectNet offers a wide variety of emotions, the distribution of classes is
+imbalanced compared to the original which is heavily imbalanced, with
+Happy and Surprise being more represented than Neutral and Fear.
+Because of its versatility, AffectNet is a great tool for training models
+to function well in multiple settings. The excellent careful annotations
+in the dataset ensure that the model learns from precise labels and aid
+in improving emotion classification. The dataset is a popular option for
+emotion detection despite its class imbalance.
+3.2. RAF-DB
+Another popular dataset for facial emotion detection is RAF-DB (Li
+& Deng, 2019; Li et al., 2017). It consists of 15,339 single class photos
+tagged with the seven main emotions classes that are surprise, fear,
+happiness, anger, disgust, neutrality, and sadness. It contains pictures of
+people of all ages, genders, and cultural backgrounds. It stands out for
+its diversity. This variation in the dataset makes it effective for training
+models that must function well across various populations.
+We used 3068 photos for testing and 12,271 images for training
+from the RAF-DB dataset. The photographs in this dataset like AffectNet
+were also taken in real-world settings and are downloaded from the
+internet. It contains variations in head positions, backgrounds, and
+lighting. Building a strong model that can identify emotions outside of
+controlled environments requires an understanding of these real-world
+difficulties. There is a noticeable class disparity in RAF-DB, as happy
+and neutral classes are significantly more prevalent than fear, anger
+and disgust.
+We proved the model’s generalizability by identifying nuanced emotional features by using RAF-DB dataset. The dataset complements the
+AffectNet and FER-2013 datasets, as the dataset guarantees a more
+comprehensive portrayal of emotions. The reliability of the emotion
+classification model is further increased by the high-quality training
+data provided by its well-annotated images.
+Machine Learning with Applications 23 (2026) 100830
+3
+
+D. Banerjee et al.
+Fig. 1. Training vs Test splits for the datasets.
+3.3. FER-2013
+FER-2013, which was first presented in the ICML 2013 challenge
+(Goodfellow et al., 2013), is a well-known dataset in facial expression
+recognition. There are 35,887 grayscale photographs in the dataset,
+each with a resolution of 48 by 48 pixels. It contains 7 different emotion
+classes which are anger, disgust, fear, happiness, neutrality, sadness,
+and surprise.
+Although FER-2013 is widely used, it has a number of drawbacks.
+The first one is mislabeling (Barsoum et al., 2016; Mazen et al., 2021),
+wherein some images are mistakenly categorized as belonging to the
+wrong class of emotion. This may impact the model’s performance as
+it introduces noise during training. Furthermore, the low-resolution
+photos in the dataset makes it more difficult for models to extract finegrained facial traits. On top of that, emotions like happy and neutral
+have far more samples than other classes like disgust and surprise,
+indicating a class imbalance. The model may become less sensitive to
+underrepresented emotions as a result of this imbalance, which could
+result in biased predictions. These drawbacks are somewhat offset by
+its size and variety of real-world examples in the classes with more
+samples. For this study, we utilized 28,709 images for training and
+7178 for testing.
+4. Proposed methodology: ExpressNet-MoE
+The proposed methodology involves training the model on three
+facial expression recognition datasets: AffectNet, RAF-DB, and FER-
+2013 (individually, to test generalizability). Two variations of AffectNet
+were taken into consideration: one with seven emotion classes with the
+‘‘contempt’’ category eliminated - AffectNet7, and another with all the
+eight classes kept - AffectNet8. There are seven emotion classes in RAF-
+DB as in AffectNet7. To maintain compatibility with other datasets for
+the model’s input, the grayscale images in FER-2013 were transformed
+into three channels. To guarantee an equitable distribution of emotion
+categories in both training and testing sets, a stratified train–test split
+is used for all datasets. This keeps the model’s performance from being
+distorted by data imbalance as much as possible. We use the same test
+split for evaluating our model as well as comparing our proposed model
+with the state-of-the-art methods.
+The BlazeFace model (Bazarevsky et al., 2019) from MediaPipe,
+which effectively identifies facial areas in photos, is used for face identification and alignment. It is used by many researchers for preprocessing
+facial images (Bayar et al., 2022; Hossen & Uddin, 2023; Soudy et al.,
+2024). The identified faces are cropped after the relative boundingbox coordinates are calculated and gently adjusted for robustness. The
+original image is scaled to 224 × 224 pixels if no face is found. An
+image generator that dynamically loads photos, does preprocessing
+(using BlazeFace), normalizes pixel values, and one-hot encodes emotion labels is included into the data pipeline. To maximize training
+efficiency and avoid overfitting, the model is trained for 15 epochs with
+a batch size of 32 using methods such as checkpointing, learning rate
+adjustments, and early stopping. This methodology ensures effective
+learning across diverse datasets and also improving the model’s generalization for facial expression recognition. Fig. 2 shows the complete
+methodology.
+Accuracy, precision, recall, and 𝐹1-score are used to evaluate facial expression recognition algorithms. Accuracy measures the overall
+proportion of correct predictions, giving a general sense of how well
+the model performs. Precision focuses on how many of the predicted
+expressions were actually correct. Recall, on the other hand, assesses
+how many of the true expressions the model was able to identify.
+The F1-score combines precision and recall into a single value, and
+provides a balanced measure which is especially useful when a dataset
+is imbalanced. These metrics provide a thorough evaluation of the
+model’s performance.
+5. Model architecture
+A number of significant hyperparameters that control the component structure and training behavior incorporated into the proposed
+architecture are listed in this section. These include parameters associated with the Mixture of Experts (MoE) module, such as the number
+of experts and gating methods, as well as kernel sizes, filter counts,
+dropout rates, activation functions, and normalization strategies within
+the CNN-based feature extractors. It also includes the hyperparameters
+used in training such as learning rate, batch size, optimizer, and loss
+function. The sections that follow offer a thorough description of these
+hyperparameters. We tried several different hyperparameters for the
+model including different filter sizes, activation functions, depth of
+CNN layers, etc. and finally selected parameters that worked best and
+still provided a reasonable model size.
+5.1. CNN Feature Extractor 1
+CNN Feature Extractor 1 or CNNFE1 (Fig. 3) is a Deep Convolution Neural Network (D-CNN) designed to extract hierarchical spatial
+information from a 224 × 224 × 3 input images.
+To preserve spatial dimensions, the network begins with a 75 × 75
+convolution layer with 8 filters, ReLU activation, and ‘‘same’’ padding.
+The convolution operation is defined in Eq. (1), where 𝑌(𝑖, 𝑗) is the
+output feature at position (𝑖, 𝑗), 𝑋(𝑖+ 𝑚, 𝑗+ 𝑛) is the input or previous
+layer’s output, and 𝐾(𝑚, 𝑛) is the filter kernel.
+𝑌(𝑖, 𝑗) =
+∑
+𝑚
+∑
+𝑛
+𝑋(𝑖+ 𝑚, 𝑗+ 𝑛) ∗𝐾(𝑚, 𝑛)
+(1)
+The ReLU formula is given in Eq. (2). ReLU (Rectified Linear Unit) is
+a widely used activation function that outputs the input (x) if positive,
+or zero otherwise. It introduces non-linearity, it is computationally
+efficient, and helps prevent vanishing gradients. This enables deeper
+networks to train effectively.
+𝑓(𝑥) = max(0, 𝑥)
+(2)
+A dropout layer (rate = 0.1) follows to reduce overfitting, then batch
+normalization is applied to stabilize and accelerate training. Given
+Machine Learning with Applications 23 (2026) 100830
+4
+
+D. Banerjee et al.
+Fig. 2. Proposed methodology.
+Fig. 3. CNN Feature Extractor 1 (CNNFE1).
+input 𝑥𝑖 in a mini-batch of size 𝑚, batch normalization proceeds as
+follows:
+𝑚𝐵= 1
+𝑚
+𝑚
+∑
+𝑖=1
+𝑥𝑖
+(3)
+𝑠2
+𝐵= 1
+𝑚
+𝑚
+∑
+𝑖=1
+(𝑥𝑖−𝑚𝐵)2
+(4)
+𝑐𝑖= 𝑥𝑖−𝑚𝐵
+√
+𝑠2
+𝐵+ 𝜖
+(5)
+𝑦𝑖= 𝛾𝑐𝑖+ 𝛽
+(6)
+Eqs. (3) and (4) compute the batch mean 𝑚𝐵 and variance 𝑠2
+𝐵 for
+input 𝑥𝑖, where 𝑚 is the batch size. Eq. (5) normalizes the input using
+the batch statistics, with 𝜖 preventing division by zero. Here, 𝛾 and 𝛽
+are learnable scale and shift parameters used in batch normalization. A
+2 × 2 max-pooling layer then reduces spatial dimensions and improves
+efficiency. The max-pooling operation is defined in Eq. (7).
+𝑌(𝑖, 𝑗) = max
+𝑚,𝑛𝑋(𝑖+ 𝑚, 𝑗+ 𝑛)
+(7)
+Following the first convolution layer, the feature extraction process
+continues with progressively smaller kernels and more filters: 50 × 50
+(16), 25 × 25 (32), 15 × 15 (64), 9 × 9 (128), and 3 × 3 (256),
+each followed by dropout, batch normalization, and pooling (except
+the last). The output is flattened and passed to a dense layer with 512
+neurons (ReLU). The dense layer (i.e., fully connected layer) calculates
+its outputs (𝑦) using its definition listed in Eq. (8).
+𝑦= 𝑓(𝑊𝑥+ 𝑏)
+(8)
+𝑊 is the weight matrix of the layer and 𝑏 is the bias vector for the
+current layer. 𝑓 is the activation function used (in this case, ReLU).
+This is finally followed by dropout (0.5) to prevent overfitting. The
+model captures both low and high-level spatial features efficiently.
+5.2. CNN Feature Extractor 2
+CNN Feature Extractor 2 or CNNFE2 as shown in Fig. 4. is also a
+CNN architecture designed to extract hierarchical spatial features while
+maintaining computational efficiency.
+It starts with a 15 × 15 convolution layer (16 filters, ReLU, same
+padding), followed by dropout (0.1), batch normalization, and 2 × 2
+max pooling. This structure repeats with 32 filters (7 × 7), 64 filters
+(5 × 5), 128 filters (3 × 3), and finally 256 filters (3 × 3), each layer
+followed by batch normalization, ReLU, and pooling. Batch normalization is used to stabilize the training process and the dropout layers are
+applied to reduce overfitting. Instead of flattening (like in CNNFE1),
+a Global Average Pooling (GAP) layer reduces each feature map to a
+single value, creating a compact and efficient feature vector. GAP for
+a given feature map 𝑋 of size 𝐻× 𝑊 (height × width) is computed by
+the equation given in Eq. (9).
+𝑌=
+1
+𝐻⋅𝑊
+𝐻
+∑
+𝑖=1
+𝑊
+∑
+𝑖=1
+𝑋(𝑖, 𝑗)
+(9)
+𝑋(𝑖, 𝑗) is the value of the feature map at position (𝑖, 𝑗) and 𝑌 is the
+scalar output representing the average value of the entire feature map.
+Machine Learning with Applications 23 (2026) 100830
+5
+
+D. Banerjee et al.
+Fig. 4. CNN Feature Extractor 2 (CNNFE2).
+Fig. 5. ResNet-50 architecture.
+5.3. ResNet-50 model
+A pre-trained ResNet-50 model trained on the VGGFace2 dataset
+(Cao et al., 2018) originally tasked for face recognition was leveraged
+here to acquire the high-level face features. It ensures deep feature
+learning by processing 224 × 224 × 3 images through the residual
+blocks of ResNet50. We have used include_top=false that turns
+the model into a pure feature extractor by removing the classification
+levels. In order to avoid overfitting, a 0.5 dropout layer is used after
+global average pooling which condenses feature maps into a compact
+vector. Transfer learning is used in this architecture to provide reliable
+face expression recognition. This sub-model architecture is shown in
+Fig. 5.
+5.4. Mixture of Experts
+Our model’s Mixture of Experts (MoE) module enhances the performance by dynamically choosing the most pertinent expert or experts
+for each input by utilizing a variety of expert networks. The structure
+of MoE is given in Fig. 6.
+The network takes a vector of size input_dim as input and starts
+with a dense input layer. After that, this input is run in parallel through
+a number of expert models (denoted by num_experts, e.g., 4 experts), each of which has a dense layer with ReLU activation to enable
+it to capture distinct data features. To regulate the information flow, a
+gating network is implemented, with num_experts logits generated
+by its own dense layer. A Softmax activation is used to convert these
+logits into a probability distribution over the experts, allowing the
+gating mechanism to choose the final experts. The softmax is defined
+Eq. (10).
+softmax(𝑧𝑖) =
+𝑒𝑧𝑖
+∑
+𝑗𝑒𝑧𝑗,
+(10)
+Where, 𝑧𝑖 is the raw output (logit) for class 𝑖 and 𝑒𝑧𝑖 is the exponential of the logit 𝑧𝑖. The denominator is the summation of the
+exponentials of all logits, this ensures that the output probabilities sum
+to 1.
+After stacking the expert outputs into a tensor, the top-𝑘 function
+from TensorFlow is used to choose the top-𝑘 experts (2 experts, default)
+based on the gating probabilities. Each expert’s contribution is scaled
+by its corresponding gating probability, and the final result is calculated
+as a weighted sum of the top expert outputs. This makes it possible for
+the model to concentrate on the experts who are most pertinent to each
+input, facilitating more specialized and effective decision-making. The
+original input is then transformed into the weighted combination of the
+top expert outputs by wrapping the MoE layer in a Tensorflow/Keras
+Model. The model’s ability to adaptively select experts through the
+MoE architecture improves performance on tasks involving complex
+decision-making.
+5.5. Our final model — ExpressNet-MoE
+The CNNFE1, CNNFE2, ResNet-50 and MoE modules are combined
+in the final ExpressNet-MoE Model (Fig. 7) to produce a robust architecture for emotion recognition.
+The model starts with a Keras Input layer that can handle 224 × 224
+RGB images. In order to capture varying amounts of picture information, three different CNN-based feature extractors are used: CNNFE1,
+CNNFE2, and ResNet50. Sequentially putting the input through these
+models yields their results. Following the concatenation of the CNNFE2
+and ResNet50 features, a dense layer with 512 units and ReLU activation is applied to the combined features. A Dropout layer with a
+regularization rate of 0.5 is then applied.
+The two sets of features are subjected to the MoE mechanism: a
+MoE layer specifically designed for CNN-based features processes the
+features from CNNFE1, and a second MoE layer also designed for the
+CNN features processes the dense layer output (from CNNFE2 and
+ResNet50). The high-level extracted representations of the input image
+are represented by a composite feature vector created by concatenating
+the outputs from the two MoE layers which we will call the final
+features.
+To predict one of the emotions in input images, an output layer
+with softmax activation is added at the end taking the output as an
+input from the final features. To enhance generalization, the model
+is assembled using the Adam optimizer and categorical cross-entropy
+loss with label smoothing. The chosen loss function, categorical Cross
+Entropy (CCE) is calculated using Eq. (11). In the equation, 𝐾 is the
+number of classes, 𝑦𝑖 is the true label and ̂𝑦𝑖 is the predicted label. log( ̂𝑦𝑖)
+is the natural logarithm of the predicted probability of the class 𝑖.
+CCE(𝑦, ̂𝑦) = −
+𝐾
+∑
+𝑖=1
+𝑦𝑖∗log ̂𝑦𝑖
+(11)
+Machine Learning with Applications 23 (2026) 100830
+6
+
+D. Banerjee et al.
+Fig. 6. Mixture of Experts (MoE).
+Fig. 7. ExpressNet-MoE architecture.
+Table 1
+List of hyperparameter values.
+ Hyperparameter
+Value
+
+ Neural Network type
+Hybrid CNN-based Mixture of Experts
+ Classification type
+Multi-class (7, and 8 classes)
+
+ Batch size
+32
+
+ Dropout rate
+Variable (0.1-0.5)
+
+ Number of epochs
+15
+
+
+Optimizer
+Adam
+
+
+Learning rate, 𝛼= 10−4
+
+
+𝛽1 = 0.9, 𝛽2 = 0.999
+
+ Loss function
+Categorical Cross-entropy
+
+We ran our experiments in a Tensorflow 2.0 compute framework
+configured with four NVidia Titan Xp GPU co-processors with mirrored strategy enabled. Values of the hyperparameters were chosen by
+heuristics and are listed in Table 1.
+6. Results
+Table 2 lists the classification report of our proposed ExpressNet-
+MoE model on all of the four datasets in terms of precision, recall, 𝐹1,
+and per-class accuracy (𝑝-Acc), while Table 3 lists the overall accuracy,
+macro averaged precision, recall and 𝐹1-score of our model at the
+evaluation.
+The model’s performance varies on different datasets, which reflects
+issues specific to each dataset. Happiness regularly has the highest 𝐹1scores, showing a good recognition of positive emotions, especially in
+RAF-DB (0.93) and FER-2013 (0.86). In FER-2013, anger and fear had
+lower 𝐹1-scores (0.59 and 0.40, respectively), due to class imbalance
+and incorrect classification. In contrast to AN-8 (0.70), disgust performs
+badly in FER-2013 (𝐹1 = 0.49), which is directly correlated to having
+less training and testing data. In FER-2013, neutral expressions have
+a high recall (0.75) but low precision (0.50), which compromises
+the reliability of classification. Overall, our model shows consistent
+performance on all of RAF-DB emotion classes (84.29%) (Table 3), yet it
+shows similar on prediction accuracies on the two versions of AffectNet
+datasets: AffectNet7 (74.77%) and AffectNet8 (72.55%).
+The generalized trend noticed during the training on all datasets
+is that validation accuracy typically followed an increasing trend with
+some fluctuations, indicating possible overfitting, training accuracy
+demonstrated consistent improvements. Our check-points made sure
+only the model with the highest validation accuracy was saved to
+mitigate the overfitting. Adjusting the learning rate facilitated smooth
+convergence, while early stopping avoided needless training.
+6.1. AffectNet7 results
+The classification task on AffectNet7 showed a robust learning progression. From 49.51% in the first epoch to 97.60% in the tenth (in
+Fig. 8). The training accuracy increased significantly. By the sixth
+epoch validation accuracy had reached 74.86%, followed by slight
+Machine Learning with Applications 23 (2026) 100830
+7
+
+D. Banerjee et al.
+Fig. 8. Training accuracy/loss vs Validation accuracy/loss: AffectNet7.
+Table 2
+Classification Report of proposed ExpressNet-MoE model on all the test-sets
+from AffectNet7 (AN-7), AffectNet8 (AN-8), RAF-DB (RAF), FER-2013 (FER).
+ Emotion
+Dataset
+Precision
+Recall
+𝐹1
+Support
+𝑝-Acc
+
+Anger
+AN-7
+0.71
+0.79
+0.75
+722
+92.38
+
+AN-8
+0.83
+0.55
+0.66
+722
+92.80
+
+RAF
+0.71
+0.87
+0.78
+162
+97.43
+
+FER
+0.61
+0.58
+0.59
+958
+89.40
+
+Disgust
+AN-7
+0.79
+0.52
+0.63
+695
+91.46
+
+AN-8
+0.68
+0.72
+0.70
+694
+92.48
+
+RAF
+0.62
+0.60
+0.61
+160
+96.02
+
+FER
+0.75
+0.36
+0.49
+111
+98.83
+
+Fear
+AN-7
+0.70
+0.76
+0.73
+609
+93.18
+
+AN-8
+0.90
+0.59
+0.71
+609
+94.85
+
+RAF
+0.65
+0.62
+0.63
+74
+98.27
+
+FER
+0.65
+0.29
+0.40
+1024
+87.66
+
+Happy
+AN-7
+0.80
+0.97
+0.88
+867
+95.31
+
+AN-8
+0.89
+0.84
+0.86
+867
+95.94
+
+RAF
+0.91
+0.95
+0.93
+1185
+94.43
+
+FER
+0.88
+0.84
+0.86
+1774
+93.22
+
+Neutral
+AN-7
+0.70
+0.72
+0.71
+572
+93.18
+
+AN-8
+0.55
+0.73
+0.62
+572
+91.14
+
+RAF
+0.88
+0.73
+0.80
+680
+91.75
+
+FER
+0.50
+0.75
+0.60
+1233
+82.84
+
+Sad
+AN-7
+0.76
+0.62
+0.68
+599
+93.06
+
+AN-8
+0.62
+0.75
+0.68
+599
+92.56
+
+RAF
+0.77
+0.88
+0.82
+478
+93.97
+
+FER
+0.50
+0.64
+0.56
+1247
+82.77
+
+Surprise
+AN-7
+0.75
+0.76
+0.76
+923
+90.98
+
+AN-8
+0.74
+0.80
+0.77
+923
+92.00
+
+RAF
+0.87
+0.82
+0.84
+329
+96.71
+
+FER
+0.85
+0.64
+0.73
+831
+94.61
+ Contempt
+AN-8
+0.69
+0.76
+0.72
+649
+93.33
+Table 3
+Overall evaluation of ExpressNet-MoE model on the test-sets in terms of
+accuracy and macro averaged Precision, Recall and 𝐹1-score.
+ Dataset
+AffectNet7
+AffectNet8
+RAF-DB
+FER-2013
+ Accuracy
+74.77%
+72.55%
+84.29%
+64.66%
+ Macro-Prec.
+74.56%
+73.69%
+77.28%
+67.86%
+ Macro-Rec.
+73.58%
+71.83%
+78.00%
+58.62%
+ Macro-𝐹1
+73.41%
+71.75%
+77.34%
+6058%
+variations that might indicate overfitting. Despite these differences,
+the final stored model matches an optimally generalized version that
+successfully captures emotional patterns in the AffectNet7 dataset. The
+final test accuracy the model achieved in this dataset is 74.77%.
+6.2. AffectNet8 results
+Training accuracy increased significantly in the AffectNet8 classification task, rising from 47.68% in the first epoch to 96.88% by the
+ninth (in Fig. 9).
+While training accuracy kept increasing, suggesting possible overfitting, validation accuracy peaked at 72.35% in the eighth epoch and
+then varied slightly. However, optimal generalization is ensured by
+the final stored model as it stores the model when highest validation
+accuracy is achieved. Even though the model was able to learn emotion representations, its resilience could be further increased by using
+additional regularization techniques. The final testing accuracy that the
+model achieved in this dataset is 72.55%.
+6.3. RAF-DB results
+Training accuracy increased from 58.89% in the first epoch to
+97.54% by the ninth (in Fig. 10), demonstrating a rapid improvement
+on the RAF-DB dataset.
+Similar trends were seen in validation accuracy, which first increased from 22.24% to 84.21% in the ninth epoch. The model eventually attained high generalization performance, despite a few slight
+decreases in the sixth and seventh epochs. Early stopping strengthened the model’s stability for practical FER applications by preventing
+needless training past the point of peak performance. The final testing
+accuracy that the model achieved in this dataset is 84.29%.
+6.4. FER-2013 results
+A peak validation accuracy of 64.37% and a training accuracy of
+93.00% are achieved on the FER-2013 training data (Fig. 11). However,
+after peaking, validation accuracy fluctuated, mostly as a result of
+incorrectly categorized data in the dataset and overfitting. Despite this,
+the model was able to acquire strong emotion representations. Better
+preprocessing or label correction could improve the results even though
+the final stored model is the most generalizable version. The final
+testing accuracy that the model achieved in this dataset is 64.66
+In every dataset, the ‘‘emotion’’ happy is classified with the highest
+accuracy. This is due to the fact that all of the datasets had ‘‘happy’’
+images predominantly.
+7. Comparative analysis
+Table 4 presents a detailed comparison of the ExpressNET-MoE
+model against other existing models on the AffectNet7, AffectNet8, RAF-
+DB, and FER-2013 datasets. All baseline results reported in Table 4 are
+taken directly from the original referenced papers.
+Machine Learning with Applications 23 (2026) 100830
+8
+
+D. Banerjee et al.
+Fig. 9. Training accuracy/Loss vs Validation accuracy/Loss: AffectNet8.
+Fig. 10. Training accuracy/Loss vs Validation accuracy/Loss: RAF-DB.
+Fig. 11. Training accuracy/Loss vs Validation accuracy/Loss: FER-2013.
+We repeated the experiments (with 𝑛= 3) with our proposed
+ExpressNet-MoE model, each time by varying the training and test
+splits, and presented in Table 4, the classification accuracies with mean,
+standard deviation with 𝑝-values (two-sided test) for each of the four
+datasets that demonstrates there exists no bias due to the variances in
+the splits.
+Our model outperforms all other models as seen in Table 4 as it
+achieves mean accuracy of 74.40% with standard deviation, 𝜎= 0.45
+on the AffectNet7 dataset. The models that are its next competitors are
+ResEmoteNet (72.93%), QCS (67.94%) and EmoNeXt-XL (67.46%), lag
+behind. Other models fall short too, including EfficientNet-B2 with an
+accuracy of 66.29% and DDAMFN with an accuracy of 67.03%. This
+substantial improvement in testing accuracy in our model demonstrates
+the effectiveness of our model in capturing nuanced facial emotions
+and fluctuations in AffectNet7 which is a dataset renowned for its challenging real-world photographs. When compared to single-stream architectures such as EfficientNet and EmoNeXt, our methodology which
+incorporates multi-expert learning and employs ensemble CNN and
+ResNet-based feature extraction, has provided a superior representational capacity, which is evidenced by the substantial gap between our
+model and the preceding best-performing models.
+Similarly, our model outperforms all prior approaches in classifying
+AffectNet8 dataset by achieving on an average 71.98% (with 𝜎= 0.66)
+as its testing accuracy on the dataset. For this dataset, D-CNN has
+Machine Learning with Applications 23 (2026) 100830
+9
+
+D. Banerjee et al.
+Table 4
+Comparison against SOTA, reported in terms of overall classification accuracy (AffectNet7: AN-7, AffectNet8: AN-8, RAF-DB: RAF,
+FER-2013: FER).
+ Model
+AN-7
+AN-8
+RAF
+FER
+
+ ViT (Roka & Rawat, 2023)
+64.48%
+–
+–
+–
+
+ MobileNet-v1 (Savchenko et al., 2022)
+64.71%
+60.25%
+–
+–
+
+ EfficientNet-B0 (Savchenko et al., 2022)
+65.74%
+61.32%
+–
+–
+
+ EmoNeXt-T (Bohi et al., 2024)
+65.55%
+61.36%
+–
+73.34%
+
+ EmoNeXt-S (Bohi et al., 2024)
+65.90%
+62.51%
+–
+74.33%
+
+ EmoNeXt-B (Bohi et al., 2024)
+66.21%
+62.94%
+–
+74.91%
+
+ EfficientNet-B2 (Savchenko et al., 2022)
+66.34%
+63.03%
+–
+–
+
+ Face2Nodes (Jiang et al., 2023)
+66.69%
+–
+91.02%
+–
+
+ EmoNeXt-L (Bohi et al., 2024)
+66.88%
+63.12%
+–
+75.57%
+
+ EmoNeXt-XL (Bohi et al., 2024)
+67.46%
+64.13%
+–
+76.12%
+
+ DDAMFN (Zhang et al., 2023)
+67.03%
+64.25%
+91.35%
+–
+
+ QCS (Wang et al., 2024)
+67.94%
+64.30%
+92.50%
+–
+
+ DCNN-CBAM (Halim et al., 2023)
+–
+66.09%
+–
+72.28%
+
+ Norface (Liu et al., 2024)
+–
+68.69%
+92.97%
+–
+
+ D-CNN (Uniyal & Agarwal, 2024)
+–
+70%
+–
+–
+
+ D-CNN (Huang, Chiang, et al., 2023)
+56.54%
+–
+83.37%
+–
+
+ GZS-ConvNet (Bhati et al., 2025)
+59.61%
+–
+62.51%
+75.32%
+
+ FER-VT (Huang et al., 2021)
+–
+–
+88.26%
+–
+
+ ResEmoteNet (Roy et al., 2024)
+72.93%
+–
+94.76%
+79.79%
+
+ ExpressNet-MoE (Ours)
+74.40 ± 0.45,
+(𝑝≈0.0077)
+71.98 ± 0.66,
+(𝑝≈0.0097)
+83.41 ± 1.06,
+(𝑝≈0.00016)
+67.05 ± 2.08,
+(𝑝≈0.0011)
+
+the highest reported accuracy of 70%, followed by Norface achieving
+68.69% and then QCS achieving 64.30%. The margin of 2.55% over
+D-CNN and 3.86% over Norface underscores our model’s effectiveness
+in generalizing even when an additional emotion class (contempt) is
+included, which frequently complicates classification tasks due to its
+subtlety. Fine-tuned EfficientNet-B2 with an accuracy of 63.03% and
+EmoNeXt-XL with an accuracy of 64.13% perform significantly worse,
+emphasizing the advantages of our model’s architecture for learning intricate facial emotions. The improvement in accuracy between
+AffectNet7 and AffectNet8 indicates that our model is both resilient
+to variations in the distribution of emotional classes and capable of
+managing large-scale datasets.
+Our model achieves an average of 83.41% accuracy (with 𝜎=
+1.06) on the RAF-DB dataset which is competitive and proves the
+model’s adaptability and generalizability but still falls short of the topperforming techniques. ResEmoteNet achieves the highest accuracy of
+an accuracy of 94.76%, followed closely by Norface with an accuracy
+of 92.97% and QCS with 92.50% accuracy. The models outperform our
+approach by approximately 8.68% to 10.47%. This can be attributed
+to the fact that RAF-DB is predominantly imbalanced and frequently
+requires fine-grained feature extraction. To enhance our ability to
+extract substantial representations from RAF-DB photographs, supplementary pretraining strategies along with data augmentation would be
+necessary.
+Despite its superior performances on AffectNet7, AffectNet8 and
+RAF-DB, our model’s FER-2013’s testing accuracy of 67.05% ± 2.08
+struggled to that of the best-performing baseline models. ResEmoteNet
+with an accuracy of 79.79%, EmoNeXt-XL with 76.12% accuracy,
+and GZS-ConvNet with an accuracy of 75.32% all outperformed our
+method. FER-2013 presents significant challenges due to its grayscale
+nature and low-resolution photographs (48 × 48 pixels). Additionally,
+the dataset’s mislabeling introduces substantial errors. To enhance
+performance on FER-2013, state-of-the-art algorithms often employ
+additional preprocessing methods, transfer learning, or domain adaptation. While our method demonstrates effectiveness on AffectNet,
+it may not be as well-suited for grayscale photographs, potentially
+contributing to the observed performance decline. Furthermore, the
+high amount of noise and label ambiguity in FER-2013 may have an
+impact on models that depend on high-resolution features. It is worth
+noting that the majority of models achieving higher accuracies on FER-
+2013 exhibit poor performance on AffectNet due to presence of many
+mislabeled samples in it.
+8. Discussion
+Generalization and adaptability have been enhanced by our proposed model with the dynamic selection of the relevant experts, a
+capability enabled by the model’s mixture of experts (MoE) architecture. Furthermore, the transfer learning method and ensemble CNN
+architecture also adds to reducing the problems related to applying FER
+in real-world scenarios due to changes in light conditions, occlusion,
+and demographic diversity. ExpressNet-MoE provides a robust means
+for FER applications in real-world scenarios, is capable of recognizing
+complex emotional expressions and provides a strong base for engagement detection systems as well by classifying emotional states more
+accurately.
+Another important finding of this research is also that the model’s
+capacity to identify some emotions, like happiness, is noticeably more
+accurate than other emotions like fear or disgust. This is attributed
+to the datasets’ class imbalances, where certain emotions are overrepresented while others have few training samples. Even though the
+model benefits from adaptive feature learning, further improvements
+can be made involving more complex data augmentation methods or
+fine-tuning methods using domain-specific datasets. This could increase
+the recognition of underrepresented emotions by FER models. Additionally, the performance difference between RAF-DB and high-performing
+models like ResEmoteNet indicates that fine-grained feature extraction
+may benefit from additional optimization. To improve the model’s
+sensitivity to minute face changes, future research could investigate
+architectural changes such as adding attention processes.
+Furthermore, as we can see in Fig. 12, the distribution of RGB
+values for AffectNet and RAF-DB are different with RAF-DB having
+higher pixel values for the red channel. This is attributed to variations
+in head position, occlusion, lighting conditions and skin color. The
+difference in the accuracies received for both RAF-DB and AffectNet
+can be attributed to this aspect of the datasets. We can also see in Fig.
+13 that the Mediapipe library that we used for image pre-processing
+crops the entire face for many RAF-DB images as these images for
+emotions like surprise, fear, etc. have their faces covered. Therefore,
+the proposed architecture cannot properly classify these images for the
+RAF-DB dataset and underperforms for the dataset.
+9. Conclusion
+To enhance facial emotion recognition, the proposed ExpressNet-
+MoE presents a novel hybrid deep learning architecture that successfully combines Mixture of Experts (MoE) module with Convolution
+Machine Learning with Applications 23 (2026) 100830
+10
+
+D. Banerjee et al.
+Fig. 12. AffectNet (left) and RAF-DB (right) normalized color distribution across all images.
+Fig. 13. Mediapipe’s detection on RAF-DB.
+Neural Networks and provides new insights into how expert models can
+be dynamically selected for emotion recognition tasks. This advances
+our knowledge of how ensemble approaches can be used to solve visual
+recognition problems, especially ones that involve intricate and subtle
+patterns like facial expressions. The model maintains competitive performance on RAF-DB while achieving excellent accuracy on AffectNet7
+and AffectNet8 by utilizing dynamic expert selection and multi-scale
+feature extraction. The findings demonstrate the value of adaptive
+feature learning in addressing practical facial emotion recognition challenges including occlusion, lighting conditions, and demographic diversity of the subjects. ExpressNet-MoE lays a solid basis for future
+developments in such systems, despite certain limitations, especially in
+datasets with noisy labels or unbalanced class distributions. To improve
+the model’s generalizability further in a range of applications, future
+research could concentrate on honing expert selection techniques or
+increasing the number of experts, improving image pre-processing as
+we see improper pre-processing degrades the model’s performance,
+adding attention-based mechanisms, and increasing variance in training
+datasets.
+CRediT authorship contribution statement
+Deeptimaan Banerjee: Conceptualization of this study, Methodology, Software, Visualization, Writing – original draft, review and
+editing. Prateek Gothwal: Reviewing and Editing, Validation. Ashis
+Kumer Biswas: Writing – review & editing, Methodology, Supervision,
+Project administration, Funding acquisition.
+Declaration of competing interest
+The authors declare the following financial interests/personal relationships which may be considered as potential competing interests:
+Ashis Kumer Biswas reports financial support was provided by National
+Science Foundation. If there are other authors, they declare that they
+have no known competing financial interests or personal relationships
+that could have appeared to influence the work reported in this paper.
+Acknowledgment
+This material is based upon work supported by the National Science
+Foundation, United States under Grant No. 2329919.
+Data availability
+I have shared publicly accessible link to our code repository. Data
+used is publicly accessible and links are also provided in the paper.
+References
+Barsoum, E., Zhang, C., Ferrer, C. C., & Zhang, Z. (2016). Training deep networks for
+facial expression recognition with crowd-sourced label distribution. In Proceedings
+of the 18th ACM international conference on multimodal interaction (pp. 279–283).
+Bayar, N., Güzel, K., & Kumlu, D. (2022). A novel BlazeFace based pre-processing
+for MobileFaceNet in face verification. In 2022 45th international conference on
+telecommunications and signal processing (pp. 179–182). IEEE.
+Bazarevsky, V., Kartynnik, Y., Vakunov, A., Raveendran, K., & Grundmann, M. (2019).
+Blazeface: Sub-millisecond neural face detection on mobile gpus. arXiv preprint
+arXiv:1907.05047.
+Bhati, V. S., Tiwari, N., & Chawla, M. (2025). A generalized zero-shot deep learning
+classifier for emotion recognition using facial expression images. IEEE Access.
+Bohi, A., Boudouri, Y. E., & Sfeir, I. (2024). A novel deep learning approach
+for facial emotion recognition: application to detecting emotional responses in
+elderly individuals with alzheimer’s disease. Neural Computing and Applications, 37,
+5235–5253.
+Cao, Q., Shen, L., Xie, W., Parkhi, O. M., & Zisserman, A. (2018). Vggface2: A dataset
+for recognising faces across pose and age. In 2018 13th IEEE international conference
+on automatic face & gesture recognition (pp. 67–74). IEEE.
+Dewan, M., Murshed, M., & Lin, F. (2019). Engagement detection in online learning:
+a review. Smart Learning Environments, 6(1), 1–20.
+Farman, H., Sedik, A., Nasralla, M. M., & Esmail, M. A. (2023). Facial emotion
+recognition in smart education systems: a review. In 2023 IEEE international smart
+cities conference (pp. 1–9). IEEE.
+Ghadekar, P., Pradhan, M. R., Swain, D., & Acharya, B. (2024). EmoSecure: Enhancing
+smart home security with Fisherface emotion recognition and biometric access
+control. IEEE Access, 12, 93133–93144.
+Goodfellow, I. J., Erhan, D., Carrier, P. L., Courville, A., Mirza, M., Hamner, B.,
+Cukierski, W., Tang, Y., Thaler, D., Lee, D.-H., et al. (2013). Challenges in
+representation learning: A report on three machine learning contests. In Neural
+information processing: 20th international conference, ICONIP 2013, daegu, Korea,
+November 3-7, 2013. proceedings, part III 20 (pp. 117–124). Springer.
+Halim, A., El-Manfy, A., Badr, A. E.-R., El-Khatib, A., Abd El-Basir, M., El-Tabee, S.,
+El-Den, Z. A., & El-Khouly, A. (2023). Facial expressions analysis to evaluate the
+level of students’ understanding. In 2023 intelligent methods, systems, and applications
+(pp. 424–429). IEEE.
+Hossen, M. K., & Uddin, M. S. (2023). A dataset for assessing real-time attention levels
+of the students during online classes. Data in Brief, 51, Article 109771.
+Machine Learning with Applications 23 (2026) 100830
+11
+
+D. Banerjee et al.
+Huang, Z.-Y., Chiang, C.-C., Chen, J.-H., Chen, Y.-C., Chung, H.-L., Cai, Y.-P., & Hsu, H.-
+C. (2023). A study on computer vision for facial emotion recognition. Scientific
+Reports, 13(1), 8425.
+Huang, Q., Huang, C., Wang, X., & Jiang, F. (2021). Facial expression recognition with
+grid-wise attention and visual transformer. Information Sciences, 580, 35–54.
+Huang, C.-W., Wu, B. C., Nguyen, P. A., Wang, H.-H., Kao, C.-C., Lee, P.-C., Rahmanti, A. R., Hsu, J. C., Yang, H.-C., & Li, Y.-C. J. (2023). Emotion recognition
+in doctor-patient interactions from real-world clinical video database: Initial development of artificial empathy. Computer Methods and Programs in Biomedicine, 233,
+Article 107480.
+Jiang, F., Huang, Q., Mei, X., Guan, Q., Tu, Y., Luo, W., & Huang, C. (2023).
+Face2nodes: learning facial expression representations with relation-aware dynamic
+graph convolution networks. Information Sciences, 649, Article 119640.
+Khodaverdian, Z., Sadr, H., & Edalatpanah, S. A. (2021). A shallow deep neural
+network for selection of migration candidate virtual machines to reduce energy
+consumption. In 2021 7th international conference on web research (pp. 191–196).
+IEEE.
+Li, S., & Deng, W. (2019). Reliable crowdsourcing and deep locality-preserving
+learning for unconstrained facial expression recognition. IEEE Transactions on Image
+Processing, 28(1), 356–370.
+Li, S., Deng, W., & Du, J. (2017). Reliable crowdsourcing and deep locality-preserving
+learning for expression recognition in the wild. In 2017 IEEE conference on computer
+vision and pattern recognition (pp. 2584–2593). IEEE.
+Liu, H., An, R., Zhang, Z., Ma, B., Zhang, W., Song, Y., Hu, Y., Chen, W., & Ding, Y.
+(2024). Norface: Improving facial expression analysis by identity normalization. In
+European conference on computer vision (pp. 293–314). Springer.
+Mazen, F. M. A., Nashat, A. A., & Seoud, R. A. A. A. A. (2021). Real time face expression
+recognition along with balanced FER2013 dataset using cyclegan. International
+Journal of Advanced Computer Science and Applications, 12(6).
+Mollahosseini, A., Hasani, B., & Mahoor, M. H. (2017). Affectnet: A database for
+facial expression, valence, and arousal computing in the wild. IEEE Transactions
+on Affective Computing, 10(1), 18–31.
+Nazir, M., Jan, Z., & Sajjad, M. (2018). Facial expression recognition using histogram
+of oriented gradients based transformed features. Cluster Computing, 21, 539–548.
+Rajavenkatanarayanan, A., Babu, A. R., Tsiakas, K., & Makedon, F. (2018). Monitoring
+task engagement using facial expressions and body postures. In Proceedings of the
+3rd international workshop on interactive and spatial computing (pp. 103–108).
+Roka, S., & Rawat, D. B. (2023). Fine tuning vision transformer model for facial emotion
+recognition: Performance analysis for human-machine teaming. In 2023 IEEE 24th
+international conference on information reuse and integration for data science (pp.
+134–139). IEEE.
+Roy, A. K., Kathania, H. K., Sharma, A., Dey, A., & Ansari, M. S. A. (2024).
+ResEmoteNet: bridging accuracy and loss reduction in facial emotion recognition.
+IEEE Signal Processing Letters, 32, 491–495.
+Sajjad, M., Ullah, F. U. M., Ullah, M., Christodoulou, G., Cheikh, F. A., Hijji, M.,
+Muhammad, K., & Rodrigues, J. J. (2023). A comprehensive survey on deep facial
+expression recognition: challenges, applications, and future guidelines. Alexandria
+Engineering Journal, 68, 817–840.
+Salhi, A. I., Kardouchi, M., & Belacel, N. (2012). Fast and efficient face recognition
+system using random forest and histograms of oriented gradients. In 2012 BIOSIGproceedings of the international conference of biometrics special interest group (pp.
+1–11). IEEE.
+Savchenko, A. V., Savchenko, L. V., & Makarov, I. (2022). Classifying emotions and
+engagement in online learning based on a single facial expression recognition neural
+network. IEEE Transactions on Affective Computing, 13(4), 2132–2143.
+Shan, C., Gong, S., & McOwan, P. W. (2005). Robust facial expression recognition using
+local binary patterns. vol. 2, In IEEE international conference on image processing 2005
+(pp. II–370). IEEE.
+Shan, C., Gong, S., & McOwan, P. W. (2009). Facial expression recognition based on
+local binary patterns: A comprehensive study. Image and Vision Computing, 27(6),
+803–816.
+Soudy, A. H., Sayed, O., Tag-Elser, H., Ragab, R., Mohsen, S., Mostafa, T., Abohany, A.
+A., & Slim, S. O. (2024). Deepfake detection using convolutional vision transformers
+and convolutional neural networks. Neural Computing and Applications, 36(31),
+19759–19775.
+Sun, N., You, C., Zheng, W., Liu, J., Chai, L., & Sun, H. (2024). Multimodal sentimental
+privileged information embedding for improving facial expression recognition. IEEE
+Transactions on Affective Computing.
+Uniyal, S., & Agarwal, R. (2024). Analyzing facial emotion patterns in AffectNet with
+deep neural networks. In 2024 1st international conference on advances in computing,
+communication and networking (pp. 801–806). IEEE.
+Wang, C., Chen, L., Wang, L., Li, Z., & Lv, X. (2024). QCS: Feature refining from
+quadruplet cross similarity for facial expression recognition. arXiv preprint arXiv:
+2411.01988.
+Zhang, S., Zhang, Y., Zhang, Y., Wang, Y., & Song, Z. (2023). A dual-direction attention
+mixed feature network for facial expression recognition. Electronics, 12(17), 3595.
+Deeptimaan Banerjee received his B.Tech. in Electronics
+and Computer Engineering from Vellore Institute of Technology, Chennai, India, in 2023. He is currently pursuing
+his master’s in computer science at the University of Colorado, Denver, US. He serves as a Research Assistant and
+a Teaching Assistant for courses including Deep Learning,
+Machine Learning, AI with Reinforcement Learning, and
+Social Informatics & Graph Theory. His research interests
+include Transfer Learning, Convolution Neural Networks
+and Transformer-based Networks.
+Prateek Gothwal received the B.E. degree in Computer
+Engineering from Netaji Subhas University of Technology,
+Dwarka, India. He is currently pursuing the M.Sc. degree
+in Computer Science at the University of Colorado Denver,
+CO, USA. He is working as a Research Assistant on student engagement prediction in online classes, focusing on
+video classification using Vision Transformers. His research
+interests include deep learning and computer vision.
+Ashis Kumer Biswas is an associate professor of the Department of Computer Science and Engineering, and Director of
+the Machine Learning laboratory (ML Lab) at the University of Colorado Denver. He received his Ph.D. degree in
+Computer Science from the University of Texas at Arlington,
+and an M.S. and a B.S. degree in Computer Science and
+Engineering from University of Dhaka, Bangladesh. Dr.
+Biswas’s research interests span several areas related to
+responsible machine learning and deep learning algorithm
+design, implementation that entails considering ethics, bias
+in the models, privacy-aware model training and energy
+efficient modeling pipeline.
+Machine Learning with Applications 23 (2026) 100830
+12

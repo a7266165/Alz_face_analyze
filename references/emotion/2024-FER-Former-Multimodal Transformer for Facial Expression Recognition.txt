@@ -1,0 +1,882 @@
+2412
+IEEE TRANSACTIONS ON MULTIMEDIA, VOL. 27, 2025
+FER-Former: Multimodal Transformer for
+Facial Expression Recognition
+Yande Li
+, Mingjie Wang, Minglun Gong
+, Yonggang Lu
+, Member, IEEE, and Li Liu
+, Member, IEEE
+Abstract—The ever-increasing demands for intuitive interactions in virtual reality have led to surging interests in facial
+expression recognition (FER). There are however several issues
+commonly seen in existing methods, including narrow receptive
+ﬁelds and homogenous supervisory signals. To address these issues,
+we propose in this paper a novel multimodal supervision-steering
+transformer for facial expression recognition in the wild, referred
+to as FER-former. Speciﬁcally, to address the limitation of narrow
+receptive ﬁelds, a hybrid feature extraction pipeline is designed
+by cascading both prevailing CNNs and transformers. To deal
+with the issue of homogenous supervisory signals, a heterogeneous
+domain-steering supervision module is proposed to incorporate
+text-space semantic correlations to enhance image features, based
+on the similarity between image and text features. Additionally,
+a FER-speciﬁc transformer encoder is introduced to characterize
+conventional one-hot label-focusing and CLIP-based text-oriented
+tokens in parallel for ﬁnal classiﬁcation. Based on the collaboration
+of multifarious token heads, global receptive ﬁelds with multimodal
+semantic cues are captured, delivering superb learning capability.
+Extensive experiments on popular benchmarks demonstrate the
+superiority of the proposed FER-former over the existing state-ofthe-art methods.
+Index Terms—Annotation ambiguity, CLIP, facial expression
+recognition, multimodal, vision transformer.
+I. INTRODUCTION
+R
+ECENTLY, facial expression recognition (FER) has carved a promising research path in computer vision toward
+ﬁne cognition for human facial expressions, as they are one
+Received 27 March 2023; revised 9 October 2023, 4 December 2023, and
+2 April 2024; accepted 14 September 2024. Date of publication 25 December
+2024; date of current version 12 May 2025. This work was supported in part
+by the China Scholarship Council under Grant 202006180033, in part by the
+Science and Technology Project of Gansu under Grant 24JRRA388, and in
+part by the Science Foundation of Zhejiang Sci-Tech University under Grant
+22062338-Y. The associate editor coordinating the review of this article and
+approving it for publication was Prof. Yonggang Wen. (Corresponding authors:
+Minglun Gong; Yonggang Lu.)
+Yande Li is with the School of Information Science and Engineering, Lanzhou
+University, Lanzhou 730000, China, also with the School of Computer Science,
+University of Guelph, Guelph, ON N1G 2W1, Canada, and also with the Department of Electrical & Computer Engineering, University of Alberta, Edmonton,
+AB T6G 1H9, Canada (e-mail: liyd19@lzu.edu.cn).
+Mingjie Wang is with the School of Science, Zhejiang Sci-Tech University,
+Hangzhou 310018, China (e-mail: mingjiew@zstu.edu.cn).
+Minglun Gong is with the School of Computer Science, University of Guelph,
+Guelph, ON N1G 2W1, Canada (e-mail: minglun@uoguelph.ca).
+Yonggang Lu is with the School of Information Science and Engineering,
+Lanzhou University, Lanzhou 730000, China (e-mail: ylu@lzu.edu.cn).
+Li Liu is with the School of Big Data and Software Engineering, Chongqing
+University, Chongqing 401331, China (e-mail: dcsliuli@cqu.edu.cn).
+Our code will be released at https://github.com/ydl832/FER-former.
+Digital Object Identiﬁer 10.1109/TMM.2024.3521788
+of the most natural and effective carriers for expressing emotions. Impressive performance [1], [2], [3] has been achieved
+on strictly lab-controlled datasets (e.g., MMI [4], CK+ [5], and
+Oulu-CASIA [6]), where all samples were produced and annotated in a heuristically-deﬁned manner with low annotation
+error. However, the transferability of these models to scenes in
+the wild has much room for improvement. Compared to FER in
+controlled environments, FER in the wild is more challenging
+due to the issues of limited samples, annotation ambiguity, and
+unconstrained variations (occlusion, pose, illumination, etc.).
+However, FER’s capability of adapting to natural scenarios is
+crucial for the prospective generalization/deployment of FER
+models in practical applications.
+Convolutional neural networks (CNNs) have achieved roaring success for various vision problems such as semantic segmentation [7], object detection [8], and image classiﬁcation [9].
+Since Kahou et al. [10] and Tang et al. [11] unprecedentedly
+adopted CNNs into FER and won the EmotiW 2013 and FER
+2013emotionrecognitioncompetitions,CNN-basedapproaches
+have become the dominating techniques and a pool of pioneering methods have been developed. For example, to ameliorate
+the occlusion problem, several current studies [12], [13], [14],
+[15] attempted to weaken the negative impacts of occlusion regions in raw images by delving into more sophisticated CNN
+architectures. Despite the promising achievements and insights,
+these CNN-based methods focus only on the merits of CNNs
+(e.g., pyramidal representations and well-established pretrained
+models) but overlook the limitations of narrow receptive ﬁelds.
+A lack of global contextual semantics easily impels the model to
+produce error-prone classiﬁcation results and hinders the generalization of FER algorithms. To enlarge the receptive ﬁelds of
+features, several existing works have attempted to deepen the
+networks or improve the convolution path [16], [17]. Nevertheless, these approaches still follow the CNN learning paradigm
+and representations with global semantics are neglected.
+In recent years, the learning paradigm of transformers, with
+self-attention mechanisms, has demonstrated its advantages
+among learning-based models in natural language processing
+(NLP) [18], [19]. It has also been widely applied in computer
+vision to model global relationships among pixels over 2D feature maps. In particular, the vision transformer (ViT) [20] is a
+pioneering work and has become a favored baseline stem for
+various vision tasks, e.g., semantic segmentation [21], image
+classiﬁcation [22], object detection [23], and image processing [24]. Although global receptive ﬁelds can be modeled via
+self-attention condensers, the insufﬁciency of training data [20]
+1520-9210 © 2024 IEEE. All rights reserved, including rights for text and data mining, and training of artiﬁcial intelligence and similar technologies.
+Personal use is permitted, but republication/redistribution requires IEEE permission. See https://www.ieee.org/publications/rights/index.html for more information.
+Authorized licensed use limited to: National Sun Yat Sen Univ.. Downloaded on March 24,2026 at 00:16:57 UTC from IEEE Xplore.  Restrictions apply.
+
+LI et al.: FER-FORMER: MULTIMODAL TRANSFORMER FOR FACIAL EXPRESSION RECOGNITION
+2413
+impedes the training of models from scratch, because the pure
+transformer block often requires a larger amount of training
+data. In addition, patch-based tokens learned by transformers
+loss the pyramidal structure of features, which damages the extraction of local spatial information. To circumvent these challenges, TransFER [25] was proposed to combine both pretrained
+CNN-based IR-50 and transformer-based encoders, resulting in
+intriguing FER performance. However, the collaboration procedure is coarse in existing hybrid approaches, and they ignore
+the ﬁne-grained extraction/integration of multi-scale features to
+some degree, reducing the robustness and scale invariance of
+representations. Hence, there is still considerable room for further improvements of FER algorithms to absorb the merits of
+hybrid CNNs and transformer paradigms in one pass.
+Another common nuisance in wild FER is that only manually annotated one-hot ground truths are provided in most existing datasets. This often leads to annotation ambiguity due to
+the subjectivity of annotators, ambiguous facial expressions, or
+low-quality facial images. For example, Chen et al. [26] demonstrated the existence of annotation biases between genders in
+many expression datasets, whereas the work [27] suggested
+that intercorrelations amongemotions wereinherentlydisparate,
+consequently degrading FER performance.
+Many efforts have been made to address the issue of annotation ambiguity and can be roughly categorized into two mainstream directions: learning of soft label distribution and learning from hard samples. Speciﬁcally, i) instead of employing
+hard one-hot supervisory signals, a set of probability distributions with auxiliary priors are assigned to facial images, aiming
+to drive deep learning-based models to extract representations
+with fuzzy boundaries [28], [29], [30], [31]; ii) Hard samples are
+selected as outliers and then imposed on extra special processes
+to suppress their negative impacts on the holistic models’ learning [31], [32], [33], [34]. Although a series of attempts have been
+conducted to ease annotation ambiguity, the needed auxiliary supervisorysignalsarestillderivedfromrawone-hotlabelsandthe
+ambiguity is prone to be inherited. Hence, homogenous supervision (supervised by one-hot labels or label distribution) with
+intrinsic ambiguity is considered by existing endeavors and the
+merits of heterogeneous supervisory signals from multimodal
+annotations are grossly underestimated or ignored. It is remarkable that the recent resounding success of CLIP [35] allows the
+thriving development of various multimodal learning (involving
+image and text) in many ﬁelds [36], [37] and, therefore, provides
+a strong inspiration for our research.
+Motivated by the above observations, we propose in this paper
+a novel multimodal supervision-steering transformer for FER in
+the wild, dubbed FER-former, which features multigranularity
+embedding integration, hybrid self-attention scheme, and heterogeneous supervisory signals (one-hot and self-deﬁned textual labels). To facilitate effective collaboration between features
+from prevailing CNNs (pyramidal property) and transformers
+(global receptive ﬁelds), a hybrid structure is designed to possess both learning paradigms in one pass. To mitigate the issues of uncontrolled occlusion and pose variations, a downsampling scheme imposed on the crude features from a pretrained
+CNN stem is devised to disentangle diverse spatial cues while
+increasing token scale invariance. More importantly, to deal with
+the issue of annotation ambiguity introduced by homogenous
+supervisory signals, a heterogeneous domain-steering supervision module is proposed to enhance image features. Speciﬁcally,
+this module aims to alleviate the issue of annotation ambiguity through the cooperation of image and CLIP-based textual
+information. The main motivation is to add text-space semantic correlations to image features by supervising the similarity
+between image and text features. Additionally, a FER-speciﬁc
+transformer encoder containing a hybrid self-attention scheme
+(e.g., one-hot and text-focusing heads) is delicately devised to
+produce ambiguity-robust tokens. Based on the collaboration
+of these ambiguity-robust token heads, global receptive ﬁelds
+with multimodal semantic cues are captured, delivering superb
+learning capability. In summary, the main contributions can be
+summarized as follows.
+r To ease the issue of annotation ambiguity, a heterogeneous
+domain-steering supervision module is proposed, aiming
+to add text-space semantic correlations to image features
+by supervising the similarity between image features and
+text features.
+r A FER-speciﬁc transformer encoder is devised to characterize conventional one-hot and text-oriented tokens for
+heterogeneous classiﬁcations, where text semantic information is passed to class token and other patch tokens by
+steering token in each encoder block.
+r Extensive experiments on popular benchmarks demonstrate the superiority of the proposed FER-former over the
+existing state-of-the-art approaches.
+II. RELATED WORK
+In this section, we review related studies that can be broadly
+categorized into three categories: FER in the wild, hybrid learning paradigms, and vision-language pretraining.
+A. FER in the Wild
+a) FER with unconstrained variations: To realize FER under weak input constraints, researchers have primarily concentrated on two challenges: occlusions and non-frontal head
+poses. Remarkable efforts have been made to suppress their
+negative impacts on FER performance. Li et al. [13] split intermediate feature maps into 24 subpatches, and then utilized
+a self-attention mechanism to recalibrate patch-based information for occlusion-aware FER. Methods in [38], [39] utilized
+non-occluded facial images as auxiliary information to further ﬁne-tune an occluded network, producing occlusion-robust
+representations. To increase the pose invariance of FER models, Zhang et al. [40] attempted to disentangle expression and
+head pose from a given image by using geometric information.
+In [41], a pose modeling network was proposed to capture the
+deep representation discrepancy among different head poses,
+thereby learning pose-invariant expression representations. In
+addition, several works attempt to address the challenges of occlusion and pose variations simultaneously. For example, Wang
+et al. [12] cropped ﬁve ﬁxed regions from a raw image and then
+fed them into a region attention network (RAN) for modeling
+Authorized licensed use limited to: National Sun Yat Sen Univ.. Downloaded on March 24,2026 at 00:16:57 UTC from IEEE Xplore.  Restrictions apply.
+
+2414
+IEEE TRANSACTIONS ON MULTIMEDIA, VOL. 27, 2025
+inner-relationships among these facial regions. In [14], Zhao
+et al. proposed a multi-scale module to reduce the susceptibility of deeper convolution towards occlusion and variant pose,
+along with a local attention module to release the interference
+of occlusion and non-frontal pose problems on FER. Despite
+numerous attempts to broaden receptive ﬁelds, they have relied
+on the CNN learning paradigm and have not fully exploited the
+global semantic features of facial images.
+b) FER with annotation ambiguity: Annotation ambiguity is
+inevitable in wild expression datasets due to the subjectivity of
+annotators, ambiguous facial expressions, and low-quality facial
+images [32]. Label distribution learning is an intuitive and favored solution to reduce ambiguity. Zhao et al. [28] treated the
+output of an auxiliary ResNet-50 as a probability distribution
+to guide the learning of the other backbone network. Similarly,
+Shao et al. [31] employed an auxiliary network to generate label
+distributions for guiding backbone network and selecting easy
+samples. In [29], Chen et al. proposed learning label distribution
+by calculating the conﬁdence probability of its nearest neighbors for a given expression image. Mao et al. [27] attempted to
+incorporate the correlations among expressions into label distribution in semantic space. Additionally, an auxiliary multibranching framework in DMUE [30] was utilized to mine the
+latent distribution while estimating the uncertainty of annotation
+ambiguity.
+Incorporating extra informative clues from challenging samples is another effective solution to alleviate annotation ambiguity. In [32], Wang et al. combined three modules, including attention mechanism, ranking regularization, and relabeling
+low-ranked samples, to mitigate the negative impacts of uncertain samples on the ﬁnal recognition results. Li et al. [33] introduced Adaptive Conﬁdence Margin (Ada-CM) to learn an
+adaptive conﬁdence margin for each expression and utilized
+low-conﬁdence samples to enhance recognition performance.
+In[34],Wangetal.dividedalltrainingsamplesintothreegroups:
+clean, noisy, and conﬂict, and then focused on learning with ambiguous samples to enhance the robustness of models. Despite
+impressive results achieved by reconstructing label distribution
+or emphasizing hard samples, additional supervisory signals are
+still derived from original one-hot labels, potentially inheriting
+ambiguity. In this paper, to mitigate the issue of annotation ambiguity, a heterogeneous domain-steering supervision module is
+proposed to add text-space semantic correlations to image features by supervising the similarity between image features and
+text features.
+B. Hybrid Leaning Paradigms
+Recently, ViT [20] has become a dominating component for
+various computer vision models thanks to its capability of modeling long-range dependencies among a set of subpatches. Although transformers have a great ability to capture global receptive ﬁelds, the intrinsic merits of CNNs (e.g., pyramidal feature
+maps) are beneﬁcial for enhancing model capacity. Hence, a
+series of hybrid architectures are designed to inherit the advantages of both CNNs and transformer-based learning paradigms.
+For example, CMT [42] and CeiT [43] combined depthwise
+convolution with a feed-forward network in encoder blocks to
+compensate for the limitations of pure transformers. The proposed convolutional token embedding and convolutional projection in CVT [44] allowed the model to inherit the merits
+of CNNs while enlarging the receptive ﬁelds via transformers. Moreover, LeViT [45] devised a fabric-like neural network
+for fast inference image classiﬁcation by incorporating some
+components that were proven useful for convolutional architectures (replacing the uniform structure of a transformer by a
+pyramid with pooling). BoTNet [46] achieved promising performance in image classiﬁcation, object detection, and instance
+segmentation by replacing spatial convolutions with a global
+self-attention mechanism in the ﬁnal three bottleneck blocks of
+ResNet.
+When dealing with FER tasks, priori knowledge of pretrained
+models is necessary due to the constraints of limited datasets. Inspired by hybrid structures in other vision tasks, TransFER [25]
+combined a pretrained IR50 with a pretrained transformer encoder to achieve state-of-the-art FER performance. However,
+the collaboration procedure is coarse and ignores the extraction/integration of multiscale features to some extent, reducing
+the robustness and scale invariance of representations. Hence,
+there is still much room for fully exploiting the merits of hybrid
+CNNs and transformer paradigms in one pass.
+C. Vision-Language Pretraining
+Vision-language pretraining (VLP) aims to learn strong representations from large-scale image-text pairs and has achieved
+impressive performance on a variety of downstream visionlanguage tasks [35], [47]. Most approaches in VLP can be
+divided into two categories: fusion encoder(s) and dual encoders [48]. The ﬁrst category aims to model the shared selfattention between image features and text features with complex multimodal encoders, such as ALBEF [47], FLAVA [48],
+SIMVLM [49], UniT [50], ViLT [51] and VinVL [52]. These
+methods can handle complex tasks such as object detection,
+natural language understanding, and multimodal reasoning,
+but they mostly require pretrained object detectors and highresolution input images. Their small corpus limits their ability
+to generalize to speciﬁc ﬁne-grained classiﬁcation tasks. In contrast, the methods in the second category, such as ALIGN [53]
+and CLIP [35], focus on learning separate unimodal encoders
+for image and text, which are simple and good at retrieval tasks.
+In particular, CLIP [35] was trained from scratch on a large
+dataset of 400 million (image, text) pairs collected from the internet, which supports a wide range of corpus requirements for
+ﬁne-grained classiﬁcation tasks. It shows the superiority of text
+supervision on multiple vision tasks [36], [37], thus providing a
+strong inspiration for our research.
+III. METHODS
+A. Overview
+An overview of the model is depicted in Fig. 1. The proposed
+FER-former consists of multigranularity embedding integration
+(MGEI), hybrid self-attention, and HDSS modules. Similar to
+Authorized licensed use limited to: National Sun Yat Sen Univ.. Downloaded on March 24,2026 at 00:16:57 UTC from IEEE Xplore.  Restrictions apply.
+
+LI et al.: FER-FORMER: MULTIMODAL TRANSFORMER FOR FACIAL EXPRESSION RECOGNITION
+2415
+Fig. 1.
+Pipeline of the proposed model. It consists of multigranularity embedding integration (MGEI), hybrid self-attention, and heterogeneous domain-steering
+supervision (HDSS). The diverse global receptive ﬁelds with multimodal semantic cues are captured by integrating text semantics into multi-head self-attention
+(MHSA). For simplicity, the conventional position encodings are omitted.
+previous study in [25], the IR-50 [54] pretrained on the Ms-
+Celeb-1 M dataset [55] is adopted as a feature extractor due to
+its good generalization. The pretrained text encoder in CLIP [35]
+is ﬁne-tuned to perceive rich relationship among different text
+labels.
+A scheme is devised to disentangle diverse spatial cues by
+downsampling crude features extracted from a pretrained CNN
+backbone, resulting in a global patch and 49 local patches of different scales. These patches are subsequently ﬂattened and projected into multiscale tokens. Additionally, to address heterogeneous supervision signals, a FER-speciﬁc transformer encoder
+block containing a hybrid self-attention is developed. Notably,
+theextractedtextfeaturesfromtextencoderareutilizedtoimplement heterogeneous domain-steering supervision by calculating
+image-text similarity. More details are illustrated as follows.
+B. Multigranularity Embedding Integration (MGEI)
+As described earlier, ViT does not generalize well when
+trained on insufﬁcient quantities of data. Therefore, to make
+full use of the merits of CNNs and ViT, a pretrained stem network [54] is utilized as a feature extractor, obtaining deep features X ∈RC×H×W , where C, H and W refer to the number of channels, height, and width, respectively. To facilitate
+splitting the extracted features into sequences of patches with
+various resolutions, the extracted features X are pooled into
+X′ ∈RC×12×12. The pooled features are then downsampled
+to obtain diverse spatial cues that enable the model to overcome the issues of occlusion and pose variances. Let Xpi ∈
+RNi×C×P 2
+i , i ∈(1, 4) denote the local patches of different resolutions, where Ni represents the number of patches of each
+resolution, and (Pi, Pi) is the resolution of each feature patch.
+To satisfy the standard transformer encoder that receives a 1D
+Fig. 2.
+Flowchart of the hybrid self-attention. The last layer’s class token is
+directly utilized for ground-truth supervision, while the newly deﬁned steering
+token is utilized for integrating image and text information.
+sequence of token embeddings as input, all the patches are ﬂattened and projected to uniform embeddings with same dimensions, which is denoted as Xp ∈RN×D, where N = 4
+i=1 Ni
+is the number of all patches and D is the length of each feature
+embedding.
+C. Hybrid Self-Attention
+The standard transformer encoder consists of a stack of M
+encoder blocks, and each block contains alternating layers of
+multihead self-attention and multilayer perception. As a key to
+ViT’s success, self-attention makes it possible to embed information globally across the whole image. As shown in Fig. 2,
+we propose a hybrid self-attention that can characterize heterogeneous one-hot label-focusing and text-oriented classiﬁcation
+Authorized licensed use limited to: National Sun Yat Sen Univ.. Downloaded on March 24,2026 at 00:16:57 UTC from IEEE Xplore.  Restrictions apply.
+
+2416
+IEEE TRANSACTIONS ON MULTIMEDIA, VOL. 27, 2025
+tokens, where text semantic information is passed to class token
+and other patch tokens by steering token in each encoder block.
+The steering token is speciﬁcally deﬁned for integrating visual
+and textual information by calculating their similarity, thereby
+enabling a more comprehensive understanding of facial expression images.
+Givenasequenceof1D featureembeddingsXp ∈RN×D and
+a class token Xc ∈R1×D, the routine input of an encoder block
+can be denoted as Z′ = [Xc; X1
+p; X2
+p; . . . ; XN
+p ]. To integrate image features with text features, a hybrid self-attention mechanism is designed. Speciﬁcally, a steering token Xs ∈R1×D is
+deﬁned, yielding a new input for our FER-speciﬁc transformer
+encoder, which we denote as Z = [Xc; Xs; X1
+p; X2
+p; . . . ; XN
+p ].
+For simplicity, we rename it Z = [a1; a2; . . . ; an], where n =
+N + 2. The steering token a2 is connected with all other embeddings by calculating self-attention in each encoder block. First,
+the input Z is linearly transformed to queries q, keys k, and
+values v as follows:
+[q, k, v] = Z[Wq, Wk, Wv]
+(1)
+where Wq, Wk ∈RD×dq, Wv ∈RD×dv. Then, the output of
+each encoder block corresponding to the steering token is calculated by:
+b2 =
+n
+
+i=1
+a′
+2,ivi
+(2)
+where the attention weights are updated by the softmax operation, a′
+2,i = softmax(q2 • ki/
+
+dq), with • referring to the dot
+product operation.
+D. Heterogeneous Domain-Steering Supervision (HDSS)
+The hard one-hot label leads to homogenous supervisory signals that hinder the further improvement of FER performance.
+Recently, progress in CLIP [35] has allowed the thriving development of multimodal models (image and text) in many
+ﬁelds [36], [37] and inspired our work. Our main motivation
+is to make image features also have text-space semantic correlations by supervising the similarity between image features and
+text features, thereby easing the issue of annotation ambiguity.
+In this section, we describe in detail how to realize HDSS by calculating image-text similarity. The pipeline of HDSS is shown
+in Fig. 1.
+Given a dataset containing M expressions, a vector of text
+labels can be generated from one-hot labels, denoted as t =
+{t1; t2; . . . ; tM}. For example, the text label for the RAF-DB
+dataset can be denoted as: ‘this is a face image of {expression}’,
+where {expression} belongs to [surprise; fear; disgust; happy;
+sad; angry; neutral]. The image feature corresponding to the
+steering token is denoted as IS ∈R1×D, and the text features
+from the text encoder are denoted as T = {T1; T2; . . . ; TM},
+T ∈RM×D. Then, the cosine similarity between an image feature IS and a text feature T is calculated by Si−t = IS × T T,
+where Si−t ∈R1×M. The result after the softmax operation is
+directly used for calculating the cross-entropy loss.
+PSi
+i−t =
+exp(Si
+i−t)
+
+j exp(Sj
+i−t)
+, Ltext = −
+
+i
+yi log(PSi
+i−t)
+(3)
+In addition, the image feature corresponding to the class token
+is denoted as IC ∈R1×D, which is ﬁrst linearly projected to
+Si−l ∈R1×M by a fully-connected layer: Si−l = proj(IC). The
+resultafterthesoftmaxoperationisalsousedtocalculateanother
+cross-entropy loss.
+PSi
+i−l =
+exp(Si
+i−l)
+
+j exp(Sj
+i−l)
+, Limage = −
+
+i
+yi log(PSi
+i−l)
+(4)
+where yi is the ground truth.
+Finally, the joint loss function is deﬁned as L = Ltext +
+Limage.
+IV. EXPERIMENTS
+Datasets: RAF-DB [56] is one of the most widely used
+large-scale real-world FER databases. The single-label subset
+(six basic expression and neutral), consisting of 12,771 training
+images and 3,068 test images, is used in our experiments. The
+overall accuracy is reported on the test set. FERPlus [57] extends
+from FER 2013 [58] and contains eight expression categories
+(six basic expressions, plus neutral and contempt). It consists
+of 28,709 training, 3,589 validation, and 3,589 test images. The
+overall accuracy is reported on the test set. SFEW [59] dataset
+is created by selecting static frames from the AFEW database.
+SFEW 2.0 is the most commonly used version and contains
+958 training samples, 436 validation samples, and 372 testing
+samples. Each image is assigned to one of seven expression categories, including neutral and six basic expressions. Results on
+the validation set are reported because the labels of the testing
+set are not released.
+Implementation details: For the RAF-DB and SFEW 2.0
+datasets, original images are used in all experiments. For the
+FERPlus dataset, MTCNN [60] is used to detect, align, and
+crop images. During training, data augmentation is employed
+on-the-ﬂy and includes random grayscale, random horizontal
+ﬂip, and random erasing to avoid over-ﬁtting. At test time, no
+data augmentation is used. All images are resized to 112 × 112
+pixels before they are fed into the network. Our model is optimized via stochastic gradient descent (SGD) optimizer with a
+mini-batch size of 16. The learning rate is initialized to 0.0001
+and is decayed by a factor of 10 every 30 epochs. Our experiment is conducted on a GeForce RTX2060 GPU, with PyTorch
+1.7.1, Python 3.8.13, and Windows 10.
+For the RAF-DB and FERPlus datasets, a IR-50 [54] pretrained on Ms-Celeb-1 M dataset [55] is adopted as a feature extractor, which is consistent with TransFER [25]. For the SFEW
+2.0 dataset, we pretrain FER-former on the RAF-DB dataset and
+then ﬁne-tune it on the SFEW 2.0 dataset, which is consistent
+with IPD-FER [61]. Regarding our scratch-trained transformer
+encoder, the depth is 16, the embedding dimension is 256, the
+number of heads is 4, and the mlp ratio is 4. Similar to conventional ViT models, the class tokens and steering tokens are
+initialized using a random initialization procedure.
+A. Comparison With State-of-The-Art Methods
+We compare our results to those of state-of-the-art methods
+on the RAF-DB, FERPlus, and SFEW 2.0 datasets.
+Authorized licensed use limited to: National Sun Yat Sen Univ.. Downloaded on March 24,2026 at 00:16:57 UTC from IEEE Xplore.  Restrictions apply.
+
+LI et al.: FER-FORMER: MULTIMODAL TRANSFORMER FOR FACIAL EXPRESSION RECOGNITION
+2417
+TABLE I
+PERFORMANCE COMPARISON WITH THE STATE-OF-THE-ART METHODS ON THE
+RAF-DB DATASET
+TABLE II
+PERFORMANCE COMPARISON WITH THE STATE-OF-THE-ART METHODS ON THE
+FERPLUS DATASET
+A comparison on the RAF-DB dataset is shown in Table I.
+The RAF-DB dataset stands as one of the most widely utilized large-scale real-world FER datasets, as it facilitates fair
+comparisons by ensuring that all images are cropped and necessitate no further preprocessing. The results show that our
+FER-former achieves state-of-the-art performance compared to
+all other methods, including FER with unconstrained variations (RAN [12], MA-Net [14], IPD-FER [61], WSFER [41],
+DCNN [15] and FG-AGR [62]), and FER with annotation ambiguity (SCN [32], DMUE [30], KTN [63], EfﬁcientFace [28],
+SPLDL [31] and EASE [34]). It can be observed that ViTbased approaches demonstrate superior performance compared
+to other pyramidal structure approaches, underscoring the effectiveness of ViT architecture in unconstrained FER. Moreover,
+the TransFER and FG-AGR approaches, which do not leverage
+text-space semantic cues like the FER-former, exhibit inferior
+accuracy. Speciﬁcally, compared to TransFER [25], the previous best performance achieved by combining CNN and ViT,
+FER-former lowers the error rate from 9.09% to 8.70%, a 4.3%
+improvement. Additionally, our method improves recognition
+accuracy by 4.17% compared to the newly reported results in
+DCNN [15].
+A comparison on the FERPlus dataset is shown in Table II.
+The FERPlus dataset is very challenging, and only a few newly
+released methods have reported results on it. Nevertheless, it
+can be seen that our FER-former achieves comparable FER
+performance compared to other methods, including FER with
+unconstrained variations (RAN [12], IPD-FER [61], and FG-
+AGR [62]), and FER with annotation ambiguity (SCN [32],
+DMUE [30], KTN [63], and EASE [34]). Among these methods,
+TABLE III
+PERFORMANCE COMPARISON WITH THE STATE-OF-THE-ART METHODS ON THE
+SFEW 2.0 DATASET
+TransFER, FG-AGR and FER-former are three ViT-based approaches that outperform other pyramidal structure approaches.
+FG-AGR and FER-former achieve state-of-the-art accuracy.
+However, FG-AGR combined CNN, ViT, and GCN architectures to address the problem of ﬁne-grained expression features
+learning. Empirically, the fusion of different network architectures can take advantage of each architecture to achieve better performance. In contrast, our approach designed a hybrid
+pipeline that solely integrates CNN and Transformers, aiming
+to capture both pyramidal features and global receptive ﬁelds
+for given inputs. EASE [34] is the latest research effort to address the issue of annotation ambiguity, which employed two
+CNN networks to categorize all samples into clean, noisy, and
+conﬂict groups. In contrast, FER-former attempts to mitigate
+annotation ambiguity by adopting textual semantic cues, with a
+0.7% improvement in recognition accuracy. Moreover, combining the advantages of ViT and other network architectures is a
+popular direction for FER in the wild.
+A comparison on the SFEW 2.0 dataset is shown in Table III.
+SFEW 2.0 is a limited dataset with 958 training samples and
+436 validation samples. Due to the limited images, we pretrained FER-former on the RAF-DB dataset and ﬁne-tuned it
+on the SFEW 2.0 dataset because they have the same expression categories, which is consistent with IPD-FER [61]. It can
+be observed that CRS-CONT [65], EASE [34] and FER-former
+are the only three models to achieve accuracies over 60% on
+this dataset. This underscores the signiﬁcant challenges posed
+by the SFEW 2.0 dataset, as the majority of images exhibit ambiguity. Nevertheless, the FER-former achieves a dramatic improvement in accuracy on this dataset. Speciﬁcally, FER-former
+improves the FER accuracy by 2.06% and 3.50% compared
+to the newly reported results in EASE [34] and DCNN [15],
+achieving state-of-the-art performance. The ﬁndings suggest
+that FER-former not only demonstrates proﬁciency in handling
+small datasets but also exhibits a remarkable capacity to ease
+the issue of annotation ambiguity. We attribute this primarily to
+the integration of textual semantic information.
+B. Confusion Matrices
+The confusion matrices of our FER-former on the three
+datasets are shown in Fig. 3. It can be observed that the FER accuracy of “fear”, “disgust” and “contempt” is noticeably lower
+than that of other expressions. In particular, “fear” is likely to be
+confused with “surprise”, and “sad” is likely to be confused with
+Authorized licensed use limited to: National Sun Yat Sen Univ.. Downloaded on March 24,2026 at 00:16:57 UTC from IEEE Xplore.  Restrictions apply.
+
+2418
+IEEE TRANSACTIONS ON MULTIMEDIA, VOL. 27, 2025
+Fig. 3.
+Confusion matrices of FER-former on the RAF-DB, FERPlus, and SFEW 2.0 datasets, where the y-axis and x-axis represent ground-truth and predicted
+labels, respectively (Su: surprise, Fe: fear, Di: disgust, Ha: happy, Sa: sad, An: anger, Ne: neutral, Co: contempt).
+Fig. 4.
+Some misclassiﬁed samples on the RAF-DB, FERPlus, and SFEW 2.0 test sets, where the y-axis and x-axis represent ground-truth and predicted labels,
+respectively. The empty spaces indicate that there is no misclassiﬁed sample in the corresponding categories. The samples highlighted in red boxes are those that
+we consider to be highly ambiguous.
+“neutral” on all three datasets, indicating the proximity of these
+expressions in the semantic space. The accuracies of “happy”
+and “neutral” are higher than those of other expressions, suggesting that they are less ambiguous and easier to distinguish
+from other expressions.
+To analyze when the FER-former misclassiﬁes expressions,
+some images selected from different confusion categories are
+shown in Fig. 4. It can be observed that ambiguous samples
+are widespread in all expression categories, including ambiguous facial expressions and low-quality facial images. The main
+reasons for low-quality facial images are occlusions, pose variations, and image blurring, whereas ambiguous facial expressions are mainly caused by compound expressions. By analyzing the confusion matrices in conjunction with Fig. 4, it becomes evident that low-quality images signiﬁcantly contribute
+to misclassifying other expressions as neutral expression, with
+compound expressions being particularly prone to misclassiﬁcation as other expressions. Close inspection of these highlighted
+misclassiﬁed samples shows that the labels produced by FERformer are sometimes arguably more convincing than the ground
+truth.
+TABLE IV
+EVALUATION (%) OF MGEI, HDSS MODULES ON THE RAF-DB, FERPLUS
+AND SFEW 2.0 DATASETS
+C. Ablation Study
+EvaluationofMGEI,HDSSonRAF-DB,FERPlus,andSFEW
+2.0 datasets: To validate the effectiveness of the MGEI and
+HDSS modules in our FER-former, an ablation study was conducted on the RAF-DB, FERPlus and SFEW 2.0 datasets, as
+shown in Table IV. The baseline in the ﬁrst row does not use
+MGEI nor HDSS. The extracted features from the stem CNN are
+sliced with local size 2 × 2 along the spatial dimension. Compared to the baseline, the accuracy improves by 0.65%, 0.32%
+and 1.39% on the three datasets when adding the MGEI module, and by 1.01%, 0.64% and 2.32% when adding the HDSS
+Authorized licensed use limited to: National Sun Yat Sen Univ.. Downloaded on March 24,2026 at 00:16:57 UTC from IEEE Xplore.  Restrictions apply.
+
+LI et al.: FER-FORMER: MULTIMODAL TRANSFORMER FOR FACIAL EXPRESSION RECOGNITION
+2419
+Fig. 5.
+Visualization (t-SNE [69]) of high dimension features generated under
+different settings on the RAF-DB dataset. Each color-coded dot represents a test
+image with the corresponding labeled expression.
+module. The combination of the MGEI and HDSS can noticeably boost the performance of FER in the wild and achieve the
+best results. The ﬁndings demonstrate that the MGEI and HDSS
+modules have a signiﬁcant impact on enhancing the performance
+of FER in unrestricted settings. Additionally, the textual semantic cues furnished by the HDSS module are particularly instrumental.
+To more intuitively illustrate the effectiveness of the MGEI
+and HDSS modules, the high-dimensional image features corresponding to the steering token from the last encoder are visualized by t-SNE [69]. As shown in Fig. 5, both MGEI and
+HDSS are effective at maximizing the margins between different expression categories. With both, the FER-former can effectively separate “angry” and “disgust” from other expressions.
+In addition, we can observe that “fear” is always close to “surprise” and “sad” is always close to “neutral” in high-dimensional
+space, which aligns well with the above observations. The results provide further evidence that the semantic relationships
+between different expressions are not equivalent. The ﬁndings
+suggest that the HDSS module effectively introduces textual semantic cues to alleviate the issue of annotation ambiguity, while
+the MGEI module effectively integrates multigranularity information to mitigate the negative effects of occlusion and pose
+variances.
+Evaluation of different text contents on RAF-DB, FERPlus
+and SFEW 2.0 datasets: Text content is introduced to mitigate
+annotation ambiguity by calculating the cosine similarity between image features and text features, which plays an important
+role in our proposed FER-former. To evaluate the robustness of
+the FER-former to different text contents, comparative experiments of ﬁve cases were conducted, including case 1: without
+text, case 2: single word, case 3: using a phrase “a face image
+of {}”, case 4: using a full active sentence “this is a face image
+of {}”, and case 5: using a passive sentence “a/an {} expression is shown in the image”. The detailed results are reported in
+Table V.
+TABLE V
+EVALUATION OF DIFFERENT TEXT CONTENTS ON THE RAF-DB, FERPLUS AND
+SFEW 2.0 DATASETS
+With regard to the RAF-DB dataset, the accuracy of four cases
+withtextsupervisionsurpassesthatofthecasewithouttext,illustrating the positive effects of text content. In addition, among the
+various textual cases, single word performs worst, while active
+sentence outperforms passive sentence. Our hypothesis is that
+a single expression word lacks context information, whereas
+passive sentence is excessively complex. The results indicate
+that contextual semantics play an important role in the text encoder. More importantly, the performance of the phrase achieves
+state-of-the-art results with a 0.85% improvement compared to
+case 1, highlighting the superiority of our FER-former approach.
+The ﬁndings on the FERPlus dataset are largely consistent with
+those mentioned earlier. It is noteworthy that the active sentence
+outperforms the phrase case on this particular dataset. We posit
+that both the active sentence and phrase have the potential to
+attain state-of-the-art results, and the difference in results can
+be attributed to varying model initialization parameters. On the
+SFEW 2.0 dataset, the incorporation of textual semantic cues results in a notable improvement in recognition accuracy, with the
+phrase in case 3 exhibiting the highest performance. Nevertheless, the active sentence in case 4 does not exhibit comparable
+results to the other two datasets. We attribute this to the limited
+size of the dataset, which may lead to ﬂuctuations in the results.
+Evaluation of different patch resolutions on RAF-DB, FER-
+Plus and SFEW 2.0 datasets: The above results have shown that
+MGEI has a great impact on the performance of FER. Here, we
+aim to investigate the impact of local patches of different resolutions. To enable our FER-former to overcome the issues of
+occlusion and pose variances, as well as to increase the scale
+invariance of tokens, the extracted features are downsampled
+along the spatial dimension, generating sequences of patches
+with varied resolutions. In particular, the resolution of the pooled
+feature is 12 ∗12, which is divisible by 2, 3, 4, 6, and 12. Therefore, we successively compare the FER performance at different
+resolutions of 2 ∗2, 3 ∗3, 4 ∗4, 6 ∗6 and 12 ∗12, as shown in
+Table VI.
+Each single resolution behaves differently on different datasets. For example, 4 ∗4 performs better on the RAF-DB dataset
+and 2 ∗2 performs better on the FERPlus dataset. We believe
+this is due to the signiﬁcant differences in the original images
+between different datasets, as Fig. 4 indicates. Therefore, we
+Authorized licensed use limited to: National Sun Yat Sen Univ.. Downloaded on March 24,2026 at 00:16:57 UTC from IEEE Xplore.  Restrictions apply.
+
+2420
+IEEE TRANSACTIONS ON MULTIMEDIA, VOL. 27, 2025
+TABLE VI
+EVALUATION OF DIFFERENT PATCH RESOLUTIONS ON THE RAF-DB, FERPLUS
+AND SFEW 2.0 DATASETS
+TABLE VII
+EVALUATION OF PARAMETERS AND FLOPS ON THE RAF-DB DATASET
+propose integrating multigranularity embeddings to achieve occlusion and pose-robust feature learning. The current results
+show that the integration of (2,4,6,12) performs better on the
+three datasets, further indicating the positive effect of MGEI.
+In addition, lower resolutions result in more patches and more
+network parameters, while higher resolutions generate fewer
+patches and fewer parameters. With limited datasets (e.g., SFEW
+2.0 dataset), too many parameters can lead to difﬁculties in optimizing the model parameters and ﬂuctuating results. Moreover,
+the resolution of 12 ∗12 indicates global features that are effective at enhancing the FER performance.
+An analysis of the parameters and FLOPs of our FER-former
+is also included, as detailed in Table VII. It can be observed that
+while the integration of the MGEI module dose not result in a
+signiﬁcant increase in either parameters or FLOPs, the introduction of the HDSS module leads to a substantial rise in both. It is
+noteworthy that the CNN and ViT networks within the baseline
+model account for the majority of the parameters and FLOPs.
+Nevertheless, it is also evident that the FER-former introduces a
+moderate increment in both parameters and FLOPs compared to
+the baseline model. In addition, we conducted ablation experiments to evaluate the impact of class tokens and steering tokens
+in our approach. We attempted to use the class token to calculate the similarity with text features, but observed a decrease in
+accuracy from 91.30% to 91.13% on the RAF-DB dataset. We
+consider that the similarity calculation in this case may interfere
+with the classiﬁcation. Our experiments show that both class
+tokens and steering tokens contribute signiﬁcantly to the performance improvements of our method. Incorporating both tokens
+into our model allows us to achieve state-of-the-art results on
+several benchmark datasets.
+V. CONCLUSION
+This paper presents a multimodal supervision-steering transformer for FER in the wild, referred to as FER-former. It combines a pre-trained prevailing CNN with a scratch-trained Transformer, allowing it to capture both pyramidal features and global
+receptive ﬁelds for given inputs. To mitigate the issues of uncontrolled occlusion and pose variations, a downsampling scheme
+imposed on the crude features is devised to disentangle diverse spatial cues. Speciﬁcally, a transformer encoder is devised to characterize conventional one-hot label-focusing and
+CLIP-based text-oriented tokens in parallel. Moreover, to alleviate the issue of annotation ambiguity, text-space semantic
+correlation is added to image features by supervising the similarity between image and text features. Finally, the proposed
+FER-former not only solves the problem of fusing text features
+and image features in FER, but also boost the state-of-the-art
+performance of FER. Nevertheless, we also acknowledge that
+the introduction of textual features can only alleviate, rather
+than eliminate, the issue of annotation ambiguity. Further endeavors are necessary to effectively address the issue of annotation ambiguity, encompassing strategies such as constructing
+datasets with accurate label distributions and devising more ef-
+ﬁcient image-text fusion techniques.
+REFERENCES
+[1] L. Yang et al., “A novel feature separation model exchange-GAN
+for facial expression recognition,” Knowl.-Based Syst., vol. 204, 2020,
+Art. no. 106217.
+[2] Y. Li, Y. Lu, M. Gong, L. Liu, and L. Zhao, “Dual-channel feature disentanglement for identity-invariant facial expression recognition,” Inf. Sci.,
+vol. 608, pp. 410–423, 2022.
+[3] W. Huang et al., “Identity-aware facial expression recognition via deep
+metric learning based on synthesized images,” IEEE Trans. Multimedia,
+vol. 24, pp. 3327–3339, 2021.
+[4] M. Valstar et al., “Induced disgust, happiness and surprise: An addition
+to the MMI facial expression database,” in Proc. 3rd Intern. Workshop
+Emotion(Satell.LREC):CorporaRes.EmotionAffect,Paris,France,2010,
+Art. no. 65.
+[5] P. Lucey et al., “The extended Cohn-Kanade dataset (CK): A complete
+dataset for action unit and emotion-speciﬁed expression,” in Proc. 2010
+IEEE Comput. Soc. Conf. Comput. Vis. Pattern Recognit.-Workshops,
+2010, pp. 94–101.
+[6] G. Zhao, X. Huang, M. Taini, S. Z. Li, and M. PietikäInen, “Facial expression recognition from near-infrared videos,” Image Vis. Comput., vol. 29,
+no. 9, pp. 607–619, 2011.
+[7] Q. Zhou et al., “Contextual ensemble network for semantic segmentation,”
+Pattern Recognit., vol. 122, 2022, Art. no. 108290.
+[8] J. Wang et al., “End-to-end object detection with fully convolutional network,” in Proc. IEEE/CVF Conf. Comput. Vis. Pattern Recognit., 2021,
+pp. 15849–15858.
+[9] H. Sun et al., “A supervised segmentation network for hyperspectral image
+classiﬁcation,” IEEE Trans. Image Process., vol. 30, pp. 2810–2825, 2021.
+[10] S. E. Kahou et al., “Combining modality speciﬁc deep neural networks for
+emotion recognition in video,” in Proc. 15th ACM Int. Conf. Multimodal
+Interact., 2013, pp. 543–550.
+[11] Y. Tang, “Deep learning using linear support vector machines,” 2013,
+arXiv:1306.0239.
+[12] K. Wang et al., “Region attention networks for pose and occlusion robust facial expression recognition,” IEEE Trans. Image Process., vol. 29,
+pp. 4057–4069, 2020.
+[13] Y. Li, J. Zeng, S. Shan, and X. Chen, “Occlusion aware facial expression
+recognition using CNN with attention mechanism,” IEEE Trans. Image
+Process., vol. 28, no. 5, pp. 2439–2450, May 2019.
+[14] Z. Zhao et al., “Learning deep global multi-scale and local attention features for facial expression recognition in the wild,” IEEE Trans. Image
+Process., vol. 30, pp. 6544–6556, Jul. 2021.
+[15] J. Y. Choi et al., “Combining deep convolutional neural networks with
+stochastic ensemble weight optimization for facial expression recognition
+in the wild,” IEEE Trans. Multimedia, vol. 25, pp. 100–111, 2023.
+[16] Y. Han, B. Tang, and L. Deng, “An enhanced convolutional neural network
+with enlarged receptive ﬁelds for fault diagnosis of planetary gearboxes,”
+Comput. Ind., vol. 107, pp. 50–58, 2019.
+[17] Y. Gu, Z. Zhong, S. Wu, and Y. Xu, “Enlarging effective receptive ﬁeld of
+convolutional neural networks for better semantic segmentation,” in Proc.
+IEEE 4th IAPR Asian Conf. Pattern Recognit., 2017, pp. 388–393.
+Authorized licensed use limited to: National Sun Yat Sen Univ.. Downloaded on March 24,2026 at 00:16:57 UTC from IEEE Xplore.  Restrictions apply.
+
+LI et al.: FER-FORMER: MULTIMODAL TRANSFORMER FOR FACIAL EXPRESSION RECOGNITION
+2421
+[18] A. Vaswani et al., “Attention is all you need,” in Proc. Adv. Neural Inf.
+Process. Syst., 2017, pp. 5998–6008.
+[19] J. Devlin, M.-W. Chang, K. Lee, and K. Toutanova, “BERT: Pre-training
+of deep bidirectional transformers for language understanding,” 2018,
+arXiv:1810.04805.
+[20] A. Dosovitskiy et al., “An image is worth 16x16 words: Transformers for
+image recognition at scale,” 2020, arXiv:2010.11929.
+[21] J. Gu et al., “Multi-scale high-resolution vision transformer for semantic
+segmentation,” in Proc. IEEE/CVF Conf. Comput. Vis. Pattern Recognit.,
+2022, pp. 12094–12103.
+[22] L. Sun et al., “Spectral–spatial feature tokenization transformer for hyperspectral image classiﬁcation,” IEEE Trans. Geosci. Remote Sens., vol. 60,
+Jan. 2022, Art. no. 5522214.
+[23] G. Han, J. Ma, S. Huang, L. Chen, and S.-F. Chang, “Few-shot object
+detection with fully cross-transformer,” in Proc. IEEE/CVF Conf. Comput.
+Vis. Pattern Recognit., 2022, pp. 5321–5330.
+[24] Z. Tu et al., “MAXIM: Multi-axis MLP for image processing,” in Proc.
+IEEE/CVF Conf. Comput. Vis. Pattern Recognit., 2022, pp. 5769–5780.
+[25] F. Xue, Q. Wang, and G. Guo, “Transfer: Learning relation-aware facial
+expression representations with transformers,” in Proc. Int. Conf. Comput.
+Vis., 2021, pp. 3601–3610.
+[26] Y. Chen and J. Joo, “Understanding and mitigating annotation bias in facial
+expression recognition,” in Proc. IEEE/CVF Int. Conf. Comput. Vis., 2021,
+pp. 14980–14991.
+[27] S. Mao et al., “Label distribution amendment with emotional semantic
+correlations for facial expression recognition,” 2021, arXiv:2107.11061.
+[28] Z. Zhao, Q. Liu, and F. Zhou, “Robust lightweight facial expression recognition network with label distribution training,” in Proc. AAAI Conf. Artif.
+Intell., 2021, pp. 3510–3519.
+[29] S. Chen et al., “Label distribution learning on auxiliary label space graphs
+for facial expression recognition,” in Proc. IEEE/CVF Conf. Comput. Vis.
+Pattern Recognit., 2020, pp. 13984–13993.
+[30] J. She et al., “Dive into ambiguity: Latent distribution mining and
+pairwise uncertainty estimation for facial expression recognition,”
+in Proc. IEEE/CVF Conf. Comput. Vis. Pattern Recognit., 2021,
+pp. 6248–6257.
+[31] J. Shao et al., “Self-paced label distribution learning for in-the-wild facial
+expression recognition,” in Proc. 30th ACM Int. Conf. Multimedia, 2022,
+pp. 161–169.
+[32] K. Wang, X. Peng, J. Yang, S. Lu, and Y. Qiao, “Suppressing uncertainties
+for large-scale facial expression recognition,” in Proc. IEEE/CVF Conf.
+Comput. Vis. Pattern Recognit., 2020, pp. 6897–6906.
+[33] H. Li, N. Wang, X. Yang, X. Wang, and X. Gao, “Towards semi-supervised
+deep facial expression recognition with an adaptive conﬁdence margin,” in Proc. IEEE/CVF Conf. Comput. Vis. Pattern Recognit., 2022,
+pp. 4156–4165.
+[34] L. Wang, G. Jia, N. Jiang, H. Wu, and J. Yang, “EASE: Robust facial expression recognition via emotion ambiguity-sensitive cooperative networks,” in Proc. 30th ACM Int. Conf. Multimedia, 2022,
+pp. 218–227.
+[35] A. Radford et al., “Learning transferable visual models from natural language supervision,” in Proc. Int. Conf. Mach. Learn., 2021,
+pp. 8748–8763.
+[36] M. V. Conde and K. Turgutlu, “CLIP-Art: Contrastive pre-training for
+ﬁne-grained art classiﬁcation,” in Proc. IEEE/CVF Conf. Comput. Vis.
+Pattern Recognit., 2021, pp. 3956–3960.
+[37] C. Wang, M. Chai, M. He, D. Chen, and J. Liao, “CLIP-NeRF: Text-andimage driven manipulation of neural radiance ﬁelds,” in Proc. IEEE/CVF
+Conf. Comput. Vis. Pattern Recognit., 2022, pp. 3835–3844.
+[38] B. Pan, S. Wang, and B. Xia, “Occluded facial expression recognition
+enhanced through privileged information,” in Proc. 27th ACM Int. Conf.
+Multimedia, 2019, pp. 566–573.
+[39] B. Xia and S. Wang, “Occluded facial expression recognition with stepwise assistance from unpaired non-occluded images,” in Proc. 28th ACM
+Int. Conf. Multimedia, 2020, pp. 2927–2935.
+[40] F. Zhang et al., “Geometry guided pose-invariant facial expression recognition,” IEEE Trans. Image Process., vol. 29, pp. 4445–4460, 2020.
+[41] F. Zhang et al., “Weakly-supervised facial expression recognition in the
+wild with noisy data,” IEEE Trans. Multimedia, vol. 24, pp. 1800–1814,
+2021.
+[42] J. Guo et al., “CMT: Convolutional neural networks meet vision transformers,” in Proc. IEEE/CVF Conf. Comput. Vis. Pattern Recognit., 2022,
+pp. 12175–12185.
+[43] K. Yuan et al., “Incorporating convolution designs into visual transformers,” in Proc. IEEE/CVF Int. Conf. Comput. Vis., 2021, pp. 579–588.
+[44] H. Wu et al., “CVT: Introducing convolutions to vision transformers,” in
+Proc. IEEE/CVF Int. Conf. Comput. Vis., 2021, pp. 22–31.
+[45] B. Graham et al., “LeViT: A vision transformer in ConvNet’s clothing
+for faster inference,” in Proc. IEEE/CVF Int. Conf. Comput. Vis., 2021,
+pp. 12259–12269.
+[46] A. Srinivas et al., “Bottleneck transformers for visual recognition,” in Proc.
+IEEE/CVF Conf. Comput. Vis. Pattern Recognit., 2021, pp. 16519–16529.
+[47] J. Li et al., “Align before fuse: Vision and language representation learning
+withmomentumdistillation,”inProc.Adv.NeuralInf.Process.Syst.,2021,
+pp. 9694–9705.
+[48] A. Singh et al., “FLAVA: A foundational language and vision alignment
+model,” in Proc. IEEE/CVF Conf. Comput. Vis. Pattern Recognit., 2022,
+pp. 15638–15650.
+[49] Z. Wang et al., “SimVLM: Simple visual language model pretraining with
+weak supervision,” 2021, arXiv:2108.10904.
+[50] R. Hu and A. Singh, “UniT: Multimodal multitask learning with a uni-
+ﬁed transformer,” in Proc. IEEE/CVF Int. Conf. Comput. Vis., 2021,
+pp. 1439–1449.
+[51] W.Kim,B.Son,andI.Kim,“ViLT:Vision-and-languagetransformerwithout convolution or region supervision,” in Proc. Int. Conf. Mach. Learn.,
+2021, pp. 5583–5594.
+[52] P. Zhang et al., “VinVL: Revisiting visual representations in visionlanguage models,” in Proc. IEEE/CVF Conf. Comput. Vis. Pattern Recognit., 2021, pp. 5579–5588.
+[53] C. Jia et al., “Scaling up visual and vision-language representation learning with noisy text supervision,” in Proc. Int. Conf. Mach. Learn., 2021,
+pp. 4904–4916.
+[54] J. Deng, J. Guo, N. Xue, and S. Zafeiriou, “ArcFace: Additive angular
+margin loss for deep face recognition,” in Proc. IEEE/CVF Conf. Comput.
+Vis. Pattern Recognit., 2019, pp. 4690–4699.
+[55] Y. Guo, L. Zhang, Y. Hu, X. He, and J. Gao, “MS-Celeb-1M: A dataset and
+benchmark for large-scale face recognition,” in Proc. Eur. Conf. Comput.
+Vis., 2016, pp. 87–102.
+[56] S. Li and W. Deng, “Reliable crowdsourcing and deep locality-preserving
+learning for unconstrained facial expression recognition,” IEEE Trans.
+Image Process., vol. 28, no. 1, pp. 356–370, Jan. 2019.
+[57] E. Barsoum, C. Zhang, C. Canton Ferrer, and Z. Zhang, “Training deep
+networks for facial expression recognition with crowd-sourced label distribution,” in Proc. ACM Int. Conf. Multimodal Interact., 2016, pp. 279–283.
+[58] I. J. Goodfellow et al., “Challenges in representation learning: A report on
+three machine learning contests,” in Proc. Int. Conf. Neural Inf. Process.,
+2013, pp. 117–124.
+[59] A. Dhall, R. Goecke, S. Lucey, and T. Gedeon, “Static facial expression analysis in tough conditions: Data, evaluation protocol and benchmark,” in Proc. 2011 IEEE Int. Conf. Comput. Vis. Workshops, 2011,
+pp. 2106–2112.
+[60] K. Zhang, Z. Zhang, Z. Li, and Y. Qiao, “Joint face detection and alignment
+using multitask cascaded convolutional networks,” IEEE Signal Process.
+Lett., vol. 23, no. 10, pp. 1499–1503, Oct. 2016.
+[61] J. Jiang and W. Deng, “Disentangling identity and pose for facial expression recognition,” IEEE Trans. Affect. Comput., vol. 13, no. 4,
+pp. 1868–1878, Oct.-Dec. 2022.
+[62] C. Li et al., “FG-AGR: Fine-grained associative graph representation for
+facial expression recognition in the wild,” IEEE Trans. Circuits Syst. Video
+Technol., vol. 34, no. 2, pp. 882–896, Feb. 2024.
+[63] H. Li et al., “Adaptively learning facial expression representation via CF labels and distillation,” IEEE Trans. Image Process., vol. 30, pp. 2016–2028,
+2021.
+[64] W. Zhang, X. Ji, K. Chen, Y. Ding, and C. Fan, “Learning a facial expression embedding disentangled from identity,” in Proc. IEEE/CVF Conf.
+Comput. Vis. Pattern Recognit., 2021, pp. 6759–6768.
+[65] H. Li et al., “CRS-CONT: A well-trained general encoder for facial expression analysis,” IEEE Trans. Image Process., vol. 31, pp. 4637–4650,
+2022.
+[66] D. Acharya, Z. Huang, D. Pani Paudel, and L. Van Gool, “Covariance
+pooling for facial expression recognition,” in Proc. IEEE Conf. Comput.
+Vis. Pattern Recognit. Workshops, 2018, pp. 367–374.
+[67] J. Cai et al., “Island loss for learning discriminative features in facial
+expressionrecognition,”inProc.13thIEEEInt.Conf.Autom.FaceGesture
+Recognit., 2018, pp. 302–309.
+[68] J. Zeng, S. Shan, and X. Chen, “Facial expression recognition with inconsistently annotated datasets,” in Proc. Eur. Conf. Comput. Vis., 2018,
+pp. 222–237.
+[69] L. Van der Maaten and G. Hinton, “Visualizing data using T-SNE,” J.
+Mach. Learn. Res., vol. 9, no. 11, pp. 2579–2605, 2008.
+Authorized licensed use limited to: National Sun Yat Sen Univ.. Downloaded on March 24,2026 at 00:16:57 UTC from IEEE Xplore.  Restrictions apply.
+
+2422
+IEEE TRANSACTIONS ON MULTIMEDIA, VOL. 27, 2025
+Yande Li received the B.Sc., M.Sc., and Ph.D. degrees from the School of Information Science and
+Engineering, Lanzhou University, Lanzhou, China,
+in 2016, 2019, and 2023, respectively. From August
+2021,hewasaVisitingPh.D.StudentwiththeUniversity of Guelph, Guelph, ON, Canada, for 17 months.
+He is currently a Postdoctoral Research Fellow with
+the Department of Electrical and Computer Engineering, University of Alberta, Edmonton, AB, Canada.
+His research interests include facial expression recognition and human motion analysis.
+Mingjie Wang received the Ph.D. degree from the
+University of Guelph, Guelph, ON, Canada, in 2022.
+He is an Associate Professor with the School of
+Science, Zhejiang Sci-Tech University, Hangzhou,
+China. His research interests include image processing, computer vision, and deep learning.
+Minglun Gong received the B.Eng. degree from
+Harbin Engineering University, Harbin, China, in
+1994, the M.Sc. degree from Tsinghua University,
+Beijing, China, in 1997, and the Ph.D. degree from
+the University of Alberta, Edmonton, AB, Canada, in
+2003. He is a Professor and Director with the School
+of Computer Science, University of Guelph. Before
+he moved to Guelph in 2019, he was a Professor
+and Head with the Department of Computer Science,
+Memorial University of Newfoundland. He has authored or coauthored 150+ referred technical papers
+in journals and conference proceedings, including 20+ articles in ACM/IEEE
+transactions. He is the Inventor of an awarded patent and six pending patents.
+His research focuses on the broad area of visual computing (including computer
+graphics, computer vision, visualization, image processing, and pattern recognition). Dr. Gong is currently an Associate Editor for Pattern Recognition and
+IEEE SIGNAL PROCESSING LETTERS, and he was also the Program Committee
+Member for top-tier conferences and Reviewer for prestigious journals. He was
+the recipient of the Izaak Walton Killam Memorial Award and best paper awards
+at the 2015 Canadian Conference on Artiﬁcial Intelligence, the 2016 International Symposium on Visual Computing, and the 2019 Conference on Computer
+and Robot Vision.
+Yonggang Lu (Member, IEEE) received the B.S. and
+M.S. degrees in physics from Lanzhou University,
+Lanzhou, China, in 1996 and 1999, respectively, and
+the M.S. and Ph.D. degrees in computer science from
+New Mexico State University, Las Cruces, NM, USA,
+in 2004 and 2007, respectively. He ﬁnished some of
+the Ph.D. work with Los Alamos National Lab, NM,
+USA. He is currently a Professor with the School of
+Information Science and Engineering, Lanzhou University, Lanzhou, China. He has authored or coauthored more than 70 research papers. His research
+interests include artiﬁcial intelligence, machine learning, pattern recognition,
+image processing, and bioinformatics. Dr. Lu has presided over a Chinese Nation Science Foundation project and other projects.
+Li Liu (Member, IEEE) received the Ph.D. degree
+in computer science from the Universite Paris-sud
+XI, Paris, France, in 2008. He is a Professor with
+Chongqing University, Chongqing China. He is also
+a Senior Research Fellow with the School of Computing, National University of Singapore, Singapore.
+He was an Associate Professor with Lanzhou University, Lanzhou, China. He has authored or coauthored
+widely in conferences and journals with more than
+50 peer-reviewed publications. His research interests
+include pattern recognition, data analysis, and their
+applications on human behaviors. He aims to contribute in interdisciplinary research of computer science and human related disciplines. Dr. Li has been the
+Principal Investigator of several funded projects from government and industry.
+Authorized licensed use limited to: National Sun Yat Sen Univ.. Downloaded on March 24,2026 at 00:16:57 UTC from IEEE Xplore.  Restrictions apply.
