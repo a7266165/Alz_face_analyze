@@ -27,7 +27,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
 from _paths import PROJECT_ROOT
 project_root = PROJECT_ROOT
 
-from src.config import FEATURES_DIR, WORKSPACE_DIR, ALIGNED_DIR as _ALIGNED_DIR
+from src.config import (
+    FEATURES_DIR,
+    WORKSPACE_DIR,
+    ALIGNED_DIR as _ALIGNED_DIR,
+    ALIGNED_BACKGROUND_DIR as _ALIGNED_BACKGROUND_DIR,
+)
 from src.extractor.features.embedding import FeatureExtractor
 
 # 設定日誌
@@ -37,11 +42,14 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# ========== 設定 ==========
-ALIGNED_DIR = _ALIGNED_DIR
-OUTPUT_DIR = FEATURES_DIR  # workspace/features
+# ========== 預設常數（會被 CLI 覆寫） ==========
+OUTPUT_DIR = FEATURES_DIR  # workspace/embedding[_ABtest]/features
 EMBEDDING_MODELS = ["arcface", "topofr", "dlib"]
 MAX_CPU_CORES = 2
+
+# 預設讀去背版（與 production 相容）；CLI --background 切到含背景版
+ALIGNED_DIR = _ALIGNED_DIR
+SUBDIR_NAME = "original"
 
 
 def setup_cpu_limit(max_cores: int):
@@ -62,11 +70,11 @@ def setup_cpu_limit(max_cores: int):
         pass
 
 
-def get_processed_subjects(output_dir: Path, models: List[str]) -> Set[str]:
+def get_processed_subjects(output_dir: Path, models: List[str], subdir: str) -> Set[str]:
     """取得所有模型都已處理完成的受試者集合"""
     subject_sets = []
     for model in models:
-        feature_dir = output_dir / model / "original"
+        feature_dir = output_dir / model / subdir
         if feature_dir.exists():
             subjects = {f.stem for f in feature_dir.glob("*.npy")}
             subject_sets.append(subjects)
@@ -97,32 +105,47 @@ def load_images(subject_dir: Path) -> List[np.ndarray]:
 
 def main():
     """主程式"""
+    import argparse
+
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--background", action="store_true",
+                    help="讀 ALIGNED_BACKGROUND_DIR (含背景) 並寫到 {model}/original_background/；"
+                         "預設讀去背版 ALIGNED_DIR 寫 {model}/original/")
+    args = ap.parse_args()
+
+    if args.background:
+        aligned_dir = _ALIGNED_BACKGROUND_DIR
+        subdir = "original_background"
+    else:
+        aligned_dir = _ALIGNED_DIR
+        subdir = "original"
+
     setup_cpu_limit(MAX_CPU_CORES)
 
     logger.info("=" * 60)
-    logger.info("原始臉部特徵提取")
+    logger.info(f"原始臉部特徵提取（{'含背景' if args.background else '去背'}）")
     logger.info("=" * 60)
-    logger.info(f"影像來源: {ALIGNED_DIR}")
-    logger.info(f"輸出目錄: {OUTPUT_DIR}")
+    logger.info(f"影像來源: {aligned_dir}")
+    logger.info(f"輸出目錄: {OUTPUT_DIR} / {{model}} / {subdir}/")
     logger.info(f"嵌入模型: {EMBEDDING_MODELS}")
 
-    if not ALIGNED_DIR.exists():
-        logger.error(f"找不到對齊影像目錄: {ALIGNED_DIR}")
+    if not aligned_dir.exists():
+        logger.error(f"找不到對齊影像目錄: {aligned_dir}")
         sys.exit(1)
 
     # 建立輸出目錄
     for model in EMBEDDING_MODELS:
-        (OUTPUT_DIR / model / "original").mkdir(parents=True, exist_ok=True)
+        (OUTPUT_DIR / model / subdir).mkdir(parents=True, exist_ok=True)
 
     # 掃描受試者
     subject_dirs = sorted([
-        d for d in ALIGNED_DIR.iterdir()
+        d for d in aligned_dir.iterdir()
         if d.is_dir()
     ])
     logger.info(f"找到 {len(subject_dirs)} 個受試者")
 
     # 檢查斷點
-    processed = get_processed_subjects(OUTPUT_DIR, EMBEDDING_MODELS)
+    processed = get_processed_subjects(OUTPUT_DIR, EMBEDDING_MODELS, subdir)
     if processed:
         logger.info(f"跳過 {len(processed)} 個已處理的受試者")
 
@@ -168,7 +191,7 @@ def main():
                         continue
 
                     feature_array = np.array(valid)  # (n_images, feature_dim)
-                    out_path = OUTPUT_DIR / model / "original" / f"{subject_id}.npy"
+                    out_path = OUTPUT_DIR / model / subdir / f"{subject_id}.npy"
                     np.save(out_path, feature_array)
 
                 success += 1
