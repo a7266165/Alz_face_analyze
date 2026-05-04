@@ -59,7 +59,12 @@ def resolve_paths(variant, cohort_mode="default"):
                               to use for cumulative eigenvalue ('original' for
                               default, variant name for asymmetry).
     """
-    cohort_dir = "p_first_hc_all" if cohort_mode == "p_first_hc_all" else "p_first_hc_strict"
+    if cohort_mode == "p_first_hc_all":
+        cohort_dir = "p_first_hc_all"
+    elif cohort_mode == "p_all_hc_all":
+        cohort_dir = "p_all_hc_all"
+    else:
+        cohort_dir = "p_first_hc_strict"
     if variant is None:
         root = ARMS_ROOT / cohort_dir / "embedding_classification"
         out = root / "_pca_summary"
@@ -266,9 +271,10 @@ def main():
     parser = argparse.ArgumentParser(__doc__)
     parser.add_argument("--variant", default=None, choices=ASYM_VARIANTS)
     parser.add_argument("--cohort-mode", default="default",
-                        choices=["default", "p_first_hc_all"],
+                        choices=["default", "p_first_hc_all", "p_all_hc_all"],
                         help="Output cohort routing. 'default'=p_first_hc_strict; "
-                             "'p_first_hc_all'=p_first_hc_all/.")
+                             "'p_first_hc_all'=p_first_hc_all/; "
+                             "'p_all_hc_all'=p_all_hc_all/.")
     parser.add_argument("--eigen-source", default="all_npy",
                         choices=["all_npy", "visit_all"],
                         help="Eigenvalue panel data source. 'all_npy' (default): "

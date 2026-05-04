@@ -177,10 +177,14 @@ def walk_root(root, label):
 def main():
     p = argparse.ArgumentParser(__doc__)
     p.add_argument("--cohort-mode", default="default",
-                    choices=["default", "p_first_hc_all"])
+                    choices=["default", "p_first_hc_all", "p_all_hc_all"])
     args = p.parse_args()
-    cohort_dir = ("p_first_hc_all" if args.cohort_mode == "p_first_hc_all"
-                  else "p_first_hc_strict")
+    if args.cohort_mode == "p_first_hc_all":
+        cohort_dir = "p_first_hc_all"
+    elif args.cohort_mode == "p_all_hc_all":
+        cohort_dir = "p_all_hc_all"
+    else:
+        cohort_dir = "p_first_hc_strict"
     base = PROJECT_ROOT / "workspace" / "arms_analysis" / cohort_dir
 
     total_files, total_rows = 0, 0
