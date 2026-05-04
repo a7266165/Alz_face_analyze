@@ -976,7 +976,9 @@ def _reverse_train(full_cohort, matched_cohort, embedding, classifier,
                    n_folds, seed):
     """Train-cohort-only side of reverse: 10-fold GroupKFold ensemble on
     matched cohort, applied to the full cohort. Output is independent of
-    keep_groups so it can be shared across the 3 ad_vs_* partitions."""
+    keep_groups so it can be shared across the 3 ad_vs_* partitions —
+    keep_groups-aware metrics (matched_oof + unmatched) are computed in
+    _reverse_eval."""
     Xm, ym, gm, idsm, n_dropped_m = build_feature_matrix(matched_cohort, embedding)
     Xf, yf, _gf, idsf, n_dropped_f = build_feature_matrix(full_cohort, embedding)
 
@@ -1014,31 +1016,27 @@ def _reverse_train(full_cohort, matched_cohort, embedding, classifier,
     })
     matched_oof_subj = _aggregate_to_subject(matched_oof_df, score_cols=["y_score"])
 
+    # `group` column is only present for ad_vs_hcgroup family cohorts (used to
+    # filter unmatched eval by keep_groups). Hi-lo partitions don't have it
+    # and don't need it (their keep_groups is None).
+    base_to_group = (full_cohort.set_index("base_id")["group"].to_dict()
+                     if "group" in full_cohort.columns else {})
+
     full_df_rows = pd.DataFrame({
         "ID": idsf, "base_id": _gf, "y_true": yf,
         "y_score": full_score,
     })
+    full_df_rows["group"] = full_df_rows["base_id"].map(base_to_group)
     full_subj = _aggregate_to_subject(full_df_rows, score_cols=["y_score"])
+    full_subj["group"] = full_subj["base_id"].map(base_to_group)
 
     matched_base_ids = set(pd.unique(gm))
     full_df_rows["in_matched"] = full_df_rows["base_id"].isin(
         matched_base_ids
     ).astype(int)
-    in_matched_visit = full_df_rows["in_matched"].to_numpy(bool)
-    n_unmatched_visits = int((~in_matched_visit).sum())
     full_subj["in_matched"] = full_subj["base_id"].isin(
         matched_base_ids
     ).astype(int)
-
-    yf_visit = full_df_rows["y_true"].to_numpy(int)
-    full_score_visit = full_df_rows["y_score"].to_numpy(float)
-    metrics_unmatched = None
-    if n_unmatched_visits >= 5 and \
-       len(np.unique(yf_visit[~in_matched_visit])) > 1:
-        metrics_unmatched = compute_clf_metrics(
-            yf_visit[~in_matched_visit],
-            full_score_visit[~in_matched_visit], seed=seed,
-        )
 
     drop_corr_info = {
         "reducer": _reducer_label(),
@@ -1056,7 +1054,7 @@ def _reverse_train(full_cohort, matched_cohort, embedding, classifier,
     }
 
     full_df_visits = full_df_rows[
-        ["ID", "base_id", "y_true", "y_score", "in_matched"]
+        ["ID", "base_id", "y_true", "y_score", "in_matched", "group"]
     ].copy()
 
     return {
@@ -1064,8 +1062,6 @@ def _reverse_train(full_cohort, matched_cohort, embedding, classifier,
         "full_subj": full_subj,
         "full_df_visits": full_df_visits,
         "matched_base_ids": matched_base_ids,
-        "n_unmatched_visits": n_unmatched_visits,
-        "metrics_unmatched": metrics_unmatched,
         "drop_corr_info": drop_corr_info,
         "k": k,
         "n_dropped_m": n_dropped_m,
@@ -1074,12 +1070,15 @@ def _reverse_train(full_cohort, matched_cohort, embedding, classifier,
 
 
 def _reverse_eval(train, matched_cohort, keep_groups, seed):
-    """Eval-time (keep_groups) part: matched-subset metrics + per-cell
-    scores_df with keep_groups-aware in_matched col."""
+    """Eval-time (keep_groups) part: subject-level matched_oof + visit-level
+    unmatched, both keep_groups-aware. Per-cell scores_df also gets
+    keep_groups-filtered in_matched col."""
     matched_oof_subj = train["matched_oof_subj"]
     full_subj = train["full_subj"]
+    full_df_visits = train["full_df_visits"]
     matched_base_ids = train["matched_base_ids"]
 
+    # ---- matched_oof: subject-level, filtered by group ----
     if keep_groups is not None:
         bid_to_group_m = matched_cohort.set_index("base_id")["group"].to_dict()
         keep_m_subj = np.array([
@@ -1090,27 +1089,55 @@ def _reverse_eval(train, matched_cohort, keep_groups, seed):
         keep_m_subj = np.ones(len(matched_oof_subj), dtype=bool)
     eval_y_m_subj = matched_oof_subj["y_true"].to_numpy(int)[keep_m_subj]
     eval_score_m_subj = matched_oof_subj["y_score"].to_numpy(float)[keep_m_subj]
-
     metrics_matched_oof = (
         compute_clf_metrics(eval_y_m_subj, eval_score_m_subj, seed=seed)
         if len(eval_y_m_subj) >= 5 and len(np.unique(eval_y_m_subj)) > 1 else None
     )
 
+    # ---- unmatched: visit-level, filtered by group ----
+    in_matched_v = full_df_visits["in_matched"].to_numpy(bool)
+    if keep_groups is not None:
+        in_keep_v = full_df_visits["group"].isin(keep_groups).to_numpy()
+    else:
+        in_keep_v = np.ones(len(full_df_visits), dtype=bool)
+    unmatched_mask = (~in_matched_v) & in_keep_v
+    n_unmatched_visits = int(unmatched_mask.sum())
+    yf_v = full_df_visits["y_true"].to_numpy(int)
+    score_v = full_df_visits["y_score"].to_numpy(float)
+    metrics_unmatched = None
+    if n_unmatched_visits >= 5 and \
+       len(np.unique(yf_v[unmatched_mask])) > 1:
+        metrics_unmatched = compute_clf_metrics(
+            yf_v[unmatched_mask], score_v[unmatched_mask], seed=seed,
+        )
+
+    # ---- scores_df (subject-level) keep_groups-aware ----
     if keep_groups is not None:
         bid_to_group_all = matched_cohort.set_index("base_id")["group"].to_dict()
         matched_keep_base = {b for b in matched_base_ids
                               if bid_to_group_all.get(b) in keep_groups}
     else:
         matched_keep_base = matched_base_ids
-
     full_df = full_subj.copy()
     if keep_groups is not None:
         full_df["in_matched"] = full_df["base_id"].isin(matched_keep_base).astype(int)
     full_df = full_df[["ID", "y_true", "y_score", "in_matched"]]
 
+    # ---- scores_df_visits keep_groups-filtered (drop subjects outside keep_groups) ----
+    if keep_groups is not None:
+        scores_df_visits = full_df_visits[in_keep_v].copy()
+    else:
+        scores_df_visits = full_df_visits.copy()
+    scores_df_visits = scores_df_visits[
+        ["ID", "base_id", "y_true", "y_score", "in_matched"]
+    ]
+
     return {
         "scores_df": full_df,
+        "scores_df_visits": scores_df_visits,
         "metrics_matched_oof": metrics_matched_oof,
+        "metrics_unmatched": metrics_unmatched,
+        "n_unmatched_visits": n_unmatched_visits,
     }
 
 
@@ -1143,13 +1170,13 @@ def run_reverse(full_cohort, matched_cohort, embedding, classifier,
 
     return {
         "scores_df": ev["scores_df"],
-        "scores_df_visits": train["full_df_visits"],
+        "scores_df_visits": ev["scores_df_visits"],
         "k_folds_used": train["k"],
         "n_dropped_no_emb_matched": train["n_dropped_m"],
         "n_dropped_no_emb_full": train["n_dropped_f"],
-        "n_unmatched": train["n_unmatched_visits"],
+        "n_unmatched": ev["n_unmatched_visits"],
         "metrics_matched_oof": ev["metrics_matched_oof"],
-        "metrics_unmatched": train["metrics_unmatched"],
+        "metrics_unmatched": ev["metrics_unmatched"],
         "drop_corr_info": train["drop_corr_info"],
     }
 
