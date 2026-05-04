@@ -23,13 +23,13 @@
 
 語言 marker 受重視，臉部 marker 相對被忽略。**擴增臉部 mesh** 增強失智偵測 — 直接相關方法論進展。
 
-## 2. ★ [PT] **Chen 2026** — MECO: Multimodal Dataset for Emotion + Cognitive Understanding in Older Adults
+## 2. ★ [--] **Alzahrani 2025** — Facial Cues for CI Detection from In-the-Wild Data
+
+**眨眼率 (EBR)** + 頭部轉動率 (HTR) + 頭部動作統計特徵 (HMSF)。區分 ND/MCI/FMD/HC 的視覺特徵 in-the-wild 分析。
+
+## 3. ★ [PT] **Chen 2026** — MECO: Multimodal Dataset for Emotion + Cognitive Understanding in Older Adults
 
 **42 位老人，~38 小時多模態訊號，30,592 同步 segment**。針對既有資料集少見的「老化族群 + 認知衰退影響表情」設計。**新公開 dataset**。
-
-## 3. ★ [--] **MA 2025** — FE Video Analysis for AD Diagnosis (Russian)
-
-**37 HC + 34 NCD（16 mild + 18 major）**做特定診斷流程，**68 keypoints 非接觸捕捉**眉/眼/口運動學。
 
 ## 4. ★ [PT] **Mu 2024** — Detect CI + Wellbeing from Remote Conversations
 
@@ -39,18 +39,17 @@
 
 社區規模 AD 篩檢需求。Audio-visual 共同訓 disentangled representation，可擴展非侵入 CI 評估。
 
-## 6. ★ [--] **Alzahrani 2025** — Facial Cues for CI Detection from In-the-Wild Data
-
-**眨眼率 (EBR)** + 頭部轉動率 (HTR) + 頭部動作統計特徵 (HMSF)。區分 ND/MCI/FMD/HC 的視覺特徵 in-the-wild 分析。
-
-## 7. ★ [--] **Hoang 2024** — Subject Harmonization for MCI Detection (Language + FE)
+## 6. ★ [--] **Hoang 2024** — Subject Harmonization for MCI Detection (Language + FE)
 
 MCI 是 AD 前驅期，數位 marker 經濟可行。語言 marker 已知有效；近年研究顯示**對話中情緒**也是補強信號。**受試者標準化** + 多模態提升 MCI 偵測。
+
+## 7. ★ [--] **MA 2025** — FE Video Analysis for AD Diagnosis (Russian)
+
+**37 HC + 34 NCD（16 mild + 18 major）**做特定診斷流程，**68 keypoints 非接觸捕捉**眉/眼/口運動學。
 
 ## 8. ★ [PT] **Lee 2024** — MCI Prediction with Multi-stream CNN
 
 MCI 早期診斷成本/時間問題。**Multi-stream CNN** 從多模態資料偵測 MCI/失智。
-
 
 ## ━━━━━━━━━━━━━━ 保留（25 篇）━━━━━━━━━━━━━━
 
@@ -153,7 +152,6 @@ QOL 評估通常自評；失智進展後病人無法自評，改 proxy 評估。
 ## 33. ★ [PT] **Takeshige-Amano 2024** — AD Detection via Smiles + Chatbot Conversations
 
 AD 認知狀態評估迫切。**99 HC + 93 AD/MCI** 與 chatbot 對話、抽微笑影像 + 視聽特徵。臉 + 聲 + 對話內容多 cue。
-
 
 ## ━━━━━━━━━━━━━━ 邊緣（32 篇）━━━━━━━━━━━━━━
 
