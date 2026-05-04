@@ -190,10 +190,12 @@ def run_one(comparison, arm_b_dir):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--cohort-mode", choices=["default", "p_first_hc_all"],
+    parser.add_argument("--cohort-mode",
+                         choices=["default", "p_first_hc_all", "p_all_hc_all"],
                          default="default",
                          help="default=原 strict HC + first-visit；"
-                              "p_first_hc_all=first-visit P + ALL NAD/ACS")
+                              "p_first_hc_all=first-visit P + ALL NAD/ACS；"
+                              "p_all_hc_all=ALL P visits + ALL NAD/ACS")
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_ARM_B_DIR,
                          help="arm_b 輸出根目錄 (default: workspace/"
                               "arms_analysis/per_arm/arm_b)")

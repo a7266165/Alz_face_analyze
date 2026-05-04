@@ -83,6 +83,11 @@ ARMS_P_FIRST_HC_ALL_DIR = ARMS_ANALYSIS_DIR / "p_first_hc_all"
 ARMS_P_FIRST_HC_ALL_PER_ARM = ARMS_P_FIRST_HC_ALL_DIR / "per_arm"
 ARMS_P_FIRST_HC_ALL_GRID = ARMS_P_FIRST_HC_ALL_DIR / "grid"
 
+# arms_analysis 模組 — 最寬 cohort（ALL P visits + ALL NAD/ACS, 兩端都不挑 first-visit / strict HC）
+ARMS_P_ALL_HC_ALL_DIR = ARMS_ANALYSIS_DIR / "p_all_hc_all"
+ARMS_P_ALL_HC_ALL_PER_ARM = ARMS_P_ALL_HC_ALL_DIR / "per_arm"
+ARMS_P_ALL_HC_ALL_GRID = ARMS_P_ALL_HC_ALL_DIR / "grid"
+
 # 別名（向後相容）— ARMS_PER_ARM_DIR / ARMS_GRID_DIR 預設指向 p_first_hc_strict
 ARMS_PER_ARM_DIR = ARMS_P_FIRST_HC_STRICT_PER_ARM
 ARMS_GRID_DIR = ARMS_P_FIRST_HC_STRICT_GRID

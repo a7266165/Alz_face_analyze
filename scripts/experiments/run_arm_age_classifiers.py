@@ -291,10 +291,12 @@ def run_cell(arm, hc_source, pred_ages, arms_root):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--cohort-mode", choices=["default", "p_first_hc_all"],
+    parser.add_argument("--cohort-mode",
+                         choices=["default", "p_first_hc_all", "p_all_hc_all"],
                          default="default",
                          help="default=原 strict HC + first-visit；"
-                              "p_first_hc_all=first-visit P + ALL NAD/ACS")
+                              "p_first_hc_all=first-visit P + ALL NAD/ACS；"
+                              "p_all_hc_all=ALL P visits + ALL NAD/ACS")
     parser.add_argument("--arms", nargs="+", choices=ALL_ARMS, default=ALL_ARMS,
                          help="只跑指定 arms (default: A B C D)")
     parser.add_argument("--arms-root", type=Path, default=DEFAULT_ARMS_ROOT,

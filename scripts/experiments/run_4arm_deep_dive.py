@@ -87,6 +87,8 @@ HC_SOURCE_MODE = os.environ.get("HC_SOURCE_MODE", "ACS")
 #   "default"      → 原行為（strict HC + first-visit per HC subject）
 #   "p_first_hc_all" → P first-visit + CDR≥0.5 + npy fallback；HC 不做 strict 篩、
 #                    保留每 subject 所有 visits（不挑 first）
+#   "p_all_hc_all" → P 端保留所有 visits（CDR≥0.5），HC 端不做 strict 篩、保留所有
+#                    visits；兩端都採 subject-first 兩階段配對
 COHORT_MODE = os.environ.get("COHORT_MODE", "default")
 
 GRID_ROOT = (PROJECT_ROOT / "workspace" / "arms_analysis" /
@@ -390,6 +392,16 @@ def _pick_first_visit_with_features(df_visits):
     return pd.DataFrame(picked).reset_index(drop=True)
 
 
+def _keep_visits_with_features(df_visits):
+    """Like _pick_first_visit_with_features but keeps ALL feature-bearing visits
+    (no per-subject pick). Used for p_all_hc_all cohort mode where we don't
+    pick first-visit on either side. Visits without embedding+landmark features
+    are dropped upfront so matching counts reflect realised pair size."""
+    good_ids = _ids_with_features()
+    out = df_visits[df_visits["ID"].astype(str).isin(good_ids)].copy()
+    return out.reset_index(drop=True)
+
+
 def _strict_hc_filter_all_visits(demo, hc_source):
     """Strict HC criteria per-visit (same rule as _strict_hc_filter) but keep
     ALL qualifying visits (not just first). Allows downstream
@@ -398,8 +410,8 @@ def _strict_hc_filter_all_visits(demo, hc_source):
 
     Source != 'internal' (外部公開資料集) 自動過 strict HC（age-only control）。
 
-    當 COHORT_MODE == "p_first_hc_all" 時，跳過 strict 篩（CDR=0 / MMSE≥26 不檢查），
-    保留所有 visit；用於「HC 不篩」cohort（first-visit P + ALL NAD/ACS）。
+    當 COHORT_MODE 為 "p_first_hc_all" / "p_all_hc_all" 時，跳過 strict 篩
+    （CDR=0 / MMSE≥26 不檢查），保留所有 visit；用於「HC 不篩」cohort。
     """
     if hc_source == "HC":
         mask = demo["group"].isin(["NAD", "ACS"])
@@ -408,7 +420,7 @@ def _strict_hc_filter_all_visits(demo, hc_source):
     sub = demo[mask].copy()
     sub["Global_CDR"] = pd.to_numeric(sub.get("Global_CDR"), errors="coerce")
     sub["MMSE"] = pd.to_numeric(sub.get("MMSE"), errors="coerce")
-    if COHORT_MODE == "p_first_hc_all":
+    if COHORT_MODE in ("p_first_hc_all", "p_all_hc_all"):
         # HC 端完全不篩：每 visit 都進，不要求 CDR=0 / MMSE≥26
         sub = sub.copy()
     else:
@@ -506,12 +518,17 @@ def build_cohort_ad_vs_HCgroup(hc_source, arm="A", caliper=2.0, seed=SEED):
     ad_all = demo[(demo["group"] == "P") & (demo["Global_CDR"] >= 0.5) &
                     demo["Age"].notna()].copy()
     ad_all = ad_all.sort_values(["base_id", "visit"])
-    ad = _pick_first_visit_with_features(ad_all)
+    if COHORT_MODE == "p_all_hc_all":
+        # AD 端保留所有 visits（CDR≥0.5），先把無 embedding/landmark 的 visit
+        # 直接濾掉，避免後續配對 / merge 時才 drop 造成 pair 數虛高。
+        ad = _keep_visits_with_features(ad_all)
+    else:
+        ad = _pick_first_visit_with_features(ad_all)
     ad["label"] = 1
 
     hc_all = _strict_hc_filter_all_visits(demo, hc_source)
     hc_all = hc_all[hc_all["Age"].notna()].copy()
-    if COHORT_MODE == "p_first_hc_all":
+    if COHORT_MODE in ("p_first_hc_all", "p_all_hc_all"):
         # 保留每 subject 所有 visits — HC 不挑 first-visit。
         # 同 visit 一律納入；無 npy fallback（visit 沒 embedding 的 row 後續
         # merge feature 時會自然 drop）。
@@ -531,10 +548,13 @@ def build_cohort_ad_vs_HCgroup(hc_source, arm="A", caliper=2.0, seed=SEED):
         prep = pd.concat([ad, hc], ignore_index=True)
         prep["mmse_group"] = np.where(prep["label"] == 1, "high", "low")
         prep["MMSE"] = prep["MMSE"].fillna(999)  # placeholder (match_1to1 reads Age)
-        # p_first_hc_all mode：HC 端有多 visit，採 subject-first 兩階段配對：
-        #   Pass 1 每個 HC base_id 最多用 1 次（subject-level 1:1）
-        #   Pass 2 剩下 AD 才用其他 visit 從已用 subject 補滿（visit-level）
-        match_mode = "subject_first" if COHORT_MODE == "p_first_hc_all" else "visit"
+        # p_first_hc_all / p_all_hc_all mode：至少一端（HC，p_all_hc_all 兩端）
+        # 有多 visit，採 subject-first 兩階段配對：
+        #   Pass 1 每個 base_id 兩端最多用 1 次（subject-level 1:1）
+        #   Pass 2 剩下 visits 退而求其次找最近 major 補滿（visit-level fallback）
+        match_mode = ("subject_first"
+                       if COHORT_MODE in ("p_first_hc_all", "p_all_hc_all")
+                       else "visit")
         matched, pairs, _ = match_1to1(prep, caliper=caliper, seed=seed,
                                          match_mode=match_mode)
         cohort = matched.merge(prep[["ID", "base_id", "group", "Age", "MMSE",
@@ -704,13 +724,17 @@ def build_cohort_ad_hi_lo(arm="A", caliper=2.0, seed=SEED, metric="MMSE"):
         demo = load_p_demographics()
         demo["Global_CDR"] = pd.to_numeric(demo.get("Global_CDR"),
                                               errors="coerce")
-        if COHORT_MODE == "p_first_hc_all":
-            # P first-visit + CDR≥0.5 + npy fallback（同 ad_vs_HC 邏輯）
+        if COHORT_MODE in ("p_first_hc_all", "p_all_hc_all"):
+            # p_first_hc_all : P first-visit + CDR≥0.5 + npy fallback
+            # p_all_hc_all   : 保留所有 P visits（CDR≥0.5、metric+Age 非空）
             ad_all = demo[(demo["Global_CDR"] >= 0.5) &
                             demo[metric].notna() &
                             demo["Age"].notna()].copy()
             ad_all = ad_all.sort_values(["base_id", "visit"])
-            cohort = _pick_first_visit_with_features(ad_all)
+            if COHORT_MODE == "p_all_hc_all":
+                cohort = _keep_visits_with_features(ad_all)
+            else:
+                cohort = _pick_first_visit_with_features(ad_all)
         else:
             cohort = demo.dropna(subset=[metric, "Age"]).copy()
             cohort = cohort.sort_values(["base_id", "visit"]).groupby(
@@ -721,17 +745,17 @@ def build_cohort_ad_hi_lo(arm="A", caliper=2.0, seed=SEED, metric="MMSE"):
         cohort["label"] = (cohort[group_col] == "high").astype(int)
         return cohort, None
     if arm == "B":
-        # p_first_hc_all mode 下 arm B hi-lo 的 matched_features.csv 由
-        # run_mmse_hilo_standalone.py 寫到 p_first_hc_all/per_arm/ 子樹。
+        # 各 cohort mode 下 arm B hi-lo 的 matched_features.csv 由
+        # run_mmse_hilo_standalone.py 預先寫到對應子樹。
         if COHORT_MODE == "p_first_hc_all":
-            arm_b_csv = (PROJECT_ROOT / "workspace" / "arms_analysis" /
-                         "p_first_hc_all" / "per_arm" / "arm_b" /
-                         f"{metric_low}_high_vs_low" / "matched_features.csv")
+            cohort_subdir = "p_first_hc_all"
+        elif COHORT_MODE == "p_all_hc_all":
+            cohort_subdir = "p_all_hc_all"
         else:
-            arm_b_csv = (PROJECT_ROOT / "workspace" / "arms_analysis" /
-                         "p_first_hc_strict" / "per_arm" / "arm_b" /
-                         f"{metric_low}_high_vs_low" /
-                         "matched_features.csv")
+            cohort_subdir = "p_first_hc_strict"
+        arm_b_csv = (PROJECT_ROOT / "workspace" / "arms_analysis" /
+                     cohort_subdir / "per_arm" / "arm_b" /
+                     f"{metric_low}_high_vs_low" / "matched_features.csv")
         if not arm_b_csv.exists():
             raise FileNotFoundError(
                 f"Run run_mmse_hilo_standalone.py with HILO_METRIC={metric} "
@@ -1440,9 +1464,12 @@ if __name__ == "__main__":
         help="覆寫 subset 資料夾名，輸出到 grid/subsets/<suffix>/",
     )
     ap.add_argument(
-        "--cohort-mode", choices=["default", "p_first_hc_all"], default=None,
+        "--cohort-mode",
+        choices=["default", "p_first_hc_all", "p_all_hc_all"],
+        default=None,
         help="cohort 篩法：default=原行為（strict HC + first-visit）；"
-             "p_first_hc_all=first-visit P + ALL NAD/ACS 不篩",
+             "p_first_hc_all=first-visit P + ALL NAD/ACS 不篩；"
+             "p_all_hc_all=ALL P visits + ALL NAD/ACS 不篩",
     )
     ap.add_argument(
         "--output-dir", type=Path, default=None,

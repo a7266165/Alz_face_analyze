@@ -387,19 +387,18 @@ def per_feature_effect_sizes(modality, feat_df, cohort, out_dir, top_n=10):
 # Main
 # ============================================================
 
-def _load_cohort_p_first_hc_all():
-    """新 cohort：first-visit P (CDR≥0.5 + npy fallback) + ALL NAD/ACS visits.
-    透過 grid 的 build_cohort_ad_vs_HCgroup("HC", arm="A") 套 COHORT_MODE 取得。
+def _load_cohort_via_grid(cohort_mode):
+    """共用 cohort loader：透過 grid 的 build_cohort_ad_vs_HCgroup("HC", arm="A")
+    套 COHORT_MODE 取得，支援 "p_first_hc_all" 與 "p_all_hc_all"。
     """
     import importlib.util
-    import os
     spec = importlib.util.spec_from_file_location(
         "run_4arm_deep_dive",
         Path(__file__).parent / "run_4arm_deep_dive.py",
     )
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
-    mod.COHORT_MODE = "p_first_hc_all"
+    mod.COHORT_MODE = cohort_mode
     cohort, _ = mod.build_cohort_ad_vs_HCgroup("HC", arm="A")
     cohort["base_id"] = cohort["ID"].astype(str).str.extract(r"^(.+)-\d+$")
     return cohort
@@ -413,10 +412,12 @@ def main():
     parser.add_argument("--healthy-strict", action="store_true", default=True)
     parser.add_argument("--skip-ci", action="store_true",
                          help="skip bootstrap AUC CI (for quick smoke test)")
-    parser.add_argument("--cohort-mode", choices=["default", "p_first_hc_all"],
+    parser.add_argument("--cohort-mode",
+                         choices=["default", "p_first_hc_all", "p_all_hc_all"],
                          default="default",
                          help="default=原 strict-HC + first-visit；"
-                              "p_first_hc_all=first-visit P + ALL NAD/ACS")
+                              "p_first_hc_all=first-visit P + ALL NAD/ACS；"
+                              "p_all_hc_all=ALL P visits + ALL NAD/ACS")
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR,
                          help="輸出根目錄 (default: workspace/arms_analysis/"
                               "per_arm/arm_a)")
@@ -432,8 +433,8 @@ def main():
     def dir_for(modality):
         return comparison_dir / MODALITY_DIRECTION[modality]
 
-    if args.cohort_mode == "p_first_hc_all":
-        cohort = _load_cohort_p_first_hc_all()
+    if args.cohort_mode in ("p_first_hc_all", "p_all_hc_all"):
+        cohort = _load_cohort_via_grid(args.cohort_mode)
     else:
         cohort = load_cohort(cdr_thresh=args.cdr_thresh,
                               healthy_strict=args.healthy_strict)

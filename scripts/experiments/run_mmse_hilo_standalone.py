@@ -605,9 +605,10 @@ def plot_emotion_heatmap(summary_df, out_path):
 # Main
 # ============================================================
 
-def _select_ad_p_first_hc_all(demo, metric):
-    """新 cohort：first-visit P + CDR≥0.5 + npy fallback。
-    呼叫 grid 的 _pick_first_visit_with_features 取得 AD pool。
+def _select_ad_via_grid(demo, metric, cohort_mode):
+    """新 cohort 共用 selector：
+      - p_first_hc_all : first-visit P + CDR≥0.5 + npy fallback (與 grid 一致)
+      - p_all_hc_all   : 保留所有 P visits + CDR≥0.5 + 必須有 embedding/landmark
     """
     import importlib.util
     spec = importlib.util.spec_from_file_location(
@@ -622,6 +623,8 @@ def _select_ad_p_first_hc_all(demo, metric):
                  demo[metric].notna() &
                  demo["Age"].notna()].copy()
     elig = elig.sort_values(["base_id", "visit"])
+    if cohort_mode == "p_all_hc_all":
+        return mod._keep_visits_with_features(elig)
     return mod._pick_first_visit_with_features(elig)
 
 
@@ -633,10 +636,12 @@ def main():
     parser.add_argument("--caliper", type=float, default=2.0)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--stat", choices=["ttest", "mannwhitney", "auto"], default="auto")
-    parser.add_argument("--cohort-mode", choices=["default", "p_first_hc_all"],
+    parser.add_argument("--cohort-mode",
+                         choices=["default", "p_first_hc_all", "p_all_hc_all"],
                          default="default",
                          help="default=原 first/latest visit；"
-                              "p_first_hc_all=first-visit + CDR≥0.5 + npy fallback")
+                              "p_first_hc_all=first-visit + CDR≥0.5 + npy fallback；"
+                              "p_all_hc_all=ALL P visits + CDR≥0.5（subject-first 配對）")
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR,
                          help="arm_b 輸出根目錄 (default: workspace/"
                               "arms_analysis/per_arm/arm_b)")
@@ -652,10 +657,10 @@ def main():
 
     # 1. Cohort
     demo = load_p_demographics()
-    if args.cohort_mode == "p_first_hc_all":
-        cohort = _select_ad_p_first_hc_all(demo, METRIC)
-        logger.info(f"P patients ({args.cohort_mode}, first-visit + CDR≥0.5 + "
-                     f"npy fallback): n={len(cohort)}")
+    if args.cohort_mode in ("p_first_hc_all", "p_all_hc_all"):
+        cohort = _select_ad_via_grid(demo, METRIC, args.cohort_mode)
+        logger.info(f"P patients ({args.cohort_mode}, CDR≥0.5 + features): "
+                     f"n={len(cohort)}")
     else:
         cohort = select_visit(demo, args.visit_selection)
         logger.info(f"P patients with {METRIC}+Age "
@@ -676,8 +681,11 @@ def main():
     cohort.to_csv(comparison_dir / "cohort.csv", index=False)
 
     # 4. 1:1 age matching
+    # p_all_hc_all 模式 AD 端有多 visit → 採 subject-first 兩階段配對
+    match_mode = ("subject_first" if args.cohort_mode == "p_all_hc_all"
+                   else "visit")
     matched, pairs_df, (minor_label, major_label) = match_1to1(
-        cohort, caliper=args.caliper, seed=args.seed
+        cohort, caliper=args.caliper, seed=args.seed, match_mode=match_mode,
     )
     pairs_df.to_csv(comparison_dir / "matched_pairs.csv", index=False)
 

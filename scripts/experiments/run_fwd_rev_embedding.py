@@ -44,17 +44,17 @@ from pathlib import Path
 
 # Early sys.argv sniff: COHORT_MODE must be set in env BEFORE we import
 # run_4arm_deep_dive (which reads it at module-load time, line 90).
-_COHORT_MODES = {"default", "p_first_hc_all"}
+_COHORT_MODES = {"default", "p_first_hc_all", "p_all_hc_all"}
 for _i, _arg in enumerate(sys.argv):
     if _arg == "--cohort-mode" and _i + 1 < len(sys.argv):
         _v = sys.argv[_i + 1]
         if _v in _COHORT_MODES:
-            os.environ["COHORT_MODE"] = "p_first_hc_all" if _v == "p_first_hc_all" else "default"
+            os.environ["COHORT_MODE"] = _v
         break
     if _arg.startswith("--cohort-mode="):
         _v = _arg.split("=", 1)[1]
         if _v in _COHORT_MODES:
-            os.environ["COHORT_MODE"] = "p_first_hc_all" if _v == "p_first_hc_all" else "default"
+            os.environ["COHORT_MODE"] = _v
         break
 
 import matplotlib
@@ -101,7 +101,7 @@ _DROP_CORR_METHOD = "pearson"
 _PCA_COMPONENTS = None       # None = disabled; int = n_components; float<1 = variance ratio
 _VISIT_MODE = "first"  # "first" = current behavior; "all" = include every qualifying visit per base_id
 _PHOTO_MODE = "mean"   # "mean" = current behavior (mean over 10 photos); "all" = one row per photo
-_COHORT_MODE = os.environ.get("COHORT_MODE", "default")  # "default"=p_first_hc_strict; "p_first_hc_all"
+_COHORT_MODE = os.environ.get("COHORT_MODE", "default")  # default=p_first_hc_strict / p_first_hc_all / p_all_hc_all
 _LR_C = 1.0  # LogisticRegression C; ≠1.0 inserts `logistic_C{value}/` segment & drops cell-level classifier leaf
 
 
@@ -125,10 +125,12 @@ def output_dir_for(feature_type, drop_corr=None, visit_mode="first",
                                                   photo=mean)
     cohort_mode='p_first_hc_all' -> p_first_hc_all/  (cohort default:
                                                        visit=all, photo=mean)
+    cohort_mode='p_all_hc_all'   -> p_all_hc_all/    (cohort default:
+                                                       visit=all, photo=mean)
 
     Suffix `__visit_X[__photo_Y]` is only appended when (visit, photo)
-    differ from the cohort's default — so p_first_hc_all + visit=all + photo=mean
-    yields plain `pca_100`, not `pca_100__visit_all`.
+    differ from the cohort's default — so p_first_hc_all / p_all_hc_all +
+    visit=all + photo=mean yields plain `pca_100`, not `pca_100__visit_all`.
 
     lr_C != 1.0 inserts `logistic_C{value}/` between cohort_dir and the
     `embedding_*classification` segment (and `cell_dir()` drops the trailing
@@ -142,7 +144,7 @@ def output_dir_for(feature_type, drop_corr=None, visit_mode="first",
         base = "no_drop"
     else:
         base = f"drop_{drop_corr}"
-    if cohort_mode == "p_first_hc_all":
+    if cohort_mode in ("p_first_hc_all", "p_all_hc_all"):
         default_visit, default_photo = "all", "mean"
     else:
         default_visit, default_photo = "first", "mean"
@@ -153,7 +155,12 @@ def output_dir_for(feature_type, drop_corr=None, visit_mode="first",
         suffix_parts.append(f"photo_{photo_mode}")
     suffix = ("__" + "_".join(suffix_parts)) if suffix_parts else ""
     drop_label = base + suffix
-    cohort_dir = "p_first_hc_all" if cohort_mode == "p_first_hc_all" else "p_first_hc_strict"
+    if cohort_mode == "p_first_hc_all":
+        cohort_dir = "p_first_hc_all"
+    elif cohort_mode == "p_all_hc_all":
+        cohort_dir = "p_all_hc_all"
+    else:
+        cohort_dir = "p_first_hc_strict"
     base_root = ARMS_ROOT / cohort_dir
     if lr_C != 1.0:
         base_root = base_root / f"logistic_C{lr_C:g}"
@@ -1413,11 +1420,11 @@ def main():
                              "behavior). 'all': keep all 10 photos as "
                              "individual training rows.")
     parser.add_argument("--cohort-mode", default="default",
-                        choices=["default", "p_first_hc_all"],
-                        help="'default' (p_first_hc_strict) or "
-                             "'p_first_hc_all' (HC = ALL NAD/ACS visits, no "
-                             "strict filter). Output goes to "
-                             "p_first_hc_<mode>/embedding_*classification/ . "
+                        choices=["default", "p_first_hc_all", "p_all_hc_all"],
+                        help="'default' (p_first_hc_strict), 'p_first_hc_all' "
+                             "(first-visit P + ALL NAD/ACS), or 'p_all_hc_all' "
+                             "(ALL P visits + ALL NAD/ACS). Output goes to "
+                             "p_<mode>/embedding_*classification/ . "
                              "Forwarded to run_4arm_deep_dive via env COHORT_MODE.")
     parser.add_argument("--n-folds", type=int, default=10)
     parser.add_argument("--seed", type=int, default=42)
@@ -1462,7 +1469,9 @@ def main():
     _LR_C = args.lr_C
     # Verify the early sniff matched (the import-time read is the source of
     # truth for run_4arm_deep_dive).
-    expected_env = "p_first_hc_all" if _COHORT_MODE == "p_first_hc_all" else "default"
+    expected_env = (_COHORT_MODE
+                     if _COHORT_MODE in ("p_first_hc_all", "p_all_hc_all")
+                     else "default")
     if os.environ.get("COHORT_MODE", "default") != expected_env:
         parser.error(
             f"COHORT_MODE env mismatch ({os.environ.get('COHORT_MODE')!r} "

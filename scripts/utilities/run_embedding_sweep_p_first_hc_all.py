@@ -124,7 +124,7 @@ def main():
                     help="Reducer specs (no_drop, pca_<N>, pca_<ratio>, "
                          "drop_<thr>). Default: full grid (32 reducers).")
     p.add_argument("--cohort-mode", default="p_first_hc_all",
-                    choices=["default", "p_first_hc_all"])
+                    choices=["default", "p_first_hc_all", "p_all_hc_all"])
     p.add_argument("--visit-mode", default="all", choices=["first", "all"])
     p.add_argument("--photo-mode", default="mean", choices=["mean", "all"])
     p.add_argument("--skip-existing", action="store_true",
