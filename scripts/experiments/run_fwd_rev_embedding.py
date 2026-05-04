@@ -178,6 +178,11 @@ class _TorchGPUPCA:
 
     def fit(self, X):
         import torch
+        # Seed torch RNG so randomized SVD in pca_lowrank is reproducible.
+        # Without this, the same input produces slightly different V across
+        # subprocess invocations (different y_score, different AUC).
+        torch.manual_seed(42)
+        torch.cuda.manual_seed_all(42)
         Xt = torch.from_numpy(np.ascontiguousarray(X, dtype=np.float32)).cuda()
         self.mean_ = Xt.mean(0, keepdim=True)
         # Clamp q to min(m, n) — sklearn PCA does this implicitly; torch.pca_lowrank errors.
@@ -1031,7 +1036,7 @@ def run_reverse(full_cohort, matched_cohort, embedding, classifier,
         "k_folds_used": k,
         "n_dropped_no_emb_matched": n_dropped_m,
         "n_dropped_no_emb_full": n_dropped_f,
-        "n_unmatched": n_unmatched,
+        "n_unmatched": n_unmatched_visits,
         "metrics_matched_oof": metrics_matched_oof,
         "metrics_full_ensemble": metrics_full_ensemble,
         "metrics_unmatched_ensemble": metrics_unmatched_ensemble,
