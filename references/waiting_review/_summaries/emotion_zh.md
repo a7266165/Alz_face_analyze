@@ -9,149 +9,150 @@
 - `○` = FER 方法論 / 資料集（generic，但 inform pipeline）
 - `△` = 邊緣相關
 
-排列：本檔已按 review status 重排 — **#1-16 強保留**、**#17-33 保留**、**#34-65 邊緣**。
+排列：本檔按 review status — **#1-8 強保留**、**#9-33 保留**、**#34-65 邊緣**。
 
 共 **65 篇**（44 篇已歸檔到 _archive_rejected/）。
 
 ---
 
+---
 
-## ━━━━━━━━━━━━━━ 強保留（16 篇）━━━━━━━━━━━━━━
+## ━━━━━━━━━━━━━━ 強保留（8 篇）━━━━━━━━━━━━━━
 
-## 1. ★ [--] **C 2024** — Multi-Dimensional Emotion Features for AD/MCI Diagnosis
+## 1. ★ [--] **Zheng 2025** — Augmenting Face Mesh for Dementia Detection
 
-長照 + 社區族群（HC=26 / MCI=23 / AD ≥60 歲）。**多維情緒特徵 + ML** 自動分類框架。
+語言 marker 受重視，臉部 marker 相對被忽略。**擴增臉部 mesh** 增強失智偵測 — 直接相關方法論進展。
 
 ## 2. ★ [PT] **Chen 2026** — MECO: Multimodal Dataset for Emotion + Cognitive Understanding in Older Adults
 
 **42 位老人，~38 小時多模態訊號，30,592 同步 segment**。針對既有資料集少見的「老化族群 + 認知衰退影響表情」設計。**新公開 dataset**。
 
-## 3. ★ [--] **Fan 2025** — Beyond the Clock: Multimodal Behavior Markers for MCI in CDT
-
-畫鐘測驗時收集**畫線軌跡 + 臉部表情 + 手部動作**三維度，多 head attention CNN 整合做 MCI 偵測。
-
-## 4. ★ [--] **L 2025** — AI-Based Facial Emotion Analysis for Differential Dementia Diagnosis
-
-64 位受試者標準 AV 刺激下的 valence + arousal 抽取，多任務 ML 分類（含 MCI 與不同失智 subtype）。
-
-## 5. ★ [--] **M 2025** — Emotion Recognition in MCI/AD Rehabilitation
-
-**30 位（14 MCI + 16 mild/moderate AD）**做有氧 + 認知訓練 + dual task + 創意活動的團體復健。**Kokoro Sensor** 攝影機分析臉部情緒。
-
-## 6. ★ [--] **MA 2025** — FE Video Analysis for AD Diagnosis (Russian)
+## 3. ★ [--] **MA 2025** — FE Video Analysis for AD Diagnosis (Russian)
 
 **37 HC + 34 NCD（16 mild + 18 major）**做特定診斷流程，**68 keypoints 非接觸捕捉**眉/眼/口運動學。
 
-## 7. ★ [PT] **Mu 2024** — Detect CI + Wellbeing from Remote Conversations
+## 4. ★ [PT] **Mu 2024** — Detect CI + Wellbeing from Remote Conversations
 
 **39 位 NC/MCI 老人遠端視訊對話**，抽臉部 + 聲音 + 語言 + 心血管特徵。**CDR 0.5 vs 0 的 AUC = 0.77**。同時量化社交孤立、神經質、心理福祉。
 
-## 8. ★ [--] **R 2026** — Audio-Visual Disentangled Representation for Elderly CI Screening
+## 5. ★ [--] **R 2026** — Audio-Visual Disentangled Representation for Elderly CI Screening
 
 社區規模 AD 篩檢需求。Audio-visual 共同訓 disentangled representation，可擴展非侵入 CI 評估。
 
-## 9. ★ [PT] **Z 2022** — Automated Facial Emotion Analysis in CI
-
-400 萬 face 預訓 CV DL 模型分析認知障礙者 passive viewing memory test 的臉部表情。**n=493**（HC + 不同 etiology / severity）。
-
-## 10. ★ [--] **Alzahrani 2025** — Facial Cues for CI Detection from In-the-Wild Data
+## 6. ★ [--] **Alzahrani 2025** — Facial Cues for CI Detection from In-the-Wild Data
 
 **眨眼率 (EBR)** + 頭部轉動率 (HTR) + 頭部動作統計特徵 (HMSF)。區分 ND/MCI/FMD/HC 的視覺特徵 in-the-wild 分析。
 
-## 11. ★ [--] **Hoang 2024** — Subject Harmonization for MCI Detection (Language + FE)
+## 7. ★ [--] **Hoang 2024** — Subject Harmonization for MCI Detection (Language + FE)
 
 MCI 是 AD 前驅期，數位 marker 經濟可行。語言 marker 已知有效；近年研究顯示**對話中情緒**也是補強信號。**受試者標準化** + 多模態提升 MCI 偵測。
 
-## 12. ★ [PT] **Lee 2024** — MCI Prediction with Multi-stream CNN
+## 8. ★ [PT] **Lee 2024** — MCI Prediction with Multi-stream CNN
 
 MCI 早期診斷成本/時間問題。**Multi-stream CNN** 從多模態資料偵測 MCI/失智。
 
-## 13. ★ [PT] **Matsuda 2025** — Smile Detection in Real-World Dementia Care (QOL Pilot)
 
-QOL 評估通常自評；失智進展後病人無法自評，改 proxy 評估。**真實照護場景的微笑偵測**作為客觀 QOL 評估的 pilot。
+## ━━━━━━━━━━━━━━ 保留（25 篇）━━━━━━━━━━━━━━
 
-## 14. ★ [--] **Sun 2023** — MC-ViViT: MCI Detection from Facial Videos (I-CONECT)
-
-**Multi-branch Classifier-ViViT**：抽 spatiotemporal 特徵 + 增強表徵。**用 I-CONECT 資料**。最高準確 90.63%（部分訪談視訊）。
-
-## 15. ★ [PT] **Takeshige-Amano 2024** — AD Detection via Smiles + Chatbot Conversations
-
-AD 認知狀態評估迫切。**99 HC + 93 AD/MCI** 與 chatbot 對話、抽微笑影像 + 視聽特徵。臉 + 聲 + 對話內容多 cue。
-
-## 16. ★ [--] **Zheng 2025** — Augmenting Face Mesh for Dementia Detection
-
-語言 marker 受重視，臉部 marker 相對被忽略。**擴增臉部 mesh** 增強失智偵測 — 直接相關方法論進展。
-
-
-## ━━━━━━━━━━━━━━ 保留（17 篇）━━━━━━━━━━━━━━
-
-## 17. ★ [PT] **Agitha 2026** — NeuroSense: Multimodal Early Dementia Screening
+## 9. ★ [PT] **Agitha 2026** — NeuroSense: Multimodal Early Dementia Screening
 
 整合語音 + EEG + 手寫 + 臉部情緒 + 認知測驗的 AI 多模態系統。每模態抽特徵後 ML 分類。
 
-## 18. ○ [PT] **Asgarian 2019** — Limitations of Facial Landmark Detection in Dementia Older Adults
+## 10. ○ [PT] **Asgarian 2019** — Limitations of Facial Landmark Detection in Dementia Older Adults
 
 臉部表情分析的前置 landmark 偵測在**老人 + 失智族群**有 systematic bias。實證研究：health status 影響 landmark 偵測效能；方法論層面警告。
 
-## 19. ★ [--] **Bergamasco 2025** — Automatic CI Detection Through Facial Emotion Analysis
+## 11. ★ [--] **Bergamasco 2025** — Automatic CI Detection Through Facial Emotion Analysis
 
 **32 位 CI + 28 位 HC**，標準視聽 emotion elicitation 視訊；訓 CNN 追蹤情緒演化作 CI 偵測。非侵入新方法。
 
-## 20. ★ [--] **Dong 2025** — Facial Micro-expressions for MCI (Clock Drawing Test)
+## 12. ★ [--] **Dong 2025** — Facial Micro-expressions for MCI (Clock Drawing Test)
 
 **畫鐘測驗**過程中錄製臉部視訊，分析 micro-expression 與認知功能的關聯，作為 MCI digital biomarker。
 
-## 21. ○ [--] **Girard 2025** — Computational Analysis of Expressive Behavior in Clinical Assessment
+## 13. ○ [--] **Girard 2025** — Computational Analysis of Expressive Behavior in Clinical Assessment
 
 概念性框架文：CV/語音/NLP 怎麼幫臨床心理評估增強信效度與規模化。
 
-## 22. ★ [--] **J 2021** — Facial Emotion Mimicry in Older Adults With/Without AD
+## 14. ★ [--] **J 2021** — Facial Emotion Mimicry in Older Adults With/Without AD
 
 25 位老人（HC + MCI + AD）用 **Kinect 3D** 錄製臉部，比較 6 種基本情緒模仿（mimicking）的適切性，跟自身典型表情比對。
 
-## 23. ◇ [--] **Matić 2026** — PD vs Depression FER Objectivization (Slovenian)
+## 15. ◇ [--] **Matić 2026** — PD vs Depression FER Objectivization (Slovenian)
 
 PD 的 hypomimia 跟憂鬱症臨床表型重疊難鑑別。**80 位（30 PD + 25 depression + 25 HC）**做 4 種 FE 任務（自發/自主/模仿/閱讀）。Hi-level Emotion 框架。
 
-## 24. ★ [PT] **Montenegro 2018** — AD Diagnosis via VR + Emotion Analysis (Thesis)
+## 16. ★ [PT] **Montenegro 2018** — AD Diagnosis via VR + Emotion Analysis (Thesis)
 
 PhD thesis：早期 AD 非侵入診斷。整合認知方法（VR 環境）+ 情緒分析。
 
-## 25. ★ [PT] **Sooriyaarachchi 2026** — Facial Expressions as Nexus for Health Assessment
+## 17. ★ [PT] **Sooriyaarachchi 2026** — Facial Expressions as Nexus for Health Assessment
 
 評估視角：臉部表情作為**行為 phenotype**，在認知衰退/疼痛等健康障礙下偏離 baseline。Review ML 進展。
 
-## 26. ★ [--] **Y 2023** — ML for Depression/Anxiety/Apathy in MCI (Speech + Facial)
+## 18. ★ [--] **Y 2023** — ML for Depression/Anxiety/Apathy in MCI (Speech + Facial)
 
 MCI 患者高比例有 depression/anxiety/apathy；這些症狀預測 MCI→失智進展。觀察性研究：**語音 + 臉部表情**作 ML 模型 input。
 
-## 27. ★ [PT] **Alsuhaibani 2024** — Review DL for Non-Invasive CI Detection
+## 19. ★ [PT] **Alsuhaibani 2024** — Review DL for Non-Invasive CI Detection
 
 Review：語音 + 語言 + 臉部 + 動作的 DL CI 偵測。**語音/語言基本上表現最高**，多模態結合（acoustic + linguistic）效益顯著。
 
-## 28. ★ [PT] **Gaya-Morey 2025** — DL FER for Elderly Systematic Review
+## 20. ★ [PT] **Gaya-Morey 2025** — DL FER for Elderly Systematic Review
 
 **31 篇近 10 年研究**的 systematic review。老人 FER 應用於 assisted living、心理健康、個人化照護。
 
-## 29. ★ [PT] **Jiang 2024** — Contactless Detection Emotion + CI in Elderly Review
+## 21. ★ [PT] **Jiang 2024** — Contactless Detection Emotion + CI in Elderly Review
 
 加拿大老化族群 ~11% 認知衰退。傳統診斷（MRI/PET/認知測驗）成本高。**Review 非接觸式偵測**（情緒 + CI）方法。
 
-## 30. ★ [--] **Kadali 2024** — CNN AD Detection from FE + Eye Movements
+## 22. ★ [--] **Kadali 2024** — CNN AD Detection from FE + Eye Movements
 
 CNN 結合臉部表情 + 眼動分析做 AD 偵測。Image preprocessing 多種方法。
 
-## 31. ★ [PT] **Karako 2024** — Predictive DL for Cognitive Risk
+## 23. ★ [PT] **Karako 2024** — Predictive DL for Cognitive Risk
 
 從**易取得資料**做 MCI 預測 DL。減少需要病人主動做認知測驗的限制（症狀出現時可能太晚）。
 
-## 32. ★ [PT] **Maji 2024** — Gamified AI for Early Dementia Detection
+## 24. ★ [PT] **Maji 2024** — Gamified AI for Early Dementia Detection
 
 整合**健康指標 CNN（1D）+ 臉部影像 CNN** 的遊戲化認知評估。1000 健康指標 + 1800 臉部影像資料訓練。
 
-## 33. ★ [PT] **Ruoranen 2023** — Memory Disorder Detection via FER
+## 25. ★ [PT] **Ruoranen 2023** — Memory Disorder Detection via FER
 
 記憶障礙下的表情變化（特別是 apathy 降低表情強度）。FER 程式應用於記憶障礙篩檢的論文（thesis）。
+
+## 26. ★ [--] **C 2024** — Multi-Dimensional Emotion Features for AD/MCI Diagnosis
+
+長照 + 社區族群（HC=26 / MCI=23 / AD ≥60 歲）。**多維情緒特徵 + ML** 自動分類框架。
+
+## 27. ★ [--] **Fan 2025** — Beyond the Clock: Multimodal Behavior Markers for MCI in CDT
+
+畫鐘測驗時收集**畫線軌跡 + 臉部表情 + 手部動作**三維度，多 head attention CNN 整合做 MCI 偵測。
+
+## 28. ★ [--] **L 2025** — AI-Based Facial Emotion Analysis for Differential Dementia Diagnosis
+
+64 位受試者標準 AV 刺激下的 valence + arousal 抽取，多任務 ML 分類（含 MCI 與不同失智 subtype）。
+
+## 29. ★ [--] **M 2025** — Emotion Recognition in MCI/AD Rehabilitation
+
+**30 位（14 MCI + 16 mild/moderate AD）**做有氧 + 認知訓練 + dual task + 創意活動的團體復健。**Kokoro Sensor** 攝影機分析臉部情緒。
+
+## 30. ★ [PT] **Z 2022** — Automated Facial Emotion Analysis in CI
+
+400 萬 face 預訓 CV DL 模型分析認知障礙者 passive viewing memory test 的臉部表情。**n=493**（HC + 不同 etiology / severity）。
+
+## 31. ★ [PT] **Matsuda 2025** — Smile Detection in Real-World Dementia Care (QOL Pilot)
+
+QOL 評估通常自評；失智進展後病人無法自評，改 proxy 評估。**真實照護場景的微笑偵測**作為客觀 QOL 評估的 pilot。
+
+## 32. ★ [--] **Sun 2023** — MC-ViViT: MCI Detection from Facial Videos (I-CONECT)
+
+**Multi-branch Classifier-ViViT**：抽 spatiotemporal 特徵 + 增強表徵。**用 I-CONECT 資料**。最高準確 90.63%（部分訪談視訊）。
+
+## 33. ★ [PT] **Takeshige-Amano 2024** — AD Detection via Smiles + Chatbot Conversations
+
+AD 認知狀態評估迫切。**99 HC + 93 AD/MCI** 與 chatbot 對話、抽微笑影像 + 視聽特徵。臉 + 聲 + 對話內容多 cue。
 
 
 ## ━━━━━━━━━━━━━━ 邊緣（32 篇）━━━━━━━━━━━━━━
