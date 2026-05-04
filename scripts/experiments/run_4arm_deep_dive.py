@@ -92,7 +92,7 @@ HC_SOURCE_MODE = os.environ.get("HC_SOURCE_MODE", "ACS")
 COHORT_MODE = os.environ.get("COHORT_MODE", "default")
 
 GRID_ROOT = (PROJECT_ROOT / "workspace" / "arms_analysis" /
-             "p_first_hc_strict" / "grid")
+             "grid" / "p_first_hc_strict")
 # Baseline output：grid/<hc_source.lower()>/，CLI subset 覆寫見 __main__。
 # mkdir 延後到 run_all() / __main__，避免 import 即建立非預期目錄。
 OUTPUT_DIR = GRID_ROOT / HC_SOURCE_MODE.lower()
@@ -754,7 +754,7 @@ def build_cohort_ad_hi_lo(arm="A", caliper=2.0, seed=SEED, metric="MMSE"):
         else:
             cohort_subdir = "p_first_hc_strict"
         arm_b_csv = (PROJECT_ROOT / "workspace" / "arms_analysis" /
-                     cohort_subdir / "per_arm" / "arm_b" /
+                     "per_arm" / cohort_subdir / "arm_b" /
                      f"{metric_low}_high_vs_low" / "matched_features.csv")
         if not arm_b_csv.exists():
             raise FileNotFoundError(

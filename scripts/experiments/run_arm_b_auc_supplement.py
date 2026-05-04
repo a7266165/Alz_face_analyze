@@ -40,7 +40,7 @@ load_embedding_asymmetry = _l1.load_embedding_asymmetry
 EMBEDDING_MODELS = _l1.EMBEDDING_MODELS
 
 DEFAULT_ARM_B_DIR = (PROJECT_ROOT / "workspace" / "arms_analysis" /
-                      "p_first_hc_strict" / "per_arm" / "arm_b")
+                      "per_arm" / "p_first_hc_strict" / "arm_b")
 # HILO_METRIC: MMSE (default) → mmse_high_vs_low/, CASI → casi_high_vs_low/
 METRIC = os.environ.get("HILO_METRIC", "MMSE")
 GROUP_COL = f"{METRIC.lower()}_group"

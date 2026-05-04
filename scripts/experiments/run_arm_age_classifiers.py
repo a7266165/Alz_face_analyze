@@ -52,7 +52,7 @@ _grid = _load_module("run_4arm_deep_dive",
 build_cohort_ad_vs_HCgroup = _grid.build_cohort_ad_vs_HCgroup
 
 DEFAULT_ARMS_ROOT = (PROJECT_ROOT / "workspace" / "arms_analysis" /
-                     "p_first_hc_strict" / "per_arm")
+                     "per_arm" / "p_first_hc_strict")
 AGES_FILE = (PROJECT_ROOT / "workspace" / "age" / "age_prediction" /
              "predicted_ages.json")
 COMPARISONS = ["HC", "NAD", "ACS"]

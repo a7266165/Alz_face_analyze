@@ -36,7 +36,7 @@ EMOTION_DIR = PROJECT_ROOT / "workspace" / "emotion" / "au_features" / "aggregat
 LANDMARK_FEATURES_CSV = PROJECT_ROOT / "workspace" / "asymmetry" / "features.csv"
 EMBEDDING_DIFF_DIR = PROJECT_ROOT / "workspace" / "embedding" / "features"
 DEFAULT_OUTPUT_DIR = (PROJECT_ROOT / "workspace" / "arms_analysis" /
-                       "p_first_hc_strict" / "per_arm" / "arm_b")
+                       "per_arm" / "p_first_hc_strict" / "arm_b")
 
 EMOTION_METHODS = [
     "openface", "libreface", "pyfeat", "dan",

@@ -45,7 +45,7 @@ DELTAS_CSV = PROJECT_ROOT / "workspace" / "longitudinal" / "patient_deltas.csv"
 LANDMARK_LONG_CSV = (PROJECT_ROOT / "workspace" / "asymmetry" / "analysis" /
                      "longitudinal_landmark_deltas.csv")
 OUTPUT_DIR = (PROJECT_ROOT / "workspace" / "arms_analysis" /
-              "p_first_hc_strict" / "per_arm" / "arm_c")
+              "per_arm" / "p_first_hc_strict" / "arm_c")
 
 EMOTIONS = ["anger", "disgust", "fear", "happiness", "sadness",
             "surprise", "neutral"]
