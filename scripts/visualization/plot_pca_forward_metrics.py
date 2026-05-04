@@ -116,13 +116,23 @@ def main():
             for col_idx, emb in enumerate(EMBEDDINGS):
                 ax = axes[row_idx, col_idx]
                 emb_sub = sub[sub["embedding"] == emb]
-                for clf, grp in emb_sub.groupby("classifier"):
+                for (clf, lr_C), grp in emb_sub.groupby(
+                    ["classifier", "lr_C"], dropna=False
+                ):
                     grp = grp.sort_values("pca_x")
+                    label = (f"{clf}/C={lr_C:g}"
+                             if clf == "logistic" and pd.notna(lr_C) else clf)
+                    base_color = EMB_CLF_COLOR.get((emb, clf),
+                                                    EMB_COLOR.get(emb))
+                    color = base_color
+                    linestyle = EMB_CLF_LINESTYLE.get(clf, "-")
+                    if clf == "logistic" and pd.notna(lr_C) and float(lr_C) != 1.0:
+                        # Distinguish second C value with dotted line (LR keeps
+                        # solid for C=1).
+                        linestyle = ":"
                     ax.plot(grp["pca_x"], grp[metric_col], marker="o",
-                            label=clf, linewidth=1.5,
-                            color=EMB_CLF_COLOR.get((emb, clf),
-                                                     EMB_COLOR.get(emb)),
-                            linestyle=EMB_CLF_LINESTYLE.get(clf, "-"))
+                            label=label, linewidth=1.5,
+                            color=color, linestyle=linestyle)
                 ax.axhline(chance, color="grey", linestyle=":", linewidth=0.8)
                 ax.grid(alpha=0.3, which="both")
                 if row_idx == 0:
