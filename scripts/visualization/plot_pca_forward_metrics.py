@@ -35,6 +35,10 @@ ASYM_VARIANTS = ["difference", "absolute_difference", "average",
 
 
 def resolve_paths(variant, cohort_mode="default"):
+    from src.config import (
+        EMBEDDING_CLASSIFICATION_DIR,
+        EMBEDDING_ASYMMETRY_CLASSIFICATION_DIR,
+    )
     if cohort_mode == "p_first_hc_all":
         cohort_dir = "p_first_hc_all"
     elif cohort_mode == "p_all_hc_all":
@@ -42,10 +46,9 @@ def resolve_paths(variant, cohort_mode="default"):
     else:
         cohort_dir = "p_first_hc_strict"
     if variant is None:
-        return (ARMS_ROOT / cohort_dir / "embedding_classification"
-                / "pca" / "_summary")
-    return (ARMS_ROOT / cohort_dir / "embedding_asymmetry_classification"
-            / variant / "pca" / "_summary")
+        return EMBEDDING_CLASSIFICATION_DIR / cohort_dir / "pca" / "_summary"
+    return (EMBEDDING_ASYMMETRY_CLASSIFICATION_DIR
+            / variant / cohort_dir / "pca" / "_summary")
 
 INPUT_DIM = {"arcface": 512, "topofr": 512, "dlib": 128}
 EMB_CLF_COLOR = {

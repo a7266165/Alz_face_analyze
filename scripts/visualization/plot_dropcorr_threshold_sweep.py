@@ -36,16 +36,19 @@ logger = logging.getLogger(__name__)
 
 def resolve_paths(variant, cohort_mode="default"):
     """Return (class_root, out, reducer_dirs)."""
+    from src.config import (
+        EMBEDDING_CLASSIFICATION_DIR,
+        EMBEDDING_ASYMMETRY_CLASSIFICATION_DIR,
+    )
     cohort_dir = {
         "default": "p_first_hc_strict",
         "p_first_hc_all": "p_first_hc_all",
         "p_all_hc_all": "p_all_hc_all",
     }[cohort_mode]
     if variant is None:
-        class_root = ARMS_ROOT / cohort_dir / "embedding_classification"
+        class_root = EMBEDDING_CLASSIFICATION_DIR / cohort_dir
     else:
-        class_root = (ARMS_ROOT / cohort_dir
-                      / "embedding_asymmetry_classification" / variant)
+        class_root = EMBEDDING_ASYMMETRY_CLASSIFICATION_DIR / variant / cohort_dir
     out = class_root / "drop_feats" / "_summary"
     reducer_dirs = []
     if class_root.is_dir():

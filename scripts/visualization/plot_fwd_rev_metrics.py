@@ -27,8 +27,11 @@ import numpy as np
 import pandas as pd
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+import sys as _sys
+_sys.path.insert(0, str(PROJECT_ROOT))
+from src.config import EMBEDDING_CLASSIFICATION_DIR
 ARMS_ROOT = PROJECT_ROOT / "workspace" / "arms_analysis"
-DEFAULT_ROOT = ARMS_ROOT / "p_first_hc_strict" / "embedding_classification" / "no_drop"
+DEFAULT_ROOT = EMBEDDING_CLASSIFICATION_DIR / "p_first_hc_strict" / "no_drop"
 ROOT = DEFAULT_ROOT  # set by main() when --root is passed
 SUMMARY = ROOT / "_summary"
 

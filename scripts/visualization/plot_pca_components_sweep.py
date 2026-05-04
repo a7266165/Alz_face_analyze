@@ -68,6 +68,10 @@ def resolve_paths(variant, cohort_mode="default"):
                               to use for cumulative eigenvalue ('original' for
                               default, variant name for asymmetry).
     """
+    from src.config import (
+        EMBEDDING_CLASSIFICATION_DIR,
+        EMBEDDING_ASYMMETRY_CLASSIFICATION_DIR,
+    )
     if cohort_mode == "p_first_hc_all":
         cohort_dir = "p_first_hc_all"
     elif cohort_mode == "p_all_hc_all":
@@ -75,12 +79,12 @@ def resolve_paths(variant, cohort_mode="default"):
     else:
         cohort_dir = "p_first_hc_strict"
     if variant is None:
-        class_root = ARMS_ROOT / cohort_dir / "embedding_classification"
+        class_root = EMBEDDING_CLASSIFICATION_DIR / cohort_dir
         out = class_root / "pca" / "_summary"
         feature_subdir = "original"
     else:
-        class_root = (ARMS_ROOT / cohort_dir
-                      / "embedding_asymmetry_classification" / variant)
+        class_root = (EMBEDDING_ASYMMETRY_CLASSIFICATION_DIR
+                      / variant / cohort_dir)
         out = class_root / "pca" / "_summary"
         feature_subdir = variant
 

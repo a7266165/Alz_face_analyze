@@ -185,17 +185,12 @@ def _iter_reducer_dirs(class_root):
 
 
 def walk_root(root, label):
+    """Walk a per-cohort root (root = <tree>/<cohort>/ or <tree>/<variant>/<cohort>/);
+    children directly under root are reducer top-levels (no_drop, pca, drop_feats)."""
     if not root.exists():
         return 0, 0
     n_files, n_rows = 0, 0
-    if root.name == "embedding_asymmetry_classification":
-        # feature_type pivots before reducer
-        candidates = []
-        for ft in sorted(root.iterdir()):
-            if ft.is_dir() and not ft.name.startswith("_"):
-                candidates.extend(_iter_reducer_dirs(ft))
-    else:
-        candidates = list(_iter_reducer_dirs(root))
+    candidates = list(_iter_reducer_dirs(root))
     for vdir in candidates:
         n = build_one(vdir)
         if n > 0:
@@ -207,6 +202,10 @@ def walk_root(root, label):
 
 
 def main():
+    from src.config import (
+        EMBEDDING_CLASSIFICATION_DIR,
+        EMBEDDING_ASYMMETRY_CLASSIFICATION_DIR,
+    )
     p = argparse.ArgumentParser(__doc__)
     p.add_argument("--cohort-mode", default="default",
                     choices=["default", "p_first_hc_all", "p_all_hc_all"])
@@ -217,13 +216,24 @@ def main():
         cohort_dir = "p_all_hc_all"
     else:
         cohort_dir = "p_first_hc_strict"
-    base = PROJECT_ROOT / "workspace" / "arms_analysis" / cohort_dir
 
     total_files, total_rows = 0, 0
-    for sub in ("embedding_classification", "embedding_asymmetry_classification"):
-        f, r = walk_root(base / sub, sub)
-        total_files += f
-        total_rows += r
+    # Original embedding tree: <cohort>/<reducer>/...
+    f, r = walk_root(EMBEDDING_CLASSIFICATION_DIR / cohort_dir,
+                     "embedding_classification")
+    total_files += f
+    total_rows += r
+    # Asymmetry tree: <variant>/<cohort>/<reducer>/...
+    if EMBEDDING_ASYMMETRY_CLASSIFICATION_DIR.is_dir():
+        for variant_dir in sorted(EMBEDDING_ASYMMETRY_CLASSIFICATION_DIR.iterdir()):
+            if not variant_dir.is_dir() or variant_dir.name.startswith("_"):
+                continue
+            cohort_root = variant_dir / cohort_dir
+            if cohort_root.is_dir():
+                f, r = walk_root(cohort_root,
+                                 f"embedding_asymmetry_classification/{variant_dir.name}")
+                total_files += f
+                total_rows += r
     print(f"\nTOTAL: {total_files} files, {total_rows} rows")
 
 
