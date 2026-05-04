@@ -333,6 +333,28 @@ build_cohort_ad_vs_HCgroup = _grid.build_cohort_ad_vs_HCgroup
 
 _PRED_AGES_CACHE = None
 
+# Training-output caches keyed by _train_cache_key(...). Lets the 3 ad_vs_*
+# partitions share one trained model per (embedding, classifier, reducer,
+# feature_type, ...) since they only differ in eval-time keep_groups filtering.
+# Cleared implicitly per subprocess (driver spawns one process per outer combo).
+# IMPORTANT: when adding a new module-level state that affects training, also
+# add it to _train_cache_key below or risk false cache hits.
+_FWD_TRAIN_CACHE = {}
+_REV_TRAIN_CACHE = {}
+
+
+def _train_cache_key(partition, embedding, classifier, n_folds, seed):
+    """Tuple key uniquely identifying a training run. ad_vs_hc / ad_vs_nad /
+    ad_vs_acs collapse to one family slot; mmse_hilo / casi_hilo each get their
+    own slot (no false sharing — their cohorts are unique)."""
+    family = ("ad_vs_hcgroup_HC"
+              if partition in {"ad_vs_hc", "ad_vs_nad", "ad_vs_acs"}
+              else partition)
+    return (family, embedding, classifier,
+            _FEATURE_TYPE, _DROP_CORR_THRESHOLD, _DROP_CORR_METHOD,
+            _PCA_COMPONENTS, _VISIT_MODE, _PHOTO_MODE, _LR_C,
+            n_folds, seed)
+
 
 def _load_pred_ages():
     """Load predicted_ages.json (cached). Used for the matched-pair filter
@@ -722,12 +744,10 @@ def _aggregate_to_subject(scores_df, score_cols):
     return scores_df.groupby("base_id", as_index=False).agg(agg_dict)
 
 
-def run_forward(full_cohort, matched_cohort, embedding, classifier,
-                n_folds=10, seed=42, keep_groups=None):
-    """Train on full_cohort 10-fold; evaluate on full + matched (optionally
-    subset by group). When keep_groups is set, training is unchanged but
-    the evaluation set is filtered to subjects whose `group` ∈ keep_groups
-    (and matched pairs that lose a side are dropped)."""
+def _forward_train(full_cohort, embedding, classifier, n_folds, seed):
+    """Train-cohort-only side of forward: 10-fold OOF + union-level metrics.
+    Output is independent of keep_groups (eval-time filter), so this is
+    cacheable per (training cohort, embedding, classifier, reducer, ...)."""
     X, y, base_ids, ids, n_dropped = build_feature_matrix(full_cohort, embedding)
     n_groups = len(np.unique(base_ids))
     k = min(n_folds, n_groups)
@@ -753,47 +773,22 @@ def run_forward(full_cohort, matched_cohort, embedding, classifier,
         oof_score[tei] = clf.predict_proba(Xte)[:, 1]
         oof_fold[tei] = fold_idx
 
-    oof_df = pd.DataFrame({
+    oof_df_base = pd.DataFrame({
         "ID": ids, "base_id": base_ids, "y_true": y,
         "y_score": oof_score, "fold": oof_fold,
     })
-
     # Aggregate row-level OOF (multiple rows per base_id when visit/photo mode
-    # is "all") back to subject-level scores for matched-pair eval (matching
-    # is defined at first-visit subject level so subject-level scores there).
-    oof_subj = _aggregate_to_subject(oof_df, score_cols=["y_score"])
+    # is "all") back to subject-level for matched-pair eval (matching is
+    # defined at first-visit subject level).
+    oof_subj = _aggregate_to_subject(oof_df_base, score_cols=["y_score"])
 
-    # Full-cohort metrics: visit-level. Counts every visit row that entered
-    # training (1 row per visit when photo=mean, 10 rows when photo=all).
-    # `n_pos` / `n_neg` here count visits, matching the visit_level OOF used
-    # to derive AUC/CM/etc.
+    # Full-cohort (union) metrics: visit-level. Stays union-level by design —
+    # the 3 ad_vs_* cells share this value via the cache.
     metrics_full = compute_clf_metrics(
-        oof_df["y_true"].to_numpy(int),
-        oof_df["y_score"].to_numpy(float),
+        oof_df_base["y_true"].to_numpy(int),
+        oof_df_base["y_score"].to_numpy(float),
         seed=seed,
     )
-
-    # Matched-cohort eval: optionally subset by group (ad_vs_nad / ad_vs_acs).
-    # Collapse the (possibly visit-expanded) matched cohort to one row per
-    # base_id by keeping the first-visit row (canonical pair member).
-    matched_first = matched_cohort.sort_values(
-        ["base_id"] + (["visit"] if "visit" in matched_cohort.columns else [])
-    ).drop_duplicates("base_id", keep="first")
-    if keep_groups is not None:
-        matched_eval = matched_first[matched_first["group"].isin(keep_groups)]
-        matched_eval = _filter_pairs_complete(matched_eval)
-    else:
-        matched_eval = matched_first
-
-    matched_min = matched_eval[["base_id", "ID", "pair_id", "label"]].copy()
-    oof_matched = matched_min.merge(oof_subj[["base_id", "y_score"]],
-                                      on="base_id", how="inner")
-    metrics_matched = compute_clf_metrics(oof_matched["label"].to_numpy(int),
-                                            oof_matched["y_score"].to_numpy(float),
-                                            seed=seed)
-    paired = paired_wilcoxon_by_pair(oof_matched)
-
-    oof_df["in_matched"] = oof_df["base_id"].isin(matched_eval["base_id"]).astype(int)
 
     drop_corr_info = {
         "reducer": _reducer_label(),
@@ -808,8 +803,74 @@ def run_forward(full_cohort, matched_cohort, embedding, classifier,
         "photo_mode": _PHOTO_MODE,
     }
 
-    return (oof_df, oof_subj, metrics_full, metrics_matched, paired, n_folds,
-            n_dropped, k, matched_eval, drop_corr_info)
+    return {
+        "oof_df_base": oof_df_base,    # without in_matched col
+        "oof_subj": oof_subj,
+        "metrics_full": metrics_full,
+        "drop_corr_info": drop_corr_info,
+        "n_dropped": n_dropped,
+        "k": k,
+    }
+
+
+def _forward_eval(train, matched_cohort, keep_groups, seed):
+    """Eval-time (keep_groups) part: matched-subset metrics + per-cell oof_df
+    with in_matched column. Always runs (cheap)."""
+    matched_first = matched_cohort.sort_values(
+        ["base_id"] + (["visit"] if "visit" in matched_cohort.columns else [])
+    ).drop_duplicates("base_id", keep="first")
+    if keep_groups is not None:
+        matched_eval = matched_first[matched_first["group"].isin(keep_groups)]
+        matched_eval = _filter_pairs_complete(matched_eval)
+    else:
+        matched_eval = matched_first
+
+    matched_min = matched_eval[["base_id", "ID", "pair_id", "label"]].copy()
+    oof_matched = matched_min.merge(
+        train["oof_subj"][["base_id", "y_score"]],
+        on="base_id", how="inner",
+    )
+    metrics_matched = compute_clf_metrics(
+        oof_matched["label"].to_numpy(int),
+        oof_matched["y_score"].to_numpy(float),
+        seed=seed,
+    )
+    paired = paired_wilcoxon_by_pair(oof_matched)
+
+    # Per-cell oof_df with partition-specific in_matched column.
+    oof_df = train["oof_df_base"].copy()
+    oof_df["in_matched"] = oof_df["base_id"].isin(
+        matched_eval["base_id"]
+    ).astype(int)
+
+    return oof_df, metrics_matched, paired, matched_eval
+
+
+def run_forward(full_cohort, matched_cohort, embedding, classifier,
+                n_folds=10, seed=42, keep_groups=None, partition=None):
+    """Train on full_cohort 10-fold; evaluate on full + matched (optionally
+    subset by group). When keep_groups is set, training is unchanged but
+    the evaluation set is filtered to subjects whose `group` ∈ keep_groups
+    (and matched pairs that lose a side are dropped).
+
+    Caches the training output keyed by `partition` family + module-level
+    state so the 3 ad_vs_* partitions share one training pass."""
+    cache_key = _train_cache_key(partition, embedding, classifier, n_folds, seed)
+    train = _FWD_TRAIN_CACHE.get(cache_key)
+    if train is None:
+        train = _forward_train(full_cohort, embedding, classifier, n_folds, seed)
+        _FWD_TRAIN_CACHE[cache_key] = train
+        logger.info(f"  forward: trained from scratch (cache miss)")
+    else:
+        logger.info(f"  forward: reused cached training (cache hit)")
+
+    oof_df, metrics_matched, paired, matched_eval = _forward_eval(
+        train, matched_cohort, keep_groups, seed,
+    )
+
+    return (oof_df, train["oof_subj"], train["metrics_full"], metrics_matched,
+            paired, n_folds, train["n_dropped"], train["k"], matched_eval,
+            train["drop_corr_info"])
 
 
 def plot_paired_scatter(matched_with_score, partition, out_path):
@@ -843,27 +904,11 @@ def plot_paired_scatter(matched_with_score, partition, out_path):
 # Reverse strategy
 # ============================================================
 
-def run_reverse(full_cohort, matched_cohort, embedding, classifier,
-                n_folds=10, seed=42, keep_groups=None):
-    """Reverse strategy with two model variants:
-
-    (a) Ensemble: 10-fold GroupKFold on matched cohort → 10 fold-models, mean
-        their predict_proba over the full cohort. (Existing.)
-    (b) Single: train one model on the full matched cohort (no CV split),
-        apply to the full cohort. Cleaner for unmatched evaluation since
-        every unmatched subject is a true held-out test for it.
-
-    When keep_groups is set, training is unchanged but evaluation cohorts
-    (full + matched) are filtered to subjects whose `group` ∈ keep_groups.
-
-    Reported metrics:
-      - matched_oof:           ensemble OOF on matched (validation domain)
-      - full_ensemble:         ensemble on full cohort (matched ∪ unmatched)
-      - unmatched_ensemble:    ensemble on unmatched-only
-      - unmatched_single:      single-model on unmatched-only
-      - matched_single_train:  single-model on matched-only (training-domain
-                                 reference, expected to be over-optimistic)
-    """
+def _reverse_train(full_cohort, matched_cohort, embedding, classifier,
+                   n_folds, seed):
+    """Train-cohort-only side of reverse: 10-fold ensemble + single fits +
+    union-level metrics. Output is independent of keep_groups so it can be
+    shared across the 3 ad_vs_* partitions."""
     Xm, ym, gm, idsm, n_dropped_m = build_feature_matrix(matched_cohort, embedding)
     Xf, yf, _gf, idsf, n_dropped_f = build_feature_matrix(full_cohort, embedding)
 
@@ -940,34 +985,14 @@ def run_reverse(full_cohort, matched_cohort, embedding, classifier,
         matched_base_ids
     ).astype(int)
 
-    # ---- Optional eval-time group filter (derived views) ----
-    if keep_groups is not None:
-        bid_to_group_m = matched_cohort.set_index("base_id")["group"].to_dict()
-        keep_m_subj = np.array([
-            bid_to_group_m.get(b) in keep_groups
-            for b in matched_oof_subj["base_id"]
-        ])
-    else:
-        keep_m_subj = np.ones(len(matched_oof_subj), dtype=bool)
-    eval_y_m_subj = matched_oof_subj["y_true"].to_numpy(int)[keep_m_subj]
-    eval_score_m_subj = matched_oof_subj["y_score"].to_numpy(float)[keep_m_subj]
-
-    # ---- Metrics ----
-    # matched_oof: subject-level (matching is defined at subject level).
-    metrics_matched_oof = (
-        compute_clf_metrics(eval_y_m_subj, eval_score_m_subj, seed=seed)
-        if len(eval_y_m_subj) >= 5 and len(np.unique(eval_y_m_subj)) > 1 else None
-    )
-    # full / unmatched: visit-level (count every visit row that entered training).
+    # ---- Union-level metrics (no keep_groups dependency, cacheable) ----
     yf_visit = full_df_rows["y_true"].to_numpy(int)
     full_score_ens_visit = full_df_rows["score_ensemble"].to_numpy(float)
     full_score_single_visit = full_df_rows["score_single"].to_numpy(float)
     metrics_full_ensemble = compute_clf_metrics(yf_visit, full_score_ens_visit,
                                                   seed=seed)
-
     metrics_unmatched_ensemble = None
     metrics_unmatched_single = None
-    metrics_matched_single_train = None
     if n_unmatched_visits >= 5 and \
        len(np.unique(yf_visit[~in_matched_visit])) > 1:
         metrics_unmatched_ensemble = compute_clf_metrics(
@@ -978,34 +1003,6 @@ def run_reverse(full_cohort, matched_cohort, embedding, classifier,
             yf_visit[~in_matched_visit],
             full_score_single_visit[~in_matched_visit], seed=seed,
         )
-    # matched_single_train: subject-level (parallel to matched_oof so the two
-    # are directly comparable; matched eval population stays subject-level).
-    yf_subj = full_subj["y_true"].to_numpy(int)
-    full_score_single_subj = full_subj["score_single"].to_numpy(float)
-    if keep_groups is not None:
-        bid_to_group_all = matched_cohort.set_index("base_id")["group"].to_dict()
-        matched_keep_base = {b for b in matched_base_ids
-                              if bid_to_group_all.get(b) in keep_groups}
-    else:
-        matched_keep_base = matched_base_ids
-    mask_matched_eval = np.array([
-        b in matched_keep_base for b in full_subj["base_id"]
-    ])
-    if mask_matched_eval.sum() >= 5 and \
-       len(np.unique(yf_subj[mask_matched_eval])) > 1:
-        metrics_matched_single_train = compute_clf_metrics(
-            yf_subj[mask_matched_eval],
-            full_score_single_subj[mask_matched_eval], seed=seed,
-        )
-
-    # scores CSV: subject-level (in_matched reflects matched-eval population
-    # if keep_groups was set; otherwise reflects whether the subject's base_id
-    # is in the matched training pool).
-    full_df = full_subj.copy()
-    if keep_groups is not None:
-        full_df["in_matched"] = full_df["base_id"].isin(matched_keep_base).astype(int)
-    full_df = full_df[["ID", "y_true", "score_ensemble", "score_single",
-                        "in_matched"]]
 
     drop_corr_info = {
         "reducer": _reducer_label(),
@@ -1023,26 +1020,141 @@ def run_reverse(full_cohort, matched_cohort, embedding, classifier,
         "photo_mode": _PHOTO_MODE,
     }
 
-    # Visit-level scores DataFrame (preserved so post-hoc visit-level metric
-    # recomputation doesn't require re-running the reverse pipeline).
+    # Visit-level scores DataFrame (in_matched reflects union training cohort,
+    # not keep_groups — preserved so post-hoc visit-level metric recomputation
+    # doesn't require re-running the reverse pipeline).
     full_df_visits = full_df_rows[
         ["ID", "base_id", "y_true", "score_ensemble", "score_single",
          "in_matched"]
     ].copy()
 
     return {
-        "scores_df": full_df,
-        "scores_df_visits": full_df_visits,
-        "k_folds_used": k,
-        "n_dropped_no_emb_matched": n_dropped_m,
-        "n_dropped_no_emb_full": n_dropped_f,
-        "n_unmatched": n_unmatched_visits,
-        "metrics_matched_oof": metrics_matched_oof,
+        "matched_oof_subj": matched_oof_subj,
+        "full_subj": full_subj,
+        "full_df_visits": full_df_visits,
+        "matched_base_ids": matched_base_ids,
+        "n_unmatched_visits": n_unmatched_visits,
         "metrics_full_ensemble": metrics_full_ensemble,
         "metrics_unmatched_ensemble": metrics_unmatched_ensemble,
         "metrics_unmatched_single": metrics_unmatched_single,
-        "metrics_matched_single_train": metrics_matched_single_train,
         "drop_corr_info": drop_corr_info,
+        "k": k,
+        "n_dropped_m": n_dropped_m,
+        "n_dropped_f": n_dropped_f,
+    }
+
+
+def _reverse_eval(train, matched_cohort, keep_groups, seed):
+    """Eval-time (keep_groups) part: matched-subset metrics + per-cell
+    scores_df with keep_groups-aware in_matched col."""
+    matched_oof_subj = train["matched_oof_subj"]
+    full_subj = train["full_subj"]
+    matched_base_ids = train["matched_base_ids"]
+
+    if keep_groups is not None:
+        bid_to_group_m = matched_cohort.set_index("base_id")["group"].to_dict()
+        keep_m_subj = np.array([
+            bid_to_group_m.get(b) in keep_groups
+            for b in matched_oof_subj["base_id"]
+        ])
+    else:
+        keep_m_subj = np.ones(len(matched_oof_subj), dtype=bool)
+    eval_y_m_subj = matched_oof_subj["y_true"].to_numpy(int)[keep_m_subj]
+    eval_score_m_subj = matched_oof_subj["y_score"].to_numpy(float)[keep_m_subj]
+
+    # matched_oof: subject-level (matching is defined at subject level).
+    metrics_matched_oof = (
+        compute_clf_metrics(eval_y_m_subj, eval_score_m_subj, seed=seed)
+        if len(eval_y_m_subj) >= 5 and len(np.unique(eval_y_m_subj)) > 1 else None
+    )
+
+    # matched_single_train: subject-level (parallel to matched_oof so the two
+    # are directly comparable; matched eval population stays subject-level).
+    yf_subj = full_subj["y_true"].to_numpy(int)
+    full_score_single_subj = full_subj["score_single"].to_numpy(float)
+    if keep_groups is not None:
+        bid_to_group_all = matched_cohort.set_index("base_id")["group"].to_dict()
+        matched_keep_base = {b for b in matched_base_ids
+                              if bid_to_group_all.get(b) in keep_groups}
+    else:
+        matched_keep_base = matched_base_ids
+    mask_matched_eval = np.array([
+        b in matched_keep_base for b in full_subj["base_id"]
+    ])
+    metrics_matched_single_train = None
+    if mask_matched_eval.sum() >= 5 and \
+       len(np.unique(yf_subj[mask_matched_eval])) > 1:
+        metrics_matched_single_train = compute_clf_metrics(
+            yf_subj[mask_matched_eval],
+            full_score_single_subj[mask_matched_eval], seed=seed,
+        )
+
+    # scores CSV: subject-level (in_matched reflects matched-eval population
+    # if keep_groups was set; otherwise reflects whether the subject's base_id
+    # is in the matched training pool).
+    full_df = full_subj.copy()
+    if keep_groups is not None:
+        full_df["in_matched"] = full_df["base_id"].isin(matched_keep_base).astype(int)
+    full_df = full_df[["ID", "y_true", "score_ensemble", "score_single",
+                        "in_matched"]]
+
+    return {
+        "scores_df": full_df,
+        "metrics_matched_oof": metrics_matched_oof,
+        "metrics_matched_single_train": metrics_matched_single_train,
+    }
+
+
+def run_reverse(full_cohort, matched_cohort, embedding, classifier,
+                n_folds=10, seed=42, keep_groups=None, partition=None):
+    """Reverse strategy with two model variants:
+
+    (a) Ensemble: 10-fold GroupKFold on matched cohort → 10 fold-models, mean
+        their predict_proba over the full cohort.
+    (b) Single: train one model on the full matched cohort (no CV split),
+        apply to the full cohort. Cleaner for unmatched evaluation since
+        every unmatched subject is a true held-out test for it.
+
+    When keep_groups is set, training is unchanged but evaluation cohorts
+    (matched_oof, matched_single_train, scores_df in_matched) are filtered
+    to subjects whose `group` ∈ keep_groups.
+
+    Caches training output keyed by `partition` family so the 3 ad_vs_*
+    partitions share one training pass.
+
+    Reported metrics:
+      - matched_oof:           ensemble OOF on matched (validation domain)
+      - full_ensemble:         ensemble on full cohort (matched ∪ unmatched)
+      - unmatched_ensemble:    ensemble on unmatched-only
+      - unmatched_single:      single-model on unmatched-only
+      - matched_single_train:  single-model on matched-only (training-domain
+                                 reference, expected to be over-optimistic)
+    """
+    cache_key = _train_cache_key(partition, embedding, classifier, n_folds, seed)
+    train = _REV_TRAIN_CACHE.get(cache_key)
+    if train is None:
+        train = _reverse_train(full_cohort, matched_cohort, embedding,
+                                classifier, n_folds, seed)
+        _REV_TRAIN_CACHE[cache_key] = train
+        logger.info(f"  reverse: trained from scratch (cache miss)")
+    else:
+        logger.info(f"  reverse: reused cached training (cache hit)")
+
+    ev = _reverse_eval(train, matched_cohort, keep_groups, seed)
+
+    return {
+        "scores_df": ev["scores_df"],
+        "scores_df_visits": train["full_df_visits"],
+        "k_folds_used": train["k"],
+        "n_dropped_no_emb_matched": train["n_dropped_m"],
+        "n_dropped_no_emb_full": train["n_dropped_f"],
+        "n_unmatched": train["n_unmatched_visits"],
+        "metrics_matched_oof": ev["metrics_matched_oof"],
+        "metrics_full_ensemble": train["metrics_full_ensemble"],
+        "metrics_unmatched_ensemble": train["metrics_unmatched_ensemble"],
+        "metrics_unmatched_single": train["metrics_unmatched_single"],
+        "metrics_matched_single_train": ev["metrics_matched_single_train"],
+        "drop_corr_info": train["drop_corr_info"],
     }
 
 
@@ -1116,6 +1228,7 @@ def run_cell(partition, embedding, classifier, strategy, n_folds=10, seed=42):
          matched_eval, drop_corr_info) = run_forward(
             full, matched, embedding, classifier,
             n_folds=n_folds, seed=seed, keep_groups=keep_groups,
+            partition=partition,
         )
         oof_df.to_csv(out / "forward_oof_scores.csv", index=False)
         # Subject-level aggregated scores (mean across visit/photo rows of the
@@ -1166,7 +1279,7 @@ def run_cell(partition, embedding, classifier, strategy, n_folds=10, seed=42):
         _write_cohort_files(out, matched, pairs)
         rev = run_reverse(full, matched, embedding, classifier,
                           n_folds=n_folds, seed=seed,
-                          keep_groups=keep_groups)
+                          keep_groups=keep_groups, partition=partition)
         scores_df = rev["scores_df"]
         common = {
             "partition": partition, "embedding": embedding,
