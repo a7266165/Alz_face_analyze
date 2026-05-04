@@ -9,7 +9,7 @@
 - `○` = FER 方法論 / 資料集（generic，但 inform pipeline）
 - `△` = 邊緣相關
 
-排列：本檔按 review status — **#1-11 強保留**、**#12-59 保留**、**#60-65 邊緣**。
+排列：本檔按 review status — **#1-9 強保留**、**#10-59 保留**、**#60-65 邊緣**。
 
 共 **65 篇**（44 篇已歸檔到 _archive_rejected/）。
 
@@ -18,7 +18,7 @@
 ---
 
 
-## ━━━━━━━━━━━━━━ 強保留（11 篇 — Layer A: face-only，無任何 stimulus / task / intervention）━━━━━━━━━━━━━━
+## ━━━━━━━━━━━━━━ 強保留（9 篇 — Layer A: face-only，無任何 stimulus / task / intervention）━━━━━━━━━━━━━━
 
 ## 1. ★ [--] **Zheng 2025** — Augmenting Face Mesh for Dementia Detection
 
@@ -32,40 +32,40 @@
 
 臉部表情分析的前置 landmark 偵測在**老人 + 失智族群**有 systematic bias。實證研究：health status 影響 landmark 偵測效能；方法論層面警告。
 
-## 4. ★ [--] **Bergamasco 2025** — Automatic CI Detection Through Facial Emotion Analysis
-
-**32 位 CI + 28 位 HC**，標準視聽 emotion elicitation 視訊；訓 CNN 追蹤情緒演化作 CI 偵測。非侵入新方法。
-
-## 5. ★ [--] **L 2025** — AI-Based Facial Emotion Analysis for Differential Dementia Diagnosis
-
-64 位受試者標準 AV 刺激下的 valence + arousal 抽取，多任務 ML 分類（含 MCI 與不同失智 subtype）。
-
-## 6. ○ [PT] **Parte 2026** — Demographic Bias in Facial Landmark Detection
+## 4. ○ [PT] **Parte 2026** — Demographic Bias in Facial Landmark Detection
 
 HRI fairness 角度。系統性審計**年齡、性別、種族**對臉部 landmark 偵測的 bias。控制統計法消解干擾。
 
-## 7. ○ [PT] **Sharma 2026** — CRBP: 3D-to-2.5D Facial Projection Benchmark
+## 5. ○ [PT] **Sharma 2026** — CRBP: 3D-to-2.5D Facial Projection Benchmark
 
 **Bosphorus 3D Face DB** 重建紋理 mesh + 6 個 canonical 2D projection；YOLOv8 偵測，分 raw / face-cropped 兩 subset。3D facial analysis 跨光度標準化 benchmark。
 
-## 8. ○ [--] **Sumsion 2025** — Stacking Ensembles + MoE for AU Recognition
+## 6. ○ [--] **Sumsion 2025** — Stacking Ensembles + MoE for AU Recognition
 
 AU 識別在不同 AU 表現不均。Stacking 集成 + MoE 做平衡。Average F1 提升。
 
-## 9. ○ [PT] **Sumsion 2026** — ELEGANT: Node + Edge Generation + Landmark MTL for AU
+## 7. ○ [PT] **Sumsion 2026** — ELEGANT: Node + Edge Generation + Landmark MTL for AU
 
 「ELEGANT」框架：**同步生成 graph node + edge** 加 landmark 多任務學習。AU 已用於失智偵測、疼痛偵測等下游，提升 AU 模型直接 inform 這些應用。
 
-## 10. ○ [PT] **Belharbi 2024** — Guided Interpretable FER via Spatial AU Cues
+## 8. ○ [PT] **Belharbi 2024** — Guided Interpretable FER via Spatial AU Cues
 
 SOTA FER classifier 缺解釋性。**訓練時引入 AU codebook 顯式對應臉部區域**，實現可解釋深度模型。
 
-## 11. ○ [PT] **Mertens 2024** — FindingEmo: 25k In-the-Wild Emotion Image Dataset
+## 9. ○ [PT] **Mertens 2024** — FindingEmo: 25k In-the-Wild Emotion Image Dataset
 
 **25k 圖像** annotated for emotion；focus on 多人複雜社交場景（不只單臉）。Valence/Arousal/Emotion label。
 
 
-## ━━━━━━━━━━━━━━ 保留（48 篇）━━━━━━━━━━━━━━
+## ━━━━━━━━━━━━━━ 保留（50 篇）━━━━━━━━━━━━━━
+
+## 10. ★ [--] **Bergamasco 2025** — Automatic CI Detection Through Facial Emotion Analysis
+
+**32 位 CI + 28 位 HC**，標準視聽 emotion elicitation 視訊；訓 CNN 追蹤情緒演化作 CI 偵測。非侵入新方法。
+
+## 11. ★ [--] **L 2025** — AI-Based Facial Emotion Analysis for Differential Dementia Diagnosis
+
+64 位受試者標準 AV 刺激下的 valence + arousal 抽取，多任務 ML 分類（含 MCI 與不同失智 subtype）。
 
 ## 12. ★ [PT] **Gaya-Morey 2025** — DL FER for Elderly Systematic Review
 
