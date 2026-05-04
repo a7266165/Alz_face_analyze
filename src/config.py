@@ -40,14 +40,15 @@ EXTERNAL_FILTERED_DIR = EXTERNAL_PUBLIC_FACE_DIR / "filtered"
 # 工作區路徑（按模組分類）
 WORKSPACE_DIR = PROJECT_ROOT / "workspace"
 
-# preprocess 模組
-PREPROCESSING_DIR = WORKSPACE_DIR / "preprocess"
+# preprocess 模組（ABtest branch：切到 _ABtest namespace 避免污染 production）
+PREPROCESSING_DIR = WORKSPACE_DIR / "preprocess_ABtest"
 SELECTED_DIR = PREPROCESSING_DIR / "selected"
 ALIGNED_DIR = PREPROCESSING_DIR / "aligned"
+ALIGNED_BACKGROUND_DIR = PREPROCESSING_DIR / "aligned_background"
 MIRRORS_DIR = PREPROCESSING_DIR / "mirrors"
 
-# embedding 模組
-EMBEDDING_DIR = WORKSPACE_DIR / "embedding"
+# embedding 模組（ABtest branch：切到 _ABtest namespace）
+EMBEDDING_DIR = WORKSPACE_DIR / "embedding_ABtest"
 FEATURES_DIR = EMBEDDING_DIR / "features"
 STATISTICS_DIR = EMBEDDING_DIR / "statistics"
 
@@ -142,6 +143,10 @@ class PreprocessConfig:
     # ========== 儲存控制 ==========
     save_intermediate: bool = False  # 是否儲存中間結果
     subject_id: Optional[str] = None  # 受試者 ID（用於建立子目錄）
+
+    # 額外輸出未去背版本到 ALIGNED_BACKGROUND_DIR（不影響既有 aligned/）
+    # ABtest branch 預設 True，產出 aligned/ + aligned_background/ 雙變體
+    also_save_aligned_background: bool = True
 
     # ========== 處理流程控制 ==========
     steps: List[str] = field(

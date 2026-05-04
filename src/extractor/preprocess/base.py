@@ -12,7 +12,7 @@ from dataclasses import dataclass
 import logging
 import shutil
 
-from src.config import PreprocessConfig, SELECTED_DIR, ALIGNED_DIR
+from src.config import PreprocessConfig, SELECTED_DIR, ALIGNED_DIR, ALIGNED_BACKGROUND_DIR
 from .detector import FaceDetector, FaceInfo
 from .selector import FaceSelector
 from .aligner import FaceStraightener
@@ -69,7 +69,7 @@ class PreprocessPipeline:
             return
 
         # 只清理該受試者的子目錄，不清理整個全域目錄
-        for base_dir in [SELECTED_DIR, ALIGNED_DIR]:
+        for base_dir in [SELECTED_DIR, ALIGNED_DIR, ALIGNED_BACKGROUND_DIR]:
             subject_dir = base_dir / self.config.subject_id
             if subject_dir.exists():
                 shutil.rmtree(subject_dir)
@@ -114,9 +114,22 @@ class PreprocessPipeline:
 
         # Step 3: 轉正選中的 n 張相片
         if "align" in self.config.steps:
+            # 副路徑（aligned_background/）需要 pre-align 影像 + 對應 landmarks
+            need_background = (
+                self.config.also_save_aligned_background
+                and self.config.save_intermediate
+            )
+            pre_align_images = (
+                [f.image.copy() for f in selected] if need_background else None
+            )
+            pre_align_landmarks = (
+                [f.landmarks.copy() for f in selected] if need_background else None
+            )
+
+            # 主路徑：apply_mask=True，沿用既有去背行為
             for face_info in selected:
                 face_info.image = self.straightener.straighten_pics(
-                    face_info.image, face_info.landmarks
+                    face_info.image, face_info.landmarks, apply_mask=True
                 )
 
             # 重新偵測轉正後的特徵點
@@ -129,6 +142,12 @@ class PreprocessPipeline:
 
             if self.config.save_intermediate:
                 self._save_aligned(selected)
+
+            # 副路徑：apply_mask=False，僅落地到 aligned_background/
+            if need_background:
+                self._save_aligned_background(
+                    selected, pre_align_images, pre_align_landmarks
+                )
 
         # 組裝結果
         processed_faces = [
@@ -181,4 +200,31 @@ class PreprocessPipeline:
             path = save_dir / filename
             cv2.imwrite(str(path), face.image)
             logger.debug(f"儲存對齊影像: {path}")
+
+    def _save_aligned_background(
+        self,
+        faces: List[FaceInfo],
+        pre_align_images: List[np.ndarray],
+        pre_align_landmarks: List[np.ndarray],
+    ):
+        """以 apply_mask=False 重做對齊，並寫到 ALIGNED_BACKGROUND_DIR"""
+        if not self.config.subject_id:
+            return
+
+        save_dir = ALIGNED_BACKGROUND_DIR / self.config.subject_id
+        save_dir.mkdir(parents=True, exist_ok=True)
+
+        for i, face in enumerate(faces):
+            bg_image = self.straightener.straighten_pics(
+                pre_align_images[i],
+                pre_align_landmarks[i],
+                apply_mask=False,
+            )
+            filename = (
+                f"{face.path.stem}_aligned.png" if face.path
+                else f"aligned_{i:03d}.png"
+            )
+            path = save_dir / filename
+            cv2.imwrite(str(path), bg_image)
+            logger.debug(f"儲存對齊影像（含背景）: {path}")
 

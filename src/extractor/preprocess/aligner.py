@@ -31,18 +31,20 @@ class FaceStraightener:
     def straighten_pics(
         self,
         image: np.ndarray,
-        landmarks: np.ndarray
+        landmarks: np.ndarray,
+        apply_mask: bool = True,
     ) -> np.ndarray:
         """
         對齊臉部
 
-        1. 建立臉部遮罩
+        1. 建立臉部遮罩（可選）
         2. 計算中線傾斜角度
         3. 旋轉影像使中線垂直
 
         Args:
             image: 輸入影像 (BGR)
             landmarks: 468 個特徵點座標 (468, 2)
+            apply_mask: 是否套用 convex hull 去背遮罩。False 時保留原始背景。
 
         Returns:
             對齊後的影像
@@ -50,18 +52,21 @@ class FaceStraightener:
         h, w = image.shape[:2]
         center = (w / 2, h / 2)
 
-        # Step 1: 建立並套用遮罩
-        mask = self.build_face_mask(image.shape, landmarks)
-        masked_image = cv2.bitwise_and(image, image, mask=mask)
+        # Step 1: 建立並套用遮罩（可選）
+        if apply_mask:
+            mask = self.build_face_mask(image.shape, landmarks)
+            image_for_rotate = cv2.bitwise_and(image, image, mask=mask)
+        else:
+            image_for_rotate = image
 
         # Step 2: 計算傾斜角度
         tilt = self.calculate_midline_tilt(landmarks)
 
         # Step 3: 旋轉影像
         M = cv2.getRotationMatrix2D(center, -tilt, 1.0)
-        aligned_image = cv2.warpAffine(masked_image, M, (w, h))
+        aligned_image = cv2.warpAffine(image_for_rotate, M, (w, h))
 
-        logger.debug(f"對齊完成，傾斜角度: {tilt:.2f}°")
+        logger.debug(f"對齊完成，傾斜角度: {tilt:.2f}°（apply_mask={apply_mask}）")
         return aligned_image
 
     def build_face_mask(

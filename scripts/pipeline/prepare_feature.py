@@ -52,6 +52,7 @@ class FeaturePipeline:
         save_intermediate: bool = True,
         max_cpu_cores: Optional[int] = None,
         input_groups: Optional[List[str]] = None,
+        save_aligned_background: bool = True,
     ):
         """
         初始化 Pipeline
@@ -86,6 +87,7 @@ class FeaturePipeline:
         self.preprocess_config = AnalyzeConfig(
             n_select=n_select,
             save_intermediate=save_intermediate,
+            also_save_aligned_background=save_aligned_background,
         )
 
         # 鏡射配置
@@ -340,6 +342,7 @@ class FeaturePipeline:
         subject_config = AnalyzeConfig(
             n_select=self.preprocess_config.n_select,
             save_intermediate=self.preprocess_config.save_intermediate,
+            also_save_aligned_background=self.preprocess_config.also_save_aligned_background,
             subject_id=subject_id,
         )
         
@@ -534,6 +537,8 @@ def main():
                     help="覆寫 FEATURES_DIR；留空用預設 workspace/embedding/features")
     ap.add_argument("--n-select", type=int, default=10)
     ap.add_argument("--max-cpu-cores", type=int, default=2)
+    ap.add_argument("--no-aligned-background", action="store_true",
+                    help="不產出 aligned_background/（debug 用；ABtest branch 預設會產）")
     args = ap.parse_args()
 
     raw_dir = args.input_root if args.input_root is not None else RAW_IMAGES_DIR
@@ -549,6 +554,7 @@ def main():
             save_intermediate=True,
             max_cpu_cores=args.max_cpu_cores,
             input_groups=args.input_groups,
+            save_aligned_background=not args.no_aligned_background,
         )
         pipeline.run()
 
