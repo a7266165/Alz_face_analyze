@@ -60,6 +60,7 @@ METRICS = [("auc", "AUC", 0.5), ("balacc", "Balanced accuracy", 0.5),
 REV_SCOPES = [
     ("reverse_ensemble_full",        "full",        "reverse_ensemble_full"),
     ("reverse_ensemble_matched_oof", "matched_oof", "reverse_ensemble_matched_oof"),
+    ("reverse_ensemble_unmatched",   "unmatched",   "reverse_ensemble_unmatched"),
 ]
 
 logging.basicConfig(level=logging.INFO,
