@@ -47,16 +47,44 @@ def load_predicted_ages(path: Path) -> dict:
         return json.load(f)
 
 
+def _pick_first_visit_with_npy_fallback(
+    df_visits: pd.DataFrame, predicted_ages: dict,
+) -> pd.DataFrame:
+    """Per subject: pick the earliest visit that has a predicted_age (= has
+    .npy + age extraction). Falls back to the earliest visit if none qualify.
+    Mirrors `_pick_first_visit_with_features` in run_4arm_deep_dive.py.
+    """
+    picked = []
+    for subj, g in df_visits.groupby("subject", as_index=False, sort=False):
+        g = g.sort_values("ID")
+        with_pred = g[g["ID"].astype(str).isin(predicted_ages)]
+        if len(with_pred) > 0:
+            picked.append(with_pred.iloc[0])
+        else:
+            picked.append(g.iloc[0])
+    return pd.DataFrame(picked).reset_index(drop=True)
+
+
 def load_demographics_for_calibration(
     demo_dir: Path,
     predicted_ages_file: Path,
+    cohort_mode: str = "all",
 ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """
     載入人口學資料與預測年齡，回傳 (df_acs, df_nad, df_p)。
 
     每個 DataFrame 包含欄位：
     ID, subject, group, real_age, predicted_age, error, age_int
+
+    cohort_mode:
+        "all" (default, backward-compat): every visit per subject. Drops only
+            visits without predicted_age or real Age.
+        "p_first_hc_all": P keeps only first-visit (with Global_CDR>=0.5 and
+            .npy fallback); NAD/ACS keep ALL visits without strict HC filter.
     """
+    if cohort_mode not in ("all", "p_first_hc_all"):
+        raise ValueError(f"unknown cohort_mode: {cohort_mode}")
+
     predicted_ages = json.loads(predicted_ages_file.read_text(encoding="utf-8"))
 
     dfs = {}
@@ -70,12 +98,21 @@ def load_demographics_for_calibration(
         df["real_age"] = df["Age"]
         df["error"] = df["real_age"] - df["predicted_age"]
         df["age_int"] = df["real_age"].apply(lambda x: int(np.floor(x)))
+
+        if cohort_mode == "p_first_hc_all" and group == "P":
+            # P side: filter to Global_CDR>=0.5 visits, then pick earliest
+            # eligible visit per subject (with .npy fallback).
+            cdr = pd.to_numeric(df.get("Global_CDR"), errors="coerce")
+            df_eligible = df[cdr >= 0.5].copy()
+            df = _pick_first_visit_with_npy_fallback(df_eligible, predicted_ages)
+
         dfs[group] = df[
             ["ID", "subject", "group", "real_age", "predicted_age", "error", "age_int"]
         ].copy()
 
     logger.info(
-        f"載入完成: ACS={len(dfs['ACS'])}, NAD={len(dfs['NAD'])}, P={len(dfs['P'])}"
+        f"載入完成 (cohort_mode={cohort_mode}): "
+        f"ACS={len(dfs['ACS'])}, NAD={len(dfs['NAD'])}, P={len(dfs['P'])}"
     )
     return dfs["ACS"], dfs["NAD"], dfs["P"]
 

@@ -19,7 +19,7 @@ import numpy as np
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[2]
-ARMS = ROOT / "workspace" / "arms_analysis"
+ARMS = ROOT / "workspace" / "arms_analysis" / "p_first_hc_strict"
 ARM_A_CSV = ARMS / "per_arm" / "arm_a" / "cohort.csv"
 ARM_B_CSV = ARMS / "per_arm" / "arm_b" / "mmse_high_vs_low" / "matched_features.csv"
 ARM_C_CSV = ARMS / "per_arm" / "arm_c" / "mmse_high_vs_low" / "matched_features_longitudinal.csv"

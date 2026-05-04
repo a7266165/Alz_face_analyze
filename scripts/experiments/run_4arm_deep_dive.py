@@ -83,7 +83,14 @@ HC_SOURCE_MODE = os.environ.get("HC_SOURCE_MODE", "ACS")
 #   "ACS_ext" → 讀 ACS.csv + EACS.csv，ACS 群體 = internal + external
 #   "EACS"    → 只讀 EACS.csv，ACS 群體 = external only（strict HC 全 bypass）
 
-GRID_ROOT = PROJECT_ROOT / "workspace" / "arms_analysis" / "grid"
+# Cohort mode：
+#   "default"      → 原行為（strict HC + first-visit per HC subject）
+#   "p_first_hc_all" → P first-visit + CDR≥0.5 + npy fallback；HC 不做 strict 篩、
+#                    保留每 subject 所有 visits（不挑 first）
+COHORT_MODE = os.environ.get("COHORT_MODE", "default")
+
+GRID_ROOT = (PROJECT_ROOT / "workspace" / "arms_analysis" /
+             "p_first_hc_strict" / "grid")
 # Baseline output：grid/<hc_source.lower()>/，CLI subset 覆寫見 __main__。
 # mkdir 延後到 run_all() / __main__，避免 import 即建立非預期目錄。
 OUTPUT_DIR = GRID_ROOT / HC_SOURCE_MODE.lower()
@@ -390,6 +397,9 @@ def _strict_hc_filter_all_visits(demo, hc_source):
     visit that has embedding+landmark features.
 
     Source != 'internal' (外部公開資料集) 自動過 strict HC（age-only control）。
+
+    當 COHORT_MODE == "p_first_hc_all" 時，跳過 strict 篩（CDR=0 / MMSE≥26 不檢查），
+    保留所有 visit；用於「HC 不篩」cohort（first-visit P + ALL NAD/ACS）。
     """
     if hc_source == "HC":
         mask = demo["group"].isin(["NAD", "ACS"])
@@ -398,14 +408,18 @@ def _strict_hc_filter_all_visits(demo, hc_source):
     sub = demo[mask].copy()
     sub["Global_CDR"] = pd.to_numeric(sub.get("Global_CDR"), errors="coerce")
     sub["MMSE"] = pd.to_numeric(sub.get("MMSE"), errors="coerce")
-    has_cog = sub["Global_CDR"].notna() | sub["MMSE"].notna()
-    ok_strict = has_cog & (
-        (sub["Global_CDR"] == 0) |
-        (sub["Global_CDR"].isna() & (sub["MMSE"] >= 26))
-    )
-    is_external = sub.get("Source", "internal") != "internal"
-    ok = ok_strict | is_external
-    sub = sub[ok].copy()
+    if COHORT_MODE == "p_first_hc_all":
+        # HC 端完全不篩：每 visit 都進，不要求 CDR=0 / MMSE≥26
+        sub = sub.copy()
+    else:
+        has_cog = sub["Global_CDR"].notna() | sub["MMSE"].notna()
+        ok_strict = has_cog & (
+            (sub["Global_CDR"] == 0) |
+            (sub["Global_CDR"].isna() & (sub["MMSE"] >= 26))
+        )
+        is_external = sub.get("Source", "internal") != "internal"
+        ok = ok_strict | is_external
+        sub = sub[ok].copy()
     sub = sub.sort_values(["base_id", "visit"])
     sub["label"] = 0
     return sub
@@ -497,7 +511,13 @@ def build_cohort_ad_vs_HCgroup(hc_source, arm="A", caliper=2.0, seed=SEED):
 
     hc_all = _strict_hc_filter_all_visits(demo, hc_source)
     hc_all = hc_all[hc_all["Age"].notna()].copy()
-    hc = _pick_first_visit_with_features(hc_all)
+    if COHORT_MODE == "p_first_hc_all":
+        # 保留每 subject 所有 visits — HC 不挑 first-visit。
+        # 同 visit 一律納入；無 npy fallback（visit 沒 embedding 的 row 後續
+        # merge feature 時會自然 drop）。
+        hc = hc_all.reset_index(drop=True).copy()
+    else:
+        hc = _pick_first_visit_with_features(hc_all)
 
     if arm == "A":
         cohort = pd.concat([ad, hc], ignore_index=True)
@@ -511,7 +531,12 @@ def build_cohort_ad_vs_HCgroup(hc_source, arm="A", caliper=2.0, seed=SEED):
         prep = pd.concat([ad, hc], ignore_index=True)
         prep["mmse_group"] = np.where(prep["label"] == 1, "high", "low")
         prep["MMSE"] = prep["MMSE"].fillna(999)  # placeholder (match_1to1 reads Age)
-        matched, pairs, _ = match_1to1(prep, caliper=caliper, seed=seed)
+        # p_first_hc_all mode：HC 端有多 visit，採 subject-first 兩階段配對：
+        #   Pass 1 每個 HC base_id 最多用 1 次（subject-level 1:1）
+        #   Pass 2 剩下 AD 才用其他 visit 從已用 subject 補滿（visit-level）
+        match_mode = "subject_first" if COHORT_MODE == "p_first_hc_all" else "visit"
+        matched, pairs, _ = match_1to1(prep, caliper=caliper, seed=seed,
+                                         match_mode=match_mode)
         cohort = matched.merge(prep[["ID", "base_id", "group", "Age", "MMSE",
                                        "Global_CDR", "label"]].drop_duplicates("ID"),
                                 on="ID", how="left", suffixes=("", "_p"))
@@ -677,21 +702,36 @@ def build_cohort_ad_hi_lo(arm="A", caliper=2.0, seed=SEED, metric="MMSE"):
     first_metric = f"first_{metric}"
     if arm == "A":
         demo = load_p_demographics()
-        cohort = demo.dropna(subset=[metric, "Age"]).copy()
-        cohort = cohort.sort_values(["base_id", "visit"]).groupby(
-            "base_id", as_index=False).first()
-        # Filter by AD: CDR>=0.5
-        cohort["Global_CDR"] = pd.to_numeric(cohort.get("Global_CDR"),
-                                                errors="coerce")
-        cohort = cohort[cohort["Global_CDR"] >= 0.5].copy()
+        demo["Global_CDR"] = pd.to_numeric(demo.get("Global_CDR"),
+                                              errors="coerce")
+        if COHORT_MODE == "p_first_hc_all":
+            # P first-visit + CDR≥0.5 + npy fallback（同 ad_vs_HC 邏輯）
+            ad_all = demo[(demo["Global_CDR"] >= 0.5) &
+                            demo[metric].notna() &
+                            demo["Age"].notna()].copy()
+            ad_all = ad_all.sort_values(["base_id", "visit"])
+            cohort = _pick_first_visit_with_features(ad_all)
+        else:
+            cohort = demo.dropna(subset=[metric, "Age"]).copy()
+            cohort = cohort.sort_values(["base_id", "visit"]).groupby(
+                "base_id", as_index=False).first()
+            cohort = cohort[cohort["Global_CDR"] >= 0.5].copy()
         med = cohort[metric].median()
         cohort[group_col] = np.where(cohort[metric] >= med, "high", "low")
         cohort["label"] = (cohort[group_col] == "high").astype(int)
         return cohort, None
     if arm == "B":
-        arm_b_csv = (PROJECT_ROOT / "workspace" / "arms_analysis" / "per_arm" /
-                     "arm_b" / f"{metric_low}_high_vs_low" /
-                     "matched_features.csv")
+        # p_first_hc_all mode 下 arm B hi-lo 的 matched_features.csv 由
+        # run_mmse_hilo_standalone.py 寫到 p_first_hc_all/per_arm/ 子樹。
+        if COHORT_MODE == "p_first_hc_all":
+            arm_b_csv = (PROJECT_ROOT / "workspace" / "arms_analysis" /
+                         "p_first_hc_all" / "per_arm" / "arm_b" /
+                         f"{metric_low}_high_vs_low" / "matched_features.csv")
+        else:
+            arm_b_csv = (PROJECT_ROOT / "workspace" / "arms_analysis" /
+                         "p_first_hc_strict" / "per_arm" / "arm_b" /
+                         f"{metric_low}_high_vs_low" /
+                         "matched_features.csv")
         if not arm_b_csv.exists():
             raise FileNotFoundError(
                 f"Run run_mmse_hilo_standalone.py with HILO_METRIC={metric} "
@@ -1145,7 +1185,8 @@ def _all_visits_per_base_id():
 
 def _compute_cell_header_stats(arm, compare, cohort):
     """Per-cell header stats for multi-row thead:
-      - n_all (total raw visits across cohort base_ids), n_unique
+      - n_all (cohort 內實際使用的 row 數 / visit 數)
+      - n_unique (cohort 內 unique base_id / 受試者數)
       - Age mean±SD per label group + Welch t p
       - For hi-lo: MMSE/CASI/CDR_SB mean±SD per group + Welch t p
     Group label convention: 1 = AD (or high-MMSE in hi-lo), 0 = control (or low-MMSE).
@@ -1153,22 +1194,18 @@ def _compute_cell_header_stats(arm, compare, cohort):
     row = {"arm": arm, "comparison": compare}
     if cohort is None or len(cohort) == 0:
         return row
-    # n_unique — split per label group
-    row["n_unique_1"] = int((cohort["label"] == 1).sum())
-    row["n_unique_0"] = int((cohort["label"] == 0).sum())
-    row["n_unique"] = row["n_unique_1"] + row["n_unique_0"]
-    # n_all (raw visits) — split per label group
-    visit_df = _all_visits_per_base_id()
     if "base_id" in cohort.columns:
-        bids_1 = cohort.loc[cohort["label"] == 1, "base_id"].astype(str).unique()
-        bids_0 = cohort.loc[cohort["label"] == 0, "base_id"].astype(str).unique()
+        bid_col = cohort["base_id"].astype(str)
     else:
-        _b = cohort["ID"].astype(str).str.extract(r"^([A-Za-z]+\d+)")[0]
-        bids_1 = _b[cohort["label"] == 1].unique()
-        bids_0 = _b[cohort["label"] == 0].unique()
-    row["n_all_1"] = int(visit_df[visit_df["base_id"].isin(bids_1)].shape[0])
-    row["n_all_0"] = int(visit_df[visit_df["base_id"].isin(bids_0)].shape[0])
+        bid_col = cohort["ID"].astype(str).str.extract(r"^(.+)-\d+$")[0]
+    # n_all = cohort 真實使用的 row / visit 數（p_first_hc_all mode 下 HC 多 visit）
+    row["n_all_1"] = int((cohort["label"] == 1).sum())
+    row["n_all_0"] = int((cohort["label"] == 0).sum())
     row["n_all"] = row["n_all_1"] + row["n_all_0"]
+    # n_unique = cohort 內 unique 受試者數
+    row["n_unique_1"] = int(bid_col[cohort["label"] == 1].nunique())
+    row["n_unique_0"] = int(bid_col[cohort["label"] == 0].nunique())
+    row["n_unique"] = row["n_unique_1"] + row["n_unique_0"]
 
     # Age stats
     age_col = "first_age" if "first_age" in cohort.columns else "Age"
@@ -1402,6 +1439,15 @@ if __name__ == "__main__":
         "--output-suffix", default=None,
         help="覆寫 subset 資料夾名，輸出到 grid/subsets/<suffix>/",
     )
+    ap.add_argument(
+        "--cohort-mode", choices=["default", "p_first_hc_all"], default=None,
+        help="cohort 篩法：default=原行為（strict HC + first-visit）；"
+             "p_first_hc_all=first-visit P + ALL NAD/ACS 不篩",
+    )
+    ap.add_argument(
+        "--output-dir", type=Path, default=None,
+        help="完全覆寫 OUTPUT_DIR（忽略 GRID_ROOT/HC_SOURCE_MODE）",
+    )
     args = ap.parse_args()
     if args.hc_source is not None:
         HC_SOURCE_MODE = args.hc_source
@@ -1411,26 +1457,32 @@ if __name__ == "__main__":
         os.environ["ARMS"] = ",".join(args.arms)
     if args.modalities:
         os.environ["MODALITIES"] = ",".join(args.modalities)
+    if args.cohort_mode is not None:
+        COHORT_MODE = args.cohort_mode
 
-    is_subset = bool(args.eacs_sources or args.arms or args.modalities or
-                     args.output_suffix)
-    if is_subset:
-        if args.output_suffix is not None:
-            suffix = args.output_suffix
-        else:
-            parts = []
-            if HC_SOURCE_MODE != "ACS":
-                parts.append(HC_SOURCE_MODE.lower())
-            if args.eacs_sources:
-                parts.append("+".join(s.lower() for s in args.eacs_sources))
-            if args.arms:
-                parts.append("".join(sorted(args.arms)))
-            if args.modalities:
-                parts.append("_".join(args.modalities)[:40])
-            suffix = "_".join(parts)
-        OUTPUT_DIR = GRID_ROOT / "subsets" / suffix
+    if args.output_dir is not None:
+        OUTPUT_DIR = args.output_dir
     else:
-        OUTPUT_DIR = GRID_ROOT / HC_SOURCE_MODE.lower()
+        is_subset = bool(args.eacs_sources or args.arms or args.modalities or
+                         args.output_suffix)
+        if is_subset:
+            if args.output_suffix is not None:
+                suffix = args.output_suffix
+            else:
+                parts = []
+                if HC_SOURCE_MODE != "ACS":
+                    parts.append(HC_SOURCE_MODE.lower())
+                if args.eacs_sources:
+                    parts.append("+".join(s.lower() for s in args.eacs_sources))
+                if args.arms:
+                    parts.append("".join(sorted(args.arms)))
+                if args.modalities:
+                    parts.append("_".join(args.modalities)[:40])
+                suffix = "_".join(parts)
+            OUTPUT_DIR = GRID_ROOT / "subsets" / suffix
+        else:
+            OUTPUT_DIR = GRID_ROOT / HC_SOURCE_MODE.lower()
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    logger.info(f"HC_SOURCE_MODE={HC_SOURCE_MODE}  OUTPUT_DIR={OUTPUT_DIR}")
+    logger.info(f"HC_SOURCE_MODE={HC_SOURCE_MODE}  COHORT_MODE={COHORT_MODE}  "
+                 f"OUTPUT_DIR={OUTPUT_DIR}")
     run_all()

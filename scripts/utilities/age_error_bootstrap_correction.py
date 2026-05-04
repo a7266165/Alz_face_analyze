@@ -14,6 +14,7 @@ scripts/utilities/age_error_bootstrap_correction.py
   + bootstrap 專屬: bootstrap_coefficients.csv/.png
 """
 
+import argparse
 import sys
 import json
 import logging
@@ -231,12 +232,19 @@ def plot_coefficients(coefs: pd.DataFrame, output_dir: Path):
 
 
 def main():
-    output_dir = BOOTSTRAP_DIR
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--cohort-mode", default="all",
+                        choices=["all", "p_first_hc_all"])
+    parser.add_argument("--output-dir", type=Path, default=BOOTSTRAP_DIR)
+    args = parser.parse_args()
+
+    output_dir = args.output_dir
     output_dir.mkdir(parents=True, exist_ok=True)
+    logger.info(f"cohort_mode = {args.cohort_mode},  output_dir = {output_dir}")
 
     # 載入資料
     df_acs, df_nad, df_p = load_demographics_for_calibration(
-        DEMOGRAPHICS_DIR, PREDICTED_AGES_FILE,
+        DEMOGRAPHICS_DIR, PREDICTED_AGES_FILE, cohort_mode=args.cohort_mode,
     )
 
     # 篩選 NAD 60+

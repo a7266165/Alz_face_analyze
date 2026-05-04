@@ -20,9 +20,10 @@ Outputs to workspace/arms_analysis/per_arm/<arm>/ad_vs_<cmp_lower>/age/:
   classifier_summary.csv            — AUC + 95% CI + BalAcc + MCC for 4 combos
 
 Usage:
-    conda run -n Alz_face_test_2 python \
+    conda run -n Alz_face_main_analysis python \
         scripts/experiments/run_arm_age_classifiers.py
 """
+import argparse
 import importlib.util
 import json
 import logging
@@ -50,11 +51,12 @@ _grid = _load_module("run_4arm_deep_dive",
                       "run_4arm_deep_dive.py")
 build_cohort_ad_vs_HCgroup = _grid.build_cohort_ad_vs_HCgroup
 
-ARMS_ROOT = PROJECT_ROOT / "workspace" / "arms_analysis" / "per_arm"
+DEFAULT_ARMS_ROOT = (PROJECT_ROOT / "workspace" / "arms_analysis" /
+                     "p_first_hc_strict" / "per_arm")
 AGES_FILE = (PROJECT_ROOT / "workspace" / "age" / "age_prediction" /
              "predicted_ages.json")
 COMPARISONS = ["HC", "NAD", "ACS"]
-ARMS = ["A", "B", "C", "D"]
+ALL_ARMS = ["A", "B", "C", "D"]
 N_FOLDS = 10
 SEED = 42
 
@@ -244,8 +246,8 @@ FEATURE_SETS = [
 MODEL_ORDER = ["xgb", "tabpfn"]  # XGB first as requested
 
 
-def run_cell(arm, hc_source, pred_ages):
-    cmp_dir = (ARMS_ROOT / f"arm_{arm.lower()}" /
+def run_cell(arm, hc_source, pred_ages, arms_root):
+    cmp_dir = (arms_root / f"arm_{arm.lower()}" /
                f"ad_vs_{hc_source.lower()}" / "age")
     cmp_dir.mkdir(parents=True, exist_ok=True)
     logger.info(f"=== Arm {arm} × {hc_source} → {cmp_dir.relative_to(PROJECT_ROOT)} ===")
@@ -288,19 +290,36 @@ def run_cell(arm, hc_source, pred_ages):
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--cohort-mode", choices=["default", "p_first_hc_all"],
+                         default="default",
+                         help="default=原 strict HC + first-visit；"
+                              "p_first_hc_all=first-visit P + ALL NAD/ACS")
+    parser.add_argument("--arms", nargs="+", choices=ALL_ARMS, default=ALL_ARMS,
+                         help="只跑指定 arms (default: A B C D)")
+    parser.add_argument("--arms-root", type=Path, default=DEFAULT_ARMS_ROOT,
+                         help="per_arm 根目錄 (default: workspace/arms_analysis/"
+                              "per_arm)；grand summary 寫到 <arms_root>/.."
+                              "/classifier_summary_all.csv")
+    args = parser.parse_args()
+
+    _grid.COHORT_MODE = args.cohort_mode
+    args.arms_root = args.arms_root.resolve()
+    logger.info(f"cohort_mode={args.cohort_mode}  arms={args.arms}  "
+                 f"arms_root={args.arms_root}")
+
     with open(AGES_FILE) as f:
         pred_ages = json.load(f)
     logger.info(f"Loaded {len(pred_ages)} predicted ages")
 
     all_rows = []
-    for arm in ARMS:
+    for arm in args.arms:
         for hc_source in COMPARISONS:
-            rows = run_cell(arm, hc_source, pred_ages)
+            rows = run_cell(arm, hc_source, pred_ages, args.arms_root)
             all_rows.extend(rows)
 
     grand = pd.DataFrame(all_rows)
-    out_csv = (PROJECT_ROOT / "workspace" / "arms_analysis" /
-               "classifier_summary_all.csv")
+    out_csv = args.arms_root.parent / "classifier_summary_all.csv"
     grand.to_csv(out_csv, index=False)
     logger.info(f"\nDone. Grand summary: {out_csv}")
 

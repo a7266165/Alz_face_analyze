@@ -26,7 +26,7 @@ import pandas as pd
 from sklearn.metrics import confusion_matrix
 
 ROOT = Path(__file__).resolve().parents[2]
-ARMS_DIR = ROOT / "workspace" / "arms_analysis" / "per_arm"
+ARMS_DIR = ROOT / "workspace" / "arms_analysis" / "p_first_hc_strict" / "per_arm"
 ARMS = ["A", "B", "C", "D"]
 COMPARISONS = ["ad_vs_hc", "ad_vs_nad", "ad_vs_acs"]
 COMP_LABEL = {"ad_vs_hc": "AD vs HC",

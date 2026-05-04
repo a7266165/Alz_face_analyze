@@ -10,7 +10,7 @@ Standalone MMSE hi-lo analysis: AD cohort × MMSE median split × 1:1 age-matche
 此腳本同時匯出 match_1to1 / bh_fdr / compare_groups 等 helper 給 4-arm 使用。
 
 Usage:
-    conda run -n Alz_face_test_2 python scripts/experiments/run_mmse_hilo_standalone.py
+    conda run -n Alz_face_main_analysis python scripts/experiments/run_mmse_hilo_standalone.py
 """
 
 import argparse
@@ -35,7 +35,8 @@ AGES_FILE = PROJECT_ROOT / "workspace" / "age" / "age_prediction" / "predicted_a
 EMOTION_DIR = PROJECT_ROOT / "workspace" / "emotion" / "au_features" / "aggregated"
 LANDMARK_FEATURES_CSV = PROJECT_ROOT / "workspace" / "asymmetry" / "features.csv"
 EMBEDDING_DIFF_DIR = PROJECT_ROOT / "workspace" / "embedding" / "features"
-OUTPUT_DIR = PROJECT_ROOT / "workspace" / "arms_analysis" / "per_arm" / "arm_b"
+DEFAULT_OUTPUT_DIR = (PROJECT_ROOT / "workspace" / "arms_analysis" /
+                       "p_first_hc_strict" / "per_arm" / "arm_b")
 
 EMOTION_METHODS = [
     "openface", "libreface", "pyfeat", "dan",
@@ -111,17 +112,33 @@ split_by_mmse_median = split_by_metric_median
 # 1:1 age nearest-neighbor matching
 # ============================================================
 
-def match_1to1(cohort, caliper=2.0, seed=42, metric=None, group_col=None):
+def match_1to1(cohort, caliper=2.0, seed=42, metric=None, group_col=None,
+               match_mode="visit"):
     """1:1 age NN match; cohort must have <group_col> set to 'high'/'low'.
 
     metric defaults to module-level METRIC (MMSE or CASI). Pairs CSV uses
     `minor_<metric_low>` / `major_<metric_low>` column names so per-metric
     runs produce schema-distinguishable CSVs.
+
+    match_mode:
+      'visit'         — current behavior; each visit can match once. Same
+                        major subject can appear multiple times via different
+                        visits.
+      'subject_first' — two-pass: pass 1 limits each major base_id to ≤1 use
+                        (subject-level 1:1); pass 2 picks up unmatched minor
+                        rows and lets them match remaining visits from
+                        already-used major subjects (visit-level fallback).
+                        Requires `base_id` column in cohort. Pairs DataFrame
+                        gains `match_pass` ∈ {'subject', 'visit_fallback'}.
     """
     if metric is None:
         metric = METRIC
     if group_col is None:
         group_col = GROUP_COL
+    if match_mode not in ("visit", "subject_first"):
+        raise ValueError(f"match_mode must be 'visit' or 'subject_first', got {match_mode!r}")
+    if match_mode == "subject_first" and "base_id" not in cohort.columns:
+        raise ValueError("match_mode='subject_first' requires base_id column in cohort")
     metric_low = metric.lower()
     rng = np.random.RandomState(seed)
     high = cohort[cohort[group_col] == "high"].copy()
@@ -139,31 +156,77 @@ def match_1to1(cohort, caliper=2.0, seed=42, metric=None, group_col=None):
     minor_order = minor.sample(frac=1.0, random_state=rng).reset_index(drop=True)
     available = major.copy().reset_index(drop=True)
 
-    pairs = []
-    for _, row in minor_order.iterrows():
-        if len(available) == 0:
-            break
-        age = row["Age"]
-        diffs = (available["Age"] - age).abs()
-        min_diff = diffs.min()
-        if min_diff > caliper:
-            continue
-        # Tie-break by subject_id lex order
-        candidates = available[diffs == min_diff].sort_values("ID")
-        picked = candidates.iloc[0]
-        pairs.append({
-            "pair_id": len(pairs),
-            "minor_id": row["ID"],
-            "minor_age": age,
-            f"minor_{metric_low}": row[metric],
-            "major_id": picked["ID"],
-            "major_age": picked["Age"],
-            f"major_{metric_low}": picked[metric],
-            "age_diff": picked["Age"] - age,
-        })
-        available = available.drop(picked.name).reset_index(drop=True)
+    def _make_pair(minor_row, picked_row, pass_label):
+        rec = {
+            "pair_id": None,  # filled after
+            "minor_id": minor_row["ID"],
+            "minor_age": minor_row["Age"],
+            f"minor_{metric_low}": minor_row[metric],
+            "major_id": picked_row["ID"],
+            "major_age": picked_row["Age"],
+            f"major_{metric_low}": picked_row[metric],
+            "age_diff": picked_row["Age"] - minor_row["Age"],
+        }
+        if match_mode == "subject_first":
+            rec["match_pass"] = pass_label
+        return rec
 
-    pairs_df = pd.DataFrame(pairs)
+    def _pick_nearest(cand_pool, age):
+        diffs = (cand_pool["Age"] - age).abs()
+        md = diffs.min()
+        if pd.isna(md) or md > caliper:
+            return None, None
+        cands = cand_pool[diffs == md].sort_values("ID")
+        return cands.iloc[0], md
+
+    pairs_records = []
+
+    if match_mode == "visit":
+        for _, row in minor_order.iterrows():
+            if len(available) == 0:
+                break
+            picked, _ = _pick_nearest(available, row["Age"])
+            if picked is None:
+                continue
+            pairs_records.append(_make_pair(row, picked, "visit"))
+            available = available.drop(picked.name).reset_index(drop=True)
+    else:
+        # === Pass 1: subject-level 1:1 ===
+        # 同 base_id 在 pass 1 兩邊都最多用 1 次（minor + major 都限制）
+        used_major_subjects = set()
+        used_minor_subjects = set()
+        matched_minor_ids = set()
+        for _, row in minor_order.iterrows():
+            if row["base_id"] in used_minor_subjects:
+                # 同 minor subject 已配過，這個 visit 留給 pass 2 處理
+                continue
+            cand_pool = available[~available["base_id"].isin(used_major_subjects)]
+            if len(cand_pool) == 0:
+                break
+            picked, _ = _pick_nearest(cand_pool, row["Age"])
+            if picked is None:
+                continue
+            pairs_records.append(_make_pair(row, picked, "subject"))
+            used_major_subjects.add(picked["base_id"])
+            used_minor_subjects.add(row["base_id"])
+            matched_minor_ids.add(row["ID"])
+            available = available.drop(picked.name).reset_index(drop=True)
+        # === Pass 2: visit-level fallback ===
+        # 剩下的 minor visits（subject 已用過或 pass 1 沒配到）→ 對 available 池
+        # 找最近 major（不再限制 subject）
+        unmatched_minor = minor_order[~minor_order["ID"].isin(matched_minor_ids)]
+        for _, row in unmatched_minor.iterrows():
+            if len(available) == 0:
+                break
+            picked, _ = _pick_nearest(available, row["Age"])
+            if picked is None:
+                continue
+            pairs_records.append(_make_pair(row, picked, "visit_fallback"))
+            available = available.drop(picked.name).reset_index(drop=True)
+
+    for i, rec in enumerate(pairs_records):
+        rec["pair_id"] = i
+    pairs_df = pd.DataFrame(pairs_records)
 
     # Build long-form matched cohort
     records = []
@@ -542,6 +605,26 @@ def plot_emotion_heatmap(summary_df, out_path):
 # Main
 # ============================================================
 
+def _select_ad_p_first_hc_all(demo, metric):
+    """新 cohort：first-visit P + CDR≥0.5 + npy fallback。
+    呼叫 grid 的 _pick_first_visit_with_features 取得 AD pool。
+    """
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "run_4arm_deep_dive",
+        Path(__file__).parent / "run_4arm_deep_dive.py",
+    )
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    demo = demo.copy()
+    demo["Global_CDR"] = pd.to_numeric(demo.get("Global_CDR"), errors="coerce")
+    elig = demo[(demo["Global_CDR"] >= 0.5) &
+                 demo[metric].notna() &
+                 demo["Age"].notna()].copy()
+    elig = elig.sort_values(["base_id", "visit"])
+    return mod._pick_first_visit_with_features(elig)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--visit-selection", choices=["first", "latest"], default="first")
@@ -550,10 +633,18 @@ def main():
     parser.add_argument("--caliper", type=float, default=2.0)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--stat", choices=["ttest", "mannwhitney", "auto"], default="auto")
+    parser.add_argument("--cohort-mode", choices=["default", "p_first_hc_all"],
+                         default="default",
+                         help="default=原 first/latest visit；"
+                              "p_first_hc_all=first-visit + CDR≥0.5 + npy fallback")
+    parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR,
+                         help="arm_b 輸出根目錄 (default: workspace/"
+                              "arms_analysis/per_arm/arm_b)")
     args = parser.parse_args()
 
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    comparison_dir = OUTPUT_DIR / COMPARISON_NAME
+    output_dir = args.output_dir
+    output_dir.mkdir(parents=True, exist_ok=True)
+    comparison_dir = output_dir / COMPARISON_NAME
     comparison_dir.mkdir(parents=True, exist_ok=True)
     for d in ("age", "embedding_mean", "embedding_asymmetry",
               "landmark_asymmetry", "emotion"):
@@ -561,8 +652,14 @@ def main():
 
     # 1. Cohort
     demo = load_p_demographics()
-    cohort = select_visit(demo, args.visit_selection)
-    logger.info(f"P patients with {METRIC}+Age ({args.visit_selection} visit): n={len(cohort)}")
+    if args.cohort_mode == "p_first_hc_all":
+        cohort = _select_ad_p_first_hc_all(demo, METRIC)
+        logger.info(f"P patients ({args.cohort_mode}, first-visit + CDR≥0.5 + "
+                     f"npy fallback): n={len(cohort)}")
+    else:
+        cohort = select_visit(demo, args.visit_selection)
+        logger.info(f"P patients with {METRIC}+Age "
+                     f"({args.visit_selection} visit): n={len(cohort)}")
 
     # 2. Filter to those with predicted age
     with open(AGES_FILE) as f:
@@ -706,7 +803,7 @@ def main():
     plot_emotion_heatmap(summary,
                           comparison_dir / "emotion" / "fig_emotion_grid_heatmap.png")
 
-    logger.info(f"Done. Outputs at {OUTPUT_DIR}")
+    logger.info(f"Done. Outputs at {output_dir}")
     logger.info(f"  Pairs: {n_pairs}, features tested: {len(summary)}")
     sig = summary[summary["qvalue"] < 0.05]
     logger.info(f"  Significant (q<0.05): {len(sig)} features")

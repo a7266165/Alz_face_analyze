@@ -10,7 +10,7 @@ Also reports per-feature Cohen's d / Hedges' g (AD mean − HC mean), and
 per-modality ROC + PR curves (PNG).
 
 Usage:
-    conda run -n Alz_face_test_2 python scripts/experiments/run_arm_a_ad_vs_hc.py
+    conda run -n Alz_face_main_analysis python scripts/experiments/run_arm_a_ad_vs_hc.py
 """
 
 import argparse
@@ -41,7 +41,8 @@ AGES_FILE = PROJECT_ROOT / "workspace" / "age" / "age_prediction" / "predicted_a
 EMOTION_DIR = PROJECT_ROOT / "workspace" / "emotion" / "au_features" / "aggregated"
 LANDMARK_FEATURES_CSV = PROJECT_ROOT / "workspace" / "asymmetry" / "features.csv"
 EMBEDDING_DIR = PROJECT_ROOT / "workspace" / "embedding" / "features"
-OUTPUT_DIR = PROJECT_ROOT / "workspace" / "arms_analysis" / "per_arm" / "arm_a"
+DEFAULT_OUTPUT_DIR = (PROJECT_ROOT / "workspace" / "arms_analysis" /
+                      "p_first_hc_strict" / "per_arm" / "arm_a")
 
 EMOTION_METHODS = ["openface", "libreface", "pyfeat", "dan",
                    "hsemotion", "vit", "poster_pp", "fer"]
@@ -386,6 +387,24 @@ def per_feature_effect_sizes(modality, feat_df, cohort, out_dir, top_n=10):
 # Main
 # ============================================================
 
+def _load_cohort_p_first_hc_all():
+    """新 cohort：first-visit P (CDR≥0.5 + npy fallback) + ALL NAD/ACS visits.
+    透過 grid 的 build_cohort_ad_vs_HCgroup("HC", arm="A") 套 COHORT_MODE 取得。
+    """
+    import importlib.util
+    import os
+    spec = importlib.util.spec_from_file_location(
+        "run_4arm_deep_dive",
+        Path(__file__).parent / "run_4arm_deep_dive.py",
+    )
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    mod.COHORT_MODE = "p_first_hc_all"
+    cohort, _ = mod.build_cohort_ad_vs_HCgroup("HC", arm="A")
+    cohort["base_id"] = cohort["ID"].astype(str).str.extract(r"^(.+)-\d+$")
+    return cohort
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--cdr-thresh", type=float, default=0.5)
@@ -394,10 +413,18 @@ def main():
     parser.add_argument("--healthy-strict", action="store_true", default=True)
     parser.add_argument("--skip-ci", action="store_true",
                          help="skip bootstrap AUC CI (for quick smoke test)")
+    parser.add_argument("--cohort-mode", choices=["default", "p_first_hc_all"],
+                         default="default",
+                         help="default=原 strict-HC + first-visit；"
+                              "p_first_hc_all=first-visit P + ALL NAD/ACS")
+    parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR,
+                         help="輸出根目錄 (default: workspace/arms_analysis/"
+                              "per_arm/arm_a)")
     args = parser.parse_args()
 
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    comparison_dir = OUTPUT_DIR / "ad_vs_hc"
+    output_dir = args.output_dir
+    output_dir.mkdir(parents=True, exist_ok=True)
+    comparison_dir = output_dir / "ad_vs_hc"
     comparison_dir.mkdir(parents=True, exist_ok=True)
     for d in DIRECTIONS:
         (comparison_dir / d).mkdir(parents=True, exist_ok=True)
@@ -405,11 +432,15 @@ def main():
     def dir_for(modality):
         return comparison_dir / MODALITY_DIRECTION[modality]
 
-    cohort = load_cohort(cdr_thresh=args.cdr_thresh, healthy_strict=args.healthy_strict)
+    if args.cohort_mode == "p_first_hc_all":
+        cohort = _load_cohort_p_first_hc_all()
+    else:
+        cohort = load_cohort(cdr_thresh=args.cdr_thresh,
+                              healthy_strict=args.healthy_strict)
     n_ad = int((cohort["label"] == 1).sum())
     n_hc = int((cohort["label"] == 0).sum())
-    logger.info(f"Cohort: AD={n_ad}, HC={n_hc}")
-    cohort.to_csv(OUTPUT_DIR / "cohort.csv", index=False)
+    logger.info(f"Cohort ({args.cohort_mode}): AD={n_ad}, HC={n_hc}")
+    cohort.to_csv(output_dir / "cohort.csv", index=False)
 
     age_mean_diff = (cohort[cohort["label"] == 1]["Age"].mean() -
                      cohort[cohort["label"] == 0]["Age"].mean())
@@ -488,7 +519,7 @@ def main():
     df["delta_vs_age_only"] = df["auc"] - age_auc
     df.to_csv(comparison_dir / "summary_per_modality.csv", index=False)
 
-    logger.info(f"Done. Outputs at {OUTPUT_DIR}")
+    logger.info(f"Done. Outputs at {output_dir}")
     for r in results:
         logger.info(
             f"  {r['modality']:<25} AUC={r.get('auc', np.nan):.3f} "

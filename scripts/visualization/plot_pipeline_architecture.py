@@ -5,7 +5,7 @@ Pipeline Architecture Diagram (Graphviz version)
 使用 graphviz 繪製，支援中文字型。
 
 Usage:
-    conda run -n tmp_graphviz python scripts/visualization/plot_pipeline_architecture.py
+    conda run -n graphviz python scripts/visualization/plot_pipeline_architecture.py
 """
 
 import graphviz

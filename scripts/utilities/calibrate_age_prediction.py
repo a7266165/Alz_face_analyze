@@ -15,6 +15,7 @@ scripts/utilities/calibrate_age_prediction.py
   └── comparison.csv
 """
 
+import argparse
 import sys
 import logging
 from pathlib import Path
@@ -45,6 +46,7 @@ load_predicted_ages = _cal.load_predicted_ages
 run_multi_seed_calibration = _cal.run_multi_seed_calibration
 save_and_plot_all = _cal.save_and_plot_all
 export_summary_stats = _cal.export_summary_stats
+load_demographics_for_calibration = _cal.load_demographics_for_calibration
 
 logging.basicConfig(
     level=logging.INFO,
@@ -100,13 +102,29 @@ def match_predicted_ages(predicted_ages: dict, demo: pd.DataFrame) -> pd.DataFra
 
 
 def main():
-    output_dir = CALIBRATION_DIR
-    output_dir.mkdir(parents=True, exist_ok=True)
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--cohort-mode", default="all",
+                        choices=["all", "p_first_hc_all"],
+                        help="'all' (default): every visit per subject (current "
+                             "behavior). 'p_first_hc_all': P first-visit + "
+                             "Global_CDR>=0.5 + .npy fallback; NAD/ACS keep all "
+                             "visits with no strict HC filter.")
+    parser.add_argument("--output-dir", type=Path, default=CALIBRATION_DIR,
+                        help="Output dir; default = workspace/age/age_prediction/"
+                             "corrections/calibration. Use the V2 path when "
+                             "running with --cohort-mode p_first_hc_all.")
+    args = parser.parse_args()
 
-    # 載入資料
-    predicted_ages = load_predicted_ages(PREDICTED_AGES_FILE)
-    demo = load_demographics(DEMOGRAPHICS_DIR)
-    df_matched = match_predicted_ages(predicted_ages, demo)
+    output_dir = args.output_dir
+    output_dir.mkdir(parents=True, exist_ok=True)
+    logger.info(f"cohort_mode = {args.cohort_mode},  output_dir = {output_dir}")
+
+    # 載入資料 — use shared cohort builder so both default and p_first_hc_all
+    # produce DataFrames with identical schema.
+    df_acs, df_nad, df_p = load_demographics_for_calibration(
+        DEMOGRAPHICS_DIR, PREDICTED_AGES_FILE, cohort_mode=args.cohort_mode,
+    )
+    df_matched = pd.concat([df_acs, df_nad, df_p], ignore_index=True)
 
     logger.info(f"總配對筆數: {len(df_matched)}")
 

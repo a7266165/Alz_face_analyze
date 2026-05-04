@@ -4,6 +4,7 @@ scripts/plot_predicted_ages.py
 並繪製 真實年齡 vs 預測年齡 scatter plot
 """
 
+import argparse
 import sys
 import json
 import logging
@@ -56,21 +57,47 @@ def match_ages(predicted_ages: dict, demo: pd.DataFrame) -> pd.DataFrame:
     records = []
     for subject_id, pred_age in predicted_ages.items():
         row = demo[demo["ID"] == subject_id]
-        if not row.empty:
-            real_age = row["Age"].values[0]
-            group = row["group"].values[0]
-            rec = {
-                "ID": subject_id,
-                "real_age": real_age,
-                "predicted_age": pred_age,
-                "group": group,
-                "error": real_age - pred_age,
-                "MMSE": row["MMSE"].values[0],
-                "CASI": row["CASI"].values[0],
-                "Global_CDR": row["Global_CDR"].values[0],
-            }
-            records.append(rec)
+        if row.empty:
+            continue
+        real_age = row["Age"].values[0]
+        if pd.isna(real_age):
+            # Has predicted_age but no real Age in demographics — drop so scatter
+            # legend n matches the actually-plotted points (mirrors calibration.py
+            # `dropna(subset=['predicted_age','Age'])`).
+            continue
+        records.append({
+            "ID": subject_id,
+            "real_age": real_age,
+            "predicted_age": pred_age,
+            "group": row["group"].values[0],
+            "error": real_age - pred_age,
+            "MMSE": row["MMSE"].values[0],
+            "CASI": row["CASI"].values[0],
+            "Global_CDR": row["Global_CDR"].values[0],
+        })
     return pd.DataFrame(records)
+
+
+def filter_cohort(df_matched: pd.DataFrame, cohort_mode: str) -> pd.DataFrame:
+    """Apply cohort_mode filter on top of the matched DataFrame.
+
+    'all'           : no-op (every visit per subject; current default).
+    'p_first_hc_all'  : P → first eligible visit (CDR>=0.5) with .npy fallback;
+                      NAD/ACS → all visits, no strict HC filter.
+    """
+    if cohort_mode == "all":
+        return df_matched
+
+    df_p = df_matched[df_matched["group"] == "P"].copy()
+    df_hc = df_matched[df_matched["group"].isin(["NAD", "ACS"])].copy()
+
+    df_p["subject"] = df_p["ID"].apply(lambda x: x.rsplit("-", 1)[0])
+    df_p_eligible = df_p[pd.to_numeric(df_p["Global_CDR"], errors="coerce") >= 0.5]
+    # First-visit pick per subject; .npy fallback baked in (rows here already
+    # have a predicted_age, so being in df_matched ⇔ has .npy + age).
+    pick = (df_p_eligible.sort_values("ID")
+                          .drop_duplicates("subject", keep="first"))
+    return pd.concat([pick.drop(columns=["subject"]), df_hc], ignore_index=True)
 
 
 AGE_BINS = [
@@ -552,15 +579,27 @@ def plot_error_by_age_combined(output_dir: Path):
 
 
 def main():
-    # 使用 config 常數
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--cohort-mode", default="all",
+                        choices=["all", "p_first_hc_all"])
+    parser.add_argument("--output-dir", type=Path, default=AGE_PREDICTION_DIR)
+    parser.add_argument("--stat-dir", type=Path, default=CALIBRATION_DIR,
+                        help="Where the patient-stratified per-score analyses "
+                             "(MMSE/CASI/CDR) are written. Default = "
+                             "CALIBRATION_DIR.")
+    args = parser.parse_args()
+
     predicted_ages_file = PREDICTED_AGES_FILE
     demo_dir = DEMOGRAPHICS_DIR
-    output_dir = AGE_PREDICTION_DIR
+    output_dir = args.output_dir
+    output_dir.mkdir(parents=True, exist_ok=True)
     output_path = output_dir / "predicted_ages_scatter.png"
+    logger.info(f"cohort_mode = {args.cohort_mode},  output_dir = {output_dir}")
 
     predicted_ages = load_predicted_ages(predicted_ages_file)
     demo = load_demographics(demo_dir)
     df_matched = match_ages(predicted_ages, demo)
+    df_matched = filter_cohort(df_matched, args.cohort_mode)
 
     print_statistics(predicted_ages, df_matched, output_dir)
     sliding_window_age_error(df_matched, output_dir)
@@ -568,7 +607,7 @@ def main():
     plot_scatter(df_matched, output_path)
 
     # Patient 專屬分析
-    stat_dir = CALIBRATION_DIR
+    stat_dir = args.stat_dir
     stat_dir.mkdir(parents=True, exist_ok=True)
     patient_score_stratified_error(df_matched, "MMSE", MMSE_BINS, stat_dir)
     patient_score_stratified_error(df_matched, "CASI", CASI_BINS, stat_dir)

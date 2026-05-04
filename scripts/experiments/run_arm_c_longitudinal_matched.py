@@ -10,7 +10,7 @@ Primary question: Does baseline severity predict the rate of face drift
 over 2 years, above and beyond age?
 
 Usage:
-    conda run -n Alz_face_test_2 python scripts/experiments/run_arm_c_longitudinal_matched.py
+    conda run -n Alz_face_main_analysis python scripts/experiments/run_arm_c_longitudinal_matched.py
 """
 
 import argparse
@@ -44,7 +44,8 @@ hedges_g = _arm_a.hedges_g
 DELTAS_CSV = PROJECT_ROOT / "workspace" / "longitudinal" / "patient_deltas.csv"
 LANDMARK_LONG_CSV = (PROJECT_ROOT / "workspace" / "asymmetry" / "analysis" /
                      "longitudinal_landmark_deltas.csv")
-OUTPUT_DIR = PROJECT_ROOT / "workspace" / "arms_analysis" / "per_arm" / "arm_c"
+OUTPUT_DIR = (PROJECT_ROOT / "workspace" / "arms_analysis" /
+              "p_first_hc_strict" / "per_arm" / "arm_c")
 
 EMOTIONS = ["anger", "disgust", "fear", "happiness", "sadness",
             "surprise", "neutral"]

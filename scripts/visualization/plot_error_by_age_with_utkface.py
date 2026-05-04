@@ -7,9 +7,17 @@
     error_after = real - corrected
 a_mean, b_mean 取自 bootstrap_coefficients.csv 的 mean 列。
 
-輸出：workspace/age/age_prediction/error_by_age_combined_with_utkface.png
+輸出：<output-dir>/error_by_age/{lines,merged}_<suffix>.png
+       <output-dir>/error_by_age/sw10/...
+       <output-dir>/residual_by_age/{lines,merged}_<suffix>.png
+       <output-dir>/residual_by_age/sw10/...
+
+預設讀 BOOTSTRAP_DIR / data / {bootstrap_coefficients,corrected_ages}.csv，
+寫到 AGE_PREDICTION_DIR/{error_by_age,residual_by_age}/。可用
+--bootstrap-dir / --output-dir 切換到 V2 路徑（age_prediction_p_first_hc_all）。
 """
 
+import argparse
 import json
 import logging
 import sys
@@ -30,12 +38,6 @@ from src.config import (
     DEMOGRAPHICS_DIR,
     PREDICTED_AGES_FILE,
 )
-
-# 分門別類的輸出子目錄
-DIR_ERR = AGE_PREDICTION_DIR / "error_by_age"
-DIR_ERR_SW = DIR_ERR / "sw10"
-DIR_RES = AGE_PREDICTION_DIR / "residual_by_age"
-DIR_RES_SW = DIR_RES / "sw10"
 
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s - %(levelname)s - %(message)s")
@@ -249,8 +251,26 @@ def all_combos() -> list:
 
 
 def main():
-    a, b = load_bootstrap_mean_coefs(BOOTSTRAP_DIR / "data" / "bootstrap_coefficients.csv")
-    df_internal = load_corrected_internal(BOOTSTRAP_DIR / "data" / "corrected_ages.csv")
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--bootstrap-dir", type=Path, default=BOOTSTRAP_DIR,
+                        help="Directory holding data/bootstrap_coefficients.csv "
+                             "+ data/corrected_ages.csv (output of "
+                             "age_error_bootstrap_correction.py).")
+    parser.add_argument("--output-dir", type=Path, default=AGE_PREDICTION_DIR,
+                        help="Root dir under which error_by_age/ and "
+                             "residual_by_age/ are written.")
+    args = parser.parse_args()
+
+    DIR_ERR = args.output_dir / "error_by_age"
+    DIR_ERR_SW = DIR_ERR / "sw10"
+    DIR_RES = args.output_dir / "residual_by_age"
+    DIR_RES_SW = DIR_RES / "sw10"
+
+    logger.info(f"bootstrap-dir = {args.bootstrap_dir}")
+    logger.info(f"output-dir    = {args.output_dir}")
+
+    a, b = load_bootstrap_mean_coefs(args.bootstrap_dir / "data" / "bootstrap_coefficients.csv")
+    df_internal = load_corrected_internal(args.bootstrap_dir / "data" / "corrected_ages.csv")
 
     with open(PREDICTED_AGES_FILE, "r", encoding="utf-8") as f:
         preds = json.load(f)

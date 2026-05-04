@@ -34,7 +34,7 @@ from matplotlib.patches import Rectangle
 
 ROOT = Path(__file__).resolve().parents[2]
 _variant = os.environ.get("GRID_VARIANT", "acs")
-DEEP = ROOT / "workspace" / "arms_analysis" / "grid" / _variant
+DEEP = ROOT / "workspace" / "arms_analysis" / "p_first_hc_strict" / "grid" / _variant
 LONG_CSV = DEEP / "stat_grid_long.csv"
 HEADER_STATS_CSV = DEEP / "cell_header_stats.csv"
 

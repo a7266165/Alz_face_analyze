@@ -9,9 +9,10 @@ Uses matched_features.csv (1:1 age-matched pairs) labelled by mmse_group:
   high=1, low=0.
 
 Usage:
-    conda run -n Alz_face_test_2 python scripts/experiments/run_arm_b_auc_supplement.py
+    conda run -n Alz_face_main_analysis python scripts/experiments/run_arm_b_auc_supplement.py
 """
 
+import argparse
 import importlib.util
 import logging
 import os
@@ -38,11 +39,12 @@ load_embedding_mean = _l1.load_embedding_mean
 load_embedding_asymmetry = _l1.load_embedding_asymmetry
 EMBEDDING_MODELS = _l1.EMBEDDING_MODELS
 
-ARM_B_DIR = PROJECT_ROOT / "workspace" / "arms_analysis" / "per_arm" / "arm_b"
+DEFAULT_ARM_B_DIR = (PROJECT_ROOT / "workspace" / "arms_analysis" /
+                      "p_first_hc_strict" / "per_arm" / "arm_b")
 # HILO_METRIC: MMSE (default) → mmse_high_vs_low/, CASI → casi_high_vs_low/
 METRIC = os.environ.get("HILO_METRIC", "MMSE")
 GROUP_COL = f"{METRIC.lower()}_group"
-COMPARISON_DIR = ARM_B_DIR / f"{METRIC.lower()}_high_vs_low"
+COMPARISON_NAME = f"{METRIC.lower()}_high_vs_low"
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s")
 logger = logging.getLogger(__name__)
@@ -72,7 +74,16 @@ def eval_modality(name, X_df, matched, model_cls="xgb"):
 
 
 def main():
-    matched = pd.read_csv(COMPARISON_DIR / "matched_features.csv")
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--arm-b-dir", type=Path, default=DEFAULT_ARM_B_DIR,
+                         help="arm_b 根目錄 (default: workspace/arms_analysis/"
+                              "per_arm/arm_b)。auc_supplement 會讀 "
+                              "<arm_b_dir>/<metric>_high_vs_low/matched_features.csv "
+                              "並寫 summary_per_modality_auc.csv 回去")
+    args = parser.parse_args()
+
+    comparison_dir = args.arm_b_dir / COMPARISON_NAME
+    matched = pd.read_csv(comparison_dir / "matched_features.csv")
     matched["label"] = (matched[GROUP_COL] == "high").astype(int)
     matched["base_id"] = matched["ID"].str.extract(r"^([A-Za-z]+\d+)")
 
@@ -134,8 +145,8 @@ def main():
             results.append(eval_modality(f"embedding_{model}_mean", emb, matched))
 
     df = pd.DataFrame(results)
-    COMPARISON_DIR.mkdir(parents=True, exist_ok=True)
-    out_csv = COMPARISON_DIR / "summary_per_modality_auc.csv"
+    comparison_dir.mkdir(parents=True, exist_ok=True)
+    out_csv = comparison_dir / "summary_per_modality_auc.csv"
     df.to_csv(out_csv, index=False)
 
     logger.info(f"Saved {out_csv}")

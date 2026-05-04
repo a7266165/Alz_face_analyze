@@ -14,9 +14,10 @@ Outputs per comparison (HC / NAD / ACS) into:
     └── age/fig_age_error_violin.png
 
 Usage:
-    conda run -n Alz_face_test_2 python \
+    conda run -n Alz_face_main_analysis python \
         scripts/experiments/run_arm_b_ad_vs_hcgroups.py
 """
+import argparse
 import importlib.util
 import json
 import logging
@@ -46,7 +47,8 @@ _grid = _load_module("run_4arm_deep_dive",
                       "run_4arm_deep_dive.py")
 build_cohort_ad_vs_HCgroup = _grid.build_cohort_ad_vs_HCgroup
 
-ARM_B_DIR = PROJECT_ROOT / "workspace" / "arms_analysis" / "per_arm" / "arm_b"
+DEFAULT_ARM_B_DIR = (PROJECT_ROOT / "workspace" / "arms_analysis" /
+                     "p_first_hc_strict" / "per_arm" / "arm_b")
 AGES_FILE = (PROJECT_ROOT / "workspace" / "age" / "age_prediction" /
              "predicted_ages.json")
 CALIPER = 2.0  # max age diff for matching (years)
@@ -128,7 +130,7 @@ def fmt_stats(label, s, fmt=".2f"):
             f"d={s['cohen_d']:.3f})")
 
 
-def run_one(comparison):
+def run_one(comparison, arm_b_dir):
     logger.info(f"=== AD vs {comparison} ===")
     cohort, pairs = build_cohort_ad_vs_HCgroup(comparison, arm="B",
                                                  caliper=CALIPER)
@@ -151,7 +153,7 @@ def run_one(comparison):
 
     cohort = attach_age_error(cohort, pred_ages)
 
-    out_dir = ARM_B_DIR / f"ad_vs_{comparison.lower()}"
+    out_dir = arm_b_dir / f"ad_vs_{comparison.lower()}"
     out_dir.mkdir(parents=True, exist_ok=True)
     age_dir = out_dir / "age"
     age_dir.mkdir(parents=True, exist_ok=True)
@@ -187,8 +189,23 @@ def run_one(comparison):
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--cohort-mode", choices=["default", "p_first_hc_all"],
+                         default="default",
+                         help="default=原 strict HC + first-visit；"
+                              "p_first_hc_all=first-visit P + ALL NAD/ACS")
+    parser.add_argument("--output-dir", type=Path, default=DEFAULT_ARM_B_DIR,
+                         help="arm_b 輸出根目錄 (default: workspace/"
+                              "arms_analysis/per_arm/arm_b)")
+    args = parser.parse_args()
+
+    # 切 grid module 的 COHORT_MODE，build_cohort_ad_vs_HCgroup 會吃這個 global
+    _grid.COHORT_MODE = args.cohort_mode
+    logger.info(f"cohort_mode={args.cohort_mode}  arm_b_dir={args.output_dir}")
+
+    args.output_dir.mkdir(parents=True, exist_ok=True)
     for cmp in ("HC", "NAD", "ACS"):
-        run_one(cmp)
+        run_one(cmp, args.output_dir)
 
 
 if __name__ == "__main__":
