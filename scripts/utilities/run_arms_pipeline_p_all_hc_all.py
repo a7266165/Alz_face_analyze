@@ -3,8 +3,9 @@ Run arms_analysis with the most permissive cohort:
     P side : ALL visits (Global_CDR>=0.5, with embedding+landmark features)
     HC side: ALL NAD + ALL ACS visits (no strict HC filter)
 
-Outputs go to workspace/arms_analysis/p_all_hc_all/  (sibling of
-p_first_hc_strict/, p_first_hc_all/), so neither of those is touched.
+Outputs go to workspace/arms_analysis/per_arm/p_all_hc_all/ (per-arm) +
+arms_analysis/grid/p_all_hc_all/ (grid) (sibling of the p_first_hc_strict
+and p_first_hc_all subtrees), so neither of those is touched.
 
 Sequentially invokes 6 stages with --cohort-mode p_all_hc_all + --output-dir
 overrides:
@@ -157,21 +158,21 @@ Both sides go through `match_mode='subject_first'` two-pass matching in Arm B
 ## Folder layout
 
 ```
-arms_analysis/p_all_hc_all/
+arms_analysis/per_arm/p_all_hc_all/
 |-- README.md                     (this file)
 |-- cohort_summary.csv            (per-stage / per-group N + age stats)
-|-- per_arm/
-|   |-- arm_a/
-|   |   `-- ad_vs_hc/             (run_arm_a_ad_vs_hc.py)
-|   `-- arm_b/
-|       |-- ad_vs_hc/             (run_arm_b_ad_vs_hcgroups.py x HC)
-|       |-- ad_vs_nad/            (x NAD)
-|       |-- ad_vs_acs/            (x ACS)
-|       |-- mmse_high_vs_low/     (run_mmse_hilo_standalone.py + auc_supplement, HILO_METRIC=MMSE)
-|       `-- casi_high_vs_low/     (HILO_METRIC=CASI)
-|-- grid/
-|   `-- acs/                      (run_4arm_deep_dive.py --arms A B --hc-source ACS)
+|-- arm_a/
+|   `-- ad_vs_hc/                 (run_arm_a_ad_vs_hc.py)
+|-- arm_b/
+|   |-- ad_vs_hc/                 (run_arm_b_ad_vs_hcgroups.py x HC)
+|   |-- ad_vs_nad/                (x NAD)
+|   |-- ad_vs_acs/                (x ACS)
+|   |-- mmse_high_vs_low/         (run_mmse_hilo_standalone.py + auc_supplement, HILO_METRIC=MMSE)
+|   `-- casi_high_vs_low/         (HILO_METRIC=CASI)
 `-- classifier_summary_all.csv    (run_arm_age_classifiers.py)
+
+arms_analysis/grid/p_all_hc_all/
+`-- acs/                          (run_4arm_deep_dive.py --arms A B --hc-source ACS)
 ```
 
 ## Scope

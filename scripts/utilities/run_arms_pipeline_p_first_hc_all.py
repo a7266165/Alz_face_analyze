@@ -3,7 +3,8 @@ Run arms_analysis with the new cohort:
     P side : first-visit + Global_CDR>=0.5 + .npy fallback
     HC side: ALL NAD + ALL ACS visits (no strict HC filter)
 
-Outputs go to workspace/arms_analysis/p_first_hc_all/  (sibling of the existing
+Outputs go to workspace/arms_analysis/per_arm/p_first_hc_all/  (per-arm analyses) +
+arms_analysis/grid/p_first_hc_all/  (grid analyses)  (sibling of the existing
 per_arm/, grid/), so the original results stay untouched.
 
 Sequentially invokes 6 stages with --cohort-mode p_first_hc_all + --output-dir
@@ -142,9 +143,8 @@ def write_readme(output_dir, df_summary):
 | **P (AD)** | First-visit + `Global_CDR >= 0.5` + `.npy fallback` |
 | **NAD / ACS (HC)** | **No strict HC filter** — every visit kept (CDR=0 / MMSE>=26 not required, no first-visit pick per HC subject) |
 
-Differs from `workspace/arms_analysis/per_arm/`、`grid/` (the original
-folders), which use strict HC (CDR=0 OR (CDR=NaN AND MMSE>=26)) AND
-first-visit per HC subject.
+Differs from the strict cohort `p_first_hc_strict`, which uses strict HC
+(CDR=0 OR (CDR=NaN AND MMSE>=26)) AND first-visit per HC subject.
 
 ## Cohort summary
 
@@ -153,21 +153,21 @@ first-visit per HC subject.
 ## Folder layout
 
 ```
-arms_analysis/p_first_hc_all/
+arms_analysis/per_arm/p_first_hc_all/
 ├── README.md                     (this file)
 ├── cohort_summary.csv            (per-stage / per-group N + age stats)
-├── per_arm/
-│   ├── arm_a/
-│   │   └── ad_vs_hc/             (run_arm_a_ad_vs_hc.py)
-│   └── arm_b/
-│       ├── ad_vs_hc/             (run_arm_b_ad_vs_hcgroups.py × HC)
-│       ├── ad_vs_nad/            (× NAD)
-│       ├── ad_vs_acs/            (× ACS)
-│       ├── mmse_high_vs_low/     (run_mmse_hilo_standalone.py + auc_supplement, HILO_METRIC=MMSE)
-│       └── casi_high_vs_low/     (HILO_METRIC=CASI)
-├── grid/
-│   └── acs/                      (run_4arm_deep_dive.py --arms A B --hc-source ACS)
+├── arm_a/
+│   └── ad_vs_hc/                 (run_arm_a_ad_vs_hc.py)
+├── arm_b/
+│   ├── ad_vs_hc/                 (run_arm_b_ad_vs_hcgroups.py × HC)
+│   ├── ad_vs_nad/                (× NAD)
+│   ├── ad_vs_acs/                (× ACS)
+│   ├── mmse_high_vs_low/         (run_mmse_hilo_standalone.py + auc_supplement, HILO_METRIC=MMSE)
+│   └── casi_high_vs_low/         (HILO_METRIC=CASI)
 └── classifier_summary_all.csv    (run_arm_age_classifiers.py)
+
+arms_analysis/grid/p_first_hc_all/
+└── acs/                          (run_4arm_deep_dive.py --arms A B --hc-source ACS)
 ```
 
 ## Scope
