@@ -28,6 +28,8 @@ import numpy as np
 import pandas as pd
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+import sys as _sys
+_sys.path.insert(0, str(PROJECT_ROOT))
 ARMS_ROOT = PROJECT_ROOT / "workspace" / "arms_analysis"
 ASYM_VARIANTS = ["difference", "absolute_difference", "average",
                  "relative_differences", "absolute_relative_differences"]

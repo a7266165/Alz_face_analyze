@@ -31,11 +31,13 @@ Usage:
 """
 import argparse
 import json
+import sys
 from pathlib import Path
 
 import pandas as pd
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(PROJECT_ROOT))
 
 METRIC_FIELDS = [
     "n", "n_pos", "n_neg",
