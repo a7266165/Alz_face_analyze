@@ -102,7 +102,7 @@ _PCA_COMPONENTS = None       # None = disabled; int = n_components; float<1 = va
 _VISIT_MODE = "first"  # "first" = current behavior; "all" = include every qualifying visit per base_id
 _PHOTO_MODE = "mean"   # "mean" = current behavior (mean over 10 photos); "all" = one row per photo
 _COHORT_MODE = os.environ.get("COHORT_MODE", "default")  # default=p_first_hc_strict / p_first_hc_all / p_all_hc_all
-_LR_C = 1.0  # LogisticRegression C; ≠1.0 inserts `logistic_C{value}/` segment & drops cell-level classifier leaf
+_LR_C = 1.0  # LogisticRegression C; encoded at cell-level leaf as logistic/C_<value>/
 
 
 def _reducer_label():
@@ -117,7 +117,7 @@ def _reducer_label():
 
 def output_dir_for(feature_type, drop_corr=None, visit_mode="first",
                     photo_mode="mean", pca_components=None,
-                    cohort_mode="default", lr_C=1.0):
+                    cohort_mode="default"):
     """Layout (override the older 4-arg call sites at runtime via the module-
     level state). When called externally, callers can pass pca_components.
 
@@ -128,22 +128,34 @@ def output_dir_for(feature_type, drop_corr=None, visit_mode="first",
     cohort_mode='p_all_hc_all'   -> p_all_hc_all/    (cohort default:
                                                        visit=all, photo=mean)
 
-    Suffix `__visit_X[__photo_Y]` is only appended when (visit, photo)
-    differ from the cohort's default — so p_first_hc_all / p_all_hc_all +
-    visit=all + photo=mean yields plain `pca_100`, not `pca_100__visit_all`.
+    Reducer naming:
+      drop_corr=X.X    → drop_feats/pearson_r_X.X
+      pca_components=N → pca/n_components_N            (int N)
+      pca_components=R → pca/var_ratio_R               (float R<1)
+      neither          → no_drop
 
-    lr_C != 1.0 inserts `logistic_C{value}/` between cohort_dir and the
-    `embedding_*classification` segment (and `cell_dir()` drops the trailing
-    `logistic/` leaf). lr_C == 1.0 leaves the layout untouched.
+    Suffix `__visit_X[__photo_Y]` is only appended (to the reducer leaf) when
+    (visit, photo) differ from the cohort's default — so p_first_hc_all +
+    visit=all + photo=mean yields plain `pca/n_components_100`.
+
+    Asymmetry layout pivots: feature_type segment comes BEFORE the reducer
+    path (embedding_asymmetry_classification/<feature_type>/<reducer>/...),
+    so all reducer variants for one feature_type cluster together.
+
+    LR `C` value is encoded at the cell-level leaf (logistic/C_<lr_C:g>/) by
+    cell_dir(), not in this path — so output_dir_for() does not depend on it.
     """
     if pca_components is not None and drop_corr is not None:
         raise ValueError("drop_corr and pca_components are mutually exclusive")
     if pca_components is not None:
-        base = f"pca_{pca_components}"
+        if isinstance(pca_components, float) and pca_components < 1:
+            reducer = Path("pca") / f"var_ratio_{pca_components:g}"
+        else:
+            reducer = Path("pca") / f"n_components_{pca_components}"
     elif drop_corr is None:
-        base = "no_drop"
+        reducer = Path("no_drop")
     else:
-        base = f"drop_{drop_corr}"
+        reducer = Path("drop_feats") / f"pearson_r_{drop_corr:g}"
     if cohort_mode in ("p_first_hc_all", "p_all_hc_all"):
         default_visit, default_photo = "all", "mean"
     else:
@@ -153,26 +165,24 @@ def output_dir_for(feature_type, drop_corr=None, visit_mode="first",
         suffix_parts.append(f"visit_{visit_mode}")
     if photo_mode != default_photo:
         suffix_parts.append(f"photo_{photo_mode}")
-    suffix = ("__" + "_".join(suffix_parts)) if suffix_parts else ""
-    drop_label = base + suffix
+    if suffix_parts:
+        suffix = "__" + "_".join(suffix_parts)
+        reducer = reducer.parent / (reducer.name + suffix)
     if cohort_mode == "p_first_hc_all":
         cohort_dir = "p_first_hc_all"
     elif cohort_mode == "p_all_hc_all":
         cohort_dir = "p_all_hc_all"
     else:
         cohort_dir = "p_first_hc_strict"
-    base_root = ARMS_ROOT / cohort_dir
-    if lr_C != 1.0:
-        base_root = base_root / f"logistic_C{lr_C:g}"
     if feature_type == "original":
-        return base_root / "embedding_classification" / drop_label
-    return (base_root / "embedding_asymmetry_classification" /
-            drop_label / feature_type)
+        return ARMS_ROOT / cohort_dir / "embedding_classification" / reducer
+    return (ARMS_ROOT / cohort_dir / "embedding_asymmetry_classification" /
+            feature_type / reducer)
 
 
 OUTPUT_DIR = output_dir_for(_FEATURE_TYPE, _DROP_CORR_THRESHOLD,
                               _VISIT_MODE, _PHOTO_MODE, _PCA_COMPONENTS,
-                              _COHORT_MODE, _LR_C)
+                              _COHORT_MODE)
 
 
 class _TorchGPUPCA:
@@ -1170,17 +1180,17 @@ def run_reverse(full_cohort, matched_cohort, embedding, classifier,
 # ============================================================
 
 def cell_dir(partition, embedding, classifier, strategy):
-    """Layout: embedding_classification/{fwd,rev}/<partition>/<embedding>/<classifier>/.
+    """Layout: <reducer>/{fwd,rev}/<partition>/<embedding>/<classifier>[/C_<lr_C:g>]/
 
-    When `_LR_C != 1.0`, OUTPUT_DIR already encodes the LR C value via the
-    `logistic_C{value}/` segment (see output_dir_for), so the trailing
-    `<classifier>/` leaf is omitted (the whole subtree is LR by construction).
+    LR cells always nest a `C_<lr_C:g>/` leaf under `logistic/` so different
+    regularization strengths sit side by side (e.g. `logistic/C_1/`,
+    `logistic/C_10/`). XGB cells stay flat (no C dimension).
     """
     bucket = "fwd" if strategy == "forward" else "rev"
-    base = OUTPUT_DIR / bucket / partition / embedding
-    if _LR_C != 1.0:
-        return base
-    return base / classifier
+    base = OUTPUT_DIR / bucket / partition / embedding / classifier
+    if classifier == "logistic":
+        return base / f"C_{_LR_C:g}"
+    return base
 
 
 def write_json(path, obj):
@@ -1430,21 +1440,14 @@ def main():
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--lr-C", type=float, default=1.0,
                         help="LogisticRegression C (inverse regularization). "
-                             "Default 1.0 keeps the original output layout. "
-                             "Any other value inserts a 'logistic_C{value}/' "
-                             "segment under cohort_dir/ and drops the trailing "
-                             "'<classifier>/' leaf, so all cells live under "
-                             "p_first_hc_*/logistic_C{value}/embedding_*/... "
-                             "Must be combined with --classifier logistic.")
+                             "Encoded at the cell-level leaf as "
+                             "logistic/C_<value>/ (e.g. C_1, C_10), so "
+                             "different C values can coexist alongside xgb/. "
+                             "Has no effect on xgb cells.")
     args = parser.parse_args()
 
     global _FEATURE_TYPE, _DROP_CORR_THRESHOLD, _DROP_CORR_METHOD
     global _PCA_COMPONENTS, _VISIT_MODE, _PHOTO_MODE, _COHORT_MODE, _LR_C, OUTPUT_DIR
-    if args.lr_C != 1.0 and args.classifier != "logistic":
-        parser.error(
-            "--lr-C != 1.0 requires --classifier logistic "
-            "(the new path layout assumes the whole subtree is LR)."
-        )
     if args.drop_correlated_threshold is not None and args.pca_components is not None:
         parser.error("--drop-correlated-threshold and --pca-components are "
                      "mutually exclusive")
@@ -1480,7 +1483,7 @@ def main():
         )
     OUTPUT_DIR = output_dir_for(_FEATURE_TYPE, _DROP_CORR_THRESHOLD,
                                   _VISIT_MODE, _PHOTO_MODE,
-                                  _PCA_COMPONENTS, _COHORT_MODE, _LR_C)
+                                  _PCA_COMPONENTS, _COHORT_MODE)
 
     partitions = expand_axis(args.partition, PARTITIONS)
     embeddings = expand_axis(args.embedding, EMBEDDINGS)
@@ -1520,7 +1523,9 @@ def main():
 
     if all_rows:
         summary_df = pd.DataFrame(all_rows)
-        summary_path = summary_dir / "combined_summary.csv"
+        # C-tagged filename so different LR C values don't clobber each other.
+        # XGB-only runs still get a C tag (uses --lr-C default 1.0); harmless.
+        summary_path = summary_dir / f"combined_summary_C{_LR_C:g}.csv"
         summary_df.to_csv(summary_path, index=False)
         logger.info(f"Wrote {summary_path} ({len(summary_df)} rows)")
 
