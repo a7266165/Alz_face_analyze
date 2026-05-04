@@ -295,18 +295,8 @@ def main():
     df.to_csv(out_csv, index=False)
     logger.info(f"Wrote {out_csv} ({len(df)} rows)")
 
-    pivot = df.pivot_table(
-        index=["partition", "embedding", "classifier", "strategy", "scope"],
-        columns="pca_root", values="auc", aggfunc="first",
-    )
-    col_order = [f"pca_{v}" for v in
-                  (1, 2, 5, 10, 20, 50, 100, 200, 400, 0.95, 0.99)] + ["no_drop"]
-    col_order = [c for c in col_order if c in pivot.columns]
-    pivot = pivot[col_order]
-    pivot.to_csv(out / "auc_by_pca_pivot.csv")
-    logger.info(f"Wrote {out / 'auc_by_pca_pivot.csv'}")
-
-    # Cumulative eigenvalue ratio per embedding (shared across the 5 figures).
+    # Cumulative eigenvalue ratio per embedding (saved as csv for downstream
+    # forward/reverse plot scripts to read).
     eig_df = compute_cumulative_eigenvalue_ratio(feature_subdir,
                                                    cohort_mode=args.eigen_source)
     if len(eig_df):
@@ -315,79 +305,6 @@ def main():
                         else f"cumulative_eigenvalue_ratio_{args.eigen_source}.csv")
         eig_df.to_csv(out / eig_csv_name, index=False)
         logger.info(f"Wrote {out / eig_csv_name}")
-
-    # Per-partition stacked plot — split into fwd/ and rev/ subdirs.
-    #   fwd/auc_by_pca_<part>.png : forward_matched (1 panel) + eigenvalue
-    #   rev/auc_by_pca_<part>.png : reverse_matched_oof + reverse_full_ensemble
-    #                                (2 panels) + eigenvalue
-    fwd_scopes = ["forward_matched"]
-    rev_scopes = ["reverse_ensemble_matched_oof", "reverse_ensemble_full"]
-    all_scopes = fwd_scopes + rev_scopes
-    line_df = df[df["scope"].isin(all_scopes) & df["pca_x"].notna()].copy()
-
-    from matplotlib.gridspec import GridSpec
-    fwd_dir = out / "fwd"
-    rev_dir = out / "rev"
-    fwd_dir.mkdir(exist_ok=True)
-    rev_dir.mkdir(exist_ok=True)
-
-    def _draw(part, scopes, out_path):
-        sub = line_df[(line_df["partition"] == part)
-                       & line_df["scope"].isin(scopes)]
-        n_top = len(scopes)
-        fig = plt.figure(figsize=(6 * n_top, 8))
-        gs = GridSpec(2, n_top, height_ratios=[2.2, 1], hspace=0.35,
-                       figure=fig)
-        top_axes = [fig.add_subplot(gs[0, i]) for i in range(n_top)]
-        bot_ax = fig.add_subplot(gs[1, :])
-        for ax_idx, (ax, scope) in enumerate(zip(top_axes, scopes)):
-            scope_df = sub[sub["scope"] == scope]
-            for (emb, clf), grp in scope_df.groupby(["embedding", "classifier"]):
-                grp = grp.sort_values("pca_x")
-                ax.plot(grp["pca_x"], grp["auc"], marker="o",
-                        label=f"{emb}/{clf}", linewidth=1.5,
-                        color=EMB_CLF_COLOR.get((emb, clf),
-                                                 EMB_COLOR.get(emb)),
-                        linestyle=EMB_CLF_LINESTYLE.get(clf, "-"))
-            ax.axhline(0.5, color="grey", linestyle=":", linewidth=0.8)
-            ax.set_xscale("log")
-            ax.set_xlim(1, 512)
-            ax.set_title(scope)
-            ax.grid(alpha=0.3, which="both")
-            if ax_idx == 0:
-                ax.set_ylabel("AUC")
-        top_axes[-1].legend(loc="center left", bbox_to_anchor=(1.02, 0.5),
-                             fontsize=8)
-        for emb in ("arcface", "topofr", "dlib"):
-            sub_eig = eig_df[eig_df["embedding"] == emb]
-            if not len(sub_eig):
-                continue
-            bot_ax.plot(sub_eig["n_components"],
-                        sub_eig["cumulative_variance_ratio"],
-                        label=f"{emb} (input dim={INPUT_DIM[emb]})",
-                        color=EMB_COLOR.get(emb), linewidth=1.8)
-        bot_ax.axhline(0.95, color="grey", linestyle=":", linewidth=0.6)
-        bot_ax.axhline(0.99, color="grey", linestyle=":", linewidth=0.6)
-        bot_ax.text(1.05, 0.95, "0.95", fontsize=7, color="grey", va="center")
-        bot_ax.text(1.05, 0.99, "0.99", fontsize=7, color="grey", va="center")
-        bot_ax.set_xscale("log")
-        bot_ax.set_xlim(1, 512)
-        bot_ax.set_ylim(0, 1.02)
-        bot_ax.set_xlabel("PCA n_components")
-        bot_ax.set_ylabel("Cumulative eigenvalue / total")
-        bot_ax.grid(alpha=0.3, which="both")
-        bot_ax.legend(loc="lower right", fontsize=8)
-        fig.suptitle(f"{part} — AUC vs PCA n_components (top) ·  "
-                     f"cumulative eigenvalue ratio (bottom)",
-                     fontsize=13)
-        fig.savefig(out_path, dpi=150, bbox_inches="tight")
-        plt.close(fig)
-        logger.info(f"Wrote {out_path}")
-
-    partitions = sorted(line_df["partition"].unique())
-    for part in partitions:
-        _draw(part, fwd_scopes, fwd_dir / f"auc_by_pca_{part}.png")
-        _draw(part, rev_scopes, rev_dir / f"auc_by_pca_{part}.png")
 
     # Feature count plot — effective n_components retained per (embedding, x).
     fc = collect_feature_counts(root, cell_json_for)
