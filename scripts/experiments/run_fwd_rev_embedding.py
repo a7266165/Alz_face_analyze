@@ -102,6 +102,7 @@ _PCA_COMPONENTS = None       # None = disabled; int = n_components; float<1 = va
 _VISIT_MODE = "first"  # "first" = current behavior; "all" = include every qualifying visit per base_id
 _PHOTO_MODE = "mean"   # "mean" = current behavior (mean over 10 photos); "all" = one row per photo
 _COHORT_MODE = os.environ.get("COHORT_MODE", "default")  # "default"=p_first_hc_strict; "p_first_hc_all"
+_LR_C = 1.0  # LogisticRegression C; ≠1.0 inserts `logistic_C{value}/` segment & drops cell-level classifier leaf
 
 
 def _reducer_label():
@@ -116,7 +117,7 @@ def _reducer_label():
 
 def output_dir_for(feature_type, drop_corr=None, visit_mode="first",
                     photo_mode="mean", pca_components=None,
-                    cohort_mode="default"):
+                    cohort_mode="default", lr_C=1.0):
     """Layout (override the older 4-arg call sites at runtime via the module-
     level state). When called externally, callers can pass pca_components.
 
@@ -128,6 +129,10 @@ def output_dir_for(feature_type, drop_corr=None, visit_mode="first",
     Suffix `__visit_X[__photo_Y]` is only appended when (visit, photo)
     differ from the cohort's default — so p_first_hc_all + visit=all + photo=mean
     yields plain `pca_100`, not `pca_100__visit_all`.
+
+    lr_C != 1.0 inserts `logistic_C{value}/` between cohort_dir and the
+    `embedding_*classification` segment (and `cell_dir()` drops the trailing
+    `logistic/` leaf). lr_C == 1.0 leaves the layout untouched.
     """
     if pca_components is not None and drop_corr is not None:
         raise ValueError("drop_corr and pca_components are mutually exclusive")
@@ -149,15 +154,18 @@ def output_dir_for(feature_type, drop_corr=None, visit_mode="first",
     suffix = ("__" + "_".join(suffix_parts)) if suffix_parts else ""
     drop_label = base + suffix
     cohort_dir = "p_first_hc_all" if cohort_mode == "p_first_hc_all" else "p_first_hc_strict"
+    base_root = ARMS_ROOT / cohort_dir
+    if lr_C != 1.0:
+        base_root = base_root / f"logistic_C{lr_C:g}"
     if feature_type == "original":
-        return ARMS_ROOT / cohort_dir / "embedding_classification" / drop_label
-    return (ARMS_ROOT / cohort_dir / "embedding_asymmetry_classification" /
+        return base_root / "embedding_classification" / drop_label
+    return (base_root / "embedding_asymmetry_classification" /
             drop_label / feature_type)
 
 
 OUTPUT_DIR = output_dir_for(_FEATURE_TYPE, _DROP_CORR_THRESHOLD,
                               _VISIT_MODE, _PHOTO_MODE, _PCA_COMPONENTS,
-                              _COHORT_MODE)
+                              _COHORT_MODE, _LR_C)
 
 
 class _TorchGPUPCA:
@@ -596,9 +604,10 @@ def build_feature_matrix(cohort, embedding):
 
 def make_classifier(name, seed=42):
     if name == "logistic":
-        # class_weight balanced for imbalanced partitions; lbfgs default
+        # class_weight balanced for imbalanced partitions; lbfgs default.
+        # C read from module-level _LR_C (set by main() from --lr-C).
         return LogisticRegression(
-            C=1.0, max_iter=2000, solver="lbfgs",
+            C=_LR_C, max_iter=2000, solver="lbfgs",
             class_weight="balanced", random_state=seed, n_jobs=-1,
         )
     if name == "xgb":
@@ -1037,9 +1046,17 @@ def run_reverse(full_cohort, matched_cohort, embedding, classifier,
 # ============================================================
 
 def cell_dir(partition, embedding, classifier, strategy):
-    """Layout: embedding_classification/{fwd,rev}/<partition>/<embedding>/<classifier>/."""
+    """Layout: embedding_classification/{fwd,rev}/<partition>/<embedding>/<classifier>/.
+
+    When `_LR_C != 1.0`, OUTPUT_DIR already encodes the LR C value via the
+    `logistic_C{value}/` segment (see output_dir_for), so the trailing
+    `<classifier>/` leaf is omitted (the whole subtree is LR by construction).
+    """
     bucket = "fwd" if strategy == "forward" else "rev"
-    return OUTPUT_DIR / bucket / partition / embedding / classifier
+    base = OUTPUT_DIR / bucket / partition / embedding
+    if _LR_C != 1.0:
+        return base
+    return base / classifier
 
 
 def write_json(path, obj):
@@ -1102,6 +1119,7 @@ def run_cell(partition, embedding, classifier, strategy, n_folds=10, seed=42):
         write_json(out / "forward_matched_metrics.json", {
             "partition": partition, "embedding": embedding,
             "classifier": classifier, "strategy": "forward",
+            **({"lr_C": _LR_C} if classifier == "logistic" else {}),
             "k_folds_used": k, "n_dropped_no_emb": n_dropped,
             "n_pairs_expected": EXPECTED_PAIRS.get(partition),
             "derived_view": (sorted(keep_groups)
@@ -1148,6 +1166,7 @@ def run_cell(partition, embedding, classifier, strategy, n_folds=10, seed=42):
         common = {
             "partition": partition, "embedding": embedding,
             "classifier": classifier, "strategy": "reverse",
+            **({"lr_C": _LR_C} if classifier == "logistic" else {}),
             "k_folds_used": rev["k_folds_used"],
             "n_dropped_no_emb_matched": rev["n_dropped_no_emb_matched"],
             "n_dropped_no_emb_full": rev["n_dropped_no_emb_full"],
@@ -1284,10 +1303,23 @@ def main():
                              "Forwarded to run_4arm_deep_dive via env COHORT_MODE.")
     parser.add_argument("--n-folds", type=int, default=10)
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--lr-C", type=float, default=1.0,
+                        help="LogisticRegression C (inverse regularization). "
+                             "Default 1.0 keeps the original output layout. "
+                             "Any other value inserts a 'logistic_C{value}/' "
+                             "segment under cohort_dir/ and drops the trailing "
+                             "'<classifier>/' leaf, so all cells live under "
+                             "p_first_hc_*/logistic_C{value}/embedding_*/... "
+                             "Must be combined with --classifier logistic.")
     args = parser.parse_args()
 
     global _FEATURE_TYPE, _DROP_CORR_THRESHOLD, _DROP_CORR_METHOD
-    global _PCA_COMPONENTS, _VISIT_MODE, _PHOTO_MODE, _COHORT_MODE, OUTPUT_DIR
+    global _PCA_COMPONENTS, _VISIT_MODE, _PHOTO_MODE, _COHORT_MODE, _LR_C, OUTPUT_DIR
+    if args.lr_C != 1.0 and args.classifier != "logistic":
+        parser.error(
+            "--lr-C != 1.0 requires --classifier logistic "
+            "(the new path layout assumes the whole subtree is LR)."
+        )
     if args.drop_correlated_threshold is not None and args.pca_components is not None:
         parser.error("--drop-correlated-threshold and --pca-components are "
                      "mutually exclusive")
@@ -1309,6 +1341,7 @@ def main():
     _VISIT_MODE = args.visit_mode
     _PHOTO_MODE = args.photo_mode
     _COHORT_MODE = args.cohort_mode
+    _LR_C = args.lr_C
     # Verify the early sniff matched (the import-time read is the source of
     # truth for run_4arm_deep_dive).
     expected_env = "p_first_hc_all" if _COHORT_MODE == "p_first_hc_all" else "default"
@@ -1320,7 +1353,7 @@ def main():
         )
     OUTPUT_DIR = output_dir_for(_FEATURE_TYPE, _DROP_CORR_THRESHOLD,
                                   _VISIT_MODE, _PHOTO_MODE,
-                                  _PCA_COMPONENTS, _COHORT_MODE)
+                                  _PCA_COMPONENTS, _COHORT_MODE, _LR_C)
 
     partitions = expand_axis(args.partition, PARTITIONS)
     embeddings = expand_axis(args.embedding, EMBEDDINGS)
@@ -1335,7 +1368,7 @@ def main():
         reducer_label = "no_drop"
     logger.info(f"Feature type: {_FEATURE_TYPE}  ·  {reducer_label}  ·  "
                 f"visit={_VISIT_MODE}  ·  photo={_PHOTO_MODE}  ·  "
-                f"cohort={_COHORT_MODE}  →  {OUTPUT_DIR}")
+                f"cohort={_COHORT_MODE}  ·  lr_C={_LR_C}  →  {OUTPUT_DIR}")
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     summary_dir = OUTPUT_DIR / "_summary"
     summary_dir.mkdir(parents=True, exist_ok=True)
