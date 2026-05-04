@@ -1,72 +1,69 @@
 """
 Build per-cell `all_metrics_with_cm.csv` for an embedding sweep cohort.
 
-Walks the per-cell metrics.json tree and aggregates into the verbose-scope
-schema used by plot_pca_components_sweep.py. Does NOT rely on
+Walks the per-cell metrics.json tree and aggregates into the long-form schema
+consumed by plot_pca_*.py / plot_dropcorr_*.py. Does NOT rely on
 combined_summary.csv (which gets overwritten by partial re-runs).
 
-For each (reducer, variant) cell tree:
-    fwd/<part>/<emb>/<clf>/forward_matched_metrics.json
+Layout (post unified-reducer + simplified-rev refactors):
+    <cohort>/embedding_classification/<reducer_path>/{fwd,rev}/<part>/<emb>/<clf>[/C_X]/
+    <cohort>/embedding_asymmetry_classification/<feature_type>/<reducer_path>/{fwd,rev}/...
+
+`<reducer_path>` is one of:
+    no_drop
+    pca/n_components_<int>
+    pca/var_ratio_<float>
+    drop_feats/pearson_r_<float>
+
+For each cell:
+    fwd/<part>/<emb>/<clf>[/C_X]/forward_matched_metrics.json
         -> rows for scope ∈ {forward_matched, forward_full}
-    rev/<part>/<emb>/<clf>/ensemble/metrics.json
-        -> rows for scope ∈ {reverse_ensemble_matched_oof,
-                             reverse_ensemble_full,
-                             reverse_ensemble_unmatched}
-    rev/<part>/<emb>/<clf>/single/metrics.json
-        -> rows for scope ∈ {reverse_single_matched_train,
-                             reverse_single_unmatched}
+    rev/<part>/<emb>/<clf>[/C_X]/metrics.json
+        -> rows for scope ∈ {reverse_matched_oof, reverse_unmatched}
 
 Output:
-    embedding_classification/<reducer>/_summary/all_metrics_with_cm.csv
-    embedding_asymmetry_classification/<reducer>/<variant>/_summary/all_metrics_with_cm.csv
+    <reducer_dir>/_summary/all_metrics_with_cm.csv
 
 Usage:
     conda run -n Alz_face_main_analysis python \
         scripts/utilities/build_asym_sweep_metrics_with_cm.py \
-        --cohort-mode p_first_hc_all
+        --cohort-mode p_all_hc_all
 """
 import argparse
 import json
-import sys
 from pathlib import Path
 
 import pandas as pd
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
-# Common metric fields to copy from each block (when present).
 METRIC_FIELDS = [
     "n", "n_pos", "n_neg",
     "auc", "auc_ci_low", "auc_ci_high",
     "balacc", "mcc", "f1", "sens", "spec",
 ]
 
-# Block extractors per scope: (file rel path, json key, strategy, method)
+# (bucket, fname, json_key, scope, strategy)
 EXTRACTORS = [
-    ("fwd",            "forward_matched_metrics.json", "metrics_matched_subset",
-     "forward_matched", "forward", ""),
-    ("fwd",            "forward_matched_metrics.json", "metrics_full_cohort",
-     "forward_full", "forward", ""),
-    ("rev/ensemble",   "metrics.json", "metrics_matched_oof",
-     "reverse_ensemble_matched_oof", "reverse", "ensemble"),
-    ("rev/ensemble",   "metrics.json", "metrics_full",
-     "reverse_ensemble_full", "reverse", "ensemble"),
-    ("rev/ensemble",   "metrics.json", "metrics_unmatched",
-     "reverse_ensemble_unmatched", "reverse", "ensemble"),
-    ("rev/single",     "metrics.json", "metrics_matched_train",
-     "reverse_single_matched_train", "reverse", "single"),
-    ("rev/single",     "metrics.json", "metrics_unmatched",
-     "reverse_single_unmatched", "reverse", "single"),
+    ("fwd", "forward_matched_metrics.json", "metrics_matched_subset",
+     "forward_matched", "forward"),
+    ("fwd", "forward_matched_metrics.json", "metrics_full_cohort",
+     "forward_full", "forward"),
+    ("rev", "metrics.json", "metrics_matched_oof",
+     "reverse_matched_oof", "reverse"),
+    ("rev", "metrics.json", "metrics_unmatched",
+     "reverse_unmatched", "reverse"),
 ]
 
 
-def _row_from_block(block, partition, emb, clf, strategy, method, scope):
+def _row_from_block(block, partition, emb, clf, lr_C, strategy, scope):
     if not block:
         return None
     row = {
         "partition": partition,
         "embedding": emb,
         "classifier": clf,
+        "lr_C": lr_C,
         "strategy": strategy,
         "scope": scope,
     }
@@ -80,15 +77,37 @@ def _row_from_block(block, partition, emb, clf, strategy, method, scope):
         row["TP"] = int(cm[1][1])
     else:
         row["TN"] = row["FP"] = row["FN"] = row["TP"] = pd.NA
-    row["method"] = method
     return row
+
+
+def _iter_cell_dirs(emb_d):
+    """Yield (cell_dir, classifier, lr_C) for each cell under emb_d.
+
+    Logistic cells: emb_d/logistic/C_<X>/ → ('logistic', float(X)).
+    XGB cells:      emb_d/xgb/            → ('xgb', None).
+    """
+    for clf_d in sorted(emb_d.iterdir()):
+        if not clf_d.is_dir():
+            continue
+        clf = clf_d.name
+        if clf == "logistic":
+            for c_d in sorted(clf_d.iterdir()):
+                if not c_d.is_dir() or not c_d.name.startswith("C_"):
+                    continue
+                try:
+                    lr_C = float(c_d.name[2:])
+                except ValueError:
+                    continue
+                yield c_d, clf, lr_C
+        elif clf == "xgb":
+            yield clf_d, clf, None
 
 
 def _scan_cells(variant_dir):
     """Walk the cell tree under variant_dir and return rows per scope."""
     rows = []
-    for fwd_or_rev in ("fwd", "rev"):
-        top = variant_dir / fwd_or_rev
+    for bucket in ("fwd", "rev"):
+        top = variant_dir / bucket
         if not top.is_dir():
             continue
         for partition_d in sorted(top.iterdir()):
@@ -97,17 +116,11 @@ def _scan_cells(variant_dir):
             for emb_d in sorted(partition_d.iterdir()):
                 if not emb_d.is_dir():
                     continue
-                for clf_d in sorted(emb_d.iterdir()):
-                    if not clf_d.is_dir():
-                        continue
-                    partition = partition_d.name
-                    emb = emb_d.name
-                    clf = clf_d.name
-                    for (rel, fname, key, scope, strategy, method) in EXTRACTORS:
-                        if not rel.startswith(fwd_or_rev):
+                for cell_d, clf, lr_C in _iter_cell_dirs(emb_d):
+                    for (b, fname, key, scope, strategy) in EXTRACTORS:
+                        if b != bucket:
                             continue
-                        rest = rel[len(fwd_or_rev) + 1:] if "/" in rel else ""
-                        json_path = clf_d / rest / fname if rest else clf_d / fname
+                        json_path = cell_d / fname
                         if not json_path.exists():
                             continue
                         try:
@@ -115,13 +128,13 @@ def _scan_cells(variant_dir):
                         except (ValueError, json.JSONDecodeError):
                             continue
                         block = d.get(key)
-                        # Wilcoxon stats (forward only)
-                        wilc = d.get("paired_wilcoxon", {}) if scope.startswith("forward") else {}
-                        row = _row_from_block(block, partition, emb, clf,
-                                                 strategy, method, scope)
+                        row = _row_from_block(block, partition_d.name,
+                                               emb_d.name, clf, lr_C,
+                                               strategy, scope)
                         if row is None:
                             continue
-                        if wilc:
+                        if scope.startswith("forward"):
+                            wilc = d.get("paired_wilcoxon", {}) or {}
                             row["wilcoxon_W"] = wilc.get("W")
                             row["wilcoxon_p"] = wilc.get("p")
                             row["n_pairs"] = wilc.get("n_pairs")
@@ -135,12 +148,11 @@ def build_one(variant_dir):
     if not rows:
         return 0
     df = pd.DataFrame(rows)
-    # Order columns sensibly
-    col_order = (["partition", "embedding", "classifier", "strategy", "scope"]
+    col_order = (["partition", "embedding", "classifier", "lr_C",
+                  "strategy", "scope"]
                  + METRIC_FIELDS
                  + ["TN", "FP", "FN", "TP",
-                    "wilcoxon_W", "wilcoxon_p", "n_pairs", "mean_diff",
-                    "method"])
+                    "wilcoxon_W", "wilcoxon_p", "n_pairs", "mean_diff"])
     cols = [c for c in col_order if c in df.columns]
     extras = [c for c in df.columns if c not in cols]
     df = df[cols + extras]
@@ -150,27 +162,44 @@ def build_one(variant_dir):
     return len(df)
 
 
+def _iter_reducer_dirs(class_root):
+    """Yield reducer dirs under a classification root.
+
+    Layout:  no_drop/, pca/<reducer>/, drop_feats/<reducer>/
+    Skips _summary, _dropcorr_summary, _pca_summary, etc.
+    """
+    if not class_root.is_dir():
+        return
+    for top in sorted(class_root.iterdir()):
+        if not top.is_dir() or top.name.startswith("_"):
+            continue
+        if top.name == "no_drop":
+            yield top
+        elif top.name in ("pca", "drop_feats"):
+            for r in sorted(top.iterdir()):
+                if r.is_dir() and not r.name.startswith("_"):
+                    yield r
+
+
 def walk_root(root, label):
     if not root.exists():
         return 0, 0
     n_files, n_rows = 0, 0
-    for reducer in sorted(root.iterdir()):
-        if not reducer.is_dir() or reducer.name.startswith("_"):
-            continue
-        # Determine if this is the "original" layout (cells direct under reducer)
-        # or the asymmetry layout (cells under variant subdir).
-        if (reducer / "fwd").is_dir() or (reducer / "rev").is_dir():
-            candidates = [reducer]
-        else:
-            candidates = [v for v in sorted(reducer.iterdir())
-                           if v.is_dir() and ((v / "fwd").is_dir() or (v / "rev").is_dir())]
-        for vdir in candidates:
-            n = build_one(vdir)
-            if n > 0:
-                n_files += 1
-                n_rows += n
-                rel = vdir.relative_to(root)
-                print(f"  {label}/{rel}: wrote {n} rows")
+    if root.name == "embedding_asymmetry_classification":
+        # feature_type pivots before reducer
+        candidates = []
+        for ft in sorted(root.iterdir()):
+            if ft.is_dir() and not ft.name.startswith("_"):
+                candidates.extend(_iter_reducer_dirs(ft))
+    else:
+        candidates = list(_iter_reducer_dirs(root))
+    for vdir in candidates:
+        n = build_one(vdir)
+        if n > 0:
+            n_files += 1
+            n_rows += n
+            rel = vdir.relative_to(root)
+            print(f"  {label}/{rel}: wrote {n} rows")
     return n_files, n_rows
 
 

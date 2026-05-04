@@ -1,14 +1,20 @@
 """
-Aggregate PCA component-count dirs (pca_1..400, plus pca_0.95/0.99 and
+Aggregate PCA reducer dirs (n_components_1..400, plus var_ratio_0.95/0.99 and
 no_drop reference) into a cross-component AUC comparison.
 
-Default mode reads `embedding_classification/pca_<n>/_summary/all_metrics_with_cm.csv`.
-With --variant, reads `embedding_asymmetry_classification/pca_<n>/<variant>/_summary/all_metrics_with_cm.csv`
+Default mode reads
+    embedding_classification/pca/n_components_<n>/_summary/all_metrics_with_cm.csv
+    embedding_classification/pca/var_ratio_<r>/_summary/all_metrics_with_cm.csv
+    embedding_classification/no_drop/_summary/all_metrics_with_cm.csv
+With --variant, reads
+    embedding_asymmetry_classification/<variant>/pca/n_components_<n>/_summary/...
+    embedding_asymmetry_classification/<variant>/pca/var_ratio_<r>/_summary/...
+    embedding_asymmetry_classification/<variant>/no_drop/_summary/...
 and computes cumulative eigenvalues from that variant's feature matrix.
 
 Output:
-    embedding_classification/_pca_summary/                       (default)
-    embedding_asymmetry_classification/_pca_summary/<variant>/   (--variant set)
+    embedding_classification/pca/_summary/                       (default)
+    embedding_asymmetry_classification/<variant>/pca/_summary/   (--variant set)
 
 Usage:
     # original
@@ -51,9 +57,12 @@ logger = logging.getLogger(__name__)
 
 
 def resolve_paths(variant, cohort_mode="default"):
-    """Return (root, out, cell_csv_for, cell_json_for, feature_subdir).
+    """Return (class_root, out, reducer_dirs, cell_json_for, feature_subdir).
 
-    cell_csv_for(reducer)  → Path to <reducer>'s _summary/all_metrics_with_cm.csv
+    class_root             → embedding_classification or
+                              embedding_asymmetry_classification/<variant>
+    reducer_dirs           → list of reducer dirs to walk
+                              (no_drop + pca/n_components_X + pca/var_ratio_X)
     cell_json_for(reducer, part, emb, clf) → cell metrics json
     feature_subdir         → which sub-dir of workspace/embedding/features/<emb>/
                               to use for cumulative eigenvalue ('original' for
@@ -66,47 +75,50 @@ def resolve_paths(variant, cohort_mode="default"):
     else:
         cohort_dir = "p_first_hc_strict"
     if variant is None:
-        root = ARMS_ROOT / cohort_dir / "embedding_classification"
-        out = root / "_pca_summary"
-        return (
-            root, out,
-            lambda r: r / "_summary" / "all_metrics_with_cm.csv",
-            lambda r, part, emb, clf: (
-                r / "fwd" / part / emb / clf / "forward_matched_metrics.json"
-            ),
-            "original",
-        )
-    root = ARMS_ROOT / cohort_dir / "embedding_asymmetry_classification"
-    out = root / "_pca_summary" / variant
-    return (
-        root, out,
-        lambda r: r / variant / "_summary" / "all_metrics_with_cm.csv",
-        lambda r, part, emb, clf: (
-            r / variant / "fwd" / part / emb / clf
-            / "forward_matched_metrics.json"
-        ),
-        variant,
-    )
+        class_root = ARMS_ROOT / cohort_dir / "embedding_classification"
+        out = class_root / "pca" / "_summary"
+        feature_subdir = "original"
+    else:
+        class_root = (ARMS_ROOT / cohort_dir
+                      / "embedding_asymmetry_classification" / variant)
+        out = class_root / "pca" / "_summary"
+        feature_subdir = variant
+
+    def _reducer_dirs():
+        out_dirs = []
+        nd = class_root / "no_drop"
+        if nd.is_dir():
+            out_dirs.append(nd)
+        pca_root = class_root / "pca"
+        if pca_root.is_dir():
+            for r in sorted(pca_root.iterdir()):
+                if r.is_dir() and not r.name.startswith("_"):
+                    out_dirs.append(r)
+        return out_dirs
+
+    def cell_json_for(reducer, part, emb, clf):
+        base = reducer / "fwd" / part / emb / clf
+        if clf == "logistic":
+            base = base / "C_1"
+        return base / "forward_matched_metrics.json"
+
+    return class_root, out, _reducer_dirs(), cell_json_for, feature_subdir
 
 
 def _parse_pca_label(name):
-    """Folder name → numeric x-axis position. Returns None for non-integer PCA
-    settings (variance ratios), `no_drop`, and `drop_*`; those rows are
-    dropped from the integer-axis line plot.
+    """Reducer dir name → numeric x-axis position. Returns the integer
+    n_components for `n_components_<int>`, None for everything else
+    (variance ratios, no_drop, drop_feats).
 
-    Strips visit/photo mode suffix (e.g. `pca_100__visit_all` -> 100).
+    Strips visit/photo mode suffix (e.g. `n_components_100__visit_all` -> 100).
     """
-    if name.startswith("no_drop"):
-        return None
-    m = re.match(r"pca_([0-9.]+)", name)
+    m = re.match(r"n_components_([0-9]+)", name)
     if not m:
         return None
-    val = m.group(1)
     try:
-        x = float(val)
+        return float(m.group(1))
     except ValueError:
         return None
-    return x if x >= 1 else None  # drop variance ratios (0 < x < 1)
 
 
 def _load_visit_all_cohort_ids():
@@ -212,22 +224,17 @@ def compute_cumulative_eigenvalue_ratio(feature_subdir, cohort_mode="all_npy"):
     return pd.DataFrame(rows)
 
 
-def collect(root, cell_csv_for):
+def collect(reducer_dirs):
     rows = []
-    for sub in sorted(root.iterdir()):
-        if not sub.is_dir():
-            continue
-        if sub.name != "no_drop" and not sub.name.startswith("pca_"):
-            continue
-        csv = cell_csv_for(sub)
+    for sub in reducer_dirs:
+        csv = sub / "_summary" / "all_metrics_with_cm.csv"
         if not csv.exists():
             logger.warning(f"missing {csv}")
             continue
         df = pd.read_csv(csv)
         df["pca_root"] = sub.name
         df["pca_x"] = _parse_pca_label(sub.name)
-        df["pca_label"] = (sub.name.replace("pca_", "") if sub.name != "no_drop"
-                            else "no_drop")
+        df["pca_label"] = sub.name
         rows.append(df)
         logger.info(f"  {sub.name}: {len(df)} rows")
     if not rows:
@@ -235,12 +242,11 @@ def collect(root, cell_csv_for):
     return pd.concat(rows, ignore_index=True)
 
 
-def collect_feature_counts(root, cell_json_for):
+def collect_feature_counts(reducer_dirs, cell_json_for):
     rows = []
-    for sub in sorted(root.iterdir()):
-        if not sub.is_dir():
-            continue
-        if not sub.name.startswith("pca_"):
+    for sub in reducer_dirs:
+        if not sub.name.startswith("n_components_") \
+                and not sub.name.startswith("var_ratio_"):
             continue
         for embedding in ["arcface", "topofr", "dlib"]:
             for partition in ["ad_vs_hc", "ad_vs_nad", "ad_vs_acs",
@@ -284,16 +290,17 @@ def main():
                              "matches what a --visit-mode all sweep saw.")
     args = parser.parse_args()
 
-    root, out, cell_csv_for, cell_json_for, feature_subdir = resolve_paths(
+    class_root, out, reducer_dirs, cell_json_for, feature_subdir = resolve_paths(
         args.variant, args.cohort_mode
     )
     out.mkdir(parents=True, exist_ok=True)
-    logger.info(f"ROOT: {root}")
+    logger.info(f"ROOT: {class_root}")
     logger.info(f"OUT : {out}")
     logger.info(f"feature_subdir for eigenvalue PCA: {feature_subdir}")
     logger.info(f"cohort_mode: {args.cohort_mode}  eigen_source: {args.eigen_source}")
+    logger.info(f"reducer_dirs: {[r.name for r in reducer_dirs]}")
 
-    df = collect(root, cell_csv_for)
+    df = collect(reducer_dirs)
     if df.empty:
         logger.warning("no data found; nothing to write")
         return
@@ -313,7 +320,7 @@ def main():
         logger.info(f"Wrote {out / eig_csv_name}")
 
     # Feature count plot — effective n_components retained per (embedding, x).
-    fc = collect_feature_counts(root, cell_json_for)
+    fc = collect_feature_counts(reducer_dirs, cell_json_for)
     if len(fc):
         fc_csv = out / "feature_count_by_pca.csv"
         fc.to_csv(fc_csv, index=False)

@@ -1,19 +1,21 @@
 """
-Aggregate dropcorr threshold dirs (no_drop + drop_0.95..0.05) into a
-cross-threshold AUC comparison.
+Aggregate drop_feats reducer dirs (pearson_r_X.X) plus no_drop reference into
+a cross-threshold AUC comparison.
 
-Default mode reads `embedding_classification/<reducer>/_summary/all_metrics_with_cm.csv`.
-With --variant, reads `embedding_asymmetry_classification/<reducer>/<variant>/_summary/all_metrics_with_cm.csv`.
+Default mode reads:
+    <cohort>/embedding_classification/no_drop/_summary/all_metrics_with_cm.csv
+    <cohort>/embedding_classification/drop_feats/pearson_r_X.X/_summary/all_metrics_with_cm.csv
+With --variant, reads:
+    <cohort>/embedding_asymmetry_classification/<variant>/no_drop/_summary/...
+    <cohort>/embedding_asymmetry_classification/<variant>/drop_feats/pearson_r_X.X/_summary/...
 
 Output goes to:
-    embedding_classification/_dropcorr_summary/                       (default)
-    embedding_asymmetry_classification/_dropcorr_summary/<variant>/   (--variant set)
+    <cohort>/embedding_classification/drop_feats/_summary/                  (default)
+    <cohort>/embedding_asymmetry_classification/<variant>/drop_feats/_summary/
 
 Usage:
-    # original
     conda run -n Alz_face_main_analysis python scripts/visualization/plot_dropcorr_threshold_sweep.py
-    # asymmetry variant
-    conda run -n Alz_face_main_analysis python scripts/visualization/plot_dropcorr_threshold_sweep.py --variant difference
+    conda run -n Alz_face_main_analysis python scripts/visualization/plot_dropcorr_threshold_sweep.py --variant difference --cohort-mode p_all_hc_all
 """
 import argparse
 import logging
@@ -32,36 +34,42 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 logger = logging.getLogger(__name__)
 
 
-def resolve_paths(variant):
-    """Return (ROOT, OUT, csv_subpath) for the given variant.
-    csv_subpath is the path under each <reducer>/ dir that holds the cell csv.
-    """
+def resolve_paths(variant, cohort_mode="default"):
+    """Return (class_root, out, reducer_dirs)."""
+    cohort_dir = {
+        "default": "p_first_hc_strict",
+        "p_first_hc_all": "p_first_hc_all",
+        "p_all_hc_all": "p_all_hc_all",
+    }[cohort_mode]
     if variant is None:
-        root = ARMS_ROOT / "p_first_hc_strict" / "embedding_classification"
-        out = root / "_dropcorr_summary"
-        # csv at <reducer>/_summary/all_metrics_with_cm.csv
-        return root, out, Path("_summary") / "all_metrics_with_cm.csv"
-    root = ARMS_ROOT / "p_first_hc_strict" / "embedding_asymmetry_classification"
-    out = root / "_dropcorr_summary" / variant
-    # csv at <reducer>/<variant>/_summary/all_metrics_with_cm.csv
-    return root, out, Path(variant) / "_summary" / "all_metrics_with_cm.csv"
+        class_root = ARMS_ROOT / cohort_dir / "embedding_classification"
+    else:
+        class_root = (ARMS_ROOT / cohort_dir
+                      / "embedding_asymmetry_classification" / variant)
+    out = class_root / "drop_feats" / "_summary"
+    reducer_dirs = []
+    nd = class_root / "no_drop"
+    if nd.is_dir():
+        reducer_dirs.append(nd)
+    df_root = class_root / "drop_feats"
+    if df_root.is_dir():
+        for r in sorted(df_root.iterdir()):
+            if r.is_dir() and not r.name.startswith("_"):
+                reducer_dirs.append(r)
+    return class_root, out, reducer_dirs
 
 
 def threshold_label(name):
     if name == "no_drop":
         return None
-    m = re.match(r"drop_([0-9.]+)$", name)
+    m = re.match(r"pearson_r_([0-9.]+)$", name)
     return float(m.group(1)) if m else None
 
 
-def load_all(root, csv_subpath):
+def load_all(reducer_dirs):
     rows = []
-    for sub in sorted(root.iterdir()):
-        if not sub.is_dir():
-            continue
-        if sub.name not in ("no_drop",) and not sub.name.startswith("drop_"):
-            continue
-        csv = sub / csv_subpath
+    for sub in reducer_dirs:
+        csv = sub / "_summary" / "all_metrics_with_cm.csv"
         if not csv.exists():
             logger.warning(f"missing {csv}")
             continue
@@ -80,14 +88,17 @@ def main():
     parser.add_argument("--variant", default=None, choices=ASYM_VARIANTS,
                         help="Asymmetry variant; if omitted, uses "
                              "embedding_classification (original).")
+    parser.add_argument("--cohort-mode", default="default",
+                        choices=["default", "p_first_hc_all", "p_all_hc_all"])
     args = parser.parse_args()
 
-    root, out, csv_subpath = resolve_paths(args.variant)
+    class_root, out, reducer_dirs = resolve_paths(args.variant, args.cohort_mode)
     out.mkdir(parents=True, exist_ok=True)
-    logger.info(f"ROOT: {root}")
+    logger.info(f"ROOT: {class_root}")
     logger.info(f"OUT : {out}")
+    logger.info(f"reducers: {[r.name for r in reducer_dirs]}")
 
-    df = load_all(root, csv_subpath)
+    df = load_all(reducer_dirs)
     if df.empty:
         logger.warning("no data found; nothing to write")
         return
@@ -95,7 +106,6 @@ def main():
     df.to_csv(out_csv, index=False)
     logger.info(f"Wrote {out_csv} ({len(df)} rows)")
 
-    # Wide AUC pivot — one cell+scope per row, one threshold per column.
     df["cell"] = (df["partition"] + "/" + df["embedding"] + "/"
                   + df["classifier"] + "/" + df["strategy"] + "/" + df["scope"])
     pivot = df.pivot_table(
@@ -103,7 +113,7 @@ def main():
         columns="drop_root", values="auc", aggfunc="first",
     )
 
-    col_order = ["no_drop"] + [f"drop_{t}" for t in
+    col_order = ["no_drop"] + [f"pearson_r_{t}" for t in
                                (0.95, 0.9, 0.85, 0.8, 0.75, 0.7, 0.65,
                                 0.6, 0.55, 0.5, 0.45, 0.4, 0.35, 0.3,
                                 0.25, 0.2, 0.15, 0.1, 0.05)]
@@ -113,9 +123,7 @@ def main():
     pivot.to_csv(pivot_csv)
     logger.info(f"Wrote {pivot_csv}")
 
-    # Line plots — one per partition, AUC vs threshold, per (embedding, classifier, scope).
-    plot_scopes = ["forward_matched", "reverse_ensemble_matched_oof",
-                   "reverse_ensemble_full"]
+    plot_scopes = ["forward_matched", "reverse_matched_oof", "reverse_unmatched"]
     line_df = df[df["scope"].isin(plot_scopes)].copy()
     # Numeric x: threshold (lower → more aggressive drop). no_drop → 1.0 placeholder.
     line_df["x"] = line_df["drop_threshold"].fillna(1.0)

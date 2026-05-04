@@ -890,6 +890,57 @@ def run_forward(full_cohort, matched_cohort, embedding, classifier,
             train["drop_corr_info"])
 
 
+def plot_cm(cm, title, out_path, neg_label="0", pos_label="1"):
+    """Render a 2×2 confusion matrix to PNG. cm = [[tn, fp], [fn, tp]]."""
+    cm = np.asarray(cm, dtype=float)
+    cmap = plt.get_cmap("Blues")
+    vmin, vmax = float(cm.min()), float(cm.max())
+    rng = vmax - vmin if vmax > vmin else 1.0
+    fig, ax = plt.subplots(figsize=(4.6, 3.4))
+    im = ax.imshow(cm, cmap=cmap, vmin=vmin, vmax=vmax)
+    ax.set_aspect("equal")
+    ax.set_xticks([0, 1]); ax.set_yticks([0, 1])
+    ax.set_xticklabels([f"Pred {neg_label}", f"Pred {pos_label}"])
+    ax.set_yticklabels([f"True {neg_label}", f"True {pos_label}"])
+    for i in range(2):
+        for j in range(2):
+            v = cm[i, j]
+            r, g, b, _ = cmap((v - vmin) / rng)
+            lum = 0.299 * r + 0.587 * g + 0.114 * b
+            ax.text(j, i, f"{int(v)}", ha="center", va="center",
+                    color="white" if lum < 0.5 else "black",
+                    fontsize=12, fontweight="bold")
+    ax.set_xlabel("Predicted"); ax.set_ylabel("True")
+    ax.set_title(title, fontsize=10)
+    fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
+    fig.subplots_adjust(left=0.18, right=0.82, top=0.85, bottom=0.15)
+    fig.savefig(out_path, dpi=150)
+    plt.close(fig)
+
+
+# Per-partition (neg, pos) labels used as CM tick labels.
+CM_LABELS = {
+    "ad_vs_hc":  ("HC",  "AD"),
+    "ad_vs_nad": ("NAD", "AD"),
+    "ad_vs_acs": ("ACS", "AD"),
+    "mmse_hilo": ("MMSE-low", "MMSE-high"),
+    "casi_hilo": ("CASI-low", "CASI-high"),
+}
+
+
+def _plot_cm_blocks(blocks, partition, out_dir, prefix):
+    """Write one CM PNG per non-None block. blocks: list of (metric_dict,
+    fname, scope) tuples; metric_dict carries `confusion_matrix` and `auc`."""
+    neg, pos = CM_LABELS.get(partition, ("0", "1"))
+    for m, fname, scope in blocks:
+        if not m or not m.get("confusion_matrix"):
+            continue
+        title = (f"{partition} — {scope}\n"
+                 f"n={m.get('n', '?')}  AUC={m.get('auc', float('nan')):.3f}")
+        plot_cm(m["confusion_matrix"], title, out_dir / fname,
+                 neg_label=neg, pos_label=pos)
+
+
 def plot_paired_scatter(matched_with_score, partition, out_path):
     """Side-by-side stripplot + paired lines: high vs low."""
     pos = (matched_with_score[matched_with_score["label"] == 1]
@@ -1198,6 +1249,10 @@ def run_cell(partition, embedding, classifier, strategy, n_folds=10, seed=42):
         )
         plot_paired_scatter(matched_score, partition,
                             out / "forward_paired_scatter.png")
+        _plot_cm_blocks([
+            (m_matched, "forward_cm_matched.png", "forward_matched"),
+            (m_full,    "forward_cm_full.png",    "forward_full"),
+        ], partition, out, prefix="forward")
         logger.info(
             f"  forward: matched AUC={m_matched['auc']:.3f} "
             f"[CI {m_matched['auc_ci_low']:.3f}-{m_matched['auc_ci_high']:.3f}] "
@@ -1251,6 +1306,10 @@ def run_cell(partition, embedding, classifier, strategy, n_folds=10, seed=42):
 
         m_oof = rev["metrics_matched_oof"]
         m_un = rev["metrics_unmatched"]
+        _plot_cm_blocks([
+            (m_oof, "cm_matched_oof.png", "matched_oof"),
+            (m_un,  "cm_unmatched.png",   "unmatched"),
+        ], partition, out, prefix="reverse")
         msg = f"  reverse: matched_oof AUC={m_oof['auc']:.3f}"
         if m_un is not None:
             msg += f"  unmatched AUC={m_un['auc']:.3f}"

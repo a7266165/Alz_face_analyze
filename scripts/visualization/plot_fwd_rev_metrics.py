@@ -1,14 +1,17 @@
 """
-Post-process run_embedding_classification outputs — confusion matrices + metric tables.
+Post-process run_fwd_rev_embedding outputs — confusion matrices + metric tables.
 
-Walks workspace/arms_analysis/embedding_classification/<partition>/<embedding>/<classifier>/
-and reads any *_metrics.json that exist (compatible with a still-running sweep).
-For each metrics block (forward × {full, matched_subset};
-reverse × {matched_oof, full_ensemble}), writes a confusion matrix PNG next to
-the JSON. Also emits a flattened CSV + markdown summary.
+Walks <ROOT>/{fwd,rev}/<partition>/<embedding>/<classifier>[/C_<lr_C>]/ and
+reads any *_metrics.json / metrics.json that exist (compatible with a
+still-running sweep). For each metrics block:
+  fwd: forward_matched_metrics.json → metrics_matched_subset, metrics_full_cohort
+  rev: metrics.json                 → metrics_matched_oof, metrics_unmatched
+writes a confusion matrix PNG next to the JSON. Also emits a flattened CSV +
+markdown summary.
 
 Usage:
-    conda run -n Alz_face_main_analysis python scripts/visualization/plot_fwd_rev_metrics.py
+    conda run -n Alz_face_main_analysis python scripts/visualization/plot_fwd_rev_metrics.py \\
+        --root workspace/arms_analysis/p_all_hc_all/embedding_classification/no_drop
     conda run -n Alz_face_main_analysis python scripts/visualization/plot_fwd_rev_metrics.py \\
         --partition ad_vs_hc --embedding arcface
 """
@@ -29,31 +32,16 @@ DEFAULT_ROOT = ARMS_ROOT / "p_first_hc_strict" / "embedding_classification" / "n
 ROOT = DEFAULT_ROOT  # set by main() when --root is passed
 SUMMARY = ROOT / "_summary"
 
-# Each entry: (json_filename, [(metric_block_key, cm_filename, scope_label,
-# pos_label, neg_label), ...])
-# Each entry: (relative_path_to_json, [(metric_block_key, cm_filename, scope_label), ...])
+# Each entry: (json_filename, bucket, [(metric_block_key, cm_filename,
+#                                       scope_label), ...])
 JSON_LAYOUT = {
-    "forward_matched_metrics.json": [
-        ("metrics_matched_subset", "forward_cm_matched.png",
-         "forward_matched"),
-        ("metrics_full_cohort", "forward_cm_full.png",
-         "forward_full"),
+    ("forward_matched_metrics.json", "fwd"): [
+        ("metrics_matched_subset", "forward_cm_matched.png", "forward_matched"),
+        ("metrics_full_cohort",    "forward_cm_full.png",    "forward_full"),
     ],
-    # Method A — ensemble (10 fold-models)
-    "ensemble/metrics.json": [
-        ("metrics_matched_oof", "ensemble/cm_matched_oof.png",
-         "reverse_ensemble_matched_oof"),
-        ("metrics_full", "ensemble/cm_full.png",
-         "reverse_ensemble_full"),
-        ("metrics_unmatched", "ensemble/cm_unmatched.png",
-         "reverse_ensemble_unmatched"),
-    ],
-    # Method B — single model trained on all matched
-    "single/metrics.json": [
-        ("metrics_matched_train", "single/cm_matched_train.png",
-         "reverse_single_matched_train"),
-        ("metrics_unmatched", "single/cm_unmatched.png",
-         "reverse_single_unmatched"),
+    ("metrics.json", "rev"): [
+        ("metrics_matched_oof", "cm_matched_oof.png", "reverse_matched_oof"),
+        ("metrics_unmatched",   "cm_unmatched.png",   "reverse_unmatched"),
     ],
 }
 
@@ -142,11 +130,22 @@ def flatten_metrics(m, partition, embedding, classifier, strategy, scope,
 # Walk + emit
 # ============================================================
 
+def _resolve_cell_leaf(clf_dir, classifier):
+    """LR cells nest C_<lr_C>/ leaf; XGB stays flat. Yields the leaf dirs to
+    inspect (one per C value for logistic, single for xgb)."""
+    if classifier == "logistic":
+        for c_dir in sorted(clf_dir.iterdir()):
+            if c_dir.is_dir() and c_dir.name.startswith("C_"):
+                yield c_dir
+    else:
+        yield clf_dir
+
+
 def iter_cells(partition_filter=None, embedding_filter=None,
                classifier_filter=None):
-    """Yield (partition, embedding, classifier, fwd_dir, rev_dir).
+    """Yield (partition, embedding, classifier, lr_C, fwd_dir, rev_dir).
 
-    Layout: embedding_classification/{fwd,rev}/<partition>/<embedding>/<classifier>/.
+    Layout: <ROOT>/{fwd,rev}/<partition>/<embedding>/<classifier>[/C_<lr_C>]/.
     A cell exists if either fwd or rev side has a matching dir.
     """
     if not ROOT.exists():
@@ -172,25 +171,30 @@ def iter_cells(partition_filter=None, embedding_filter=None,
                         continue
                     if classifier_filter and clf_dir.name != classifier_filter:
                         continue
-                    yield part_dir.name, emb_dir.name, clf_dir.name
+                    for leaf in _resolve_cell_leaf(clf_dir, clf_dir.name):
+                        lr_C = leaf.name[2:] if clf_dir.name == "logistic" else ""
+                        yield (part_dir.name, emb_dir.name, clf_dir.name, lr_C)
 
     for combo in _scan(fwd_root):
         seen.add(combo)
     for combo in _scan(rev_root):
         seen.add(combo)
 
-    for partition, embedding, classifier in sorted(seen):
-        fwd_dir = fwd_root / partition / embedding / classifier
-        rev_dir = rev_root / partition / embedding / classifier
-        yield partition, embedding, classifier, fwd_dir, rev_dir
+    for partition, embedding, classifier, lr_C in sorted(seen):
+        leaf_suffix = f"/C_{lr_C}" if lr_C else ""
+        fwd_dir = (fwd_root / partition / embedding / classifier
+                    / (f"C_{lr_C}" if lr_C else ""))
+        rev_dir = (rev_root / partition / embedding / classifier
+                    / (f"C_{lr_C}" if lr_C else ""))
+        yield partition, embedding, classifier, lr_C, fwd_dir, rev_dir
 
 
-def process_cell(partition, embedding, classifier, fwd_dir, rev_dir):
+def process_cell(partition, embedding, classifier, lr_C, fwd_dir, rev_dir):
     rows = []
     neg_lbl, pos_lbl = LABELS.get(partition, ("0", "1"))
 
-    for json_name, blocks in JSON_LAYOUT.items():
-        cell_dir = fwd_dir if json_name.startswith("forward_") else rev_dir
+    for (json_name, bucket), blocks in JSON_LAYOUT.items():
+        cell_dir = fwd_dir if bucket == "fwd" else rev_dir
         json_path = cell_dir / json_name
         if not json_path.exists():
             continue
@@ -206,19 +210,20 @@ def process_cell(partition, embedding, classifier, fwd_dir, rev_dir):
             if cm is None:
                 continue
             cm_path = cell_dir / cm_filename
-            title = (f"{partition} / {embedding} / {classifier}\n"
+            title = (f"{partition} / {embedding} / {classifier}"
+                     + (f" (C={lr_C})" if lr_C else "") + "\n"
                      f"{scope}  n={m.get('n', '?')}  "
                      f"AUC={m.get('auc', float('nan')):.3f}")
             plot_cm(cm, title, cm_path, neg_label=neg_lbl, pos_label=pos_lbl)
-            extra = {}
+            extra = {"lr_C": lr_C} if lr_C else {}
             if scope == "forward_matched":
                 pw = payload.get("paired_wilcoxon") or {}
-                extra = {
+                extra.update({
                     "wilcoxon_W": pw.get("W"),
                     "wilcoxon_p": pw.get("p"),
                     "n_pairs": pw.get("n_pairs"),
                     "mean_diff": pw.get("mean_diff"),
-                }
+                })
             rows.append(flatten_metrics(m, partition, embedding, classifier,
                                           strategy, scope, extra=extra))
 
@@ -311,14 +316,16 @@ def main():
 
     all_rows = []
     n_cells = 0
-    for partition, embedding, classifier, fwd_dir, rev_dir in iter_cells(
+    for partition, embedding, classifier, lr_C, fwd_dir, rev_dir in iter_cells(
         args.partition, args.embedding, args.classifier
     ):
-        rows = process_cell(partition, embedding, classifier, fwd_dir, rev_dir)
+        rows = process_cell(partition, embedding, classifier, lr_C,
+                            fwd_dir, rev_dir)
         if rows:
             n_cells += 1
             all_rows.extend(rows)
-            logger.info(f"  {partition}/{embedding}/{classifier}: "
+            tag = f" (C={lr_C})" if lr_C else ""
+            logger.info(f"  {partition}/{embedding}/{classifier}{tag}: "
                         f"{len(rows)} metric blocks")
 
     if not all_rows:

@@ -3,18 +3,20 @@ Per-partition reverse PCA plot: AUC + Balanced Accuracy + MCC vs PCA
 n_components, with the cumulative eigenvalue ratio panel below.
 
 Mirror of plot_pca_forward_metrics.py for the reverse strategy. Reverse
-classifiers are trained on the matched 1:1 cohort and evaluated either on
-matched-OOF (age-controlled) or on the full cohort (ensemble inference).
+classifiers are trained on the matched 1:1 cohort via 10-fold GroupKFold
+and evaluated on:
+  - matched_oof: subject-level OOF on the matched cohort (validation domain)
+  - unmatched:   ensemble of fold-models on unmatched subjects (held-out)
 
 Reads the long-form metrics + cumulative_eigenvalue_ratio.csv produced by
-plot_pca_components_sweep.py (default mode -> embedding_classification;
+plot_pca_components_sweep.py (default -> embedding_classification;
 --variant <v> -> embedding_asymmetry_classification/<v>).
 
 Output (per partition x scope):
-    embedding_classification/_pca_summary/rev/
-        reverse_ens_full_by_pca_<partition>.png
-        reverse_ens_matched_oof_by_pca_<partition>.png
-    embedding_asymmetry_classification/_pca_summary/<variant>/rev/
+    embedding_classification/pca/_summary/rev/
+        reverse_matched_oof_by_pca_<partition>.png
+        reverse_unmatched_by_pca_<partition>.png
+    embedding_asymmetry_classification/<variant>/pca/_summary/rev/
         ...
 
 Usage:
@@ -42,9 +44,10 @@ def resolve_paths(variant, cohort_mode="default"):
     else:
         cohort_dir = "p_first_hc_strict"
     if variant is None:
-        return ARMS_ROOT / cohort_dir / "embedding_classification" / "_pca_summary"
+        return (ARMS_ROOT / cohort_dir / "embedding_classification"
+                / "pca" / "_summary")
     return (ARMS_ROOT / cohort_dir / "embedding_asymmetry_classification"
-            / "_pca_summary" / variant)
+            / variant / "pca" / "_summary")
 
 INPUT_DIM = {"arcface": 512, "topofr": 512, "dlib": 128}
 EMB_CLF_COLOR = {
@@ -63,9 +66,8 @@ METRICS = [("auc", "AUC", 0.5), ("balacc", "Balanced accuracy", 0.5),
 
 # (scope value in CSV, file-name tag, panel label)
 REV_SCOPES = [
-    ("reverse_ensemble_full",        "full",        "reverse_ensemble_full"),
-    ("reverse_ensemble_matched_oof", "matched_oof", "reverse_ensemble_matched_oof"),
-    ("reverse_ensemble_unmatched",   "unmatched",   "reverse_ensemble_unmatched"),
+    ("reverse_matched_oof", "matched_oof", "reverse_matched_oof"),
+    ("reverse_unmatched",   "unmatched",   "reverse_unmatched"),
 ]
 
 logging.basicConfig(level=logging.INFO,
@@ -74,17 +76,16 @@ logger = logging.getLogger(__name__)
 
 
 def _parse_pca_label(name):
-    if name.startswith("no_drop") or not name.startswith("pca_"):
-        return None
+    """Parse n_components_<int> reducer-dir name into integer x; everything
+    else (no_drop, var_ratio_*, drop_feats/*) returns None."""
     import re
-    m = re.match(r"pca_([0-9.]+)", name)
+    m = re.match(r"n_components_([0-9]+)", name)
     if not m:
         return None
     try:
-        x = float(m.group(1))
+        return float(m.group(1))
     except ValueError:
         return None
-    return x if x >= 1 else None
 
 
 def main():
@@ -175,7 +176,7 @@ def main():
                               hspace=0.18, wspace=0.06)
         rev_dir = out / "rev"
         rev_dir.mkdir(parents=True, exist_ok=True)
-        png = rev_dir / f"reverse_ens_{scope_tag}_by_pca_{part}.png"
+        png = rev_dir / f"reverse_{scope_tag}_by_pca_{part}.png"
         fig.savefig(png, dpi=150)
         plt.close(fig)
         logger.info(f"Wrote {png}")

@@ -42,9 +42,10 @@ def resolve_paths(variant, cohort_mode="default"):
     else:
         cohort_dir = "p_first_hc_strict"
     if variant is None:
-        return ARMS_ROOT / cohort_dir / "embedding_classification" / "_pca_summary"
+        return (ARMS_ROOT / cohort_dir / "embedding_classification"
+                / "pca" / "_summary")
     return (ARMS_ROOT / cohort_dir / "embedding_asymmetry_classification"
-            / "_pca_summary" / variant)
+            / variant / "pca" / "_summary")
 
 INPUT_DIM = {"arcface": 512, "topofr": 512, "dlib": 128}
 EMB_CLF_COLOR = {
@@ -67,16 +68,14 @@ logger = logging.getLogger(__name__)
 
 
 def _parse_pca_label(name):
-    if name.startswith("no_drop") or not name.startswith("pca_"):
-        return None
-    m = re.match(r"pca_([0-9.]+)", name)
+    """Parse n_components_<int> into integer x; var_ratio_*/no_drop → None."""
+    m = re.match(r"n_components_([0-9]+)", name)
     if not m:
         return None
     try:
-        x = float(m.group(1))
+        return float(m.group(1))
     except ValueError:
         return None
-    return x if x >= 1 else None
 
 
 def main():
