@@ -9,7 +9,7 @@
 - `○` = FER 方法論 / 資料集（generic，但 inform pipeline）
 - `△` = 邊緣相關
 
-排列：本檔按 review status — **#1-27 強保留**、**#28-60 保留**、**#61-65 邊緣**。
+排列：本檔按 review status — **#1-20 強保留**、**#21-60 保留**、**#61-65 邊緣**。
 
 共 **65 篇**（44 篇已歸檔到 _archive_rejected/）。
 
@@ -18,7 +18,7 @@
 ---
 
 
-## ━━━━━━━━━━━━━━ 強保留（27 篇 — Layer A: face-only + no instruction）━━━━━━━━━━━━━━
+## ━━━━━━━━━━━━━━ 強保留（20 篇 — Layer A: face-only + no instruction，且 abstract 有具體 cohort/結果）━━━━━━━━━━━━━━
 
 ## 1. ★ [--] **Zheng 2025** — Augmenting Face Mesh for Dementia Detection
 
@@ -40,85 +40,88 @@
 
 **31 篇近 10 年研究**的 systematic review。老人 FER 應用於 assisted living、心理健康、個人化照護。
 
-## 6. ★ [--] **Kadali 2024** — CNN AD Detection from FE + Eye Movements
-
-CNN 結合臉部表情 + 眼動分析做 AD 偵測。Image preprocessing 多種方法。
-
-## 7. ★ [PT] **Ruoranen 2023** — Memory Disorder Detection via FER
-
-記憶障礙下的表情變化（特別是 apathy 降低表情強度）。FER 程式應用於記憶障礙篩檢的論文（thesis）。
-
-## 8. ★ [--] **L 2025** — AI-Based Facial Emotion Analysis for Differential Dementia Diagnosis
+## 6. ★ [--] **L 2025** — AI-Based Facial Emotion Analysis for Differential Dementia Diagnosis
 
 64 位受試者標準 AV 刺激下的 valence + arousal 抽取，多任務 ML 分類（含 MCI 與不同失智 subtype）。
 
-## 9. ★ [PT] **Z 2022** — Automated Facial Emotion Analysis in CI
+## 7. ★ [PT] **Z 2022** — Automated Facial Emotion Analysis in CI
 
 400 萬 face 預訓 CV DL 模型分析認知障礙者 passive viewing memory test 的臉部表情。**n=493**（HC + 不同 etiology / severity）。
 
-## 10. ★ [PT] **Matsuda 2025** — Smile Detection in Real-World Dementia Care (QOL Pilot)
+## 8. ★ [PT] **Matsuda 2025** — Smile Detection in Real-World Dementia Care (QOL Pilot)
 
 QOL 評估通常自評；失智進展後病人無法自評，改 proxy 評估。**真實照護場景的微笑偵測**作為客觀 QOL 評估的 pilot。
 
-## 11. ★ [--] **Sun 2023** — MC-ViViT: MCI Detection from Facial Videos (I-CONECT)
+## 9. ★ [--] **Sun 2023** — MC-ViViT: MCI Detection from Facial Videos (I-CONECT)
 
 **Multi-branch Classifier-ViViT**：抽 spatiotemporal 特徵 + 增強表徵。**用 I-CONECT 資料**。最高準確 90.63%（部分訪談視訊）。
 
-## 12. ★ [PT] **Sooriyaarachchi 2026** — Facial Expressions as Nexus for Health Assessment
+## 10. ★ [PT] **Sooriyaarachchi 2026** — Facial Expressions as Nexus for Health Assessment
 
 評估視角：臉部表情作為**行為 phenotype**，在認知衰退/疼痛等健康障礙下偏離 baseline。Review ML 進展。
 
-## 13. ◇ [--] **E 2024** — Emotional Response to Social Robots in Dementia
+## 11. ◇ [--] **E 2024** — Emotional Response to Social Robots in Dementia
 
 失智長者對社交輔助機器人多感官刺激的**即時情緒反應**（用 FER）量化評估 pilot。
 
-## 14. ★ [PT] **Liu 2021** — FER for Sound Intervention Emotional Response in Dementia
+## 12. ★ [PT] **Liu 2021** — FER for Sound Intervention Emotional Response in Dementia
 
 養護機構公共空間，**FaceReader** 評估失智長者對 3 種聲音介入（音樂/溪流/鳥鳴）的情緒反應。SAM 量表 vs FER 比較。
 
-## 15. ◇ [--] **M 2024** — Optimized Attention FER for ND Healthcare
-
-CBAM 注意力模組 + 輕量 DLN 在 AD/PD 的 FER 應用。
-
-## 16. ◇ [--] **Nylander 2025** — FE Metrics as Digital Biomarkers of Neurologic Disease
-
-PD masked facies 等 ND 特徵性臉部表情。提取診間視訊的笑/皺眉/眨眼，評估自動化 FER 作為遠端、客觀診斷工具。
-
-## 17. ○ [PT] **Parte 2026** — Demographic Bias in Facial Landmark Detection
+## 13. ○ [PT] **Parte 2026** — Demographic Bias in Facial Landmark Detection
 
 HRI fairness 角度。系統性審計**年齡、性別、種族**對臉部 landmark 偵測的 bias。控制統計法消解干擾。
 
-## 18. ○ [PT] **Sharma 2026** — CRBP: 3D-to-2.5D Facial Projection Benchmark
+## 14. ○ [PT] **Sharma 2026** — CRBP: 3D-to-2.5D Facial Projection Benchmark
 
 **Bosphorus 3D Face DB** 重建紋理 mesh + 6 個 canonical 2D projection；YOLOv8 偵測，分 raw / face-cropped 兩 subset。3D facial analysis 跨光度標準化 benchmark。
 
-## 19. ○ [--] **Sumsion 2025** — Stacking Ensembles + MoE for AU Recognition
+## 15. ○ [--] **Sumsion 2025** — Stacking Ensembles + MoE for AU Recognition
 
 AU 識別在不同 AU 表現不均。Stacking 集成 + MoE 做平衡。Average F1 提升。
 
-## 20. ○ [PT] **Sumsion 2026** — ELEGANT: Node + Edge Generation + Landmark MTL for AU
+## 16. ○ [PT] **Sumsion 2026** — ELEGANT: Node + Edge Generation + Landmark MTL for AU
 
 「ELEGANT」框架：**同步生成 graph node + edge** 加 landmark 多任務學習。AU 已用於失智偵測、疼痛偵測等下游，提升 AU 模型直接 inform 這些應用。
 
-## 21. ○ [PT] **Belharbi 2024** — Guided Interpretable FER via Spatial AU Cues
+## 17. ○ [PT] **Belharbi 2024** — Guided Interpretable FER via Spatial AU Cues
 
 SOTA FER classifier 缺解釋性。**訓練時引入 AU codebook 顯式對應臉部區域**，實現可解釋深度模型。
 
-## 22. ◇ [PT] **Goyal 2025** — IoT Stress Detection for Elderly
-
-CNN FER 把表情分 7 類（怕/怒/嫌/喜/中/悲/驚）。長時間 capture 推估老人**疼痛強度**，協助看護。
-
-## 23. ◇ [PT] **Jouval 2023** — Emotion Evaluation Across Age Ranges Using Labeled Films
+## 18. ◇ [PT] **Jouval 2023** — Emotion Evaluation Across Age Ranges Using Labeled Films
 
 4 個年齡層（YA 20-39 + OA + ...）非病理男女觀看標籤化短片（中/喜/驚/怒/恐/嫌/悲），評估臉部反應。
 
-## 24. ◇ [--] **Kolosov 2024** — AU + Emotions in Dementia Listening to Music
+## 19. ◇ [--] **Kolosov 2024** — AU + Emotions in Dementia Listening to Music
 
 音樂介入失智照護。AU 與快樂程度的關聯（專家觀察）。**特定 AU 與快樂程度對應**。個人化音樂播放清單應用。
 
-## 25. ○ [PT] **Mertens 2024** — FindingEmo: 25k In-the-Wild Emotion Image Dataset
+## 20. ○ [PT] **Mertens 2024** — FindingEmo: 25k In-the-Wild Emotion Image Dataset
 
 **25k 圖像** annotated for emotion；focus on 多人複雜社交場景（不只單臉）。Valence/Arousal/Emotion label。
+
+
+## ━━━━━━━━━━━━━━ 保留（40 篇 — 前 7 篇是 Layer A 但細節不足，後續為 Layer B + C）━━━━━━━━━━━━━━
+
+## 21. ★ [--] **Kadali 2024** — CNN AD Detection from FE + Eye Movements
+
+CNN 結合臉部表情 + 眼動分析做 AD 偵測。Image preprocessing 多種方法。
+
+## 22. ★ [PT] **Ruoranen 2023** — Memory Disorder Detection via FER
+
+記憶障礙下的表情變化（特別是 apathy 降低表情強度）。FER 程式應用於記憶障礙篩檢的論文（thesis）。
+
+## 23. ◇ [--] **M 2024** — Optimized Attention FER for ND Healthcare
+
+CBAM 注意力模組 + 輕量 DLN 在 AD/PD 的 FER 應用。
+
+## 24. ◇ [--] **Nylander 2025** — FE Metrics as Digital Biomarkers of Neurologic Disease
+
+PD masked facies 等 ND 特徵性臉部表情。提取診間視訊的笑/皺眉/眨眼，評估自動化 FER 作為遠端、客觀診斷工具。
+
+## 25. ◇ [PT] **Goyal 2025** — IoT Stress Detection for Elderly
+
+CNN FER 把表情分 7 類（怕/怒/嫌/喜/中/悲/驚）。長時間 capture 推估老人**疼痛強度**，協助看護。
 
 ## 26. ◇ [PT] **Takale 2024** — DL ND Patient FER Intensive Care
 
@@ -127,9 +130,6 @@ Hyperparameter tuning + DL FER 在神經疾患加護應用。
 ## 27. ○ [PT] **Veigas 2024** — DL FER for Elderly
 
 老化族群心理健康挑戰。FER 偵測情緒供心理健康 monitoring。
-
-
-## ━━━━━━━━━━━━━━ 保留（33 篇 — Layer B + Layer C）━━━━━━━━━━━━━━
 
 ## 28. ○ [--] **Girard 2025** — Computational Analysis of Expressive Behavior in Clinical Assessment
 
