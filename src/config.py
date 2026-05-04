@@ -68,29 +68,41 @@ CALIBRATION_DIR_V2 = CORRECTIONS_DIR_V2 / "calibration"
 BOOTSTRAP_DIR_V2 = CORRECTIONS_DIR_V2 / "bootstrap_correction"
 MEAN_CORRECTION_DIR_V2 = CORRECTIONS_DIR_V2 / "mean_correction"
 
-# arms_analysis 模組
+# arms_analysis 模組（per_arm + grid 分析；layout: arms_analysis/<analysis_type>/<cohort>/...）
 ARMS_ANALYSIS_DIR = WORKSPACE_DIR / "arms_analysis"
+ARMS_PER_ARM_BASE = ARMS_ANALYSIS_DIR / "per_arm"
+ARMS_GRID_BASE = ARMS_ANALYSIS_DIR / "grid"
 
 # arms_analysis 模組 — default cohort
 #   P : first-visit + Global_CDR>=0.5 + .npy fallback
 #   HC: strict (CDR=0 OR (CDR=NaN AND MMSE>=26)) + first-visit per HC subject
-ARMS_P_FIRST_HC_STRICT_DIR = ARMS_ANALYSIS_DIR / "p_first_hc_strict"
-ARMS_P_FIRST_HC_STRICT_PER_ARM = ARMS_P_FIRST_HC_STRICT_DIR / "per_arm"
-ARMS_P_FIRST_HC_STRICT_GRID = ARMS_P_FIRST_HC_STRICT_DIR / "grid"
+ARMS_P_FIRST_HC_STRICT_PER_ARM = ARMS_PER_ARM_BASE / "p_first_hc_strict"
+ARMS_P_FIRST_HC_STRICT_GRID = ARMS_GRID_BASE / "p_first_hc_strict"
 
 # arms_analysis 模組 — 新 cohort（first-visit P + ALL NAD/ACS, no strict HC filter）
-ARMS_P_FIRST_HC_ALL_DIR = ARMS_ANALYSIS_DIR / "p_first_hc_all"
-ARMS_P_FIRST_HC_ALL_PER_ARM = ARMS_P_FIRST_HC_ALL_DIR / "per_arm"
-ARMS_P_FIRST_HC_ALL_GRID = ARMS_P_FIRST_HC_ALL_DIR / "grid"
+ARMS_P_FIRST_HC_ALL_PER_ARM = ARMS_PER_ARM_BASE / "p_first_hc_all"
+ARMS_P_FIRST_HC_ALL_GRID = ARMS_GRID_BASE / "p_first_hc_all"
 
 # arms_analysis 模組 — 最寬 cohort（ALL P visits + ALL NAD/ACS, 兩端都不挑 first-visit / strict HC）
-ARMS_P_ALL_HC_ALL_DIR = ARMS_ANALYSIS_DIR / "p_all_hc_all"
-ARMS_P_ALL_HC_ALL_PER_ARM = ARMS_P_ALL_HC_ALL_DIR / "per_arm"
-ARMS_P_ALL_HC_ALL_GRID = ARMS_P_ALL_HC_ALL_DIR / "grid"
+ARMS_P_ALL_HC_ALL_PER_ARM = ARMS_PER_ARM_BASE / "p_all_hc_all"
+ARMS_P_ALL_HC_ALL_GRID = ARMS_GRID_BASE / "p_all_hc_all"
 
-# 別名（向後相容）— ARMS_PER_ARM_DIR / ARMS_GRID_DIR 預設指向 p_first_hc_strict
+# 別名（向後相容）
+# ARMS_P_*_DIR：原本是 cohort 的 top-level dir，重組後 cohort 沒有頂層 dir 了；
+# 把它指向 per_arm 那條（cohort_summary.csv + README.md 也搬到 per_arm/<cohort>/ 下）
+ARMS_P_FIRST_HC_STRICT_DIR = ARMS_P_FIRST_HC_STRICT_PER_ARM
+ARMS_P_FIRST_HC_ALL_DIR = ARMS_P_FIRST_HC_ALL_PER_ARM
+ARMS_P_ALL_HC_ALL_DIR = ARMS_P_ALL_HC_ALL_PER_ARM
+
+# ARMS_PER_ARM_DIR / ARMS_GRID_DIR 預設指向 p_first_hc_strict
 ARMS_PER_ARM_DIR = ARMS_P_FIRST_HC_STRICT_PER_ARM
 ARMS_GRID_DIR = ARMS_P_FIRST_HC_STRICT_GRID
+
+# embedding_classification 模組（原始 embedding sweep；layout: embedding_classification/<cohort>/<reducer>/...）
+EMBEDDING_CLASSIFICATION_DIR = WORKSPACE_DIR / "embedding_classification"
+
+# embedding_asymmetry_classification 模組（asymmetry sweep；layout: embedding_asymmetry_classification/<variant>/<cohort>/<reducer>/...）
+EMBEDDING_ASYMMETRY_CLASSIFICATION_DIR = WORKSPACE_DIR / "embedding_asymmetry_classification"
 
 
 def get_raw_images_subdir(group: str) -> Path:
