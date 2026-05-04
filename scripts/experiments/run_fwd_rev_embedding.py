@@ -923,9 +923,9 @@ def plot_paired_scatter(matched_with_score, partition, out_path):
 
 def _reverse_train(full_cohort, matched_cohort, embedding, classifier,
                    n_folds, seed):
-    """Train-cohort-only side of reverse: 10-fold ensemble + single fits +
-    union-level metrics. Output is independent of keep_groups so it can be
-    shared across the 3 ad_vs_* partitions."""
+    """Train-cohort-only side of reverse: 10-fold GroupKFold ensemble on
+    matched cohort, applied to the full cohort. Output is independent of
+    keep_groups so it can be shared across the 3 ad_vs_* partitions."""
     Xm, ym, gm, idsm, n_dropped_m = build_feature_matrix(matched_cohort, embedding)
     Xf, yf, _gf, idsf, n_dropped_f = build_feature_matrix(full_cohort, embedding)
 
@@ -935,7 +935,6 @@ def _reverse_train(full_cohort, matched_cohort, embedding, classifier,
         raise RuntimeError(f"too few groups in matched ({n_groups_m})")
     gkf = GroupKFold(n_splits=k)
 
-    # ---- (a) 10-fold ensemble ----
     oof_m = np.full(len(ym), np.nan, dtype=float)
     full_preds = []
     n_kept_per_fold = []
@@ -957,24 +956,8 @@ def _reverse_train(full_cohort, matched_cohort, embedding, classifier,
         oof_m[tei] = clf.predict_proba(Xm_te)[:, 1]
         full_preds.append(clf.predict_proba(Xf_t)[:, 1])
 
-    full_score_ensemble = np.mean(np.stack(full_preds, axis=0), axis=0)
+    full_score = np.mean(np.stack(full_preds, axis=0), axis=0)
 
-    # ---- (b) Single model trained on all matched ----
-    if needs_scaler(classifier):
-        scaler_single = StandardScaler().fit(Xm)
-        Xm_all_t = scaler_single.transform(Xm)
-        Xf_single_t = scaler_single.transform(Xf)
-    else:
-        Xm_all_t, Xf_single_t = Xm, Xf
-    sel_single, n_kept_single = _fit_drop_correlated(Xm_all_t)
-    Xm_all_t = _apply_drop_correlated(sel_single, Xm_all_t)
-    Xf_single_t = _apply_drop_correlated(sel_single, Xf_single_t)
-    clf_single = make_classifier(classifier, seed=seed)
-    clf_single.fit(Xm_all_t, ym)
-    full_score_single = clf_single.predict_proba(Xf_single_t)[:, 1]
-
-    # ---- Aggregate row-level predictions to subject-level (one row per base_id).
-    # No-op when each base_id already has one row (default first/mean mode).
     matched_oof_df = pd.DataFrame({
         "ID": idsm, "base_id": gm, "y_true": ym, "y_score": oof_m,
     })
@@ -982,43 +965,28 @@ def _reverse_train(full_cohort, matched_cohort, embedding, classifier,
 
     full_df_rows = pd.DataFrame({
         "ID": idsf, "base_id": _gf, "y_true": yf,
-        "score_ensemble": full_score_ensemble,
-        "score_single": full_score_single,
+        "y_score": full_score,
     })
-    full_subj = _aggregate_to_subject(
-        full_df_rows, score_cols=["score_ensemble", "score_single"],
-    )
+    full_subj = _aggregate_to_subject(full_df_rows, score_cols=["y_score"])
 
-    # ---- Subset masks ----
     matched_base_ids = set(pd.unique(gm))
-    # Visit-level masks (on full_df_rows)
     full_df_rows["in_matched"] = full_df_rows["base_id"].isin(
         matched_base_ids
     ).astype(int)
     in_matched_visit = full_df_rows["in_matched"].to_numpy(bool)
     n_unmatched_visits = int((~in_matched_visit).sum())
-    # Subject-level masks (kept for matched_single_train + scores CSV)
     full_subj["in_matched"] = full_subj["base_id"].isin(
         matched_base_ids
     ).astype(int)
 
-    # ---- Union-level metrics (no keep_groups dependency, cacheable) ----
     yf_visit = full_df_rows["y_true"].to_numpy(int)
-    full_score_ens_visit = full_df_rows["score_ensemble"].to_numpy(float)
-    full_score_single_visit = full_df_rows["score_single"].to_numpy(float)
-    metrics_full_ensemble = compute_clf_metrics(yf_visit, full_score_ens_visit,
-                                                  seed=seed)
-    metrics_unmatched_ensemble = None
-    metrics_unmatched_single = None
+    full_score_visit = full_df_rows["y_score"].to_numpy(float)
+    metrics_unmatched = None
     if n_unmatched_visits >= 5 and \
        len(np.unique(yf_visit[~in_matched_visit])) > 1:
-        metrics_unmatched_ensemble = compute_clf_metrics(
+        metrics_unmatched = compute_clf_metrics(
             yf_visit[~in_matched_visit],
-            full_score_ens_visit[~in_matched_visit], seed=seed,
-        )
-        metrics_unmatched_single = compute_clf_metrics(
-            yf_visit[~in_matched_visit],
-            full_score_single_visit[~in_matched_visit], seed=seed,
+            full_score_visit[~in_matched_visit], seed=seed,
         )
 
     drop_corr_info = {
@@ -1028,7 +996,6 @@ def _reverse_train(full_cohort, matched_cohort, embedding, classifier,
         "pca_components": _PCA_COMPONENTS,
         "n_features_input": int(Xm.shape[1]),
         "n_features_kept_per_fold": [int(n) for n in n_kept_per_fold],
-        "n_features_kept_single": int(n_kept_single),
         "n_rows_matched": int(Xm.shape[0]),
         "n_rows_full": int(Xf.shape[0]),
         "n_unique_subjects_matched": int(pd.unique(gm).size),
@@ -1037,12 +1004,8 @@ def _reverse_train(full_cohort, matched_cohort, embedding, classifier,
         "photo_mode": _PHOTO_MODE,
     }
 
-    # Visit-level scores DataFrame (in_matched reflects union training cohort,
-    # not keep_groups — preserved so post-hoc visit-level metric recomputation
-    # doesn't require re-running the reverse pipeline).
     full_df_visits = full_df_rows[
-        ["ID", "base_id", "y_true", "score_ensemble", "score_single",
-         "in_matched"]
+        ["ID", "base_id", "y_true", "y_score", "in_matched"]
     ].copy()
 
     return {
@@ -1051,9 +1014,7 @@ def _reverse_train(full_cohort, matched_cohort, embedding, classifier,
         "full_df_visits": full_df_visits,
         "matched_base_ids": matched_base_ids,
         "n_unmatched_visits": n_unmatched_visits,
-        "metrics_full_ensemble": metrics_full_ensemble,
-        "metrics_unmatched_ensemble": metrics_unmatched_ensemble,
-        "metrics_unmatched_single": metrics_unmatched_single,
+        "metrics_unmatched": metrics_unmatched,
         "drop_corr_info": drop_corr_info,
         "k": k,
         "n_dropped_m": n_dropped_m,
@@ -1079,73 +1040,43 @@ def _reverse_eval(train, matched_cohort, keep_groups, seed):
     eval_y_m_subj = matched_oof_subj["y_true"].to_numpy(int)[keep_m_subj]
     eval_score_m_subj = matched_oof_subj["y_score"].to_numpy(float)[keep_m_subj]
 
-    # matched_oof: subject-level (matching is defined at subject level).
     metrics_matched_oof = (
         compute_clf_metrics(eval_y_m_subj, eval_score_m_subj, seed=seed)
         if len(eval_y_m_subj) >= 5 and len(np.unique(eval_y_m_subj)) > 1 else None
     )
 
-    # matched_single_train: subject-level (parallel to matched_oof so the two
-    # are directly comparable; matched eval population stays subject-level).
-    yf_subj = full_subj["y_true"].to_numpy(int)
-    full_score_single_subj = full_subj["score_single"].to_numpy(float)
     if keep_groups is not None:
         bid_to_group_all = matched_cohort.set_index("base_id")["group"].to_dict()
         matched_keep_base = {b for b in matched_base_ids
                               if bid_to_group_all.get(b) in keep_groups}
     else:
         matched_keep_base = matched_base_ids
-    mask_matched_eval = np.array([
-        b in matched_keep_base for b in full_subj["base_id"]
-    ])
-    metrics_matched_single_train = None
-    if mask_matched_eval.sum() >= 5 and \
-       len(np.unique(yf_subj[mask_matched_eval])) > 1:
-        metrics_matched_single_train = compute_clf_metrics(
-            yf_subj[mask_matched_eval],
-            full_score_single_subj[mask_matched_eval], seed=seed,
-        )
 
-    # scores CSV: subject-level (in_matched reflects matched-eval population
-    # if keep_groups was set; otherwise reflects whether the subject's base_id
-    # is in the matched training pool).
     full_df = full_subj.copy()
     if keep_groups is not None:
         full_df["in_matched"] = full_df["base_id"].isin(matched_keep_base).astype(int)
-    full_df = full_df[["ID", "y_true", "score_ensemble", "score_single",
-                        "in_matched"]]
+    full_df = full_df[["ID", "y_true", "y_score", "in_matched"]]
 
     return {
         "scores_df": full_df,
         "metrics_matched_oof": metrics_matched_oof,
-        "metrics_matched_single_train": metrics_matched_single_train,
     }
 
 
 def run_reverse(full_cohort, matched_cohort, embedding, classifier,
                 n_folds=10, seed=42, keep_groups=None, partition=None):
-    """Reverse strategy with two model variants:
+    """Reverse strategy: 10-fold GroupKFold on matched cohort → 10 fold-models;
+    mean their predict_proba over the full cohort. Reports:
 
-    (a) Ensemble: 10-fold GroupKFold on matched cohort → 10 fold-models, mean
-        their predict_proba over the full cohort.
-    (b) Single: train one model on the full matched cohort (no CV split),
-        apply to the full cohort. Cleaner for unmatched evaluation since
-        every unmatched subject is a true held-out test for it.
+      - matched_oof:  ensemble OOF on matched (subject-level, validation domain)
+      - unmatched:    ensemble on unmatched-only (visit-level, held-out domain)
 
-    When keep_groups is set, training is unchanged but evaluation cohorts
-    (matched_oof, matched_single_train, scores_df in_matched) are filtered
-    to subjects whose `group` ∈ keep_groups.
+    When keep_groups is set, training is unchanged but the matched eval cohort
+    (matched_oof + scores_df in_matched) is filtered to subjects whose
+    `group` ∈ keep_groups.
 
     Caches training output keyed by `partition` family so the 3 ad_vs_*
     partitions share one training pass.
-
-    Reported metrics:
-      - matched_oof:           ensemble OOF on matched (validation domain)
-      - full_ensemble:         ensemble on full cohort (matched ∪ unmatched)
-      - unmatched_ensemble:    ensemble on unmatched-only
-      - unmatched_single:      single-model on unmatched-only
-      - matched_single_train:  single-model on matched-only (training-domain
-                                 reference, expected to be over-optimistic)
     """
     cache_key = _train_cache_key(partition, embedding, classifier, n_folds, seed)
     train = _REV_TRAIN_CACHE.get(cache_key)
@@ -1167,10 +1098,7 @@ def run_reverse(full_cohort, matched_cohort, embedding, classifier,
         "n_dropped_no_emb_full": train["n_dropped_f"],
         "n_unmatched": train["n_unmatched_visits"],
         "metrics_matched_oof": ev["metrics_matched_oof"],
-        "metrics_full_ensemble": train["metrics_full_ensemble"],
-        "metrics_unmatched_ensemble": train["metrics_unmatched_ensemble"],
-        "metrics_unmatched_single": train["metrics_unmatched_single"],
-        "metrics_matched_single_train": ev["metrics_matched_single_train"],
+        "metrics_unmatched": train["metrics_unmatched"],
         "drop_corr_info": train["drop_corr_info"],
     }
 
@@ -1313,63 +1241,27 @@ def run_cell(partition, embedding, classifier, strategy, n_folds=10, seed=42):
 
         scores_visits = rev["scores_df_visits"]
 
-        # --- Method A: 10-fold ensemble ---
-        ens_dir = out / "ensemble"
-        ens_dir.mkdir(parents=True, exist_ok=True)
-        scores_df[["ID", "y_true", "score_ensemble", "in_matched"]].rename(
-            columns={"score_ensemble": "y_score"}
-        ).to_csv(ens_dir / "scores.csv", index=False)
-        scores_visits[["ID", "base_id", "y_true", "score_ensemble",
-                       "in_matched"]].rename(
-            columns={"score_ensemble": "y_score"}
-        ).to_csv(ens_dir / "scores_visits.csv", index=False)
-        write_json(ens_dir / "metrics.json", {
-            **common, "method": "ensemble (10 fold-models)",
+        scores_df.to_csv(out / "scores.csv", index=False)
+        scores_visits.to_csv(out / "scores_visits.csv", index=False)
+        write_json(out / "metrics.json", {
+            **common,
             "metrics_matched_oof": rev["metrics_matched_oof"],
-            "metrics_full": rev["metrics_full_ensemble"],
-            "metrics_unmatched": rev["metrics_unmatched_ensemble"],
-        })
-
-        # --- Method B: single model ---
-        sgl_dir = out / "single"
-        sgl_dir.mkdir(parents=True, exist_ok=True)
-        scores_df[["ID", "y_true", "score_single", "in_matched"]].rename(
-            columns={"score_single": "y_score"}
-        ).to_csv(sgl_dir / "scores.csv", index=False)
-        scores_visits[["ID", "base_id", "y_true", "score_single",
-                       "in_matched"]].rename(
-            columns={"score_single": "y_score"}
-        ).to_csv(sgl_dir / "scores_visits.csv", index=False)
-        write_json(sgl_dir / "metrics.json", {
-            **common, "method": "single (1 model on all matched)",
-            "metrics_matched_train": rev["metrics_matched_single_train"],
-            "metrics_unmatched": rev["metrics_unmatched_single"],
+            "metrics_unmatched": rev["metrics_unmatched"],
         })
 
         m_oof = rev["metrics_matched_oof"]
-        m_full = rev["metrics_full_ensemble"]
-        m_un_ens = rev["metrics_unmatched_ensemble"]
-        m_un_single = rev["metrics_unmatched_single"]
-        msg = (f"  reverse: matched_oof AUC={m_oof['auc']:.3f}  "
-               f"full_ensemble AUC={m_full['auc']:.3f}")
-        if m_un_ens is not None:
-            msg += f"  unmatched_ensemble AUC={m_un_ens['auc']:.3f}"
-        if m_un_single is not None:
-            msg += f"  unmatched_single AUC={m_un_single['auc']:.3f}"
+        m_un = rev["metrics_unmatched"]
+        msg = f"  reverse: matched_oof AUC={m_oof['auc']:.3f}"
+        if m_un is not None:
+            msg += f"  unmatched AUC={m_un['auc']:.3f}"
         logger.info(msg)
-        for scope_name, method, m in [
-            ("matched_oof", "ensemble", m_oof),
-            ("full", "ensemble", m_full),
-            ("unmatched", "ensemble", m_un_ens),
-            ("matched_train", "single", rev["metrics_matched_single_train"]),
-            ("unmatched", "single", m_un_single),
-        ]:
+        for scope_name, m in [("matched_oof", m_oof), ("unmatched", m_un)]:
             if m is None:
                 continue
             summary_rows.append({
                 "partition": partition, "embedding": embedding,
                 "classifier": classifier, "strategy": "reverse",
-                "method": method, "scope": scope_name,
+                "scope": scope_name,
                 **{k: v for k, v in m.items() if k != "confusion_matrix"},
             })
 
