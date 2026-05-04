@@ -75,8 +75,15 @@ from xgboost import XGBClassifier
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))
 
+from src.config import (
+    EMBEDDING_CLASSIFICATION_DIR,
+    EMBEDDING_ASYMMETRY_CLASSIFICATION_DIR,
+)
+
 ARMS_ROOT = PROJECT_ROOT / "workspace" / "arms_analysis"
 EMBEDDING_FEAT_DIR = PROJECT_ROOT / "workspace" / "embedding" / "features"
+EMB_CLF_ROOT = EMBEDDING_CLASSIFICATION_DIR
+EMB_ASYM_CLF_ROOT = EMBEDDING_ASYMMETRY_CLASSIFICATION_DIR
 ARM_B_DIR = ARMS_ROOT / "per_arm" / "arm_b"
 AGES_FILE = (PROJECT_ROOT / "workspace" / "age" / "age_prediction" /
              "predicted_ages.json")
@@ -118,15 +125,16 @@ def _reducer_label():
 def output_dir_for(feature_type, drop_corr=None, visit_mode="first",
                     photo_mode="mean", pca_components=None,
                     cohort_mode="default"):
-    """Layout (override the older 4-arg call sites at runtime via the module-
-    level state). When called externally, callers can pass pca_components.
+    """Build per-cell output dir for the chosen feature_type / reducer /
+    cohort / visit-photo mode combination.
 
-    cohort_mode='default' -> p_first_hc_strict/  (cohort default: visit=first,
-                                                  photo=mean)
-    cohort_mode='p_first_hc_all' -> p_first_hc_all/  (cohort default:
-                                                       visit=all, photo=mean)
-    cohort_mode='p_all_hc_all'   -> p_all_hc_all/    (cohort default:
-                                                       visit=all, photo=mean)
+    Tree layout (post-split):
+      Original:  workspace/embedding_classification/<cohort>/<reducer>/
+      Asymmetry: workspace/embedding_asymmetry_classification/<feature_type>/<cohort>/<reducer>/
+
+    cohort_mode='default'        -> p_first_hc_strict (default visit=first, photo=mean)
+    cohort_mode='p_first_hc_all' -> p_first_hc_all    (default visit=all,   photo=mean)
+    cohort_mode='p_all_hc_all'   -> p_all_hc_all      (default visit=all,   photo=mean)
 
     Reducer naming:
       drop_corr=X.X    → drop_feats/pearson_r_X.X
@@ -134,18 +142,13 @@ def output_dir_for(feature_type, drop_corr=None, visit_mode="first",
       pca_components=R → pca/var_ratio_R               (float R<1)
       neither          → no_drop
 
-    Variant subdir `<visit_X>[_<photo_Y>]` is only appended (as a nested
-    sub-directory under the reducer dir) when (visit, photo) differ from the
-    cohort's default — so p_first_hc_all + visit=all + photo=mean yields plain
-    `pca/n_components_100`. p_first_hc_strict (default visit=first/photo=mean)
-    + visit_mode=all yields `pca/n_components_100/visit_all`.
-
-    Asymmetry layout pivots: feature_type segment comes BEFORE the reducer
-    path (embedding_asymmetry_classification/<feature_type>/<reducer>/...),
-    so all reducer variants for one feature_type cluster together.
+    Variant subdir `<visit_X>[_<photo_Y>]` is appended as a nested
+    sub-directory under the reducer dir when (visit, photo) differ from the
+    cohort's default — e.g. p_first_hc_strict + visit_mode=all yields
+    `pca/n_components_100/visit_all`.
 
     LR `C` value is encoded at the cell-level leaf (logistic/C_<lr_C:g>/) by
-    cell_dir(), not in this path — so output_dir_for() does not depend on it.
+    cell_dir(), not in this path.
     """
     if pca_components is not None and drop_corr is not None:
         raise ValueError("drop_corr and pca_components are mutually exclusive")
@@ -176,9 +179,8 @@ def output_dir_for(feature_type, drop_corr=None, visit_mode="first",
     else:
         cohort_dir = "p_first_hc_strict"
     if feature_type == "original":
-        return ARMS_ROOT / cohort_dir / "embedding_classification" / reducer
-    return (ARMS_ROOT / cohort_dir / "embedding_asymmetry_classification" /
-            feature_type / reducer)
+        return EMB_CLF_ROOT / cohort_dir / reducer
+    return EMB_ASYM_CLF_ROOT / feature_type / cohort_dir / reducer
 
 
 OUTPUT_DIR = output_dir_for(_FEATURE_TYPE, _DROP_CORR_THRESHOLD,
