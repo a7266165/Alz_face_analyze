@@ -48,14 +48,20 @@ def resolve_paths(variant, cohort_mode="default"):
                       / "embedding_asymmetry_classification" / variant)
     out = class_root / "drop_feats" / "_summary"
     reducer_dirs = []
-    nd = class_root / "no_drop"
-    if nd.is_dir():
-        reducer_dirs.append(nd)
-    df_root = class_root / "drop_feats"
-    if df_root.is_dir():
-        for r in sorted(df_root.iterdir()):
-            if r.is_dir() and not r.name.startswith("_"):
-                reducer_dirs.append(r)
+    if class_root.is_dir():
+        seen = set()
+        for marker_name in ("fwd", "rev"):
+            for marker in class_root.rglob(marker_name):
+                if marker.is_dir():
+                    seen.add(marker.parent)
+        for reducer in sorted(seen):
+            rel_parts = reducer.relative_to(class_root).parts
+            if any(p.startswith("_") for p in rel_parts):
+                continue
+            # drop_feats plot covers no_drop reference + drop_feats reducers.
+            if rel_parts[0] not in ("no_drop", "drop_feats"):
+                continue
+            reducer_dirs.append(reducer)
     return class_root, out, reducer_dirs
 
 

@@ -134,9 +134,11 @@ def output_dir_for(feature_type, drop_corr=None, visit_mode="first",
       pca_components=R → pca/var_ratio_R               (float R<1)
       neither          → no_drop
 
-    Suffix `__visit_X[__photo_Y]` is only appended (to the reducer leaf) when
-    (visit, photo) differ from the cohort's default — so p_first_hc_all +
-    visit=all + photo=mean yields plain `pca/n_components_100`.
+    Variant subdir `<visit_X>[_<photo_Y>]` is only appended (as a nested
+    sub-directory under the reducer dir) when (visit, photo) differ from the
+    cohort's default — so p_first_hc_all + visit=all + photo=mean yields plain
+    `pca/n_components_100`. p_first_hc_strict (default visit=first/photo=mean)
+    + visit_mode=all yields `pca/n_components_100/visit_all`.
 
     Asymmetry layout pivots: feature_type segment comes BEFORE the reducer
     path (embedding_asymmetry_classification/<feature_type>/<reducer>/...),
@@ -166,8 +168,7 @@ def output_dir_for(feature_type, drop_corr=None, visit_mode="first",
     if photo_mode != default_photo:
         suffix_parts.append(f"photo_{photo_mode}")
     if suffix_parts:
-        suffix = "__" + "_".join(suffix_parts)
-        reducer = reducer.parent / (reducer.name + suffix)
+        reducer = reducer / "_".join(suffix_parts)
     if cohort_mode == "p_first_hc_all":
         cohort_dir = "p_first_hc_all"
     elif cohort_mode == "p_all_hc_all":

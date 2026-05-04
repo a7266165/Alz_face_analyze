@@ -163,22 +163,25 @@ def build_one(variant_dir):
 
 
 def _iter_reducer_dirs(class_root):
-    """Yield reducer dirs under a classification root.
+    """Yield reducer dirs under a classification root — any directory whose
+    parent path is fwd-or-rev-bearing. Walks arbitrarily deep so visit/photo
+    variants nested under a reducer (e.g. no_drop/visit_all,
+    pca/n_components_100/visit_all_photo_all) are picked up.
 
-    Layout:  no_drop/, pca/<reducer>/, drop_feats/<reducer>/
-    Skips _summary, _dropcorr_summary, _pca_summary, etc.
+    Skips paths containing any underscore-prefixed segment (_summary, etc.).
     """
     if not class_root.is_dir():
         return
-    for top in sorted(class_root.iterdir()):
-        if not top.is_dir() or top.name.startswith("_"):
+    seen = set()
+    for marker_name in ("fwd", "rev"):
+        for marker in class_root.rglob(marker_name):
+            if marker.is_dir():
+                seen.add(marker.parent)
+    for reducer in sorted(seen):
+        rel_parts = reducer.relative_to(class_root).parts
+        if any(p.startswith("_") for p in rel_parts):
             continue
-        if top.name == "no_drop":
-            yield top
-        elif top.name in ("pca", "drop_feats"):
-            for r in sorted(top.iterdir()):
-                if r.is_dir() and not r.name.startswith("_"):
-                    yield r
+        yield reducer
 
 
 def walk_root(root, label):

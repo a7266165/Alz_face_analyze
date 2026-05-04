@@ -85,16 +85,23 @@ def resolve_paths(variant, cohort_mode="default"):
         feature_subdir = variant
 
     def _reducer_dirs():
-        out_dirs = []
-        nd = class_root / "no_drop"
-        if nd.is_dir():
-            out_dirs.append(nd)
-        pca_root = class_root / "pca"
-        if pca_root.is_dir():
-            for r in sorted(pca_root.iterdir()):
-                if r.is_dir() and not r.name.startswith("_"):
-                    out_dirs.append(r)
-        return out_dirs
+        if not class_root.is_dir():
+            return []
+        seen = set()
+        for marker_name in ("fwd", "rev"):
+            for marker in class_root.rglob(marker_name):
+                if marker.is_dir():
+                    seen.add(marker.parent)
+        out = []
+        for reducer in sorted(seen):
+            rel_parts = reducer.relative_to(class_root).parts
+            if any(p.startswith("_") for p in rel_parts):
+                continue
+            # PCA components plot only cares about no_drop + pca/ subtree.
+            if rel_parts[0] not in ("no_drop", "pca"):
+                continue
+            out.append(reducer)
+        return out
 
     def cell_json_for(reducer, part, emb, clf):
         base = reducer / "fwd" / part / emb / clf
