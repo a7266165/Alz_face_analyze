@@ -205,6 +205,8 @@ def main() -> int:
                         help="back-fill _state.json aliases from existing waiting_review JSON sidecars and exit")
     parser.add_argument("--batch", type=int, default=1,
                         help="run N consecutive sweeps with cursor pagination; stops early if a sweep returns 0 new papers")
+    parser.add_argument("--query-idx", type=int, default=None,
+                        help="override the slot's query index (selects a specific entry from the topic's TOPIC_QUERIES list)")
     parser.add_argument("--no-pdf", action="store_true",
                         help="save metadata JSON only; defer PDF download to download_pdfs.py")
     parser.add_argument("-v", "--verbose", action="store_true")
@@ -272,6 +274,7 @@ def main() -> int:
                 dry_run=args.dry_run,
                 push=push,
                 override_topics=override,
+                override_query_idx=args.query_idx,
                 download_pdf=not args.no_pdf,
             )
         else:
@@ -285,7 +288,7 @@ def main() -> int:
                 push=push,
                 override_topics=topics,
                 override_sources=["arxiv", "s2", "openalex", "pubmed"],
-                override_query_idx=0,
+                override_query_idx=args.query_idx if args.query_idx is not None else 0,
                 download_pdf=not args.no_pdf,
             )
 

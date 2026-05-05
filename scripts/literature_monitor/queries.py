@@ -22,6 +22,10 @@ TOPIC_QUERIES: dict[str, list[str]] = {
         '"facial biometric" ("Alzheimer" OR "dementia")',
         '"facial phenotype" "Alzheimer"',
         '"face representation" "cognitive impairment"',
+        # 2026-05-05 additions: face-shape / photograph-based AD detection
+        '"face shape" ("Alzheimer" OR "dementia")',
+        '"facial photograph" ("dementia" OR "Alzheimer") detection',
+        '"image-based phenotype" ("Alzheimer" OR "dementia")',
     ],
     "asymmetry": [
         '"facial asymmetry" AND ("Alzheimer" OR "dementia" OR "MCI" OR "cognitive decline")',
@@ -32,6 +36,11 @@ TOPIC_QUERIES: dict[str, list[str]] = {
         '"facial fluctuating asymmetry" cognitive',
         '"face midline" ("Alzheimer" OR "dementia")',
         '"facial asymmetry" "neurodegeneration"',
+        # 2026-05-05 additions: Chien-style anchor (3D face + AD biomarker)
+        '"3D face" ("Alzheimer" OR "dementia" OR "MCI")',
+        '"facial morphometry" ("Alzheimer" OR "dementia")',
+        '"image-based" "facial" ("Alzheimer" OR "dementia")',
+        '"Procrustes" ("Alzheimer" OR "dementia") face',
     ],
     "emotion": [
         '("facial expression" OR "emotion recognition" OR "FER") AND ("Alzheimer" OR "dementia")',
@@ -42,6 +51,10 @@ TOPIC_QUERIES: dict[str, list[str]] = {
         '"emotional expressivity" "Alzheimer"',
         '"valence arousal" ("Alzheimer" OR "dementia")',
         '"emotion expression" "neurodegeneration"',
+        # 2026-05-05 additions: tighter AD-biomarker framing
+        '"facial biomarker" ("Alzheimer" OR "dementia" OR "MCI")',
+        '"face image" "Alzheimer" diagnosis',
+        '"facial features" "AD" detection',
     ],
     "age": [
         # Face-image-explicit only. AVOID: "age estimation" alone, "brain age",
