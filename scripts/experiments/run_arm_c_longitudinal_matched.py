@@ -29,6 +29,9 @@ from scipy import stats
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))
+from src.config import (
+    EMBEDDING_FEATURE_STAT_DIR, OVERVIEW_DIR, cohort_name,
+)
 
 # Reuse utilities from Arm A (cv_eval, bootstrap_auc_ci)
 _spec = importlib.util.spec_from_file_location(
@@ -41,11 +44,10 @@ bootstrap_auc_ci = _arm_a.bootstrap_auc_ci
 cohens_d = _arm_a.cohens_d
 hedges_g = _arm_a.hedges_g
 
-DELTAS_CSV = PROJECT_ROOT / "workspace" / "longitudinal" / "patient_deltas.csv"
+from src.config import LONGITUDINAL_FEATURES_DIR
+DELTAS_CSV = LONGITUDINAL_FEATURES_DIR / "patient_deltas.csv"
 LANDMARK_LONG_CSV = (PROJECT_ROOT / "workspace" / "asymmetry" / "analysis" /
                      "longitudinal_landmark_deltas.csv")
-OUTPUT_DIR = (PROJECT_ROOT / "workspace" / "arms_analysis" /
-              "per_arm" / "p_first_hc_strict" / "arm_c")
 
 EMOTIONS = ["anger", "disgust", "fear", "happiness", "sadness",
             "surprise", "neutral"]
@@ -326,14 +328,18 @@ def main():
     parser.add_argument("--min-follow-up-days", type=int, default=180)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--tiebreak", choices=["high", "low"], default="high")
+    parser.add_argument("--cohort-mode",
+                         choices=["default", "p_first_hc_all", "p_all_hc_all"],
+                         default="default")
     args = parser.parse_args()
 
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    comparison_dir = OUTPUT_DIR / COMPARISON_NAME
+    cohort_dir = cohort_name(args.cohort_mode)
+    comparison_dir = (OVERVIEW_DIR / cohort_dir / "longi_naive" /
+                      COMPARISON_NAME)
     comparison_dir.mkdir(parents=True, exist_ok=True)
-    for d in ("age", "embedding_mean", "embedding_asymmetry",
-              "landmark_asymmetry", "emotion"):
-        (comparison_dir / d).mkdir(parents=True, exist_ok=True)
+    emb_mean_stat_dir = (EMBEDDING_FEATURE_STAT_DIR / "original" /
+                          cohort_dir / COMPARISON_NAME)
+    emb_mean_stat_dir.mkdir(parents=True, exist_ok=True)
 
     # 1. Cohort
     cohort = load_arm_c_cohort(min_follow_up_days=args.min_follow_up_days)
@@ -347,13 +353,13 @@ def main():
     n_high = (cohort[GROUP_COL] == "high").sum()
     n_low = (cohort[GROUP_COL] == "low").sum()
     logger.info(f"Baseline {METRIC} median={median_val:.1f}; high={n_high}, low={n_low}")
-    cohort.to_csv(comparison_dir / "cohort_longitudinal.csv", index=False)
+    cohort.to_csv(comparison_dir / "cohort.csv", index=False)
 
     # 4. 1:1 age match on first_age
     matched, pairs_df, (minor, major) = match_1to1(
         cohort, caliper=args.caliper, seed=args.seed
     )
-    pairs_df.to_csv(comparison_dir / "matched_pairs_longitudinal.csv", index=False)
+    pairs_df.to_csv(comparison_dir / "matched_pairs.csv", index=False)
     logger.info(f"Matched pairs: {len(pairs_df)} "
                 f"(caliper={args.caliper}, minor={minor})")
 
@@ -362,7 +368,7 @@ def main():
     merged = matched.merge(
         cohort.drop(columns=[GROUP_COL]), on="base_id", how="left"
     )
-    merged.to_csv(comparison_dir / "matched_features_longitudinal.csv", index=False)
+    merged.to_csv(comparison_dir / "matched_features.csv", index=False)
 
     # 5. Matching report
     high_m = merged[merged[GROUP_COL] == "high"]
@@ -494,9 +500,10 @@ def main():
     mod_df.to_csv(comparison_dir / "summary_per_modality.csv", index=False)
 
     # 8. Plots
-    plot_drift_by_group(merged, comparison_dir / "embedding_mean" / "fig_drift_rate_by_group.png")
+    plot_drift_by_group(merged, emb_mean_stat_dir / "fig_drift_rate_by_group.png")
 
-    logger.info(f"Done. Outputs at {OUTPUT_DIR}")
+    logger.info(f"Done. Artifacts at {comparison_dir}; "
+                 f"drift fig at {emb_mean_stat_dir}/.")
     sig_feat = pf[pf["paired_q"] < 0.05]
     logger.info(f"Features with paired_q<0.05: {len(sig_feat)}")
     if len(sig_feat) > 0:

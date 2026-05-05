@@ -31,29 +31,51 @@ RAW_IMAGES_DIR = Path(_RAW_PATH_FILE.read_text(encoding="utf-8").strip())
 
 # 外部依賴目錄
 EXTERNAL_DIR = PROJECT_ROOT / "external"
-
-# 公開人臉資料集（ACS 擴充）
 EXTERNAL_PUBLIC_FACE_DIR = EXTERNAL_DIR / "public_face_datasets"
 EXTERNAL_DATASETS_DIR = EXTERNAL_PUBLIC_FACE_DIR / "datasets"
 EXTERNAL_FILTERED_DIR = EXTERNAL_PUBLIC_FACE_DIR / "filtered"
 
-# 工作區路徑（按模組分類）
+# 工作區根
 WORKSPACE_DIR = PROJECT_ROOT / "workspace"
 
-# preprocess 模組（ABtest branch：切到 _ABtest namespace 避免污染 production）
+# -----------------------------------------------------------------------------
+# Preprocess（ABtest branch 預設）
+# -----------------------------------------------------------------------------
 PREPROCESSING_DIR = WORKSPACE_DIR / "preprocess_ABtest"
 SELECTED_DIR = PREPROCESSING_DIR / "selected"
 ALIGNED_DIR = PREPROCESSING_DIR / "aligned"
 ALIGNED_BACKGROUND_DIR = PREPROCESSING_DIR / "aligned_background"
 MIRRORS_DIR = PREPROCESSING_DIR / "mirrors"
 
-# embedding 模組（ABtest branch：切到 _ABtest namespace）
-EMBEDDING_DIR = WORKSPACE_DIR / "embedding_ABtest"
-FEATURES_DIR = EMBEDDING_DIR / "features"
-STATISTICS_DIR = EMBEDDING_DIR / "statistics"
+# -----------------------------------------------------------------------------
+# Embedding (ABtest branch — extraction target)
+# -----------------------------------------------------------------------------
+EMBEDDING_ABTEST_DIR = WORKSPACE_DIR / "embedding_ABtest"
+FEATURES_DIR = EMBEDDING_ABTEST_DIR / "features"
+STATISTICS_DIR = EMBEDDING_ABTEST_DIR / "statistics"
+EMBEDDING_ABTEST_ANALYSIS_DIR = EMBEDDING_ABTEST_DIR / "analysis"
+EMBEDDING_ABTEST_CLASSIFICATION_DIR = EMBEDDING_ABTEST_ANALYSIS_DIR / "classification"
 
-# age 模組
-AGE_PREDICTION_DIR = WORKSPACE_DIR / "age" / "age_prediction"
+# -----------------------------------------------------------------------------
+# Embedding
+# -----------------------------------------------------------------------------
+EMBEDDING_DIR = WORKSPACE_DIR / "embedding"
+EMBEDDING_FEATURES_DIR = EMBEDDING_DIR / "features"
+EMBEDDING_ANALYSIS_DIR = EMBEDDING_DIR / "analysis"
+EMBEDDING_FEATURE_STAT_DIR = EMBEDDING_ANALYSIS_DIR / "feature_stat"
+EMBEDDING_CLASSIFICATION_DIR = EMBEDDING_ANALYSIS_DIR / "classification"
+# 6 個 variant 為 EMBEDDING_CLASSIFICATION_DIR 之 L1 sub-dir：
+# original / difference / absolute_difference / average / relative_differences / absolute_relative_differences
+
+# -----------------------------------------------------------------------------
+# Age
+# -----------------------------------------------------------------------------
+AGE_DIR = WORKSPACE_DIR / "age"
+AGE_PREDICTIONS_DIR = AGE_DIR / "predictions"
+# 預設指向 p_first_hc_strict；其他 cohort 用 AGE_PREDICTIONS_DIR / cohort_name(...) 動態組合
+AGE_PREDICTION_DIR = AGE_PREDICTIONS_DIR / "p_first_hc_strict"
+AGE_BENCHMARK_DIR = AGE_PREDICTIONS_DIR / "benchmark"
+
 CORRECTIONS_DIR = AGE_PREDICTION_DIR / "corrections"
 CALIBRATION_DIR = CORRECTIONS_DIR / "calibration"
 BOOTSTRAP_DIR = CORRECTIONS_DIR / "bootstrap_correction"
@@ -61,48 +83,92 @@ MEAN_CORRECTION_DIR = CORRECTIONS_DIR / "mean_correction"
 PREDICTED_AGES_FILE = AGE_PREDICTION_DIR / "predicted_ages.json"
 PREDICTED_AGES_CALIBRATED_FILE = AGE_PREDICTION_DIR / "predicted_ages_calibrated.json"
 
-# age 模組 — 新 cohort（first-visit P + ALL NAD/ACS, no strict HC filter）
-AGE_PREDICTION_DIR_V2 = WORKSPACE_DIR / "age" / "age_prediction_p_first_hc_all"
-CORRECTIONS_DIR_V2 = AGE_PREDICTION_DIR_V2 / "corrections"
-CALIBRATION_DIR_V2 = CORRECTIONS_DIR_V2 / "calibration"
-BOOTSTRAP_DIR_V2 = CORRECTIONS_DIR_V2 / "bootstrap_correction"
-MEAN_CORRECTION_DIR_V2 = CORRECTIONS_DIR_V2 / "mean_correction"
+# Age analysis 子樹
+AGE_ANALYSIS_DIR = AGE_DIR / "analysis"
+AGE_PRED_ERROR_STAT_DIR = AGE_ANALYSIS_DIR / "pred_error_stat"
+AGE_CLASSIFICATION_DIR = AGE_ANALYSIS_DIR / "classification"
+AGE_WINDOW_CLASSIFIER_DIR = AGE_CLASSIFICATION_DIR / "window_classifier"
 
-# arms_analysis 模組（per_arm + grid 分析；layout: arms_analysis/<analysis_type>/<cohort>/...）
-ARMS_ANALYSIS_DIR = WORKSPACE_DIR / "arms_analysis"
-ARMS_PER_ARM_BASE = ARMS_ANALYSIS_DIR / "per_arm"
-ARMS_GRID_BASE = ARMS_ANALYSIS_DIR / "grid"
+# -----------------------------------------------------------------------------
+# Longitudinal — features (raw deltas) + analysis (per-modality)
+# -----------------------------------------------------------------------------
+LONGITUDINAL_DIR = WORKSPACE_DIR / "longitudinal"
+LONGITUDINAL_FEATURES_DIR = LONGITUDINAL_DIR / "features"
+LONGITUDINAL_ANALYSIS_DIR = LONGITUDINAL_DIR / "analysis"
+LONGI_AGE_DIR = LONGITUDINAL_ANALYSIS_DIR / "age"
+LONGI_AGE_CLASSIFICATION_DIR = LONGI_AGE_DIR / "classification"
+LONGI_AGE_PRED_ERROR_STAT_DIR = LONGI_AGE_DIR / "pred_error_stat"
 
-# arms_analysis 模組 — default cohort
-#   P : first-visit + Global_CDR>=0.5 + .npy fallback
-#   HC: strict (CDR=0 OR (CDR=NaN AND MMSE>=26)) + first-visit per HC subject
-ARMS_P_FIRST_HC_STRICT_PER_ARM = ARMS_PER_ARM_BASE / "p_first_hc_strict"
-ARMS_P_FIRST_HC_STRICT_GRID = ARMS_GRID_BASE / "p_first_hc_strict"
+# -----------------------------------------------------------------------------
+# Emo_au
+# -----------------------------------------------------------------------------
+EMO_AU_DIR = WORKSPACE_DIR / "emo_au"
+EMO_AU_FEATURES_DIR = EMO_AU_DIR / "features"
+EMO_AU_FEATURES_SCHEMA_FILE = EMO_AU_FEATURES_DIR / "_schema.json"
+EMO_AU_ANALYSIS_DIR = EMO_AU_DIR / "analysis"
+EMO_AU_FEATURE_STAT_DIR = EMO_AU_ANALYSIS_DIR / "feature_stat"
+EMO_AU_CLASSIFICATION_DIR = EMO_AU_ANALYSIS_DIR / "classification"
 
-# arms_analysis 模組 — 新 cohort（first-visit P + ALL NAD/ACS, no strict HC filter）
-ARMS_P_FIRST_HC_ALL_PER_ARM = ARMS_PER_ARM_BASE / "p_first_hc_all"
-ARMS_P_FIRST_HC_ALL_GRID = ARMS_GRID_BASE / "p_first_hc_all"
+# -----------------------------------------------------------------------------
+# Asymmetry (landmark)
+# -----------------------------------------------------------------------------
+ASYMMETRY_DIR = WORKSPACE_DIR / "asymmetry"
+ASYMMETRY_FEATURES_DIR = ASYMMETRY_DIR / "features"
+ASYMMETRY_LANDMARKS_DIR = ASYMMETRY_FEATURES_DIR / "landmarks"
+ASYMMETRY_PAIR_FEATURES_FILE = ASYMMETRY_FEATURES_DIR / "pair_features.csv"
+ASYMMETRY_ANALYSIS_DIR = ASYMMETRY_DIR / "analysis"
+ASYMMETRY_FEATURE_STAT_DIR = ASYMMETRY_ANALYSIS_DIR / "feature_stat"
+ASYMMETRY_CLASSIFICATION_DIR = ASYMMETRY_ANALYSIS_DIR / "classification"
 
-# arms_analysis 模組 — 最寬 cohort（ALL P visits + ALL NAD/ACS, 兩端都不挑 first-visit / strict HC）
-ARMS_P_ALL_HC_ALL_PER_ARM = ARMS_PER_ARM_BASE / "p_all_hc_all"
-ARMS_P_ALL_HC_ALL_GRID = ARMS_GRID_BASE / "p_all_hc_all"
+# -----------------------------------------------------------------------------
+# Overview — 跨 modality cohort metadata + matching artifacts + per-design summaries
+# + cross-modality stat grid（per-cohort × per-hc_source）
+# -----------------------------------------------------------------------------
+OVERVIEW_DIR = WORKSPACE_DIR / "overview"
 
-# 別名（向後相容）
-# ARMS_P_*_DIR：原本是 cohort 的 top-level dir，重組後 cohort 沒有頂層 dir 了；
-# 把它指向 per_arm 那條（cohort_summary.csv + README.md 也搬到 per_arm/<cohort>/ 下）
-ARMS_P_FIRST_HC_STRICT_DIR = ARMS_P_FIRST_HC_STRICT_PER_ARM
-ARMS_P_FIRST_HC_ALL_DIR = ARMS_P_FIRST_HC_ALL_PER_ARM
-ARMS_P_ALL_HC_ALL_DIR = ARMS_P_ALL_HC_ALL_PER_ARM
+# -----------------------------------------------------------------------------
+# Helper: cohort name 對映
+# -----------------------------------------------------------------------------
+COHORT_DIRS = {
+    "default": "p_first_hc_strict",
+    "p_first_hc_strict": "p_first_hc_strict",
+    "p_first_hc_all": "p_first_hc_all",
+    "p_all_hc_all": "p_all_hc_all",
+}
 
-# ARMS_PER_ARM_DIR / ARMS_GRID_DIR 預設指向 p_first_hc_strict
-ARMS_PER_ARM_DIR = ARMS_P_FIRST_HC_STRICT_PER_ARM
-ARMS_GRID_DIR = ARMS_P_FIRST_HC_STRICT_GRID
 
-# embedding_classification 模組（原始 embedding sweep；layout: embedding_classification/<cohort>/<reducer>/...）
-EMBEDDING_CLASSIFICATION_DIR = WORKSPACE_DIR / "embedding_classification"
+def cohort_name(cohort_mode: str) -> str:
+    """將 cohort mode 對映到實際 dir 名稱。"""
+    return COHORT_DIRS.get(cohort_mode, cohort_mode)
 
-# embedding_asymmetry_classification 模組（asymmetry sweep；layout: embedding_asymmetry_classification/<variant>/<cohort>/<reducer>/...）
-EMBEDDING_ASYMMETRY_CLASSIFICATION_DIR = WORKSPACE_DIR / "embedding_asymmetry_classification"
+
+def embedding_classification_path(
+    variant: str,
+    cohort: str,
+    reducer: str = "no_drop",
+    partition: Optional[str] = None,
+    direction: Optional[str] = None,
+    emb: Optional[str] = None,
+    clf: Optional[str] = None,
+) -> Path:
+    """
+    Compose embedding classification output path.
+
+    Layout: embedding/analysis/classification/<variant>/<cohort>/<reducer>/<partition>/<direction>/<emb>/<clf>/
+
+    Args:
+        variant: original | difference | absolute_difference | average |
+                 relative_differences | absolute_relative_differences
+        cohort: cohort name (will be mapped via COHORT_DIRS)
+        reducer: no_drop | pca/n_components_X | drop_feats/pearson_r_X.X
+        partition, direction, emb, clf: 可選、None 時止於前面那層
+    """
+    p = EMBEDDING_CLASSIFICATION_DIR / variant / cohort_name(cohort) / reducer
+    for seg in (partition, direction, emb, clf):
+        if seg is None:
+            break
+        p = p / seg
+    return p
 
 
 def get_raw_images_subdir(group: str) -> Path:

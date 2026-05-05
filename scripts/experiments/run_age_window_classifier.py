@@ -17,7 +17,7 @@ Pipeline (per pipeline_{2,9}feat.png):
        predictions by real_age ∈ [start, start+10), recompute metrics
     8. Also produce 3 views: AD vs NAD, AD vs ACS, AD vs Healthy (union)
 
-Outputs at workspace/age_window_classifier/{clf}/{feat}feat/:
+Outputs at workspace/age/analysis/classification/window_classifier/{clf}/{feat}feat/:
     predictions.csv                          (all test predictions, flat)
     summary_by_view.csv                      (global + per-window per-view)
     fig_metrics_by_window_{view}.png         (line plot)
@@ -50,9 +50,17 @@ from sklearn.model_selection import GroupKFold
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEMOGRAPHICS_DIR = PROJECT_ROOT / "data" / "demographics"
-PREDICTED_AGES_FILE = PROJECT_ROOT / "workspace" / "age" / "age_prediction" / "predicted_ages.json"
-EMOTION_DIR = PROJECT_ROOT / "workspace" / "emotion" / "au_features" / "aggregated"
-OUTPUT_BASE = PROJECT_ROOT / "workspace" / "age_window_classifier"
+PREDICTED_AGES_FILE = PROJECT_ROOT / "workspace" / "age" / "predictions" / "p_first_hc_strict" / "predicted_ages.json"
+OUTPUT_BASE = PROJECT_ROOT / "workspace" / "age" / "analysis" / "classification" / "window_classifier"
+
+# Load emotion via shared helper.
+import importlib.util as _ilu
+_emo_spec = _ilu.spec_from_file_location(
+    "emotion_loader",
+    PROJECT_ROOT / "scripts" / "utilities" / "emotion_loader.py",
+)
+_emotion_loader = _ilu.module_from_spec(_emo_spec)
+_emo_spec.loader.exec_module(_emotion_loader)
 
 EMOTIONS = ["anger", "disgust", "fear", "happiness", "sadness",
             "surprise", "neutral"]
@@ -162,13 +170,21 @@ def attach_age_error(df):
 
 def attach_emotion_means(df):
     """7 emotion category means, averaged across 8 methods."""
+    # Collect all subject-visit ids that exist as npy under any of the 8 methods.
     method_tables = []
+    methods_root = _emotion_loader.EMO_AU_FEATURES_DIR
+    all_ids = set()
     for m in EMOTION_METHODS:
-        path = EMOTION_DIR / f"{m}_harmonized.csv"
-        if not path.exists():
+        d = methods_root / m
+        if d.is_dir():
+            all_ids.update(p.stem for p in d.glob("*.npy"))
+    all_ids = sorted(all_ids)
+    for m in EMOTION_METHODS:
+        try:
+            tb = _emotion_loader.load_emotion(m, all_ids)
+        except (FileNotFoundError, KeyError):
             logger.warning(f"  emotion {m} missing, skipping")
             continue
-        tb = pd.read_csv(path)
         cols = [f"{e}_mean" for e in EMOTIONS]
         miss = [c for c in cols if c not in tb.columns]
         if miss:
@@ -180,7 +196,7 @@ def attach_emotion_means(df):
         )
         method_tables.append(tb)
     if not method_tables:
-        raise RuntimeError("no emotion csv loaded")
+        raise RuntimeError("no emotion data loaded")
     # Outer-merge all method tables on ID
     merged = method_tables[0]
     for t in method_tables[1:]:

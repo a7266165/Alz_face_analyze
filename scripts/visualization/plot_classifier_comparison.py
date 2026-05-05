@@ -11,10 +11,13 @@ Y-axis = comparison group (HC, NAD, ACS).
 Each cell: independent 2×2 confusion matrix at threshold=0.5 from that
 combo's OOF predictions, with AUC/BalAcc/MCC printed below.
 
-Reads:  workspace/arms_analysis/per_arm/<arm>/ad_vs_<cmp>/age/classifier_<set>_<model>_oof.csv
-        workspace/arms_analysis/per_arm/<arm>/ad_vs_<cmp>/age/classifier_summary.csv
+Reads:
+  workspace/age/analysis/classification/<cohort>/<partition>/<full|matched>/<feat_set>/<model>_oof.csv
+  workspace/age/analysis/classification/<cohort>/<partition>/summary_<full|matched>.csv
+  + longitudinal/analysis/age/classification/... for arm_c/d.
 
-Output: workspace/arms_analysis/per_arm/<arm>/age_classifier_grid.png
+Output: stdout (`age_classifier_grid.png` is no longer written; summary.csv
+        tables carry the metrics directly).
 """
 from pathlib import Path
 
@@ -26,7 +29,12 @@ import pandas as pd
 from sklearn.metrics import confusion_matrix
 
 ROOT = Path(__file__).resolve().parents[2]
-ARMS_DIR = ROOT / "workspace" / "arms_analysis" / "per_arm" / "p_first_hc_strict"
+COHORT = "p_first_hc_strict"
+AGE_CLF_ROOT = ROOT / "workspace" / "age" / "analysis" / "classification" / COHORT
+LONGI_AGE_CLF_ROOT = (ROOT / "workspace" / "longitudinal_analysis" / "age"
+                      / "analysis" / "classification" / COHORT)
+ARM_TO_DESIGN = {"A": ("cross", "full"), "B": ("cross", "matched"),
+                  "C": ("longi", "full"), "D": ("longi", "matched")}
 ARMS = ["A", "B", "C", "D"]
 COMPARISONS = ["ad_vs_hc", "ad_vs_nad", "ad_vs_acs"]
 COMP_LABEL = {"ad_vs_hc": "AD vs HC",
@@ -34,23 +42,27 @@ COMP_LABEL = {"ad_vs_hc": "AD vs HC",
               "ad_vs_acs": "AD vs ACS"}
 MODELS = [("xgb", "XGBoost"), ("tabpfn", "TabPFN")]
 FEAT_SETS = [("2feat", "2-feat"), ("3feat", "3-feat")]
-# Flat column order: XGB-2f, XGB-3f, TabPFN-2f, TabPFN-3f
 COLS = [(model, mlbl, fs, flbl)
         for (model, mlbl) in MODELS
         for (fs, flbl) in FEAT_SETS]
 
 
+def _arm_root(arm):
+    timeframe, _ = ARM_TO_DESIGN[arm]
+    return LONGI_AGE_CLF_ROOT if timeframe == "longi" else AGE_CLF_ROOT
+
+
 def load_oof(arm, cmp, model, feat_set):
-    p = (ARMS_DIR / f"arm_{arm.lower()}" / cmp / "age" /
-         f"classifier_{feat_set}_{model}_oof.csv")
+    _, design = ARM_TO_DESIGN[arm]
+    p = _arm_root(arm) / cmp / design / feat_set / f"{model}_oof.csv"
     if not p.exists():
         return None
     return pd.read_csv(p)
 
 
 def load_summary(arm, cmp):
-    p = (ARMS_DIR / f"arm_{arm.lower()}" / cmp / "age" /
-         "classifier_summary.csv")
+    _, design = ARM_TO_DESIGN[arm]
+    p = _arm_root(arm) / cmp / f"summary_{design}.csv"
     if not p.exists():
         return None
     return pd.read_csv(p)
@@ -156,7 +168,14 @@ def render_arm(arm):
         fontsize=13, fontweight="bold", y=1.04,
     )
 
-    out_path = ARMS_DIR / f"arm_{arm.lower()}" / "age_classifier_grid.png"
+    # Output goes to overview/<cohort>/.
+    overview_cohort = ROOT / "workspace" / "overview" / COHORT
+    _, design = ARM_TO_DESIGN[arm]
+    design_full = {"full": "naive", "matched": "matched"}[design]
+    timeframe = ARM_TO_DESIGN[arm][0]
+    out_path = (overview_cohort / f"{timeframe}_{design_full}"
+                / f"classifier_grid_arm_{arm.lower()}.png")
+    out_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out_path, dpi=150, bbox_inches="tight")
     plt.close(fig)
     print(f"Saved {out_path}")

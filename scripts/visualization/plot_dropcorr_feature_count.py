@@ -2,12 +2,12 @@
 Plot the number of features retained by DropCorrelatedFeatures at each
 threshold, per embedding model.
 
-Default mode reads `drop_X.X/fwd/<partition>/<emb>/logistic/forward_matched_metrics.json`.
-With --variant, reads `drop_X.X/<variant>/fwd/<partition>/<emb>/logistic/...`.
+Reads `embedding/analysis/classification/<variant>/<cohort>/drop_feats/
+pearson_r_X.X/<partition>/fwd/<emb>/logistic/forward_matched_metrics.json`
+(`<variant>` defaults to `original`, switch with `--variant`).
 
-Outputs:
-    embedding_classification/_dropcorr_summary/                   (default)
-    embedding_asymmetry_classification/_dropcorr_summary/<variant>/  (--variant)
+Output:
+    embedding/analysis/classification/<variant>/<cohort>/drop_feats/_summary/
         feature_count_by_threshold.csv
         feature_count_by_threshold.png
 
@@ -30,7 +30,6 @@ import pandas as pd
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 import sys as _sys
 _sys.path.insert(0, str(PROJECT_ROOT))
-ARMS_ROOT = PROJECT_ROOT / "workspace" / "arms_analysis"
 ASYM_VARIANTS = ["difference", "absolute_difference", "average",
                  "relative_differences", "absolute_relative_differences"]
 
@@ -43,27 +42,20 @@ logger = logging.getLogger(__name__)
 
 
 def resolve_paths(variant, cohort_mode="default"):
-    from src.config import (
-        EMBEDDING_CLASSIFICATION_DIR,
-        EMBEDDING_ASYMMETRY_CLASSIFICATION_DIR,
-    )
-    cohort_dir = {
-        "default": "p_first_hc_strict",
-        "p_first_hc_all": "p_first_hc_all",
-        "p_all_hc_all": "p_all_hc_all",
-    }[cohort_mode]
-    if variant is None:
-        class_root = EMBEDDING_CLASSIFICATION_DIR / cohort_dir
-    else:
-        class_root = EMBEDDING_ASYMMETRY_CLASSIFICATION_DIR / variant / cohort_dir
+    from src.config import EMBEDDING_CLASSIFICATION_DIR, cohort_name
+    cohort_dir = cohort_name(cohort_mode)
+    v = variant if variant is not None else "original"
+    class_root = EMBEDDING_CLASSIFICATION_DIR / v / cohort_dir
     out = class_root / "drop_feats" / "_summary"
     reducer_dirs = []
     if class_root.is_dir():
+        # NEW layout: class_root/<reducer>/<partition>/{fwd,rev}/<emb>/<clf>/
+        # rglob('fwd') / 'rev' → marker.parent = partition, marker.parent.parent = reducer-leaf
         seen = set()
         for marker_name in ("fwd", "rev"):
             for marker in class_root.rglob(marker_name):
                 if marker.is_dir():
-                    seen.add(marker.parent)
+                    seen.add(marker.parent.parent)
         for reducer in sorted(seen):
             rel_parts = reducer.relative_to(class_root).parts
             if any(p.startswith("_") for p in rel_parts):
@@ -73,7 +65,8 @@ def resolve_paths(variant, cohort_mode="default"):
             reducer_dirs.append(reducer)
 
     def cell_json_for(reducer, part, emb, clf):
-        base = reducer / "fwd" / part / emb / clf
+        # NEW layout: reducer/<partition>/<fwd|rev>/<emb>/<clf>/
+        base = reducer / part / "fwd" / emb / clf
         if clf == "logistic":
             base = base / "C_1"
         return base / "forward_matched_metrics.json"

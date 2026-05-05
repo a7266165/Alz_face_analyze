@@ -7,8 +7,8 @@
 - Embedding cosine distance (跨 visit 計算)
 
 產出:
-- workspace/longitudinal/longitudinal_dataset.csv (per-visit 完整資料)
-- workspace/longitudinal/patient_deltas.csv (per-patient 首末差值)
+- workspace/longitudinal/features/longitudinal_dataset.csv (per-visit 完整資料)
+- workspace/longitudinal/features/patient_deltas.csv (per-patient 首末差值)
 """
 
 import json
@@ -22,17 +22,17 @@ import pandas as pd
 from scipy.spatial.distance import cosine as cosine_distance
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(PROJECT_ROOT / "src"))
+sys.path.insert(0, str(PROJECT_ROOT))
+from src.config import LONGITUDINAL_FEATURES_DIR
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 # === Paths ===
 DEMOGRAPHICS_DIR = PROJECT_ROOT / "data" / "demographics"
-EMOTION_DIR = PROJECT_ROOT / "workspace" / "emotion" / "au_features" / "aggregated"
-AGE_FILE = PROJECT_ROOT / "workspace" / "age" / "age_prediction" / "predicted_ages.json"
+AGE_FILE = PROJECT_ROOT / "workspace" / "age" / "predictions" / "p_first_hc_strict" / "predicted_ages.json"
 EMBEDDING_DIR = PROJECT_ROOT / "workspace" / "embedding" / "features"
-OUTPUT_DIR = PROJECT_ROOT / "workspace" / "longitudinal"
+OUTPUT_DIR = LONGITUDINAL_FEATURES_DIR
 
 # Use openface as default emotion model (most complete coverage)
 EMOTION_MODEL = "openface"
@@ -40,6 +40,15 @@ EMOTION_MODEL = "openface"
 EMBEDDING_MODELS = ["arcface", "topofr", "dlib"]
 EMBEDDING_TYPE = "original"  # used for cosine drift vs first visit
 EMBEDDING_DIFF_TYPE = "difference"  # used for asymmetry magnitude per visit
+
+# Load emotion via shared helper.
+import importlib.util as _ilu
+_emo_spec = _ilu.spec_from_file_location(
+    "emotion_loader",
+    PROJECT_ROOT / "scripts" / "utilities" / "emotion_loader.py",
+)
+_emotion_loader = _ilu.module_from_spec(_emo_spec)
+_emo_spec.loader.exec_module(_emotion_loader)
 
 
 def load_base_table():
@@ -67,9 +76,9 @@ def load_base_table():
 
 
 def join_emotion_features(base_df):
-    """Join emotion/AU features."""
-    csv_path = EMOTION_DIR / f"{EMOTION_MODEL}_harmonized.csv"
-    emo = pd.read_csv(csv_path)
+    """Join emotion/AU features (aggregated on-the-fly from per-subject npy)."""
+    ids = base_df["ID"].dropna().astype(str).unique().tolist()
+    emo = _emotion_loader.load_emotion(EMOTION_MODEL, ids)
 
     # Keep only mean columns for longitudinal simplicity
     mean_cols = [c for c in emo.columns if c.endswith("_mean")]
@@ -81,8 +90,11 @@ def join_emotion_features(base_df):
     merged = base_df.merge(emo_subset, left_on="ID", right_on="subject_id", how="left")
     merged = merged.drop(columns=["subject_id"])
 
-    n_matched = merged[mean_cols[0].replace("_mean", "")].notna().sum()
-    logger.info(f"Emotion features joined: {n_matched}/{len(merged)} matched")
+    if mean_cols:
+        n_matched = merged[mean_cols[0].replace("_mean", "")].notna().sum()
+        logger.info(f"Emotion features joined: {n_matched}/{len(merged)} matched")
+    else:
+        logger.warning(f"No emotion features loaded for method {EMOTION_MODEL}")
     return merged
 
 

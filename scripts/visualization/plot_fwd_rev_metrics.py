@@ -11,7 +11,7 @@ markdown summary.
 
 Usage:
     conda run -n Alz_face_main_analysis python scripts/visualization/plot_fwd_rev_metrics.py \\
-        --root workspace/arms_analysis/p_all_hc_all/embedding_classification/no_drop
+        --root workspace/embedding/analysis/classification/original/p_all_hc_all/no_drop
     conda run -n Alz_face_main_analysis python scripts/visualization/plot_fwd_rev_metrics.py \\
         --partition ad_vs_hc --embedding arcface
 """
@@ -30,8 +30,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 import sys as _sys
 _sys.path.insert(0, str(PROJECT_ROOT))
 from src.config import EMBEDDING_CLASSIFICATION_DIR
-ARMS_ROOT = PROJECT_ROOT / "workspace" / "arms_analysis"
-DEFAULT_ROOT = EMBEDDING_CLASSIFICATION_DIR / "p_first_hc_strict" / "no_drop"
+DEFAULT_ROOT = EMBEDDING_CLASSIFICATION_DIR / "original" / "p_first_hc_strict" / "no_drop"
 ROOT = DEFAULT_ROOT  # set by main() when --root is passed
 SUMMARY = ROOT / "_summary"
 
@@ -255,7 +254,7 @@ def _df_to_md(df):
 def write_markdown(rows, out_path):
     df = pd.DataFrame(rows)
     if df.empty:
-        out_path.write_text("# embedding_classification — no cells found yet\n",
+        out_path.write_text("# embedding classification — no cells found yet\n",
                             encoding="utf-8")
         return
 
@@ -269,7 +268,7 @@ def write_markdown(rows, out_path):
     cols = [c for c in cols if c in df.columns]
 
     lines = [
-        "# embedding_classification — metrics summary",
+        "# embedding classification — metrics summary",
         "",
         f"Source: `{ROOT.relative_to(PROJECT_ROOT)}`",
         f"Cells found: {df[['partition','embedding','classifier']].drop_duplicates().shape[0]}",
@@ -304,15 +303,17 @@ def main():
     parser.add_argument("--classifier", default=None)
     parser.add_argument(
         "--root", default=str(DEFAULT_ROOT),
-        help="Output root dir to scan. Default: embedding_classification/. "
-             "For asymmetry sweeps pass e.g. "
-             "embedding_asymmetry_absolute_relative_differences_classification/.",
+        help="Output root dir to scan. Default: "
+             "embedding/analysis/classification/original/<cohort>/no_drop. "
+             "For asymmetry sweeps swap `original` for any of "
+             "{difference, absolute_difference, average, "
+             "relative_differences, absolute_relative_differences}.",
     )
     args = parser.parse_args()
 
     global ROOT, SUMMARY
     ROOT = Path(args.root) if Path(args.root).is_absolute() else \
-        ARMS_ROOT / args.root
+        EMBEDDING_CLASSIFICATION_DIR / args.root
     SUMMARY = ROOT / "_summary"
     SUMMARY.mkdir(parents=True, exist_ok=True)
     logger.info(f"Scanning: {ROOT}")

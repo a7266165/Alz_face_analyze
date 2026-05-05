@@ -2,12 +2,12 @@
 Cohort overview for the 4-arm analysis.
 
 Reads:
-  workspace/arms_analysis/per_arm/arm_a/cohort.csv
-  workspace/arms_analysis/per_arm/arm_b/mmse_high_vs_low/matched_features.csv
-  workspace/arms_analysis/per_arm/arm_c/mmse_high_vs_low/matched_features_longitudinal.csv
+  workspace/overview/<cohort>/cross_naive/cohort.csv
+  workspace/overview/<cohort>/cross_matched/mmse_high_vs_low/matched_features.csv
+  workspace/overview/<cohort>/longi_naive/mmse_high_vs_low/matched_features.csv
 
 Produces:
-  workspace/arms_analysis/cohort_overview.png
+  workspace/overview/<cohort>/cohort_overview.png
 """
 
 from pathlib import Path
@@ -19,11 +19,12 @@ import numpy as np
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[2]
-ARMS = ROOT / "workspace" / "arms_analysis" / "p_first_hc_strict"
-ARM_A_CSV = ARMS / "per_arm" / "arm_a" / "cohort.csv"
-ARM_B_CSV = ARMS / "per_arm" / "arm_b" / "mmse_high_vs_low" / "matched_features.csv"
-ARM_C_CSV = ARMS / "per_arm" / "arm_c" / "mmse_high_vs_low" / "matched_features_longitudinal.csv"
-OUT_PNG = ARMS / "cohort_overview.png"
+COHORT = "p_first_hc_strict"
+OVERVIEW_COHORT = ROOT / "workspace" / "overview" / COHORT
+ARM_A_CSV = OVERVIEW_COHORT / "cross_naive" / "cohort.csv"
+ARM_B_CSV = OVERVIEW_COHORT / "cross_matched" / "mmse_high_vs_low" / "matched_features.csv"
+ARM_C_CSV = OVERVIEW_COHORT / "longi_naive" / "mmse_high_vs_low" / "matched_features.csv"
+OUT_PNG = OVERVIEW_COHORT / "cohort_overview.png"
 
 COLOR_POS = "#C44E52"  # red  = AD / MMSE-high / last visit
 COLOR_NEG = "#4C72B0"  # blue = HC / MMSE-low  / baseline

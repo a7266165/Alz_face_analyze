@@ -2,19 +2,16 @@
 Aggregate PCA reducer dirs (n_components_1..400, plus var_ratio_0.95/0.99 and
 no_drop reference) into a cross-component AUC comparison.
 
-Default mode reads
-    embedding_classification/pca/n_components_<n>/_summary/all_metrics_with_cm.csv
-    embedding_classification/pca/var_ratio_<r>/_summary/all_metrics_with_cm.csv
-    embedding_classification/no_drop/_summary/all_metrics_with_cm.csv
-With --variant, reads
-    embedding_asymmetry_classification/<variant>/pca/n_components_<n>/_summary/...
-    embedding_asymmetry_classification/<variant>/pca/var_ratio_<r>/_summary/...
-    embedding_asymmetry_classification/<variant>/no_drop/_summary/...
-and computes cumulative eigenvalues from that variant's feature matrix.
+Reads (`<variant>` defaults to `original`, switch with `--variant`):
+    embedding/analysis/classification/<variant>/<cohort>/pca/n_components_<n>/_summary/all_metrics_with_cm.csv
+    embedding/analysis/classification/<variant>/<cohort>/pca/var_ratio_<r>/_summary/all_metrics_with_cm.csv
+    embedding/analysis/classification/<variant>/<cohort>/no_drop/_summary/all_metrics_with_cm.csv
+
+For non-`original` variants, cumulative eigenvalues are computed from that
+variant's feature matrix (workspace/embedding/features/<emb>/<variant>/).
 
 Output:
-    embedding_classification/pca/_summary/                       (default)
-    embedding_asymmetry_classification/<variant>/pca/_summary/   (--variant set)
+    embedding/analysis/classification/<variant>/<cohort>/pca/_summary/
 
 Usage:
     # original
@@ -35,7 +32,6 @@ import pandas as pd
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 import sys as _sys
 _sys.path.insert(0, str(PROJECT_ROOT))
-ARMS_ROOT = PROJECT_ROOT / "workspace" / "arms_analysis"
 ASYM_VARIANTS = ["difference", "absolute_difference", "average",
                  "relative_differences", "absolute_relative_differences"]
 
@@ -61,8 +57,7 @@ logger = logging.getLogger(__name__)
 def resolve_paths(variant, cohort_mode="default"):
     """Return (class_root, out, reducer_dirs, cell_json_for, feature_subdir).
 
-    class_root             → embedding_classification or
-                              embedding_asymmetry_classification/<variant>
+    class_root             → embedding/analysis/classification/<variant>/<cohort>
     reducer_dirs           → list of reducer dirs to walk
                               (no_drop + pca/n_components_X + pca/var_ratio_X)
     cell_json_for(reducer, part, emb, clf) → cell metrics json
@@ -70,34 +65,21 @@ def resolve_paths(variant, cohort_mode="default"):
                               to use for cumulative eigenvalue ('original' for
                               default, variant name for asymmetry).
     """
-    from src.config import (
-        EMBEDDING_CLASSIFICATION_DIR,
-        EMBEDDING_ASYMMETRY_CLASSIFICATION_DIR,
-    )
-    if cohort_mode == "p_first_hc_all":
-        cohort_dir = "p_first_hc_all"
-    elif cohort_mode == "p_all_hc_all":
-        cohort_dir = "p_all_hc_all"
-    else:
-        cohort_dir = "p_first_hc_strict"
-    if variant is None:
-        class_root = EMBEDDING_CLASSIFICATION_DIR / cohort_dir
-        out = class_root / "pca" / "_summary"
-        feature_subdir = "original"
-    else:
-        class_root = (EMBEDDING_ASYMMETRY_CLASSIFICATION_DIR
-                      / variant / cohort_dir)
-        out = class_root / "pca" / "_summary"
-        feature_subdir = variant
+    from src.config import EMBEDDING_CLASSIFICATION_DIR, cohort_name
+    cohort_dir = cohort_name(cohort_mode)
+    feature_subdir = variant if variant is not None else "original"
+    class_root = EMBEDDING_CLASSIFICATION_DIR / feature_subdir / cohort_dir
+    out = class_root / "pca" / "_summary"
 
     def _reducer_dirs():
         if not class_root.is_dir():
             return []
+        # NEW layout: class_root/<reducer>/<partition>/{fwd,rev}/<emb>/<clf>/
         seen = set()
         for marker_name in ("fwd", "rev"):
             for marker in class_root.rglob(marker_name):
                 if marker.is_dir():
-                    seen.add(marker.parent)
+                    seen.add(marker.parent.parent)
         out = []
         for reducer in sorted(seen):
             rel_parts = reducer.relative_to(class_root).parts
@@ -110,7 +92,8 @@ def resolve_paths(variant, cohort_mode="default"):
         return out
 
     def cell_json_for(reducer, part, emb, clf):
-        base = reducer / "fwd" / part / emb / clf
+        # NEW layout: reducer/<partition>/<fwd|rev>/<emb>/<clf>/
+        base = reducer / part / "fwd" / emb / clf
         if clf == "logistic":
             base = base / "C_1"
         return base / "forward_matched_metrics.json"

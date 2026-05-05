@@ -15,9 +15,10 @@ matched (D) are all handled consistently. For longitudinal arms (C/D) the
 "Age"/"MMSE" features map to first_age/first_MMSE, and age_error =
 first_age − baseline_predicted_age.
 
-Outputs to workspace/arms_analysis/per_arm/<arm>/ad_vs_<cmp_lower>/age/:
-  classifier_<set>_<model>_oof.csv  — per-subject out-of-fold predictions
-  classifier_summary.csv            — AUC + 95% CI + BalAcc + MCC for 4 combos
+Outputs (A/B → age/analysis/classification, C/D → longitudinal/analysis/age/classification):
+  <root>/<cohort>/ad_vs_<cmp>/<full|matched>/<set>/<model>_oof.csv  — per-subject OOF
+  <root>/<cohort>/ad_vs_<cmp>/summary_<full|matched>.csv             — AUC/CI/BalAcc/MCC
+  overview/<cohort>/classifier_summary_all.csv                       — grand summary
 
 Usage:
     conda run -n Alz_face_main_analysis python \
@@ -37,6 +38,10 @@ from sklearn.model_selection import GroupKFold
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))
+from src.config import (
+    AGE_CLASSIFICATION_DIR, LONGI_AGE_CLASSIFICATION_DIR,
+    OVERVIEW_DIR, cohort_name,
+)
 
 
 def _load_module(name, path):
@@ -51,14 +56,21 @@ _grid = _load_module("run_4arm_deep_dive",
                       "run_4arm_deep_dive.py")
 build_cohort_ad_vs_HCgroup = _grid.build_cohort_ad_vs_HCgroup
 
-DEFAULT_ARMS_ROOT = (PROJECT_ROOT / "workspace" / "arms_analysis" /
-                     "per_arm" / "p_first_hc_strict")
-AGES_FILE = (PROJECT_ROOT / "workspace" / "age" / "age_prediction" /
-             "predicted_ages.json")
+AGES_FILE = (PROJECT_ROOT / "workspace" / "age" / "predictions" /
+             "p_first_hc_strict" / "predicted_ages.json")
 COMPARISONS = ["HC", "NAD", "ACS"]
 ALL_ARMS = ["A", "B", "C", "D"]
 N_FOLDS = 10
 SEED = 42
+
+# Arm → (classification root, design bucket name)
+# A=cross_naive, B=cross_matched, C=longi_naive, D=longi_matched
+ARM_TO_ROOT_DESIGN = {
+    "A": (AGE_CLASSIFICATION_DIR, "full"),
+    "B": (AGE_CLASSIFICATION_DIR, "matched"),
+    "C": (LONGI_AGE_CLASSIFICATION_DIR, "full"),
+    "D": (LONGI_AGE_CLASSIFICATION_DIR, "matched"),
+}
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s")
 logger = logging.getLogger(__name__)
@@ -94,7 +106,7 @@ def _attach_age_error_long(cohort, pred_ages):
 def build_feature_df(arm, hc_source, pred_ages):
     """Return DataFrame with [ID, base_id, Age, MMSE, age_error, label].
 
-    Pre-filter pattern (consistent with run_arm_b_ad_vs_hcgroups.py):
+    Pre-filter pattern (consistent with run_cross_matched.py):
       - Drop subjects missing ANY of {Age, MMSE, age_error}, so 2-feat and
         3-feat see the same N subjects.
       - For matched arms (B, D), drop entire pair (both sides) if either side
@@ -246,34 +258,38 @@ FEATURE_SETS = [
 MODEL_ORDER = ["xgb", "tabpfn"]  # XGB first as requested
 
 
-def run_cell(arm, hc_source, pred_ages, arms_root):
-    cmp_dir = (arms_root / f"arm_{arm.lower()}" /
-               f"ad_vs_{hc_source.lower()}" / "age")
-    cmp_dir.mkdir(parents=True, exist_ok=True)
-    logger.info(f"=== Arm {arm} × {hc_source} → {cmp_dir.relative_to(PROJECT_ROOT)} ===")
+def run_cell(arm, hc_source, pred_ages, cohort_dir):
+    """Layout: <root>/<cohort>/ad_vs_<cmp>/<design>/<set>/<model>_oof.csv
+    + <root>/<cohort>/ad_vs_<cmp>/summary_<design>.csv"""
+    root, design = ARM_TO_ROOT_DESIGN[arm]
+    partition = f"ad_vs_{hc_source.lower()}"
+    partition_dir = root / cohort_dir / partition
+    design_dir = partition_dir / design
+    design_dir.mkdir(parents=True, exist_ok=True)
+    logger.info(f"=== Arm {arm} × {hc_source} → {design_dir.relative_to(PROJECT_ROOT)} ===")
     try:
         feat_df = build_feature_df(arm, hc_source, pred_ages)
     except Exception as e:
         logger.error(f"  cohort build failed: {e}")
-        return [{"arm": arm, "comparison": f"ad_vs_{hc_source.lower()}",
+        return [{"arm": arm, "comparison": partition,
                   "model": "—", "n_features": 0, "n": 0,
                   "auc": float("nan"), "skip_reason": f"cohort error: {e}"}]
     if feat_df is None or feat_df.empty:
         logger.warning(f"  empty cohort, skipping")
-        return [{"arm": arm, "comparison": f"ad_vs_{hc_source.lower()}",
+        return [{"arm": arm, "comparison": partition,
                   "model": "—", "n_features": 0, "n": 0,
                   "auc": float("nan"), "skip_reason": "empty cohort"}]
 
     rows = []
     for set_name, feat_cols in FEATURE_SETS:
+        feat_dir = design_dir / set_name
+        feat_dir.mkdir(parents=True, exist_ok=True)
         for model in MODEL_ORDER:
             oof, s = cv_eval(feat_df, feat_cols, model)
-            s.update({"arm": arm,
-                      "comparison": f"ad_vs_{hc_source.lower()}",
+            s.update({"arm": arm, "comparison": partition,
                       "feature_set": set_name})
             if oof is not None:
-                oof_path = cmp_dir / f"classifier_{set_name}_{model}_oof.csv"
-                oof.to_csv(oof_path, index=False)
+                oof.to_csv(feat_dir / f"{model}_oof.csv", index=False)
             logger.info(
                 f"  {set_name:6s} {model:6s}: n={s['n']:4d}  "
                 f"AUC={s.get('auc', float('nan')):.3f} "
@@ -285,7 +301,7 @@ def run_cell(arm, hc_source, pred_ages, arms_root):
             rows.append(s)
 
     summary_df = pd.DataFrame(rows)
-    summary_df.to_csv(cmp_dir / "classifier_summary.csv", index=False)
+    summary_df.to_csv(partition_dir / f"summary_{design}.csv", index=False)
     return rows
 
 
@@ -299,16 +315,12 @@ def main():
                               "p_all_hc_all=ALL P visits + ALL NAD/ACS")
     parser.add_argument("--arms", nargs="+", choices=ALL_ARMS, default=ALL_ARMS,
                          help="只跑指定 arms (default: A B C D)")
-    parser.add_argument("--arms-root", type=Path, default=DEFAULT_ARMS_ROOT,
-                         help="per_arm 根目錄 (default: workspace/arms_analysis/"
-                              "per_arm)；grand summary 寫到 <arms_root>/.."
-                              "/classifier_summary_all.csv")
     args = parser.parse_args()
 
     _grid.COHORT_MODE = args.cohort_mode
-    args.arms_root = args.arms_root.resolve()
+    cohort_dir = cohort_name(args.cohort_mode)
     logger.info(f"cohort_mode={args.cohort_mode}  arms={args.arms}  "
-                 f"arms_root={args.arms_root}")
+                 f"cohort_dir={cohort_dir}")
 
     with open(AGES_FILE) as f:
         pred_ages = json.load(f)
@@ -317,11 +329,12 @@ def main():
     all_rows = []
     for arm in args.arms:
         for hc_source in COMPARISONS:
-            rows = run_cell(arm, hc_source, pred_ages, args.arms_root)
+            rows = run_cell(arm, hc_source, pred_ages, cohort_dir)
             all_rows.extend(rows)
 
     grand = pd.DataFrame(all_rows)
-    out_csv = args.arms_root.parent / "classifier_summary_all.csv"
+    out_csv = OVERVIEW_DIR / cohort_dir / "classifier_summary_all.csv"
+    out_csv.parent.mkdir(parents=True, exist_ok=True)
     grand.to_csv(out_csv, index=False)
     logger.info(f"\nDone. Grand summary: {out_csv}")
 

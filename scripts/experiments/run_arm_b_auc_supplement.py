@@ -24,6 +24,7 @@ import pandas as pd
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))
+from src.config import OVERVIEW_DIR, cohort_name
 
 # Reuse loaders + cv_eval from Arm A
 _spec = importlib.util.spec_from_file_location(
@@ -39,8 +40,6 @@ load_embedding_mean = _l1.load_embedding_mean
 load_embedding_asymmetry = _l1.load_embedding_asymmetry
 EMBEDDING_MODELS = _l1.EMBEDDING_MODELS
 
-DEFAULT_ARM_B_DIR = (PROJECT_ROOT / "workspace" / "arms_analysis" /
-                      "per_arm" / "p_first_hc_strict" / "arm_b")
 # HILO_METRIC: MMSE (default) → mmse_high_vs_low/, CASI → casi_high_vs_low/
 METRIC = os.environ.get("HILO_METRIC", "MMSE")
 GROUP_COL = f"{METRIC.lower()}_group"
@@ -75,14 +74,14 @@ def eval_modality(name, X_df, matched, model_cls="xgb"):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--arm-b-dir", type=Path, default=DEFAULT_ARM_B_DIR,
-                         help="arm_b 根目錄 (default: workspace/arms_analysis/"
-                              "per_arm/arm_b)。auc_supplement 會讀 "
-                              "<arm_b_dir>/<metric>_high_vs_low/matched_features.csv "
-                              "並寫 summary_per_modality_auc.csv 回去")
+    parser.add_argument("--cohort-mode",
+                         choices=["default", "p_first_hc_all", "p_all_hc_all"],
+                         default="default")
     args = parser.parse_args()
 
-    comparison_dir = args.arm_b_dir / COMPARISON_NAME
+    cohort_dir = cohort_name(args.cohort_mode)
+    comparison_dir = (OVERVIEW_DIR / cohort_dir / "cross_matched" /
+                      COMPARISON_NAME)
     matched = pd.read_csv(comparison_dir / "matched_features.csv")
     matched["label"] = (matched[GROUP_COL] == "high").astype(int)
     matched["base_id"] = matched["ID"].str.extract(r"^([A-Za-z]+\d+)")

@@ -5,8 +5,8 @@ Build Arm-C longitudinal Δ supplements:
       full-vector embedding-asymmetry and 130-d landmark raw-xy modalities
 
 Outputs:
-  workspace/longitudinal/hc_patient_deltas.csv
-  workspace/longitudinal/vector_deltas.npz
+  workspace/longitudinal/features/hc_patient_deltas.csv
+  workspace/longitudinal/features/vector_deltas.npz
 
 Usage:
   "C:/Users/4080/anaconda3/envs/Alz_face_test_2/python.exe" \
@@ -23,13 +23,23 @@ import pandas as pd
 from scipy.spatial.distance import cosine as cosine_distance
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(PROJECT_ROOT))
+from src.config import LONGITUDINAL_FEATURES_DIR
 
 DEMOGRAPHICS_DIR = PROJECT_ROOT / "data" / "demographics"
-EMOTION_DIR = PROJECT_ROOT / "workspace" / "emotion" / "au_features" / "aggregated"
-AGE_FILE = PROJECT_ROOT / "workspace" / "age" / "age_prediction" / "predicted_ages.json"
+AGE_FILE = PROJECT_ROOT / "workspace" / "age" / "predictions" / "p_first_hc_strict" / "predicted_ages.json"
 EMBEDDING_DIR = PROJECT_ROOT / "workspace" / "embedding" / "features"
-LANDMARK_FEATURES_CSV = PROJECT_ROOT / "workspace" / "asymmetry" / "features.csv"
-LONGITUDINAL_DIR = PROJECT_ROOT / "workspace" / "longitudinal"
+LANDMARK_FEATURES_CSV = PROJECT_ROOT / "workspace" / "asymmetry" / "features" / "pair_features.csv"
+LONGITUDINAL_DIR = LONGITUDINAL_FEATURES_DIR
+
+# Load emotion via shared helper.
+import importlib.util as _ilu
+_emo_spec = _ilu.spec_from_file_location(
+    "emotion_loader",
+    PROJECT_ROOT / "scripts" / "utilities" / "emotion_loader.py",
+)
+_emotion_loader = _ilu.module_from_spec(_emo_spec)
+_emo_spec.loader.exec_module(_emotion_loader)
 
 EMBEDDING_MODELS = ["arcface", "topofr", "dlib"]
 EMOTIONS = ["anger", "disgust", "fear", "happiness", "sadness",
@@ -125,12 +135,19 @@ def _load_emotion_dict():
     enabling Arm C/D emotion_fisher Δ tests to parallel A/B.
     """
     out = {}
+    methods_root = _emotion_loader.EMO_AU_FEATURES_DIR
+    all_ids = set()
     for method in EMOTION_METHODS:
-        path = EMOTION_DIR / f"{method}_harmonized.csv"
-        if not path.exists():
-            logger.warning(f"Emotion CSV missing: {path}")
+        d = methods_root / method
+        if d.is_dir():
+            all_ids.update(p.stem for p in d.glob("*.npy"))
+    all_ids = sorted(all_ids)
+    for method in EMOTION_METHODS:
+        try:
+            df = _emotion_loader.load_emotion(method, all_ids)
+        except (FileNotFoundError, KeyError) as e:
+            logger.warning(f"Emotion {method}: {e}")
             continue
-        df = pd.read_csv(path)
         for _, r in df.iterrows():
             sid = r["subject_id"]
             if sid not in out:

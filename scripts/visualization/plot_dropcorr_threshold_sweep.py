@@ -2,16 +2,12 @@
 Aggregate drop_feats reducer dirs (pearson_r_X.X) plus no_drop reference into
 a cross-threshold AUC comparison.
 
-Default mode reads:
-    <cohort>/embedding_classification/no_drop/_summary/all_metrics_with_cm.csv
-    <cohort>/embedding_classification/drop_feats/pearson_r_X.X/_summary/all_metrics_with_cm.csv
-With --variant, reads:
-    <cohort>/embedding_asymmetry_classification/<variant>/no_drop/_summary/...
-    <cohort>/embedding_asymmetry_classification/<variant>/drop_feats/pearson_r_X.X/_summary/...
+Reads (`<variant>` defaults to `original`, switch with `--variant`):
+    embedding/analysis/classification/<variant>/<cohort>/no_drop/_summary/all_metrics_with_cm.csv
+    embedding/analysis/classification/<variant>/<cohort>/drop_feats/pearson_r_X.X/_summary/all_metrics_with_cm.csv
 
-Output goes to:
-    <cohort>/embedding_classification/drop_feats/_summary/                  (default)
-    <cohort>/embedding_asymmetry_classification/<variant>/drop_feats/_summary/
+Output:
+    embedding/analysis/classification/<variant>/<cohort>/drop_feats/_summary/
 
 Usage:
     conda run -n Alz_face_main_analysis python scripts/visualization/plot_dropcorr_threshold_sweep.py
@@ -28,7 +24,6 @@ import pandas as pd
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 import sys as _sys
 _sys.path.insert(0, str(PROJECT_ROOT))
-ARMS_ROOT = PROJECT_ROOT / "workspace" / "arms_analysis"
 ASYM_VARIANTS = ["difference", "absolute_difference", "average",
                  "relative_differences", "absolute_relative_differences"]
 
@@ -38,27 +33,19 @@ logger = logging.getLogger(__name__)
 
 def resolve_paths(variant, cohort_mode="default"):
     """Return (class_root, out, reducer_dirs)."""
-    from src.config import (
-        EMBEDDING_CLASSIFICATION_DIR,
-        EMBEDDING_ASYMMETRY_CLASSIFICATION_DIR,
-    )
-    cohort_dir = {
-        "default": "p_first_hc_strict",
-        "p_first_hc_all": "p_first_hc_all",
-        "p_all_hc_all": "p_all_hc_all",
-    }[cohort_mode]
-    if variant is None:
-        class_root = EMBEDDING_CLASSIFICATION_DIR / cohort_dir
-    else:
-        class_root = EMBEDDING_ASYMMETRY_CLASSIFICATION_DIR / variant / cohort_dir
+    from src.config import EMBEDDING_CLASSIFICATION_DIR, cohort_name
+    cohort_dir = cohort_name(cohort_mode)
+    v = variant if variant is not None else "original"
+    class_root = EMBEDDING_CLASSIFICATION_DIR / v / cohort_dir
     out = class_root / "drop_feats" / "_summary"
     reducer_dirs = []
     if class_root.is_dir():
+        # NEW layout: class_root/<reducer>/<partition>/{fwd,rev}/<emb>/<clf>/
         seen = set()
         for marker_name in ("fwd", "rev"):
             for marker in class_root.rglob(marker_name):
                 if marker.is_dir():
-                    seen.add(marker.parent)
+                    seen.add(marker.parent.parent)
         for reducer in sorted(seen):
             rel_parts = reducer.relative_to(class_root).parts
             if any(p.startswith("_") for p in rel_parts):
@@ -97,8 +84,7 @@ def load_all(reducer_dirs):
 def main():
     parser = argparse.ArgumentParser(__doc__)
     parser.add_argument("--variant", default=None, choices=ASYM_VARIANTS,
-                        help="Asymmetry variant; if omitted, uses "
-                             "embedding_classification (original).")
+                        help="Asymmetry variant; if omitted, uses original.")
     parser.add_argument("--cohort-mode", default="default",
                         choices=["default", "p_first_hc_all", "p_all_hc_all"])
     args = parser.parse_args()

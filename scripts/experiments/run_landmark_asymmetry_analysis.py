@@ -60,7 +60,7 @@ LANDMARK_FEATURES_CSV = PROJECT_ROOT / "workspace" / "asymmetry" / "landmark_fea
 LANDMARKS_DIR = PROJECT_ROOT / "workspace" / "asymmetry" / "landmarks"
 DEMOGRAPHICS_CSV = PROJECT_ROOT / "data" / "demographics" / "P.csv"
 PREDICTED_AGES_FILE = PROJECT_ROOT / "workspace" / "age" / "age_prediction" / "predicted_ages.json"
-PATIENT_DELTAS_CSV = PROJECT_ROOT / "workspace" / "longitudinal" / "patient_deltas.csv"
+PATIENT_DELTAS_CSV = PROJECT_ROOT / "workspace" / "longitudinal" / "features" / "patient_deltas.csv"
 OUTPUT_DIR = PROJECT_ROOT / "workspace" / "asymmetry" / "analysis"
 
 N_FOLDS = 5

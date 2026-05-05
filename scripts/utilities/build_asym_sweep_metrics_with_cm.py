@@ -5,9 +5,8 @@ Walks the per-cell metrics.json tree and aggregates into the long-form schema
 consumed by plot_pca_*.py / plot_dropcorr_*.py. Does NOT rely on
 combined_summary.csv (which gets overwritten by partial re-runs).
 
-Layout (post unified-reducer + simplified-rev refactors):
-    <cohort>/embedding_classification/<reducer_path>/{fwd,rev}/<part>/<emb>/<clf>[/C_X]/
-    <cohort>/embedding_asymmetry_classification/<feature_type>/<reducer_path>/{fwd,rev}/...
+Layout:
+    embedding/analysis/classification/<variant>/<cohort>/<reducer_path>/<part>/{fwd,rev}/<emb>/<clf>[/C_X]/
 
 `<reducer_path>` is one of:
     no_drop
@@ -105,17 +104,20 @@ def _iter_cell_dirs(emb_d):
             yield clf_d, clf, None
 
 
-def _scan_cells(variant_dir):
-    """Walk the cell tree under variant_dir and return rows per scope."""
+def _scan_cells(reducer_dir):
+    """Walk the cell tree under a reducer-leaf dir and return rows per scope.
+
+    NEW layout: reducer_dir/<partition>/<fwd|rev>/<emb>/<clf>/<files>
+    """
     rows = []
-    for bucket in ("fwd", "rev"):
-        top = variant_dir / bucket
-        if not top.is_dir():
+    for partition_d in sorted(reducer_dir.iterdir()):
+        if not partition_d.is_dir() or partition_d.name.startswith("_"):
             continue
-        for partition_d in sorted(top.iterdir()):
-            if not partition_d.is_dir():
+        for bucket in ("fwd", "rev"):
+            bucket_d = partition_d / bucket
+            if not bucket_d.is_dir():
                 continue
-            for emb_d in sorted(partition_d.iterdir()):
+            for emb_d in sorted(bucket_d.iterdir()):
                 if not emb_d.is_dir():
                     continue
                 for cell_d, clf, lr_C in _iter_cell_dirs(emb_d):
@@ -165,10 +167,10 @@ def build_one(variant_dir):
 
 
 def _iter_reducer_dirs(class_root):
-    """Yield reducer dirs under a classification root — any directory whose
-    parent path is fwd-or-rev-bearing. Walks arbitrarily deep so visit/photo
-    variants nested under a reducer (e.g. no_drop/visit_all,
-    pca/n_components_100/visit_all_photo_all) are picked up.
+    """Yield reducer-leaf dirs under a classification root.
+
+    NEW layout: class_root/<reducer>/<partition>/{fwd,rev}/<emb>/<clf>/
+    rglob('fwd' or 'rev') → marker.parent.parent = reducer-leaf.
 
     Skips paths containing any underscore-prefixed segment (_summary, etc.).
     """
@@ -178,7 +180,7 @@ def _iter_reducer_dirs(class_root):
     for marker_name in ("fwd", "rev"):
         for marker in class_root.rglob(marker_name):
             if marker.is_dir():
-                seen.add(marker.parent)
+                seen.add(marker.parent.parent)
     for reducer in sorted(seen):
         rel_parts = reducer.relative_to(class_root).parts
         if any(p.startswith("_") for p in rel_parts):
@@ -204,36 +206,22 @@ def walk_root(root, label):
 
 
 def main():
-    from src.config import (
-        EMBEDDING_CLASSIFICATION_DIR,
-        EMBEDDING_ASYMMETRY_CLASSIFICATION_DIR,
-    )
+    from src.config import EMBEDDING_CLASSIFICATION_DIR, cohort_name
     p = argparse.ArgumentParser(__doc__)
     p.add_argument("--cohort-mode", default="default",
                     choices=["default", "p_first_hc_all", "p_all_hc_all"])
     args = p.parse_args()
-    if args.cohort_mode == "p_first_hc_all":
-        cohort_dir = "p_first_hc_all"
-    elif args.cohort_mode == "p_all_hc_all":
-        cohort_dir = "p_all_hc_all"
-    else:
-        cohort_dir = "p_first_hc_strict"
+    cohort_dir = cohort_name(args.cohort_mode)
 
     total_files, total_rows = 0, 0
-    # Original embedding tree: <cohort>/<reducer>/...
-    f, r = walk_root(EMBEDDING_CLASSIFICATION_DIR / cohort_dir,
-                     "embedding_classification")
-    total_files += f
-    total_rows += r
-    # Asymmetry tree: <variant>/<cohort>/<reducer>/...
-    if EMBEDDING_ASYMMETRY_CLASSIFICATION_DIR.is_dir():
-        for variant_dir in sorted(EMBEDDING_ASYMMETRY_CLASSIFICATION_DIR.iterdir()):
+    # 6 variants flat: original + 5 asymmetry transforms
+    if EMBEDDING_CLASSIFICATION_DIR.is_dir():
+        for variant_dir in sorted(EMBEDDING_CLASSIFICATION_DIR.iterdir()):
             if not variant_dir.is_dir() or variant_dir.name.startswith("_"):
                 continue
             cohort_root = variant_dir / cohort_dir
             if cohort_root.is_dir():
-                f, r = walk_root(cohort_root,
-                                 f"embedding_asymmetry_classification/{variant_dir.name}")
+                f, r = walk_root(cohort_root, variant_dir.name)
                 total_files += f
                 total_rows += r
     print(f"\nTOTAL: {total_files} files, {total_rows} rows")

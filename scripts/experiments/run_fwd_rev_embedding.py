@@ -77,16 +77,15 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.config import (
     EMBEDDING_CLASSIFICATION_DIR,
-    EMBEDDING_ASYMMETRY_CLASSIFICATION_DIR,
+    EMBEDDING_FEATURES_DIR,
+    EMBEDDING_ABTEST_CLASSIFICATION_DIR,
+    FEATURES_DIR as EMBEDDING_ABTEST_FEAT_DIR,
+    cohort_name,
 )
 
-ARMS_ROOT = PROJECT_ROOT / "workspace" / "arms_analysis"
-EMBEDDING_FEAT_DIR = PROJECT_ROOT / "workspace" / "embedding" / "features"
-EMB_CLF_ROOT = EMBEDDING_CLASSIFICATION_DIR
-EMB_ASYM_CLF_ROOT = EMBEDDING_ASYMMETRY_CLASSIFICATION_DIR
-ARM_B_DIR = ARMS_ROOT / "per_arm" / "arm_b"
-AGES_FILE = (PROJECT_ROOT / "workspace" / "age" / "age_prediction" /
-             "predicted_ages.json")
+EMBEDDING_FEAT_DIR = EMBEDDING_FEATURES_DIR
+AGES_FILE = (PROJECT_ROOT / "workspace" / "age" / "predictions" /
+             "p_first_hc_strict" / "predicted_ages.json")
 
 PARTITIONS = ["ad_vs_hc", "ad_vs_nad", "ad_vs_acs", "mmse_hilo", "casi_hilo"]
 EMBEDDINGS = ["arcface", "topofr", "dlib"]
@@ -94,6 +93,7 @@ CLASSIFIERS = ["logistic", "xgb"]
 STRATEGIES = ["forward", "reverse"]
 FEATURE_TYPES = [
     "original",
+    "original_background",
     "difference", "absolute_difference", "average",
     "relative_differences", "absolute_relative_differences",
 ]
@@ -128,9 +128,11 @@ def output_dir_for(feature_type, drop_corr=None, visit_mode="first",
     """Build per-cell output dir for the chosen feature_type / reducer /
     cohort / visit-photo mode combination.
 
-    Tree layout (post-split):
-      Original:  workspace/embedding_classification/<cohort>/<reducer>/
-      Asymmetry: workspace/embedding_asymmetry_classification/<feature_type>/<cohort>/<reducer>/
+    Tree layout:
+      embedding/analysis/classification/<variant>/<cohort>/<reducer>/
+
+    Variants: original / difference / absolute_difference / average /
+              relative_differences / absolute_relative_differences
 
     cohort_mode='default'        -> p_first_hc_strict (default visit=first, photo=mean)
     cohort_mode='p_first_hc_all' -> p_first_hc_all    (default visit=all,   photo=mean)
@@ -147,6 +149,7 @@ def output_dir_for(feature_type, drop_corr=None, visit_mode="first",
     cohort's default — e.g. p_first_hc_strict + visit_mode=all yields
     `pca/n_components_100/visit_all`.
 
+    Cell-leaf path: <output_dir>/<partition>/<fwd|rev>/<emb>/<clf>/[C_<value>/]
     LR `C` value is encoded at the cell-level leaf (logistic/C_<lr_C:g>/) by
     cell_dir(), not in this path.
     """
@@ -172,15 +175,8 @@ def output_dir_for(feature_type, drop_corr=None, visit_mode="first",
         suffix_parts.append(f"photo_{photo_mode}")
     if suffix_parts:
         reducer = reducer / "_".join(suffix_parts)
-    if cohort_mode == "p_first_hc_all":
-        cohort_dir = "p_first_hc_all"
-    elif cohort_mode == "p_all_hc_all":
-        cohort_dir = "p_all_hc_all"
-    else:
-        cohort_dir = "p_first_hc_strict"
-    if feature_type == "original":
-        return EMB_CLF_ROOT / cohort_dir / reducer
-    return EMB_ASYM_CLF_ROOT / feature_type / cohort_dir / reducer
+    cohort_dir = cohort_name(cohort_mode)
+    return EMBEDDING_CLASSIFICATION_DIR / feature_type / cohort_dir / reducer
 
 
 OUTPUT_DIR = output_dir_for(_FEATURE_TYPE, _DROP_CORR_THRESHOLD,
@@ -291,8 +287,8 @@ def _load_module(name, path):
 
 _arm_a = _load_module("arm_a", PROJECT_ROOT / "scripts" / "experiments" /
                       "run_arm_a_ad_vs_hc.py")
-_hilo = _load_module("mmse_hilo", PROJECT_ROOT / "scripts" / "experiments" /
-                     "run_mmse_hilo_standalone.py")
+_hilo = _load_module("cross_matched", PROJECT_ROOT / "scripts" / "experiments" /
+                     "run_cross_matched.py")
 _grid = _load_module("deep_dive", PROJECT_ROOT / "scripts" / "experiments" /
                      "run_4arm_deep_dive.py")
 
@@ -378,9 +374,10 @@ def _train_cache_key(partition, embedding, classifier, n_folds, seed):
 
 def _load_pred_ages():
     """Load predicted_ages.json (cached). Used for the matched-pair filter
-    that mirrors arm_b's run_arm_b_ad_vs_hcgroups.py:143-147 — drop pairs
-    whose either side lacks a predicted_age, so matched n_pairs aligns with
-    arm_b's reference (HC=180, NAD=169, ACS=29 / hi-lo equivalent)."""
+    that mirrors run_cross_matched.run_hc_groups_comparison's predicted-age
+    filter — drop pairs whose either side lacks a predicted_age, so matched
+    n_pairs aligns with arm_b's reference (HC=180, NAD=169, ACS=29 / hi-lo
+    equivalent)."""
     global _PRED_AGES_CACHE
     if _PRED_AGES_CACHE is None:
         with open(AGES_FILE) as f:
@@ -389,8 +386,7 @@ def _load_pred_ages():
 
 
 def _filter_pairs_by_pred_age(matched, pairs):
-    """Drop pairs where either minor_id or major_id lacks a predicted_age.
-    Mirrors arm_b's run_arm_b_ad_vs_hcgroups.py:143-147."""
+    """Drop pairs where either minor_id or major_id lacks a predicted_age."""
     if pairs is None or len(pairs) == 0:
         return matched, pairs
     pred_ages = _load_pred_ages()
@@ -1189,14 +1185,14 @@ def run_reverse(full_cohort, matched_cohort, embedding, classifier,
 # ============================================================
 
 def cell_dir(partition, embedding, classifier, strategy):
-    """Layout: <reducer>/{fwd,rev}/<partition>/<embedding>/<classifier>[/C_<lr_C:g>]/
+    """Layout: <reducer>/<partition>/{fwd,rev}/<embedding>/<classifier>[/C_<lr_C:g>]/
 
     LR cells always nest a `C_<lr_C:g>/` leaf under `logistic/` so different
     regularization strengths sit side by side (e.g. `logistic/C_1/`,
     `logistic/C_10/`). XGB cells stay flat (no C dimension).
     """
     bucket = "fwd" if strategy == "forward" else "rev"
-    base = OUTPUT_DIR / bucket / partition / embedding / classifier
+    base = OUTPUT_DIR / partition / bucket / embedding / classifier
     if classifier == "logistic":
         return base / f"C_{_LR_C:g}"
     return base
@@ -1379,10 +1375,8 @@ def main():
                         choices=STRATEGIES + ["both"])
     parser.add_argument("--feature-type", default="original",
                         choices=FEATURE_TYPES,
-                        help="Embedding feature variant. 'original' writes "
-                             "to embedding_classification/; asymmetry "
-                             "variants write to "
-                             "embedding_asymmetry_<variant>_classification/.")
+                        help="Embedding feature variant. Output goes to "
+                             "embedding/analysis/classification/<variant>/.")
     parser.add_argument("--drop-correlated-threshold", type=float, default=None,
                         help="Optional Pearson correlation threshold above "
                              "which one feature of each correlated pair is "
@@ -1425,10 +1419,19 @@ def main():
                              "logistic/C_<value>/ (e.g. C_1, C_10), so "
                              "different C values can coexist alongside xgb/. "
                              "Has no effect on xgb cells.")
+    parser.add_argument("--embedding-abtest", action="store_true",
+                        help="Read features from embedding_ABtest/features/ "
+                             "and write outputs to "
+                             "embedding_ABtest/analysis/classification/.  "
+                             "Default: production embedding/ tree.")
     args = parser.parse_args()
 
     global _FEATURE_TYPE, _DROP_CORR_THRESHOLD, _DROP_CORR_METHOD
     global _PCA_COMPONENTS, _VISIT_MODE, _PHOTO_MODE, _COHORT_MODE, _LR_C, OUTPUT_DIR
+    global EMBEDDING_CLASSIFICATION_DIR, EMBEDDING_FEAT_DIR
+    if args.embedding_abtest:
+        EMBEDDING_CLASSIFICATION_DIR = EMBEDDING_ABTEST_CLASSIFICATION_DIR
+        EMBEDDING_FEAT_DIR = EMBEDDING_ABTEST_FEAT_DIR
     if args.drop_correlated_threshold is not None and args.pca_components is not None:
         parser.error("--drop-correlated-threshold and --pca-components are "
                      "mutually exclusive")

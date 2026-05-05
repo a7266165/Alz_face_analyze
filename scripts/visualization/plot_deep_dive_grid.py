@@ -2,12 +2,12 @@
 Render Section 3.5 deep-dive grid: 14 data rows × 16 cells with 5-row header.
 
 Reads (default GRID_VARIANT=acs):
-  workspace/arms_analysis/grid/<GRID_VARIANT>/stat_grid_long.csv
-  workspace/arms_analysis/grid/<GRID_VARIANT>/cell_header_stats.csv
+  workspace/overview/p_first_hc_strict/stat_grid/<GRID_VARIANT>/stat_grid_long.csv
+  workspace/overview/p_first_hc_strict/stat_grid/<GRID_VARIANT>/cell_header_stats.csv
 
 Outputs:
-  workspace/arms_analysis/grid/<GRID_VARIANT>/stat_grid.png
-  workspace/arms_analysis/grid/<GRID_VARIANT>/stat_grid_markdown.md
+  workspace/overview/p_first_hc_strict/stat_grid/<GRID_VARIANT>/stat_grid.png
+  workspace/overview/p_first_hc_strict/stat_grid/<GRID_VARIANT>/stat_grid_markdown.md
 
 GRID_VARIANT examples:
   acs                                              (baseline, internal ACS)
@@ -34,7 +34,7 @@ from matplotlib.patches import Rectangle
 
 ROOT = Path(__file__).resolve().parents[2]
 _variant = os.environ.get("GRID_VARIANT", "acs")
-DEEP = ROOT / "workspace" / "arms_analysis" / "grid" / "p_first_hc_strict" / _variant
+DEEP = ROOT / "workspace" / "overview" / "p_first_hc_strict" / "stat_grid" / _variant
 LONG_CSV = DEEP / "stat_grid_long.csv"
 HEADER_STATS_CSV = DEEP / "cell_header_stats.csv"
 

@@ -36,13 +36,27 @@ from sklearn.preprocessing import StandardScaler
 from xgboost import XGBClassifier
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+import sys as _sys
+_sys.path.insert(0, str(PROJECT_ROOT))
+from src.config import (
+    AGE_PRED_ERROR_STAT_DIR, ASYMMETRY_FEATURE_STAT_DIR,
+    EMBEDDING_FEATURE_STAT_DIR, EMO_AU_FEATURE_STAT_DIR,
+    OVERVIEW_DIR, cohort_name,
+)
+
 DEMOGRAPHICS_DIR = PROJECT_ROOT / "data" / "demographics"
-AGES_FILE = PROJECT_ROOT / "workspace" / "age" / "age_prediction" / "predicted_ages.json"
-EMOTION_DIR = PROJECT_ROOT / "workspace" / "emotion" / "au_features" / "aggregated"
-LANDMARK_FEATURES_CSV = PROJECT_ROOT / "workspace" / "asymmetry" / "features.csv"
+AGES_FILE = PROJECT_ROOT / "workspace" / "age" / "predictions" / "p_first_hc_strict" / "predicted_ages.json"
+LANDMARK_FEATURES_CSV = PROJECT_ROOT / "workspace" / "asymmetry" / "features" / "pair_features.csv"
 EMBEDDING_DIR = PROJECT_ROOT / "workspace" / "embedding" / "features"
-DEFAULT_OUTPUT_DIR = (PROJECT_ROOT / "workspace" / "arms_analysis" /
-                      "per_arm" / "p_first_hc_strict" / "arm_a")
+
+# Load emotion via shared helper.
+import importlib.util as _ilu
+_emo_spec = _ilu.spec_from_file_location(
+    "emotion_loader",
+    PROJECT_ROOT / "scripts" / "utilities" / "emotion_loader.py",
+)
+_emotion_loader = _ilu.module_from_spec(_emo_spec)
+_emo_spec.loader.exec_module(_emotion_loader)
 
 EMOTION_METHODS = ["openface", "libreface", "pyfeat", "dan",
                    "hsemotion", "vit", "poster_pp", "fer"]
@@ -128,24 +142,7 @@ def load_age_error(ids):
 
 
 def load_emotion_matrix(ids):
-    emo_cols = [f"{emo}_{stat}" for emo in EMOTIONS for stat in STATS]
-    frames = []
-    for method in EMOTION_METHODS:
-        path = EMOTION_DIR / f"{method}_harmonized.csv"
-        if not path.exists():
-            continue
-        df = pd.read_csv(path)
-        keep = ["subject_id"] + [c for c in emo_cols if c in df.columns]
-        df = df[keep].copy()
-        rename = {c: f"{method}__{c}" for c in keep if c != "subject_id"}
-        df = df.rename(columns=rename)
-        frames.append(df)
-    if not frames:
-        return None
-    out = frames[0]
-    for f in frames[1:]:
-        out = out.merge(f, on="subject_id", how="outer")
-    return out[out["subject_id"].isin(ids)]
+    return _emotion_loader.load_emotion_matrix(ids, methods=EMOTION_METHODS)
 
 
 def load_landmark_matrix(ids):
@@ -418,20 +415,31 @@ def main():
                          help="default=原 strict-HC + first-visit；"
                               "p_first_hc_all=first-visit P + ALL NAD/ACS；"
                               "p_all_hc_all=ALL P visits + ALL NAD/ACS")
-    parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR,
-                         help="輸出根目錄 (default: workspace/arms_analysis/"
-                              "per_arm/arm_a)")
     args = parser.parse_args()
 
-    output_dir = args.output_dir
-    output_dir.mkdir(parents=True, exist_ok=True)
-    comparison_dir = output_dir / "ad_vs_hc"
-    comparison_dir.mkdir(parents=True, exist_ok=True)
-    for d in DIRECTIONS:
-        (comparison_dir / d).mkdir(parents=True, exist_ok=True)
+    cohort_dir = cohort_name(args.cohort_mode)
+    partition = "ad_vs_hc"
+    design_dir = OVERVIEW_DIR / cohort_dir / "cross_naive"
+    partition_dir = design_dir / partition
+    partition_dir.mkdir(parents=True, exist_ok=True)
 
     def dir_for(modality):
-        return comparison_dir / MODALITY_DIRECTION[modality]
+        """Per-modality feature_stat leaf dir (fanned out across modality trees)."""
+        direction = MODALITY_DIRECTION[modality]
+        if direction == "age":
+            d = AGE_PRED_ERROR_STAT_DIR / cohort_dir / partition
+        elif direction == "emotion":
+            d = EMO_AU_FEATURE_STAT_DIR / cohort_dir / partition
+        elif direction == "landmark_asymmetry":
+            d = ASYMMETRY_FEATURE_STAT_DIR / cohort_dir / partition
+        elif direction == "embedding_mean":
+            d = EMBEDDING_FEATURE_STAT_DIR / "original" / cohort_dir / partition
+        elif direction == "embedding_asymmetry":
+            d = EMBEDDING_FEATURE_STAT_DIR / "difference" / cohort_dir / partition
+        else:
+            raise ValueError(f"unknown modality direction {direction!r}")
+        d.mkdir(parents=True, exist_ok=True)
+        return d
 
     if args.cohort_mode in ("p_first_hc_all", "p_all_hc_all"):
         cohort = _load_cohort_via_grid(args.cohort_mode)
@@ -441,7 +449,7 @@ def main():
     n_ad = int((cohort["label"] == 1).sum())
     n_hc = int((cohort["label"] == 0).sum())
     logger.info(f"Cohort ({args.cohort_mode}): AD={n_ad}, HC={n_hc}")
-    cohort.to_csv(output_dir / "cohort.csv", index=False)
+    cohort.to_csv(design_dir / "cohort.csv", index=False)
 
     age_mean_diff = (cohort[cohort["label"] == 1]["Age"].mean() -
                      cohort[cohort["label"] == 0]["Age"].mean())
@@ -518,9 +526,10 @@ def main():
     df["age_gap_years"] = age_mean_diff
     age_auc = df.loc[df["modality"] == "age_only", "auc"].iloc[0]
     df["delta_vs_age_only"] = df["auc"] - age_auc
-    df.to_csv(comparison_dir / "summary_per_modality.csv", index=False)
+    df.to_csv(partition_dir / "summary_per_modality.csv", index=False)
 
-    logger.info(f"Done. Outputs at {output_dir}")
+    logger.info(f"Done. overview design dir={design_dir}; per-modality fanout under "
+                 f"age/emo_au/asymmetry/embedding feature_stat trees.")
     for r in results:
         logger.info(
             f"  {r['modality']:<25} AUC={r.get('auc', np.nan):.3f} "

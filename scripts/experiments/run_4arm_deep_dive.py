@@ -45,8 +45,8 @@ def _load_module(name, path):
 
 _arm_a = _load_module("arm_a_ad_vs_hc",
                        PROJECT_ROOT / "scripts" / "experiments" / "run_arm_a_ad_vs_hc.py")
-_arm_b = _load_module("mmse_hilo_standalone",
-                       PROJECT_ROOT / "scripts" / "experiments" / "run_mmse_hilo_standalone.py")
+_arm_b = _load_module("cross_matched",
+                       PROJECT_ROOT / "scripts" / "experiments" / "run_cross_matched.py")
 
 cv_eval = _arm_a.cv_eval
 bootstrap_auc_ci = _arm_a.bootstrap_auc_ci
@@ -62,19 +62,17 @@ load_p_demographics = _arm_b.load_p_demographics
 
 # === Paths ===
 DEMOGRAPHICS_DIR = PROJECT_ROOT / "data" / "demographics"
-AGES_FILE = PROJECT_ROOT / "workspace" / "age" / "age_prediction" / "predicted_ages.json"
-EMOTION_DIR = PROJECT_ROOT / "workspace" / "emotion" / "au_features" / "aggregated"
-LANDMARK_FEATURES_CSV = PROJECT_ROOT / "workspace" / "asymmetry" / "features.csv"
+AGES_FILE = PROJECT_ROOT / "workspace" / "age" / "predictions" / "p_first_hc_strict" / "predicted_ages.json"
+LANDMARK_FEATURES_CSV = PROJECT_ROOT / "workspace" / "asymmetry" / "features" / "pair_features.csv"
 EMBEDDING_DIR = PROJECT_ROOT / "workspace" / "embedding" / "features"
-LONGITUDINAL_CSV = PROJECT_ROOT / "workspace" / "longitudinal" / "patient_deltas.csv"
+from src.config import LONGITUDINAL_FEATURES_DIR
+LONGITUDINAL_CSV = LONGITUDINAL_FEATURES_DIR / "patient_deltas.csv"
 LANDMARK_LONG_CSV = (PROJECT_ROOT / "workspace" / "asymmetry" / "analysis" /
                      "longitudinal_landmark_deltas.csv")
 # New unified-schema files from build_longitudinal_hc_and_vectors.py
-AD_DELTAS_CSV = (PROJECT_ROOT / "workspace" / "longitudinal" /
-                  "ad_patient_deltas.csv")
-HC_LONGITUDINAL_CSV = (PROJECT_ROOT / "workspace" / "longitudinal" /
-                        "hc_patient_deltas.csv")
-VECTOR_DELTAS_NPZ = (PROJECT_ROOT / "workspace" / "longitudinal" /
+AD_DELTAS_CSV = LONGITUDINAL_FEATURES_DIR / "ad_patient_deltas.csv"
+HC_LONGITUDINAL_CSV = LONGITUDINAL_FEATURES_DIR / "hc_patient_deltas.csv"
+VECTOR_DELTAS_NPZ = (LONGITUDINAL_FEATURES_DIR /
                       "vector_deltas.npz")
 HC_SOURCE_MODE = os.environ.get("HC_SOURCE_MODE", "ACS")
 # 允許由環境變數或 CLI 設定；CLI 在 __main__ 區塊解析並覆寫。
@@ -91,9 +89,9 @@ HC_SOURCE_MODE = os.environ.get("HC_SOURCE_MODE", "ACS")
 #                    visits；兩端都採 subject-first 兩階段配對
 COHORT_MODE = os.environ.get("COHORT_MODE", "default")
 
-GRID_ROOT = (PROJECT_ROOT / "workspace" / "arms_analysis" /
-             "grid" / "p_first_hc_strict")
-# Baseline output：grid/<hc_source.lower()>/，CLI subset 覆寫見 __main__。
+from src.config import OVERVIEW_DIR, cohort_name as _cohort_name
+GRID_ROOT = OVERVIEW_DIR / _cohort_name(COHORT_MODE) / "stat_grid"
+# Baseline output：overview/<cohort>/stat_grid/<hc_source.lower()>/，CLI subset 覆寫見 __main__。
 # mkdir 延後到 run_all() / __main__，避免 import 即建立非預期目錄。
 OUTPUT_DIR = GRID_ROOT / HC_SOURCE_MODE.lower()
 
@@ -605,8 +603,7 @@ def _build_longitudinal_cohort_hc(hc_source, demo, caliper, seed, do_match=True)
     hc_delta_all = pd.read_csv(HC_LONGITUDINAL_CSV)
 
     # External EACS delta（當 HC_SOURCE_MODE 指定 ACS_ext / EACS）
-    eacs_csv = (PROJECT_ROOT / "workspace" / "longitudinal" /
-                 "eacs_patient_deltas.csv")
+    eacs_csv = LONGITUDINAL_FEATURES_DIR / "eacs_patient_deltas.csv"
     if HC_SOURCE_MODE in ("ACS_ext", "EACS") and eacs_csv.exists():
         eacs_delta_all = pd.read_csv(eacs_csv)
         eacs_delta_all["group"] = "ACS"  # 併入 ACS 群
@@ -745,21 +742,15 @@ def build_cohort_ad_hi_lo(arm="A", caliper=2.0, seed=SEED, metric="MMSE"):
         cohort["label"] = (cohort[group_col] == "high").astype(int)
         return cohort, None
     if arm == "B":
-        # 各 cohort mode 下 arm B hi-lo 的 matched_features.csv 由
-        # run_mmse_hilo_standalone.py 預先寫到對應子樹。
-        if COHORT_MODE == "p_first_hc_all":
-            cohort_subdir = "p_first_hc_all"
-        elif COHORT_MODE == "p_all_hc_all":
-            cohort_subdir = "p_all_hc_all"
-        else:
-            cohort_subdir = "p_first_hc_strict"
-        arm_b_csv = (PROJECT_ROOT / "workspace" / "arms_analysis" /
-                     "per_arm" / cohort_subdir / "arm_b" /
-                     f"{metric_low}_high_vs_low" / "matched_features.csv")
+        # 各 cohort mode 下 hi-lo 的 matched_features.csv 由
+        # run_cross_matched.py --comparison {mmse,casi}_hilo 預先寫到對應子樹。
+        arm_b_csv = (OVERVIEW_DIR / _cohort_name(COHORT_MODE) /
+                     "cross_matched" / f"{metric_low}_high_vs_low" /
+                     "matched_features.csv")
         if not arm_b_csv.exists():
             raise FileNotFoundError(
-                f"Run run_mmse_hilo_standalone.py with HILO_METRIC={metric} "
-                f"first")
+                f"Run run_cross_matched.py --comparison {metric_low}_hilo first"
+            )
         cohort = pd.read_csv(arm_b_csv)
         cohort["label"] = (cohort[group_col] == "high").astype(int)
         p_df = pd.read_csv(DEMOGRAPHICS_DIR / "P.csv")
@@ -1094,7 +1085,7 @@ def _load_vector_delta(cohort, vec_key):
 def _arm_c_feature_df(test_kind, extra, cohort):
     """Build feature DF for Arm C using pre-computed ann_* Δ columns.
 
-    Cohort is matched_features_longitudinal.csv (for hi-lo). For AD vs
+    Cohort is matched_features.csv (for hi-lo). For AD vs
     {HC,NAD,ACS}, HC Δ aren't pre-computed → return None → cell becomes n/a.
     """
     has_ann = any(c.startswith("ann_") for c in cohort.columns)
@@ -1486,6 +1477,8 @@ if __name__ == "__main__":
         os.environ["MODALITIES"] = ",".join(args.modalities)
     if args.cohort_mode is not None:
         COHORT_MODE = args.cohort_mode
+    # Recompute GRID_ROOT now that COHORT_MODE may have been overridden.
+    GRID_ROOT = OVERVIEW_DIR / _cohort_name(COHORT_MODE) / "stat_grid"
 
     if args.output_dir is not None:
         OUTPUT_DIR = args.output_dir

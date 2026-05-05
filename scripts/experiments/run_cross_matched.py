@@ -1,0 +1,1018 @@
+"""
+Cross-sectional age-matched analyses for AD vs {HC, NAD, ACS} and AD within-cohort
+hi-lo splits on MMSE / CASI. One CLI entry point per comparison via --comparison.
+
+兩種 comparison family：
+  ad_vs_{hc, nad, acs}  - AD vs HC-group 1:1 age-matched；只輸出 matching artifacts
+                          + age-error violin（薄包裝，cohort 由 run_4arm_deep_dive
+                          的 build_cohort_ad_vs_HCgroup 提供）
+  {mmse, casi}_hilo     - AD cohort 內 metric median 切高/低，1:1 age-matched，
+                          做完整 multi-modality 分析：
+                            (1) raw age prediction error
+                            (2) 8 emotion methods × 7 emotions × 4 stats
+                            (3) landmark asymmetry L2 + area_diff
+                            (4) 3-model embedding asymmetry L2
+
+此腳本同時匯出 match_1to1 / bh_fdr / compare_groups / cohens_d 等 helper 給
+run_4arm_deep_dive / run_fwd_rev_embedding 透過 importlib 引用。
+
+Usage:
+    conda run -n Alz_face_main_analysis python scripts/experiments/run_cross_matched.py --comparison mmse_hilo
+    conda run -n Alz_face_main_analysis python scripts/experiments/run_cross_matched.py --comparison ad_vs_hc
+"""
+
+import argparse
+import json
+import logging
+import os
+import re
+import sys
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+from scipy import stats
+
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+import sys as _sys
+_sys.path.insert(0, str(PROJECT_ROOT))
+from src.config import (
+    AGE_PRED_ERROR_STAT_DIR, EMO_AU_FEATURE_STAT_DIR,
+    OVERVIEW_DIR, cohort_name,
+)
+
+DEMOGRAPHICS_DIR = PROJECT_ROOT / "data" / "demographics"
+AGES_FILE = PROJECT_ROOT / "workspace" / "age" / "predictions" / "p_first_hc_strict" / "predicted_ages.json"
+LANDMARK_FEATURES_CSV = PROJECT_ROOT / "workspace" / "asymmetry" / "features" / "pair_features.csv"
+EMBEDDING_DIFF_DIR = PROJECT_ROOT / "workspace" / "embedding" / "features"
+
+# Load emotion via shared helper.
+import importlib.util as _ilu
+_emo_spec = _ilu.spec_from_file_location(
+    "emotion_loader",
+    PROJECT_ROOT / "scripts" / "utilities" / "emotion_loader.py",
+)
+_emotion_loader = _ilu.module_from_spec(_emo_spec)
+_emo_spec.loader.exec_module(_emotion_loader)
+
+EMOTION_METHODS = [
+    "openface", "libreface", "pyfeat", "dan",
+    "hsemotion", "vit", "poster_pp", "fer",
+]
+EMOTIONS = ["anger", "disgust", "fear", "happiness", "sadness", "surprise", "neutral"]
+STATS = ["mean", "std", "range", "entropy"]
+LANDMARK_REGIONS = ["eye", "nose", "mouth", "face_oval"]
+EMBEDDING_MODELS = ["arcface", "topofr", "dlib"]
+
+# Hi-lo split metric: "MMSE" (default) or "CASI". Configurable via env var
+# HILO_METRIC or CLI --metric. The grid script imports match_1to1 etc. with
+# default MMSE behavior, so changing this only affects __main__ runs.
+METRIC = os.environ.get("HILO_METRIC", "MMSE")
+METRIC_LOW = METRIC.lower()
+GROUP_COL = f"{METRIC_LOW}_group"
+COMPARISON_NAME = f"{METRIC_LOW}_high_vs_low"
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s")
+logger = logging.getLogger(__name__)
+
+
+# ============================================================
+# Cohort
+# ============================================================
+
+def load_p_demographics():
+    df = pd.read_csv(DEMOGRAPHICS_DIR / "P.csv")
+    df["MMSE"] = pd.to_numeric(df["MMSE"], errors="coerce")
+    df["CASI"] = pd.to_numeric(df.get("CASI"), errors="coerce")
+    df["Age"] = pd.to_numeric(df["Age"], errors="coerce")
+    df["Global_CDR"] = pd.to_numeric(df.get("Global_CDR"), errors="coerce")
+    df["base_id"] = df["ID"].str.extract(r"^([A-Za-z]+\d+)")
+    df["visit"] = df["ID"].str.extract(r"-(\d+)$").astype(float)
+    return df
+
+
+def select_visit(df, visit_selection="first", metric=None):
+    """Pick one visit per base_id where <metric> and Age are present.
+
+    metric defaults to module-level METRIC ("MMSE" or "CASI").
+    """
+    if metric is None:
+        metric = METRIC
+    elig = df.dropna(subset=[metric, "Age"]).copy()
+    elig = elig.sort_values(["base_id", "visit"])
+    if visit_selection == "first":
+        picked = elig.groupby("base_id", as_index=False).first()
+    else:
+        picked = elig.groupby("base_id", as_index=False).last()
+    return picked
+
+
+def split_by_metric_median(cohort, tiebreak="high", metric=None, group_col=None):
+    """Median split of cohort by `metric` (MMSE or CASI). Adds <metric_low>_group col."""
+    if metric is None:
+        metric = METRIC
+    if group_col is None:
+        group_col = GROUP_COL
+    median = cohort[metric].median()
+    if tiebreak == "high":
+        cohort[group_col] = np.where(cohort[metric] >= median, "high", "low")
+    else:
+        cohort[group_col] = np.where(cohort[metric] > median, "high", "low")
+    return cohort, float(median)
+
+
+# Backward-compat alias (older callers / grid script may import this name).
+split_by_mmse_median = split_by_metric_median
+
+
+# ============================================================
+# 1:1 age nearest-neighbor matching
+# ============================================================
+
+def match_1to1(cohort, caliper=2.0, seed=42, metric=None, group_col=None,
+               match_mode="visit"):
+    """1:1 age NN match; cohort must have <group_col> set to 'high'/'low'.
+
+    metric defaults to module-level METRIC (MMSE or CASI). Pairs CSV uses
+    `minor_<metric_low>` / `major_<metric_low>` column names so per-metric
+    runs produce schema-distinguishable CSVs.
+
+    match_mode:
+      'visit'         — current behavior; each visit can match once. Same
+                        major subject can appear multiple times via different
+                        visits.
+      'subject_first' — two-pass: pass 1 limits each major base_id to ≤1 use
+                        (subject-level 1:1); pass 2 picks up unmatched minor
+                        rows and lets them match remaining visits from
+                        already-used major subjects (visit-level fallback).
+                        Requires `base_id` column in cohort. Pairs DataFrame
+                        gains `match_pass` ∈ {'subject', 'visit_fallback'}.
+    """
+    if metric is None:
+        metric = METRIC
+    if group_col is None:
+        group_col = GROUP_COL
+    if match_mode not in ("visit", "subject_first"):
+        raise ValueError(f"match_mode must be 'visit' or 'subject_first', got {match_mode!r}")
+    if match_mode == "subject_first" and "base_id" not in cohort.columns:
+        raise ValueError("match_mode='subject_first' requires base_id column in cohort")
+    metric_low = metric.lower()
+    rng = np.random.RandomState(seed)
+    high = cohort[cohort[group_col] == "high"].copy()
+    low = cohort[cohort[group_col] == "low"].copy()
+
+    # Minor group drives the iteration
+    if len(low) <= len(high):
+        minor, major = low, high
+        minor_label, major_label = "low", "high"
+    else:
+        minor, major = high, low
+        minor_label, major_label = "high", "low"
+
+    # Shuffle minor group order (small randomness so results don't depend on input order)
+    minor_order = minor.sample(frac=1.0, random_state=rng).reset_index(drop=True)
+    available = major.copy().reset_index(drop=True)
+
+    def _make_pair(minor_row, picked_row, pass_label):
+        rec = {
+            "pair_id": None,  # filled after
+            "minor_id": minor_row["ID"],
+            "minor_age": minor_row["Age"],
+            f"minor_{metric_low}": minor_row[metric],
+            "major_id": picked_row["ID"],
+            "major_age": picked_row["Age"],
+            f"major_{metric_low}": picked_row[metric],
+            "age_diff": picked_row["Age"] - minor_row["Age"],
+        }
+        if match_mode == "subject_first":
+            rec["match_pass"] = pass_label
+        return rec
+
+    def _pick_nearest(cand_pool, age):
+        diffs = (cand_pool["Age"] - age).abs()
+        md = diffs.min()
+        if pd.isna(md) or md > caliper:
+            return None, None
+        cands = cand_pool[diffs == md].sort_values("ID")
+        return cands.iloc[0], md
+
+    pairs_records = []
+
+    if match_mode == "visit":
+        for _, row in minor_order.iterrows():
+            if len(available) == 0:
+                break
+            picked, _ = _pick_nearest(available, row["Age"])
+            if picked is None:
+                continue
+            pairs_records.append(_make_pair(row, picked, "visit"))
+            available = available.drop(picked.name).reset_index(drop=True)
+    else:
+        # === Pass 1: subject-level 1:1 ===
+        # 同 base_id 在 pass 1 兩邊都最多用 1 次（minor + major 都限制）
+        used_major_subjects = set()
+        used_minor_subjects = set()
+        matched_minor_ids = set()
+        for _, row in minor_order.iterrows():
+            if row["base_id"] in used_minor_subjects:
+                # 同 minor subject 已配過，這個 visit 留給 pass 2 處理
+                continue
+            cand_pool = available[~available["base_id"].isin(used_major_subjects)]
+            if len(cand_pool) == 0:
+                break
+            picked, _ = _pick_nearest(cand_pool, row["Age"])
+            if picked is None:
+                continue
+            pairs_records.append(_make_pair(row, picked, "subject"))
+            used_major_subjects.add(picked["base_id"])
+            used_minor_subjects.add(row["base_id"])
+            matched_minor_ids.add(row["ID"])
+            available = available.drop(picked.name).reset_index(drop=True)
+        # === Pass 2: visit-level fallback ===
+        # 剩下的 minor visits（subject 已用過或 pass 1 沒配到）→ 對 available 池
+        # 找最近 major（不再限制 subject）
+        unmatched_minor = minor_order[~minor_order["ID"].isin(matched_minor_ids)]
+        for _, row in unmatched_minor.iterrows():
+            if len(available) == 0:
+                break
+            picked, _ = _pick_nearest(available, row["Age"])
+            if picked is None:
+                continue
+            pairs_records.append(_make_pair(row, picked, "visit_fallback"))
+            available = available.drop(picked.name).reset_index(drop=True)
+
+    for i, rec in enumerate(pairs_records):
+        rec["pair_id"] = i
+    pairs_df = pd.DataFrame(pairs_records)
+
+    # Build long-form matched cohort
+    records = []
+    for _, p in pairs_df.iterrows():
+        records.append({
+            "pair_id": p["pair_id"], "ID": p["minor_id"],
+            "Age": p["minor_age"], metric: p[f"minor_{metric_low}"],
+            group_col: minor_label,
+        })
+        records.append({
+            "pair_id": p["pair_id"], "ID": p["major_id"],
+            "Age": p["major_age"], metric: p[f"major_{metric_low}"],
+            group_col: major_label,
+        })
+    matched = pd.DataFrame(records)
+    return matched, pairs_df, (minor_label, major_label)
+
+
+# ============================================================
+# Feature loading
+# ============================================================
+
+def load_age_error(subject_ids, demo):
+    with open(AGES_FILE) as f:
+        pred_ages = json.load(f)
+    rows = []
+    for sid in subject_ids:
+        real_row = demo[demo["ID"] == sid]
+        if len(real_row) == 0:
+            continue
+        real_age = real_row.iloc[0]["Age"]
+        pred_age = pred_ages.get(sid)
+        if pd.isna(real_age) or pred_age is None:
+            continue
+        rows.append({
+            "subject_id": sid,
+            "age_error": real_age - pred_age,
+            "abs_age_error": abs(real_age - pred_age),
+        })
+    return pd.DataFrame(rows)
+
+
+def load_landmark_asymmetry(subject_ids):
+    """Per-subject landmark asymmetry summary scalars:
+      - {region}_l2: L2 norm of all x/y pair diffs in that region
+      - {region}_area_diff: signed area asymmetry
+      - landmark_total_l2: L2 over all 4 regions combined
+    """
+    df = pd.read_csv(LANDMARK_FEATURES_CSV)
+    df = df[df["subject_id"].isin(subject_ids)].copy()
+
+    rows = []
+    for _, r in df.iterrows():
+        out = {"subject_id": r["subject_id"]}
+        total_sq = 0.0
+        for region in LANDMARK_REGIONS:
+            xy_cols = [c for c in df.columns
+                       if c.startswith(f"{region}_") and "area_diff" not in c]
+            vec = r[xy_cols].to_numpy(dtype=float)
+            l2 = float(np.sqrt(np.nansum(vec * vec)))
+            out[f"landmark__{region}_l2"] = l2
+            out[f"landmark__{region}_area_diff"] = float(r[f"{region}_area_diff"])
+            total_sq += np.nansum(vec * vec)
+        out["landmark__total_l2"] = float(np.sqrt(total_sq))
+        rows.append(out)
+    return pd.DataFrame(rows)
+
+
+def load_embedding_asymmetry(subject_ids):
+    """Per-subject embedding asymmetry scalar per model (L2 norm of mean-pooled diff)."""
+    rows = []
+    for sid in subject_ids:
+        out = {"subject_id": sid}
+        for model in EMBEDDING_MODELS:
+            npy = EMBEDDING_DIFF_DIR / model / "difference" / f"{sid}.npy"
+            if not npy.exists():
+                out[f"embasym__{model}_l2"] = np.nan
+                continue
+            a = np.load(npy, allow_pickle=True)
+            if a.dtype == object:
+                a = list(a.item().values())[0]
+            mean_diff = a.mean(axis=0) if a.ndim == 2 else a
+            out[f"embasym__{model}_l2"] = float(np.linalg.norm(mean_diff))
+        rows.append(out)
+    return pd.DataFrame(rows)
+
+
+def load_emotion_features():
+    """Return dict method -> DataFrame with subject_id + 7 emotions × 4 stats (28 cols)."""
+    emotion_cols = [f"{emo}_{stat}" for emo in EMOTIONS for stat in STATS]
+    out = {}
+    # NOTE: pass cohort ids via globals when this is called; we don't have them
+    # at module level. Use ALL ids known to the schema (loader will skip
+    # missing) — caller filters by cohort downstream.
+    # Preserve legacy contract: per-method DataFrame with method-prefixed cols.
+    # Empty `ids` is OK: loader iterates files. Pass None → loader needs an
+    # iterable, so collect all subject-visit ids from npy filenames.
+    method_dirs = _emotion_loader.EMO_AU_FEATURES_DIR
+    all_ids = set()
+    for m in EMOTION_METHODS:
+        d = method_dirs / m
+        if d.is_dir():
+            all_ids.update(p.stem for p in d.glob("*.npy"))
+    for method in EMOTION_METHODS:
+        try:
+            df = _emotion_loader.load_emotion(method, sorted(all_ids))
+        except (FileNotFoundError, KeyError) as e:
+            logger.warning(f"emotion {method}: {e}; skipping")
+            continue
+        if df.empty:
+            continue
+        keep = ["subject_id"] + [c for c in emotion_cols if c in df.columns]
+        df = df[keep].copy()
+        rename = {c: f"{method}__{c}" for c in keep if c != "subject_id"}
+        df = df.rename(columns=rename)
+        out[method] = df
+    return out
+
+
+# ============================================================
+# Stats
+# ============================================================
+
+def bh_fdr(pvals):
+    p = np.asarray(pvals, dtype=float)
+    n = len(p)
+    order = np.argsort(p)
+    ranked = p[order]
+    q = ranked * n / (np.arange(n) + 1)
+    # Enforce monotonicity from the top
+    q = np.minimum.accumulate(q[::-1])[::-1]
+    q = np.clip(q, 0, 1)
+    out = np.empty_like(q)
+    out[order] = q
+    return out
+
+
+def cohens_d(a, b):
+    a = np.asarray(a, dtype=float)
+    b = np.asarray(b, dtype=float)
+    na, nb = len(a), len(b)
+    if na < 2 or nb < 2:
+        return np.nan
+    va, vb = a.var(ddof=1), b.var(ddof=1)
+    pooled = np.sqrt(((na - 1) * va + (nb - 1) * vb) / (na + nb - 2))
+    if pooled == 0:
+        return 0.0
+    return (a.mean() - b.mean()) / pooled
+
+
+def hedges_g(a, b):
+    """Hedges' g = Cohen's d with small-sample bias correction (J factor)."""
+    d = cohens_d(a, b)
+    if np.isnan(d):
+        return np.nan
+    na, nb = len(a), len(b)
+    df = na + nb - 2
+    if df < 1:
+        return d
+    J = 1.0 - (3.0 / (4.0 * df - 1.0))
+    return d * J
+
+
+def compare_groups(values_high, values_low, feature_name, stat_mode="auto",
+                    paired_values=None):
+    """Compare high vs low MMSE for one feature.
+
+    paired_values : optional pairs_df for paired t-test. If provided, also
+      computes paired-test stat using the pair_id alignment.
+    """
+    vh = np.asarray(values_high, dtype=float)
+    vl = np.asarray(values_low, dtype=float)
+    vh_valid = vh[~np.isnan(vh)]
+    vl_valid = vl[~np.isnan(vl)]
+    n_h, n_l = len(vh_valid), len(vl_valid)
+
+    base = {
+        "feature": feature_name,
+        "n_high": n_h, "n_low": n_l,
+        "mean_high": vh_valid.mean() if n_h else np.nan,
+        "std_high": vh_valid.std(ddof=1) if n_h > 1 else np.nan,
+        "mean_low": vl_valid.mean() if n_l else np.nan,
+        "std_low": vl_valid.std(ddof=1) if n_l > 1 else np.nan,
+    }
+
+    if n_h < 2 or n_l < 2:
+        return {**base, "test": "skip", "stat": np.nan, "pvalue": np.nan,
+                "cohen_d": np.nan, "hedges_g": np.nan,
+                "paired_t_stat": np.nan, "paired_t_p": np.nan, "n_paired": 0}
+
+    use_mwu = stat_mode == "mannwhitney" or (stat_mode == "auto" and min(n_h, n_l) < 20)
+    if use_mwu:
+        stat_val, pval = stats.mannwhitneyu(vh_valid, vl_valid,
+                                             alternative="two-sided")
+        test_name = "mannwhitney_u"
+    else:
+        stat_val, pval = stats.ttest_ind(vh_valid, vl_valid, equal_var=False)
+        test_name = "welch_t"
+
+    # Paired t-test on the subset where both members of each pair have data
+    paired_stat, paired_p, n_paired = np.nan, np.nan, 0
+    if paired_values is not None and len(vh) == len(vl):
+        valid_mask = ~np.isnan(vh) & ~np.isnan(vl)
+        if valid_mask.sum() >= 2:
+            paired_stat, paired_p = stats.ttest_rel(vh[valid_mask], vl[valid_mask])
+            n_paired = int(valid_mask.sum())
+
+    return {
+        **base,
+        "test": test_name, "stat": float(stat_val), "pvalue": float(pval),
+        "cohen_d": cohens_d(vh_valid, vl_valid),
+        "hedges_g": hedges_g(vh_valid, vl_valid),
+        "paired_t_stat": float(paired_stat) if not np.isnan(paired_stat) else np.nan,
+        "paired_t_p": float(paired_p) if not np.isnan(paired_p) else np.nan,
+        "n_paired": n_paired,
+    }
+
+
+# ============================================================
+# Plots
+# ============================================================
+
+def plot_age_error_violin(matched_df, out_path, metric=None, group_col=None):
+    if metric is None:
+        metric = METRIC
+    if group_col is None:
+        group_col = GROUP_COL
+    high = matched_df[matched_df[group_col] == "high"]["age_error"].dropna()
+    low = matched_df[matched_df[group_col] == "low"]["age_error"].dropna()
+    fig, ax = plt.subplots(figsize=(5, 5))
+    parts = ax.violinplot([high, low], showmedians=True)
+    for pc, color in zip(parts["bodies"], ["#4C72B0", "#C44E52"]):
+        pc.set_facecolor(color)
+        pc.set_alpha(0.6)
+    ax.set_xticks([1, 2])
+    ax.set_xticklabels([f"High {metric}\n(n={len(high)})",
+                        f"Low {metric}\n(n={len(low)})"])
+    ax.set_ylabel("Age error (real − predicted)")
+    ax.set_title(f"Age prediction error by {metric} group\n"
+                 f"(age-matched 1:1 within AD)")
+    ax.axhline(0, color="gray", linestyle="--", linewidth=0.8)
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=150)
+    plt.close(fig)
+
+
+def plot_metric_figure(cohort, matched_df, median_val, out_path,
+                        metric=None, group_col=None):
+    """<metric>-only figure: pre-match distribution + post-match boxplot."""
+    if metric is None:
+        metric = METRIC
+    if group_col is None:
+        group_col = GROUP_COL
+    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+
+    # (a) <metric> histogram (pre-matching), median split annotated
+    ax = axes[0]
+    hi = cohort[cohort[group_col] == "high"][metric]
+    lo = cohort[cohort[group_col] == "low"][metric]
+    metric_max = max(30, int(np.ceil(cohort[metric].max() / 5.0)) * 5)
+    bins = np.arange(0, metric_max + 1, max(1, metric_max // 30))
+    ax.hist([lo, hi], bins=bins, stacked=True,
+            color=["#C44E52", "#4C72B0"],
+            label=[f"Low {metric} (n={len(lo)})",
+                   f"High {metric} (n={len(hi)})"])
+    ax.axvline(median_val, color="black", linestyle="--", linewidth=1.2,
+               label=f"median={median_val:.1f}")
+    ax.set_xlabel(metric)
+    ax.set_ylabel("# subjects")
+    ax.set_title(f"(a) {metric} distribution (pre-matching AD cohort)")
+    ax.legend()
+
+    # (b) <metric> boxplot post-match
+    ax = axes[1]
+    hi_m = matched_df[matched_df[group_col] == "high"][metric]
+    lo_m = matched_df[matched_df[group_col] == "low"][metric]
+    bp = ax.boxplot([hi_m, lo_m], patch_artist=True,
+                    tick_labels=[f"High\n(n={len(hi_m)})",
+                                  f"Low\n(n={len(lo_m)})"])
+    for patch, c in zip(bp["boxes"], ["#4C72B0", "#C44E52"]):
+        patch.set_facecolor(c); patch.set_alpha(0.6)
+    ax.set_ylabel(metric)
+    ax.set_title(f"(b) {metric} by group (post-matching)\n"
+                 f"High: {hi_m.mean():.1f}±{hi_m.std():.1f}  |  "
+                 f"Low: {lo_m.mean():.1f}±{lo_m.std():.1f}")
+    ax.axhline(median_val, color="black", linestyle="--", linewidth=0.8)
+
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=150)
+    plt.close(fig)
+
+
+# Backward-compat alias
+plot_mmse_figure = plot_metric_figure
+
+
+def plot_age_figure(cohort, matched_df, median_val, out_path,
+                     metric=None, group_col=None):
+    """Age-only figure: pre/post distribution + Age×<metric> scatter showing matching losses."""
+    if metric is None:
+        metric = METRIC
+    if group_col is None:
+        group_col = GROUP_COL
+    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+
+    # (a) Age distribution: pre vs post matching, per group
+    ax = axes[0]
+    bins_age = np.arange(50, 100, 2)
+    hi_pre = cohort[cohort[group_col] == "high"]["Age"]
+    lo_pre = cohort[cohort[group_col] == "low"]["Age"]
+    hi_post = matched_df[matched_df[group_col] == "high"]["Age"]
+    lo_post = matched_df[matched_df[group_col] == "low"]["Age"]
+    ax.hist(hi_pre, bins=bins_age, alpha=0.3, color="#4C72B0",
+            label=f"High pre (n={len(hi_pre)})", histtype="stepfilled")
+    ax.hist(lo_pre, bins=bins_age, alpha=0.3, color="#C44E52",
+            label=f"Low pre (n={len(lo_pre)})", histtype="stepfilled")
+    ax.hist(hi_post, bins=bins_age, histtype="step", color="#4C72B0",
+            linewidth=2, label=f"High post (n={len(hi_post)})")
+    ax.hist(lo_post, bins=bins_age, histtype="step", color="#C44E52",
+            linewidth=2, label=f"Low post (n={len(lo_post)})")
+    ax.set_xlabel("Age")
+    ax.set_ylabel("# subjects")
+    ax.set_title("(a) Age distribution: pre (fill) vs post (line) matching")
+    ax.legend(fontsize=8)
+
+    # (b) Age vs <metric> scatter — pre/post coloring
+    ax = axes[1]
+    matched_ids = set(matched_df["ID"])
+    unmatched = cohort[~cohort["ID"].isin(matched_ids)]
+    ax.scatter(unmatched["Age"], unmatched[metric], color="lightgray",
+               s=18, alpha=0.5, label=f"unmatched (n={len(unmatched)})")
+    hi_mm = matched_df[matched_df[group_col] == "high"]
+    lo_mm = matched_df[matched_df[group_col] == "low"]
+    ax.scatter(hi_mm["Age"], hi_mm[metric], color="#4C72B0", s=22,
+               alpha=0.7, label=f"High matched (n={len(hi_mm)})")
+    ax.scatter(lo_mm["Age"], lo_mm[metric], color="#C44E52", s=22,
+               alpha=0.7, label=f"Low matched (n={len(lo_mm)})")
+    ax.axhline(median_val, color="black", linestyle="--", linewidth=0.8)
+    ax.set_xlabel("Age")
+    ax.set_ylabel(metric)
+    ax.set_title(f"(b) Age × {metric} (matched highlighted)")
+    ax.legend(fontsize=8)
+
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=150)
+    plt.close(fig)
+
+
+def plot_emotion_heatmap(summary_df, out_path):
+    """8 methods × 7 emotions heatmap of Δmean (high − low) on the _mean stat only."""
+    diff = np.full((len(EMOTION_METHODS), len(EMOTIONS)), np.nan)
+    sig = np.full_like(diff, "", dtype=object)
+    for i, method in enumerate(EMOTION_METHODS):
+        for j, emo in enumerate(EMOTIONS):
+            feat = f"{method}__{emo}_mean"
+            row = summary_df[summary_df["feature"] == feat]
+            if len(row) == 0:
+                continue
+            diff[i, j] = row["mean_high"].iloc[0] - row["mean_low"].iloc[0]
+            q = row["qvalue"].iloc[0]
+            if not pd.isna(q):
+                if q < 0.001: sig[i, j] = "***"
+                elif q < 0.01: sig[i, j] = "**"
+                elif q < 0.05: sig[i, j] = "*"
+
+    vmax = np.nanmax(np.abs(diff)) if np.isfinite(np.nanmax(np.abs(diff))) else 1.0
+    fig, ax = plt.subplots(figsize=(8, 6))
+    im = ax.imshow(diff, cmap="RdBu_r", vmin=-vmax, vmax=vmax, aspect="auto")
+    ax.set_xticks(range(len(EMOTIONS)))
+    ax.set_xticklabels(EMOTIONS, rotation=30, ha="right")
+    ax.set_yticks(range(len(EMOTION_METHODS)))
+    ax.set_yticklabels(EMOTION_METHODS)
+    for i in range(len(EMOTION_METHODS)):
+        for j in range(len(EMOTIONS)):
+            if sig[i, j]:
+                ax.text(j, i, sig[i, j], ha="center", va="center", fontsize=10)
+    ax.set_title(f"Δ mean (High {METRIC} − Low {METRIC}) of emotion probabilities\n"
+                 "* q<0.05, ** q<0.01, *** q<0.001")
+    fig.colorbar(im, ax=ax, label="Δ mean")
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=150)
+    plt.close(fig)
+
+
+# ============================================================
+# AD vs {HC, NAD, ACS} comparison (was run_arm_b_ad_vs_hcgroups)
+# ============================================================
+
+def _hc_groups_per_group_stats(cohort, col):
+    """Welch t-test stats: AD (1) vs comparison (0). Returns dict."""
+    a = cohort[cohort["label"] == 1][col].dropna().astype(float)
+    b = cohort[cohort["label"] == 0][col].dropna().astype(float)
+    out = {
+        "ad_n": len(a), "ad_mean": float(a.mean()) if len(a) else np.nan,
+        "ad_std": float(a.std(ddof=1)) if len(a) > 1 else np.nan,
+        "hc_n": len(b), "hc_mean": float(b.mean()) if len(b) else np.nan,
+        "hc_std": float(b.std(ddof=1)) if len(b) > 1 else np.nan,
+    }
+    if len(a) > 1 and len(b) > 1:
+        t, p = stats.ttest_ind(a, b, equal_var=False)
+        out["welch_t"] = float(t)
+        out["welch_p"] = float(p)
+    else:
+        out["welch_t"] = np.nan
+        out["welch_p"] = np.nan
+    out["cohen_d"] = cohens_d(a, b)
+    return out
+
+
+def _hc_groups_fmt_stats(label, s, fmt=".2f"):
+    return (f"{label}: AD {s['ad_mean']:{fmt}} ± {s['ad_std']:{fmt}} vs "
+            f"{s['hc_mean']:{fmt}} ± {s['hc_std']:{fmt}}  "
+            f"(Welch t={s['welch_t']:.2f}, p={s['welch_p']:.3g}, "
+            f"d={s['cohen_d']:.3f})")
+
+
+def _hc_groups_plot_violin(cohort, comparison_name, out_path, caliper):
+    hc = cohort[cohort["label"] == 0]["age_error"].dropna()
+    ad = cohort[cohort["label"] == 1]["age_error"].dropna()
+    fig, ax = plt.subplots(figsize=(5, 5))
+    parts = ax.violinplot([hc, ad], showmedians=True)
+    for pc, color in zip(parts["bodies"], ["#4C72B0", "#C44E52"]):
+        pc.set_facecolor(color)
+        pc.set_alpha(0.6)
+    ax.set_xticks([1, 2])
+    ax.set_xticklabels([f"{comparison_name}\n(n={len(hc)})",
+                        f"AD\n(n={len(ad)})"])
+    ax.set_ylabel("Age error (real − predicted)")
+    ax.set_title(f"Age prediction error: {comparison_name} vs AD\n"
+                 f"(age-matched 1:1, caliper={caliper}y)")
+    ax.axhline(0, color="gray", linestyle="--", linewidth=0.8)
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=150)
+    plt.close(fig)
+
+
+def run_hc_groups_comparison(comparison, cohort_dir, cohort_mode, caliper=2.0):
+    """ad_vs_{hc, nad, acs} 1:1 age-matched analysis. comparison ∈ {HC, NAD, ACS}.
+
+    Output fan-out:
+      overview/<cohort>/cross_matched/<partition>/
+        {matched_features.csv, matched_pairs.csv, matching_report.txt, summary_stats.csv}
+      age/analysis/pred_error_stat/<cohort>/<partition>/matched_violin.png
+    """
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "run_4arm_deep_dive",
+        Path(__file__).parent / "run_4arm_deep_dive.py",
+    )
+    grid_mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(grid_mod)
+    grid_mod.COHORT_MODE = cohort_mode
+
+    logger.info(f"=== AD vs {comparison} ===")
+    cohort, pairs = grid_mod.build_cohort_ad_vs_HCgroup(
+        comparison, arm="B", caliper=caliper,
+    )
+    n_pairs_raw = len(pairs) if pairs is not None else len(cohort) // 2
+
+    with open(AGES_FILE) as f:
+        pred_ages = json.load(f)
+
+    # Drop pairs where either side lacks predicted_age
+    if pairs is not None:
+        keep = pairs["minor_id"].isin(pred_ages) & pairs["major_id"].isin(pred_ages)
+        pairs = pairs[keep].copy()
+        kept_ids = set(pairs["minor_id"]).union(pairs["major_id"])
+        cohort = cohort[cohort["ID"].isin(kept_ids)].copy()
+    n_pairs = len(pairs) if pairs is not None else len(cohort) // 2
+    logger.info(f"Matched pairs: {n_pairs}/{n_pairs_raw} after predicted_age filter "
+                f"(caliper={caliper}y)")
+
+    cohort = cohort.copy()
+    cohort["predicted_age"] = cohort["ID"].map(pred_ages)
+    cohort["age_error"] = cohort["Age"] - cohort["predicted_age"]
+
+    partition = f"ad_vs_{comparison.lower()}"
+    artifacts_dir = OVERVIEW_DIR / cohort_dir / "cross_matched" / partition
+    artifacts_dir.mkdir(parents=True, exist_ok=True)
+    age_stat_dir = AGE_PRED_ERROR_STAT_DIR / cohort_dir / partition
+    age_stat_dir.mkdir(parents=True, exist_ok=True)
+
+    cohort.to_csv(artifacts_dir / "matched_features.csv", index=False)
+    if pairs is not None:
+        pairs.to_csv(artifacts_dir / "matched_pairs.csv", index=False)
+
+    age_s = _hc_groups_per_group_stats(cohort, "Age")
+    mmse_s = _hc_groups_per_group_stats(cohort, "MMSE")
+    err_s = _hc_groups_per_group_stats(cohort, "age_error")
+
+    summary = pd.DataFrame([
+        {"variable": "Age", **age_s},
+        {"variable": "MMSE", **mmse_s},
+        {"variable": "age_error", **err_s},
+    ])
+    summary.to_csv(artifacts_dir / "summary_stats.csv", index=False)
+
+    with open(artifacts_dir / "matching_report.txt", "w", encoding="utf-8") as f:
+        f.write(f"AD vs {comparison} 1:1 age-matched (caliper={caliper}y)\n")
+        f.write(f"Matched pairs: {n_pairs}\n\n")
+        f.write(_hc_groups_fmt_stats("Age   ", age_s) + "\n")
+        f.write(_hc_groups_fmt_stats("MMSE  ", mmse_s) + "\n")
+        f.write(_hc_groups_fmt_stats("AgeErr", err_s) + "\n")
+
+    _hc_groups_plot_violin(cohort, comparison,
+                            age_stat_dir / "matched_violin.png", caliper)
+    logger.info(f"Saved {artifacts_dir}/ + {age_stat_dir}/matched_violin.png")
+    logger.info("  " + _hc_groups_fmt_stats("Age   ", age_s))
+    logger.info("  " + _hc_groups_fmt_stats("MMSE  ", mmse_s))
+    logger.info("  " + _hc_groups_fmt_stats("AgeErr", err_s))
+    return summary
+
+
+# ============================================================
+# Main
+# ============================================================
+
+def _select_ad_via_grid(demo, metric, cohort_mode):
+    """新 cohort 共用 selector：
+      - p_first_hc_all : first-visit P + CDR≥0.5 + npy fallback (與 grid 一致)
+      - p_all_hc_all   : 保留所有 P visits + CDR≥0.5 + 必須有 embedding/landmark
+    """
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "run_4arm_deep_dive",
+        Path(__file__).parent / "run_4arm_deep_dive.py",
+    )
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    demo = demo.copy()
+    demo["Global_CDR"] = pd.to_numeric(demo.get("Global_CDR"), errors="coerce")
+    elig = demo[(demo["Global_CDR"] >= 0.5) &
+                 demo[metric].notna() &
+                 demo["Age"].notna()].copy()
+    elig = elig.sort_values(["base_id", "visit"])
+    if cohort_mode == "p_all_hc_all":
+        return mod._keep_visits_with_features(elig)
+    return mod._pick_first_visit_with_features(elig)
+
+
+def _set_metric(metric):
+    """Switch module-level METRIC and derived constants. Used by main() to
+    dispatch between MMSE / CASI hi-lo branches without threading metric
+    through every helper signature."""
+    global METRIC, METRIC_LOW, GROUP_COL, COMPARISON_NAME
+    METRIC = metric
+    METRIC_LOW = metric.lower()
+    GROUP_COL = f"{METRIC_LOW}_group"
+    COMPARISON_NAME = f"{METRIC_LOW}_high_vs_low"
+
+
+def _run_hilo(args):
+    """Hi-lo (MMSE / CASI median split) full multi-modality analysis.
+    Uses module-level METRIC / METRIC_LOW / GROUP_COL / COMPARISON_NAME — set
+    via _set_metric() before calling.
+
+    Output fan-out:
+      overview/<cohort>/cross_matched/<partition>/
+        {cohort.csv, matched_features.csv, matched_pairs.csv, matching_report.txt,
+         summary_stats.csv, <metric>_continuous_corr.csv,
+         fig_<metric>_overview.png, fig_age_overview.png}
+      age/analysis/pred_error_stat/<cohort>/<partition>/matched_violin.png
+      emo_au/analysis/feature_stat/<cohort>/<partition>/fig_emotion_grid_heatmap.png
+    """
+    cohort_dir = cohort_name(args.cohort_mode)
+    comparison_dir = OVERVIEW_DIR / cohort_dir / "cross_matched" / COMPARISON_NAME
+    comparison_dir.mkdir(parents=True, exist_ok=True)
+    age_stat_dir = AGE_PRED_ERROR_STAT_DIR / cohort_dir / COMPARISON_NAME
+    age_stat_dir.mkdir(parents=True, exist_ok=True)
+    emo_stat_dir = EMO_AU_FEATURE_STAT_DIR / cohort_dir / COMPARISON_NAME
+    emo_stat_dir.mkdir(parents=True, exist_ok=True)
+
+    # 1. Cohort
+    demo = load_p_demographics()
+    if args.cohort_mode in ("p_first_hc_all", "p_all_hc_all"):
+        cohort = _select_ad_via_grid(demo, METRIC, args.cohort_mode)
+        logger.info(f"P patients ({args.cohort_mode}, CDR≥0.5 + features): "
+                     f"n={len(cohort)}")
+    else:
+        cohort = select_visit(demo, args.visit_selection)
+        logger.info(f"P patients with {METRIC}+Age "
+                     f"({args.visit_selection} visit): n={len(cohort)}")
+
+    # 2. Filter to those with predicted age
+    with open(AGES_FILE) as f:
+        pred_ages = json.load(f)
+    cohort = cohort[cohort["ID"].isin(pred_ages)].copy()
+    logger.info(f"After requiring predicted_age: n={len(cohort)}")
+
+    # 3. Split by metric median
+    cohort, median_val = split_by_metric_median(cohort, args.median_tiebreak)
+    n_high = (cohort[GROUP_COL] == "high").sum()
+    n_low = (cohort[GROUP_COL] == "low").sum()
+    logger.info(f"{METRIC} median={median_val:.1f}; high n={n_high}, low n={n_low}")
+
+    cohort.to_csv(comparison_dir / "cohort.csv", index=False)
+
+    # 4. 1:1 age matching
+    # p_all_hc_all 模式 AD 端有多 visit → 採 subject-first 兩階段配對
+    match_mode = ("subject_first" if args.cohort_mode == "p_all_hc_all"
+                   else "visit")
+    matched, pairs_df, (minor_label, major_label) = match_1to1(
+        cohort, caliper=args.caliper, seed=args.seed, match_mode=match_mode,
+    )
+    pairs_df.to_csv(comparison_dir / "matched_pairs.csv", index=False)
+
+    n_pairs = len(pairs_df)
+    logger.info(f"Matched pairs: {n_pairs} (caliper={args.caliper}, minor={minor_label})")
+
+    # 5. Load features and merge
+    age_err = load_age_error(matched["ID"].tolist(), demo)
+    emo_dfs = load_emotion_features()
+    lmk = load_landmark_asymmetry(matched["ID"].tolist())
+    emb_asym = load_embedding_asymmetry(matched["ID"].tolist())
+
+    merged = matched.merge(age_err, left_on="ID", right_on="subject_id", how="left")
+    for method, edf in emo_dfs.items():
+        merged = merged.merge(edf, left_on="ID", right_on="subject_id",
+                              how="left", suffixes=("", f"_{method}_sid"))
+        if f"subject_id_{method}_sid" in merged.columns:
+            merged = merged.drop(columns=[f"subject_id_{method}_sid"])
+    merged = merged.merge(lmk, left_on="ID", right_on="subject_id",
+                          how="left", suffixes=("", "_lmk_sid"))
+    if "subject_id_lmk_sid" in merged.columns:
+        merged = merged.drop(columns=["subject_id_lmk_sid"])
+    merged = merged.merge(emb_asym, left_on="ID", right_on="subject_id",
+                          how="left", suffixes=("", "_emb_sid"))
+    if "subject_id_emb_sid" in merged.columns:
+        merged = merged.drop(columns=["subject_id_emb_sid"])
+    merged = merged.drop(columns=[c for c in merged.columns if c.startswith("subject_id")])
+
+    merged.to_csv(comparison_dir / "matched_features.csv", index=False)
+
+    # 6. Matching report
+    with open(comparison_dir / "matching_report.txt", "w", encoding="utf-8") as f:
+        f.write(f"=== AD {METRIC} age-balanced cohort ===\n")
+        f.write(f"Visit selection: {args.visit_selection}\n")
+        f.write(f"{METRIC} median: {median_val:.2f} (tiebreak={args.median_tiebreak})\n")
+        f.write(f"Pre-matching: high n={n_high}, low n={n_low}\n")
+        f.write(f"Post-matching: {n_pairs} pairs ({2*n_pairs} subjects)\n")
+        f.write(f"Caliper (years): {args.caliper}\n\n")
+        high_m = matched[matched[GROUP_COL] == "high"]
+        low_m = matched[matched[GROUP_COL] == "low"]
+        f.write(f"Post-match age: high {high_m['Age'].mean():.2f}±{high_m['Age'].std():.2f}, "
+                f"low {low_m['Age'].mean():.2f}±{low_m['Age'].std():.2f}\n")
+        if len(high_m) > 1 and len(low_m) > 1:
+            t, p = stats.ttest_ind(high_m["Age"], low_m["Age"], equal_var=False)
+            f.write(f"Age t-test p={p:.4f} (should be >>0.05 if matching worked)\n")
+        f.write(f"Post-match {METRIC}: high {high_m[METRIC].mean():.2f}±{high_m[METRIC].std():.2f}, "
+                f"low {low_m[METRIC].mean():.2f}±{low_m[METRIC].std():.2f}\n")
+
+    # 7. Per-feature stats
+    feature_cols = ["age_error", "abs_age_error"]
+    for method in EMOTION_METHODS:
+        for emo in EMOTIONS:
+            for stat in STATS:
+                col = f"{method}__{emo}_{stat}"
+                if col in merged.columns:
+                    feature_cols.append(col)
+    for region in LANDMARK_REGIONS:
+        for suffix in ("l2", "area_diff"):
+            col = f"landmark__{region}_{suffix}"
+            if col in merged.columns:
+                feature_cols.append(col)
+    if "landmark__total_l2" in merged.columns:
+        feature_cols.append("landmark__total_l2")
+    for model in EMBEDDING_MODELS:
+        col = f"embasym__{model}_l2"
+        if col in merged.columns:
+            feature_cols.append(col)
+
+    # Build paired-aligned arrays by pair_id (for paired t-test)
+    high_by_pair = merged[merged[GROUP_COL] == "high"].set_index("pair_id")
+    low_by_pair = merged[merged[GROUP_COL] == "low"].set_index("pair_id")
+    common_pairs = high_by_pair.index.intersection(low_by_pair.index)
+    high_aligned = high_by_pair.loc[common_pairs].sort_index()
+    low_aligned = low_by_pair.loc[common_pairs].sort_index()
+
+    rows = []
+    for col in feature_cols:
+        if col not in merged.columns:
+            continue
+        rows.append(compare_groups(
+            high_aligned[col].to_numpy(dtype=float),
+            low_aligned[col].to_numpy(dtype=float),
+            col, stat_mode=args.stat,
+            paired_values=True,
+        ))
+    summary = pd.DataFrame(rows)
+
+    # 8. FDR correction across all features (BH-FDR applied independently
+    # to the Welch p-values and the paired t-test p-values)
+    for pcol, qcol in [("pvalue", "qvalue"), ("paired_t_p", "paired_t_q")]:
+        valid = summary[pcol].notna()
+        summary[qcol] = np.nan
+        if valid.sum() > 0:
+            summary.loc[valid, qcol] = bh_fdr(summary.loc[valid, pcol].values)
+
+    summary.to_csv(comparison_dir / "summary_stats.csv", index=False)
+
+    # 9. Continuous metric correlations (robustness)
+    cont_rows = []
+    for col in feature_cols:
+        if col not in merged.columns:
+            continue
+        sub = merged[[col, METRIC]].dropna()
+        if len(sub) < 5:
+            continue
+        r_p, p_p = stats.pearsonr(sub[METRIC], sub[col])
+        r_s, p_s = stats.spearmanr(sub[METRIC], sub[col])
+        cont_rows.append({
+            "feature": col, "n": len(sub),
+            "pearson_r": r_p, "pearson_p": p_p,
+            "spearman_r": r_s, "spearman_p": p_s,
+        })
+    pd.DataFrame(cont_rows).to_csv(
+        comparison_dir / f"{METRIC_LOW}_continuous_corr.csv", index=False)
+
+    # 10. Plots — fan out per modality
+    plot_metric_figure(cohort, matched, median_val,
+                        comparison_dir / f"fig_{METRIC_LOW}_overview.png")
+    plot_age_figure(cohort, matched, median_val,
+                     comparison_dir / "fig_age_overview.png")
+    plot_age_error_violin(merged, age_stat_dir / "matched_violin.png")
+    plot_emotion_heatmap(summary, emo_stat_dir / "fig_emotion_grid_heatmap.png")
+
+    logger.info(f"Done. Artifacts at {comparison_dir}; "
+                 f"per-modality fanout to age/emo_au feature_stat trees.")
+    logger.info(f"  Pairs: {n_pairs}, features tested: {len(summary)}")
+    sig = summary[summary["qvalue"] < 0.05]
+    logger.info(f"  Significant (q<0.05): {len(sig)} features")
+    if len(sig) > 0:
+        logger.info(f"  Top 5: {sig.nsmallest(5, 'qvalue')['feature'].tolist()}")
+
+
+COMPARISON_CHOICES = ["ad_vs_hc", "ad_vs_nad", "ad_vs_acs", "mmse_hilo", "casi_hilo"]
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--comparison", required=True, choices=COMPARISON_CHOICES,
+                        help="ad_vs_{hc,nad,acs}: AD vs HC-group matching artifacts; "
+                             "{mmse,casi}_hilo: AD within-cohort hi-lo full analysis.")
+    parser.add_argument("--cohort-mode",
+                         choices=["default", "p_first_hc_all", "p_all_hc_all"],
+                         default="default")
+    parser.add_argument("--caliper", type=float, default=2.0)
+    # hi-lo only:
+    parser.add_argument("--visit-selection", choices=["first", "latest"], default="first")
+    parser.add_argument("--median-tiebreak", choices=["high", "low"], default="high",
+                        help="Where metric == median subjects go.")
+    parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--stat", choices=["ttest", "mannwhitney", "auto"], default="auto")
+    args = parser.parse_args()
+
+    cohort_dir = cohort_name(args.cohort_mode)
+    if args.comparison.startswith("ad_vs_"):
+        comparison_label = args.comparison.replace("ad_vs_", "").upper()
+        run_hc_groups_comparison(comparison_label, cohort_dir,
+                                  args.cohort_mode, caliper=args.caliper)
+    else:
+        metric = "MMSE" if args.comparison == "mmse_hilo" else "CASI"
+        _set_metric(metric)
+        _run_hilo(args)
+
+
+if __name__ == "__main__":
+    main()
