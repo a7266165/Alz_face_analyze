@@ -1,0 +1,1053 @@
+Citation: Chien, C.-F.; Sung, J.-L.;
+Wang, C.-P.; Yen, C.-W.; Yang, Y.-H.
+Analyzing Facial Asymmetry in
+Alzheimer’s Dementia Using
+Image-Based Technology.
+Biomedicines 2023, 11, 2802.
+https://doi.org/10.3390/
+biomedicines11102802
+Academic Editors: Wu Qiu and
+Hulin Kuang
+Received: 1 September 2023
+Revised: 12 October 2023
+Accepted: 13 October 2023
+Published: 16 October 2023
+Copyright:
+© 2023 by the authors.
+Licensee MDPI, Basel, Switzerland.
+This article is an open access article
+distributed
+under
+the
+terms
+and
+conditions of the Creative Commons
+Attribution (CC BY) license (https://
+creativecommons.org/licenses/by/
+4.0/).
+biomedicines
+Article
+Analyzing Facial Asymmetry in Alzheimer’s Dementia Using
+Image-Based Technology
+Ching-Fang Chien 1,2, Jia-Li Sung 3, Chung-Pang Wang 3, Chen-Wen Yen 3,4,5,*
+and Yuan-Han Yang 1,2,4,5,*
+1
+Department of Neurology, Kaohsiung Municipal Ta-Tung Hospital, Kaohsiung Medical University Hospital,
+Kaohsiung Medical University, Kaohsiung 80756, Taiwan
+2
+Department of Neurology, Kaohsiung Medical University Hospital, Kaohsiung Medical University,
+Kaohsiung 80756, Taiwan
+3
+Department of Mechanical and Electromechanical Engineering, National Sun Yat-sen University,
+Kaohsiung 80424, Taiwan
+4
+Department of and Master’s Program in Neurology, Faculty of Medicine, College of Medicine,
+Kaohsiung Medical University, Kaohsiung 80708, Taiwan
+5
+Neuroscience Research Center, Kaohsiung Medical University, Kaohsiung 80708, Taiwan
+*
+Correspondence: cmurobot@gmail.com (C.-W.Y.); endlessyhy@gmail.com (Y.-H.Y.)
+Abstract: Several studies have demonstrated accelerated brain aging in Alzheimer’s dementia (AD).
+Previous studies have also reported that facial asymmetry increases with age. Because obtaining facial
+images is much easier than obtaining brain images, the aim of this work was to investigate whether
+AD exhibits accelerated aging patterns in facial asymmetry. We developed new facial asymmetry
+measures to compare Alzheimer’s patients with healthy controls. A three-dimensional camera
+was used to capture facial images, and 68 facial landmarks were identiﬁed using an open-source
+machine-learning algorithm called OpenFace. A standard image registration method was used to
+align the three-dimensional original and mirrored facial images. This study used the registration error,
+representing landmark superimposition asymmetry distances, to examine 29 pairs of landmarks to
+characterize facial asymmetry. After comparing the facial images of 150 patients with AD with those
+of 150 age- and sex-matched non-demented controls, we found that the asymmetry of 20 landmarks
+was signiﬁcantly different in AD than in the controls (p < 0.05). The AD-linked asymmetry was
+concentrated in the face edge, eyebrows, eyes, nostrils, and mouth. Facial asymmetry evaluation may
+thus serve as a tool for the detection of AD.
+Keywords: Alzheimer’s dementia; facial asymmetry; facial landmarks; accelerated aging; Procrustes
+method
+1. Introduction
+Alzheimer’s dementia (AD) is characterized by a gradual decline in cognitive func-
+tions, particularly memory, impacting spatial awareness, judgment, and causing neuropsy-
+chiatric symptoms, and thus signiﬁcantly affecting daily life. The prevailing understanding
+of AD pathology involves the accumulation of β-amyloid plaques outside nerve cells and
+tau protein tangles inside nerve cells, leading to neuronal damage and death [1]. However,
+these pathological changes are considered late-stage manifestations, and there are few
+hypotheses regarding the events preceding AD onset. In AD, synaptic degeneration can
+be detected in the early stages of pathological progression before neuronal degeneration.
+Synapses are where β-amyloid peptides are generated and serve as targets for toxic β-
+amyloid oligomers [2]. Neuroinﬂammation, which has been conﬁrmed to play a pivotal
+role in AD, involves various inﬂammatory processes within the central nervous system [3].
+Activated immune cells release inﬂammatory molecules in the brain, potentially causing
+neuronal damage. This inﬂammation may be a consequence of neuronal damage and
+abnormal protein metabolism, contributing to the progression of the disease. Among innate
+Biomedicines 2023, 11, 2802. https://doi.org/10.3390/biomedicines11102802
+https://www.mdpi.com/journal/biomedicines
+
+Biomedicines 2023, 11, 2802
+2 of 15
+immune cells, microglial cells are central participants in neuroinﬂammation. Activated mi-
+croglial cells exhibit diverse cellular proﬁles and interact with β-amyloid and tau proteins,
+as well as neuronal circuits in various ways. In later AD stages, excessive neuroinﬂamma-
+tion leads to neuronal and glial cell death. Aβ clearance is impaired, and microglial cells
+release high levels of pro-inﬂammatory molecules, causing neurodegeneration. This creates
+a vicious cycle, and the release of ROS and NOS by microglial cells accelerates neuronal
+loss [3,4]. Vascular dysregulation may also be associated with AD. In post-mortem studies,
+60–90% of clinical diagnosed AD patients exhibit brain vascular abnormalities, with 30%
+showing signs of cerebral infarctions [5]. About one-third of clinical diagnosed vascular
+dementia patients present AD-related pathological features, including amyloid plaques and
+neuroﬁbrillary tangles [6]. Genetic factors play a role, particularly in early-onset AD with
+mutations in genes like APP, PSEN1, and PSEN2. However, most AD cases are late-onset
+and involve complex interactions between multiple genetic and environmental factors.
+From a macroscopic perspective, AD primarily affects brain regions such as the cerebral
+cortex and the hippocampus, resulting in atrophy and volume loss. Owing to the limited
+treatability of AD currently, earlier detection of AD and earlier use of medications such as
+acetylcholinesterase inhibitors is important as this may postpone disease progression and
+preserve patients’ activities of daily living.
+The developmental processes of the brain and facial morphology are highly intercon-
+nected [7,8]. During early embryonic development, the neuroepithelial cells located within
+the neural folds gives rise to facial precursor cells known as Cranial Neural Crest Cells
+(CNCC) [9]. These CNCCs undergo a transformation from an epithelial to a mesenchymal
+state and migrate ventrally, playing a signiﬁcant role in the development of a majority of
+craniofacial bones and connective tissues. Early brain growth impacts facial prominence
+positioning and growth. In proximity to the CNCCs is the forebrain, which encompasses
+the cerebral cortex. The CNCC-secreted paracrine factors also regulate brain development.
+These interactions are well-documented in animal embryo studies and align with the
+co-occurrence of neurodevelopmental and craniofacial abnormalities in humans [8].
+Many studies have demonstrated a pattern of accelerated brain aging in patients with
+AD. Based on MRI imaging, the BrainAGE algorithm linked AD to accelerated brain aging
+compared with a cognitively normal group and a group with mild cognitive impairment
+(MCI) [10–13]. Huang et al. utilized MRI and a machine learning model to predict brain age
+based on gray matter volume, revealing an accelerated brain aging trajectory in patients
+with MCI compared with healthy individuals [14]. Linden et al. found that facial asymme-
+try increases with age [15], and normal face development is highly contingent on normal
+brain development [8,16,17]. Facial malformation was also observed to be related to un-
+derlying brain disease [18]. Face–brain asymmetry has been identiﬁed in autism spectrum
+disorders [19] and in patients with focal epilepsy [20]. The etiology of facial asymmetry
+is multifactorial, including functional, neuromuscular, stomatognathic, environmental,
+congenital, traumatic, and neoplastic factors, as well as the effects of chronic skin diseases
+and aging. The face reveals clues to sex, age, and genetics. One study reported that AD
+patients have an “older-appearing face” based on the estimation of an independent panel
+of eight human raters [21]. Penke et al. also found that facial asymmetry was an important
+predictor of cognitive decline in older persons [22].
+Most diagnostic procedures for AD are invasive or time consuming. For example, psy-
+chological assessment is time consuming, cerebrospinal ﬂuid examination is invasive, and
+amyloid positron emission tomography is costly [23]. Beyond the conventional chemical
+and imaging biomarkers, other markers for AD detection are being developed [24,25]. As
+far as we know, there are no facial presentations that are typical of AD.
+Review articles have appeared that cover many single-face image-based methods for
+estimating age [26–28]. However, these articles do not focus on the relationship between
+face aging and neurodegenerative diseases such as AD. In an initial investigation of the
+impact of AD on the human face, the above-cited literature points to facial symmetry as an
+interesting feature to focus on.
+
+Biomedicines 2023, 11, 2802
+3 of 15
+Considering that obtaining facial images is much easier than obtaining brain images,
+the aim of this study was to investigate whether facial asymmetry is potentially a marker
+for differentiating patients with AD from age- and sex-matched, healthy control subjects.
+2. Materials and Methods
+2.1. Participants
+A total of 300 Taiwanese participants, including 150 AD patients and 150 controls
+without dementia, were recruited at Kaohsiung Municipal Ta-Tung Hospital in southern
+Taiwan. Participants had no previous facial trauma or disease. The diagnosis of AD was
+based on the NINCDS-ADRDA criteria [29] with reference to a series of comprehensive neu-
+ropsychological tests, including the Mini-Mental State Examination (MMSE) [30] derived
+from the Cognitive Abilities Screening Instrument (CASI) [31], Neuropsychiatric Inventory
+(NPI) [32], and Clinical Dementia Rating (CDR) scale [33]. The neuroimaging and blood
+check to exclude other conditions possibly contributing to the diagnosis of dementia were
+conducted simultaneously. The control group without dementia was recruited by a senior
+neurologist to exclude dementia and other systemic diseases.
+This study was approved by the institutional review board of the Kaohsiung Medical
+University Chung-Ho Memorial Hospital (KMUHIRB-SV(I)-20210067). All patients gave
+written consent for the use of their images for research purposes before the image was taken.
+2.2. Data Collection
+2.2.1. Image Retraction
+The images of patients were recorded with a stereo camera (Intel RealSense D435) to
+capture three-dimensional (3D) facial images. With a 30 Hz frame rate, every participant
+took thirty images. The resolution of the infrared camera is 1280 × 720. The resolution
+of the RGB camera is 1920 × 1080. Under standardized lighting conditions and against a
+constant background, test subjects were guided by a clinician to a natural head position at a
+distance of about 40 to 60 cm from the 3D camera. While keeping the Frankfort horizontal
+(FH) plane parallel to the ﬂoor subjects were asked to maintain a neutral facial expression
+with both eyes looking forward. The experiments were carried out in a quiet room of
+Kaohsiung Municipal Ta-Tung Hospital and subjects were required to stay seated during
+the test. Subjects were instructed to show a natural and relaxed facial expression while
+the images were taken. After removing images with closed-eyes or other inappropriate
+expressions, we included those with adequate quality for further analysis.
+2.2.2. Face Landmark Detection and Pre-Processing
+For each of the 3D face images analyzed in this study, we used OpenFace [34], a facial
+behavior analysis toolkit, to detect 68 facial landmarks. OpenFace’s open-source availability,
+robust facial landmark detection, and strong performance make it a preferred choice for
+research and development in the ﬁeld of facial analysis. As shown in Figures 1 and 2, as
+a machine learning algorithm, OpenFace detects 29 hemiface landmarks for each side of
+the face and 10 midface landmarks. Each landmark is represented by its 3-dimension x
+(horizontal), y (vertical), and z (depth) coordinates. Since OpenFace also provides the yaw
+angle for the human face, we took the face with the smallest yaw angle as the frame for
+subsequent calculation (Figure 3).
+In measuring the position of the facial landmarks, inaccurate results were frequently
+encountered in estimating the depth of facial contour landmarks since these landmarks are
+located in the boundary between face and background regions. To remedy this problem,
+by processing the depth measurements provided by the camera system, we used K-means
+clustering algorithm [35] to automatically classify image pixels into a foreground (face)
+cluster and a background cluster. For each of the facial landmarks that were incorrectly
+assigned into the background cluster, we used the following rules to replace its depth
+measurement. First, with such a landmark as the center, we set up a 7 × 7 pixel window.
+Next, we examined how many pixels within this window were clustered into the facial
+
+Biomedicines 2023, 11, 2802
+4 of 15
+cluster and used the average depth of these pixels as the depth of the landmark. When
+pixels of this 7 × 7 window were all assigned into the background cluster, the landmark
+depth was chosen as the median value of the depth of all 68 landmarks.
+Biomedicines 2023, 11, x FOR PEER REVIEW 
+4 of 15 
+ 
+ 
+Figure 1. The image registration process example of OpenFace. 
+ 
+Figure 2. Facial feature points distribution map by OpenFace. 
+ 
+Figure 3. Yaw angle. 
+In measuring the position of the facial landmarks, inaccurate results were frequently 
+encountered in estimating the depth of facial contour landmarks since these landmarks 
+are located in the boundary between face and background regions. To remedy this 
+problem, by processing the depth measurements provided by the camera system, we used 
+K-means clustering algorithm [35] to automatically classify image pixels into a foreground 
+(face) cluster and a background cluster. For each of the facial landmarks that were 
+incorrectly assigned into the background cluster, we used the following rules to replace 
+its depth measurement. First, with such a landmark as the center, we set up a 7 × 7 pixel 
+window. Next, we examined how many pixels within this window were clustered into 
+the facial cluster and used the average depth of these pixels as the depth of the landmark. 
+Figure 1. The image registration process example of OpenFace.
+Biomedicines 2023, 11, x FOR PEER REVIEW 
+4 of 15 
+ 
+ 
+Figure 1. The image registration process example of OpenFace. 
+ 
+Figure 2. Facial feature points distribution map by OpenFace. 
+ 
+Figure 3. Yaw angle. 
+In measuring the position of the facial landmarks, inaccurate results were frequently 
+encountered in estimating the depth of facial contour landmarks since these landmarks 
+are located in the boundary between face and background regions. To remedy this 
+problem, by processing the depth measurements provided by the camera system, we used 
+K-means clustering algorithm [35] to automatically classify image pixels into a foreground 
+(face) cluster and a background cluster. For each of the facial landmarks that were 
+incorrectly assigned into the background cluster, we used the following rules to replace 
+its depth measurement. First, with such a landmark as the center, we set up a 7 × 7 pixel 
+window. Next, we examined how many pixels within this window were clustered into 
+the facial cluster and used the average depth of these pixels as the depth of the landmark. 
+Figure 2. Facial feature points distribution map by OpenFace.
+Biomedicines 2023, 11, x FOR PEER REVIEW 
+4 of 15 
+ 
+ 
+Figure 1. The image registration process example of OpenFace. 
+ 
+Figure 2. Facial feature points distribution map by OpenFace. 
+ 
+Figure 3. Yaw angle. 
+In measuring the position of the facial landmarks, inaccurate results were frequently 
+encountered in estimating the depth of facial contour landmarks since these landmarks 
+are located in the boundary between face and background regions. To remedy this 
+problem, by processing the depth measurements provided by the camera system, we used 
+K-means clustering algorithm [35] to automatically classify image pixels into a foreground 
+(face) cluster and a background cluster. For each of the facial landmarks that were 
+incorrectly assigned into the background cluster, we used the following rules to replace 
+its depth measurement. First, with such a landmark as the center, we set up a 7 × 7 pixel 
+window. Next, we examined how many pixels within this window were clustered into 
+the facial cluster and used the average depth of these pixels as the depth of the landmark. 
+Figure 3. Yaw angle.
+The size of a face image varies with the actual face size and the distance between the
+subject and the camera. To develop asymmetry measures that are invariant to these varia-
+tions, we ﬁrst calculated the centroid of all facial landmarks and denoted its coordinates
+as (x, y). Next, we used Equation (1a) to determine the horizontal normalized coefﬁcient
+dx which is the average of all the horizontal distances between the landmark centroid and
+landmarks. Similarly, this work used Equation (1b) to determine the vertical normalized
+coefﬁcient dy. Note that in the xy plane, distances are measured in pixels whereas distances
+
+Biomedicines 2023, 11, 2802
+5 of 15
+in the z direction are measured in mm. This unit inconsistency problem will be addressed
+in the following section.
+∑
+68
+i=1
+|xi −x|
+68
+= dx
+(1a)
+∑
+68
+i=1
+|yi −y|
+68
+= dy
+(1b)
+Note that the above normalization procedure was not employed in the depth direction.
+There are two reasons for such an arrangement. The ﬁrst is that, in the depth direction, the
+differences between the landmarks are invariant to the distance between the subject and the
+camera. The second reason is that, as shown in the next section, the proposed asymmetry
+measure does not account for depth direction differences.
+2.3. Normalization and Procrustes Analysis of the Facial Coordinates
+This work characterizes facial asymmetry by comparing the location of each of the
+29 right hemiface landmarks to the location of the corresponding left hemiface landmarks.
+To achieve this goal, the basic idea of the proposed approach is ﬁrst to create a mirror face im-
+age by horizontally ﬂipping the original image and then uses the Procrustes method [36,37]
+to align the mirror and original images. The Procrustes method, used in shape analysis
+and image alignment, aligns objects like facial images by translation, rotation, scaling,
+and reﬂection to minimize differences. It places facial landmarks in a shared coordinate
+system and orientation. This is employed to create a mirrored right-face image for LSAD
+calculations with the left face. Note that since the right hemiface of the mirror image is
+essentially the left hemiface of the original image, the Procrustes method only needs to
+align the right hemiface of the original and mirror images. This alignment procedure is
+critical for accurate asymmetry assessment since it is very difﬁcult to perfectly orient the
+test subjects toward the camera.
+To implement the proposed approach, we ﬁrst denoted the coordinates of the ith right
+hemiface landmarks of the original image and mirror image as (xi, yi, zi) and (αi, βi, γi),
+respectively. The coordinates of the centroids of the right hemiface landmarks of the
+original and mirror images are denoted as (x, y, z) and (α, β, γ), respectively. Based
+on the normalization concept introduced in the previous section, we used Equation (2a)
+to calculate the normalized horizontal coordinate of the ith right hemiface landmarks
+of the original image. In an identical manner, we used Equation (2b) to determine the
+normalized vertical coordinate of the ith right hemiface landmarks of the original image.
+Similarly, for the mirror image, Equation (3a,b) were used to determine the normalized
+horizontal and vertical coordinates of ith right hemiface landmarks of the mirror image.
+For the depth direction, this work used Equations (2c) and (3c) to determine the normalized
+depth coordinates of the right hemiface landmarks of the original image and mirror image,
+respectively. Note that the depth coefﬁcient c of Equations (2c) and (3c) was introduced
+to adjust the relative weighting between the alignment errors of the xy plane and the
+depth direction in applying the Procrustes method and at the same time resolving the unit
+inconsistency problem of the xy plane and the z direction.
+Xi = (xi −x)/dx
+(2a)
+Yi = (yi −y)/dy
+(2b)
+Zi = c ∗(zi −z)
+(2c)
+Ai = (αi −α)/dx
+(3a)
+Bi =
+ βi −β
+
+/dy
+(3b)
+Ci = c ∗(γi −γ)
+(3c)
+Once the depth coefﬁcient c was determined, with the alignment error of the ith right
+hemiface quantiﬁed as (Xi −Ai)2 + (Yi −Bi)2 + (Zi −Ci)2, we used the Procrustes method
+
+Biomedicines 2023, 11, 2802
+6 of 15
+to translate and rotate the original image so that the sum of squares of the alignment
+error of all right hemiface landmarks could be minimized. With X′
+i and Y′
+i denoting the
+horizontal and vertical normalized coordinate of the ith landmark of the aligned original
+image, we used Equation (4) to quantify the asymmetry associated with the ith landmark.
+Hereafter, these asymmetry measures will be referred to as landmark superimposition
+asymmetry distances (LSADs). The sum of LSAD is also proposed as an asymmetry
+measure (Equation (5)).
+LSADi =
+q Ai −X′i
+2 +
+ Bi −Y′i
+2
+(4)
+LSADs = ∑
+29
+i=1 LSADi
+(5)
+With the asymmetry measures speciﬁed, the depth coefﬁcient c can be determined by
+the following steps. First, we extensively tested different values of the depth coefﬁcient c.
+For each of these tested c values, we calculated all the asymmetry measures of Equations (4)
+and (5) for all the test subjects. With these 30 asymmetry measures logged for all test
+individuals, we performed an independent sample one-tailed t-test between AD and
+controls and counted the number of asymmetry measures with signiﬁcant differences.
+Because the number of asymmetry measures with signiﬁcant differences is the most when
+the depth coefﬁcient was 0.016, the value of the depth coefﬁcient c was chosen as 0.016 for
+subsequent analysis.
+2.4. Statistic Analysis
+Continuous variables are expressed as the mean with the standard deviation, whereas
+categorical variables are presented as percentages. The association between the AD and
+controls and demographic and clinical characteristics (age, sex, CDR, CDR-SB, MMSE, and
+CASI) was explored using t-tests and the chi-square test. p-values for comparisons across
+groups of clinical and demographic characteristics were derived from the aforementioned
+analyses. The independent t-test is used to determine if the mean of the LSAD of the AD
+patients and controls is signiﬁcantly different. All reported p-values are two-sided, with a
+p-value < 0.05 considered to be statistically signiﬁcant. Analyses were performed using
+SPSS Version 26.
+3. Results
+3.1. Demographic Characteristics of Recruited Participants
+Patients’ age ranged from 56 to 79 years (mean: 72.2 years; standard deviation:
+4.9 years). Fifty-seven patients were male and ninety-three were female. The CDR sum of
+boxes score was 4.8 ± 2.9 (mean ± SD), the MMSE total score was 21.0 ± 4.4 (mean ± SD),
+and the CASI total score was 65.7 ± 14.2 (mean ± SD).
+Healthy subjects were chosen as the control group (age: 52–93 years, mean: 71.8 years,
+standard deviation: 7.4 years) and included forty-six males and one hundred and four
+females. The CDR sum of boxes score was 1.5 ± 1.4 (mean ± SD), the MMSE total score was
+24.5 ± 3.7 (mean ± SD), and the CASI total score was 83.7 ± 10.5 (mean ± SD). A summary
+of subjects’ characteristics is reported in Table 1.
+
+Biomedicines 2023, 11, 2802
+7 of 15
+Table 1. Demographic characteristics of recruited participants.
+AD
+Controls
+p-Value
+Age, years (mean ± SD)
+72.2 ± 4.9
+71.8 ± 7.4
+0.15
+Gender (patient No., (%))
+0.19
+Male
+57 (38%)
+46 (31%)
+Female
+93 (62%)
+104 (69%)
+CDR (%)
+0
+2 (1.4%)
+0.5
+49 (34.8%)
+1.0
+76 (53.9%)
+2.0
+14 (9.9%)
+3.0
+0
+CDR-SB (mean ± SD)
+4.8 ± 2.9
+1.5 ± 1.4
+MMSE (mean ± SD)
+21.0 ± 4.4
+24.5 ± 3.7
+CASI (mean ± SD)
+65.7 ± 14.2
+83.7 ± 10.5
+CDR: Clinical Dementia Rating. MMSE: Mini-Mental State Examination. SD: standard deviation.
+3.2. The Comparison of Landmark Superimposition Asymmetry Distances (LSADs) of AD and Controls
+Figure 4 shows the 68 landmarks, including 29 hemiface landmarks for each side of
+the faces and 10 midface landmarks. The landmark superimposition asymmetry distances
+(LSADs) of AD and controls are shown in Table 2, expressed as the mean with the standard
+deviation. Among the 29 LSADs of the AD patients, 20 of these LSADs are signiﬁcantly
+larger than those of the controls. In face edge pair 1, the mean distance was 0.71 ± 0.51 for
+AD patients and 0.63 ± 0.53 for controls (p = 0.003). In face edge pair 2, the mean distance
+was 0.43 ± 0.30 for AD patients and 0.40 ± 0.37 for controls (p = 0.006). In face edge pair 3,
+the mean distance was 0.47 ± 0.34 for AD patients and 0.39 ± 0.33 for controls (p = 0.009).
+In face edge pair 4, the mean distance was 0.56 ± 0.37 for AD patients and 0.46 ± 0.37
+for controls (p = 0.012). In face edge pair 5, the mean distance was 0.57 ± 0.39 for AD
+patients and 0.48 ± 0.37 for controls (p = 0.010). In face edge pair 6, the mean distance was
+0.51 ± 0.33 for AD patients and 0.44 ± 0.32 for controls (p = 0.003). In face edge pair 7,
+the mean distance was 0.41 ± 0.31 for AD patients and 0.37 ± 0.31 for controls (p = 0.041).
+In face edge pair 8, the mean distance was 0.34 ± 0.35 for AD patients and 0.25 ± 0.24
+for controls (p = 0.007). In eyebrows pair 9, the mean distance was 0.25 ± 0.19 for AD
+patients and 0.22 ± 0.15 for controls (p = 0.005). In eyebrows pair 10, the mean distance was
+0.17 ± 0.12 for AD patients and 0.16 ± 0.12 for controls (p = 0.004). In eyebrows pair 13,
+the mean distance was 0.29 ± 0.20 for AD patients and 0.25 ± 0.18 for controls (p = 0.001).
+In nostrils pair 14, the mean distance was 0.37 ± 0.23 for AD patients and 0.31 ± 0.22 for
+controls (p = 0.013). In nostrils pair 15, the mean distance was 0.44 ± 0.25 for AD patients
+and 0.39 ± 0.26 for controls (p = 0.016). In eyes pair 16, the mean distance was 0.12 ± 0.10
+for AD patients and 0.09 ± 0.06 for controls (p = 0.024). In eyes pair 17, the mean distance
+was 0.15 ± 0.12 for AD patients and 0.11 ± 0.09 for controls (p = 0.001). In eyes pair 18, the
+mean distance was 0.13 ± 0.10 for AD patients and 0.11 ± 0.09 for controls (p = 0.0004). In
+eyes pair 19, the mean distance was 0.12 ± 0.07 for AD patients and 0.10 ± 0.07 for controls
+(p = 0.0009). In mouth pair 22, the mean distance was 0.13 ± 0.09 for AD patients and
+0.11 ± 0.08 for controls (p = 0.023). In mouth pair 24, the mean distance was 0.43 ± 0.23 for
+AD patients and 0.37 ± 0.23 for controls (p = 0.035). In mouth pair 26, the mean distance
+was 0.25 ± 0.16 for AD patients and 0.21 ± 0.15 for controls (p = 0.042). The sum of LSAD
+was 10.33 ± 4.39 for AD patients and 9.14 ± 4.45 for controls (p = 0.003). Other LSADs
+of the AD patients were also larger than those of the controls but did not show statistical
+signiﬁcance.
+
+Biomedicines 2023, 11, 2802
+8 of 15
+Biomedicines 2023, 11, x FOR PEER REVIEW 
+9 of 15 
+ 
+ 
+Figure 4. Facial feature point pairs of LSADs with a signiﬁcant diﬀerence between AD patients and 
+controls are marked as red. 
+4. Discussion 
+4.1. Key Findings 
+In this work, we aimed to develop a facial asymmetry assessment system to 
+diﬀerentiate Alzheimer’s patients from non-dementia people. Our study showed, among 
+the 29 tested landmark pairs, 20 pairs of LSADs of the AD patients are signiﬁcantly larger 
+than those of the controls, including all face edge landmarks, 3 eyebrow landmarks, all 
+landmarks of the nostrils, 4 landmarks of the eyes, and 3 mouth landmarks. 
+4.2. Facial Diﬀerences in Ethnic Skin 
+Taiwan is located in East Asia and its population is primarily composed of Han 
+Chinese and indigenous peoples. Also, there are subtle diﬀerences in the facial features of 
+northeast Asian and southeast Asian ethnic groups, often reﬂecting mixed phenotypic 
+characteristics inﬂuenced by their proximity to neighboring populations. Farkas et al. 
+found that the most signiﬁcant diﬀerences among diﬀerent racial groups were observed 
+in the eye socket area, nose height, and nose width. Middle Eastern and Asian populations 
+had narrower intercanthal distances with less eye corner width, whereas Caucasians 
+exhibited a narrower nasal base with a more pronounced nasal tip [38,39]. Facial aging 
+processes are similar across races, but diﬀerences in skeletal support and soft tissue 
+tendencies result in slower facial aging in Asians compared to Caucasians. Asians often 
+have dense fat and ﬁber connections in the mid-face, reducing sagging and resulting in 
+fewer superﬁcial wrinkles [40]. Although our assessment method is not inﬂuenced by skin 
+color, wrinkles, or nasal bridge height, it is important to acknowledge that racial 
+diﬀerences have a signiﬁcant impact on morphological variations related to facial 
+asymmetry [41]. This could limit the comparability of facial asymmetry measurements 
+across diﬀerent ethnic groups, representing a limitation in our study. 
+4.3. Possible Biological and Neural Mechanisms of Facial Asymmetry in AD 
+Facial development begins in the early fourth week of embryonic development when 
+the frontonasal process emerges. By the ﬁfth week, the nasal processes and 
+maxillary/mandibular processes appear. They grow and fuse, forming the foundation of 
+Figure 4. Facial feature point pairs of LSADs with a signiﬁcant difference between AD patients and
+controls are marked as red.
+Table 2. The facial feature point pairs of LSADs, calculated with t-test between AD and controls.
+Face Part
+Pair
+AD
+Controls
+p-Value
+Face edge
+1
+0.71 ± 0.51
+0.63 ± 0.53
+0.003 *
+2
+0.43 ± 0.30
+0.40 ± 0.37
+0.006 *
+3
+0.47 ± 0.34
+0.39 ± 0.33
+0.009 *
+4
+0.56 ± 0.37
+0.46 ± 0.37
+0.012 *
+5
+0.57 ± 0.39
+0.48 ± 0.37
+0.010 *
+6
+0.51 ± 0.33
+0.44 ± 0.32
+0.003 *
+7
+0.41 ± 0.31
+0.37 ± 0.31
+0.041 *
+8
+0.34 ± 0.35
+0.25 ± 0.24
+0.007 *
+Eyebrows
+9
+0.25 ± 0.19
+0.22 ± 0.15
+0.005 *
+10
+0.17 ± 0.12
+0.16 ± 0.12
+0.004 *
+11
+0.24 ± 0.18
+0.22 ± 0.18
+0.059
+12
+0.30 ± 0.22
+0.27 ± 0.20
+0.053
+13
+0.29 ± 0.20
+0.25 ± 0.18
+0.001 *
+Nostrils
+14
+0.37 ± 0.23
+0.31 ± 0.22
+0.013 *
+15
+0.44 ± 0.25
+0.39 ± 0.26
+0.016 *
+Eyes
+16
+0.12 ± 0.10
+0.09 ± 0.06
+0.024 *
+17
+0.15 ± 0.12
+0.11 ± 0.09
+0.001 *
+18
+0.13 ± 0.10
+0.11 ± 0.09
+0.0004 *
+19
+0.12 ± 0.07
+0.10 ± 0.07
+0.0009 *
+20
+0.32 ± 0.11
+0.32 ± 0.09
+0.209
+21
+0.29 ± 0.11
+0.28 ± 0.08
+0.747
+Mouth
+22
+0.13 ± 0.09
+0.11 ± 0.08
+0.023 *
+23
+0.31 ± 0.17
+0.27 ± 0.17
+0.054
+24
+0.43 ± 0.23
+0.37 ± 0.23
+0.035 *
+25
+0.33 ± 0.19
+0.27 ± 0.17
+0.083
+26
+0.25 ± 0.16
+0.21 ± 0.15
+0.042 *
+27
+0.82 ± 0.27
+0.79 ± 0.25
+0.936
+28
+0.52 ± 0.15
+0.55 ± 0.13
+0.645
+29
+0.36 ± 0.20
+0.31 ± 0.19
+0.069
+Sum
+of LSAD
+10.33 ± 4.39
+9.14 ± 4.45
+0.003 *
+* p < 0.05.
+
+Biomedicines 2023, 11, 2802
+9 of 15
+4. Discussion
+4.1. Key Findings
+In this work, we aimed to develop a facial asymmetry assessment system to differ-
+entiate Alzheimer’s patients from non-dementia people. Our study showed, among the
+29 tested landmark pairs, 20 pairs of LSADs of the AD patients are signiﬁcantly larger
+than those of the controls, including all face edge landmarks, 3 eyebrow landmarks, all
+landmarks of the nostrils, 4 landmarks of the eyes, and 3 mouth landmarks.
+4.2. Facial Differences in Ethnic Skin
+Taiwan is located in East Asia and its population is primarily composed of Han Chi-
+nese and indigenous peoples. Also, there are subtle differences in the facial features of
+northeast Asian and southeast Asian ethnic groups, often reﬂecting mixed phenotypic char-
+acteristics inﬂuenced by their proximity to neighboring populations. Farkas et al. found
+that the most signiﬁcant differences among different racial groups were observed in the
+eye socket area, nose height, and nose width. Middle Eastern and Asian populations had
+narrower intercanthal distances with less eye corner width, whereas Caucasians exhibited
+a narrower nasal base with a more pronounced nasal tip [38,39]. Facial aging processes are
+similar across races, but differences in skeletal support and soft tissue tendencies result
+in slower facial aging in Asians compared to Caucasians. Asians often have dense fat
+and ﬁber connections in the mid-face, reducing sagging and resulting in fewer superﬁcial
+wrinkles [40]. Although our assessment method is not inﬂuenced by skin color, wrinkles,
+or nasal bridge height, it is important to acknowledge that racial differences have a sig-
+niﬁcant impact on morphological variations related to facial asymmetry [41]. This could
+limit the comparability of facial asymmetry measurements across different ethnic groups,
+representing a limitation in our study.
+4.3. Possible Biological and Neural Mechanisms of Facial Asymmetry in AD
+Facial development begins in the early fourth week of embryonic development
+when the frontonasal process emerges. By the ﬁfth week, the nasal processes and maxil-
+lary/mandibular processes appear. They grow and fuse, forming the foundation of facial
+development. This process is typically completed by the eighth week, deﬁning three
+primary facial regions: the frontal, maxillary, and mandibular parts [42,43].
+In human facial development, genetic factors and growth factors play crucial roles.
+Key pathways include Fibroblast Growth Factor (FGF), Hedgehog (HH), and Bone Mor-
+phogenetic Protein (BMP). FGFs are involved in precise regulation, with mutations linked
+to syndromes like Crouzon and Apert. The HH pathway inﬂuences neural crest cells and
+jaw development, and mutations in the Sonic Hedgehog (SHH) gene can cause midline
+defects and eye issues. BMP signaling is essential for craniofacial bone development and
+disruptions can lead to various anomalies, including a cleft palate and facial defects [7,8,16].
+However, there is currently no direct evidence showing that these signaling molecules are
+physiologically relevant to the pathogenesis of AD.
+AD causes cortical atrophy and brain function decline. Abbate et al. proposed a
+pathophysiological hypothesis for AD, suggesting shared spatial information in cortical
+arealization during development and AD [44,45]. Some AD subtypes affect speciﬁc brain
+regions, potentially leading to lateralization. However, limited literature explores this.
+Compared to other vertebrates, AD processes, like amyloid deposition due to metabolism
+and tau pathogenesis from adult neurogenesis/migration, are emphasized in the complex
+human cortex. The human longevity revolution likely contributes to these extremes.
+The two most substantiated risk factors for AD are genetics and aging. Mutations
+in genes like PSEN1, PSEN2, and APP lead to early-onset familial AD, while late-onset
+sporadic AD results from a combination of factors, including aging, lifestyle, environment,
+and genetics [46]. APOE4 is the most signiﬁcant genetic risk factor for late-onset AD,
+associated with earlier accumulation of amyloid plaques and neuroﬁbrillary tangles. APOE
+gene variants directly impact brain development [47]. In a study with 1187 healthy children,
+
+Biomedicines 2023, 11, 2802
+10 of 15
+APOE4 carriers had a thinner temporal cortex, smaller hippocampus, and weaker executive
+function correlations [48].
+In normal aging, neuron loss is minimal, but there are changes in dendrite characteris-
+tics. These alterations vary across brain regions, with the most signiﬁcant volume reduction
+occurring in speciﬁc areas like the frontal and temporal cortex [49]. Facial aging involves
+changes in bone structure, soft tissues, and skin, with interrelated effects. Bone resorption
+occurs with aging, affecting support, leading to soft tissue contraction and shifting. Exter-
+nal factors like sun exposure and smoking impact skin aging, while collagen degradation
+accelerates and synthesis decreases with age, resulting in dermal atrophy [50–52].
+Similar to our study, the BrainAGE algorithm via MRI has shown accelerated brain
+aging patterns in AD patients [10]. Dysfunctional DNA repair is also implicated in AD risk.
+While DNA methylation patterns generally decrease with age, speciﬁc gene regions may
+experience excessive methylation, resulting in increased variability. Epigenetic clocks, based
+on DNA methylation at speciﬁc sites, serve as reliable aging markers [53,54]. The difference
+between actual age and biological age is referred to as accelerated or decelerated epigenetic
+aging. Studies on dementia and mild cognitive impairment have yielded inconclusive
+results, with some suggesting a link between epigenetic age and dementia risk while others
+ﬁnd no signiﬁcant association [53,54].
+Unlike our study, Naqvi et al. provided genetic and MRI evidence supporting the link
+between human facial and brain shape. They explored changes in various facial quadrants
+using GWAS but found no signiﬁcant associations in AD [55]. This lack of association may
+be due to the complex etiology of AD, which involves a combination of genes and factors
+related to late-life plaque accumulation and neurodegeneration.
+4.4. Method Comparisons
+Recent studies used deep learning for age estimation from facial images [17–19] and
+showed promise. However, the connection between facial images and AD detection remains
+intriguing due to natural facial asymmetry variation. Quantifying facial asymmetry lacks a
+universally accepted standard [38]. This study introduces a landmark-based measure to
+address this issue.
+Previous research has employed various methods to assess facial asymmetry, such
+as using the asymmetry distance calculated by root-mean-squared-error (RMSE) [56,57].
+For instance, Ferrario et al. [58] utilized a camera-automatic three-dimensional landmark
+detection system, employing 16 landmarks, including 6 median points and 10 points
+representing the eyes, nose, mouth, and face edges. They applied Euclidean distance matrix
+analysis to compare the left and right hemifaces. Xiong et al. [59] analyzed 21 automatic
+facial landmarks, encompassing 7 medial points and 7 pairs of landmarks for the eyes,
+nose, and mouth. Ekrami et al. [60] examined 19 manual facial landmarks, consisting of
+7 medial points and 6 pairs of landmarks for the eyes, nose, and mouth. In addition to
+biological landmarks, some studies incorporated nevi and wrinkles to enhance sensitivity.
+Many studies attempted to establish a reference frame for quantifying asymmetry, but
+determining the accurate midline frames posed another challenge [36,37,56]. To reduce
+errors, some studies employed multiple validation methods.
+Regarding the assessment of facial asymmetry for facial palsy, there are various
+methods available. Gaber et al. employed Kinect V2 for automated recognition of facial
+features and created their own database. To address the issue of small sample sizes,
+they utilized undersampling and data augmentation for compensation [61]. Abayomi-
+Alli et al. introduced a deep learning-based method for facial paralysis detection and
+classiﬁcation. They employed a novel image enhancement technique that extended random
+erasure enhancement using Voronoi subdivision structures. Subsequently, they used the
+SqueezeNet deep neural network for extracting deep features and employed a multi-
+class classiﬁer for classiﬁcation [62]. Wei et al. proposed a set of new facial features and
+augmented reality tools to assist users in interactively assessing facial symmetry. The
+
+Biomedicines 2023, 11, 2802
+11 of 15
+development process involved four different datasets and focused on extracting features
+suitable for application on a smartphone program with lower computational costs [63].
+After reviewing the previous literature, this study utilized a camera-automatic three-
+dimensional landmark detection system with OpenFace and analyzed facial asymmetry
+using the Procrustes method, which appeared to be the most effective and intuitive ap-
+proach. The LSADs in our study indicated increased facial asymmetry in AD patients,
+particularly in regions such as the face edge, eyebrows, eyes, nostrils, and mouth. This
+method has been applied in other studies, albeit with different landmarks. Concerning age,
+Linden et al. demonstrated increased facial asymmetry in the lower two-thirds compared
+to the upper one-third in older age groups, while in younger age groups, more asymmetries
+were found in the upper third of the face [15]. Recently, Umeda et al. employed deep
+learning models to distinguish between the faces of dementia patients and non-dementia
+patients, with the lower face epochs providing better sensitivity and speciﬁcity. However,
+their results may have been inﬂuenced by the signiﬁcantly older age of their AD group [23].
+Greater normal variability in the global population was observed in the location of facial
+landmarks, including tragion, gonion, and zygion [64]. Zygion is close to our face edge
+landmark pair 2, and gonion is near our face edge landmark pair 5. Vertical eye movement
+differences have been found in AD patients compared to normal individuals [65], and
+abnormal oculomotor movement has been noted in several neurodegenerative diseases [66].
+However, direct associations between eye shape or location and AD have not been iden-
+tiﬁed in previous studies, nor have such associations been found for the rest of the facial
+landmarks.
+4.5. Strengths
+Facial asymmetry assessment is our initial step in evaluating facial features. While
+some conditions like stroke exhibit obvious facial asymmetry, its impact in chronic degen-
+erative diseases is less discernible and is compounded by age-related effects. Thus, we
+employed a state-of-the-art machine learning algorithm to automatically and effectively
+identify facial landmarks, reducing human labor and enhancing the reproducibility of facial
+asymmetry measurements.
+Compared to previous research, our study possesses several strengths. Firstly, by
+utilizing a 3D camera for facial capture, our study introduced a systematic approach to
+calibrate the relative orientation between the human head and the camera, leading to
+more accurate facial asymmetry computation. Secondly, to our knowledge, this is the ﬁrst
+study to distinguish AD patients from non-dementia individuals through the objective
+evaluation of facial asymmetry. Thirdly, our study incorporated more reference points than
+other studies, allowing for the assessment of more subtle and precise features. Lastly, the
+included AD patients were primarily in the mild severity range (CDR: 0.5–1.0), indicating
+that our results may be applicable for early disease detection.
+4.6. Limitations
+The limitations include the automatic machine learning system used to differentiate
+AD patients from healthy subjects, which is still developing, and the fact that our partici-
+pants consisted of only Taiwanese people; therefore, an extensive application still needs to
+be further evaluated. Our study includes a small participant number and is a cross-sectional
+study, thus a larger, longitudinal study may provide more information on the issue of AD
+patients’ facial characteristics.
+OpenFace uses Conditional Local Neural Fields (CLNFs) for facial landmark detection
+and tracking. A CLNF’s performance depends on dataset diversity. Diverse datasets
+enhance adaptability, while small or biased datasets may hinder performance. Fine-tuning,
+data augmentation, and context-speciﬁc evaluation are often needed. In our study, we
+controlled image quality, facial pose, and expression. However, our dataset was limited in
+diversity and scale.
+
+Biomedicines 2023, 11, 2802
+12 of 15
+Additionally, overstating the connection between facial appearance and diseases can
+lead to biases. The current diagnostic criteria continue to be the basis for AD diagnosis.
+The early and accurate detection of AD remains an unmet need, and we propose that
+facial asymmetry could potentially serve as a supplementary tool in the future, alongside
+emerging early diagnostic methods for AD.
+5. Conclusions
+AD patients exhibited increased facial asymmetry compared to age- and gender-
+matched individuals without dementia. Our analysis encompassed a total of 29 facial
+landmarks, revealing that 20 pairs of LSADs in AD patients were signiﬁcantly larger than
+those in the control group. Asymmetry in facial features, including face edges, eyebrows,
+eyes, nostrils, and mouth, contributed to distinguishing AD from non-dementia controls.
+Speciﬁcally, differences in face edge pairs 1 through 8, as well as eyebrows pairs 9, 10,
+and 13, nostrils pairs 14 and 15, eye pairs 16 through 19, and mouth pairs 22, 24, and 26,
+were statistically signiﬁcant, with p-values ranging from 0.001 to 0.041. Furthermore, the
+total LSAD was notably higher in AD patients compared to controls, with a p-value of
+0.003. Facial asymmetry may potentially serve as a tool for early AD detection in the future.
+However, it is essential to validate these ﬁndings in larger and more diverse cohorts.
+Author Contributions: Conceptualization, Y.-H.Y.; methodology, Y.-H.Y. and C.-W.Y.; investigation,
+J.-L.S. and C.-P.W.; software, J.-L.S.; data curation, C.-P.W. and C.-W.Y.; writing—draft preparation,
+C.-F.C.; writing—review and editing C.-W.Y. and Y.-H.Y. All authors have read and agreed to the
+published version of the manuscript.
+Funding: This study was supported by NSYSU-KMU joint research project (NSYSUKMU 108-I003),
+Kaohsiung Medical University Research Center Grant (KMU-TC112B02), Department of Neurology,
+Kaohsiung Municipal Ta-Tung Hospital, Kaohsiung, Taiwan (KMTTH-DK(C)112003).
+Institutional Review Board Statement: This study was conducted according to the guidelines of the
+Declaration of Helsinki and approved by the Institutional Review Board of the of the Kaohsiung
+Medical University Chung-Ho Memorial Hospital (KMUHIRB-SV(I)-20210067).
+Informed Consent Statement: Informed consent was obtained from all subjects involved in this
+study.
+Data Availability Statement: Third party data: Restrictions apply to the availability of these data.
+The data were obtained from Department of Mechanical and Electromechanical Engineering, National
+Sun Yat-Sen University, Kaohsiung, Taiwan and are available from Chen-Wen Yen and Yuan-Han
+Yang with the permission of Department of Mechanical and Electromechanical Engineering, National
+Sun Yat-Sen University, Kaohsiung, Taiwan.
+Conﬂicts of Interest: The authors declare no conﬂict of interest.
+References
+1.
+Jellinger, K.A. Neuropathological assessment of the Alzheimer spectrum. J. Neural Transm. 2020, 127, 1229–1256. [CrossRef]
+2.
+Pelucchi, S.; Gardoni, F.; Di Luca, M.; Marcello, E. Synaptic dysfunction in early phases of Alzheimer’s Disease. Handb. Clin.
+Neurol. 2022, 184, 417–438. [CrossRef]
+3.
+Bairamian, D.; Sha, S.; Rolhion, N.; Sokol, H.; Dorothee, G.; Lemere, C.A.; Krantic, S. Microbiota in neuroinﬂammation and
+synaptic dysfunction: A focus on Alzheimer’s disease. Mol. Neurodegener. 2022, 17, 19. [CrossRef]
+4.
+Gonzalez, H.; Elgueta, D.; Montoya, A.; Pacheco, R. Neuroimmune regulation of microglial activity involved in neuroinﬂammation
+and neurodegenerative diseases. J. Neuroimmunol. 2014, 274, 1–13. [CrossRef]
+5.
+Kalaria, R. Similarities between Alzheimer’s disease and vascular dementia. J. Neurol. Sci. 2002, 203–204, 29–34. [CrossRef]
+6.
+Kalaria, R.N.; Ballard, C. Overlap between pathology of Alzheimer disease and vascular dementia. Alzheimer Dis. Assoc. Disord.
+1999, 13, S115–S123. [CrossRef] [PubMed]
+7.
+Roth, D.M.; Bayona, F.; Baddam, P.; Graf, D. Craniofacial Development: Neural Crest in Molecular Embryology. Head Neck Pathol.
+2021, 15, 1–15. [CrossRef] [PubMed]
+8.
+Marcucio, R.; Hallgrimsson, B.; Young, N.M. Facial Morphogenesis: Physical and Molecular Interactions Between the Brain and
+the Face. Curr. Top. Dev. Biol. 2015, 115, 299–320. [CrossRef]
+9.
+Smeriglio, P.; Zalc, A. Cranial Neural Crest Cells Contribution to Craniofacial Bone Development and Regeneration. Curr.
+Osteoporos. Rep. 2023, 21, 624–631. [CrossRef] [PubMed]
+
+Biomedicines 2023, 11, 2802
+13 of 15
+10.
+Franke, K.; Gaser, C. Ten Years of BrainAGE as a Neuroimaging Biomarker of Brain Aging: What Insights Have We Gained?
+Front. Neurol. 2019, 10, 789. [CrossRef]
+11.
+Cole, J.H.; Franke, K. Predicting Age Using Neuroimaging: Innovative Brain Ageing Biomarkers. Trends Neurosci. 2017, 40,
+681–690. [CrossRef] [PubMed]
+12.
+Franke, K.; Ziegler, G.; Kloppel, S.; Gaser, C. Alzheimer’s Disease Neuroimaging I. Estimating the age of healthy subjects from
+T1-weighted MRI scans using kernel methods: Exploring the inﬂuence of various parameters. Neuroimage 2010, 50, 883–892.
+[CrossRef] [PubMed]
+13.
+Lin, L.; Min, X.; Yue, J.; Wenjie, K.; Shuicai, W.; Shen, S.; Zhenrong, F. Quantifying Brain and Cognitive Maintenance as Key
+Indicators for Sustainable Cognitive Aging: Insights from the UK Biobank. Sustainability 2023, 15, 9620. [CrossRef]
+14.
+Huang, W.; Li, X.; Li, H.; Wang, W.; Chen, K.; Xu, K.; Zhang, J.; Chen, Y.; Wei, D.; Shu, N.; et al. Accelerated Brain Aging in
+Amnestic Mild Cognitive Impairment: Relationships with Individual Cognitive Decline, Risk Factors for Alzheimer Disease, and
+Clinical Progression. Radiol. Artif. Intell. 2021, 3, e200171. [CrossRef]
+15.
+Linden, O.E.; He, J.K.; Morrison, C.S.; Sullivan, S.R.; Taylor, H.O.B. The Relationship between Age and Facial Asymmetry. Plast.
+Reconstr. Surg. 2018, 142, 1145–1152. [CrossRef] [PubMed]
+16.
+Marcucio, R.S.; Young, N.M.; Hu, D.; Hallgrimsson, B. Mechanisms that underlie co-variation of the brain and face. Genesis 2011,
+49, 177–189. [CrossRef]
+17.
+Adameyko, I.; Fried, K. The Nervous System Orchestrates and Integrates Craniofacial Development: A Review. Front. Physiol.
+2016, 7, 49. [CrossRef] [PubMed]
+18.
+Demyer, W.; Zeman, W.; Palmer, C.G. The Face Predicts the Brain: Diagnostic Signiﬁcance of Median Facial Anomalies for
+Holoprosencephaly (Arhinencephaly). Pediatrics 1964, 34, 256–263. [CrossRef]
+19.
+Hammond, P.; Forster-Gibson, C.; Chudley, A.E.; Allanson, J.E.; Hutton, T.J.; Farrell, S.A.; McKenzie, J.; Holden, J.J.; Lewis, M.E.
+Face-brain asymmetry in autism spectrum disorders. Mol. Psychiatry 2008, 13, 614–623. [CrossRef]
+20.
+Balestrini, S.; Lopez, S.M.; Chinthapalli, K.; Sargsyan, N.; Demurtas, R.; Vos, S.; Altmann, A.; Suttie, M.; Hammond, P.; Sisodiya,
+S.M. Increased facial asymmetry in focal epilepsies associated with unilateral lesions. Brain Commun. 2021, 3, fcab068. [CrossRef]
+21.
+Elliott, M.L.; Belsky, D.W.; Knodt, A.R.; Ireland, D.; Melzer, T.R.; Poulton, R.; Ramrakha, S.; Caspi, A.; Mofﬁtt, T.E.; Hariri, A.R.
+Brain-age in midlife is associated with accelerated biological aging and cognitive decline in a longitudinal birth cohort. Mol.
+Psychiatry 2021, 26, 3829–3838. [CrossRef] [PubMed]
+22.
+Penke, L.; Bates, T.C.; Gow, A.J.; Pattie, A.; Starr, J.M.; Jones, B.C.; Perrett, D.I.; Deary, I.J. Symmetric faces are a sign of successful
+cognitive aging. Evol. Hum. Behav. 2009, 30, 429–437. [CrossRef]
+23.
+Umeda-Kameyama, Y.; Kameyama, M.; Tanaka, T.; Son, B.K.; Kojima, T.; Fukasawa, M.; Iizuka, T.; Ogawa, S.; Iijima, K.; Akishita,
+M. Screening of Alzheimer’s disease by facial complexion using artiﬁcial intelligence. Aging 2021, 13, 1765–1772. [CrossRef]
+[PubMed]
+24.
+Yang, Y.H.; Lee, Y.H.; Yen, C.W.; Huang, L.C.; Chang, Y.P.; Chien, C.F. Association between Cerebral Coordination Functions and
+Clinical Outcomes of Alzheimer’s Dementia. Brain Sci. 2022, 12, 1370. [CrossRef]
+25.
+Vrahatis, A.G.; Skolariki, K.; Krokidis, M.G.; Lazaros, K.; Exarchos, T.P.; Vlamos, P. Revolutionizing the Early Detection of
+Alzheimer’s Disease through Non-Invasive Biomarkers: The Role of Artiﬁcial Intelligence and Deep Learning. Sensors 2023, 23,
+4184. [CrossRef]
+26.
+Atallah, R.; Kamsin, A.; Ismail, M.A.; Abdelrahman, S.; Zerdoumi, S. Face Recognition and Age Estimation Implications of
+Changes in Facial Features: A Critical Review Study. IEEE Access 2018, 6, 28290–28304. [CrossRef]
+27.
+Osman, O.F.; Yap, M.H. Computational Intelligence in Automatic Face Age Estimation: A Survey. IEEE Trans. Emerg. Top. Comput.
+Intell. 2019, 3, 271–285. [CrossRef]
+28.
+Punyani, P.; Gupta, R.; Kumar, A. Neural networks for facial age estimation: A survey on recent advances. Artif. Intell. Rev. 2020,
+53, 3299–3347. [CrossRef]
+29.
+Dubois, B.; Feldman, H.H.; Jacova, C.; DeKosky, S.T.; Barberger-Gateau, P.; Cummings, J.; Delacourte, A.; Galasko, D.; Gauthier,
+S.; Jicha, G.; et al. Research criteria for the diagnosis of Alzheimer’s disease: Revising the NINCDS-ADRDA criteria. Lancet
+Neurol. 2007, 6, 734–746. [CrossRef]
+30.
+Folstein, M.F.; Folstein, S.E.; McHugh, P.R. “Mini-mental state”. A practical method for grading the cognitive state of patients for
+the clinician. J. Psychiatr. Res. 1975, 12, 189–198. [CrossRef]
+31.
+McCurry, S.M.; Edland, S.D.; Teri, L.; Kukull, W.A.; Bowen, J.D.; McCormick, W.C.; Larson, E.B. The cognitive abilities screening
+instrument (CASI): Data from a cohort of 2524 cognitively intact elderly. Int. J. Geriatr. Psychiatry 1999, 14, 882–888. [CrossRef]
+32.
+Cummings, J.L.; Mega, M.; Gray, K.; Rosenberg-Thompson, S.; Carusi, D.A.; Gornbein, J. The Neuropsychiatric Inventory:
+Comprehensive assessment of psychopathology in dementia. Neurology 1994, 44, 2308–2314. [CrossRef] [PubMed]
+33.
+Morris, J.C. The Clinical Dementia Rating (CDR): Current version and scoring rules. Neurology 1993, 43, 2412–2414. [CrossRef]
+[PubMed]
+34.
+Baltrušaitis, T.; Robinson, P.; Morency, L.-P. OpenFace: An open source facial behavior analysis toolkit. In Proceedings of the IEEE
+Winter Conference on Applications of Computer Vision (WACV), Lake Placid, NY, USA, 7–10 March 2016.
+35.
+Tzortzis, G.F.; Likas, A.C. The global kernel k-means algorithm for clustering in feature space. IEEE Trans. Neural Netw. 2009, 20,
+1181–1194. [CrossRef] [PubMed]
+
+Biomedicines 2023, 11, 2802
+14 of 15
+36.
+Slice, D.E. Landmark coordinates aligned by procrustes analysis do not lie in Kendall’s shape space. Syst. Biol. 2001, 50, 141–149.
+[CrossRef]
+37.
+Damstra, J.; Fourie, Z.; De Wit, M.; Ren, Y. A three-dimensional comparison of a morphometric and conventional cephalometric
+midsagittal planes for craniofacial asymmetry. Clin. Oral Investig. 2012, 16, 285–294. [CrossRef]
+38.
+Farkas, L.G.; Katic, M.J.; Forrest, C.R.; Alt, K.W.; Bagic, I.; Baltadjiev, G.; Cunha, E.; Cvicelová, M.; Davies, S.; Erasmus, I.; et al.
+International anthropometric study of facial morphology in various ethnic groups/races. J. Craniofac. Surg. 2005, 16, 615–646.
+[CrossRef]
+39.
+Vashi, N.A.; de Castro Maymone, M.B.; Kundu, R.V. Aging Differences in Ethnic Skin. J. Clin. Aesthetic Dermatol. 2016, 9, 31–38.
+40.
+Liew, S.; Wu, W.T.; Chan, H.H.; Ho, W.W.; Kim, H.J.; Goodman, G.J.; Peng, P.H.; Rogers, J.D. Consensus on Changing Trends,
+Attitudes, and Concepts of Asian Beauty. Aesthetic Plast. Surg. 2016, 40, 193–201. [CrossRef]
+41.
+Monteiro, L.C.P.; Ripardo, R.C.; Torro-Alves, N.; Souza, G.S. Facial morphometric differences across face databases: Inﬂuence of
+ethnicities and sex. Front. Neurosci. 2023, 19, 1130867. [CrossRef]
+42.
+Som, P.M.; Naidich, T.P. Illustrated review of the embryology and development of the facial region, part 1: Early face and lateral
+nasal cavities. Am. J. Neuroradiol. 2013, 34, 2233–2240. [CrossRef]
+43.
+Som, P.M.; Naidich, T.P. Illustrated review of the embryology and development of the facial region, part 2: Late development of
+the fetal face and changes in the face from the newborn to adulthood. Am. J. Neuroradiol. 2014, 35, 10–18. [CrossRef]
+44.
+Abbate, C. Topographic Markers Drive Proteinopathies to Selection of Target Brain Areas at Onset in Neurodegenerative
+Dementias. Front. Aging Neurosci. 2018, 10, 308. [CrossRef]
+45.
+Abbate, C. The Adult Neurogenesis Theory of Alzheimer’s Disease. J. Alzheimer’s Dis. 2023, 93, 1237–1276. [CrossRef] [PubMed]
+46.
+Isaev, N.K.; Stelmashook, E.V.; Genrikhs, E.E. Neurogenesis and brain aging. Rev. Neurosci. 2019, 30, 573–580. [CrossRef]
+[PubMed]
+47.
+Yassine, H.N.; Finch, C.E. APOE Alleles and Diet in Brain Aging and Alzheimer’s Disease. Front. Aging Neurosci. 2020, 12, 150.
+[CrossRef] [PubMed]
+48.
+Chang, L.; Douet, V.; Bloss, C.; Lee, K.; Pritchett, A.; Jernigan, T.L.; Akshoomoff, N.; Murray, S.S.; Frazier, J.; Kennedy, D.N.; et al.
+Pediatric Imaging, Neurocognition, and Genetics (PING) Study Consortium. Gray matter maturation and cognition in children
+with different APOE ε genotypes. Neurology 2016, 87, 585–594. [CrossRef]
+49.
+Wang, H.; Lautrup, S.; Caponio, D.; Zhang, J.; Fang, E.F. DNA Damage-Induced Neurodegeneration in Accelerated Ageing and
+Alzheimer’s Disease. Int. J. Mol. Sci. 2021, 22, 6748. [CrossRef] [PubMed]
+50.
+Liang, W.S.; Goetz, L.H.; Schork, N.J. Assessing brain and biological aging trajectories associated with Alzheimer’s disease. Front.
+Neurosci. 2022, 16, 1036102. [CrossRef]
+51.
+Swift, A.; Liew, S.; Weinkle, S.; Garcia, J.K.; Silberberg, M.B. The Facial Aging Process From the “Inside Out”. Aesthetic Surg. J.
+2021, 41, 1107–1119. [CrossRef]
+52.
+Farkas, J.P.; Pessa, J.E.; Hubbard, B.; Rohrich, R.J. The Science and Theory behind Facial Aging. Plast. Reconstr. Surg. Glob. Open
+2013, 1, e8–e15. [CrossRef]
+53.
+Zhou, A.; Wu, Z.; Zaw Phyo, A.Z.; Torres, D.; Vishwanath, S.; Ryan, J. Epigenetic aging as a biomarker of dementia and related
+outcomes: A systematic review. Epigenomics 2022, 14, 1125–1138. [CrossRef] [PubMed]
+54.
+Sugden, K.; Caspi, A.; Elliott, M.L.; Bourassa, K.J.; Chamarti, K.; Corcoran, D.L.; Hariri, A.R.; Houts, R.M.; Kothari, M.; Kritchevsky,
+S.; et al. Association of Pace of Aging Measured by Blood-Based DNA Methylation with Age-Related Cognitive Impairment and
+Dementia. Neurology 2022, 99, e1402–e1413. [CrossRef] [PubMed]
+55.
+Naqvi, S.; Sleyp, Y.; Hoskens, H.; Indencleef, K.; Spence, J.P.; Bruffaerts, R.; Radwan, A.; Eller, R.J.; Richmond, S.; Shriver, M.D.;
+et al. Shared heritability of human face and brain shape. Nat. Genet. 2021, 53, 830–839. [CrossRef]
+56.
+Claes, P.; Walters, M.; Vandermeulen, D.; Clement, J.G. Spatially-dense 3D facial asymmetry assessment in both typical and
+disordered growth. J. Anat. 2011, 219, 444–455. [CrossRef] [PubMed]
+57.
+Taylor, H.O.; Morrison, C.S.; Linden, O.; Phillips, B.; Chang, J.; Byrne, M.E.; Sullivan, S.R.; Forrest, C.R. Quantitative facial
+asymmetry: Using three-dimensional photogrammetry to measure baseline facial surface symmetry. J. Craniofac. Surg. 2014, 25,
+124–128. [CrossRef]
+58.
+Ferrario, V.F.; Sforza, C.; Miani, A., Jr.; Serrao, G. A three-dimensional evaluation of human facial asymmetry. J. Anat. 1995, 186,
+103–110.
+59.
+Xiong, Y.; Zhao, Y.; Yang, H.; Sun, Y.; Wang, Y. Comparison Between Interactive Closest Point and Procrustes Analysis for
+Determining the Median Sagittal Plane of Three-Dimensional Facial Data. J. Craniofac. Surg. 2016, 27, 441–444. [CrossRef]
+60.
+Ekrami, O.; Claes, P.; White, J.D.; Zaidi, A.A.; Shriver, M.D.; Van Dongen, S. Measuring asymmetry from high-density 3D surface
+scans: An application to human faces. PLoS ONE 2018, 13, e0207895. [CrossRef]
+61.
+Gaber, A.; Taher, M.F.; Wahed, M.A.; Shalaby, N.M.; Gaber, S. Classiﬁcation of facial paralysis based on machine learning
+techniques. Biomed. Eng. Online 2022, 21, 65. [CrossRef]
+62.
+Abayomi-Alli, O.O.; Damaševiˇcius, R.; Maskeli¯unas, R.; Misra, S. Few-Shot Learning with a Novel Voronoi Tessellation-Based
+Image Augmentation Method for Facial Palsy Detection. Electronics 2021, 10, 978. [CrossRef]
+63.
+Wei, W.; Ho, E.S.L.; McCay, K.D.; Damaševiˇcius, R.; Maskeli¯unas, R.; Esposito, A. Assessing Facial Symmetry and Attractiveness
+using Augmented Reality. Pattern Anal. Appl. 2022, 25, 635–651. [CrossRef]
+
+Biomedicines 2023, 11, 2802
+15 of 15
+64.
+Ferrario, V.F.; Sforza, C.; Ciusa, V.; Dellavia, C.; Tartaglia, G.M. The effect of sex and age on facial asymmetry in healthy subjects:
+A cross-sectional study from adolescence to mid-adulthood. J. Oral Maxillofac. Surg. 2001, 59, 382–388. [CrossRef] [PubMed]
+65.
+Nam, U.; Lee, K.; Ko, H.; Lee, J.Y.; Lee, E.C. Analyzing Facial and Eye Movements to Screen for Alzheimer’s Disease. Sensors
+2020, 20, 5349. [CrossRef] [PubMed]
+66.
+Antoniades, C.A.; Kennard, C. Ocular motor abnormalities in neurodegenerative disorders. Eye 2015, 29, 200–207. [CrossRef]
+[PubMed]
+Disclaimer/Publisher’s Note: The statements, opinions and data contained in all publications are solely those of the individual
+author(s) and contributor(s) and not of MDPI and/or the editor(s). MDPI and/or the editor(s) disclaim responsibility for any injury to
+people or property resulting from any ideas, methods, instructions or products referred to in the content.

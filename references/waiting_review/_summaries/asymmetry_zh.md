@@ -4,7 +4,7 @@
 
 共 11 篇（Ko 2021 / Pucciarelli 2018 dupe 已合併；Pucciarelli 2018 craniofacial 重建 thesis 已 archive）。
 
-> **Backfill 紀錄**：Albaker 2023、Yoonesi 2025 的 abstract 為空，從 PDF 抽出文字補回 JSON（Chien 2023 沒 PDF 無法救）。
+> **Backfill 紀錄**：Albaker 2023、Yoonesi 2025 的 abstract 為空，從 PDF 抽出文字補回 JSON。Chien 2023 透過 Europe PMC（PMC10604711）取得 OA PDF + .txt，2026-05-05 補回完整摘要。
 
 ---
 
@@ -44,11 +44,23 @@
 
 ---
 
-## 4. [--] **Chien 2023** — Analyzing Facial Asymmetry in Alzheimer's Dementia Using Image-Based Technology
+## 4. [PT] **Chien 2023** — Analyzing Facial Asymmetry in Alzheimer's Dementia Using Image-Based Technology
 
-> *Biomedicines* 11(10):2802
+> *Biomedicines* 11(10):2802（高雄醫學大學 + 中山大學機電工程，Kaohsiung Ta-Tung Hospital）
 
-**沒有 abstract，沒有 PDF**（無 OA 也無法 backfill）。標題與本 project 直接相關（AD 失智的臉部不對稱影像分析），值得手動找 paper 補回，但目前資訊量為零。
+**背景**：多項研究顯示 AD 有**加速腦老化**模式（BrainAGE on MRI 區分 AD/MCI/HC）；同時臉部不對稱**隨年齡增加**（Linden et al.）；腦與臉部發育高度耦合（CNCC paracrine factors）。Penke 等人發現臉部不對稱是老人認知衰退的重要預測因子。臉影像比腦影像便宜易取得，因此本研究探討臉部不對稱能否作為 AD 標記。
+
+**方法**：
+
+- **受試者**：高雄醫學大學 Ta-Tung 醫院招募 300 位台灣受試者 — **150 位 AD 病人 + 150 位年齡 + 性別 matched 非失智 controls**。
+- **影像**：3D 攝影機拍攝臉部 → **OpenFace** 自動識別 **68 facial landmarks**。
+- **不對稱量化**：將 3D 原圖與其鏡像影像用標準 image registration 對齊；以 registration error（landmark superimposition 距離）作為**不對稱度量**。檢查 **29 對 landmark**。
+
+**結果**：**20 個 landmark 在 AD 與 controls 之間有顯著差異（p < 0.05）**；AD 不對稱集中在**臉緣、眉毛、眼睛、鼻孔、嘴巴**區域。
+
+**結論**：facial asymmetry 評估可作為 AD 偵測工具。（與本 project 高度同向 — 同樣用 3D landmark 不對稱、AD 對照 HC 設計，但本 paper 用 Procrustes registration error 而非角度偏離。）
+
+> **5/5 通過**：純 3D 臉部影像 + 既有 cohort（300 受試者）audit + 具體 p < 0.05 數字 + 臨床對照無刺激/任務 + dataset 直接含 AD。**Anchor paper for the user's research direction**。
 
 ---
 
