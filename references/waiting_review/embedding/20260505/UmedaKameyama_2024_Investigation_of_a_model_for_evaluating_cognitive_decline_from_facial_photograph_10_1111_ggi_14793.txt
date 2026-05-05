@@ -1,0 +1,263 @@
+into seven things to keep in mind in dementia care: “know their
+personality,” “move their mind,” “help them move their body,”
+“expand their world,” “help each other,” “get them in shape,” and
+“help them face the risks.”
+The Dementia Care Method® was provided to all the BSC
+nursing homes as booklets and cards to support care practices.
+Care staff in each nursing home were encouraged to use the
+Dementia Care Method® for daily care.
+Several months after providing the methods, a survey of prac-
+tices of the Dementia Care Method® showed that half of the sur-
+vey participants employed the methods and felt that they were
+providing essential dementia care. Care staff with <1 year of expe-
+rience have shown a similar tendency. However, some had difﬁ-
+culties in putting it into practice.7
+To facilitate the practice of the Dementia Care Method®, we
+have started an online training course. Speciﬁcally, a 1-h online
+training course was developed to introduce the outline and use
+cases promoting the technique. The care staff of BSC nursing
+homes participated in the training voluntarily.
+To verify the effect of the online training course on the
+Dementia Care Method®, we asked the participants to respond to
+a questionnaire after voluntarily taking the online training course.
+Of 1246 participants, 782 answered the questionnaire. About
+95.7% said that they would like to try this method. The method
+suited their purposes in addressing current caregiving issues. In
+addition, they perceived the technique to be easy and believed that
+it could be applied to speciﬁc care recipients or situations. In con-
+trast, the participants were concerned about whether they could
+involve their colleagues, whether they will have enough time to use
+the method, and apply it in a “correct” manner. Additional use
+cases and tips were provided to help them overcome such anxiety.
+The online training course motivated the participants to put
+the Dementia Care Method® into use. As a result, more residents
+have begun sharing their thoughts and requests with the care
+staff,
+enabling them to support
+residents in realizing
+their
+desires and preferences. For instance, one resident who was
+demotivated, now enjoys growing vegetables, and has even started
+a workout routine. Another resident who was usually bored at
+the nursing home and frequently expressed a desire to return
+home is now actively engaging in various housework activities
+and enjoying life with fellow residents. The impact can be evalu-
+ated through observing changes in the frequency of behavioral
+and psychological symptoms of dementia (BPSD) and the content
+of daily reports. Similar cases have been gradually increasing,
+indicating that care recipients’ quality of life has improved. More-
+over, some utilization cases of BSC nursing homes have been
+presented at conferences.8,9
+Currently,
+the
+Japanese
+version
+of
+the
+Dementia
+Care
+Method®
+is
+available
+at
+https://www.benesse-style-care.co.jp/
+method03/. An English version will be available shortly and we
+will continue to promote the Dementia Care Method®.
+Disclosure statement
+The author declares no conﬂict of interest.
+Data availability statement
+Research data are not shared.
+Ryoko Fukuda
+Benesse Style Care Co., Ltd., Benesse Institute for
+Research on KAIGO (Continuing Care), Tokyo, Japan
+References
+1 Livingston G, Huntley J, Sommerlad A et al. Dementia prevention, interven-
+tion, and care: 2020 report of the lancet commission. Lancet 2020; 396:
+413–446.
+2 Fazio S, Pace D, Flinner J, Kallmyer B. The fundamentals of person-
+centered care for individuals with dementia. Gerontologist 2018; 58: S10–S19.
+3 Brodaty H, Draper B, Low LF. Nursing home staff attitudes towards resi-
+dents with dementia: strain and satisfaction with work. J Adv Nurs 2003;
+44: 583–590.
+4 Terada S, Oshima E, Yokota O et al. Person-centered care and quality of
+life of patients with dementia in long-term care facilities. Psychiatry Res
+2013; 205: 103–108.
+5 Barbosa A, Sousa L, Nolan M, Figueiredo D. Effects of person-centered
+care
+approaches
+to
+dementia
+care
+on
+staff:
+a
+systematic
+review.
+Am J Alzheimers Dis 2015; 30: 713–722.
+6 Iba T, Sakamoto M, Miyake T. How to write tacit knowledge as a pattern
+language: media design for spontaneous and collaborative communities.
+Procd Soc Behv 2011; 26: 46–54.
+7 Fukuda R. Veriﬁcation of the effectiveness of the dementia care
+method®, “words to create a world for living together with you”. J Japn
+Soc Dement Care 2023; 22: 547–556.
+8 Kuroda K, Ui HA, Hasegawa C. Reduce BPSD through the realization of
+what one wants to be. J Japn Soc Dement Care 2023; 22: 209.
+9 Niikura Y, Nishiyama H, Shimoda Y. Realization of daily living that is
+safer than home and like at home. J Japn Soc Dement Care 2023; 22: 162.
+How to cite this article: Fukuda R. Promotion of
+Dementia Care Method® “Words to create a world for liv-
+ing together with you”: Effect of an online training course.
+Geriatr. Gerontol. Int. 2024;24:392–393. https://doi.org/10.
+1111/ggi.14746
+Investigation of a model for evaluating cognitive decline from
+facial photographs using AI
+Dear Editor,
+Japan has more than 5 million people with dementia, and if
+4 million people with mild cognitive impairment are included, one
+in four older adults is in a state of declining cognitive function.
+Early detection of cognitive decline can prevent the onset of
+dementia. Developing a less invasive, inexpensive and simple
+dementia screening tool is urgently required.
+Letters to the Editor-Research Studies
+393
+|
+© 2024 The Authors. Geriatrics & Gerontology International
+published by John Wiley & Sons Australia, Ltd on behalf of Japan Geriatrics Society.
+This is an open access article under the terms of the Creative Commons Attribution License, which permits use, distribution and reproduction in any
+medium, provided the original work is properly cited.
+
+Perceived age is more strongly correlated with cognitive func-
+tion compared with chronological age.1 Thus, it was postulated
+that cognitive decline might be expressed in a patient’s face. Then,
+we carried out a study using artiﬁcial intelligence (AI), which can
+likely determine more details compared with human judgment.
+When deep learning was used to learn facial photographs of
+patients with Alzheimer’s disease and normal facial photographs,
+and a classiﬁcation task was attempted using the test images, the
+correct answer rate was 92.6%, and the area under the curve
+was 0.97.
+The scores calculated by the AI model correlated signiﬁcantly
+more strongly with cognitive decline than with chronological age.2
+While perceived age can be a useful biomarker in the geriatric
+ﬁeld, it requires more than 10 people to judge it. AI that deter-
+mines age from facial photos is already in use, and for this study,
+we opted to utilize the widely used Microsoft Azure Application
+Programming Interface. We aimed to determine if AI can easily
+produce reliable perceived age.
+The Alzheimer’s disease group (121 people), which was used
+for the previous study,2 was also used in the present study. We
+evaluated their faces using the Microsoft Azure face Application
+Programming Interface.
+The AI Azure age showed signiﬁcant correlation with chrono-
+logical age (r = 0.480, P = 2.53  108) and human-judged per-
+ceived age” (r = 0.791, P = 3.88  1027; Fig. S1); however, it failed
+to show a signiﬁcantly stronger correlation with the Mini-Mental
+State Examination than chronological age (Table 1) in men, women
+and all participants, contrary to human-judged perceived age. Fur-
+thermore, although human perceived age showed a stronger corre-
+lation with the Vitality Index3 than chronological age,1 AI Azure
+age failed to show superiority (Data S2). To test the hypothesis that
+a higher population might overcome the failure of AI Azure age, we
+tried 638 faces; however, AI Azure age failed to show the superiority
+to chronological age (Data S3). We tested the relationship between
+“sadness” detected by Azure and GDS15. However, the analysis of
+sadness also failed to detect depression (Data S4, Fig. S2).
+The failure to show the superiority of AI-perceived age over
+human-judged perceived age might be attributable to the weak-
+ness of the Azure system in older people and Asian ethnicity. The
+AI Azure age perceived age to be approximately 20 years younger
+than chronological age, and the maximum value was 74 years.
+Emotion judged by AI was reported to be biased by population
+due to bias in training data.4
+To determine the perceived age of older individuals as a use-
+ful biomarker, AI trained on a substantial amount of training
+data from older individuals would likely be necessary.
+Disclosure statement
+The authors declare no conﬂict of interest.
+Data availability statement
+It is strongly prohibited by the Ethics Committee to provide the
+face photos externally.
+Yumi Umeda-Kameyama,1,2
+Masashi Kameyama,3
+Taro Kojima,2
+Tomoki Tanaka,4 Katsuya Iijima,4,5
+Sumito Ogawa,2 Tomomichi Iizuka6 and
+Masahiro Akishita2
+1Dementia Center, The University of Tokyo Hospital,
+Tokyo, Japan
+2Department of Geriatric Medicine, The University of
+Tokyo, Tokyo, Japan
+3Tokyo Metropolitan Institute for Geriatrics and
+Gerontology, Tokyo, Japan
+4Institute of Gerontology, The University of Tokyo,
+Tokyo, Japan
+5Institute for Future Initiatives, The University of Tokyo,
+Tokyo, Japan
+6Center for Dementia Fukujuji Hospital, Kiyose, Japan
+References
+1 Umeda-Kameyama Y, Kameyama M, Akishita M et al. Cognitive function
+has a stronger correlation with perceived age than with chronological
+age. Geriatr Gerontol Int 2020; 20: 779–784.
+2 Umeda-Kameyama Y, Kameyama M, Akishita M et al. Screening of
+Alzheimer’s disease by facial complexion using artiﬁcial intelligence.
+Aging (Albany NY) 2021; 13: 1765–1772.
+3 Toba K, Nakai R, Akishita M et al. Vitality index as a useful tool to assess
+elderly with dementia. Geriatr Gerontol Int 2002; 2: 23–29.
+4 McQuaid J. Spying on your emotion. Sci Am 2021; 325: 40–47.
+Supporting Information
+Additional supporting information may be found in the online
+version of this article at the publisher’s website:
+DATA S1. Supporting Information.
+How
+to
+cite
+this
+article: Umeda-Kameyama
+Y,
+Kameyama M, Kojima T, et al. Investigation of a model for
+evaluating cognitive decline from facial photographs using
+AI. Geriatr. Gerontol. Int. 2024;24:393–394. https://doi.
+org/10.1111/ggi.14793
+Table 1
+Mini-Mental State Examination and artiﬁcial
+intelligence Azure age
+MMSE
+r
+P
+Total
+Chronological
+0.166
+0.0688
+(n = 121)
+Azure
+0.186
+0.0416
+Difference
+0.833
+Male
+Chronological
+0.200
+0.187
+(n = 45)
+Azure
+0.184
+0.226
+Difference
+0.923
+Female
+Chronological
+0.145
+0.212
+(n = 76)
+Azure
+0.206
+0.0749
+Difference
+0.572
+Note: Difference refers to a test of the difference between correlated
+correlation coefﬁcients, known as Steiger’s test.
+Letters to the Editor-Research Studies
+394
+|
+© 2024 The Authors. Geriatrics & Gerontology International
+published by John Wiley & Sons Australia, Ltd on behalf of Japan Geriatrics Society.

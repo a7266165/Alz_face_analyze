@@ -1,0 +1,1100 @@
+Passive Dementia Screening via Facial Temporal Micro-Dynamics Analysis
+of In-the-Wild Talking-Head Video
+Filippo Cenacchi
+Longbing Cao
+Mitchell McEwan
+Deborah Richards
+School of Computing, Macquarie University, Sydney, Australia
+filippo.cenacchi@mq.edu.au, longbing.cao@mq.edu.au,
+mitchell.mcewan@mq.edu.au, deborah.richards@mq.edu.au
+Abstract
+We target passive dementia screening from short camera-
+facing talking-head video, developing a facial temporal
+micro-dynamics analysis for language-free detection of
+early neuro-cognitive change.
+This enables unscripted,
+in-the-wild video analysis at scale to capture natural fa-
+cial behaviors, transferrable across devices, topics, and
+cultures without active intervention by clinicians or re-
+searchers during recording. Most existing resources pri-
+oritize speech or scripted interviews, limiting use outside
+clinics and coupling predictions to language and transcrip-
+tion.
+In contrast, we identify and analyze whether tem-
+poral facial kinematics, including blink dynamics, small
+mouth–jaw motions, gaze variability, and subtle head ad-
+justments, are sufficient for dementia screening without
+speech or text.
+By stabilizing facial signals, we convert
+these micro-movements into interpretable facial micrody-
+namic time series, smooth them, and summarize short win-
+dows into compact clip-level statistics for screening. Each
+window is encoded by its activity mix (the relative share
+of motion across streams), thus the predictor analyzes the
+distribution of motion across streams rather than its mag-
+nitude, making per-channel effects transparent.
+We also
+introduce YT-DemTalk, a new dataset curated from pub-
+licly available, in-the-wild camera-facing videos. It con-
+tains 300 clips (150 with self-reported dementia, 150 con-
+trols) to test our model and offer a first benchmarking of
+the corpus. On YT-DemTalk, ablations identify gaze lability
+and mouth/jaw dynamics as the most informative cues, and
+light-weighted shallow classifiers could attain a dementia
+prediction performance of (AUROC) 0.953, 0.961 Average
+Precision (AP), 0.851 F1-score, and 0.857 accuracy.
+1. Introduction
+Talking-head video has become a reliable substrate for
+learning fine-grained, in-the-wild audiovisual behavior.
+CVPR/ICCV work on active-speaker detection and lip read-
+ing shows that robust pipelines can extract temporally pre-
+cise orofacial dynamics under unconstrained conditions
+[54, 55]. In parallel, the community has learned to cap-
+ture subtle facial micro-motions via dense detection and 3D
+modeling [17, 25, 53]. Modern video backbones (Inflated
+3D (I3D), R(2+1)D, SlowFast, Video Vision Transformer
+(ViViT), Video Masked Autoencoders (VideoMAE)) and
+masked/contrastive pretraining further stabilize temporal
+representation learning in-the-wild [5, 8, 24, 33, 59, 60].
+However, most automated dementia-screening pipelines
+still anchor on speech/text from constrained interviews
+(e.g., DementiaBank/Pitt), [1, 40, 41, 64, 66] which primar-
+ily benchmark acoustic–linguistic models under relatively
+standardized conversational conditions rather than natural,
+non-clinical settings.
+We instead target content-agnostic
+facial temporal micro-dynamics and blink/eyelid regular-
+ity, mouth–jaw motion, gaze dispersion, and head micro-
+jitter, signals that exist regardless of language or topic. This
+choice is grounded in neurophysiology: intelligibility and
+perception rely on slow 1–8 Hz modulations and on audio-
+visual coupling between what is heard and what is seen; dis-
+ruptions in these prosodic-scale dynamics are informative
+even without lexical content [4, 19, 28]. Deployability in-
+the-wild raises two additional requirements. First, domain
+transport across channels/devices must work without target
+labels; shallow, label-free alignment of second-order struc-
+ture (CORAL/Procrustes) is effective and light-weight [56].
+Second, well-calibrated probabilities are needed for thresh-
+olded screening; temperature scaling remains a strong, sim-
+ple post-hoc calibrator [30]. We handle in-the-wild noise
+with a face-quality gate that drops unstable frames/windows
+and summarize the remaining stabilized traces into short-
+arXiv:2511.13802v2  [cs.CV]  26 Nov 2025
+
+window micro-dynamics scored by a calibrated head. Our
+formulation focuses on how the face moves rather than what
+is said, providing an interpretable and deployable alterna-
+tive to transcript-based pipelines.
+By contrast, video micro-dynamics (fine-grained fa-
+cial/cranial motion and prosodic envelope timing) remain
+comparatively underexplored despite mounting evidence
+that temporal facial kinematics and prosodic rhythm jointly
+encode neurocognitive status.
+Furthermore, most video-
+based studies to date have been conducted in clinical or
+study-managed settings (e.g., scheduled remote conversa-
+tions), rather than in in-the-wild talking-head media com-
+prising publicly available personal vlogs, day-in-the-life
+recordings, and unstructured interviews, where individuals
+with or without dementia behave naturally outside experi-
+mental contexts, thereby affording greater ecological valid-
+ity [40, 45, 48–50, 66].
+This gap matters because speech intelligibility and au-
+diovisual perception are governed by slow modulations of
+two coupled signals: (i) the acoustic amplitude envelope
+of speech and (ii) visible articulatory motion (lips, jaw,
+eyelids, head). Intelligibility-relevant structure concentrates
+in the ∼1–8 Hz delta–theta band; visual articulators move
+at similar rates, and their temporal coupling supports ro-
+bust perception [20, 22, 23, 29, 48, 50]. Disrupting this
+audio–visual coupling reduces intelligibility even without
+lexical cues. Consequently, we model the content-agnostic
+fluctuation geometry of facial behavior, the shape and tim-
+ing of blink recurrence, jaw open–close cycles, and gaze
+dispersion, rather than the words themselves, reducing sen-
+sitivity to language and topic.
+Complementarily, many
+physiological and neural signals exhibit scale-free struc-
+ture and long-range temporal dependence, so their vari-
+ability follows similar patterns across multiple time scales.
+Multiscale-entropy–style measures capture these regulari-
+ties from short recordings, yielding compact, semantics-
+free summaries that tend to transfer across cameras, scenes,
+and recording conditions [15, 20, 23, 29, 31].
+Prior human-robot interaction (HRI) studies have al-
+ready shown the feasibility and usability of robot-led cogni-
+tive assessments (including Montreal Cognitive Assessment
+(MoCA)-inspired workflows), suggesting that standardized,
+unbiased test administration and objective signal capture
+are practical in clinics and homes [18, 52].
+Addressing
+the above gaps and fusing multi-disciplinary approaches,
+we develop a content-agnostic, lightweight, real-time de-
+tector operating on facial temporal micro-dynamics rather
+than patient transcripts or demographics, and we apply
+this to humanoid robots with rich facial expressions (e.g.,
+Pepper/Ameca) as an opportunistic front end for automated
+triage and early referral. This yields an in-the-wild pipeline
+for passive, real-time screening from camera-facing video
+that can be embedded on humanoids for proactive diagno-
+sis. To facilitate this unique and reproducible research on
+passive screening from in-the-wild (naturalistic and vari-
+able composition) talking-head video, we curate and release
+YT-DemTalk, a corpus of 300 publicly available interview
+and monologue recordings. The dataset is balanced: 150
+clips are from individuals who explicitly self-report a de-
+mentia diagnosis, and 150 clips are from individuals with no
+such self-report; we use the latter as the control subset. Both
+groups contain people from a wide range of ages, cultural
+backgrounds and genders. We provide subject-safe train-
+ing, validation, and test splits, basic metadata (title, channel
+identifier, and timestamp) suitable for further open-source
+testing. Clips with heavy occlusions, severe compression
+artifacts, or unstable tracking are excluded using a prede-
+fined face-quality gate.
+We study passive dementia screening from in-the-
+wild talking-head video, i.e., single-speaker, self-contained
+camera-facing clips drawn from public media. Unlike prior
+work emphasizing curated interviews or speech-only cor-
+pora, we target facial micro-dynamics and prosodic en-
+velopes extracted from uncontrolled uploads and evaluate
+transport across sources [1, 41, 45, 49, 66]. Our network
+(Figure 1; Section 3) operates on stabilized facial traces,
+short-window motion–mix vectors uk ∈∆5 in ILR (Aitchi-
+son) space with optional label-free alignment, and a cali-
+brated head that outputs ˆp(V ). Our work enables scalable,
+language–free dementia screening from ordinary patients’
+videos with four contributions:
+• Unscripted,
+content-agnostic facial temporal micro-
+dynamics.
+We operationalize facial micro-dynamics
+(blink/eyelid regularity, mouth–jaw activity, gaze disper-
+sion, head micro-jitter) for everyday clips, addressing
+the speech/transcript bias of prior Alzheimer’s disease
+(AD) resources that rely on controlled audio or automatic
+speech recognition (ASR) [41].
+• A predictive compositional model in Aitchison geome-
+try. We treat each window’s motion mix (6 s; 2 s hop)
+as a composition, map it with an isometric log-ratio
+(ILR) transform, and calculate distances, covariances,
+Principal Component Analysis (PCA), and the scoring
+head directly in the ILR space.
+We add reallocation-
+aware regularization (Aitchison variance with Dirichlet-
+style concentration) and composition-preserving augmen-
+tations (multiplicative noise and stream dropout with
+renormalization), so the network learns diagnostic motion
+reallocation instead of magnitude shortcuts.
+• Label-free domain alignment in the ILR space. To trans-
+port across channels/devices without target labels, we
+align source and target ILR statistics using second-order
+correlation alignment and orthogonal Procrustes, avoid-
+ing heavy test-time adaptation while improving robust-
+ness in-the-wild [56, 62].
+• YT-DEMTALK dataset. We introduce a 300-clip corpus
+
+of in-the-wild, camera-facing videos (balanced demen-
+tia/control) with subject-safe train/val/test splits to sup-
+port passive video screening at scale.
+2. Related Work
+Large-scale, in-the-wild corpora and tasks around talking
+heads have driven progress in robust audiovisual modeling.
+For example, active-speaker detection and diarization on
+cinematic, unconstrained video (e.g., AVA-ActiveSpeaker)
+face dynamics with audio cues and stress cross-domain
+generalization [2, 3, 14, 46, 54]. Meanwhile, lip-reading
+and audio-visual speech recognition datasets (LRW/LRS)
+further emphasize temporal precision of orofacial mo-
+tion under non-clinical conditions [2, 3, 13]. In parallel,
+forgery/reenactment benchmarks (FaceForensics++) pres-
+sured methods to be sensitive to subtle per-frame micro-
+dynamics and misalignment [53]. By contrast, target a dif-
+ferent goal: passive neurocognitive screening where con-
+tent is incidental and micro-dynamics are primary. Conse-
+quently, face alignment and 3D morphable modeling have
+matured rapidly, enabling stable, per-frame geometry for
+dynamics analysis.
+Specifically, 3D Dense Face Align-
+ment (3DDFA) solved extreme-pose alignment with a 3D
+solution [67], while volumetric CNNs improved single-
+image 3D reconstruction [35]. Building on this, modern
+detailed capture (DECA, EMOCA) yields temporally con-
+sistent expression parameters usable as micromotor prox-
+ies [16, 25]. Likewise, real-time reenactment (Face2Face)
+exposed how tiny expression trajectories drive perceptual
+identity [58]. High-quality dense face detectors further sta-
+bilized pipelines in-the-wild [17]. However, our pipeline
+leverages these ingredients only as measurement scaffold-
+ing; the diagnostic signal is drawn from content-free fluc-
+tuation geometry.
+Capturing subtle, multi-scale dynam-
+ics from short clips is central to recognition.
+For tem-
+poral modeling, inflated 3D ConvNets (I3D) [8] and fac-
+torized 3D convolutions (R(2+1)D) [60] showed strong
+baselines, while SlowFast introduced multi-rate pathways
+to balance semantics and motion [24]. Lightweight tem-
+poral shifting (TSM) [37] and transformer-based mod-
+els (ViViT, VideoMAE) [5, 59] advanced long-horizon
+reasoning and pretraining.
+Forecasting/anticipation tasks
+further probe whether models internalize causal micro-
+structure [21, 27].
+In contrast, our work does not learn
+high-level actions; instead we quantify micro-dynamic sta-
+bility and intermittency over prosodic time scales and fuse
+them geometrically.
+Practically, label scarcity in health-
+care motivates self-supervised pretraining.
+Contrastive
+and instance-discrimination methods (MoCo) [32], vision
+transformers with masked reconstruction (MAE) [33], and
+distillation-based schemes (DINO) [7] reduce reliance on
+dense annotation.
+For video, masked pretraining trans-
+fers well to short clips and preserves motion cues [59].
+In dementia cohorts, recurring non-verbal motor mark-
+ers include oculomotor control anomalies (abnormal sac-
+cades/fixations/pursuit) [42], altered blink/eyelid dynamics
+[36], impaired orofacial praxis and jaw–mouth kinemat-
+ics [9], changes in facial affect/expressivity (incl.
+brow
+movement) [51], and reduced postural stability with in-
+creased sway and head micromovement [26]. For trans-
+port, shallow statistical alignment (CORAL/DeepCORAL)
+[57] provide effective, label-free matching of second-order
+structure; adversarial DA complements them when label
+structure must be preserved [61]. For geometry-preserving
+distribution bridging, optimal-transport variants maintain
+relational structure [6].
+For reliability, deployed screen-
+ing demands calibrated probabilities.
+Thus, temperature
+scaling remains a strong, simple post-hoc calibrator [30],
+and detection-oriented objectives like focal loss help un-
+der imbalance [38]. We combine temperature scaling with
+Youden-optimal thresholds to keep positive predictive value
+(PPV) stable across realistic prevalences.
+CVPR/ICCV
+have increasingly featured clinically oriented perception
+systems (e.g., large–small co-modeling for diagnosis [11]).
+Accordingly, our focus is distinct: passive, talking-head
+micro-dynamics as disease-agnostic biomarkers.
+To our
+knowledge, no prior work frames passive dementia screen-
+ing as cross-modal fluctuation reallocation measurable
+from short, in-the-wild clips.
+3. Method
+3.1. Preliminary
+We model facial micro-dynamics as a composition and learn
+in composition geometry rather than on raw proportions.
+From raw frames, we extract dense landmarks and iris cen-
+ters with MediaPipe FaceMesh/Iris and estimate head pose
+via SolvePnP to obtain stable, per-frame geometry. Five
+streams are derived blink/eyelid stability, mouth–jaw mo-
+tion, gaze dispersion, brow asymmetry, and head micro-
+jitter, and denoised with Savitzky–Golay and exponential
+moving averages. Signals are segmented into overlapping
+windows (6 s, 2 s hop) and normalized by a per-video 15 s
+baseline to form window embeddings that capture short-
+horizon behavior.
+Each window yields a conserved-sum
+motion-mix vector uk ∈∆5; we then map to ILR (Aitchi-
+son) space, where distances, covariances, and PCA are co-
+herent for compositions. Clip-level features aggregate win-
+dow means and dispersion in ILR space and are optionally
+subjected to simple, label-free second-order alignment on
+the ILR embeddings to improve cross-source transport. A
+shallow calibrated head maps the reduced features to a re-
+liable posterior Pmodel, and a face-quality gate suppresses
+low-confidence windows before fusing scores into a clip-
+level decision. Figure 1 illustrates the pipeline on two sub-
+jects, one neuro-typical and one with dementia.
+
+Figure 1. Facial micro-dynamics screening pipeline. Frames are stabilized (FaceMesh/Iris with SolvePnP), micro-dynamic key per-
+formance indicators (KPIs) are computed and smoothed, 6-s windows (2-s hop) are summarized relative to a 15-s baseline, features are
+reduced with PCA and scored by a calibrated shallow classifier, and a face-quality gate fuses the scores into one clip-level decision.
+3.2. Rationale
+Passive screening from in-the-wild talking-head video re-
+quires signals that (i) are content-agnostic, so language,
+prompt, and topic do not confound predictions; (ii) remain
+stable under camera/viewpoint and subject identity; and (iii)
+are calibratable at inference to support risk thresholds in
+deployments. Content-dependent baselines (text/semantics,
+lexical prosody, audio spectra) excel on single streams but
+entangle diagnosis with “what is said,” microphone con-
+ditions, and dataset curation.
+Purely geometric streams
+(2D/3D landmarks) can be robust yet lose fine-scale dynam-
+ics needed for sensitive triage. Figure 2 illustrates the re-
+sulting system feedback loop. First, a lightweight landmark
+stabilizer decouples camera shake from facial micromotor
+activity, yielding per-stream traces that remain interpretable
+across content. Second, each stream produces a bounded
+indicator (e.g., blink regularity, eyelid “steadiness,” jaw ac-
+tivity, gaze lability, head micro-movement), which we ag-
+gregate into a conserved-sum simplex so no single cue dom-
+inates and trade-offs are explicit at thresholding. Third, we
+prioritize calibration: alongside accuracy metrics, we tar-
+get low Brier score and Expected Calibration Error (ECE)
+so badge summaries reflect reliable probabilities clinicians,
+or an automated triage system can act on.
+This combi-
+nation, content-agnostic features, conserved compositions,
+and calibration-first reporting, guides the method described
+next and underpins our deployment-oriented evaluation.
+3.3. Design
+For each video V ,
+we compute per-window micro-
+dynamics vectors {uk}K
+k=1 ∈∆5 (Section 3.1) and sum-
+marize them with ϕ(V ) = [ ¯u, Disp(u1:K) ] ∈Rd.
+A
+linear head with temperature T
+> 0 yields logit ℓ=
+Wϕ(V ) + b and probability ˆp = σ(ℓ/T). To transport
+across sources without labels, we estimate an alignment
+map A that matches second-order micro-dynamics struc-
+ture. Training minimizes a multi-objective: (i) supervised
+classification on the source domain, (ii) label-free alignment
+between source/target statistics, and (iii) a composition reg-
+ularizer that stabilizes the micro-dynamics vectors.
+L = 1
+|S|
+X
+(V,y)∈S
+CE
+
+y, σ
+
+W ϕ(V )+b
+T
+
++ λalnLaln + λregLreg.
+(1)
+This
+combines
+supervised
+classification
+on
+com-
+pact
+micro-dynamics
+vector
+statistics
+with
+label-free
+source–target alignment and a composition term that stabi-
+lizes the simplex representation. For alignment we consider
+three label-free choices. Let ΦS/T stack ϕ(·) row-wise and
+
+Figure 2. Live analysis user interface (UI). Left: stabilized landmarks over talking-head video. Right: micro-dynamic traces (blink,
+eyelid stability, mouth/jaw, gaze, head jitter) and a spatiotemporal stability map; top badges summarize calibrated indicators.
+C(·) be an empirical covariance:
+Lcoral =
+ C(ΦS) −C(ΦT )
+2
+F
+(2)
+which matches second-order structure and is effective when
+means are close.
+Lproc =
+min
+R∈Rd×d
+ ΦS −ΦT R
+2
+F
+s.t. R⊤R = I
+(3)
+which removes rotation/scale drift via an orthogonal map.
+Lot =
+min
+Γ∈Π(µS,µT )
+
+D, Γ
+
++ ε KL
+ Γ
+ µSµ⊤
+T
+
+(4)
+which preserves relational geometry when supports only
+partially overlap using Kullback–Leibler (KL) divergence.
+To keep the conserved-sum composition and avoid single-
+cue collapse we add:
+Lreg = β Var
+
+1⊤uk
+
++ γ
+X
+k
+KL
+ uk ∥¯u
+
+.
+(5)
+Calibration fits the temperature on validation by negative
+log-likelihood (NLL):
+T ⋆= arg min
+T >0
+X
+(V,y)∈V
+CE
+
+y, σ
+
+W ϕ(V )+b
+T
+
+(6)
+after which (W, b, T ⋆) are frozen for test-time ˆp.
+Micro-dynamics workflow. From each input clip we
+extract facial landmarks, gaze/pose, and (if present) au-
+dio traces; we compute per-window micro-dynamics vec-
+tors {uk} (blink, eyelid stability, mouth–jaw motion, gaze
+variability, head micro-jitter, prosody), summarize each clip
+with ϕ(V ), optionally apply label-free alignment, and pro-
+duce calibrated risk scores. When evaluating across sources
+without labels, we estimate a label-free alignment map A
+(CORAL / orthogonal Procrustes / entropic OT) and apply
+Algorithm 1 Training & Scoring on Micro-Dynamics
+(alignment + calibrated head)
+Input: Labeled source S; optional unlabeled target T ; weights λaln, λreg;
+temperature T
+Output: Calibrated scorer ˆp(V )
+1: Extract micro-dynamics vectors: For each V , compute {uk}; sum-
+marize ϕ(V ) = [ ¯u, Disp(u1:K) ].
+2: Estimate alignment A (if T ):
+• CORAL: minimize Lcoral in Eq. (2);
+• Procrustes: minimize Lproc in Eq. (3);
+• Optimal transport (OT) (entropic/W2): minimize Lot in Eq. (4).
+If no T , set A = I.
+3: Train head: Minimize Eq. (1) over (W, b) using (V, y) ∈S with
+ϕ(V )←Aϕ(V ).
+4: Calibrate: Fit T ⋆by NLL (Eq. (6)); freeze (W, b, T ⋆).
+5: Inference: ˆp = σ
+ (W Aϕ(V ) + b)/T ⋆
+; threshold by Youden’s J.
+it to ϕ(V ) for transport. A calibrated logistic head then pro-
+duces the final risk:
+ˆp = σ
+W Aϕ(V ) + b
+T
+
+,
+(7)
+where the temperature T is fit on validation and frozen at
+test time. In short, the pipeline performs micro-dynamics
+extraction, computes optional alignment and adds a cali-
+brated scoring to yield reliable probabilities for screening.
+Discussion.
+The micro-dynamics scoring head opti-
+mizes accuracy and reliability jointly: Lcls learns a separa-
+ble decision on compact statistics; Laln grants cross-source
+transport without labels; and T ensures operational calibra-
+tion for thresholded risk. The resulting task formulation is
+lightweight, semantics-free, and compatible with our live
+UI (Figure 2), contributing to advancements in medical AI.
+
+4. Experiments and Results
+4.1. Experimental setup
+Each clip yields six micro-dynamics channels: (1) blink/eye
+aspect ratio (EAR), (2) eyelid stability, (3) mouth–jaw mo-
+tion, (4) brow asymmetry, (5) gaze dispersion (iris tra-
+jectory), and (6) head micro-jitter (pose), computed on
+sliding windows of 6 s with a 2 s hop after a 15 s per-
+video baseline. We sweep window/hop, smoothing (Sav-
+itzky–Golay vs. exponential moving average (EMA)-only),
+PCA variance targets, and head family.
+Per-video fea-
+tures (mean and dispersion) are standardized, reduced by
+PCA (variance target 0.98), and scored by shallow heads
+(Random Forest (RF), Gradient-Boosted Decision Trees
+(GBDT), AdaBoost (ADA), Logistic Regression (LR), Sup-
+port Vector Machine (SVM), Extra Trees (ET); RF is
+default).
+For SOTA sequence baselines we additionally
+train DL+INCEPTIONTIME and DL+TSMIXER on the
+same micro-dynamics streams following standard configu-
+rations [10, 34]. Probabilities for all heads are calibrated on
+validation and frozen for test, following modern large-scale
+calibration practice in vision [44]. All experiments run on
+an NVIDIA RTX 4090; full training and evaluation across
+baselines completes in ≈3 hours.
+Head (Stats–PCA–RF). Here, Stats are per-window sum-
+mary features, PCA reduces their dimensionality, and RF
+is a Random Forest trained on the PCA-reduced vectors.
+We report stratified bootstrap 95% CIs for AUROC/AP and
+use non-parametric permutation tests for between-head AU-
+ROC differences, which match the ordering in Figs. 3–4.
+Because screening acts on thresholds, we calibrate proba-
+bilities by temperature scaling on the validation split and
+keep the temperature fixed at test time [44]. The chosen
+operating point (τ=0.636; Figure 6) lies on a broad Accu-
+racy/F1 plateau and yields recall 0.771, specificity 0.953,
+accuracy 0.857, F1 0.851, and only two false positives (Fig-
+ure 5). Single-channel ablations (Figure 7) show that gaze
+lability and mouth/jaw motion contribute most of the sig-
+nal, with brow asymmetry and head micro-jitter providing
+smaller gains; this pattern is stable across the window/hop,
+smoothing, PCA-target, and head-family sweeps.
+4.2. Results
+Table
+1
+summarizes
+the
+headline
+discrimina-
+tion
+numbers
+for
+five
+heads,
+contrasting
+our
+Stats+PCA+RF default against a convolutional SOTA
+baseline
+(DL+INCEPTIONTIME),
+an
+MLP
+mixer
+(DL+TSMIXER),
+and
+two
+stronger
+tree
+ensembles
+(Stats+PCA+ADA/GBDT). The Stats+PCA+RF head at-
+tains the best AUROC, AP, F1 and Acc, so we keep it as our
+primary screening model for all subsequent analyses. The
+next figures unpack these results in a consistent order. First,
+Figures 3 and 4 focus on ranking quality under different
+Figure 3. ROC (test). Stats+PCA+RF dominates across most
+false positive rate (FPR); AUROC=0.953.
+prevalence and threshold conditions.
+Second, Figure 5
+connects the selected operating point to concrete error
+types and the distribution of posteriors.
+Third, Figure 6
+shows how metrics change as the decision threshold moves,
+which clarifies the trade-off between precision and recall.
+Fourth, Figure 7 examines the marginal contribution of
+each microdynamic channel.
+Finally, Figure 8 provides
+qualitative examples that make quantitative patterns visible
+and interpretable.
+Method
+AUROC
+AP
+F1
+Acc
+Thr
+Stats+PCA+RF (ours)
+0.953
+0.961
+0.851
+0.857
+0.636
+DL+INCEPTIONTIME
+0.938
+0.949
+0.824
+0.835
+0.794
+Stats+PCA+ADA
+0.902
+0.919
+0.741
+0.769
+0.690
+Stats+PCA+GBDT
+0.893
+0.925
+0.844
+0.846
+0.522
+DL+TSMIXER
+0.844
+0.865
+0.772
+0.747
+0.662
+Table 1. Test performance with validation-tuned thresholds.
+We benchmark our Stats+PCA+RF head against Incep-
+tionTime as a strong convolutional TSC reference [34],
+PatchTST and iTransformer as channel-aware Transformer
+forecasters [39, 47], TimesNet as a 2D-variation tem-
+poral model [65], and TSMixer as an efficient all-MLP
+mixer [10], so that our calibrated tree ensemble is tested
+against diverse, state-of-the-art (SOTA) inductive biases.
+Figure 3 summarizes ranking performance across all possi-
+ble thresholds. The curve for the Stats, PCA, then Random
+Forest head dominates the alternatives over a wide false
+positive range, which supports the aggregate AUROC re-
+ported in Table 1. This indicates that the chosen represen-
+tation and head separate positive and negative clips consis-
+tently, even when the operating point is shifted. The shape
+near the low false positive region is especially relevant for
+screening, where the cost of false positives is high and pre-
+cision must remain stable.
+Interpreting Precision–Recall. Figure 4 complements
+the ROC view by stressing behavior when positive cases are
+relatively rare. The area under the precision–recall curve
+
+Figure 4. Precision–Recall (test). Near-perfect precision until
+mid-range recall; AP=0.961.
+Figure 5. Left: Confusion matrix at the validation–tuned thresh-
+old (τ=0.636). Right: Class-conditioned probability histograms
+show good separation with a narrow overlap band.
+Figure 6. Threshold sweep. A broad optimum exists; τ=0.636
+balances precision and recall with slight bias toward higher PPV.
+remains high, and precision stays near perfect until mid-
+range recall. This is aligned with the screening goal stated
+in the setup, which favors a conservative operating point
+that keeps positive predictive value high while still recalling
+a substantial fraction of true positives.
+Linking the operating point to errors and posteriors.
+Figure 5 ties the threshold τ=0.636 to concrete outcomes.
+The left panel shows that false positives are few, which is
+consistent with the conservative choice of threshold. The
+right panel shows class-conditioned probability histograms
+with a visible separation band and a relatively narrow over-
+lap region. Together, these two views explain why the se-
+lected threshold yields high precision while keeping recall
+at a workable level for screening.
+Operating-point selection. Figure 6 shows that accu-
+racy and F1 have a broad plateau around the chosen thresh-
+old. This plateau suggests that small deviations during de-
+Figure 7. Per-channel ablation (test AUROC). Removing gaze
+or mouth/jaw hurts most; other channels contribute but are less
+critical by themselves.
+ployment, for example due to mild distribution shift, will
+not degrade performance sharply. The selected operating
+point therefore reflects a practical balance for real-time use,
+where the system must remain reliable without per-site re-
+tuning.
+Figure 7 quantifies the marginal impact of each
+stream by ablating them one at a time. The largest drops
+occur when gaze variability or mouth and jaw motion are
+removed, while brow asymmetry and head micro-jitter have
+smaller, but still positive, effects.
+This pattern matches
+the intended design of the micro-dynamics representation:
+orofacial and oculomotor dynamics carry stable, content-
+agnostic cues in ordinary talking-head video, and they an-
+chor the performance of the calibrated head.
+Results We report AUROC and AP with stratified boot-
+strap 95% CIs, and calibration with Expected Calibra-
+tion Error (ECE; 10 bins) and Brier score.
+Between-
+method AUROC differences are assessed via a non-
+parametric,
+label-preserving permutation test,
+follow-
+ing recent best practice for calibration/uncertainty eval-
+uation and hypothesis testing in vision [12, 43, 63].
+Our chosen head, Stats+PCA+RF (ours), attains AU-
+ROC 0.953 [0.912, 0.984] and AP 0.961 [0.928, 0.986],
+with F1 0.851 and ACC 0.857 at the tuned threshold 0.636.
+Calibration is reasonable: ECE 0.268 and Brier 0.168.
+Among the new baselines, the strongest competitor is the
+convolutional DL+INCEPTIONTIME head, which reaches
+AUROC 0.938 and AP 0.949 (F1 0.824, ACC 0.835),
+while the best alternative tree model, Stats+PCA+GBDT,
+attains AUROC 0.893, AP 0.925, F1 0.844 and ACC 0.846,
+and DL+TSMIXER lags further behind (AUROC 0.844,
+AP 0.865). Permutation tests on AUROC differences find
+no significant gap between Stats+PCA+RF and the next-
+best heads, but all alternatives show higher calibration error,
+so Stats+PCA+RF remains the best compromise between
+discrimination and reliability under subject-safe splitting.
+5. Analysis
+5.1. Qualitative Results
+We examine how the model behaves beyond headline met-
+rics.
+We first examine qualitative evidence on held-out
+clips, then connect the selected operating point to calibra-
+
+Figure 8. Qualitative examples. Stabilized face mesh (top) with synchronized micro-dynamics traces (bottom). Badges summarize
+calibrated indicators.
+tion, and finally analyze which micro-dynamics channels
+matter most and where errors arise. Figure 8 shows stabi-
+lized landmarks overlaid on talking-head frames with syn-
+chronized traces for blink/eyelid, mouth–jaw, gaze, brow
+asymmetry, and head micro-jitter. Clips with sustained gaze
+lability and elevated mouth–jaw activity receive higher pos-
+teriors, whereas clips with steady gaze and moderate ar-
+ticulatory motion are scored as low risk. The visible cues
+align with the ranking behavior seen in ROC/PR views
+(Figs. 3–4) and with the separation of class-conditioned
+posteriors in Figure 5. The UI exposes per-stream indica-
+tors and a calibrated score badge. Clinicians can verify that
+risk increases when gaze wanders during speech or when
+jaw cycles become irregular, and decreases when the face is
+well-framed with stable ocular behavior.
+5.2. Operating Point and Calibration
+The validation-tuned threshold τ=0.636 lies on a broad
+plateau for Accuracy/F1 (Figure 6), indicating tolerance to
+mild distribution shift. At this point, the test confusion ma-
+trix shows few false positives and a clear separation band
+in the posterior histograms (Figure 5). Calibration is rea-
+sonable (ECE 0.268; Brier 0.168), so reported probabilities
+are interpretable for screening rather than only for ranking.
+Single-channel removals (Figure 7) identify gaze variability
+and mouth–jaw motion as the dominant contributors; ablat-
+ing either causes the largest AUROC drops. Brow asymme-
+try and head micro-jitter provide secondary gains, suggest-
+ing that orofacial and oculomotor streams anchor perfor-
+mance in uncontrolled video. Common failures mirror these
+findings. False negatives concentrate in clips with (i) mouth
+occlusion or beard-induced tracking gaps, (ii) extreme head
+pose or framing that suppresses iris tracking, and (iii) com-
+pression artifacts that destabilize high-frequency micro-
+movements. Simple capture guidance camera-facing fram-
+ing, moderate lighting, and minimal mouth occlusion re-
+duces these errors and preserves the same qualitative cues
+surfaced in the UI.
+6. Conclusion
+We present a content-agnostic, micro-dynamics approach
+to passive dementia screening from ordinary talking-head
+videos.
+The proposed micro-dynamics representation,
+built from stabilized facial traces, short-window statis-
+tics, and a conserved composition, pairs naturally with
+label-free alignment (CORAL/Procrustes) and post-hoc cal-
+ibration.
+On our curated data YT-DemTalk, the com-
+pact PCA then RF head achieves strong discrimination (AU-
+ROC 0.953, AP 0.961) and high precision at a conserva-
+tive operating point, while ablations show that gaze labil-
+ity and mouth/jaw motion carry the largest marginal sig-
+nal. The live analysis UI exposes per-stream indicators and
+calibrated scores, yielding traceable, per-stream evidence.
+Our study is limited to a single speaker, short clips without
+assessing longitudinal change, clinic-grade labels, or fair-
+ness across demographic strata. Future work will: (i) cou-
+ple the micro-dynamics representation with self-supervised
+
+video pretraining for stronger cross-domain transport, (ii)
+extend to multi-view and longer-horizon stability measures,
+and (iii) embed the larger data with deeper models on
+resource-constrained humanoid robots for on-device, in-
+the-wild triage with human-in-the-loop oversight, evaluat-
+ing usability and calibration drift under real deployment.
+References
+[1] Dementiabank (pitt corpus),
+talkbank.
+https : / /
+dementia.talkbank.org/. Accessed 2025-10-30. 1,
+2
+[2] Triantafyllos Afouras, Joon Son Chung, Andrew Senior,
+Oriol Vinyals, and Andrew Zisserman. Deep audio-visual
+speech recognition. pages 8717–8727. IEEE, 2018. 3
+[3] Triantafyllos Afouras, Joon Son Chung, and Andrew Zisser-
+man. Lrs3-ted: a large-scale dataset for visual speech recog-
+nition. 2018. 3
+[4] Fritzie I Arce-McShane.
+The association between age-
+related changes in oral neuromechanics and alzheimer’s dis-
+ease.
+Advances in geriatric medicine and research, 3(2):
+e210011, 2021. 1
+[5] Anurag Arnab, Mostafa Dehghani, Georg Heigold, Chen
+Sun, Mario Luˇci´c, and Cordelia Schmid.
+Vivit: A video
+vision transformer. In Proceedings of the IEEE/CVF inter-
+national conference on computer vision, pages 6836–6846,
+2021. 1, 3
+[6] Yikun Bai, Huy Tran, Hengrong Du, Xinran Liu, and Soheil
+Kolouri. Fused partial gromov-wasserstein for structured ob-
+jects. 2025. 3
+[7] Mathilde Caron, Hugo Touvron, Ishan Misra, Herv´e J´egou,
+Julien Mairal, Piotr Bojanowski, and Armand Joulin. Emerg-
+ing properties in self-supervised vision transformers. In Pro-
+ceedings of the IEEE/CVF international conference on com-
+puter vision, pages 9650–9660, 2021. 3
+[8] Joao Carreira and Andrew Zisserman.
+Quo vadis, action
+recognition? a new model and the kinetics dataset. In pro-
+ceedings of the IEEE Conference on Computer Vision and
+Pattern Recognition, pages 6299–6308, 2017. 1, 3
+[9] Maysa Luchesi Cera, Karin Zazo Ortiz, Paulo Henrique Fer-
+reira Bertolucci, and Tha´ıs Soares Cianciarullo Minett.
+Speech and orofacial apraxias in alzheimer’s disease. Inter-
+national psychogeriatrics, 25(10):1679–1685, 2013. 3
+[10] Si-An Chen, Chun-Liang Li, Nate Yoder, Sercan O Arik, and
+Tomas Pfister.
+Tsmixer: An all-mlp architecture for time
+series forecasting. arXiv preprint arXiv:2303.06053, 2023.
+6
+[11] Wanyi Chen, Zihua Zhao, Jiangchao Yao, Ya Zhang, Jia-
+jun Bu, and Haishuai Wang. Multi-modal medical diagnosis
+via large-small model collaboration. In Proceedings of the
+Computer Vision and Pattern Recognition Conference, pages
+30763–30773, 2025. 3
+[12] Jiacheng Cheng and Nuno Vasconcelos.
+Calibrating deep
+neural networks by pairwise constraints. In Proceedings of
+the IEEE/CVF Conference on Computer Vision and Pattern
+Recognition, pages 13709–13718, 2022. 7
+[13] Joon Son Chung, Andrew W. Senior, Oriol Vinyals, and An-
+drew Zisserman. Lip reading sentences in the wild. 2016.
+3
+[14] Joon Son Chung, Arsha Nagrani, and Andrew Zisserman.
+Voxceleb2: Deep speaker recognition. 2018. 3
+[15] Madalena Costa, Ary L Goldberger, and C-K Peng. Mul-
+tiscale entropy analysis of complex physiologic time series.
+Physical review letters, 89(6):068102, 2002. 2
+[16] Radek Danˇeˇcek, Michael J Black, and Timo Bolkart. Emoca:
+Emotion driven monocular face capture and animation. In
+Proceedings of the IEEE/CVF Conference on Computer Vi-
+sion and Pattern Recognition, pages 20311–20322, 2022. 3
+[17] Jiankang Deng, Jia Guo, Evangelos Ververas, Irene Kot-
+sia, and Stefanos Zafeiriou. Retinaface: Single-shot multi-
+level face localisation in the wild.
+In Proceedings of
+the IEEE/CVF conference on computer vision and pattern
+recognition, pages 5203–5212, 2020. 1, 3
+[18] Alessandro Di Nuovo, Simone Varrasi, Daniela Conti,
+Joshua Bamsforth, Alexandr Lucas, Alessandro Soranzo,
+and John McNamara. Usability evaluation of a robotic sys-
+tem for cognitive testing. In 2019 14th ACM/IEEE Interna-
+tional Conference on Human-Robot Interaction (HRI), pages
+588–589. IEEE, 2019. 2
+[19] Nai Ding and Jonathan Z Simon.
+Cortical entrainment
+to continuous speech: functional roles and interpretations.
+Frontiers in human neuroscience, 8:311, 2014. 1
+[20] Nai Ding and Jonathan Z Simon.
+Cortical entrainment
+to continuous speech: functional roles and interpretations.
+Frontiers in human neuroscience, 8:311, 2014. 2
+[21] Qiaole Dong and Yanwei Fu. Memflow: Optical flow es-
+timation and prediction with memory.
+In Proceedings of
+the IEEE/CVF Conference on Computer Vision and Pattern
+Recognition, pages 19068–19078, 2024. 3
+[22] Rob Drullman, Joost M Festen, and Reinier Plomp. Effect of
+temporal envelope smearing on speech reception. The Jour-
+nal of the Acoustical Society of America, 95(2):1053–1064,
+1994. 2
+[23] Taffeta M Elliott and Fr´ed´eric E Theunissen. The modula-
+tion transfer function for speech intelligibility. PLoS compu-
+tational biology, 5(3):e1000302, 2009. 2
+[24] Christoph Feichtenhofer, Haoqi Fan, Jitendra Malik, and
+Kaiming He. Slowfast networks for video recognition. In
+Proceedings of the IEEE/CVF international conference on
+computer vision, pages 6202–6211, 2019. 1, 3
+[25] Yao Feng, Haiwen Feng, Michael J Black, and Timo Bolkart.
+Learning an animatable detailed 3d face model from in-the-
+wild images. pages 1–13. ACM New York, NY, USA, 2021.
+1, 3
+[26] Miguel F Gago, Vitor Fernandes, Jaime Ferreira, H´elder
+Silva, Lu´ıs Rocha, Estela Bicho, and Nuno Sousa.
+Pos-
+tural stability analysis with inertial measurement units in
+alzheimer’s disease. Dementia and geriatric cognitive dis-
+orders extra, 4(1):22–30, 2014. 3
+[27] Harshala Gammulle, Simon Denman, Sridha Sridharan, and
+Clinton Fookes. Predicting the future: A jointly learnt model
+for action anticipation.
+In Proceedings of the IEEE/CVF
+International Conference on Computer Vision, pages 5562–
+5571, 2019. 3
+
+[28] Anne-Lise Giraud and David Poeppel. Cortical oscillations
+and speech processing: emerging computational principles
+and operations. Nature neuroscience, 15(4):511–517, 2012.
+1
+[29] Anne-Lise Giraud and David Poeppel. Cortical oscillations
+and speech processing: emerging computational principles
+and operations. Nature neuroscience, 15(4):511–517, 2012.
+2
+[30] Chuan Guo, Geoff Pleiss, Yu Sun, and Kilian Q Weinberger.
+On calibration of modern neural networks. In International
+conference on machine learning, pages 1321–1330. PMLR,
+2017. 1, 3
+[31] Biyu J He. Scale-free brain activity: past, present, and future.
+Trends in cognitive sciences, 18(9):480–487, 2014. 2
+[32] Kaiming He, Haoqi Fan, Yuxin Wu, Saining Xie, and Ross
+Girshick. Momentum contrast for unsupervised visual rep-
+resentation learning. In Proceedings of the IEEE/CVF con-
+ference on computer vision and pattern recognition, pages
+9729–9738, 2020. 3
+[33] Kaiming He, Xinlei Chen, Saining Xie, Yanghao Li, Piotr
+Doll´ar, and Ross Girshick. Masked autoencoders are scalable
+vision learners. In Proceedings of the IEEE/CVF conference
+on computer vision and pattern recognition, pages 16000–
+16009, 2022. 1, 3
+[34] Hassan Ismail Fawaz, Benjamin Lucas, Germain Forestier,
+Charlotte Pelletier, Daniel F Schmidt, Jonathan Weber, Geof-
+frey I Webb, Lhassane Idoumghar, Pierre-Alain Muller, and
+Franc¸ois Petitjean. Inceptiontime: Finding alexnet for time
+series classification. Data Mining and Knowledge Discovery,
+34(6):1936–1962, 2020. 6
+[35] Aaron S Jackson, Adrian Bulat, Vasileios Argyriou, and
+Georgios Tzimiropoulos. Large pose 3d face reconstruction
+from a single image via direct volumetric cnn regression. In
+Proceedings of the IEEE international conference on com-
+puter vision, pages 1031–1039, 2017. 3
+[36] Aristea Ladas, Christos Frantzidis, Panagiotis Bamidis, and
+Ana B Vivas. Eye blink rate as a biological marker of mild
+cognitive impairment. International Journal of Psychophys-
+iology, 93(1):12–16, 2014. 3
+[37] Ji Lin, Chuang Gan, and Song Han. Tsm: Temporal shift
+module for efficient video understanding. In Proceedings of
+the IEEE/CVF international conference on computer vision,
+pages 7083–7093, 2019. 3
+[38] Tsung-Yi Lin, Priya Goyal, Ross Girshick, Kaiming He, and
+Piotr Doll´ar. Focal loss for dense object detection. In Pro-
+ceedings of the IEEE international conference on computer
+vision, pages 2980–2988, 2017. 3
+[39] Yong Liu, Tengge Hu, Haoran Zhang, Haixu Wu, Shiyu
+Wang, Lintao Ma, and Mingsheng Long. itransformer: In-
+verted transformers are effective for time series forecasting.
+arXiv preprint arXiv:2310.06625, 2023. 6
+[40] Saturnino Luz, Fasih Haider, Sofia De la Fuente, Davida
+Fromm, and Brian MacWhinney.
+Detecting cognitive de-
+cline using speech only: The adresso challenge. 2021. 1,
+2
+[41] Saturnino Luz, Fasih Haider, Sofia de la Fuente Garcia,
+Davida Fromm, and Brian MacWhinney.
+Alzheimer’s
+dementia recognition through spontaneous speech.
+page
+780169. Frontiers Media SA, 2021. 1, 2
+[42] Michael R MacAskill and Tim J Anderson. Eye movements
+in neurodegenerative diseases. Current opinion in neurology,
+29(1):61–68, 2016. 3
+[43] Francesca Mandel and Ian Barnett. Permutation-based hy-
+pothesis testing for neural networks. In Proceedings of the
+AAAI Conference on Artificial Intelligence, pages 14306–
+14314, 2024. 7
+[44] Matthias Minderer,
+Josip Djolonga,
+Rob Romijnders,
+Frances Hubis, Xiaohua Zhai, Neil Houlsby, Dustin Tran,
+and Mario Lucic. Revisiting the calibration of modern neu-
+ral networks. Advances in neural information processing sys-
+tems, 34:15682–15694, 2021. 6
+[45] Xiaofan Mu, Merna Bibars, Salman Seyedi, Iris Zheng, Zi-
+fan Jiang, Liu Chen, Bolaji Omofojoye, Rachel Hershen-
+berg, Allan I. Levey, Gari D. Clifford, Hiroko H. Dodge, and
+Hyeokhyen Kwon. Feasibility of detecting cognitive impair-
+ment and psychological well-being among older adults us-
+ing facial, acoustic, linguistic, and cardiovascular patterns
+derived from remote conversations. 2025. 2
+[46] Arsha Nagrani, Joon Son Chung, Weidi Xie, and Andrew
+Zisserman. Voxceleb: Large-scale speaker verification in the
+wild. page 101027. Elsevier, 2020. 3
+[47] Y Nie. A time series is worth 64words: Long-term fore-
+casting with transformers. arXiv preprint arXiv:2211.14730,
+2022. 6
+[48] Jonas Obleser and Nathan Weisz. Suppressed alpha oscilla-
+tions predict intelligibility of speech and its acoustic details.
+Cerebral Cortex, 22(11):2466–2477, 2011. 2
+[49] Taichi Okunishi, Chuheng Zheng, Mondher Bouazizi, To-
+moaki Ohtsuki, Momoko Kitazawa, Toshiro Horigome, and
+Taishiro Kishimoto. Dementia and mci detection based on
+comprehensive facial expression analysis from videos dur-
+ing conversation. IEEE, 2025. 2
+[50] Hyojin Park, Christoph Kayser, Gregor Thut, and Joachim
+Gross. Lip movements entrain the observers’ low-frequency
+brain oscillations to facilitate speech intelligibility. elife, 5:
+e14521, 2016. 2
+[51] Peter S Pressman, Kuan Hua Chen, James Casey, Stefan Sil-
+lau, Heidi J Chial, Christopher M Filley, Bruce L Miller, and
+Robert W Levenson. Incongruences between facial expres-
+sion and self-reported emotional reactivity in frontotemporal
+dementia and related disorders. The Journal of neuropsychi-
+atry and clinical neurosciences, 35(2):192–201, 2023. 3
+[52] Silvia Rossi, Claudia Di Napoli, Federica Garramone, Elena
+Salvatore, and Gabriella Santangelo.
+Personality-based
+adaptation of robot behaviour: Acceptability results on in-
+dividuals with cognitive impairments. International Journal
+of Social Robotics, 16(1):211–226, 2024. 2
+[53] Andreas Rossler, Davide Cozzolino, Luisa Verdoliva, Chris-
+tian Riess, Justus Thies, and Matthias Nießner. Faceforen-
+sics++: Learning to detect manipulated facial images.
+In
+Proceedings of the IEEE/CVF international conference on
+computer vision, pages 1–11, 2019. 1, 3
+[54] Joseph Roth, Sourish Chaudhuri, Ondrej Klejch, Rad-
+hika Marvin, Andrew Gallagher, Liat Kaver, Sharadh
+
+Ramaswamy, Arkadiusz Stopczynski, Cordelia Schmid,
+Zhonghua Xi, et al. Ava active speaker: An audio-visual
+dataset for active speaker detection. In ICASSP 2020-2020
+IEEE international conference on acoustics, speech and sig-
+nal processing (ICASSP), pages 4492–4496. IEEE, 2020. 1,
+3
+[55] Joon Son Chung, Andrew Senior, Oriol Vinyals, and Andrew
+Zisserman. Lip reading sentences in the wild. In Proceed-
+ings of the IEEE conference on computer vision and pattern
+recognition, pages 6447–6456, 2017. 1
+[56] Baochen Sun and Kate Saenko.
+Deep coral: Correlation
+alignment for deep domain adaptation.
+In European con-
+ference on computer vision, pages 443–450. Springer, 2016.
+1, 2
+[57] Baochen Sun, Jiashi Feng, and Kate Saenko. Return of frus-
+tratingly easy domain adaptation. In Proceedings of the AAAI
+conference on artificial intelligence, 2016. 3
+[58] Justus Thies, Michael Zollhofer, Marc Stamminger, Chris-
+tian Theobalt, and Matthias Nießner. Face2face: Real-time
+face capture and reenactment of rgb videos.
+In Proceed-
+ings of the IEEE conference on computer vision and pattern
+recognition, pages 2387–2395, 2016. 3
+[59] Zhan Tong, Yibing Song, Jue Wang, and Limin Wang.
+Videomae: Masked autoencoders are data-efficient learners
+for self-supervised video pre-training. pages 10078–10093,
+2022. 1, 3
+[60] Du Tran, Heng Wang, Lorenzo Torresani, Jamie Ray, Yann
+LeCun, and Manohar Paluri. A closer look at spatiotemporal
+convolutions for action recognition. In Proceedings of the
+IEEE conference on Computer Vision and Pattern Recogni-
+tion, pages 6450–6459, 2018. 1, 3
+[61] Eric Tzeng, Judy Hoffman, Kate Saenko, and Trevor Darrell.
+Adversarial discriminative domain adaptation. In Proceed-
+ings of the IEEE conference on computer vision and pattern
+recognition, pages 7167–7176, 2017. 3
+[62] Dequan Wang, Evan Shelhamer, Shaoteng Liu, Bruno Ol-
+shausen, and Trevor Darrell. Tent: Fully test-time adaptation
+by entropy minimization. arXiv preprint arXiv:2006.10726,
+2020. 2
+[63] Deng-Bao Wang, Lanqing Li, Peilin Zhao, Pheng-Ann Heng,
+and Min-Ling Zhang. On the pitfall of mixup for uncertainty
+calibration. In Proceedings of the IEEE/CVF conference on
+computer vision and pattern recognition, pages 7609–7618,
+2023. 7
+[64] Tifani Warnita, Nakamasa Inoue, and Koichi Shinoda. De-
+tecting alzheimer’s disease using gated convolutional neural
+network from audio data. arXiv preprint arXiv:1803.11344,
+2018. 1
+[65] Haixu Wu, Tengge Hu, Yong Liu, Hang Zhou, Jianmin
+Wang, and Mingsheng Long.
+Timesnet:
+Temporal 2d-
+variation modeling for general time series analysis. arXiv
+preprint arXiv:2210.02186, 2022. 6
+[66] Anthony Yeung, Andrea Iaboni, Elizabeth Rochon, Mon-
+ica Lavoie, Calvin Santiago, Maria Yancheva, Jekaterina
+Novikova, Mengdan Xu, Jessica Robin, Liam D Kaufman,
+et al.
+Correlating natural language processing and auto-
+mated speech analysis with clinician assessment to quantify
+speech-language changes in mild cognitive impairment and
+alzheimer’s dementia. Alzheimer’s research & therapy, 13
+(1):109, 2021. 1, 2
+[67] Xiangyu Zhu, Zhen Lei, Xiaoming Liu, Hailin Shi, and
+Stan Z Li. Face alignment across large poses: A 3d solu-
+tion. In Proceedings of the IEEE conference on computer
+vision and pattern recognition, pages 146–155, 2016. 3

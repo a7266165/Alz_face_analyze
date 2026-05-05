@@ -1,0 +1,21 @@
+{
+  "title": "Passive Dementia Screening via Facial Temporal Micro-Dynamics Analysis of In-the-Wild Talking-Head Video",
+  "authors": [
+    "Filippo Cenacchi",
+    "Longbing Cao",
+    "Mitchell McEwan",
+    "Deborah Richards"
+  ],
+  "year": 2025,
+  "abstract": "We target passive dementia screening from short camera-facing talking head video, developing a facial temporal micro dynamics analysis for language free detection of early neuro cognitive change. This enables unscripted, in the wild video analysis at scale to capture natural facial behaviors, transferrable across devices, topics, and cultures without active intervention by clinicians or researchers during recording. Most existing resources prioritize speech or scripted interviews, limiting use outside clinics and coupling predictions to language and transcription. In contrast, we identify and analyze whether temporal facial kinematics, including blink dynamics, small mouth jaw motions, gaze variability, and subtle head adjustments, are sufficient for dementia screening without speech or text. By stabilizing facial signals, we convert these micro movements into interpretable facial microdynamic time series, smooth them, and summarize short windows into compact clip level statistics for screening. Each window is encoded by its activity mix (the relative share of motion across streams), thus the predictor analyzes the distribution of motion across streams rather than its magnitude, making per channel effects transparent. We also introduce YT DemTalk, a new dataset curated from publicly available, in the wild camera facing videos. It contains 300 clips (150 with self reported dementia, 150 controls) to test our model and offer a first benchmarking of the corpus. On YT DemTalk, ablations identify gaze lability and mouth/jaw dynamics as the most informative cues, and light weighted shallow classifiers could attain a dementia prediction performance of (AUROC) 0.953, 0.961 Average Precision (AP), 0.851 F1-score, and 0.857 accuracy.",
+  "doi": null,
+  "arxiv_id": "2511.13802",
+  "venue": "arXiv",
+  "citation_count": null,
+  "source": "arxiv",
+  "pdf_url": "https://arxiv.org/pdf/2511.13802v2",
+  "relevance_score": null,
+  "extra": {},
+  "pdf_status": "deferred",
+  "primary_id": "arxiv:2511.13802"
+}
