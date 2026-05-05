@@ -1,0 +1,805 @@
+SPECIAL SECTION ON ADVANCED INFORMATION SENSING AND LEARNING
+TECHNOLOGIES FOR DATA-CENTRIC SMART HEALTH APPLICATIONS
+Received January 22, 2019, accepted February 9, 2019, date of publication February 18, 2019, date of current version March 8, 2019.
+Digital Object Identifier 10.1109/ACCESS.2019.2900022
+Algorithmic Bias in Clinical Populations—
+Evaluating and Improving Facial
+Analysis Technology in Older
+Adults With Dementia
+BABAK TAATI
+1,2,3,4, (Member, IEEE), SHUN ZHAO1, AHMED B. ASHRAF1,6,
+AZIN ASGARIAN1,2, M. ERIN BROWNE5, KENNETH M. PRKACHIN7, ALEX MIHAILIDIS1,3,8,
+AND THOMAS HADJISTAVROPOULOS5,9
+1Toronto Rehabilitation Institute, University Health Network, Toronto, ON M5G 2A2, Canada
+2Department of Computer Science, University of Toronto, Toronto, ON M5S 1A1, Canada
+3Institute of Biomaterials and Biomedical Engineering, University of Toronto, Toronto, ON M5S 1A1, Canada
+4Vector Institute for Artiﬁcial Intelligence, Toronto, ON M5G 1M1, Canada
+5Department of Psychology, University of Regina, Regina, SK S4S 0A2, Canada
+6Department of Electrical and Computer Engineering, University of Manitoba, Winnipeg, MB R3T 5V6, Canada
+7Department of Psychology, University of Northern British Columbia, Prince George, BC V2N 4Z9, Canada
+8Department of Occupational Science and Occupational Therapy, University of Toronto, Toronto, ON M5S 1A1, Canada
+9Centre on Aging and Health, University of Regina, Regina, SK S4S 0A2, Canada
+Corresponding author: Babak Taati (babak.taati@uhn.ca)
+This work was supported in part by the Canadian Institutes of Health Research, by the AGE-WELL Network of National Centres of
+Excellence, by the Natural Sciences and Engineering Research Council of Canada, and by the Toronto Rehabilitation
+InstituteâĂŤUniversity Health Network.
+ABSTRACT The need for the automated facial expression analysis arises in various clinical settings involv-
+ing mental and physical health assessment of older adults. However, the effect of age (young versus old)
+and ability (healthy versus physical or cognitive impairment) on the performance of available methods has
+not yet been investigated. In this paper, we demonstrate a bias affecting the performance of common facial
+landmark detection and expression recognition algorithms on the faces of older adults with dementia. We also
+investigate the ways of mitigating this bias via the addition of representative training examples. Results show
+that landmark placement is less accurate when tested on the faces of individuals with dementia as compared
+to older adults who are cognitively healthy. Retraining or ﬁne-tuning the methods with images of older
+adults’ faces improves the performance signiﬁcantly, but the gap between older adults with versus without
+dementia persists. As the interest in using facial analysis methods in clinical applications grows, results
+of this study: 1) highlight the limitations of the existing models when applied to clinical populations and
+2) shed light on methods of addressing these limitations as well as the need to develop algorithms designed
+to be fair with respect to variables such as age and ability.
+INDEX TERMS Facial analysis, older adults, dementia, facial landmark detection, facial action units.
+I. INTRODUCTION
+A prerequisite for analysis of faces from videos and images
+is the localization of key reference points describing facial
+features (also known as facial landmarks). Example applica-
+tions of facial landmark detection include expression recog-
+nition, clinical assessment of depression, detection of pain
+in non-communicative individuals, monitoring progression
+of motor neuron disease, human computer interaction, and
+The associate editor coordinating the review of this manuscript and
+approving it for publication was Qingxue Zhang.
+alternative interfaces for differently abled persons, among
+other applications. Recent resurgence of deep learning has
+resulted in a number of new data-driven landmark detection
+algorithms [1]–[5]. Every year, the proceedings of leading
+conferences include new deep learning based facial landmark
+detection methods with reports of ever improving perfor-
+mance (e.g. [2]–[4]). However, the response of these algo-
+rithms to variables such as age, gender, ethnicity, ability, and
+health conditions affecting facial expression is often not part
+of the analysis in these papers. This is partly because tradi-
+tional face datasets often consist of young and healthy adults.
+VOLUME 7, 2019
+2169-3536 
+ 2019 IEEE. Translations and content mining are permitted for academic research only.
+Personal use is also permitted, but republication/redistribution requires IEEE permission.
+See http://www.ieee.org/publications_standards/publications/rights/index.html for more information.
+25527
+
+B. Taati et al.: Algorithmic Bias in Clinical Populations
+More importantly, the current work does not focus on devel-
+oping algorithms that are explicitly designed to be fair with
+respect to these variables.
+Gender and ethnic origin have previously been shown
+to affect the performance of facial analysis algorithms [6].
+Typically, face recognition methods perform better for males
+and for persons with lighter skin tones [6]. The difference in
+performance (e.g. measured as the positive predictive value),
+between a light-skinned male and a dark-skinned female is
+shown to be in the range of 30-35 percentage points.
+The need for automated facial expression analysis arises in
+various clinical settings involving health assessment of older
+adults. The effect of age and physical or cognitive health on
+facial landmark detection and expression recognition algo-
+rithms has not been investigated.
+In this paper, we demonstrate the existence of algorithmic
+bias in state-of-the-art facial landmark and expression recog-
+nition methods, which affects the performance of these algo-
+rithms for older adults with cognitive impairment. We present
+a comparison of ﬁve methods with pre-trained landmark
+detection models, and show that the performance drops for
+people with dementia as compared to older adults who are
+cognitively healthy. We also examined two facial action unit
+detection algorithms with pre-trained models, and the perfor-
+mance was poor for both groups in our test cohort.
+One option to remedy observed biases could be to start
+training new models speciﬁc to older adults using training
+data only from clinical populations. However, collecting large
+datasets from this segment is expensive and time consuming,
+and this approach would not be fully utilizing the datasets
+already available. To address this, we re-trained / ﬁne-tuned
+two landmark placement models by augmenting examples of
+older adult faces from people who were cognitively intact.
+Performance improved signiﬁcantly, but the gap between
+older adults with vs. without dementia persisted. Finally, we
+retrained / ﬁne-tuned the models with various faces from the
+dementia group. Using one of the algorithms, performance
+improved by including more examples from people with
+dementia in the training data.
+Figure 1 presents the experimental ﬂowchart summariz-
+ing these experiments and their results. The next section
+(Section II) presents the details of our method, followed by
+detailed results (Section III), discussion (Section IV), and
+conclusions (Section V).
+II. METHOD
+A. PARTICIPANTS AND DATASET
+Data from 86 older adult individuals with and without
+dementia are analyzed in this study. This is a subset of
+a full dataset of 102 participants [7], chosen based on
+the availability of high quality front view images. Slightly
+under half of the participants (42) had dementia and the
+remainder (44) were cognitively intact older adults who were
+living independently in the community. Table 1 summarizes
+the demographic information of the participants. Details of
+the protocol pertaining to this study are summarized here.
+FIGURE 1. Experimental flowchart.
+TABLE 1. Participant demographic information.
+Participants with dementia were recruited from long-term
+care facilities and were identiﬁed by facility health care staff.
+The recruitment criteria for the cognitively healthy commu-
+nity cohort was being age 65+, living independently in the
+community, and attending a physiotherapy clinic. The study
+was approved by the institutional review board at 3 institu-
+tions (University of Regina, Toronto Rehabilitation Institute –
+University Health Network, and University of Toronto) and
+all participants – or substitute decision makers in cases of
+severe dementia – provided informed written consent.
+Each participant was video recorded during a baseline
+state, and also as they underwent a standardized protocol of
+movements designed to identify painful areas [9]. The entire
+dataset was manually annotated by trained psychologists for
+the level of pain expressed at each image frame. Two clini-
+cally valid methods to score pain were used: one is a ﬁne-
+grained observational approach based on the Facial Action
+Coding System (FACS) [10], and the other is an easy-to-
+use observational approach – the Pain Assessment Checklist
+for Limited Ability to Communicate-II (PACSLAC-II) [11].
+Both methods are clinically validated for scoring pain in
+individuals with severe dementia who might have difﬁculties
+with verbal communication [7].
+The dataset used in this paper contains 688 frontal images
+from the 86 older adults. Eight images from each person
+were selected, such that in all images the face of the per-
+son was fully visible from a front view. One image from
+each person was selected at random from the baseline video.
+25528
+VOLUME 7, 2019
+
+B. Taati et al.: Algorithmic Bias in Clinical Populations
+Images from the painful protocol of each person were
+clustered into 7 groups, based on the level of pain expressed,
+and one frontal view image from each group was chosen at
+random (conditioned only on image quality). This ensured
+that for each person, different expressions corresponding to
+various degrees of pain appeared in the dataset. When needed,
+images were manually rotated to place the face in an upright
+position.
+In each of the 688 images, the locations of 68 standard
+facial landmarks (on the eyes, eyebrows, nose, mouth, and
+along the jawline) were manually marked by a coder blinded
+to the dementia status. To measure inter-rater reliability,
+a random subset of these images (61 images: 36 dementia,
+26 healthy) was also annotated by a second coder, blinded to
+the dementia status as well as the ﬁrst coder’s annotations.
+B. FACIAL LANDMARK DETECTION
+We compared the accuracy of different pre-trained landmark
+detection models in faces of older adults with vs. without
+dementia. The hypothesis behind this experiment is that the
+performance of pre-trained models is worse (i.e. less accu-
+rate and more failures) when tested on faces of older adults
+with dementia, as compared to faces of older adults who are
+cognitively intact.
+We used ﬁve different landmark detection algorithms with
+available code and pre-trained models. These include: active
+appearance models (AAM) [12], as implemented in the
+Menpo project [13], the face alignment network (FAN) [2]
+(a deep convolutional neural network constructed by stacking
+four hourglass networks [3], [14]), face alignment by coarse-
+to-ﬁne shape searching (CFSS) [15], mnemonic descent
+method (MDM) [1], and OpenFace [16] (another facial align-
+ment library using deep neural networks).
+The FAN model is capable of producing 2D or 3D facial
+landmarks. Here, the 2D version is used. The 2D-FAN model
+has obtained state-of-the-art results when tested on a number
+of benchmarks [2]. The other four methods cover a variety
+of facial landmark detection algorithms, ranging from the
+classical AAM approach to newer deep learning based
+models which previously reported state-of-the-art perfor-
+mance on standard benchmarks. The ﬁve models are trained
+on different training sets of various sizes (Table 2). As such,
+the experiments cover a variety of approaches and training
+dataset.
+TABLE 2. Training sets used to train the pre-trained models.
+We tested pre-trained models of these ﬁve methods on
+the 688 images in our dataset. To ensure a fair comparison,
+for each image, the same face bounding box (as detected by
+the Dlib face detector [19]) was provided to all ﬁve algo-
+rithms. Performance on the cognitively healthy older adult
+subset (44 × 8 = 352 images) vs. the dementia subset
+(42 × 8 = 336 images) was compared in terms of the
+normalized root-mean-square error (NRMSE) and the Nor-
+malized Mean Error (NME) [20] between the true (manually
+annotated) and estimated landmark locations. The nonpara-
+metric Wilcoxon rank-sum test was used to assess statistical
+signiﬁcance. Both the NRMSE and NME are normalized by
+the face size, deﬁned as the diagonal of the bounding box
+of the face, as used in the FAN paper [2]. This normalization
+factor is more robust with respect to out of plane rotations [21]
+as compared to the interocular distance used in some other
+work [22].
+The relationship between landmark placement errors and
+the age and gender of participants was also examined. For par-
+ticipants with dementia, the relationship between landmark
+placement errors and the Cognitive Performance Scale [8]
+was also investigated.
+C. FACIAL ACTION UNIT DETECTION
+We used two pre-trained models to detect facial action units
+on the same 688 images. The models were the OpenFace [16]
+and the Affdex SDK (Affectiva Inc., Boston, USA) [23].
+For this comparison, 2 facial action units (AUs) were man-
+ually annotated on all 688 images and compared with the
+pre-trained models across the two groups of healthy and
+dementia faces. These were the AU4 (brow lowerer) and
+AU43 (eyes closed). The choice of action units was based on
+the FACS-based observational approach to assess pain [10].
+The two action units selected are among the 6 used in esti-
+mating observed pain via FACS coding. Our dataset con-
+tains 8 images per person at various levels of observed pain.
+As such, we expected to have a large variation in action units
+used to calculate a pain score.
+D. RETRAINING AND FINE-TUNING
+To investigate how the augmentation of training data with
+older faces inﬂuences the performance, the AAM and
+FAN models were retrained / ﬁne-tuned with the images of
+independent older adults.
+While several effective transfer learning techniques are
+available for AMM models [24], [25], such methods are
+typically used when only a handful of training images from
+the target domain are available, e.g. as low as 5 target training
+images [24], [26]. In our case, with the availability of a
+few hundred training images, it was possible to fully retrain
+the AAM model from scratch. By contrast, deep learning
+models require a very large training corpus and, as such,
+ﬁne-tuning the pre-trained FAN model was the only viable
+transfer learning option.
+The AAM model was retrained using a combina-
+tion of the older face images and the 300-W dataset.
+VOLUME 7, 2019
+25529
+
+B. Taati et al.: Algorithmic Bias in Clinical Populations
+To ﬁne-tune the FAN model, the pre-trained weights of the
+ﬁrst three hourglass structures were frozen and the remain-
+ing weights were ﬁne-tuned using the images of indepen-
+dent older adults. When testing on the dementia subset,
+all 8 × 42 healthy images were added to the training set for
+both AAM and FAN. When testing on the healthy partici-
+pants, 5-fold cross validation was used, with an additional
+constraint that all 8 images from each participant belonged
+to either the training or the testing set at each fold. The
+nonparametric Wilcoxon signed rank test was used to com-
+pare the difference between the pre-trained and the ﬁne-tuned
+models. The Wilcoxon rank-sum test was used to compare the
+difference between the dementia and independent groups.
+Next, we repeated the same retraining / ﬁne-tuning process,
+but images from a subset of the individuals with dementia
+(D = 1, 3, 5, 10, 15, 20) were also added to the training set.
+That is, the AAM and FAN models were retrained / ﬁne-tuned
+with all the images of independent older adults (8 × 42 =
+352), as well as with 8 × D images of people with dementia.
+To ensure a fair and consistent comparison, all test results in
+this experiment are reported on the same remaining 22 par-
+ticipants with dementia. In doing so, the random subsets of
+D individuals with dementia were always drawn from the
+same 20 (= 42−20) people. For each value of D, 10 random
+subsets were drawn, resulting in 10 models, and the average
+and standard deviation of landmark placement errors were
+calculated on the remaining 22 × 8 images.
+III. RESULTS
+A. INTER-RATER RELIABILITY
+The NRMSE and NME between the two annotators were
+2.8% ± 0.6% and 2.2% ± 0.5% respectively. Both the
+NRMSE and NME were below 5% in all 61 images annotated
+by the two coders.
+B. FACIAL LANDMARK DETECTION
+No signiﬁcant relationship was found between landmark
+placement errors (NRMSE or NME, using any of the ﬁve
+pre-trained models) and either age or gender of the partici-
+pants. Similarly, within the dementia subgroup, the Cognitive
+Performance Scale [8] was not signiﬁcantly correlated with
+landmark placement errors.
+The relationship between landmark placement errors and
+dementia was signiﬁcant using every one of the ﬁve pre-
+trained models. Table 3 compares the NRMSE (%) in the
+dementia images vs. the independent controls. Table 4 com-
+pares the NME (%) in the dementia images vs. the indepen-
+dent controls. The z-statistic and the p-value of the Wilcoxon
+rank-sum test are also presented.
+Table 5 and Table 6 show the percentage of images in
+which the NRMSE and NME were below 5% in each of the
+dementia or independent subgroups.
+C. RETRAINING AND FINE-TUNING
+Table 7 presents the percentage of images in which NRMSE
+and NME were below 5%, when using the FAN model
+TABLE 3. Landmark placement NRMSE (%) in the dementia (D) vs.
+the independent control (C) images. OF denotes OpenFace.
+TABLE 4. Landmark placement NME (%) in the dementia (D) vs.
+the independent control (C) images. OF denotes OpenFace.
+TABLE 5. Percentage of images in which NRMSE was below 5%.
+OF denotes OpenFace.
+TABLE 6. Percentage of images in which NME was below 5%. OF denotes
+OpenFace.
+TABLE 7. Fine-tuning the FAN model with images from cognitively
+healthy older adults.
+ﬁne-tuned with images from independent older adults.
+For easy comparison, the corresponding pre-trained num-
+bers from Table 5 and Table 6 are reproduced. Fine-tuning
+signiﬁcantly improved both NRMSE and NME in both the
+25530
+VOLUME 7, 2019
+
+B. Taati et al.: Algorithmic Bias in Clinical Populations
+FIGURE 2. Retraining the AAM model and fine-tuning the FAN model with
+images from independent older adults and various numbers of older
+adults with dementia.
+FIGURE 3. Retraining the AAM model and fine-tuning the FAN model with
+images from independent older adults and various numbers of older
+adults with dementia.
+dementia and the independent groups: using the Wilcoxon
+signed rank test, all p-values were smaller than 10−5.
+The difference between dementia and independent groups,
+however,
+remained
+statistically
+signiﬁcant
+for
+both
+NRMSE (z = 7.7, p < 10−5∗) and NME (z = 7.3,
+p < 10−5∗), using the Wilcoxon rank-sum test. The AAM
+model retrained with the independent older adult images
+showed a similar pattern (i.e. both NRMSE and NME
+improved) but the statistically signiﬁcant gap between inde-
+pendent and dementia groups persisted. For brevity, the table
+is not included.
+Figure 2 illustrates the percentage of images in which the
+NRMSE for the retrained (AAM) and ﬁne-tuned (FAN) mod-
+els were below 5% for various values of D; i.e. the number of
+individuals with dementia in the training set. Figure 3 illus-
+trates a similar plot, but with a 4% threshold on the NRMSE.
+D. FACIAL ACTION UNITS
+Table 8 presents the accuracy and the area under the receiver
+operating characteristic curve (AUC) in predicting action
+units AU4 and AU43 on all 688 images, using OpenFace and
+Affdex SDK. No signiﬁcant difference was found between
+the performances of either model on the dementia vs. the
+independent subgroups. The confusion matrices in predicting
+AU4 and AU43 are shown in Figure 4.
+TABLE 8. Facial action unit detection.
+FIGURE 4. Confusion matrices in predicting action units AU4 and
+AU43 using OpenFace and Affdex SDK. (a) OpenFace. (b) Affdex SDK.
+IV. DISCUSSION
+When evaluating pre-trained landmark detection models on
+faces of older adults with and without dementia, large dif-
+ferences in performance were observed between the two
+subgroups. For example, using the pre-trained FAN model,
+the percentage of test images with NRMSE < 5% was 84.9%
+in the cognitively healthy group, as compared to 72.0% in the
+dementia group (Table 5).
+When comparing NME distributions, all ﬁve landmark
+detection models examined performed better on indepen-
+dent older adults as compared to older adults with dementia
+and the differences were statistically signiﬁcant (Table 4).
+Similarly, when comparing NRMSE distributions, all ﬁve
+landmark detection models examined performed better on
+independent older adults as compared to older adults with
+dementia and all but one of the differences were statistically
+signiﬁcant (Table 3).
+As interest in using facial analysis methods in clinical
+applications grows – e.g. to assess pain in dementia [27]
+or monitor the progression of amyotrophic lateral sclero-
+sis (ALS) [28], [29] – this is an important ﬁnding that high-
+lights the limitations of existing models when applied to
+clinical populations.
+VOLUME 7, 2019
+25531
+
+B. Taati et al.: Algorithmic Bias in Clinical Populations
+We emphasize that even models trained on hundreds of
+thousands of examples (FAN and OpenFace) exhibit this
+bias, indicating that even large training datasets do not cap-
+ture the variability of a clinical population. Algorithms and
+pre-trained models investigated here include those reporting
+current and past state-of-the-art performance on standard
+benchmarks. Results and analyses presented here are not
+meant to criticize these models as they represent the best tools
+available today. Rather, our point is to demonstrate that off-
+the-shelf models cannot be directly used in all clinical appli-
+cations. The main challenge in obtaining good performance in
+clinical populations is having access to representative training
+data. It is not realistic to expect developers of these models
+(often computer science academics or technology companies)
+to include data from various clinical populations (dementia,
+stroke, ALS, etc.) in their training data. Patient data and
+identiﬁable health records (e.g. face images) are highly sen-
+sitive and access is often restricted. A more realistic solution
+might be to collect targeted represented training sets, e.g.
+dementia examples for applications related to pain detection
+in dementia, stroke examples for applications in orofacial
+rehabilitation, etc.
+Once we are cognizant of the limitations of existing mod-
+els, the next natural question is to investigate methods of
+resolving these limitations. In this work, we examined the
+effect of including older faces and faces of people with
+dementia in the training data.
+The inclusion of older adults (Section III.C) signiﬁcantly
+and substantially improved the performance of both the AAM
+and the FAN models. Table 7, for instance, shows that the
+percentage of dementia test images with NRMSE < 5%
+moved from 72.0% in the pre-trained FAN model to 90.2%
+with the inclusion of 336 face images from 42 cognitively
+healthy older adults in the training data. Perhaps surpris-
+ingly, inspecting Figure 2 and Figure 2, it appears that the
+performance of the ﬁne-tuned FAN model does not improve
+with the additional inclusion of dementia images. The values
+shown in Figure 2 (red line) hover around 90% and do not
+show improvement with an increase in the number of people
+with dementia in the training data. By contrast, retrained
+AAM models display a visible upward trend with no apparent
+leveling off, even at D = 20.
+To formally investigate these observations, a linear regres-
+sion line was ﬁtted to the AAM and FAN trends for both
+threshold values of 5% and 4%. Table 9 presents the adjusted
+R2 value of the ﬁtted line, as well as the F-statistic and
+TABLE 9. Comparing the linear regression lines fitted to the trends
+in Figure 2 and Figure 3 vs. a constant model.
+TABLE 10. Precision (%) and recall (%) in detecting AU4 and AU43.
+the p-value of comparing the regression line vs. a constant
+model; i.e. a horizontal line. As expected, the AAM trends
+at both thresholds are signiﬁcantly different from a constant
+model, while the FAN trends are not.
+We do not have an explanation as to why the FAN
+model does not improve with the addition of dementia
+images. This is particularly surprising because the model
+had a sizeable (∼20 percentage points) improvement when
+it was ﬁne-tuned with independent older images. Neverthe-
+less, the more important observation is that the AAM model
+demonstrates signiﬁcant improvement with the additional
+dementia images, to the point of reaching FAN performance
+at D = 20 and NRMSE threshold of 5%, and far surpassing
+FAN at D ≥10 and NRMSE threshold of 4%. This implies the
+importance of having access to representative samples from
+the target population. While the AAM model is considerably
+simpler than the FAN model, this conﬁrms the intuition that
+including representative data in the training set is more impor-
+tant than the choice of algorithm used.
+When evaluating facial action unit detection, neither of
+the two pre-trained models tested performed well, and the
+difference between performances on independent vs. demen-
+tia subgroups was not signiﬁcant. Comparing the accuracy
+(or AUC) values between the OpenFace and the Affdex
+DSK (Table 8), it might appear at ﬁrst that the Affdex SDK
+achieves reasonable performance with accuracy values larger
+than 70% in detecting both AU4 and AU43. Accuracy and
+AUC values, however, can over-represent the performance
+of a model when the test data are not balanced. In our case,
+AU4 and AU43 were not present in 75.9% and 78.3% of the
+test images respectively. Inspecting the confusion matrices
+reveals that both models performed poorly in detecting either
+of the two action units tested. Precision and recall values of
+the models are shown in Table 10, conﬁrming poor (< 50%)
+precision in all 4 cases (2 models, 2 action units), and poor
+recall in all but one case.
+A limitation of this study is that the automatic detection
+of only two facial action units (AU4 and AU43) is examined.
+Future work could replicate this analysis on additional action
+units. This study focused on individuals with one type of cog-
+nitive impairment, namely dementia. Future work should also
+expand the analysis to include individuals with other forms of
+cognitive impairment (e.g. traumatic brain injury or autism),
+and also to include individuals with physical impairments
+(e.g. Parkinson’s disease and hemiplegia).
+V. CONCLUSIONS
+Through the experiments conducted for this paper we
+have demonstrated the existence of algorithmic bias in
+25532
+VOLUME 7, 2019
+
+B. Taati et al.: Algorithmic Bias in Clinical Populations
+state-of-the-art facial landmark and expression recognition
+methods, which affects the performance of these algorithms
+for older adults with cognitive impairment. As interest in
+using computer vision and facial analysis methods in clini-
+cal applications grows (e.g. [30]–[33]), this study highlights
+the limitations of existing computer vision models when
+applied to clinical populations, and explores some of the
+requirements for addressing these limitations (e.g. number
+of representative training images required). Beyond facial
+analysis, the interest in using machine learning / deep learn-
+ing techniques in various clinical applications is also grow-
+ing rapidly (e.g. [34]–[36]). Our work highlights the need
+for developing algorithms that are explicitly designed to be
+agnostic and fair with respect to sensitive data attributes such
+as age and cognitive or physical ability.
+REFERENCES
+[1] G. Trigeorgis, P. Snape, M. A. Nicolaou, E. Antonakos, and S. Zafeiriou,
+‘‘Mnemonic descent method: A recurrent process applied for end-to-end
+face alignment,’’ in Proc. IEEE Conf. Comput. Vis. Pattern Recognit.
+(CVPR), Jun. 2016, pp. 4177–4187.
+[2] A. Bulat and G. Tzimiropoulos, ‘‘How far are we from solving the
+2D & 3D face alignment problem? (and a dataset of 230,000 3D facial
+landmarks),’’ in Proc. IEEE Int. Conf. Comput. Vis. (ICCV), Oct. 2017,
+pp. 1021–1030.
+[3] A. Bulat and G. Tzimiropoulos, ‘‘Binarized convolutional landmark
+localizers for human pose estimation and face alignment with limited
+resources,’’ in Proc. IEEE Int. Conf. Comput. Vis. (ICCV), Oct. 2017,
+pp. 3706–3714.
+[4] A. S. Jackson, A. Bulat, V. Argyriou, and G. Tzimiropoulos, ‘‘Large pose
+3D face reconstruction from a single image via direct volumetric CNN
+regression,’’ in Proc. IEEE Int. Conf. Comput. Vis. (ICCV), Oct. 2017,
+pp. 1031–1039.
+[5] Y. Sun, X. Wang, and X. Tang, ‘‘Deep convolutional network cascade for
+facial point detection,’’ in Proc. IEEE Conf. Comput. Vis. Pattern Recognit.,
+Jun. 2013, pp. 3476–3483.
+[6] J. Buolamwini and T. Gebru, ‘‘Gender shades: Intersectional accuracy dis-
+parities in commercial gender classiﬁcation,’’ in Proc. 1st Conf. Fairness,
+Accountability Transparency, Jan. 2018, pp. 77–91.
+[7] T. Hadjistavropoulos, M. E. Browne, K. M. Prkachin, B. Taati, A. Ashraf,
+and A. Mihailidis, ‘‘Pain in severe dementia: A comparison of a ﬁne-
+grained assessment approach to an observational checklist designed
+for clinical settings,’’ Eur. J. Pain, vol. 22, no. 5, pp. 915–925,
+May 2018.
+[8] J. N. Morris et al., ‘‘MDS cognitive performance scale,’’ J. Gerontology,
+vol. 49, no. 4, pp. M174–M182, Jul. 1994.
+[9] B. S. Husebo, L. I. Strand, R. Moe-Nilssen, S. B. Husebo, A. L. Snow, and
+A. E. Ljunggren, ‘‘Mobilization-observation-behavior-intensity-dementia
+pain scale (MOBID): Development and validation of a nurse-administered
+pain assessment tool for use in dementia,’’ J. Pain Symptom Manage.,
+vol. 34, no. 1, pp. 67–80, May 2007.
+[10] K. M. Prkachin, ‘‘The consistency of facial expressions of pain:
+A comparison across modalities,’’ Pain, vol. 51, no. 3, pp. 297–306,
+Dec. 1992.
+[11] S. Chan, T. Hadjistavropoulos, J. Williams, and A. Lints-Martindale,
+‘‘Evidence-based development and initial validation of the pain assess-
+ment checklist for seniors with limited ability to communicate-II
+(PACSLAC-II),’’ Clin. J. Pain, vol. 30, no. 9, pp. 816–824, Sep. 2014.
+[12] I. Matthews and S. Baker, ‘‘Active appearance models revisited,’’ Int. J.
+Comput. Vis., vol. 60, no. 2, pp. 135–164, Nov. 2004.
+[13] J. Alabort-i-Medina, E. Antonakos, J. Booth, P. Snape, and S. Zafeiriou,
+‘‘Menpo: A comprehensive platform for parametric image alignment and
+visual deformable models,’’ in Proc. 22nd ACM Int. Conf. Multimedia,
+Orlando, FL, USA, Nov. 2014, pp. 679–682.
+[14] A. Newell, K. Yang, and J. Deng, ‘‘Stacked hourglass networks for
+human pose estimation,’’ in Proc. Eur. Conf. Comput. Vis., Sep. 2016,
+pp. 483–499.
+[15] S. Zhu, C. Li, C. C. Loy, and X. Tang, ‘‘Face alignment by coarse-to-
+ﬁne shape searching,’’ in Proc. IEEE Conf. Comput. Vis. Pattern Recog-
+nit. (CVPR), Jun. 2015, pp. 4998–5006.
+[16] B.
+Amos,
+B.
+Ludwiczuk,
+and
+M.
+Satyanarayanan,
+‘‘Openface:
+A general-purpose face recognition library with mobile applications,’’
+CMU School Comput. Sci., Pittsburgh, PA, USA, Tech. Rep. CMU-CS-
+16-118, 2016.
+[17] C. Sagonas, G. Tzimiropoulos, S. Zafeiriou, and M. Pantic, ‘‘A semi-
+automatic methodology for facial landmark annotation,’’ in Proc.
+IEEE Conf. Comput. Vis. Pattern Recognit. Workshops, Jun. 2013,
+pp. 896–903.
+[18] R. Gross, I. Matthews, J. Cohn, T. Kanade, and S. Baker, ‘‘Multi-PIE,’’
+Image Vis. Comput., vol. 28, no. 5, pp. 807–813, May 2010.
+[19] D. E. King, ‘‘Dlib-ml: A machine learning toolkit,’’ J. Mach. Learn. Res.,
+vol. 10, pp. 1755–1758, Jul. 2009.
+[20] A. Bulat and G. Tzimiropoulos, ‘‘Convolutional aggregation of local
+evidence for large pose face alignment,’’ in Proc. Brit. Mach. Vis.
+Conf. (BMVC), 2016, pp. 1–12.
+[21] X. Zhu and D. Ramanan, ‘‘Face detection, pose estimation, and landmark
+localization in the wild,’’ in Proc. IEEE Conf. Comput. Vis. Pattern Recog-
+nit., Jun. 2012, pp. 2879–2886.
+[22] J. Shen, S. Zafeiriou, G. G. Chrysos, J. Kossaiﬁ, G. Tzimiropoulos, and
+M. Pantic, ‘‘The ﬁrst facial landmark tracking in-the-wild challenge:
+Benchmark and results,’’ in Proc. IEEE Int. Conf. Comput. Vis. Work-
+shop (ICCVW), Dec. 2015, pp. 1003–1011.
+[23] D. McDuff, A. Mahmoud, M. Mavadati, M. Amr, J. Turcot, and
+R. E. Kaliouby, ‘‘AFFDEX SDK: A cross-platform real-time multi-face
+expression recognition toolkit,’’ in Proc. CHI Conf. Extended Abstr. Hum.
+Factors Comput. Syst., May 2016, pp. 3723–3726.
+[24] A. Asgarian, A. B. Ashraf, D. Fleet, and B. Taati, ‘‘Subspace selection
+to suppress confounding source domain information in AAM transfer
+learning,’’ in Proc. IEEE Int. Joint Conf. Biometrics (IJCB), Oct. 2017,
+pp. 456–463.
+[25] D. Haase, E. Rodner, and J. Denzler, ‘‘Instance-weighted transfer learning
+of active appearance models,’’ in Proc. IEEE Conf. Comput. Vis. Pattern
+Recognit. (CVPR), Jun. 2014, pp. 1426–1433.
+[26] A. Asgarian et al. (2018). ‘‘A hybrid instance-based transfer learning
+method.’’ [Online]. Available: https://arxiv.org/abs/1812.01063
+[27] M.
+Atee,
+K.
+Hoti,
+R.
+Parsons,
+and
+J.
+D.
+Hughes,
+‘‘Pain
+assessment in dementia: Evaluation of a point-of-care technological
+solution,’’
+J.
+Alzheimer’s
+Disease,
+vol.
+60,
+no.
+1,
+pp. 137–150,
+Jan. 2017.
+[28] A. Bandini, J. R. Green, B. Taati, S. Orlandi, L. Zinman, and Y. Yunusova,
+‘‘Automatic detection of amyotrophic lateral sclerosis (ALS) from video-
+based analysis of facial movements: Speech and non-speech tasks,’’ in
+Proc. 13th IEEE Int. Conf. Autom. Face Gesture Recognit. (FG), May 2018,
+pp. 150–157.
+[29] A. Bandini, J. R. Green, J. Wang, T. F. Campbell, L. Zinman, and
+Y. Yunusova, ‘‘Kinematic features of jaw and lips distinguish symptomatic
+from presymptomatic stages of bulbar decline in amyotrophic lateral scle-
+rosis,’’ J. Speech, Lang., Hearing Res., vol. 61, no. 5, pp. 1118–1129,
+May 2018.
+[30] A. Ashraf and B. Taati, ‘‘Automated video analysis of handwash-
+ing behavior as a potential marker of cognitive health in older
+adults,’’ IEEE J. Biomed. Health Inform., vol. 20, no. 2, pp. 682–690,
+Mar. 2016.
+[31] M. H. Li, T. A. Mestre, S. H. Fox, and B. Taati, ‘‘Vision-based assessment
+of parkinsonism and levodopa-induced dyskinesia with pose estimation,’’
+J. NeuroEng. Rehabil., vol. 15, no. 1, p. 97, Nov. 2018.
+[32] M. H. Li, T. A. Mestre, S. H. Fox, and B. Taati, ‘‘Automated assessment
+of levodopa-induced dyskinesia: Evaluating the responsiveness of video-
+based features,’’ Parkinsonism Related Disorders, vol. 53, pp. 42–45,
+Aug. 2018.
+[33] Y. Zhang et al., ‘‘Strength and similarity guided group-level brain func-
+tional network construction for MCI diagnosis,’’ Pattern Recognit., vol. 88,
+pp. 421–430, Apr. 2019.
+[34] Y. Zhang, H. Zhang, X. Chen, S.-W. Lee, and D. Shen, ‘‘Hybrid high-
+order functional connectivity networks using resting-state functional MRI
+for mild cognitive impairment diagnosis,’’ Sci. Rep., vol. 7, Jul. 2017,
+Art. no. 6530.
+[35] Z. Jin, G. Zhou, D. Gao, and Y. Zhang, ‘‘EEG classiﬁcation using
+sparse Bayesian extreme learning machine for brain–computer inter-
+face,’’ Neural Comput. Appl., Oct. 2018, pp. 1–9. [Online]. Available:
+https://link.springer.com/article/10.1007%2Fs00521-018-3735-3
+VOLUME 7, 2019
+25533
+
+B. Taati et al.: Algorithmic Bias in Clinical Populations
+BABAK TAATI (M’96) received the B.Sc. degree
+in electrical engineering from the Sharif University
+of Technology, Tehran, Iran, in 1997, the M.A.Sc.
+degree in engineering science from Simon Fraser
+University, Burnaby, BC, Canada, in 2002, and
+the Ph.D. degree in electrical engineering from
+Queen’s University, Kingston, ON, Canada.
+From 2008 to 2009, he was the Lead Computer
+Vision Scientist with Feeling Software, Montreal,
+Canada. From 2009 to 2012, he was a Postdoctoral
+Fellow with the University of Toronto, Toronto, ON, Canada, and also
+with the Toronto Rehabilitation Institute. He has been a Scientist with the
+Toronto Rehabilitation Institute—University Health Network, Toronto, since
+2012. He is also an Assistant Professor with the Institute of Biomaterials
+and Biomedical Engineering, University of Toronto, and the Department of
+Computer Science, University of Toronto. His research interests include the
+application of computer vision systems in health monitoring, rehabilitation,
+and diagnostic technologies.
+SHUN ZHAO received the B.A.Sc. degree in elec-
+trical engineering from the University of Toronto,
+Toronto, ON, Canada, in 2015, and the M.Sc.
+degree in cognitive science from The University
+of Edinburgh, Edinburgh, U.K., in 2016. He is
+currently a Research Associate with the Toronto
+Rehabilitation Institute—University Health Net-
+work, Toronto.
+AHMED
+B.
+ASHRAF
+received
+the
+B.Sc.
+degree in electrical engineering from the Uni-
+versity of Engineering and Technology, Lahore,
+Pakistan, in 2000, and the master’s and Ph.D.
+degrees in electrical and computer engineering
+from Carnegie Mellon University, Pittsburgh, PA,
+USA, in 2006 and 2010 respectively.
+From 2010 to 2013, he was a Postdoctoral
+Fellow
+with
+the
+Section
+of
+Biomedical
+Image Analysis, University of Pennsylvania,
+Philadelphia, PA, USA. From 2013 to 2018, he was a Postdoctoral
+Fellow with the Toronto Rehabilitation Institute, University Health Network,
+Toronto, ON, Canada. He is currently an Assistant Professor with the Depart-
+ment of Electrical and Computer Engineering, University of Manitoba,
+Winnipeg, MB, Canada. His research interests include machine learning,
+biomedical imaging, and computer vision.
+AZIN ASGARIAN received the B.Sc. degree in
+computer science from the University of Tehran,
+in 2011, and the M.A.Sc. degree in computer
+science from the University of Toronto, in 2018.
+During her master’s study, she spent two semesters
+as a Research Assistant with University Health
+Network, where she involved in several projects,
+such as transfer learning, facial expression recog-
+nition, and a vision-based pain detection system.
+As an Applied Research Scientist with Georgian
+Partners Inc., she is currently involved in transfer learning and domain
+adaptation projects. Her main research interests include computer vision and
+machine learning.
+M. ERIN BROWNE received the B.Sc. degree in
+psychology and the M.Sc. degree in experimen-
+tal psychology from the University of Northern
+British Columbia, BC, Canada, in 2010 and 2014,
+respectively. She is currently pursuing the Ph.D.
+degree in clinical psychology with the Depart-
+ment of Psychology, University of Regina, SK,
+Canada. Her research interests include the expres-
+sion and perception of pain and emotion via facial
+expression, facial action coding, and communica-
+tive changes associated with aging and dementia.
+KENNETH M. PRKACHIN received the B.A.
+(Hons.) and M.A. degrees in psychology and the
+Ph.D. degree in clinical psychology from The
+University of British Columbia, Vancouver, BC,
+Canada, in 1972, 1976, and 1978, respectively.
+He has held academic appointments with The
+University of British Columbia, the University of
+Waterloo, Waterloo, ON, and the University of
+Northern British Columbia, Prince George, BC,
+since 1978. He is currently a Professor Emeritus
+with the University of Northern British Columbia. With his co-investigators,
+Dr. P. Solomon and Dr. J. Cohn, he has established the UNBC-McMaster
+Pain Archive, which has been used widely in the research on automated
+analysis of pain expression. His research has focused on the behavioral
+expression of pain, in particular on characterizing the nature and effects of
+facial expressions of pain.
+Dr. Prkachin is a Fellow of the Canadian Psychological Association.
+ALEX MIHAILIDIS received the B.A.Sc. degree
+in mechanical engineering and the M.A.Sc. degree
+in biomedical engineering from the University
+of Toronto, in 1996 and 1998, respectively, and
+the Ph.D. degree in biomedical engineering from
+Strathclyde University, in 2003.
+He is a currently a Professor with the Depart-
+ment of Occupational Science and Occupational
+Therapy, University of Toronto, and also with the
+Institute of Biomaterials and Biomedical Engi-
+neering, University of Toronto. He is also the Scientiﬁc Director of the
+AGE-WELL Network of Centres of Excellence. His research focuses on the
+development of technology to support older adults and family caregivers,
+through the application of artiﬁcial intelligence, sensors, and robotics. He is
+a Fellow of the Rehabilitation Engineering and Assistive Technology Society
+of North America.
+THOMAS
+HADJISTAVROPOULOS
+received
+the B.A. degree (Hons.) in psychology from
+McGill
+University,
+Montreal,
+QC,
+Canada,
+in 1985, and the master’s and Ph.D. degrees
+in clinical psychology from the University of
+Saskatchewan, Saskatoon, SK, Canada, in 1987
+and 1991, respectively.
+He has held academic appointments with The
+University of British Columbia and the University
+of Waterloo. He is currently a Professor of psy-
+chology and the Research Chair in aging and health with the University of
+Regina. He has published over 200 peer-reviewed papers and book chapters
+as well as seven books. His research focuses on pain in older adults with
+a special emphasis on seniors who have difﬁculty communicating their
+experience because of severe dementia.
+Dr. Hadjistavropoulos received the distinguished career awards from the
+Saskatchewan Health Research Foundation and the Special Interest Group
+of Pain in Older Persons from the International Association for the Study
+of Pain. His honors include fellowships from the Canadian Academy of
+Health Sciences, the Canadian Psychological Association, the American
+Psychological Association, and the Canadian Association of Cognitive and
+Behavioural Therapies. He has served a term as the President of the Canadian
+Psychological Association.
+25534
+VOLUME 7, 2019
