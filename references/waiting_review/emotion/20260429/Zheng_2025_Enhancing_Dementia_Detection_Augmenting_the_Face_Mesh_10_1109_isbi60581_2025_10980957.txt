@@ -1,0 +1,496 @@
+ENHANCING DEMENTIA DETECTION: AUGMENTING THE FACE MESH
+Chuheng Zheng, Mondher Bouazizi, Tomoaki Ohtsuki,
+Momoko Kitazawa, Toshiro Horigome, Taishiro Kishimoto
+Keio University
+ABSTRACT
+Alzheimer’s disease (AD) stands as a prevalent form of dementia,
+primarily impacting the elderly, and presently lacking any known
+cure. Early screening and intervention have demonstrated efficacy
+for both current and prospective treatments. With the global popula-
+tion aging, early detection of AD has become imperative. Language-
+based approaches for dementia detection have received considerable
+attention in research due to dementia’s nature of hurting cognitive
+and language functions. Facial features, on the other hand, have
+been comparatively neglected despite their potential in identifying
+AD, due to a lack of usable dataset. AD patients show different
+patterns while displaying facial expressions because of Apathy, a
+phenomenon common in AD patients. This makes facial features
+non-negligible in dementia detection. The face mesh, comprising
+478 landmarks, serves as a rich and informative facial representa-
+tion. This study concentrates on leveraging face mesh data for AD
+detection.
+We explored data augmentation techniques to address
+the challenges of over-fitting, particularly impactful in training neu-
+ral networks on a small dataset. Deep learning methods, includ-
+ing transformer, Convolutional Neural Networks (CNN), and Long
+Short-Term Memory (LSTM) networks, were employed to classify
+dementia patients and healthy subjects. By augmenting the dataset
+by rotation, shift, and scaling, we improved the performance of the
+deep learning methods. The combined use of 1D CNN networks and
+data augmentation method reported the highest accuracy of 76%.
+These results confirmed the effectiveness of our data augmentation
+methods. They also underscore the potential of face-related features
+in enhancing early detection approaches for AD.
+Index Terms— data augmentation, dementia detection, deep
+learning, face mesh
+1. INTRODUCTION
+Dementia, a degenerative neurological disorder, progressively ham-
+pers an individual’s cognitive capacities and day-to-day functional-
+ity. Primarily affecting the elderly, dementia afflicts approximately
+55 million people globally, with an additional 10 million new cases
+surfacing each year [1]. Patients grappling with dementia may man-
+ifest symptoms like memory loss, impaired judgment, and bewilder-
+ment, encountering challenges in articulation and comprehension.
+Some may even find themselves disoriented in familiar surround-
+ings. As the illness advances, those afflicted may also display be-
+havioral and psychological manifestations, including but not limited
+to depression, anxiety, agitation, and aggression [2].
+The widespread application of conventional methods for diag-
+nosing dementia, such as neuroimaging and psychological testing, is
+severely hampered. Firstly, these methods need a lot of resources and
+money. The conventional methods involve costly medical infrastruc-
+ture, skilled professionals, and a large amount of time commitment.
+Therefore, it is difficult for these diagnostic processes to scale up to
+a wider population. Furthermore, people may be discouraged from
+willingly engaging in these assessments due to the invasive nature
+of neuroimaging and the complexity of psychological examinations,
+which might lead to poor acceptance rates and possible delays in the
+diagnosis of dementia. A low-cost and scalable screening method
+would be highly favored to recognize possible biological indicators
+for dementia, especially in the early stage. Contrary to the huge
+amount of studies [3, 4, 5, 6, 7, 8] to search dementia indicators from
+speech or transcriptions, facial features have not gotten as much at-
+tention, despite being demonstrated to be useful indicators [9]. Some
+researches [9, 10] have investigated the use of facial features or face
+images for dementia detection; however, these studies utilized very
+small and restricted datasets, which may introduce institutional bias
+into the results, yielding a high performance with no generalization
+ability when applied to other data.
+Motivated by the under-researched condition in the area of us-
+ing facial features to detect dementia, we aimed to investigate apply-
+ing facial features to detect dementia. In this study, we especially
+explored the use of face mesh. We proposed a data augmentation
+method to mitigate the lack of data and investigated three common
+deep learning models to improve the classification performance.
+The structure of the paper is organized as follows: Section II
+introduces the related works that used facial features to detect de-
+mentia. Section III describes the dataset, face mesh, and proposed
+methods used in this research. Section IV presents the experimen-
+tal settings as well as the results and performance of the proposed
+methods. Section V concludes this paper.
+2. RELATED WORKS
+Asplund et al. [11, 12] reported notable variations in facial expres-
+sions of people with dementia and showed it possible to identify
+dementia based on the variations in facial expressions. According
+to Asplund et al. [11], certain dementia patients have a tendency
+to show fewer facial expressions. Their investigation, which was
+done under both happy and unpleasant stimulus settings utilizing the
+Facial Action Coding System (FACS), revealed a decreased capac-
+ity for expression production. They investigated two techniques for
+reading facial expressions in dementia patients and found differences
+between them in a follow-up research [12]. Patients with dementia
+have been seen to display reduced facial cues in quantity or clarity.
+These results imply that variations in the facial expressions of those
+suffering from dementia may act as markers for dementia.
+In recent years, several studies [9, 10, 13] have gathered fa-
+cial expression data from individuals with dementia, exploring the
+potential of utilizing facial expressions for dementia detection. To
+overcome the under-researched aspect of facial expression in de-
+mentia studies relative to speech and language data, the researchers
+presented an automated method for dementia identification from a
+2025 IEEE 22nd International Symposium on Biomedical Imaging (ISBI) | 979-8-3315-2052-6/25/$31.00 ©2025 IEEE | DOI: 10.1109/ISBI60581.2025.10980957
+Authorized licensed use limited to: National Sun Yat Sen Univ.. Downloaded on May 05,2026 at 04:13:39 UTC from IEEE Xplore.  Restrictions apply. 
+
+human face. They retrieved face-related features from spoken di-
+alogues involving 24 people and attempted to categorize dementia.
+To categorize individuals into two groups, the combination of L1 lo-
+gistic regression and face-related features produced a detection per-
+formance of 0.82 on accuracy. Lip activity, action units (AUs), and
+eye gaze were among the most contributing features that were found.
+Based on a spoken dialog system, the results showed that the system
+can identify dementia and provide help to medical professionals.
+Umeda et al. [10] aimed to explore whether artificial intelli-
+gence could distinguish the faces of individuals with cognitive im-
+pairment from those without. Using samples collected from 121
+patients with cognitive impairment and 117 cognitively sound par-
+ticipants, they tested five deep learning models. Xception with the
+Adam optimizer performed the best, showing 87.31% sensitivity,
+94.57% specificity, and 92.56% accuracy. The study revealed a sig-
+nificant correlation between the “Face AI score” and cognitive im-
+pairment, suggesting the potential use of AI for developing a facial
+biomarker for dementia. Even though their study produced excel-
+lent accuracy results, it is vital to remember that they used raw face
+images, and institutional bias was a point of worry mentioned in
+[10]. The machine learning algorithm might be misled by institu-
+tional bias and end up learning about the environment instead of de-
+mentia markers. Zheng et al. [14] explored the use of facial features
+for dementia detection. They extracted face mesh, AUs, and HoG
+(Histogram of Oriented Gradients) features from interview videos
+involving dementia patients and healthy subjects. Utilizing a vot-
+ing system in conjunction with SVM as the classifier, they attained a
+73% accuracy, specifically leveraging the AUs data.
+3. METHODS
+3.1. PROMPT Dataset
+Approved by Keio University School of Medicine Ethics Committee,
+the Keio Medical School collected voice and video data from partic-
+ipants of healthy subjects and dementia patients for the PROMPT
+dataset [15] with informed consent obtained. In the collection pro-
+cess, the dementia patients participated in several interview sessions
+conducted by professionals, with at least a 2-week gap between ses-
+sions. During each session, the patients were required to undergo
+several interviews. The video and audio recordings of the sessions
+were captured separately from two microphones and an Intel Re-
+alsense camera. One microphone was set at the patients’ place and
+another set at the doctor’s place. The camera was set on the table in
+front of the patients, with a distance of about 1 meter between them.
+The study involved three tasks: free speech, where participants en-
+gaged in casual guided conversations with the interviewer; question
+and answer (Q&A), where participants responded to complex situ-
+ational queries. Additionally, participants described the content of
+an image depicting a scenario with children arguing over food in the
+picture description task.
+The PROMPT dataset comprises 446 samples collected from de-
+mentia patients and healthy subjects, encompassing both dementia
+and healthy cases, obtained from 117 subjects, each sample spanning
+approximately 10 minutes. Despite its richness, this dataset falls
+short in size compared to conventional machine learning datasets,
+posing challenges in training a generalizable and robust deep learn-
+ing model. To address this limitation, our research introduces a novel
+approach by leveraging data augmentation. This strategy aims to
+overcome the over-fitting problems inherent in smaller datasets, en-
+hancing the model’s ability to generalize effectively and to facilitate
+the training of more proficient deep learning models.
+Fig. 1. An illustration of a face mesh generated using MediaPipe.The
+blue and red strokes annotate the position of the pupils.
+3.2. Face Mesh
+Face meshes can be represented as a set of points or vertices that
+define the facial structure, rather than storing a complete image of
+the face. This reduces the risk of identifying individuals from fa-
+cial features, thus enhancing anonymity and privacy. It also hides
+race, gender, or age information from the viewers. This function al-
+lows medical experts to watch and evaluate facial expressions and
+movements while maintaining patient privacy. This feature is espe-
+cially helpful in telemedicine settings where patients are unable to
+see medical professionals in person. Because no third party will be
+able to determine who they are, it also motivates future AD sufferers
+to get screened early. Doctors and other medical professionals may
+evaluate patients’ status remotely while keeping secure the patients’
+personal identification.
+3.3. Data Augmentation
+Although data augmentation has been extensively used in tasks deal-
+ing with image data or text data, data augmentation methods for face
+mesh data are not receiving attention from researchers. Face mesh
+data, as opposed to image data, employs a 3- dimensional structure
+as it contains x, y, z coordinates for each landmark it extracts. This
+is making the data augmentation different from that applied in the
+2-dimensional images. Each face mesh can be transformed in 3-D
+space as long as the relative position among landmarks remains the
+same. In addition to that, this research aims to detect dementia by
+evaluating the temporal patterns from the face mesh time series data,
+which makes it necessary to keep temporal consistency before and
+after augmentation. In this research, analogous to the data augmen-
+tation methods commonly used for image data, we proposed 3 kinds
+of augmentation methods, featuring rotating, shifting, and scaling.
+• Rotation: Randomly rotating the face mesh time series data.
+Specifically, for each face mesh time series data to be aug-
+mented, we randomly decided a rotation value (5 to 10 degrees)
+on each of the x, y, z axes. A rotation matrix is then created and
+applied to each landmark in each frame of the data.
+• Shifting: Randomly shifting the face mesh time series data.
+Specifically, we randomly decide a shift between −0.5 to 0.5
+on each of the x, y, z axes, which were later applied to each
+landmark of each frame, of the face mesh data.
+• Scaling:
+Randomly scaling the face mesh time series data.
+Specifically, we first decide a factor between [0.9, 1.1). Then
+this factor was applied to scale the face mesh data.
+Fig. 2 showed examples of our data augmentation methods.
+Authorized licensed use limited to: National Sun Yat Sen Univ.. Downloaded on May 05,2026 at 04:13:39 UTC from IEEE Xplore.  Restrictions apply. 
+
+(a) Original
+(b) Rotated
+(c) Shifted
+(d) Scaled
+Fig. 2. Examples of augmented face mesh data by different methods.
+The color of the landmarks refers to the depth, with red ones closer
+to the camera and green ones further to the camera.
+3.4. Models
+We used Transformer, LSTM, and the 1D CNN network to perform
+classification between dementia and healthy samples.
+The trans-
+former model contains only 1 transformer encoder layer, with 8 at-
+tention heads. The dropout rate was set to 0.5. The global average
+pooling layer compresses the hidden states of 32 to 1 and will be
+classified by the linear layer at the end of the model. We used the
+Adam optimizer with a learning rate of 2 · 10−3 and set the batch
+size to 1024. The cross-entropy loss function was used to calculate
+the model loss.
+The LSTM network is composed of 1 LSTM layer whose hidden
+state size was set to 64. The principal components are input into each
+cell of the LSTM layer and the hidden states of the last cell in the
+LSTM layer are forwarded to the linear layer (with 64 input features
+and 2 output features) and softmax layer for the final decision. We
+used Adam optimizer with a learning rate of 2·10−3 and set the batch
+size to 256. The cross-entropy loss function was used to calculate the
+model loss.
+The 1D CNN network is composed of 3 groups of CNN net-
+works. Each group of networks is composed of a 1D CNN layer, a
+Max Pooling layer and a Relu activation layer. The 1D CNN layer
+has 32 in and out channels with a kernel size of 3. The Max Pooling
+layer has a kernel size of 2. A fully-connected network is finally ap-
+plied to make predictions. We used Adam optimizer with a learning
+rate of 2·10−3 and set the batch size to maximum. The cross-entropy
+loss function was used to calculate the model loss.
+4. EXPERIMENT SETTINGS AND RESULTS
+Following the common way to measure the performance of a ma-
+chine learning task, we implemented a 5-fold cross-validation in the
+experiments. In each fold, 20% of the subjects were held out as the
+test set. In the training of each fold, we train transformer models,
+LSTM models, and 1D CNN models for 120 epochs, 400 epochs,
+and 120 epochs respectively. The epoch numbers are large enough
+for the model to converge on the training set, getting an accuracy
+of more than 99% on training data. We train the LSTM models for
+more epochs because they converge more slowly.
+In this research, we implemented 3 kinds of data augmentation
+methods to increase the size of the data. Each time we applied 1
+method of the three methods including rotating, shifting, and scaling.
+From each real face mesh sample video in the PROMPT dataset,
+we created an extra virtual sample by augmentation. As such, we
+created 3 extra datasets: virtual dataset 1 created by rotating, virtual
+Table 1. The dementia detection accuracy performance of the dif-
+ferent deep learning models with different data augmentation tech-
+niques.
+Models
+Baseline
+Rotation
+Shifting
+Scaling
+All
+LSTM
+0.698
+0.705
+0.705
+0.707
+0.636
+Transformer
+0.730
+0.748
+0.752
+0.725
+0.676
+1D CNN
+0.701
+0.734
+0.759
+0.737
+0.677
+dataset 2 created by shifting, and virtual dataset 3 created by scaling.
+All of the 3 datasets share the same size as the real dataset. In the
+training, we used the real dataset with one of the 3 datasets, which
+increased the dataset size to double.
+We implemented an incremental PCA method to reduce the di-
+mensionality of the dataset with a batch size of 64 while processing
+dataset incrementally. The PCA is an unsupervised learning pro-
+cess, and it is performed on the augmented dataset (the real dataset
+with one of the virtual datasets) with each frame of the face mesh
+as a sample, this converts a frame of the face mesh into 32 prin-
+cipal components, which represent more than 99.9% variation in-
+formation of the original face mesh dataset, according to our ex-
+periments. After doing the PCA reduction, a face mesh time se-
+ries sample in the shape of [Nsteps, Nlandmarks, Naxes] was converted to
+the shape of [Nsteps, Ncomponents], where Nsteps refers to the number of
+frames, Nlandmarks refers to the number of landmarks, Naxes refers to
+the number of elements each landmark has to annotate its location,
+and Ncomponents refers to the number of principal components.
+Table 1 displays the highest accuracy performance of the 3 pro-
+posed data augmentation methods with different deep learning mod-
+els employed, respectively. Column “All” refers to the performance
+when all 3 augmentation methods were employed. LSTM shows
+slight improvement in accuracy with each augmentation technique,
+reaching its peak accuracy with scaling (0.707). Transformer has
+the highest baseline accuracy (0.730). It performs best with shifting
+augmentation (0.752), but scaling reduces its accuracy to 0.725. The
+1D CNN model demonstrates consistent improvement with all aug-
+mentation techniques, achieving the highest accuracy with shifting
+(0.759).
+We noticed from the tables that shifting and rotation generally
+improve model performance, particularly for the Transformer and
+1D CNN models. The augmentation of Mediapipe face mesh data
+shows promising results in enhancing the performance of deep learn-
+ing models for dementia detection, with specific augmentations ben-
+efiting different models uniquely. Though applying a single data
+augmentation method on the deep learning models reports improve-
+ment on certain levels when all 3 methods were applied, the accuracy
+performance became worse. The reason behind it probably is when
+all 3 methods were used, the train data distribution was largely al-
+tered, which does not share commonness with test data anymore.
+Traditional feature engineering and machine learning classifiers
+often outperform deep learning when data is limited. In this study,
+we implemented a traditional machine learning approach to classify
+dementia and healthy subjects. We processed face mesh time-series
+data into four representations: the original data, its differentiation,
+frequency spectrum, and spectrum differentiation. From these, we
+extracted statistical features such as mean, median, standard devia-
+tion, extremes, and key percentiles (e.g., 1%, 5%, 10%, etc.). Using
+a 5-fold cross-validation, we employed a Gradient Boosted Decision
+Tree (GBDT) classifier with 100 estimators, a learning rate of 1, and
+varying max depths. Table 2 shows the accuracy across different
+parameters and augmentation methods.
+Authorized licensed use limited to: National Sun Yat Sen Univ.. Downloaded on May 05,2026 at 04:13:39 UTC from IEEE Xplore.  Restrictions apply. 
+
+Table 2. Accuracy performance of Gradient Boosting Decision Tree
+when different augmentation methods were applied.
+max depth
+Baseline
+Rotation
+Shifting
+Scaling
+All
+1
+0.642
+0.671
+0.683
+0.693
+0.704
+2
+0.692
+0.704
+0.662
+0.683
+0.720
+3
+0.698
+0.698
+0.686
+0.688
+0.720
+4
+0.719
+0.715
+0.686
+0.669
+0.707
+Unlike the LSTM and Transformer models, the GBDT model
+does not consistently improve with different augmentation. Its per-
+formance varies with different max depths. From Table 2, we see
+that a single data augmentation technique does not improve perfor-
+mance in most cases. However, it yields the highest accuracy of
+0.720 when all the augmentation methods were applied, which is
+similar to the baseline model with a max depth of 4 (0.719). This
+inconsistency between feature engineering methods and deep learn-
+ing methods was probably caused by the different processing before
+classifying. Data augmentation techniques such as rotation, shifting,
+and scaling primarily affect the raw data, adding variations to the
+original dataset. However, if feature engineering extracts aspects of
+the data that are invariant to these transformations or focuses on fea-
+tures that are not significantly altered by augmentation, the impact of
+augmentation might be minimized in the final model training. Com-
+pared with deep learning models that automatically find patterns in
+data, GBDT responds less to augmentation possibly due to the de-
+signed features not altering with augmentation.
+5. CONCLUSION
+By implementing and analyzing various models such as LSTM,
+Transformer, 1D CNN, and GBDT coupled with different data aug-
+mentation methods like rotation, shifting, and scaling, we have
+gained crucial insights into the potentials and limitations of deep
+learning and machine learning models in medical diagnostics. The
+proposed data augmentation methods improved the performance
+of different deep learning models. We achieved the best accuracy
+performance of 0.76 by employing a 1D CNN model with shift-
+ing augmentation. These results confirmed the effectiveness of our
+data augmentation methods. They also underscore the potential of
+face-related features in enhancing early detection approaches for
+AD.
+6. ACKNOWLEDGEMENT
+This work was supported by JST ASPIRE Grant Number JPM-
+JAP2326 and JST SPRING, Grant Number JPMJSP2123, Japan.
+7. REFERENCES
+[1] “World
+health
+organization.
+dementia,”
+https:
+//www.who.int/news-room/fact-sheets/
+detail/dementia, Accessed: 2023-3-15.
+[2] Joaquim Cerejeira, Lu´ısa Lagarto, and Elizabeta Blagoja
+Mukaetova-Ladinska,
+“Behavioral and psychological symp-
+toms of dementia,” Frontiers in neurology, vol. 3:73, 2012.
+[3] Bahman Mirheidari, Daniel Blackburn, Traci Walker, An-
+nalena Venneri, Markus Reuber, and Heidi Christensen, “De-
+tecting signs of dementia using word vector representations.,”
+in Interspeech, 2018, pp. 1893–1897.
+[4] Youxiang Zhu, Xiaohui Liang, John A Batsis, and Robert M
+Roth,
+“Exploring deep transfer learning techniques for
+alzheimer’s dementia detection,”
+Frontiers in computer sci-
+ence, vol. 3:624683, 2021.
+[5] Pranav Mahajan and Veeky Baths,
+“Acoustic and language
+based deep learning approaches for alzheimer’s dementia de-
+tection from spontaneous speech,” Frontiers in Aging Neuro-
+science, vol. 13:623607, 2021.
+[6] Daisaku Shibata, Kaoru Ito, Hiroyuki Nagai, Taro Okahisa,
+Ayae Kinoshita, and Eiji Aramaki, “Idea density in japanese
+for the early detection of dementia based on narrative speech,”
+PloS one, vol. 13, no. 12:e0208418, 2018.
+[7] Yamanki Santander-Cruz, Sebasti´an Salazar-Colores, Wil-
+frido Jacobo Paredes-Garc´ıa, Humberto Guendulain-Arenas,
+and Sa´ul Tovar-Arriaga,
+“Semantic feature extraction using
+sbert for dementia detection,”
+Brain Sciences, vol. 12, no.
+2:270, 2022.
+[8] Ulla Petti, Simon Baker, and Anna Korhonen,
+“A system-
+atic literature review of automatic alzheimer’s disease detec-
+tion from speech and language,” Journal of the American Med-
+ical Informatics Association, vol. 27, no. 11, pp. 1784–1797,
+2020.
+[9] Hiroki Tanaka, Hiroyoshi Adachi, Hiroaki Kazui, Manabu
+Ikeda, Takashi Kudo, and Satoshi Nakamura, “Detecting de-
+mentia from face in human-agent interaction,” in ACM ICMI
+2019, 2019, pp. 1–6.
+[10] Yumi
+Umeda-Kameyama,
+Masashi
+Kameyama,
+Tomoki
+Tanaka, Bo-Kyung Son, Taro Kojima, Makoto Fukasawa, To-
+momichi Iizuka, Sumito Ogawa, Katsuya Iijima, and Masahiro
+Akishita, “Screening of alzheimer’s disease by facial complex-
+ion using artificial intelligence,” Aging (Albany NY), vol. 13,
+no. 2, pp. 1765–1772, 2021.
+[11] Kenneth Asplund, Astrid Norberg, Rolf Adolfsson, and
+Howard M Waxman, “Facial expressions in severely demented
+patients—a stimulus–response study of four patients with de-
+mentia of the alzheimer type,” Int. J. Geriatr. Psychiatry, vol.
+6, no. 8, pp. 599–606, 1991.
+[12] Kenneth Asplund, Lilian Jansson, and Astrid Norberg, “Facial
+expressions of patients with dementia: a comparison of two
+methods of interpretation,”
+International Psychogeriatrics,
+vol. 7, no. 4, pp. 527–534, 1995.
+[13] Ying Liu, Zixuan Wang, and Ge Yu,
+“The effectiveness of
+facial expression recognition in detecting emotional responses
+to sound interventions in older adults with dementia,” Frontiers
+in Psychology, vol. 12:707809, 2021.
+[14] Chuheng Zheng,
+Mondher Bouazizi,
+Tomoaki Ohtsuki,
+Momoko Kitazawa, Toshiro Horigome, and Taishiro Kishi-
+moto, “Detecting dementia from face-related features with au-
+tomated computational methods,” Bioengineering, vol. 10, no.
+7:862, 2023.
+[15] Taishiro Kishimoto, Akihiro Takamiya, Kuo-ching Liang,
+Kei Funaki, Takanori Fujita, Momoko Kitazawa, Michitaka
+Yoshimura, Yuki Tazawa, Toshiro Horigome, Yoko Eguchi,
+et al.,
+“The project for objective measures using computa-
+tional psychiatry technology (prompt): rationale, design, and
+methodology,”
+Contemporary Clinical Trials Communica-
+tions, vol. 19:100649, 2020.
+Authorized licensed use limited to: National Sun Yat Sen Univ.. Downloaded on May 05,2026 at 04:13:39 UTC from IEEE Xplore.  Restrictions apply. 
