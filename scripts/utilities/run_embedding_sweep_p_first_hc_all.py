@@ -105,6 +105,8 @@ def run_one(feat, kind, value, args):
         cmd += ["--pca-components", str(value)]
     elif kind == "drop":
         cmd += ["--drop-correlated-threshold", str(value)]
+    if args.embedding_abtest:
+        cmd.append("--embedding-abtest")
     label = label_for(kind, value)
     print(f"\n{'='*70}\n[{time.strftime('%H:%M:%S')}] {feat} / "
           f"{label}\n{'='*70}", flush=True)
@@ -130,6 +132,10 @@ def main():
     p.add_argument("--skip-existing", action="store_true",
                     help="Skip invocations whose output dir already has a "
                          "_summary/combined_summary.csv.")
+    p.add_argument("--embedding-abtest", action="store_true",
+                    help="Forward to run_fwd_rev_embedding.py: read features "
+                         "from embedding_ABtest/features/ and write outputs "
+                         "to embedding_ABtest/analysis/classification/.")
     args = p.parse_args()
 
     specs = args.reducers if args.reducers else DEFAULT_REDUCERS
@@ -155,6 +161,8 @@ def main():
                         PROJECT_ROOT / "scripts" / "experiments" /
                         "run_fwd_rev_embedding.py")
                     m = module_from_spec(sp); sp.loader.exec_module(m)
+                    if args.embedding_abtest:
+                        m.EMBEDDING_CLASSIFICATION_DIR = m.EMBEDDING_ABTEST_CLASSIFICATION_DIR
                     globals()["_imp"] = m
                 imp = globals()["_imp"]
                 pca = value if kind == "pca" else None
