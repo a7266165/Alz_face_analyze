@@ -37,11 +37,16 @@ ASYM_VARIANTS = ["difference", "absolute_difference", "average",
                  "relative_differences", "absolute_relative_differences"]
 
 
-def resolve_paths(variant, cohort_mode="default"):
-    from src.config import EMBEDDING_CLASSIFICATION_DIR, cohort_name
+def resolve_paths(variant, cohort_mode="default", abtest=False):
+    from src.config import (
+        EMBEDDING_CLASSIFICATION_DIR,
+        EMBEDDING_ABTEST_CLASSIFICATION_DIR,
+        cohort_name,
+    )
     cohort_dir = cohort_name(cohort_mode)
     v = variant if variant is not None else "original"
-    return EMBEDDING_CLASSIFICATION_DIR / v / cohort_dir / "pca" / "_summary"
+    root = EMBEDDING_ABTEST_CLASSIFICATION_DIR if abtest else EMBEDDING_CLASSIFICATION_DIR
+    return root / v / cohort_dir / "pca" / "_summary"
 
 
 INPUT_DIM = {"arcface": 512, "topofr": 512, "dlib": 128}
@@ -165,12 +170,16 @@ def main():
     parser.add_argument("--direction", choices=["fwd", "rev"], required=True,
                         help="fwd: forward_{full,matched}; "
                              "rev: reverse_{matched_oof,unmatched}.")
-    parser.add_argument("--variant", default=None, choices=ASYM_VARIANTS)
+    parser.add_argument("--variant", default=None,
+                        choices=ASYM_VARIANTS + ["original", "original_background"],
+                        help="Variant under classification/.  Default None == 'original'.")
     parser.add_argument("--cohort-mode", default="default",
                         choices=["default", "p_first_hc_all", "p_all_hc_all"])
+    parser.add_argument("--embedding-abtest", action="store_true",
+                        help="Read from embedding_ABtest/ tree.")
     args = parser.parse_args()
 
-    out = resolve_paths(args.variant, args.cohort_mode)
+    out = resolve_paths(args.variant, args.cohort_mode, abtest=args.embedding_abtest)
     logger.info(f"OUT: {out}")
     long_csv = out / "all_pca_metrics.csv"
     eig_csv = out / "cumulative_eigenvalue_ratio.csv"

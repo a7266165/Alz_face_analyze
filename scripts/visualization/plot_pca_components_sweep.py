@@ -36,6 +36,7 @@ ASYM_VARIANTS = ["difference", "absolute_difference", "average",
                  "relative_differences", "absolute_relative_differences"]
 
 EMBEDDING_FEAT_DIR = (PROJECT_ROOT / "workspace" / "embedding" / "features")
+EMBEDDING_ABTEST_FEAT_DIR = (PROJECT_ROOT / "workspace" / "embedding_ABtest" / "features")
 INPUT_DIM = {"arcface": 512, "topofr": 512, "dlib": 128}
 EMB_COLOR = {"arcface": "#1f77b4", "topofr": "#ff7f0e", "dlib": "#2ca02c"}
 # Per (embedding, classifier): same hue per embedding but lighter for LR /
@@ -54,22 +55,31 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 logger = logging.getLogger(__name__)
 
 
-def resolve_paths(variant, cohort_mode="default"):
-    """Return (class_root, out, reducer_dirs, cell_json_for, feature_subdir).
+def resolve_paths(variant, cohort_mode="default", abtest=False):
+    """Return (class_root, out, reducer_dirs, cell_json_for, feature_subdir, feat_root).
 
-    class_root             → embedding/analysis/classification/<variant>/<cohort>
+    class_root             → <classification_root>/<variant>/<cohort>
+    feat_root              → workspace/embedding[_ABtest]/features
     reducer_dirs           → list of reducer dirs to walk
                               (no_drop + pca/n_components_X + pca/var_ratio_X)
     cell_json_for(reducer, part, emb, clf) → cell metrics json
-    feature_subdir         → which sub-dir of workspace/embedding/features/<emb>/
-                              to use for cumulative eigenvalue ('original' for
-                              default, variant name for asymmetry).
+    feature_subdir         → which sub-dir of <feat_root>/<emb>/ to use for
+                              cumulative eigenvalue ('original' for default,
+                              variant name for asymmetry / original_background).
     """
-    from src.config import EMBEDDING_CLASSIFICATION_DIR, cohort_name
+    from src.config import (
+        EMBEDDING_CLASSIFICATION_DIR,
+        EMBEDDING_ABTEST_CLASSIFICATION_DIR,
+        cohort_name,
+    )
     cohort_dir = cohort_name(cohort_mode)
     feature_subdir = variant if variant is not None else "original"
-    class_root = EMBEDDING_CLASSIFICATION_DIR / feature_subdir / cohort_dir
+    classification_root = (
+        EMBEDDING_ABTEST_CLASSIFICATION_DIR if abtest else EMBEDDING_CLASSIFICATION_DIR
+    )
+    class_root = classification_root / feature_subdir / cohort_dir
     out = class_root / "pca" / "_summary"
+    feat_root = EMBEDDING_ABTEST_FEAT_DIR if abtest else EMBEDDING_FEAT_DIR
 
     def _reducer_dirs():
         if not class_root.is_dir():
@@ -98,7 +108,7 @@ def resolve_paths(variant, cohort_mode="default"):
             base = base / "C_1"
         return base / "forward_matched_metrics.json"
 
-    return class_root, out, _reducer_dirs(), cell_json_for, feature_subdir
+    return class_root, out, _reducer_dirs(), cell_json_for, feature_subdir, feat_root
 
 
 def _parse_pca_label(name):
@@ -175,7 +185,7 @@ def _load_visit_all_cohort_ids():
     return ids
 
 
-def compute_cumulative_eigenvalue_ratio(feature_subdir, cohort_mode="all_npy"):
+def compute_cumulative_eigenvalue_ratio(feature_subdir, cohort_mode="all_npy", feat_root=None):
     """For each embedding model, fit PCA on the feature pool determined by
     cohort_mode and return the cumulative explained-variance ratio.
 
@@ -192,9 +202,11 @@ def compute_cumulative_eigenvalue_ratio(feature_subdir, cohort_mode="all_npy"):
     keep_ids = None
     if cohort_mode == "visit_all":
         keep_ids = _load_visit_all_cohort_ids()
+    if feat_root is None:
+        feat_root = EMBEDDING_FEAT_DIR
     rows = []
     for emb in ("arcface", "topofr", "dlib"):
-        feat_dir = EMBEDDING_FEAT_DIR / emb / feature_subdir
+        feat_dir = feat_root / emb / feature_subdir
         if not feat_dir.exists():
             logger.warning(f"missing {feat_dir}; skipping {emb}")
             continue
@@ -271,7 +283,9 @@ def collect_feature_counts(reducer_dirs, cell_json_for):
 
 def main():
     parser = argparse.ArgumentParser(__doc__)
-    parser.add_argument("--variant", default=None, choices=ASYM_VARIANTS)
+    parser.add_argument("--variant", default=None,
+                        choices=ASYM_VARIANTS + ["original", "original_background"],
+                        help="Variant under classification/.  Default None == 'original'.")
     parser.add_argument("--cohort-mode", default="default",
                         choices=["default", "p_first_hc_all", "p_all_hc_all"],
                         help="Output cohort routing. 'default'=p_first_hc_strict; "
@@ -284,10 +298,13 @@ def main():
                              "(no cohort filter). 'visit_all': filter to the "
                              "union of visit=all cohort IDs so the panel "
                              "matches what a --visit-mode all sweep saw.")
+    parser.add_argument("--embedding-abtest", action="store_true",
+                        help="Read from embedding_ABtest/ tree (features + "
+                             "analysis/classification) instead of production embedding/.")
     args = parser.parse_args()
 
-    class_root, out, reducer_dirs, cell_json_for, feature_subdir = resolve_paths(
-        args.variant, args.cohort_mode
+    class_root, out, reducer_dirs, cell_json_for, feature_subdir, feat_root = resolve_paths(
+        args.variant, args.cohort_mode, abtest=args.embedding_abtest
     )
     out.mkdir(parents=True, exist_ok=True)
     logger.info(f"ROOT: {class_root}")
@@ -307,7 +324,8 @@ def main():
     # Cumulative eigenvalue ratio per embedding (saved as csv for downstream
     # forward/reverse plot scripts to read).
     eig_df = compute_cumulative_eigenvalue_ratio(feature_subdir,
-                                                   cohort_mode=args.eigen_source)
+                                                   cohort_mode=args.eigen_source,
+                                                   feat_root=feat_root)
     if len(eig_df):
         eig_csv_name = ("cumulative_eigenvalue_ratio.csv"
                         if args.eigen_source == "all_npy"

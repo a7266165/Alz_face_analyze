@@ -206,17 +206,28 @@ def walk_root(root, label):
 
 
 def main():
-    from src.config import EMBEDDING_CLASSIFICATION_DIR, cohort_name
+    from src.config import (
+        EMBEDDING_CLASSIFICATION_DIR,
+        EMBEDDING_ABTEST_CLASSIFICATION_DIR,
+        cohort_name,
+    )
     p = argparse.ArgumentParser(__doc__)
     p.add_argument("--cohort-mode", default="default",
                     choices=["default", "p_first_hc_all", "p_all_hc_all"])
+    p.add_argument("--embedding-abtest", action="store_true",
+                    help="Walk embedding_ABtest/analysis/classification/ "
+                         "instead of production embedding/analysis/classification/.")
     args = p.parse_args()
     cohort_dir = cohort_name(args.cohort_mode)
+    classification_root = (
+        EMBEDDING_ABTEST_CLASSIFICATION_DIR if args.embedding_abtest
+        else EMBEDDING_CLASSIFICATION_DIR
+    )
 
     total_files, total_rows = 0, 0
-    # 6 variants flat: original + 5 asymmetry transforms
-    if EMBEDDING_CLASSIFICATION_DIR.is_dir():
-        for variant_dir in sorted(EMBEDDING_CLASSIFICATION_DIR.iterdir()):
+    # 6 variants flat: original + 5 asymmetry transforms (+ original_background on ABtest)
+    if classification_root.is_dir():
+        for variant_dir in sorted(classification_root.iterdir()):
             if not variant_dir.is_dir() or variant_dir.name.startswith("_"):
                 continue
             cohort_root = variant_dir / cohort_dir
