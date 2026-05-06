@@ -1,14 +1,14 @@
 """
 Embedding-classifier sweep for the p_first_hc_all cohort.
 
-Runs run_fwd_rev_embedding.py across:
+Runs run_fwd_rev.py across:
     - feature_type:    original + 5 asymmetry variants (6 total)
     - reducer:         no_drop + PCA grid + dropcorr grid
 
-For each (feature_type, reducer) combo, run_fwd_rev_embedding internally
+For each (feature_type, reducer) combo, run_fwd_rev internally
 sweeps partition x embedding x classifier x strategy = 60 cells.
 
-GPU PCA + GPU XGB are unconditionally on inside run_fwd_rev_embedding.
+GPU PCA + GPU XGB are unconditionally on inside run_fwd_rev.
 
 Reducer naming (a single positional value, parsed):
     "no_drop"      -> no reducer
@@ -23,10 +23,10 @@ Default settings:
 
 Usage:
     conda run -n Alz_face_main_analysis python \
-        scripts/utilities/run_embedding_sweep_p_first_hc_all.py
+        scripts/embedding/run_sweep.py
     # subset:
     conda run -n Alz_face_main_analysis python \
-        scripts/utilities/run_embedding_sweep_p_first_hc_all.py \
+        scripts/embedding/run_sweep.py \
         --feature-types original difference \
         --reducers pca_100 drop_0.85
 """
@@ -95,8 +95,8 @@ def label_for(kind, value):
 
 
 def run_one(feat, kind, value, args):
-    cmd = [PYTHON, str(PROJECT_ROOT / "scripts" / "experiments" /
-                        "run_fwd_rev_embedding.py"),
+    cmd = [PYTHON, str(PROJECT_ROOT / "scripts" / "embedding" /
+                        "run_fwd_rev.py"),
            "--cohort-mode", args.cohort_mode,
            "--visit-mode", args.visit_mode,
            "--photo-mode", args.photo_mode,
@@ -133,7 +133,7 @@ def main():
                     help="Skip invocations whose output dir already has a "
                          "_summary/combined_summary.csv.")
     p.add_argument("--embedding-abtest", action="store_true",
-                    help="Forward to run_fwd_rev_embedding.py: read features "
+                    help="Forward to run_fwd_rev.py: read features "
                          "from embedding_ABtest/features/ and write outputs "
                          "to embedding_ABtest/analysis/classification/.")
     args = p.parse_args()
@@ -159,7 +159,7 @@ def main():
                 if "_imp" not in globals():
                     sp = spec_from_file_location("rfre",
                         PROJECT_ROOT / "scripts" / "experiments" /
-                        "run_fwd_rev_embedding.py")
+                        "run_fwd_rev.py")
                     m = module_from_spec(sp); sp.loader.exec_module(m)
                     if args.embedding_abtest:
                         m.EMBEDDING_CLASSIFICATION_DIR = m.EMBEDDING_ABTEST_CLASSIFICATION_DIR
