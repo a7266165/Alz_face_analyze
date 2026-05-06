@@ -1,6 +1,6 @@
 # Conda Environments — Alz_face_analyze
 
-按 `workspace/<dir>` 角色重新規劃的 11 個 active env + 2 個保留不動 + `legacy/` 歷史 snapshot。
+按 `workspace/<modality>/` 角色規劃的 11 個 active env + 4 個 deployment / 雜項。
 
 ## Workspace dir → env 對應表
 
@@ -10,13 +10,12 @@
 | `asymmetry/` | `Alz_face_asymmetry` | `Alz_face_main_analysis` |
 | `embedding/` (ArcFace / TopoFR / Dlib) | `Alz_face_embedding_other` | `Alz_face_main_analysis` |
 | `embedding/` (VGGFace) | `Alz_face_embedding_vggface` | `Alz_face_main_analysis` |
-| `emotion/` (OpenFace 3) | `Alz_face_emo_openface` | `Alz_face_main_analysis` |
-| `emotion/` (LibreFace) | `Alz_face_emo_libreface` | `Alz_face_main_analysis` |
-| `emotion/` (Py-Feat) | `Alz_face_emo_pyfeat` | `Alz_face_main_analysis` |
-| `emotion/` (DAN / HSEmotion / ViT / POSTER_V2 / EmoNeXt / FER) | `Alz_face_emo_other` | `Alz_face_main_analysis` |
+| `emo_au/` (OpenFace 3) | `Alz_face_emo_au_openface` | `Alz_face_main_analysis` |
+| `emo_au/` (LibreFace) | `Alz_face_emo_au_libreface` | `Alz_face_main_analysis` |
+| `emo_au/` (Py-Feat) | `Alz_face_emo_au_pyfeat` | `Alz_face_main_analysis` |
+| `emo_au/` (DAN / HSEmotion / ViT / POSTER_V2 / EmoNeXt / FER) | `Alz_face_emo_au_other` | `Alz_face_main_analysis` |
 | `rotation/` | `Alz_face_rotation` | `Alz_face_main_analysis` |
-| `arms_analysis/` | — | `Alz_face_main_analysis` |
-| `age_window_classifier/` | — | `Alz_face_main_analysis` |
+| `overview/` | — | `Alz_face_main_analysis` |
 | `longitudinal/` | `Alz_face_main_analysis` | `Alz_face_main_analysis` |
 
 ## Active envs
@@ -25,7 +24,7 @@
 
 | env | torch | 主要套件 | 用途 |
 |---|---|---|---|
-| **`Alz_face_main_analysis`** | 2.7.1+cu118 | tabpfn / xgboost / lightgbm / scikit-learn / feature-engine / statsmodels / pingouin / shap / matplotlib | 所有 `scripts/experiments/*.py`、`scripts/visualization/*.py`、`scripts/utilities/*.py` |
+| **`Alz_face_main_analysis`** | 2.7.1+cu118 | tabpfn / xgboost / lightgbm / scikit-learn / feature-engine / statsmodels / pingouin / shap / matplotlib | 所有跨模態 orchestrator（`scripts/overview/`）、modality consumer scripts（`scripts/<modality>/run_*.py` / `plot_*.py`）、`scripts/utilities/` |
 
 ### Extract envs（依工具版本衝突分開）
 
@@ -36,10 +35,10 @@
 | `Alz_face_embedding_other` | 2.7.1+cu118 | dlib 19.24.6 / insightface / onnxruntime-gpu | `workspace/embedding/{arcface,topofr,dlib}/` |
 | `Alz_face_embedding_vggface` | — | tensorflow 2.20 / deepface / dlib 19.24.6 | `workspace/embedding/vggface/` |
 | `Alz_face_rotation` | — (CPU) | mediapipe / opencv (含 contrib) / scipy | `workspace/rotation/` |
-| `Alz_face_emo_openface` | 2.5.1+cu121 | openface-test 0.1.26 / timm 1.0.15 | `workspace/emotion/openface/` |
-| `Alz_face_emo_libreface` | 2.5.1+cu121 | libreface 0.1.1 / dlib 19.24.6 / mediapipe | `workspace/emotion/libreface/` |
-| `Alz_face_emo_pyfeat` | 2.5.1+cu121 | py-feat 0.6.2 / kornia / scipy<1.12 | `workspace/emotion/pyfeat/` |
-| `Alz_face_emo_other` | 2.5.1+cu121 | emotiefflib 1.1.1 / timm / transformers / onnxruntime-gpu | `workspace/emotion/{dan,hsemotion,vit,poster_v2,emonext,fer,emonet}/` |
+| `Alz_face_emo_au_openface` | 2.5.1+cu121 | openface-test 0.1.26 / timm 1.0.15 | `workspace/emo_au/openface/` |
+| `Alz_face_emo_au_libreface` | 2.5.1+cu121 | libreface 0.1.1 / dlib 19.24.6 / mediapipe | `workspace/emo_au/libreface/` |
+| `Alz_face_emo_au_pyfeat` | 2.5.1+cu121 | py-feat 0.6.2 / kornia / scipy<1.12 | `workspace/emo_au/pyfeat/` |
+| `Alz_face_emo_au_other` | 2.5.1+cu121 | emotiefflib 1.1.1 / timm / transformers / onnxruntime-gpu | `workspace/emo_au/{dan,hsemotion,vit,poster_v2,emonext,fer,emonet}/` |
 
 ### Deployment / 雜項（保留不動）
 
@@ -133,10 +132,10 @@ conda create -n Alz_face_rotation python=3.11 -y
 # mediapipe pin: same reason as Alz_face_asymmetry — 0.10.22+ dropped legacy API.
 ```
 
-### `Alz_face_emo_openface`
+### `Alz_face_emo_au_openface`
 
 ```bash
-conda create -n Alz_face_emo_openface python=3.11 -y
+conda create -n Alz_face_emo_au_openface python=3.11 -y
 "<env>/python.exe" -m pip install \
     torch==2.5.1+cu121 torchvision==0.20.1+cu121 \
     --index-url https://download.pytorch.org/whl/cu121
@@ -145,10 +144,10 @@ conda create -n Alz_face_emo_openface python=3.11 -y
 
 匯入時是 `import openface`（不是 openface_test）。
 
-### `Alz_face_emo_libreface`
+### `Alz_face_emo_au_libreface`
 
 ```bash
-conda create -n Alz_face_emo_libreface python=3.11 -y
+conda create -n Alz_face_emo_au_libreface python=3.11 -y
 "<env>/python.exe" -m pip install \
     torch==2.5.1+cu121 torchvision==0.20.1+cu121 \
     --index-url https://download.pytorch.org/whl/cu121
@@ -160,10 +159,10 @@ conda create -n Alz_face_emo_libreface python=3.11 -y
     --index-url https://download.pytorch.org/whl/cu121
 ```
 
-### `Alz_face_emo_pyfeat`
+### `Alz_face_emo_au_pyfeat`
 
 ```bash
-conda create -n Alz_face_emo_pyfeat python=3.11 -y
+conda create -n Alz_face_emo_au_pyfeat python=3.11 -y
 "<env>/python.exe" -m pip install \
     torch==2.5.1+cu121 torchvision==0.20.1+cu121 \
     --index-url https://download.pytorch.org/whl/cu121
@@ -174,10 +173,10 @@ conda create -n Alz_face_emo_pyfeat python=3.11 -y
 "<env>/python.exe" -m pip install "scipy<1.12"  # py-feat 用了 scipy.integrate.simps（已重命名）
 ```
 
-### `Alz_face_emo_other`（DAN / HSEmotion / ViT / POSTER_V2 / EmoNeXt / FER / emonet）
+### `Alz_face_emo_au_other`（DAN / HSEmotion / ViT / POSTER_V2 / EmoNeXt / FER / emonet）
 
 ```bash
-conda create -n Alz_face_emo_other python=3.11 -y
+conda create -n Alz_face_emo_au_other python=3.11 -y
 "<env>/python.exe" -m pip install \
     torch==2.5.1+cu121 torchvision==0.20.1+cu121 \
     --index-url https://download.pytorch.org/whl/cu121
@@ -208,32 +207,11 @@ conda create -n Alz_face_api python=3.11 -y
 
 ## 執行慣例
 
-- **Analysis script**：用 `conda run -n Alz_face_main_analysis python scripts/...py`
-- **Pipeline script (extract)**：在對應 extractor env 內 activate 後再跑（pipeline scripts 多半沒寫 conda run 在 docstring）
+- **Consumer script**：用 `conda run -n Alz_face_main_analysis python scripts/...py`（`overview/` orchestrator、modality consumer、`utilities/` library）
+- **Producer script (extract)**：在對應 extractor env 內 activate 後再跑（producer scripts 多半沒寫 conda run 在 docstring）
 - **Windows cp950 + conda run**：含中文輸出或多行 subprocess 改用絕對路徑直跑：
   ```
   "C:/Users/4080/anaconda3/envs/<env>/python.exe" scripts/...
   ```
-- **不改 `pyproject.toml`**：依專案慣例
+- **不改 `pyproject.toml`**：root 那份僅作為 project anchor + metadata，沒有 build-system；依賴管理走 conda envs。
 - **新套件先建 `tmp_env`**：例外只有 `graphviz` env（pipeline diagram 專用）
-
-## `legacy/` 歷史 snapshot
-
-`envs/legacy/` 含 10 份舊 env 的 pip freeze 快照：
-
-- `Alz_face_age.txt` — rebuild 前的 132-pkg 快照
-- `Alz_face_analyze_emo.txt` — decommissioned（取代為 `Alz_face_emo_openface`）
-- `Alz_face_analyze_only_VGGFace_py311.txt` — decommissioned（取代為 `Alz_face_embedding_vggface`）
-- `Alz_face_api.txt` — rebuild 前的 113-pkg 快照
-- `Alz_face_main_analysis.txt` — rebuild 前（原為 `Alz_face_test_2` clone）
-- `Alz_face_relation_analysis.txt` — decommissioned（純分析角色已併入 `Alz_face_main_analysis`）
-- `Alz_face_rotating.txt` — decommissioned（取代為 `Alz_face_rotation`）
-- `emo_analyze.txt` — decommissioned（與 `Alz_face_analyze_emo` 重複）
-- `libreface.txt` — decommissioned（取代為 `Alz_face_emo_libreface`）
-- `pyfeat.txt` — decommissioned（取代為 `Alz_face_emo_pyfeat`）
-
-要從中還原：
-```bash
-conda env create -n <name>_restored --file envs/legacy/<name>.txt
-```
-（注意 pip-installed 套件可能因上游 PyPI 變動而還原失敗；快照僅供參考。）
