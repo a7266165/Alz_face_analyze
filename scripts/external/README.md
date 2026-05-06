@@ -36,7 +36,7 @@ python scripts/external/build_external_demographics.py
 - **IMDB**：`EACS_IMDB_{nm_id}-{visit:02d}`，visit 依 (nm_id, photo_year) 組合升冪
   編號。同年多張落同一 visit folder。Age = photo_year - birth_year
 
-Subject ID 的 base_id / visit 解析：run_4arm_deep_dive.py 用 `^(.+)-\d+$`
+Subject ID 的 base_id / visit 解析：scripts/utilities/cohort.py 用 `^(.+)-\d+$`
 regex，通用於 `ACS1-1`、`P123-5`、`EACS_AFAD_00001-1`、`EACS_IMDB_nm0000002-03`。
 
 ## 依賴

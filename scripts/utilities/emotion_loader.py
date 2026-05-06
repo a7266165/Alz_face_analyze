@@ -18,7 +18,7 @@ Public API:
     load_emotion_matrix(ids, methods=None) -> pd.DataFrame
         wide table merging all methods, columns named `<method>__<col>` —
         backward-compatible with the previous loader signatures used in
-        run_arm_a / run_4arm_deep_dive / run_cross_matched /
+        run_cross_naive / run_stat_grid / run_cross_matched /
         run_age_window_classifier / build_longitudinal_dataset /
         build_longitudinal_hc_and_vectors.
 """
@@ -149,8 +149,8 @@ def load_emotion_matrix(
     """Wide-format multi-method emotion matrix.
 
     For each method, picks emotion columns only (matching the legacy
-    `load_emotion_matrix` in run_arm_a) and prefixes them with
-    `<method>__`. Merges across methods on `subject_id`.
+    `load_emotion_matrix` API) and prefixes them with `<method>__`.
+    Merges across methods on `subject_id`.
 
     Returns:
         DataFrame with `subject_id` + 8 method × 7 emotion × 4 stat = 224

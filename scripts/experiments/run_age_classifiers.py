@@ -1,31 +1,31 @@
 """
-Per-arm × per-comparison binary classifier on 2-3 simple features.
+Per-design × per-comparison binary classifier on 2-3 simple age/MMSE features.
 
-For each arm ∈ {A, B, C, D} × comparison ∈ {HC, NAD, ACS}:
+For each design ∈ {cross_naive, cross_matched, longitudinal_naive,
+longitudinal_matched} × comparison ∈ {HC, NAD, ACS}:
   Feature sets:
-    set1 = [Age, MMSE]                  (2 features)
-    set2 = [Age, MMSE, age_error]       (3 features)
+    set1 = [Age, MMSE]                   (2 features)
+    set2 = [Age, MMSE, age_error]        (3 features)
   Models (run order: XGBoost first, then TabPFN):
-    xgb     : XGBClassifier(n_est=200, depth=4, lr=0.1)
-    tabpfn  : TabPFNClassifier(ignore_pretraining_limits=True)
+    xgb     XGBClassifier(n_est=200, depth=4, lr=0.1)
+    tabpfn  TabPFNClassifier(ignore_pretraining_limits=True)
 
-Cohorts are built via the grid script's `build_cohort_ad_vs_HCgroup` helper
-so naive (A) / cross-sec matched (B) / longitudinal naive (C) / longitudinal
-matched (D) are all handled consistently. For longitudinal arms (C/D) the
-"Age"/"MMSE" features map to first_age/first_MMSE, and age_error =
-first_age − baseline_predicted_age.
+Cohorts come from scripts.utilities.cohort.build_cohort_ad_vs_HCgroup. For
+longitudinal designs the "Age"/"MMSE" features map to first_age/first_MMSE,
+and age_error = first_age − baseline_predicted_age.
 
-Outputs (A/B → age/analysis/classification, C/D → longitudinal/analysis/age/classification):
-  <root>/<cohort>/ad_vs_<cmp>/<full|matched>/<set>/<model>_oof.csv  — per-subject OOF
-  <root>/<cohort>/ad_vs_<cmp>/summary_<full|matched>.csv             — AUC/CI/BalAcc/MCC
-  overview/<cohort>/classifier_summary_all.csv                       — grand summary
+Outputs:
+  cross_naive / cross_matched     → age/analysis/classification/...
+  longitudinal_*                  → longitudinal/analysis/age/classification/...
+
+  <root>/<cohort>/ad_vs_<cmp>/<bucket>/<set>/<model>_oof.csv  per-subject OOF
+  <root>/<cohort>/ad_vs_<cmp>/summary_<bucket>.csv            AUC/CI/BalAcc/MCC
+  overview/<cohort>/classifier_summary_all.csv                grand summary
 
 Usage:
-    conda run -n Alz_face_main_analysis python \
-        scripts/experiments/run_arm_age_classifiers.py
+    conda run -n Alz_face_main_analysis python scripts/experiments/run_age_classifiers.py
 """
 import argparse
-import importlib.util
 import json
 import logging
 import sys
@@ -42,34 +42,22 @@ from src.config import (
     AGE_CLASSIFICATION_DIR, LONGI_AGE_CLASSIFICATION_DIR,
     OVERVIEW_DIR, cohort_name,
 )
-
-
-def _load_module(name, path):
-    spec = importlib.util.spec_from_file_location(name, path)
-    m = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(m)
-    return m
-
-
-_grid = _load_module("run_4arm_deep_dive",
-                      PROJECT_ROOT / "scripts" / "experiments" /
-                      "run_4arm_deep_dive.py")
-build_cohort_ad_vs_HCgroup = _grid.build_cohort_ad_vs_HCgroup
+from scripts.utilities.cohort import build_cohort_ad_vs_HCgroup, VALID_DESIGNS
+from scripts.utilities.stats_helpers import bootstrap_auc_ci
 
 AGES_FILE = (PROJECT_ROOT / "workspace" / "age" / "predictions" /
              "p_first_hc_strict" / "predicted_ages.json")
 COMPARISONS = ["HC", "NAD", "ACS"]
-ALL_ARMS = ["A", "B", "C", "D"]
+ALL_DESIGNS = list(VALID_DESIGNS)
 N_FOLDS = 10
 SEED = 42
 
-# Arm → (classification root, design bucket name)
-# A=cross_naive, B=cross_matched, C=longi_naive, D=longi_matched
-ARM_TO_ROOT_DESIGN = {
-    "A": (AGE_CLASSIFICATION_DIR, "full"),
-    "B": (AGE_CLASSIFICATION_DIR, "matched"),
-    "C": (LONGI_AGE_CLASSIFICATION_DIR, "full"),
-    "D": (LONGI_AGE_CLASSIFICATION_DIR, "matched"),
+# design → (classification root, bucket subdir name)
+DESIGN_TO_ROOT_BUCKET = {
+    "cross_naive":          (AGE_CLASSIFICATION_DIR, "full"),
+    "cross_matched":        (AGE_CLASSIFICATION_DIR, "matched"),
+    "longitudinal_naive":   (LONGI_AGE_CLASSIFICATION_DIR, "full"),
+    "longitudinal_matched": (LONGI_AGE_CLASSIFICATION_DIR, "matched"),
 }
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s")
@@ -77,11 +65,10 @@ logger = logging.getLogger(__name__)
 
 
 # ============================================================
-# Cohort → feature DataFrame (per arm)
+# Cohort → feature DataFrame
 # ============================================================
 
 def _attach_age_error_xsec(cohort, pred_ages):
-    """Cross-sectional age_error = Age − predicted_age."""
     cohort = cohort.copy()
     cohort["predicted_age"] = cohort["ID"].map(pred_ages)
     cohort["age_error"] = cohort["Age"] - cohort["predicted_age"]
@@ -89,10 +76,7 @@ def _attach_age_error_xsec(cohort, pred_ages):
 
 
 def _attach_age_error_long(cohort, pred_ages):
-    """Longitudinal: baseline age_error = first_age − predicted_age(first_visit_id).
-
-    Renames first_age → Age, first_MMSE → MMSE so feature names are uniform.
-    """
+    """Longitudinal: baseline age_error = first_age − pred_age(first_visit_id)."""
     cohort = cohort.copy()
     cohort["predicted_age"] = cohort["first_visit_id"].map(pred_ages)
     cohort["age_error"] = cohort["first_age"] - cohort["predicted_age"]
@@ -103,19 +87,20 @@ def _attach_age_error_long(cohort, pred_ages):
     return cohort
 
 
-def build_feature_df(arm, hc_source, pred_ages):
+def build_feature_df(design, hc_source, pred_ages, cohort_mode, hc_source_mode):
     """Return DataFrame with [ID, base_id, Age, MMSE, age_error, label].
 
-    Pre-filter pattern (consistent with run_cross_matched.py):
-      - Drop subjects missing ANY of {Age, MMSE, age_error}, so 2-feat and
-        3-feat see the same N subjects.
-      - For matched arms (B, D), drop entire pair (both sides) if either side
-        fails the filter, preserving pairing.
+    Pre-filter: drop subjects missing ANY of {Age, MMSE, age_error} so that
+    2-feat and 3-feat see the same N. For matched designs, drop the entire
+    pair if either side fails the filter (preserves pairing).
     """
-    cohort, pairs = build_cohort_ad_vs_HCgroup(hc_source, arm=arm)
+    cohort, pairs = build_cohort_ad_vs_HCgroup(
+        hc_source, design=design,
+        cohort_mode=cohort_mode, hc_source_mode=hc_source_mode,
+    )
     if cohort is None or len(cohort) == 0:
         return None
-    if arm in ("A", "B"):
+    if design in ("cross_naive", "cross_matched"):
         cohort = _attach_age_error_xsec(cohort, pred_ages)
     else:
         cohort = _attach_age_error_long(cohort, pred_ages)
@@ -123,22 +108,20 @@ def build_feature_df(arm, hc_source, pred_ages):
         cohort["base_id"] = cohort["ID"].astype(str).str.extract(
             r"^([A-Za-z_]+\d+)")
 
-    # Subject-level pass filter: all 3 features present
     has_all = (cohort["Age"].notna() &
                cohort["MMSE"].notna() &
                cohort["age_error"].notna())
     n_raw = len(cohort)
 
-    # If matched, drop entire pair when either side fails
-    if arm in ("B", "D") and pairs is not None and "pair_id" in cohort.columns:
+    if design in ("cross_matched", "longitudinal_matched") and pairs is not None \
+            and "pair_id" in cohort.columns:
         passing_ids = set(cohort.loc[has_all, "ID"])
         keep = (pairs["minor_id"].isin(passing_ids) &
                 pairs["major_id"].isin(passing_ids))
         kept_ids = set(pairs.loc[keep, "minor_id"]).union(
             pairs.loc[keep, "major_id"])
         cohort = cohort[cohort["ID"].isin(kept_ids)].copy()
-        n_pairs_kept = int(keep.sum())
-        n_pairs_raw = len(pairs)
+        n_pairs_kept = int(keep.sum()); n_pairs_raw = len(pairs)
         logger.info(f"  pair filter: kept {n_pairs_kept}/{n_pairs_raw} pairs "
                     f"(={2 * n_pairs_kept} subjects from raw {n_raw})")
     else:
@@ -147,12 +130,12 @@ def build_feature_df(arm, hc_source, pred_ages):
                     f"(needed all of Age/MMSE/age_error)")
 
     keep_cols = ["ID", "base_id", "Age", "MMSE", "age_error", "label"]
-    feat_df = cohort[[c for c in keep_cols if c in cohort.columns]].copy()
-    return feat_df
+    return cohort[[c for c in keep_cols if c in cohort.columns]].copy()
 
 
 # ============================================================
-# CV evaluation
+# CV evaluation (custom — different from stats_helpers.cv_eval which only
+# does 5-fold pooled metrics; this returns per-subject OOF probs)
 # ============================================================
 
 def get_classifier(name, seed):
@@ -166,36 +149,19 @@ def get_classifier(name, seed):
     if name == "tabpfn":
         from tabpfn import TabPFNClassifier
         return TabPFNClassifier(random_state=seed,
-                                  ignore_pretraining_limits=True)
+                                ignore_pretraining_limits=True)
     raise ValueError(f"unknown classifier: {name}")
 
 
-def bootstrap_auc_ci(y_true, y_prob, n_boot=1000, seed=42, alpha=0.05):
-    rng = np.random.default_rng(seed)
-    y_true = np.asarray(y_true)
-    y_prob = np.asarray(y_prob)
-    n = len(y_true)
-    aucs = []
-    for _ in range(n_boot):
-        idx = rng.integers(0, n, n)
-        if len(np.unique(y_true[idx])) < 2:
-            continue
-        aucs.append(roc_auc_score(y_true[idx], y_prob[idx]))
-    if not aucs:
-        return float("nan"), float("nan")
-    lo, hi = np.percentile(aucs, [100 * alpha / 2, 100 * (1 - alpha / 2)])
-    return float(lo), float(hi)
-
-
-def cv_eval(feat_df, feat_cols, model_name, n_folds=N_FOLDS, seed=SEED):
-    """GroupKFold CV; returns OOF preds DataFrame + summary dict."""
+def _cv_eval(feat_df, feat_cols, model_name, n_folds=N_FOLDS, seed=SEED):
+    """GroupKFold CV; returns (per-subject OOF DataFrame, summary dict)."""
     df = feat_df.dropna(subset=feat_cols + ["label"]).copy()
     if df.empty:
         return None, {"model": model_name, "n_features": len(feat_cols),
-                       "n": 0, "auc": float("nan"), "auc_ci_low": float("nan"),
-                       "auc_ci_high": float("nan"), "balacc": float("nan"),
-                       "mcc": float("nan"),
-                       "skip_reason": "all-NaN features"}
+                      "n": 0, "auc": float("nan"), "auc_ci_low": float("nan"),
+                      "auc_ci_high": float("nan"), "balacc": float("nan"),
+                      "mcc": float("nan"),
+                      "skip_reason": "all-NaN features"}
     X = df[feat_cols].to_numpy(dtype=float)
     y = df["label"].to_numpy(dtype=int)
     groups = df["base_id"].to_numpy()
@@ -204,11 +170,10 @@ def cv_eval(feat_df, feat_cols, model_name, n_folds=N_FOLDS, seed=SEED):
     n_folds_eff = min(n_folds, n_groups)
     if n_folds_eff < 2 or len(np.unique(y)) < 2:
         return None, {"model": model_name, "n_features": len(feat_cols),
-                       "n": len(df), "auc": float("nan"),
-                       "auc_ci_low": float("nan"),
-                       "auc_ci_high": float("nan"),
-                       "balacc": float("nan"), "mcc": float("nan"),
-                       "skip_reason": f"n_groups={n_groups} insufficient"}
+                      "n": len(df), "auc": float("nan"),
+                      "auc_ci_low": float("nan"), "auc_ci_high": float("nan"),
+                      "balacc": float("nan"), "mcc": float("nan"),
+                      "skip_reason": f"n_groups={n_groups} insufficient"}
 
     gkf = GroupKFold(n_splits=n_folds_eff)
     y_prob = np.full(len(df), np.nan)
@@ -221,11 +186,10 @@ def cv_eval(feat_df, feat_cols, model_name, n_folds=N_FOLDS, seed=SEED):
     valid = ~np.isnan(y_prob)
     if valid.sum() < 5 or len(np.unique(y[valid])) < 2:
         return None, {"model": model_name, "n_features": len(feat_cols),
-                       "n": int(valid.sum()), "auc": float("nan"),
-                       "auc_ci_low": float("nan"),
-                       "auc_ci_high": float("nan"),
-                       "balacc": float("nan"), "mcc": float("nan"),
-                       "skip_reason": "insufficient OOF coverage"}
+                      "n": int(valid.sum()), "auc": float("nan"),
+                      "auc_ci_low": float("nan"), "auc_ci_high": float("nan"),
+                      "balacc": float("nan"), "mcc": float("nan"),
+                      "skip_reason": "insufficient OOF coverage"}
     auc = roc_auc_score(y[valid], y_prob[valid])
     ci_lo, ci_hi = bootstrap_auc_ci(y[valid], y_prob[valid], seed=seed)
     y_pred = (y_prob[valid] >= 0.5).astype(int)
@@ -239,7 +203,8 @@ def cv_eval(feat_df, feat_cols, model_name, n_folds=N_FOLDS, seed=SEED):
     summary = {
         "model": model_name, "n_features": len(feat_cols),
         "feat_cols": "+".join(feat_cols), "n": int(valid.sum()),
-        "n_pos": int((y[valid] == 1).sum()), "n_neg": int((y[valid] == 0).sum()),
+        "n_pos": int((y[valid] == 1).sum()),
+        "n_neg": int((y[valid] == 0).sum()),
         "auc": float(auc), "auc_ci_low": ci_lo, "auc_ci_high": ci_hi,
         "balacc": float(balacc), "mcc": float(mcc),
         "n_folds": n_folds_eff,
@@ -255,38 +220,40 @@ FEATURE_SETS = [
     ("2feat", ["Age", "MMSE"]),
     ("3feat", ["Age", "MMSE", "age_error"]),
 ]
-MODEL_ORDER = ["xgb", "tabpfn"]  # XGB first as requested
+MODEL_ORDER = ["xgb", "tabpfn"]
 
 
-def run_cell(arm, hc_source, pred_ages, cohort_dir):
-    """Layout: <root>/<cohort>/ad_vs_<cmp>/<design>/<set>/<model>_oof.csv
-    + <root>/<cohort>/ad_vs_<cmp>/summary_<design>.csv"""
-    root, design = ARM_TO_ROOT_DESIGN[arm]
+def run_cell(design, hc_source, pred_ages, cohort_dir, cohort_mode, hc_source_mode):
+    """Layout: <root>/<cohort>/ad_vs_<cmp>/<bucket>/<set>/<model>_oof.csv
+    + <root>/<cohort>/ad_vs_<cmp>/summary_<bucket>.csv"""
+    root, bucket = DESIGN_TO_ROOT_BUCKET[design]
     partition = f"ad_vs_{hc_source.lower()}"
     partition_dir = root / cohort_dir / partition
-    design_dir = partition_dir / design
-    design_dir.mkdir(parents=True, exist_ok=True)
-    logger.info(f"=== Arm {arm} × {hc_source} → {design_dir.relative_to(PROJECT_ROOT)} ===")
+    bucket_dir = partition_dir / bucket
+    bucket_dir.mkdir(parents=True, exist_ok=True)
+    logger.info(f"=== {design} × {hc_source} → "
+                f"{bucket_dir.relative_to(PROJECT_ROOT)} ===")
     try:
-        feat_df = build_feature_df(arm, hc_source, pred_ages)
+        feat_df = build_feature_df(design, hc_source, pred_ages,
+                                   cohort_mode, hc_source_mode)
     except Exception as e:
         logger.error(f"  cohort build failed: {e}")
-        return [{"arm": arm, "comparison": partition,
-                  "model": "—", "n_features": 0, "n": 0,
-                  "auc": float("nan"), "skip_reason": f"cohort error: {e}"}]
+        return [{"design": design, "comparison": partition,
+                 "model": "—", "n_features": 0, "n": 0,
+                 "auc": float("nan"), "skip_reason": f"cohort error: {e}"}]
     if feat_df is None or feat_df.empty:
         logger.warning(f"  empty cohort, skipping")
-        return [{"arm": arm, "comparison": partition,
-                  "model": "—", "n_features": 0, "n": 0,
-                  "auc": float("nan"), "skip_reason": "empty cohort"}]
+        return [{"design": design, "comparison": partition,
+                 "model": "—", "n_features": 0, "n": 0,
+                 "auc": float("nan"), "skip_reason": "empty cohort"}]
 
     rows = []
     for set_name, feat_cols in FEATURE_SETS:
-        feat_dir = design_dir / set_name
+        feat_dir = bucket_dir / set_name
         feat_dir.mkdir(parents=True, exist_ok=True)
         for model in MODEL_ORDER:
-            oof, s = cv_eval(feat_df, feat_cols, model)
-            s.update({"arm": arm, "comparison": partition,
+            oof, s = _cv_eval(feat_df, feat_cols, model)
+            s.update({"design": design, "comparison": partition,
                       "feature_set": set_name})
             if oof is not None:
                 oof.to_csv(feat_dir / f"{model}_oof.csv", index=False)
@@ -301,35 +268,36 @@ def run_cell(arm, hc_source, pred_ages, cohort_dir):
             rows.append(s)
 
     summary_df = pd.DataFrame(rows)
-    summary_df.to_csv(partition_dir / f"summary_{design}.csv", index=False)
+    summary_df.to_csv(partition_dir / f"summary_{bucket}.csv", index=False)
     return rows
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(description=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--cohort-mode",
-                         choices=["default", "p_first_hc_all", "p_all_hc_all"],
-                         default="default",
-                         help="default=原 strict HC + first-visit；"
-                              "p_first_hc_all=first-visit P + ALL NAD/ACS；"
-                              "p_all_hc_all=ALL P visits + ALL NAD/ACS")
-    parser.add_argument("--arms", nargs="+", choices=ALL_ARMS, default=ALL_ARMS,
-                         help="只跑指定 arms (default: A B C D)")
+                        choices=["default", "p_first_hc_all", "p_all_hc_all"],
+                        default="default")
+    parser.add_argument("--hc-source-mode",
+                        choices=["ACS", "ACS_ext", "EACS"], default="ACS")
+    parser.add_argument("--designs", nargs="+", choices=ALL_DESIGNS,
+                        default=ALL_DESIGNS,
+                        help="只跑指定 designs (default: all 4)")
     args = parser.parse_args()
 
-    _grid.COHORT_MODE = args.cohort_mode
     cohort_dir = cohort_name(args.cohort_mode)
-    logger.info(f"cohort_mode={args.cohort_mode}  arms={args.arms}  "
-                 f"cohort_dir={cohort_dir}")
+    logger.info(f"cohort_mode={args.cohort_mode}  designs={args.designs}  "
+                f"cohort_dir={cohort_dir}")
 
     with open(AGES_FILE) as f:
         pred_ages = json.load(f)
     logger.info(f"Loaded {len(pred_ages)} predicted ages")
 
     all_rows = []
-    for arm in args.arms:
+    for design in args.designs:
         for hc_source in COMPARISONS:
-            rows = run_cell(arm, hc_source, pred_ages, cohort_dir)
+            rows = run_cell(design, hc_source, pred_ages, cohort_dir,
+                            args.cohort_mode, args.hc_source_mode)
             all_rows.extend(rows)
 
     grand = pd.DataFrame(all_rows)

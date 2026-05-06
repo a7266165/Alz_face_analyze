@@ -71,12 +71,13 @@ DIRECTION_MAP = {
 DIRECTIONS = ["age", "embedding_mean", "embedding_asymmetry",
               "landmark_asymmetry", "emotion"]
 
-ARM_ORDER = ["A", "B", "C", "D"]
-ARM_LABELS = {
-    "A": "A (cross-sectional naive)",
-    "B": "B (cross-sectional matched)",
-    "C": "C (longitudinal naive)",
-    "D": "D (longitudinal matched)",
+DESIGN_ORDER = ["cross_naive", "cross_matched",
+                "longitudinal_naive", "longitudinal_matched"]
+DESIGN_LABELS = {
+    "cross_naive":          "cross_naive (cross-sectional naive)",
+    "cross_matched":        "cross_matched (cross-sectional matched)",
+    "longitudinal_naive":   "longitudinal_naive",
+    "longitudinal_matched": "longitudinal_matched",
 }
 COMPARE_ORDER = ["HC", "NAD", "ACS", "mmse-hi-lo", "casi-hi-lo"]
 # Row-2 label — hi-lo broken into 3 sub-lines (vs on its own line)
@@ -168,8 +169,8 @@ def _row_label(parent, sub):
     return f"{parent}\n  [{sub}]"
 
 
-def _get_hdr(hdr_df, arm, cmp):
-    sub = hdr_df[(hdr_df.arm == arm) & (hdr_df.comparison == cmp)]
+def _get_hdr(hdr_df, design, cmp):
+    sub = hdr_df[(hdr_df.design == design) & (hdr_df.comparison == cmp)]
     return sub.iloc[0] if len(sub) else None
 
 
@@ -237,7 +238,7 @@ def render_grid(long_df, hdr_df, out_png, out_md, row_order=None):
     if row_order is None:
         row_order = ROW_ORDER
     n_rows = len(row_order)
-    n_cols = len(ARM_ORDER) * len(COMPARE_ORDER)
+    n_cols = len(DESIGN_ORDER) * len(COMPARE_ORDER)
 
     # --- PNG ---
     header_h_total = sum(ROW_HEIGHTS)
@@ -257,18 +258,18 @@ def render_grid(long_df, hdr_df, out_png, out_md, row_order=None):
 
     # Row 1: arm label
     y0, y1 = row_y_offsets[0], row_y_offsets[1]
-    for ai, arm in enumerate(ARM_ORDER):
+    for ai, arm in enumerate(DESIGN_ORDER):
         x0 = ai * len(COMPARE_ORDER)
         ax.add_patch(Rectangle((x0, y0), len(COMPARE_ORDER), y1 - y0,
                                  facecolor="#D0E3F0", edgecolor="black",
                                  linewidth=1.0))
         ax.text(x0 + len(COMPARE_ORDER) / 2, (y0 + y1) / 2,
-                 ARM_LABELS[arm], ha="center", va="center",
+                 DESIGN_LABELS[arm], ha="center", va="center",
                  fontweight="bold", fontsize=19)
 
     # Row 2: comparison full name
     y0, y1 = row_y_offsets[1], row_y_offsets[2]
-    for ai in range(len(ARM_ORDER)):
+    for ai in range(len(DESIGN_ORDER)):
         for ci, cmp in enumerate(COMPARE_ORDER):
             x = ai * len(COMPARE_ORDER) + ci
             ax.add_patch(Rectangle((x, y0), 1, y1 - y0,
@@ -280,7 +281,7 @@ def render_grid(long_df, hdr_df, out_png, out_md, row_order=None):
 
     # Row 3: per-group n
     y0, y1 = row_y_offsets[2], row_y_offsets[3]
-    for ai, arm in enumerate(ARM_ORDER):
+    for ai, arm in enumerate(DESIGN_ORDER):
         for ci, cmp in enumerate(COMPARE_ORDER):
             x = ai * len(COMPARE_ORDER) + ci
             ax.add_patch(Rectangle((x, y0), 1, y1 - y0,
@@ -293,7 +294,7 @@ def render_grid(long_df, hdr_df, out_png, out_md, row_order=None):
 
     # Row 4: Age stats
     y0, y1 = row_y_offsets[3], row_y_offsets[4]
-    for ai, arm in enumerate(ARM_ORDER):
+    for ai, arm in enumerate(DESIGN_ORDER):
         for ci, cmp in enumerate(COMPARE_ORDER):
             x = ai * len(COMPARE_ORDER) + ci
             ax.add_patch(Rectangle((x, y0), 1, y1 - y0,
@@ -306,7 +307,7 @@ def render_grid(long_df, hdr_df, out_png, out_md, row_order=None):
 
     # Row 5: cog stats (hi-lo only)
     y0, y1 = row_y_offsets[4], row_y_offsets[5]
-    for ai, arm in enumerate(ARM_ORDER):
+    for ai, arm in enumerate(DESIGN_ORDER):
         for ci, cmp in enumerate(COMPARE_ORDER):
             x = ai * len(COMPARE_ORDER) + ci
             ax.add_patch(Rectangle((x, y0), 1, y1 - y0,
@@ -325,10 +326,10 @@ def render_grid(long_df, hdr_df, out_png, out_md, row_order=None):
 
     # Data cells
     for ri, (parent, sub) in enumerate(row_order):
-        for ai, arm in enumerate(ARM_ORDER):
+        for ai, arm in enumerate(DESIGN_ORDER):
             for ci, cmp in enumerate(COMPARE_ORDER):
                 mask = ((long_df["modality_parent"] == parent) &
-                        (long_df["arm"] == arm) &
+                        (long_df["design"] == arm) &
                         (long_df["comparison"] == cmp))
                 if sub is None:
                     mask = mask & long_df["modality_sub"].isna()
@@ -358,7 +359,7 @@ def render_grid(long_df, hdr_df, out_png, out_md, row_order=None):
 
     # Thick outer frame per arm (drawn last so it sits on top of inner edges)
     total_h = header_h_total + DATA_ROW_H * n_rows
-    for ai in range(len(ARM_ORDER)):
+    for ai in range(len(DESIGN_ORDER)):
         x0 = ai * len(COMPARE_ORDER)
         ax.add_patch(Rectangle((x0, 0), len(COMPARE_ORDER), total_h,
                                  facecolor="none", edgecolor="black",
@@ -383,15 +384,15 @@ def render_grid(long_df, hdr_df, out_png, out_md, row_order=None):
     # Row 1: Modality rowspan=5 + arm labels
     html.append("<tr>")
     html.append(f'<th rowspan="5" {center}>Modality</th>')
-    for i, arm in enumerate(ARM_ORDER):
+    for i, arm in enumerate(DESIGN_ORDER):
         st = arm_sep_head if i > 0 else center
         html.append(f'<th colspan="{len(COMPARE_ORDER)}" {st}>'
-                     f'{ARM_LABELS[arm]}</th>')
+                     f'{DESIGN_LABELS[arm]}</th>')
     html.append("</tr>")
 
     # Row 2: comparison full name
     html.append("<tr>")
-    for ai in range(len(ARM_ORDER)):
+    for ai in range(len(DESIGN_ORDER)):
         for ci, cmp in enumerate(COMPARE_ORDER):
             st = arm_sep_head if (ai > 0 and ci == 0) else center
             html.append(f"<th {st}>{COMPARE_FULLNAME_HTML[cmp]}</th>")
@@ -399,7 +400,7 @@ def render_grid(long_df, hdr_df, out_png, out_md, row_order=None):
 
     # Row 3: per-group n (2 lines: AD group / ctrl group)
     html.append("<tr>")
-    for ai, arm in enumerate(ARM_ORDER):
+    for ai, arm in enumerate(DESIGN_ORDER):
         for ci, cmp in enumerate(COMPARE_ORDER):
             st = arm_sep_head if (ai > 0 and ci == 0) else center
             txt = _header_row3_text(_get_hdr(hdr_df, arm, cmp), cmp)
@@ -408,7 +409,7 @@ def render_grid(long_df, hdr_df, out_png, out_md, row_order=None):
 
     # Row 4: Age (3 sub-lines: "Age:", values, p)
     html.append("<tr>")
-    for ai, arm in enumerate(ARM_ORDER):
+    for ai, arm in enumerate(DESIGN_ORDER):
         for ci, cmp in enumerate(COMPARE_ORDER):
             st = arm_sep_head if (ai > 0 and ci == 0) else center
             txt = _header_row4_text(_get_hdr(hdr_df, arm, cmp))
@@ -417,7 +418,7 @@ def render_grid(long_df, hdr_df, out_png, out_md, row_order=None):
 
     # Row 5: cog stats (hi-lo only) — MMSE/CASI, blank, CDR; each 3 sub-lines
     html.append("<tr>")
-    for ai, arm in enumerate(ARM_ORDER):
+    for ai, arm in enumerate(DESIGN_ORDER):
         for ci, cmp in enumerate(COMPARE_ORDER):
             st = arm_sep_head if (ai > 0 and ci == 0) else center
             txt = _header_row5_text(_get_hdr(hdr_df, arm, cmp), cmp)
@@ -430,10 +431,10 @@ def render_grid(long_df, hdr_df, out_png, out_md, row_order=None):
         label = parent if sub is None else f"{parent} [{sub}]"
         html.append("<tr>")
         html.append(f"<td>{label}</td>")
-        for ai, arm in enumerate(ARM_ORDER):
+        for ai, arm in enumerate(DESIGN_ORDER):
             for ci, cmp in enumerate(COMPARE_ORDER):
                 mask = ((long_df["modality_parent"] == parent) &
-                        (long_df["arm"] == arm) &
+                        (long_df["design"] == arm) &
                         (long_df["comparison"] == cmp))
                 if sub is None:
                     mask = mask & long_df["modality_sub"].isna()
@@ -472,7 +473,7 @@ def main():
         hdr_df = pd.read_csv(HEADER_STATS_CSV)
     else:
         print(f"WARNING: {HEADER_STATS_CSV} not found — header rows 3-5 will show '—'")
-        hdr_df = pd.DataFrame(columns=["arm", "comparison"])
+        hdr_df = pd.DataFrame(columns=["design", "comparison"])
 
     # Aggregate render at variant root.
     render_grid(long_df, hdr_df, DEEP / "stat_grid.png",

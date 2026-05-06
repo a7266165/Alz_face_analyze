@@ -1,5 +1,5 @@
 """
-Cohort overview for the 4-arm analysis.
+Cohort age ladder overview across 3 cross-sectional + longitudinal designs.
 
 Reads:
   workspace/overview/<cohort>/cross_naive/cohort.csv
@@ -21,9 +21,9 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[2]
 COHORT = "p_first_hc_strict"
 OVERVIEW_COHORT = ROOT / "workspace" / "overview" / COHORT
-ARM_A_CSV = OVERVIEW_COHORT / "cross_naive" / "cohort.csv"
-ARM_B_CSV = OVERVIEW_COHORT / "cross_matched" / "mmse_high_vs_low" / "matched_features.csv"
-ARM_C_CSV = OVERVIEW_COHORT / "longi_naive" / "mmse_high_vs_low" / "matched_features.csv"
+CROSS_NAIVE_CSV   = OVERVIEW_COHORT / "cross_naive" / "cohort.csv"
+CROSS_MATCHED_CSV = OVERVIEW_COHORT / "cross_matched" / "mmse_high_vs_low" / "matched_features.csv"
+LONGI_NAIVE_CSV   = OVERVIEW_COHORT / "longi_naive" / "mmse_high_vs_low" / "matched_features.csv"
 OUT_PNG = OVERVIEW_COHORT / "cohort_overview.png"
 
 COLOR_POS = "#C44E52"  # red  = AD / MMSE-high / last visit
@@ -69,14 +69,14 @@ def render_table(ax, cell_text, row_labels, col_labels, footnote=None):
                 ha="center", va="top", fontsize=8, style="italic", color="dimgray")
 
 
-def panel_arm_a(ax_hist, ax_table, df, xlim, bins):
+def panel_cross_naive(ax_hist, ax_table, df, xlim, bins):
     ad = df[df["label"] == 1]
     hc = df[df["label"] == 0]
     plot_overlay_hist(
         ax_hist,
         {f"AD (n={len(ad)})": ad["Age"], f"HC (n={len(hc)})": hc["Age"]},
         [COLOR_POS, COLOR_NEG], bins=bins, xlim=xlim,
-        title="Arm A — AD vs HC (no age control)",
+        title="cross_naive — AD vs HC (no age control)",
     )
     cell_text = [
         [str(len(ad)), _fmt_mean_sd(ad["Age"]), _fmt_range(ad["Age"]), _fmt_mean_sd(ad["MMSE"])],
@@ -87,14 +87,14 @@ def panel_arm_a(ax_hist, ax_table, df, xlim, bins):
                  col_labels=["N", "Age μ±σ", "Age range", "MMSE μ±σ"])
 
 
-def panel_arm_b(ax_hist, ax_table, df, xlim, bins):
+def panel_cross_matched(ax_hist, ax_table, df, xlim, bins):
     hi = df[df["mmse_group"] == "high"]
     lo = df[df["mmse_group"] == "low"]
     plot_overlay_hist(
         ax_hist,
         {f"MMSE-high (n={len(hi)})": hi["Age"], f"MMSE-low (n={len(lo)})": lo["Age"]},
         [COLOR_POS, COLOR_NEG], bins=bins, xlim=xlim,
-        title="Arm B — MMSE matched (AD only)",
+        title="cross_matched — MMSE matched (AD only)",
     )
     n_pairs = df["pair_id"].nunique() if "pair_id" in df.columns else len(df) // 2
     cell_text = [
@@ -107,13 +107,13 @@ def panel_arm_b(ax_hist, ax_table, df, xlim, bins):
                  footnote=f"{n_pairs} matched pairs (1:1 NN, caliper = 2.0 yr)")
 
 
-def panel_arm_c(ax_hist, ax_table, df, xlim, bins):
+def panel_longi_naive(ax_hist, ax_table, df, xlim, bins):
     plot_overlay_hist(
         ax_hist,
         {f"Baseline (n={len(df)})": df["first_age"],
          f"Last visit (n={len(df)})": df["last_age"]},
         [COLOR_NEG, COLOR_POS], bins=bins, xlim=xlim,
-        title="Arm C — Longitudinal (AD, matched)",
+        title="longi_naive — Longitudinal (AD, matched)",
     )
 
     hi = df[df["mmse_group"] == "high"]
@@ -143,19 +143,19 @@ def panel_arm_c(ax_hist, ax_table, df, xlim, bins):
 
 
 def main():
-    arm_a = pd.read_csv(ARM_A_CSV)
-    arm_b = pd.read_csv(ARM_B_CSV)
-    arm_c = pd.read_csv(ARM_C_CSV)
+    cn = pd.read_csv(CROSS_NAIVE_CSV)
+    cm = pd.read_csv(CROSS_MATCHED_CSV)
+    ln = pd.read_csv(LONGI_NAIVE_CSV)
 
-    print(f"Arm A: {len(arm_a)} rows  (AD={int((arm_a['label']==1).sum())}, "
-          f"HC={int((arm_a['label']==0).sum())})")
-    print(f"Arm B: {len(arm_b)} rows  (high={int((arm_b['mmse_group']=='high').sum())}, "
-          f"low={int((arm_b['mmse_group']=='low').sum())})")
-    print(f"Arm C: {len(arm_c)} patients  (high={int((arm_c['mmse_group']=='high').sum())}, "
-          f"low={int((arm_c['mmse_group']=='low').sum())})")
+    print(f"cross_naive:   {len(cn)} rows  (AD={int((cn['label']==1).sum())}, "
+          f"HC={int((cn['label']==0).sum())})")
+    print(f"cross_matched: {len(cm)} rows  (high={int((cm['mmse_group']=='high').sum())}, "
+          f"low={int((cm['mmse_group']=='low').sum())})")
+    print(f"longi_naive:   {len(ln)} patients  (high={int((ln['mmse_group']=='high').sum())}, "
+          f"low={int((ln['mmse_group']=='low').sum())})")
 
     all_ages = pd.concat([
-        arm_a["Age"], arm_b["Age"], arm_c["first_age"], arm_c["last_age"],
+        cn["Age"], cm["Age"], ln["first_age"], ln["last_age"],
     ]).dropna()
     xlim = (float(np.floor(all_ages.min() / 5) * 5),
             float(np.ceil(all_ages.max() / 5) * 5))
@@ -165,11 +165,12 @@ def main():
         2, 3, figsize=(16, 8.5),
         gridspec_kw={"height_ratios": [3, 1.2]},
     )
-    panel_arm_a(axes[0, 0], axes[1, 0], arm_a, xlim, bins)
-    panel_arm_b(axes[0, 1], axes[1, 1], arm_b, xlim, bins)
-    panel_arm_c(axes[0, 2], axes[1, 2], arm_c, xlim, bins)
+    panel_cross_naive(axes[0, 0],   axes[1, 0], cn, xlim, bins)
+    panel_cross_matched(axes[0, 1], axes[1, 1], cm, xlim, bins)
+    panel_longi_naive(axes[0, 2],   axes[1, 2], ln, xlim, bins)
 
-    fig.suptitle("Cohort overview — 4-arm age ladder", fontsize=14, y=0.995)
+    fig.suptitle("Cohort age ladder — cross-sec + longitudinal designs",
+                 fontsize=14, y=0.995)
     fig.tight_layout(rect=(0, 0, 1, 0.98))
     fig.savefig(OUT_PNG, dpi=150, bbox_inches="tight")
     plt.close(fig)

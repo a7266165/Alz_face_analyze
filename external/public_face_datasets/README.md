@@ -49,7 +49,7 @@ external/public_face_datasets/
 4. **產 demographics** → `scripts/external/build_external_demographics.py`
    輸出：`data/demographics/EACS.csv`（7,933 rows + Source 欄）
 5. **Feature extraction**（未做）→ 跑 `prepare_feature.py` 等 pipeline 對 EACS 影像
-6. **4-arm deep-dive** → `scripts/experiments/run_4arm_deep_dive.py --hc-source {ACS, ACS_ext, EACS}`
+6. **Stat grid** → `scripts/experiments/run_stat_grid.py --hc-source {ACS, ACS_ext, EACS}`
 
 ## `--hc-source` 三模式
 

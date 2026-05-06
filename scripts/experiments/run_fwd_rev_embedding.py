@@ -34,28 +34,12 @@ Usage:
         --strategy forward
 """
 import argparse
-import importlib.util
 import itertools
 import json
 import logging
 import os
 import sys
 from pathlib import Path
-
-# Early sys.argv sniff: COHORT_MODE must be set in env BEFORE we import
-# run_4arm_deep_dive (which reads it at module-load time, line 90).
-_COHORT_MODES = {"default", "p_first_hc_all", "p_all_hc_all"}
-for _i, _arg in enumerate(sys.argv):
-    if _arg == "--cohort-mode" and _i + 1 < len(sys.argv):
-        _v = sys.argv[_i + 1]
-        if _v in _COHORT_MODES:
-            os.environ["COHORT_MODE"] = _v
-        break
-    if _arg.startswith("--cohort-mode="):
-        _v = _arg.split("=", 1)[1]
-        if _v in _COHORT_MODES:
-            os.environ["COHORT_MODE"] = _v
-        break
 
 import matplotlib
 matplotlib.use("Agg")
@@ -275,24 +259,25 @@ logger = logging.getLogger(__name__)
 
 
 # ============================================================
-# Reuse helpers from existing arm scripts
+# Direct imports from utilities (cohort + matching + stats)
 # ============================================================
 
-def _load_module(name, path):
-    spec = importlib.util.spec_from_file_location(name, path)
-    m = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(m)
-    return m
+from scripts.utilities.cohort import (
+    _strict_hc_filter_all_visits,
+    build_cohort_ad_vs_HCgroup,
+    DEMOGRAPHICS_DIR as _COHORT_DEMOGRAPHICS_DIR,
+    load_p_demographics,
+    match_1to1,
+    select_visit,
+    split_by_metric_median,
+)
+from scripts.utilities.feature_loaders import load_embedding_mean
+from scripts.utilities.stats_helpers import bootstrap_auc_ci
 
-
-_arm_a = _load_module("arm_a", PROJECT_ROOT / "scripts" / "experiments" /
-                      "run_arm_a_ad_vs_hc.py")
-_hilo = _load_module("cross_matched", PROJECT_ROOT / "scripts" / "experiments" /
-                     "run_cross_matched.py")
-_grid = _load_module("deep_dive", PROJECT_ROOT / "scripts" / "experiments" /
-                     "run_4arm_deep_dive.py")
-
-load_embedding_mean = _arm_a.load_embedding_mean  # legacy: original-only
+# Module-level _COHORT_MODE is set in main() after argparse; cohort builders
+# get it threaded as a parameter (no env-var-at-load globals).
+_COHORT_MODE = "default"
+_HC_SOURCE_MODE = os.environ.get("HC_SOURCE_MODE", "ACS")
 
 
 def load_embedding(ids, model, feature_type="original", photo_mode=None):
@@ -335,12 +320,9 @@ def load_embedding(ids, model, feature_type="original", photo_mode=None):
                              **{f"{model}__dim_{i}": float(a[k, i])
                                 for i in range(a.shape[1])}})
     return pd.DataFrame(rows) if rows else None
-bootstrap_auc_ci = _arm_a.bootstrap_auc_ci
-match_1to1 = _hilo.match_1to1
-split_by_metric_median = _hilo.split_by_metric_median
-load_p_demographics = _hilo.load_p_demographics
-select_visit = _hilo.select_visit
-build_cohort_ad_vs_HCgroup = _grid.build_cohort_ad_vs_HCgroup
+# (bootstrap_auc_ci, match_1to1, split_by_metric_median, load_p_demographics,
+# select_visit, build_cohort_ad_vs_HCgroup are imported above from
+# scripts.utilities — no importlib reuse here.)
 
 
 # ============================================================
@@ -407,8 +389,8 @@ def _expand_to_all_visits_ad_hc(full_first, hc_source):
     add more visits as additional training samples).
     """
     import os as _os
-    DEMOGRAPHICS_DIR = _grid.DEMOGRAPHICS_DIR
-    HC_SOURCE_MODE = _grid.HC_SOURCE_MODE
+    DEMOGRAPHICS_DIR = _COHORT_DEMOGRAPHICS_DIR
+    HC_SOURCE_MODE = _HC_SOURCE_MODE
 
     frames = []
     groups_to_load = ["P", "NAD"]
@@ -446,7 +428,7 @@ def _expand_to_all_visits_ad_hc(full_first, hc_source):
     ad_all = demo[(demo["group"] == "P") & (demo["Global_CDR"] >= 0.5)
                   & demo["Age"].notna()].copy()
     ad_all["label"] = 1
-    hc_all = _grid._strict_hc_filter_all_visits(demo, hc_source)
+    hc_all = _strict_hc_filter_all_visits(demo, hc_source, _COHORT_MODE)
     hc_all = hc_all[hc_all["Age"].notna()].copy()
     full_all = pd.concat([ad_all, hc_all], ignore_index=True)
     full_all["mmse_group"] = np.nan
@@ -503,18 +485,32 @@ def _build_ad_vs_hcgroup(hc_source):
     """ad_vs_hc / ad_vs_nad / ad_vs_acs.
 
     Returns (full_cohort, matched_cohort, pairs_df).
-    full from arm='A' (no matching), matched from arm='B' (1:1 age) with
-    the predicted_age post-hoc filter applied so n_pairs matches arm_b.
+    full from design='cross_naive' (no matching), matched from design=
+    'cross_matched' (1:1 age) with the predicted_age post-hoc filter applied
+    so n_pairs matches the cross_matched reference.
 
-    When _VISIT_MODE == "all": full is expanded to all qualifying visits per
-    base_id, and matched is similarly expanded (with pair_id/label/group
-    propagated from the first-visit row). pairs_df is unchanged (still
-    first-visit pair members for the paired Wilcoxon).
+    visit_mode + cohort_mode interaction:
+      cohort_mode='default' (p_first_hc_strict) picks one visit per subject on
+      both sides; visit_mode='all' expands to all qualifying visits restricted
+      to the same base_id set.
+
+      cohort_mode in ('p_first_hc_all', 'p_all_hc_all') already controls visit
+      selection at cohort-build time (HC unfiltered all-visits in both; AD
+      first-visit in p_first_hc_all vs all-visits in p_all_hc_all). The
+      expansion path is intentionally skipped — re-deriving from
+      base_id-restricted demographics would collapse both modes onto the
+      same expanded cohort, defeating the purpose of the cohort_mode flag.
     """
-    full_first, _ = build_cohort_ad_vs_HCgroup(hc_source, arm="A")
-    matched, pairs = build_cohort_ad_vs_HCgroup(hc_source, arm="B")
+    full_first, _ = build_cohort_ad_vs_HCgroup(
+        hc_source, design="cross_naive",
+        cohort_mode=_COHORT_MODE, hc_source_mode=_HC_SOURCE_MODE,
+    )
+    matched, pairs = build_cohort_ad_vs_HCgroup(
+        hc_source, design="cross_matched",
+        cohort_mode=_COHORT_MODE, hc_source_mode=_HC_SOURCE_MODE,
+    )
     matched, pairs = _filter_pairs_by_pred_age(matched, pairs)
-    if _VISIT_MODE == "all":
+    if _VISIT_MODE == "all" and _COHORT_MODE == "default":
         full = _expand_to_all_visits_ad_hc(full_first, hc_source)
         matched = _expand_matched_to_all_visits(matched, full)
         return full, matched, pairs
@@ -570,7 +566,12 @@ def _build_metric_hilo(metric):
     matched = matched.drop(columns=[c for c in matched.columns if c.endswith("_p")])
     matched, pairs = _filter_pairs_by_pred_age(matched, pairs)
 
-    if _VISIT_MODE == "all":
+    # See `_build_ad_vs_hcgroup` for cohort_mode × visit_mode interaction.
+    # Expansion only meaningful for the legacy strict cohort (default); the
+    # other two cohort_modes' visit-selection semantics are already controlled
+    # at cohort-build time, so re-deriving via base_id-restrict would collapse
+    # them onto a common expanded set.
+    if _VISIT_MODE == "all" and _COHORT_MODE == "default":
         cohort_all = _expand_hilo_to_all_visits(cohort, metric)
         matched_all = _expand_matched_to_all_visits(matched, cohort_all)
         return cohort_all, matched_all, pairs
@@ -1409,8 +1410,9 @@ def main():
                         help="'default' (p_first_hc_strict), 'p_first_hc_all' "
                              "(first-visit P + ALL NAD/ACS), or 'p_all_hc_all' "
                              "(ALL P visits + ALL NAD/ACS). Output goes to "
-                             "p_<mode>/embedding_*classification/ . "
-                             "Forwarded to run_4arm_deep_dive via env COHORT_MODE.")
+                             "<cohort>/embedding_*classification/ . "
+                             "Threaded as a function parameter to "
+                             "scripts.utilities.cohort.build_cohort_*.")
     parser.add_argument("--n-folds", type=int, default=10)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--lr-C", type=float, default=1.0,
@@ -1454,17 +1456,6 @@ def main():
     _PHOTO_MODE = args.photo_mode
     _COHORT_MODE = args.cohort_mode
     _LR_C = args.lr_C
-    # Verify the early sniff matched (the import-time read is the source of
-    # truth for run_4arm_deep_dive).
-    expected_env = (_COHORT_MODE
-                     if _COHORT_MODE in ("p_first_hc_all", "p_all_hc_all")
-                     else "default")
-    if os.environ.get("COHORT_MODE", "default") != expected_env:
-        parser.error(
-            f"COHORT_MODE env mismatch ({os.environ.get('COHORT_MODE')!r} "
-            f"vs --cohort-mode {_COHORT_MODE!r}). Pass --cohort-mode "
-            "before other flags or set COHORT_MODE env explicitly."
-        )
     OUTPUT_DIR = output_dir_for(_FEATURE_TYPE, _DROP_CORR_THRESHOLD,
                                   _VISIT_MODE, _PHOTO_MODE,
                                   _PCA_COMPONENTS, _COHORT_MODE)

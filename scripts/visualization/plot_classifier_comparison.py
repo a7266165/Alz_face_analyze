@@ -14,7 +14,7 @@ combo's OOF predictions, with AUC/BalAcc/MCC printed below.
 Reads:
   workspace/age/analysis/classification/<cohort>/<partition>/<full|matched>/<feat_set>/<model>_oof.csv
   workspace/age/analysis/classification/<cohort>/<partition>/summary_<full|matched>.csv
-  + longitudinal/analysis/age/classification/... for arm_c/d.
+  + longitudinal/analysis/age/classification/... for longitudinal_naive/_matched.
 
 Output: stdout (`age_classifier_grid.png` is no longer written; summary.csv
         tables carry the metrics directly).
@@ -33,9 +33,14 @@ COHORT = "p_first_hc_strict"
 AGE_CLF_ROOT = ROOT / "workspace" / "age" / "analysis" / "classification" / COHORT
 LONGI_AGE_CLF_ROOT = (ROOT / "workspace" / "longitudinal_analysis" / "age"
                       / "analysis" / "classification" / COHORT)
-ARM_TO_DESIGN = {"A": ("cross", "full"), "B": ("cross", "matched"),
-                  "C": ("longi", "full"), "D": ("longi", "matched")}
-ARMS = ["A", "B", "C", "D"]
+# design → (timeframe, bucket subdir name)
+DESIGN_TO_TIMEFRAME_BUCKET = {
+    "cross_naive":          ("cross", "full"),
+    "cross_matched":        ("cross", "matched"),
+    "longitudinal_naive":   ("longi", "full"),
+    "longitudinal_matched": ("longi", "matched"),
+}
+DESIGNS = list(DESIGN_TO_TIMEFRAME_BUCKET.keys())
 COMPARISONS = ["ad_vs_hc", "ad_vs_nad", "ad_vs_acs"]
 COMP_LABEL = {"ad_vs_hc": "AD vs HC",
               "ad_vs_nad": "AD vs NAD",
@@ -47,22 +52,22 @@ COLS = [(model, mlbl, fs, flbl)
         for (fs, flbl) in FEAT_SETS]
 
 
-def _arm_root(arm):
-    timeframe, _ = ARM_TO_DESIGN[arm]
+def _design_root(design):
+    timeframe, _ = DESIGN_TO_TIMEFRAME_BUCKET[design]
     return LONGI_AGE_CLF_ROOT if timeframe == "longi" else AGE_CLF_ROOT
 
 
-def load_oof(arm, cmp, model, feat_set):
-    _, design = ARM_TO_DESIGN[arm]
-    p = _arm_root(arm) / cmp / design / feat_set / f"{model}_oof.csv"
+def load_oof(design, cmp, model, feat_set):
+    _, bucket = DESIGN_TO_TIMEFRAME_BUCKET[design]
+    p = _design_root(design) / cmp / bucket / feat_set / f"{model}_oof.csv"
     if not p.exists():
         return None
     return pd.read_csv(p)
 
 
-def load_summary(arm, cmp):
-    _, design = ARM_TO_DESIGN[arm]
-    p = _arm_root(arm) / cmp / f"summary_{design}.csv"
+def load_summary(design, cmp):
+    _, bucket = DESIGN_TO_TIMEFRAME_BUCKET[design]
+    p = _design_root(design) / cmp / f"summary_{bucket}.csv"
     if not p.exists():
         return None
     return pd.read_csv(p)
@@ -93,7 +98,7 @@ def draw_cm(ax, cm, neg_label, pos_label):
     ax.set_ylabel("True", fontsize=8)
 
 
-def render_arm(arm):
+def render_design(design):
     n_rows = len(COMPARISONS)
     n_cols = len(COLS)
     fig, axes = plt.subplots(
@@ -103,11 +108,11 @@ def render_arm(arm):
     )
 
     for ri, cmp in enumerate(COMPARISONS):
-        summary = load_summary(arm, cmp)
+        summary = load_summary(design, cmp)
         neg_label = cmp.replace("ad_vs_", "").upper()
         for ci, (model, model_lbl, fset, flbl) in enumerate(COLS):
             ax = axes[ri, ci]
-            oof = load_oof(arm, cmp, model, fset)
+            oof = load_oof(design, cmp, model, fset)
             if oof is None or summary is None:
                 ax.text(0.5, 0.5, "no data", ha="center", va="center",
                         transform=ax.transAxes, fontsize=10, color="gray")
@@ -164,17 +169,16 @@ def render_arm(arm):
         ))
 
     fig.suptitle(
-        f"Arm {arm} — confusion matrices @ threshold=0.5  (10-fold OOF)",
+        f"{design} — confusion matrices @ threshold=0.5  (10-fold OOF)",
         fontsize=13, fontweight="bold", y=1.04,
     )
 
-    # Output goes to overview/<cohort>/.
+    # Output goes to overview/<cohort>/<timeframe>_<design_full>/.
     overview_cohort = ROOT / "workspace" / "overview" / COHORT
-    _, design = ARM_TO_DESIGN[arm]
-    design_full = {"full": "naive", "matched": "matched"}[design]
-    timeframe = ARM_TO_DESIGN[arm][0]
-    out_path = (overview_cohort / f"{timeframe}_{design_full}"
-                / f"classifier_grid_arm_{arm.lower()}.png")
+    timeframe, bucket = DESIGN_TO_TIMEFRAME_BUCKET[design]
+    bucket_full = {"full": "naive", "matched": "matched"}[bucket]
+    out_path = (overview_cohort / f"{timeframe}_{bucket_full}"
+                / f"classifier_grid_{design}.png")
     out_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out_path, dpi=150, bbox_inches="tight")
     plt.close(fig)
@@ -182,8 +186,8 @@ def render_arm(arm):
 
 
 def main():
-    for arm in ARMS:
-        render_arm(arm)
+    for design in DESIGNS:
+        render_design(design)
 
 
 if __name__ == "__main__":

@@ -10,7 +10,8 @@ Outputs：
   workspace/age/age_prediction/eacs_age_error.csv
     欄：subject_id, Source, real_age, pred_age, age_error, abs_age_error
 
-此 CSV 可直接被 run_arm_a_ad_vs_hc.py 的 load_age_error() 或 4-arm 讀取。
+此 CSV 可直接被 scripts.utilities.feature_loaders.load_age_error / load_age_error_pairs
+或 run_stat_grid 讀取。
 """
 import argparse
 import csv
