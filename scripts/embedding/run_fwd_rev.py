@@ -27,11 +27,17 @@ Reverse strategy:
 Sweep axes: 5 partition × 3 embedding × 2 classifier × 2 strategy = 60 cells.
 
 Usage:
-    conda run -n Alz_face_main_analysis python scripts/experiments/run_fwd_rev_embedding.py \\
+    conda run -n Alz_face_main_analysis python scripts/embedding/run_fwd_rev.py \\
         --partition all --embedding all --classifier both --strategy both
-    conda run -n Alz_face_main_analysis python scripts/experiments/run_fwd_rev_embedding.py \\
+    conda run -n Alz_face_main_analysis python scripts/embedding/run_fwd_rev.py \\
         --partition ad_vs_hc --embedding arcface --classifier logistic \\
         --strategy forward
+    # Hyperparameter grid search (LR C + XGB n_estimators×max_depth×lr).
+    # Writes per-cell grid_results.csv + best_params.json under OUTPUT_DIR/grid_search/.
+    conda run -n Alz_face_main_analysis python scripts/embedding/run_fwd_rev.py \\
+        --feature-type original_background --cohort-mode p_first_hc_all \\
+        --partition ad_vs_hc --embedding arcface --classifier both \\
+        --strategy forward --grid-search
 """
 import argparse
 import itertools
@@ -94,9 +100,23 @@ _VISIT_MODE = "first"  # "first" = current behavior; "all" = include every quali
 _PHOTO_MODE = "mean"   # "mean" = current behavior (mean over 10 photos); "all" = one row per photo
 _COHORT_MODE = os.environ.get("COHORT_MODE", "default")  # default=p_first_hc_strict / p_first_hc_all / p_all_hc_all
 _LR_C = 1.0  # LogisticRegression C; encoded at cell-level leaf as logistic/C_<value>/
+_XGB_PARAMS = {"n_estimators": 300, "max_depth": 6, "learning_rate": 0.1}
 _RFE_DROP = None   # iterative RFE: drop N weakest features per iter (None/0 = off)
 _RFE_ITERS = 5     # number of RFE iterations
 _SAVE_OOF_PROB = False  # write pred_probability/<config>.csv for meta_analysis stacking
+
+# Default grid-search ranges. Hand-edited starting points; sweeping logspace for
+# regularization (LR C) and a 3×3×3 grid for XGB tree shape + boosting steps.
+_DEFAULT_LR_GRID = [
+    {"C": 0.001}, {"C": 0.01}, {"C": 0.1},
+    {"C": 1.0},   {"C": 10.0}, {"C": 100.0},
+]
+_DEFAULT_XGB_GRID = [
+    {"n_estimators": ne, "max_depth": md, "learning_rate": lr}
+    for ne in (200, 500, 1000)
+    for md in (3, 6, 9)
+    for lr in (0.05, 0.1, 0.2)
+]
 
 
 def _reducer_label():
@@ -354,6 +374,7 @@ def _train_cache_key(partition, embedding, classifier, n_folds, seed):
     return (family, embedding, classifier,
             _FEATURE_TYPE, _DROP_CORR_THRESHOLD, _DROP_CORR_METHOD,
             _PCA_COMPONENTS, _VISIT_MODE, _PHOTO_MODE, _LR_C,
+            tuple(sorted(_XGB_PARAMS.items())),
             n_folds, seed)
 
 
@@ -659,7 +680,9 @@ def make_classifier(name, seed=42):
         )
     if name == "xgb":
         return XGBClassifier(
-            n_estimators=300, max_depth=6, learning_rate=0.1,
+            n_estimators=_XGB_PARAMS["n_estimators"],
+            max_depth=_XGB_PARAMS["max_depth"],
+            learning_rate=_XGB_PARAMS["learning_rate"],
             objective="binary:logistic", eval_metric="logloss",
             random_state=seed, verbosity=0,
             tree_method="hist", device="cuda",
@@ -1234,17 +1257,40 @@ def run_reverse(full_cohort, matched_cohort, embedding, classifier,
 # Per-cell driver
 # ============================================================
 
-def cell_dir(partition, embedding, classifier, strategy):
-    """Layout: <reducer>/<partition>/{fwd,rev}/<embedding>/<classifier>[/C_<lr_C:g>]/
+def _classifier_params_for_json(classifier):
+    """Active classifier hyperparam state, formatted for embedding into the
+    metrics JSON. LR → {"lr_C": ...}, XGB → {"xgb_params": {...}}, else {}.
+    Read by build_sweep_metrics.py to populate per-cell hyperparam columns."""
+    if classifier == "logistic":
+        return {"lr_C": _LR_C}
+    if classifier == "xgb":
+        return {"xgb_params": dict(_XGB_PARAMS)}
+    return {}
 
-    LR cells always nest a `C_<lr_C:g>/` leaf under `logistic/` so different
-    regularization strengths sit side by side (e.g. `logistic/C_1/`,
-    `logistic/C_10/`). XGB cells stay flat (no C dimension).
+
+def _xgb_param_tag():
+    """Folder-name fragment encoding active XGB hyperparams. Used as the
+    cell-level leaf so different XGB combos (e.g. grid search) sit side by
+    side, mirroring LR's `C_<value>/` convention."""
+    return (f"ne_{_XGB_PARAMS['n_estimators']}"
+            f"_md_{_XGB_PARAMS['max_depth']}"
+            f"_lr_{_XGB_PARAMS['learning_rate']:g}")
+
+
+def cell_dir(partition, embedding, classifier, strategy):
+    """Layout:
+        <reducer>/<partition>/{fwd,rev}/<embedding>/<classifier>/<param_tag>/
+
+    Both LR and XGB nest a hyperparam-tagged leaf so different combos sit
+    side by side (e.g. `logistic/C_1/`, `xgb/ne_300_md_6_lr_0.1/`).
+    TabPFN has no exposed hyperparams → stays flat at `<classifier>/`.
     """
     bucket = "fwd" if strategy == "forward" else "rev"
     base = OUTPUT_DIR / partition / bucket / embedding / classifier
     if classifier == "logistic":
         return base / f"C_{_LR_C:g}"
+    if classifier == "xgb":
+        return base / _xgb_param_tag()
     return base
 
 
@@ -1323,7 +1369,7 @@ def run_cell(partition, embedding, classifier, strategy, n_folds=10, seed=42):
         write_json(out / "forward_matched_metrics.json", {
             "partition": partition, "embedding": embedding,
             "classifier": classifier, "strategy": "forward",
-            **({"lr_C": _LR_C} if classifier == "logistic" else {}),
+            **_classifier_params_for_json(classifier),
             "k_folds_used": k, "n_dropped_no_emb": n_dropped,
             "n_pairs_expected": EXPECTED_PAIRS.get(partition),
             "derived_view": (sorted(keep_groups)
@@ -1374,7 +1420,7 @@ def run_cell(partition, embedding, classifier, strategy, n_folds=10, seed=42):
         common = {
             "partition": partition, "embedding": embedding,
             "classifier": classifier, "strategy": "reverse",
-            **({"lr_C": _LR_C} if classifier == "logistic" else {}),
+            **_classifier_params_for_json(classifier),
             "k_folds_used": rev["k_folds_used"],
             "n_dropped_no_emb_matched": rev["n_dropped_no_emb_matched"],
             "n_dropped_no_emb_full": rev["n_dropped_no_emb_full"],
@@ -1425,6 +1471,104 @@ def expand_axis(value, all_values):
     if value == "all" or value == "both":
         return all_values
     return [value]
+
+
+def _apply_classifier_params(classifier, combo):
+    """Mutate module-level classifier hyperparam state from a grid combo dict."""
+    global _LR_C, _XGB_PARAMS
+    if classifier == "logistic":
+        _LR_C = float(combo["C"])
+    elif classifier == "xgb":
+        _XGB_PARAMS = {**_XGB_PARAMS, **combo}
+
+
+def run_grid_search(partitions, embeddings, classifiers, strategies,
+                    n_folds, seed, lr_grid, xgb_grid):
+    """Hyperparameter grid search aligned with the existing per-cell layout.
+
+    For each (embedding, classifier, strategy) and each grid combo, iterates
+    over partitions and calls `run_cell()` — the same writer that non-grid
+    runs use. Each combo lands in its own cell_dir:
+
+      <OUTPUT_DIR>/<partition>/<fwd|rev>/<embedding>/logistic/C_<value>/...
+      <OUTPUT_DIR>/<partition>/<fwd|rev>/<embedding>/xgb/ne_X_md_Y_lr_Z/...
+
+    so per-combo `forward_matched_metrics.json` + `metrics.json` + scores
+    CSVs + CM PNGs are all written exactly as in a normal run. After the
+    full sweep completes, calls `build_sweep_metrics.py` as a subprocess to
+    refresh `<OUTPUT_DIR>/_summary/all_metrics_with_cm.csv` so the aggregate
+    grid table is at the standard location alongside other cross-cell
+    summaries.
+
+    TabPFN has no exposed hyperparams here, so it's silently skipped if it
+    appears in `classifiers`.
+
+    Forward training is cached per (training cohort family × hyperparam
+    state), so the 3 ad_vs_* family partitions share one training pass per
+    combo (cache key now includes _XGB_PARAMS / _LR_C).
+    """
+    n_combos_run = 0
+    n_combos_failed = 0
+
+    for embedding, classifier, strategy in itertools.product(
+        embeddings, classifiers, strategies
+    ):
+        if classifier == "logistic":
+            grid = lr_grid
+        elif classifier == "xgb":
+            grid = xgb_grid
+        else:
+            logger.info(f"  grid: skipping {classifier} (no exposed params)")
+            continue
+
+        logger.info(
+            f"=== grid: {embedding}/{classifier}/{strategy} "
+            f"× {len(partitions)} partitions × {len(grid)} combos "
+            f"= {len(partitions) * len(grid)} cells ==="
+        )
+
+        for combo in grid:
+            _apply_classifier_params(classifier, combo)
+            for partition in partitions:
+                try:
+                    run_cell(partition, embedding, classifier, strategy,
+                             n_folds=n_folds, seed=seed)
+                    n_combos_run += 1
+                except Exception as e:
+                    n_combos_failed += 1
+                    logger.exception(
+                        f"  FAILED {partition}/{embedding}/{classifier}/"
+                        f"{strategy} combo={combo}: {e}"
+                    )
+
+    logger.info(
+        f"Grid search done: {n_combos_run} cells written, "
+        f"{n_combos_failed} failed."
+    )
+
+    # Refresh _summary/all_metrics_with_cm.csv via build_sweep_metrics.py so
+    # the per-combo rows land in the standard cross-cell summary CSV.
+    _refresh_summary_csv()
+
+
+def _refresh_summary_csv():
+    """Subprocess-call build_sweep_metrics.py to refresh the
+    `<OUTPUT_DIR>/_summary/all_metrics_with_cm.csv` aggregate. Handles all
+    feature_type variants under the active cohort_mode."""
+    import subprocess
+    cmd = [
+        sys.executable,
+        str(PROJECT_ROOT / "scripts" / "embedding" / "build_sweep_metrics.py"),
+        "--cohort-mode", _COHORT_MODE,
+    ]
+    if EMBEDDING_CLASSIFICATION_DIR is EMBEDDING_ABTEST_CLASSIFICATION_DIR:
+        cmd.append("--embedding-abtest")
+    logger.info(f"Refreshing summary CSV: {' '.join(cmd)}")
+    try:
+        subprocess.run(cmd, check=True)
+    except subprocess.CalledProcessError as e:
+        logger.warning(f"build_sweep_metrics.py failed (exit {e.returncode}); "
+                       f"skip — run it manually to refresh _summary/.")
 
 
 def main():
@@ -1503,6 +1647,16 @@ def main():
                              "skipped for it.")
     parser.add_argument("--rfe-iters", type=int, default=5,
                         help="Number of RFE iterations (used with --rfe-drop).")
+    parser.add_argument("--grid-search", action="store_true",
+                        help="Hyperparameter grid search over LR C "
+                             "(default: 6 logspace points 1e-3..1e2) and XGB "
+                             "(n_estimators × max_depth × learning_rate, 27 "
+                             "combos). Writes per-cell grid_results.csv + "
+                             "best_params.json under <OUTPUT_DIR>/grid_search/. "
+                             "Skips per-combo cell-dir output to keep things "
+                             "tidy. TabPFN is silently skipped (no exposed "
+                             "hyperparams). Edits to default grids: tweak "
+                             "_DEFAULT_LR_GRID / _DEFAULT_XGB_GRID at module top.")
     args = parser.parse_args()
 
     global _FEATURE_TYPE, _DROP_CORR_THRESHOLD, _DROP_CORR_METHOD
@@ -1558,6 +1712,14 @@ def main():
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     summary_dir = OUTPUT_DIR / "_summary"
     summary_dir.mkdir(parents=True, exist_ok=True)
+
+    if args.grid_search:
+        run_grid_search(
+            partitions, embeddings, classifiers, strategies,
+            n_folds=args.n_folds, seed=args.seed,
+            lr_grid=_DEFAULT_LR_GRID, xgb_grid=_DEFAULT_XGB_GRID,
+        )
+        return
 
     all_rows = []
     n_cells = 0

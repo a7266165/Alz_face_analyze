@@ -57,14 +57,19 @@ EXTRACTORS = [
 ]
 
 
-def _row_from_block(block, partition, emb, clf, lr_C, strategy, scope):
+def _row_from_block(block, partition, emb, clf, lr_C, xgb_params,
+                    strategy, scope):
     if not block:
         return None
+    xp = xgb_params or {}
     row = {
         "partition": partition,
         "embedding": emb,
         "classifier": clf,
         "lr_C": lr_C,
+        "xgb_n_estimators": xp.get("n_estimators"),
+        "xgb_max_depth": xp.get("max_depth"),
+        "xgb_learning_rate": xp.get("learning_rate"),
         "strategy": strategy,
         "scope": scope,
     }
@@ -81,27 +86,36 @@ def _row_from_block(block, partition, emb, clf, lr_C, strategy, scope):
     return row
 
 
-def _iter_cell_dirs(emb_d):
-    """Yield (cell_dir, classifier, lr_C) for each cell under emb_d.
+def _has_metrics_json(d):
+    return ((d / "forward_matched_metrics.json").exists()
+            or (d / "metrics.json").exists())
 
-    Logistic cells: emb_d/logistic/C_<X>/ → ('logistic', float(X)).
-    XGB cells:      emb_d/xgb/            → ('xgb', None).
+
+def _iter_cell_dirs(emb_d):
+    """Yield (cell_dir, classifier) for each cell under emb_d.
+
+    Generic walk: a "cell" is any directory that directly contains
+    forward_matched_metrics.json or metrics.json. We accept two depths
+    under emb_d:
+      1. emb_d/<classifier>/                → flat (legacy or hyperparam-less)
+      2. emb_d/<classifier>/<param_tag>/    → hyperparam-tagged leaf
+                                              (C_<lr_C>, ne_X_md_Y_lr_Z, ...)
+
+    Hyperparam values are read from the JSON itself (lr_C / xgb_params
+    fields), not parsed from the path — keeps this walker classifier-agnostic
+    and robust to format changes.
     """
     for clf_d in sorted(emb_d.iterdir()):
         if not clf_d.is_dir():
             continue
         clf = clf_d.name
-        if clf == "logistic":
-            for c_d in sorted(clf_d.iterdir()):
-                if not c_d.is_dir() or not c_d.name.startswith("C_"):
-                    continue
-                try:
-                    lr_C = float(c_d.name[2:])
-                except ValueError:
-                    continue
-                yield c_d, clf, lr_C
-        elif clf == "xgb":
-            yield clf_d, clf, None
+        # Flat layout (legacy or hyperparam-less classifiers like tabpfn).
+        if _has_metrics_json(clf_d):
+            yield clf_d, clf
+        # Hyperparam-tagged subdirs (C_X/, ne_X_md_Y_lr_Z/, etc).
+        for sub_d in sorted(clf_d.iterdir()):
+            if sub_d.is_dir() and _has_metrics_json(sub_d):
+                yield sub_d, clf
 
 
 def _scan_cells(reducer_dir):
@@ -120,7 +134,7 @@ def _scan_cells(reducer_dir):
             for emb_d in sorted(bucket_d.iterdir()):
                 if not emb_d.is_dir():
                     continue
-                for cell_d, clf, lr_C in _iter_cell_dirs(emb_d):
+                for cell_d, clf in _iter_cell_dirs(emb_d):
                     for (b, fname, key, scope, strategy) in EXTRACTORS:
                         if b != bucket:
                             continue
@@ -132,9 +146,13 @@ def _scan_cells(reducer_dir):
                         except (ValueError, json.JSONDecodeError):
                             continue
                         block = d.get(key)
+                        # Hyperparams live in the JSON, not the path — keeps
+                        # this walker decoupled from leaf-name conventions.
+                        lr_C = d.get("lr_C")
+                        xgb_params = d.get("xgb_params")
                         row = _row_from_block(block, partition_d.name,
                                                emb_d.name, clf, lr_C,
-                                               strategy, scope)
+                                               xgb_params, strategy, scope)
                         if row is None:
                             continue
                         if scope.startswith("forward"):
@@ -152,7 +170,9 @@ def build_one(variant_dir):
     if not rows:
         return 0
     df = pd.DataFrame(rows)
-    col_order = (["partition", "embedding", "classifier", "lr_C",
+    col_order = (["partition", "embedding", "classifier",
+                  "lr_C",
+                  "xgb_n_estimators", "xgb_max_depth", "xgb_learning_rate",
                   "strategy", "scope"]
                  + METRIC_FIELDS
                  + ["TN", "FP", "FN", "TP",
