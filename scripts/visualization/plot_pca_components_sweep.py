@@ -358,11 +358,12 @@ def main():
                 label="y = PCA setting (int)")
         ax.set_xscale("symlog", linthresh=1)
         ax.set_yscale("symlog", linthresh=1)
-        ax.set_xlabel("PCA n_components setting")
+        ax.tick_params(labelsize=15)
+        ax.set_xlabel("PCA n_components setting", fontsize=15)
         ax.set_ylabel("Effective components retained "
-                       "(mean across 5 partitions × 10 folds)")
-        ax.set_title("PCA — effective component count vs setting")
-        ax.legend()
+                       "(mean across 5 partitions × 10 folds)", fontsize=15)
+        ax.set_title("PCA — effective component count vs setting", fontsize=18)
+        ax.legend(loc="lower right", fontsize=18)
         ax.grid(alpha=0.3, which="both")
         fig.tight_layout()
         fc_png = out / "feature_count_by_pca.png"

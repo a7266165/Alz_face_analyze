@@ -76,6 +76,15 @@ SCOPES_BY_DIRECTION = {
     ],
 }
 
+# Display label for each partition (used in suptitle).
+PARTITION_LABELS = {
+    "ad_vs_hc":  "AD vs HC",
+    "ad_vs_nad": "AD vs NAD",
+    "ad_vs_acs": "AD vs ACS",
+    "mmse_hilo": "MMSE Hi-Lo",
+    "casi_hilo": "CASI Hi-Lo",
+}
+
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
@@ -129,13 +138,12 @@ def _draw_partition_scope(df, eig_df, part, scope_val, scope_label,
                                     color=color, alpha=0.15, linewidth=0)
             ax.axhline(chance, color="grey", linestyle=":", linewidth=0.8)
             ax.grid(alpha=0.3, which="both")
+            ax.tick_params(labelsize=15)
             if row_idx == 0:
-                ax.set_title(f"{emb} (input dim={INPUT_DIM[emb]})")
+                ax.set_title(f"{emb} (input dim={INPUT_DIM[emb]})", fontsize=18)
             if col_idx == 0:
-                ax.set_ylabel(metric_label)
-            if row_idx == 0 and col_idx == len(EMBEDDINGS) - 1:
-                ax.legend(loc="center left", bbox_to_anchor=(1.02, 0.5),
-                          fontsize=8)
+                ax.set_ylabel(metric_label, fontsize=15, labelpad=15)
+            ax.legend(loc="lower right", fontsize=14)
 
     for col_idx, emb in enumerate(EMBEDDINGS):
         ax = axes[3, col_idx]
@@ -150,18 +158,18 @@ def _draw_partition_scope(df, eig_df, part, scope_val, scope_label,
         ax.text(1.05, 0.99, "0.99", fontsize=7, color="grey", va="center")
         ax.set_ylim(0, 1.02)
         ax.grid(alpha=0.3, which="both")
-        ax.set_xlabel("PCA n_components")
+        ax.tick_params(labelsize=15)
         if col_idx == 0:
-            ax.set_ylabel("Cumulative\neigenvalue / total")
+            ax.set_ylabel("Cumulative\neigenvalue / total", fontsize=15, labelpad=15)
 
     axes[0, 0].set_xscale("log")
     axes[0, 0].set_xlim(1, 512)
 
-    fig.suptitle(f"{part} — {scope_label} metrics + cumulative "
-                 f"eigenvalue ratio vs PCA n_components",
-                 fontsize=13)
-    fig.subplots_adjust(left=0.07, right=0.92, top=0.94, bottom=0.05,
-                        hspace=0.18, wspace=0.06)
+    part_label = PARTITION_LABELS.get(part, part)
+    fig.suptitle(f"{part_label} — {scope_label}", fontsize=45)
+    fig.supxlabel("PCA n_components", fontsize=30)
+    fig.subplots_adjust(left=0.10, right=0.92, top=0.88, bottom=0.10,
+                        hspace=0.30, wspace=0.06)
     return fig
 
 
@@ -209,7 +217,7 @@ def main():
                                         scope_label, shade_ci=shade_ci)
             if fig is None:
                 continue
-            png = direction_dir / f"{prefix}_{file_tag}_by_pca_{part}.png"
+            png = direction_dir / f"{part}_{file_tag}.png"
             fig.savefig(png, dpi=150)
             plt.close(fig)
             logger.info(f"Wrote {png}")
