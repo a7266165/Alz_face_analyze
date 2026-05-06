@@ -288,7 +288,7 @@ def main():
                         help="Variant under classification/.  Default None == 'original'.")
     parser.add_argument("--cohort-mode", default="default",
                         choices=["default", "p_first_hc_all", "p_all_hc_all"],
-                        help="Output cohort routing. 'default'=p_first_hc_strict; "
+                        help="Output cohort routing. 'default'=p_first_hc_first; "
                              "'p_first_hc_all'=p_first_hc_all/; "
                              "'p_all_hc_all'=p_all_hc_all/.")
     parser.add_argument("--eigen-source", default="all_npy",

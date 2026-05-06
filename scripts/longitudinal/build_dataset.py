@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 # === Paths ===
 DEMOGRAPHICS_DIR = PROJECT_ROOT / "data" / "demographics"
-AGE_FILE = PROJECT_ROOT / "workspace" / "age" / "predictions" / "p_first_hc_strict" / "predicted_ages.json"
+AGE_FILE = PROJECT_ROOT / "workspace" / "age" / "predictions" / "p_first_hc_first" / "predicted_ages.json"
 EMBEDDING_DIR = PROJECT_ROOT / "workspace" / "embedding" / "features"
 OUTPUT_DIR = LONGITUDINAL_FEATURES_DIR
 

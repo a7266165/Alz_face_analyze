@@ -8,7 +8,7 @@
 
 樣式 match 原圖：scatter + y=x 虛線 + 橘色迴歸線 + n/r/MAE。
 
-輸出：workspace/age/age_prediction/predicted_ages_scatter_with_utkface.png
+輸出：workspace/age/predictions/p_first_hc_first/predicted_ages_scatter_with_utkface.png
 """
 
 import json

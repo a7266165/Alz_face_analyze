@@ -6,7 +6,7 @@ ACS (internal) vs E-ACS (external) — predicted age scatter.
   右：E-ACS (data/demographics/EACS.csv)，外部公開資料集的 7 個 source
        可用 --color-by-source 依來源上色
 
-輸出：workspace/age/age_prediction/predicted_ages_scatter_acs_vs_eacs.png
+輸出：workspace/age/predictions/p_first_hc_first/predicted_ages_scatter_acs_vs_eacs.png
 """
 
 import argparse

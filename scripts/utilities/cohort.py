@@ -20,7 +20,9 @@ cohort_mode: 'default' | 'p_first_hc_all' | 'p_all_hc_all' (see cohort_name in s
 hc_source_mode: 'ACS' | 'ACS_ext' | 'EACS' (controls ACS-group composition)
 
 Migration note: cohort_mode and hc_source_mode were previously module-level
-globals read from os.environ at import time (run_4arm_deep_dive.py:77, 90).
+globals read from os.environ at import time (legacy `run_4arm_deep_dive.py`,
+since split into `scripts/overview/run_cross_naive.py`,
+`scripts/overview/run_cross_matched.py`, `scripts/overview/run_stat_grid.py`).
 They are now explicit function parameters; this module reads no env vars.
 EACS_SOURCES env (sub-source filter) remains read inside the function for
 parity with the legacy behaviour.
@@ -153,16 +155,20 @@ def _keep_visits_with_features(df_visits):
 
 
 # ============================================================
-# Strict HC filter (used by default cohort_mode)
+# HC filter (group-source only; cognitive filter dropped 2026-05-06)
 # ============================================================
+# Function names retain the `_strict_` prefix for backward call-site
+# compatibility, but the strict cognitive criterion (CDR=0 or MMSE>=26)
+# has been removed — HC is now defined purely by group membership
+# (NAD / ACS / etc) plus visit selection.
 
 def _strict_hc_filter_all_visits(demo, hc_source, cohort_mode):
-    """Strict HC criteria per-visit (CDR=0 OR (CDR=NaN AND MMSE>=26)) but keep
-    ALL qualifying visits. Source != 'internal' (external public datasets) auto-
-    bypasses the strict filter (age-only control).
+    """HC group-source filter, all qualifying visits kept.
 
-    cohort_mode in ('p_first_hc_all', 'p_all_hc_all') skips the strict filter
-    entirely — every visit is kept, used for "HC unfiltered" cohorts.
+    Previously also enforced strict cognitive criteria (CDR=0 OR
+    (CDR=NaN AND MMSE>=26)); that filter was dropped 2026-05-06.
+    `cohort_mode` is now informational — all modes share the same
+    group-only filter.
     """
     if hc_source == "HC":
         mask = demo["group"].isin(["NAD", "ACS"])
@@ -171,24 +177,18 @@ def _strict_hc_filter_all_visits(demo, hc_source, cohort_mode):
     sub = demo[mask].copy()
     sub["Global_CDR"] = pd.to_numeric(sub.get("Global_CDR"), errors="coerce")
     sub["MMSE"] = pd.to_numeric(sub.get("MMSE"), errors="coerce")
-    if cohort_mode in ("p_first_hc_all", "p_all_hc_all"):
-        sub = sub.copy()
-    else:
-        has_cog = sub["Global_CDR"].notna() | sub["MMSE"].notna()
-        ok_strict = has_cog & (
-            (sub["Global_CDR"] == 0) |
-            (sub["Global_CDR"].isna() & (sub["MMSE"] >= 26))
-        )
-        is_external = sub.get("Source", "internal") != "internal"
-        sub = sub[ok_strict | is_external].copy()
     sub = sub.sort_values(["base_id", "visit"])
     sub["label"] = 0
     return sub
 
 
 def _strict_hc_filter(demo, hc_source):
-    """Strict HC + first-visit per base_id (used by longitudinal cohorts to
-    determine the allowed HC pool)."""
+    """HC group-source filter, first visit per base_id.
+
+    Used by longitudinal cohorts to determine the allowed HC pool.
+    Previously also enforced strict cognitive criteria; that filter was
+    dropped 2026-05-06.
+    """
     if hc_source == "HC":
         mask = demo["group"].isin(["NAD", "ACS"])
     else:
@@ -196,13 +196,6 @@ def _strict_hc_filter(demo, hc_source):
     sub = demo[mask].copy()
     sub["Global_CDR"] = pd.to_numeric(sub.get("Global_CDR"), errors="coerce")
     sub["MMSE"] = pd.to_numeric(sub.get("MMSE"), errors="coerce")
-    has_cog = sub["Global_CDR"].notna() | sub["MMSE"].notna()
-    ok_strict = has_cog & (
-        (sub["Global_CDR"] == 0) |
-        (sub["Global_CDR"].isna() & (sub["MMSE"] >= 26))
-    )
-    is_external = sub.get("Source", "internal") != "internal"
-    sub = sub[ok_strict | is_external].copy()
     sub = sub.sort_values(["base_id", "visit"]).groupby("base_id", as_index=False).first()
     sub["label"] = 0
     return sub

@@ -6,18 +6,20 @@
 3. Bootstrap Correction           — ×1000 iter
 4. Mean Correction                — single fit
 
-輸出: workspace/age/age_prediction/age_correction_methods_flowchart.png
+輸出: workspace/age/predictions/p_first_hc_first/age_correction_methods_flowchart.png
 """
 
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from _paths import PROJECT_ROOT
+from _paths import PROJECT_ROOT  # noqa: F401
 
 from graphviz import Digraph
 
-OUTPUT_DIR = PROJECT_ROOT / "workspace" / "age" / "age_prediction"
+from src.config import AGE_PREDICTION_DIR
+
+OUTPUT_DIR = AGE_PREDICTION_DIR
 
 NODE_W = "2.6"
 

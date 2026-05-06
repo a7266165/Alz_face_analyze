@@ -75,7 +75,7 @@ conda run -n Alz_face_main_analysis python scripts/embedding/run_sweep.py \
 
 | `--cohort-mode` | AD 視作 | HC 視作 | workspace dir |
 |---|---|---|---|
-| `default` | 首次 visit + strict-HC filter | 首次 visit + strict | `p_first_hc_strict/` |
+| `default` | 首次 visit + strict-HC filter | 首次 visit + strict | `p_first_hc_first/` |
 | `p_first_hc_all` | 首次 visit | 全部 visit（HC 不 filter） | `p_first_hc_all/` |
 | `p_all_hc_all` | 全部 visit | 全部 visit | `p_all_hc_all/` |
 

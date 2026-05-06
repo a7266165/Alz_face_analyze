@@ -59,7 +59,7 @@ from scripts.utilities.stats_helpers import (
 # ----------------------------------------------------------------------
 DEMOGRAPHICS_DIR = PROJECT_ROOT / "data" / "demographics"
 AGES_FILE = (PROJECT_ROOT / "workspace" / "age" / "predictions" /
-              "p_first_hc_strict" / "predicted_ages.json")
+              "p_first_hc_first" / "predicted_ages.json")
 LANDMARK_FEATURES_CSV = (PROJECT_ROOT / "workspace" / "asymmetry" /
                          "features" / "pair_features.csv")
 LONGITUDINAL_CSV = LONGITUDINAL_FEATURES_DIR / "patient_deltas.csv"

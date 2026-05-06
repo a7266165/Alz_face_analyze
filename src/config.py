@@ -72,8 +72,8 @@ EMBEDDING_CLASSIFICATION_DIR = EMBEDDING_ANALYSIS_DIR / "classification"
 # -----------------------------------------------------------------------------
 AGE_DIR = WORKSPACE_DIR / "age"
 AGE_PREDICTIONS_DIR = AGE_DIR / "predictions"
-# 預設指向 p_first_hc_strict；其他 cohort 用 AGE_PREDICTIONS_DIR / cohort_name(...) 動態組合
-AGE_PREDICTION_DIR = AGE_PREDICTIONS_DIR / "p_first_hc_strict"
+# 預設指向 p_first_hc_first；其他 cohort 用 AGE_PREDICTIONS_DIR / cohort_name(...) 動態組合
+AGE_PREDICTION_DIR = AGE_PREDICTIONS_DIR / "p_first_hc_first"
 AGE_BENCHMARK_DIR = AGE_PREDICTIONS_DIR / "benchmark"
 
 CORRECTIONS_DIR = AGE_PREDICTION_DIR / "corrections"
@@ -130,8 +130,8 @@ OVERVIEW_DIR = WORKSPACE_DIR / "overview"
 # Helper: cohort name 對映
 # -----------------------------------------------------------------------------
 COHORT_DIRS = {
-    "default": "p_first_hc_strict",
-    "p_first_hc_strict": "p_first_hc_strict",
+    "default": "p_first_hc_first",
+    "p_first_hc_first": "p_first_hc_first",
     "p_first_hc_all": "p_first_hc_all",
     "p_all_hc_all": "p_all_hc_all",
 }

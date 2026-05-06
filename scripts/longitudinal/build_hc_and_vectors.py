@@ -27,7 +27,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from src.config import LONGITUDINAL_FEATURES_DIR
 
 DEMOGRAPHICS_DIR = PROJECT_ROOT / "data" / "demographics"
-AGE_FILE = PROJECT_ROOT / "workspace" / "age" / "predictions" / "p_first_hc_strict" / "predicted_ages.json"
+AGE_FILE = PROJECT_ROOT / "workspace" / "age" / "predictions" / "p_first_hc_first" / "predicted_ages.json"
 EMBEDDING_DIR = PROJECT_ROOT / "workspace" / "embedding" / "features"
 LANDMARK_FEATURES_CSV = PROJECT_ROOT / "workspace" / "asymmetry" / "features" / "pair_features.csv"
 LONGITUDINAL_DIR = LONGITUDINAL_FEATURES_DIR

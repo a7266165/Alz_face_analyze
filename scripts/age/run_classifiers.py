@@ -46,7 +46,7 @@ from scripts.utilities.cohort import build_cohort_ad_vs_HCgroup, VALID_DESIGNS
 from scripts.utilities.stats_helpers import bootstrap_auc_ci
 
 AGES_FILE = (PROJECT_ROOT / "workspace" / "age" / "predictions" /
-             "p_first_hc_strict" / "predicted_ages.json")
+             "p_first_hc_first" / "predicted_ages.json")
 COMPARISONS = ["HC", "NAD", "ACS"]
 ALL_DESIGNS = list(VALID_DESIGNS)
 N_FOLDS = 10

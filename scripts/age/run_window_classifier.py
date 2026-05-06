@@ -50,7 +50,7 @@ from sklearn.model_selection import GroupKFold
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEMOGRAPHICS_DIR = PROJECT_ROOT / "data" / "demographics"
-PREDICTED_AGES_FILE = PROJECT_ROOT / "workspace" / "age" / "predictions" / "p_first_hc_strict" / "predicted_ages.json"
+PREDICTED_AGES_FILE = PROJECT_ROOT / "workspace" / "age" / "predictions" / "p_first_hc_first" / "predicted_ages.json"
 OUTPUT_BASE = PROJECT_ROOT / "workspace" / "age" / "analysis" / "classification" / "window_classifier"
 
 # Load emotion via shared helper.

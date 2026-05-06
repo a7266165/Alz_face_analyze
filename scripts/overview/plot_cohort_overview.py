@@ -19,7 +19,7 @@ import numpy as np
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[2]
-COHORT = "p_first_hc_strict"
+COHORT = "p_first_hc_first"
 OVERVIEW_COHORT = ROOT / "workspace" / "overview" / COHORT
 CROSS_NAIVE_CSV   = OVERVIEW_COHORT / "cross_naive" / "cohort.csv"
 CROSS_MATCHED_CSV = OVERVIEW_COHORT / "cross_matched" / "mmse_high_vs_low" / "matched_features.csv"

@@ -6,7 +6,7 @@ Blacklist：UTKFace race label 誤標的 subjects（明顯非亞裔），直接�
 
 輸入：
   external/public_face_datasets/filtered/asian_elderly_60plus/EACS_UTKFace_*
-  workspace/age/age_prediction/predicted_ages.json
+  workspace/age/predictions/p_first_hc_first/predicted_ages.json
 輸出：
   更新 predicted_ages.json（只動 EACS_UTKFace_* 條目；
     blacklist 的 id 從檔中移除）

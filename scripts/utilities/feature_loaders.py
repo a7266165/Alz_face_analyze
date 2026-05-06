@@ -23,7 +23,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 EMBEDDING_DIR = PROJECT_ROOT / "workspace" / "embedding" / "features"
 LANDMARK_FEATURES_CSV = PROJECT_ROOT / "workspace" / "asymmetry" / "features" / "pair_features.csv"
 PREDICTED_AGES_FILE = (PROJECT_ROOT / "workspace" / "age" / "predictions" /
-                        "p_first_hc_strict" / "predicted_ages.json")
+                        "p_first_hc_first" / "predicted_ages.json")
 
 # ----------------------------------------------------------------------
 # Constants

@@ -75,7 +75,7 @@ from src.config import (
 
 EMBEDDING_FEAT_DIR = EMBEDDING_FEATURES_DIR
 AGES_FILE = (PROJECT_ROOT / "workspace" / "age" / "predictions" /
-             "p_first_hc_strict" / "predicted_ages.json")
+             "p_first_hc_first" / "predicted_ages.json")
 
 PARTITIONS = ["ad_vs_hc", "ad_vs_nad", "ad_vs_acs", "mmse_hilo", "casi_hilo"]
 EMBEDDINGS = ["arcface", "topofr", "dlib"]
@@ -98,7 +98,7 @@ _DROP_CORR_METHOD = "pearson"
 _PCA_COMPONENTS = None       # None = disabled; int = n_components; float<1 = variance ratio
 _VISIT_MODE = "first"  # "first" = current behavior; "all" = include every qualifying visit per base_id
 _PHOTO_MODE = "mean"   # "mean" = current behavior (mean over 10 photos); "all" = one row per photo
-_COHORT_MODE = os.environ.get("COHORT_MODE", "default")  # default=p_first_hc_strict / p_first_hc_all / p_all_hc_all
+_COHORT_MODE = os.environ.get("COHORT_MODE", "default")  # default=p_first_hc_first / p_first_hc_all / p_all_hc_all
 _LR_C = 1.0  # LogisticRegression C; encoded at cell-level leaf as logistic/C_<value>/
 _XGB_PARAMS = {"n_estimators": 300, "max_depth": 6, "learning_rate": 0.1}
 _RFE_DROP = None   # iterative RFE: drop N weakest features per iter (None/0 = off)
@@ -141,7 +141,7 @@ def output_dir_for(feature_type, drop_corr=None, visit_mode="first",
     Variants: original / difference / absolute_difference / average /
               relative_differences / absolute_relative_differences
 
-    cohort_mode='default'        -> p_first_hc_strict (default visit=first, photo=mean)
+    cohort_mode='default'        -> p_first_hc_first (default visit=first, photo=mean)
     cohort_mode='p_first_hc_all' -> p_first_hc_all    (default visit=all,   photo=mean)
     cohort_mode='p_all_hc_all'   -> p_all_hc_all      (default visit=all,   photo=mean)
 
@@ -153,7 +153,7 @@ def output_dir_for(feature_type, drop_corr=None, visit_mode="first",
 
     Variant subdir `<visit_X>[_<photo_Y>]` is appended as a nested
     sub-directory under the reducer dir when (visit, photo) differ from the
-    cohort's default — e.g. p_first_hc_strict + visit_mode=all yields
+    cohort's default — e.g. p_first_hc_first + visit_mode=all yields
     `pca/n_components_100/visit_all`.
 
     Cell-leaf path: <output_dir>/<partition>/<fwd|rev>/<emb>/<clf>/[C_<value>/]
@@ -514,7 +514,7 @@ def _build_ad_vs_hcgroup(hc_source):
     so n_pairs matches the cross_matched reference.
 
     visit_mode + cohort_mode interaction:
-      cohort_mode='default' (p_first_hc_strict) picks one visit per subject on
+      cohort_mode='default' (p_first_hc_first) picks one visit per subject on
       both sides; visit_mode='all' expands to all qualifying visits restricted
       to the same base_id set.
 
@@ -1614,7 +1614,7 @@ def main():
                              "individual training rows.")
     parser.add_argument("--cohort-mode", default="default",
                         choices=["default", "p_first_hc_all", "p_all_hc_all"],
-                        help="'default' (p_first_hc_strict), 'p_first_hc_all' "
+                        help="'default' (p_first_hc_first), 'p_first_hc_all' "
                              "(first-visit P + ALL NAD/ACS), or 'p_all_hc_all' "
                              "(ALL P visits + ALL NAD/ACS). Output goes to "
                              "<cohort>/embedding_*classification/ . "

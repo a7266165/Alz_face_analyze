@@ -25,6 +25,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
 from _paths import PROJECT_ROOT
 
+from src.config import PREDICTED_AGES_CALIBRATED_FILE
 from src.meta import MetaConfig, MetaPipeline
 
 # ========== 設定 ==========
@@ -32,14 +33,14 @@ from src.meta import MetaConfig, MetaPipeline
 # 路徑設定
 WORKSPACE_DIR = PROJECT_ROOT / "workspace"
 DEMOGRAPHICS_DIR = PROJECT_ROOT / "data" / "demographics"
-PREDICTED_AGES_FILE = WORKSPACE_DIR / "age" / "age_prediction" / "predicted_ages_calibrated.json"
+PREDICTED_AGES_FILE = PREDICTED_AGES_CALIBRATED_FILE
 
 # Base-level 預測分數目錄 — 由 scripts/embedding/run_fwd_rev.py 加
-# `--save-oof-probabilities` flag 產生。預設讀 original × p_first_hc_strict
+# `--save-oof-probabilities` flag 產生。預設讀 original × p_first_hc_first
 # × no_drop 的 forward 結果；user 想換 (feature_type, cohort, reducer) 組合
 # 直接改 PREDICTIONS_DIR 的值。
 EMBEDDING_CLF_DIR = WORKSPACE_DIR / "embedding" / "analysis" / "classification"
-PREDICTIONS_DIR = (EMBEDDING_CLF_DIR / "original" / "p_first_hc_strict"
+PREDICTIONS_DIR = (EMBEDDING_CLF_DIR / "original" / "p_first_hc_first"
                    / "no_drop" / "pred_probability")
 
 # Emotion 分數檔案

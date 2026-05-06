@@ -13,8 +13,9 @@ a_mean, b_mean 取自 bootstrap_coefficients.csv 的 mean 列。
        <output-dir>/residual_by_age/sw10/...
 
 預設讀 BOOTSTRAP_DIR / data / {bootstrap_coefficients,corrected_ages}.csv，
-寫到 AGE_PREDICTION_DIR/{error_by_age,residual_by_age}/。可用
---bootstrap-dir / --output-dir 切換到 V2 路徑（age_prediction_p_first_hc_all）。
+寫到 AGE_PREDICTION_DIR/{error_by_age,residual_by_age}/（=
+workspace/age/predictions/p_first_hc_first/...）。可用 --bootstrap-dir /
+--output-dir 切到別的 cohort 子目錄（如 predictions/p_first_hc_all）。
 """
 
 import argparse
