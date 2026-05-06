@@ -65,18 +65,19 @@ METRICS = [("auc", "AUC", 0.5), ("balacc", "Balanced accuracy", 0.5),
            ("mcc", "MCC", 0.0)]
 
 # scope value in CSV → (file-name tag, panel label, output-image prefix)
-# Tuple order in each list IS the output-file ordering (encoded as
-# 1_/2_ scope-index prefix at write-time). Convention: non-matched scopes
-# first, matched scopes last — so reviewers see the unfiltered/full picture
-# before the matched-pair view.
+# file_tag is chosen so that alphabetical FS sort within each direction
+# folder yields the intended order:
+#   fwd: full (f) < matched (m)        → full first, matched second
+#   rev: oof  (o) < unmatched (u)      → oof first, unmatched second
+# This avoids needing a numeric scope_idx prefix in the filename.
 SCOPES_BY_DIRECTION = {
     "fwd": [
-        ("forward_full",    "full",        "forward_full",        "forward_metrics"),
-        ("forward_matched", "matched",     "forward_matched",     "forward_metrics"),
+        ("forward_full",    "full",     "forward_full",        "forward_metrics"),
+        ("forward_matched", "matched",  "forward_matched",     "forward_metrics"),
     ],
     "rev": [
-        ("reverse_unmatched",   "unmatched",   "reverse_unmatched",   "reverse"),
-        ("reverse_matched_oof", "matched_oof", "reverse_matched_oof", "reverse"),
+        ("reverse_matched_oof", "oof",       "reverse_matched_oof", "reverse"),
+        ("reverse_unmatched",   "unmatched", "reverse_unmatched",   "reverse"),
     ],
 }
 
@@ -223,19 +224,17 @@ def main():
     ordered = [p for p in PARTITION_ORDER if p in found]
     unknown = sorted(p for p in found if p not in PARTITION_ORDER)
     partitions = ordered + unknown
-    # Filename pattern: {scope_idx}_{file_tag}_{part_idx}_{part}.png
-    #   scope_idx 1/2 (from SCOPES_BY_DIRECTION list order) groups all scope-1
-    #     files before scope-2 in alphabetical FS sort
+    # Filename pattern: {file_tag}_{part_idx}_{part}.png
+    #   file_tag (alphabetical) gives scope ordering — see SCOPES_BY_DIRECTION
     #   part_idx 1-5 (from PARTITION_ORDER) orders within each scope group as
     #     hc, nad, acs, mmse, casi
     for part_idx, part in enumerate(partitions, start=1):
-        for scope_idx, (scope_val, file_tag, scope_label, prefix) in \
-                enumerate(scopes, start=1):
+        for scope_val, file_tag, scope_label, prefix in scopes:
             fig = _draw_partition_scope(df, eig_df, part, scope_val,
                                         scope_label, shade_ci=shade_ci)
             if fig is None:
                 continue
-            png = direction_dir / f"{scope_idx}_{file_tag}_{part_idx}_{part}.png"
+            png = direction_dir / f"{file_tag}_{part_idx}_{part}.png"
             fig.savefig(png, dpi=150)
             plt.close(fig)
             logger.info(f"Wrote {png}")
