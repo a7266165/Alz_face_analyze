@@ -26,8 +26,8 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 # ── 路徑 ──
-RAW_DIR = PROJECT_ROOT / "workspace" / "au_features" / "raw"
-OUT_DIR = PROJECT_ROOT / "workspace" / "au_analysis" / "emotion_comparison"
+RAW_DIR = PROJECT_ROOT / "workspace" / "emo_au" / "features" / "raw"
+OUT_DIR = PROJECT_ROOT / "workspace" / "emo_au" / "analysis" / "emotion_comparison"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 # ── 常數 ──

@@ -24,7 +24,7 @@ from _paths import PROJECT_ROOT
 from src.config import ALIGNED_DIR
 
 # ── 路徑配置 ──
-RAW_OUTPUT_DIR = PROJECT_ROOT / "workspace" / "au_features" / "raw" / "fer"
+RAW_OUTPUT_DIR = PROJECT_ROOT / "workspace" / "emo_au" / "features" / "raw" / "fer"
 
 # FER 輸出的 7 種表情 → harmonized 名稱對映
 # fer 預設 key: angry, disgust, fear, happy, sad, surprise, neutral

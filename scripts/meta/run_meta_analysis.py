@@ -25,7 +25,6 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
 from _paths import PROJECT_ROOT
 
-from _utils import find_latest_dir
 from src.meta import MetaConfig, MetaPipeline
 
 # ========== 設定 ==========
@@ -35,17 +34,19 @@ WORKSPACE_DIR = PROJECT_ROOT / "workspace"
 DEMOGRAPHICS_DIR = PROJECT_ROOT / "data" / "demographics"
 PREDICTED_AGES_FILE = WORKSPACE_DIR / "age" / "age_prediction" / "predicted_ages_calibrated.json"
 
-# LR 預測分數目錄 — 自動掃描最新 analysis 目錄
-ANALYSIS_DIR = None  # 手動指定時填入 Path，None 則自動掃描
-if ANALYSIS_DIR is None:
-    ANALYSIS_DIR = find_latest_dir(WORKSPACE_DIR, "analysis_")
-PREDICTIONS_DIR = ANALYSIS_DIR / "pred_probability"
+# Base-level 預測分數目錄 — 由 scripts/embedding/run_fwd_rev.py 加
+# `--save-oof-probabilities` flag 產生。預設讀 original × p_first_hc_strict
+# × no_drop 的 forward 結果；user 想換 (feature_type, cohort, reducer) 組合
+# 直接改 PREDICTIONS_DIR 的值。
+EMBEDDING_CLF_DIR = WORKSPACE_DIR / "embedding" / "analysis" / "classification"
+PREDICTIONS_DIR = (EMBEDDING_CLF_DIR / "original" / "p_first_hc_strict"
+                   / "no_drop" / "pred_probability")
 
 # Emotion 分數檔案
-EMOTION_SCORES_FILE = WORKSPACE_DIR / "emotion" / "emotion_score_EmoNet.csv"
+EMOTION_SCORES_FILE = WORKSPACE_DIR / "emo_au" / "emotion_score_EmoNet.csv"
 
-# 輸出目錄
-OUTPUT_DIR = WORKSPACE_DIR / f"tabpfn_meta_analysis_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+# 輸出目錄（modality-flat：放在 workspace/meta/ 下，不再寫到 workspace 根）
+OUTPUT_DIR = WORKSPACE_DIR / "meta" / f"tabpfn_meta_analysis_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
 
 # 模組組合定義（與論文 M1~M4 對齊）
 # Module 1 (M1): BioAuth (lr_score_original)

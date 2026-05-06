@@ -78,7 +78,7 @@ def _visits_with_features():
     # EACS 沒跑 embedding，但有 emotion / age prediction → 用 emotion CSV 作 proxy
     # 讓 build_group 不會把 EACS 全部過濾掉
     for tool in ("dan", "openface", "pyfeat", "vit"):
-        emo_raw = (PROJECT_ROOT / "workspace" / "emotion" / "au_features"
+        emo_raw = (PROJECT_ROOT / "workspace" / "emo_au" / "features"
                     / "raw" / tool)
         if emo_raw.exists():
             ids.update(p.stem for p in emo_raw.glob("EACS_*.csv"))

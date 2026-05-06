@@ -25,7 +25,7 @@ from _paths import PROJECT_ROOT
 from src.config import ALIGNED_DIR
 
 # ── 路徑 ──
-RAW_OUTPUT_DIR = PROJECT_ROOT / "workspace" / "au_features" / "raw"
+RAW_OUTPUT_DIR = PROJECT_ROOT / "workspace" / "emo_au" / "features" / "raw"
 WEIGHTS_DIR = PROJECT_ROOT / "external" / "emotion"
 
 HARMONIZED_COLS = ["anger", "disgust", "fear", "happiness", "sadness", "surprise", "neutral"]

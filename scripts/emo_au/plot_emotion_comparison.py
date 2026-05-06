@@ -16,8 +16,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # ── paths ──
-AGG_DIR = PROJECT_ROOT / "workspace" / "au_features" / "aggregated"
-OUT_DIR = PROJECT_ROOT / "workspace" / "au_analysis" / "emotion_comparison"
+AGG_DIR = PROJECT_ROOT / "workspace" / "emo_au" / "features" / "aggregated"
+OUT_DIR = PROJECT_ROOT / "workspace" / "emo_au" / "analysis" / "emotion_comparison"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 EMOTIONS = ["anger", "disgust", "fear", "happiness", "sadness", "surprise", "neutral"]

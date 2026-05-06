@@ -73,7 +73,7 @@ AGES_FILE = (PROJECT_ROOT / "workspace" / "age" / "predictions" /
 
 PARTITIONS = ["ad_vs_hc", "ad_vs_nad", "ad_vs_acs", "mmse_hilo", "casi_hilo"]
 EMBEDDINGS = ["arcface", "topofr", "dlib"]
-CLASSIFIERS = ["logistic", "xgb"]
+CLASSIFIERS = ["logistic", "xgb", "tabpfn"]
 STRATEGIES = ["forward", "reverse"]
 FEATURE_TYPES = [
     "original",
@@ -94,6 +94,9 @@ _VISIT_MODE = "first"  # "first" = current behavior; "all" = include every quali
 _PHOTO_MODE = "mean"   # "mean" = current behavior (mean over 10 photos); "all" = one row per photo
 _COHORT_MODE = os.environ.get("COHORT_MODE", "default")  # default=p_first_hc_strict / p_first_hc_all / p_all_hc_all
 _LR_C = 1.0  # LogisticRegression C; encoded at cell-level leaf as logistic/C_<value>/
+_RFE_DROP = None   # iterative RFE: drop N weakest features per iter (None/0 = off)
+_RFE_ITERS = 5     # number of RFE iterations
+_SAVE_OOF_PROB = False  # write pred_probability/<config>.csv for meta_analysis stacking
 
 
 def _reducer_label():
@@ -661,11 +664,56 @@ def make_classifier(name, seed=42):
             random_state=seed, verbosity=0,
             tree_method="hist", device="cuda",
         )
+    if name == "tabpfn":
+        from tabpfn import TabPFNClassifier
+        return TabPFNClassifier(
+            ignore_pretraining_limits=True,
+            random_state=seed,
+        )
     raise ValueError(f"unknown classifier: {name}")
 
 
 def needs_scaler(classifier):
+    # TabPFN has its own internal normalization; xgb is tree-based.
     return classifier == "logistic"
+
+
+def _fit_with_optional_rfe(X_train, y_train, classifier, seed):
+    """Fit classifier; if module-level _RFE_DROP > 0 and classifier supports
+    feature_importances_/coef_, do iterative RFE: drop _RFE_DROP weakest
+    features per iteration for _RFE_ITERS rounds, then refit on the surviving
+    feature subset.
+
+    Returns (final_model, keep_mask). keep_mask is a bool array of length
+    X_train.shape[1]; True means feature kept. When RFE is off or the
+    classifier doesn't expose importance, keep_mask is all-True.
+    """
+    n_features = X_train.shape[1]
+    keep_mask = np.ones(n_features, dtype=bool)
+    if _RFE_DROP is None or _RFE_DROP <= 0 or classifier == "tabpfn":
+        clf = make_classifier(classifier, seed=seed)
+        clf.fit(X_train, y_train)
+        return clf, keep_mask
+
+    for _ in range(_RFE_ITERS):
+        kept_idx = np.where(keep_mask)[0]
+        if len(kept_idx) <= _RFE_DROP:
+            break  # leave at least _RFE_DROP features alive
+        clf = make_classifier(classifier, seed=seed)
+        clf.fit(X_train[:, keep_mask], y_train)
+        if hasattr(clf, "feature_importances_"):
+            imp = np.asarray(clf.feature_importances_)
+        elif hasattr(clf, "coef_"):
+            imp = np.abs(np.asarray(clf.coef_).ravel())
+        else:
+            break
+        # drop _RFE_DROP weakest within currently-kept indices
+        weakest_within_kept = np.argsort(imp)[:_RFE_DROP]
+        keep_mask[kept_idx[weakest_within_kept]] = False
+    # final refit on surviving subset
+    clf = make_classifier(classifier, seed=seed)
+    clf.fit(X_train[:, keep_mask], y_train)
+    return clf, keep_mask
 
 
 # ============================================================
@@ -785,9 +833,9 @@ def _forward_train(full_cohort, embedding, classifier, n_folds, seed):
         Xtr = _apply_drop_correlated(sel, Xtr)
         Xte = _apply_drop_correlated(sel, Xte)
         n_kept_per_fold.append(n_kept)
-        clf = make_classifier(classifier, seed=seed)
-        clf.fit(Xtr, y[tri])
-        oof_score[tei] = clf.predict_proba(Xte)[:, 1]
+        clf, rfe_mask = _fit_with_optional_rfe(Xtr, y[tri], classifier, seed)
+        Xte_eval = Xte[:, rfe_mask] if rfe_mask is not None and not rfe_mask.all() else Xte
+        oof_score[tei] = clf.predict_proba(Xte_eval)[:, 1]
         oof_fold[tei] = fold_idx
 
     oof_df_base = pd.DataFrame({
@@ -1004,8 +1052,9 @@ def _reverse_train(full_cohort, matched_cohort, embedding, classifier,
         Xm_te = _apply_drop_correlated(sel, Xm_te)
         Xf_t = _apply_drop_correlated(sel, Xf_t)
         n_kept_per_fold.append(n_kept)
-        clf = make_classifier(classifier, seed=seed)
-        clf.fit(Xm_tr, ym[tri])
+        clf, rfe_mask = _fit_with_optional_rfe(Xm_tr, ym[tri], classifier, seed)
+        if rfe_mask is not None and not rfe_mask.all():
+            Xm_te, Xf_t = Xm_te[:, rfe_mask], Xf_t[:, rfe_mask]
         oof_m[tei] = clf.predict_proba(Xm_te)[:, 1]
         full_preds.append(clf.predict_proba(Xf_t)[:, 1])
 
@@ -1257,6 +1306,20 @@ def run_cell(partition, embedding, classifier, strategy, n_folds=10, seed=42):
         # Subject-level aggregated scores (mean across visit/photo rows of the
         # same base_id). Same as oof_df in the default first/mean mode.
         oof_subj.to_csv(out / "forward_oof_scores_subject.csv", index=False)
+        if _SAVE_OOF_PROB:
+            # Meta-stacking input: subject-level (one row per base_id) with
+            # canonical column names that run_meta_analysis.py consumes.
+            prob_dir = OUTPUT_DIR / "pred_probability"
+            prob_dir.mkdir(parents=True, exist_ok=True)
+            prob_df = oof_subj[["base_id", "y_true", "y_score"]].rename(
+                columns={"y_true": "label", "y_score": "prob"})
+            prob_df["partition"] = partition
+            prob_df["embedding"] = embedding
+            prob_df["classifier"] = classifier
+            prob_df.to_csv(
+                prob_dir / f"{partition}_{embedding}_{classifier}_forward.csv",
+                index=False,
+            )
         write_json(out / "forward_matched_metrics.json", {
             "partition": partition, "embedding": embedding,
             "classifier": classifier, "strategy": "forward",
@@ -1426,10 +1489,25 @@ def main():
                              "and write outputs to "
                              "embedding_ABtest/analysis/classification/.  "
                              "Default: production embedding/ tree.")
+    parser.add_argument("--save-oof-probabilities", action="store_true",
+                        help="Additionally write pred_probability/<config>.csv "
+                             "alongside per-cell outputs (consumed by "
+                             "scripts/meta/run_meta_analysis.py as base-level "
+                             "input for TabPFN stacking).")
+    parser.add_argument("--rfe-drop", type=int, default=None,
+                        help="Iterative RFE: drop N weakest features per "
+                             "iteration after fitting; refit on the survivor "
+                             "subset; repeat --rfe-iters times. Uses "
+                             "feature_importances_ (xgb) or |coef_| "
+                             "(logistic). TabPFN has neither, so RFE is "
+                             "skipped for it.")
+    parser.add_argument("--rfe-iters", type=int, default=5,
+                        help="Number of RFE iterations (used with --rfe-drop).")
     args = parser.parse_args()
 
     global _FEATURE_TYPE, _DROP_CORR_THRESHOLD, _DROP_CORR_METHOD
     global _PCA_COMPONENTS, _VISIT_MODE, _PHOTO_MODE, _COHORT_MODE, _LR_C, OUTPUT_DIR
+    global _RFE_DROP, _RFE_ITERS, _SAVE_OOF_PROB
     global EMBEDDING_CLASSIFICATION_DIR, EMBEDDING_FEAT_DIR
     if args.embedding_abtest:
         EMBEDDING_CLASSIFICATION_DIR = EMBEDDING_ABTEST_CLASSIFICATION_DIR
@@ -1456,6 +1534,9 @@ def main():
     _PHOTO_MODE = args.photo_mode
     _COHORT_MODE = args.cohort_mode
     _LR_C = args.lr_C
+    _RFE_DROP = args.rfe_drop
+    _RFE_ITERS = args.rfe_iters
+    _SAVE_OOF_PROB = args.save_oof_probabilities
     OUTPUT_DIR = output_dir_for(_FEATURE_TYPE, _DROP_CORR_THRESHOLD,
                                   _VISIT_MODE, _PHOTO_MODE,
                                   _PCA_COMPONENTS, _COHORT_MODE)

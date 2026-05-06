@@ -8,7 +8,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from src.config import WORKSPACE_DIR, ALIGNED_DIR, EXTERNAL_DIR
+from src.config import WORKSPACE_DIR, ALIGNED_DIR, EXTERNAL_DIR, EMO_AU_DIR
 
 # =============================================================================
 # 統一特徵名稱
@@ -314,13 +314,12 @@ AU_SCALE_INFO = {
 # 路徑配置
 # =============================================================================
 
-EMOTION_DIR = WORKSPACE_DIR / "emotion"
-AU_FEATURES_DIR = EMOTION_DIR / "au_features"
+AU_FEATURES_DIR = EMO_AU_DIR / "features"
 AU_RAW_DIR = AU_FEATURES_DIR / "raw"
 AU_HARMONIZED_DIR = AU_FEATURES_DIR / "harmonized"
 AU_AGGREGATED_DIR = AU_FEATURES_DIR / "aggregated"
 
-AU_ANALYSIS_DIR = EMOTION_DIR / "au_analysis"
+AU_ANALYSIS_DIR = EMO_AU_DIR / "analysis"
 
 # 權重目錄
 WEIGHTS_DIR = EXTERNAL_DIR / "emotion"

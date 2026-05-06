@@ -1,7 +1,7 @@
 """
 process_angles.py
 遍歷有 1200 張相片的資料夾，使用兩種方法計算頭部旋轉角度
-並將訊號圖儲存到 workspace/PnP 與 workspace/vector_angle
+並將訊號圖儲存到 workspace/rotation/PnP 與 workspace/rotation/vector_angle
 
 功能：
 - 自動跳過已處理過的資料夾（檢查輸出圖片是否存在）
@@ -31,8 +31,8 @@ CATEGORIES = {
 }
 
 # 輸出目錄
-OUTPUT_DIR_PNP = PROJECT_ROOT / "workspace" / "PnP"
-OUTPUT_DIR_VECTOR = PROJECT_ROOT / "workspace" / "vector_angle"
+OUTPUT_DIR_PNP = PROJECT_ROOT / "workspace" / "rotation" / "PnP"
+OUTPUT_DIR_VECTOR = PROJECT_ROOT / "workspace" / "rotation" / "vector_angle"
 
 # 目標相片數量
 TARGET_COUNT = 1200
