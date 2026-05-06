@@ -184,7 +184,8 @@ conda create -n Alz_face_emo_au_other python=3.11 -y
     emotiefflib==1.1.1 \
     timm transformers safetensors tokenizers \
     huggingface-hub onnxruntime-gpu \
-    opencv-python-headless numpy pandas
+    opencv-python-headless numpy pandas scipy
+# scipy 用於 src/emo_au/postprocess/{harmonizer,aggregator} 的 linregress / simps
 # 各 model 私有 weights / 私有 pip pkg 按 external/emotion/<model>/requirements.txt 補
 ```
 
