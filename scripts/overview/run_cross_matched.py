@@ -22,8 +22,8 @@ scripts/utilities/{cohort, feature_loaders, stats_helpers}.py. This script
 only contains plot helpers + the comparison-level orchestration.
 
 Usage:
-    conda run -n Alz_face_main_analysis python scripts/experiments/run_cross_matched.py --comparison mmse_hilo
-    conda run -n Alz_face_main_analysis python scripts/experiments/run_cross_matched.py --comparison ad_vs_hc
+    conda run -n Alz_face_main_analysis python scripts/overview/run_cross_matched.py --comparison mmse_hilo
+    conda run -n Alz_face_main_analysis python scripts/overview/run_cross_matched.py --comparison ad_vs_hc
 """
 import argparse
 import json

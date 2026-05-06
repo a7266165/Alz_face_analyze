@@ -25,7 +25,7 @@ Outputs at workspace/age/analysis/classification/window_classifier/{clf}/{feat}f
 
 Usage (Alz_face_test_2 env has tabpfn/sklearn/xgboost):
     "C:/Users/4080/anaconda3/envs/Alz_face_test_2/python.exe" \\
-        scripts/experiments/run_age_window_classifier.py \\
+        scripts/age/run_window_classifier.py \\
         --features 9 --n-runs 100
 """
 

@@ -23,7 +23,7 @@ Outputs:
   overview/<cohort>/classifier_summary_all.csv                grand summary
 
 Usage:
-    conda run -n Alz_face_main_analysis python scripts/experiments/run_age_classifiers.py
+    conda run -n Alz_face_main_analysis python scripts/age/run_classifiers.py
 """
 import argparse
 import json

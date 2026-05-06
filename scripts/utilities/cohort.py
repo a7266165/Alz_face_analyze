@@ -4,11 +4,11 @@ Cohort builders + 1:1 matching helpers for AD vs HC-group and AD hi-lo
 hc_source_mode handling.
 
 Consumed by:
-  - scripts/experiments/run_cross_naive.py        (was run_arm_a_ad_vs_hc.py)
-  - scripts/experiments/run_cross_matched.py
-  - scripts/experiments/run_stat_grid.py          (was run_4arm_deep_dive.py)
-  - scripts/experiments/run_age_classifiers.py    (was run_arm_age_classifiers.py)
-  - scripts/experiments/run_fwd_rev_embedding.py
+  - scripts/overview/run_cross_naive.py
+  - scripts/overview/run_cross_matched.py
+  - scripts/overview/run_stat_grid.py
+  - scripts/age/run_classifiers.py
+  - scripts/embedding/run_fwd_rev.py
 
 Design parameter `design` replaces the legacy `arm` letter:
   cross_naive          (was arm A)  — AD ∪ HC-group, no matching

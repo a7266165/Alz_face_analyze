@@ -10,7 +10,7 @@ Outputs:
 
 Usage:
   "C:/Users/4080/anaconda3/envs/Alz_face_test_2/python.exe" \
-      scripts/experiments/build_longitudinal_hc_and_vectors.py
+      scripts/longitudinal/build_hc_and_vectors.py
 """
 
 import json

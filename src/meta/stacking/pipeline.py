@@ -13,10 +13,10 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import pandas as pd
 
-from src.meta_analysis.stacking.config import MetaConfig
-from src.meta_analysis.loader.meta import MetaDataLoader
-from src.meta_analysis.stacking.evaluator import MetaEvaluator
-from src.meta_analysis.stacking.trainer import TabPFNMetaTrainer, TrainResult
+from src.meta.stacking.config import MetaConfig
+from src.meta.loader.meta import MetaDataLoader
+from src.meta.stacking.evaluator import MetaEvaluator
+from src.meta.stacking.trainer import TabPFNMetaTrainer, TrainResult
 
 logger = logging.getLogger(__name__)
 

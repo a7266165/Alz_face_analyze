@@ -20,7 +20,7 @@ from typing import Dict, List, Optional, Tuple
 import numpy as np
 import pandas as pd
 
-from src.meta_analysis.loader.dataset import FoldData, MetaDataset
+from src.meta.loader.dataset import FoldData, MetaDataset
 
 logger = logging.getLogger(__name__)
 

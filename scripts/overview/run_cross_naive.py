@@ -22,7 +22,7 @@ Outputs (per cohort_mode + ad_vs_hc partition):
   embedding/analysis/feature_stat/{original,difference}/<cohort>/ad_vs_hc/...
 
 Usage:
-    conda run -n Alz_face_main_analysis python scripts/experiments/run_cross_naive.py \\
+    conda run -n Alz_face_main_analysis python scripts/overview/run_cross_naive.py \\
         --cohort-mode default
 """
 import argparse

@@ -3,11 +3,11 @@ Shared statistical helpers: classifier CV, bootstrap CI, effect sizes,
 multivariate tests (Welch, Hotelling T², PERMANOVA), and BH-FDR.
 
 Consumed by:
-  - scripts/experiments/run_cross_naive.py
-  - scripts/experiments/run_cross_matched.py
-  - scripts/experiments/run_stat_grid.py
-  - scripts/experiments/run_age_classifiers.py
-  - scripts/experiments/run_fwd_rev_embedding.py (only bootstrap_auc_ci)
+  - scripts/overview/run_cross_naive.py
+  - scripts/overview/run_cross_matched.py
+  - scripts/overview/run_stat_grid.py
+  - scripts/age/run_classifiers.py
+  - scripts/embedding/run_fwd_rev.py (only bootstrap_auc_ci)
 """
 import logging
 import sys

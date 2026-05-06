@@ -15,8 +15,8 @@ import pandas as pd
 from sklearn.inspection import permutation_importance
 from tabpfn import TabPFNClassifier
 
-from src.meta_analysis.loader.dataset import MetaDataset
-from src.meta_analysis.stacking.evaluator import MetaEvaluator
+from src.meta.loader.dataset import MetaDataset
+from src.meta.stacking.evaluator import MetaEvaluator
 
 logger = logging.getLogger(__name__)
 

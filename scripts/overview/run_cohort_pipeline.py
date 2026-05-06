@@ -5,12 +5,12 @@ One entry point parametrized by --cohort-mode. Each cohort runs the same 5
 producer steps + writes cohort_summary.csv + README.md.
 
 5 steps (post-refactor; AUC supplement is now folded into step 3):
-    1. cross_naive (ad_vs_hc)                  → run_cross_naive.py
-    2. cross_matched × {ad_vs_hc, ad_vs_nad, ad_vs_acs}  → run_cross_matched.py
-    3. cross_matched × {mmse_hilo, casi_hilo}  → run_cross_matched.py
+    1. cross_naive (ad_vs_hc)                  → overview/run_cross_naive.py
+    2. cross_matched × {ad_vs_hc, ad_vs_nad, ad_vs_acs}  → overview/run_cross_matched.py
+    3. cross_matched × {mmse_hilo, casi_hilo}  → overview/run_cross_matched.py
                                                   (auto-includes AUC supplement)
-    4. stat grid (cross_naive + cross_matched, HC=ACS)   → run_stat_grid.py
-    5. age classifiers (cross_naive + cross_matched)     → run_age_classifiers.py
+    4. stat grid (cross_naive + cross_matched, HC=ACS)   → overview/run_stat_grid.py
+    5. age classifiers (cross_naive + cross_matched)     → age/run_classifiers.py
 
 Cohort modes:
     default          strict-HC + first-visit (legacy main cohort)
@@ -22,9 +22,9 @@ Longitudinal designs are not invoked by default — they need build_longitudinal
 producers and are out of scope for cross-sectional cohort pipelines.
 
 Usage:
-    conda run -n Alz_face_main_analysis python scripts/utilities/run_cohort_pipeline.py \\
+    conda run -n Alz_face_main_analysis python scripts/overview/run_cohort_pipeline.py \\
         --cohort-mode p_first_hc_all
-    conda run -n Alz_face_main_analysis python scripts/utilities/run_cohort_pipeline.py \\
+    conda run -n Alz_face_main_analysis python scripts/overview/run_cohort_pipeline.py \\
         --cohort-mode p_all_hc_all --summary-only
 """
 import argparse
@@ -45,7 +45,8 @@ logging.basicConfig(level=logging.INFO,
 logger = logging.getLogger(__name__)
 
 PYTHON = sys.executable
-SCRIPTS_DIR = PROJECT_ROOT / "scripts" / "experiments"
+OVERVIEW_SCRIPTS_DIR = Path(__file__).parent
+AGE_SCRIPTS_DIR = PROJECT_ROOT / "scripts" / "age"
 
 
 # ============================================================
@@ -301,7 +302,7 @@ def main():
     # 1. cross_naive (ad_vs_hc)
     run_step(
         "cross_naive (ad_vs_hc)",
-        [PYTHON, SCRIPTS_DIR / "run_cross_naive.py",
+        [PYTHON, OVERVIEW_SCRIPTS_DIR / "run_cross_naive.py",
          "--cohort-mode", args.cohort_mode],
     )
 
@@ -309,7 +310,7 @@ def main():
     for cmp in ("ad_vs_hc", "ad_vs_nad", "ad_vs_acs"):
         run_step(
             f"cross_matched ({cmp})",
-            [PYTHON, SCRIPTS_DIR / "run_cross_matched.py",
+            [PYTHON, OVERVIEW_SCRIPTS_DIR / "run_cross_matched.py",
              "--comparison", cmp,
              "--cohort-mode", args.cohort_mode],
         )
@@ -318,7 +319,7 @@ def main():
     for cmp in ("mmse_hilo", "casi_hilo"):
         run_step(
             f"cross_matched ({cmp})",
-            [PYTHON, SCRIPTS_DIR / "run_cross_matched.py",
+            [PYTHON, OVERVIEW_SCRIPTS_DIR / "run_cross_matched.py",
              "--comparison", cmp,
              "--cohort-mode", args.cohort_mode],
         )
@@ -326,7 +327,7 @@ def main():
     # 4. stat grid (cross_naive + cross_matched, HC=ACS)
     run_step(
         "run_stat_grid [cross_naive + cross_matched, ACS]",
-        [PYTHON, SCRIPTS_DIR / "run_stat_grid.py",
+        [PYTHON, OVERVIEW_SCRIPTS_DIR / "run_stat_grid.py",
          "--cohort-mode", args.cohort_mode,
          "--designs", "cross_naive", "cross_matched",
          "--hc-source", "ACS"],
@@ -335,7 +336,7 @@ def main():
     # 5. age classifiers (cross_naive + cross_matched)
     run_step(
         "run_age_classifiers [cross_naive + cross_matched]",
-        [PYTHON, SCRIPTS_DIR / "run_age_classifiers.py",
+        [PYTHON, AGE_SCRIPTS_DIR / "run_classifiers.py",
          "--cohort-mode", args.cohort_mode,
          "--designs", "cross_naive", "cross_matched"],
     )

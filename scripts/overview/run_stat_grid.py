@@ -21,7 +21,7 @@ core logic was the longitudinal_matched cohort × per-modality stats, which is
 already represented as the longitudinal_matched design column here.
 
 Usage:
-    conda run -n Alz_face_test_2 python scripts/experiments/run_stat_grid.py \\
+    conda run -n Alz_face_test_2 python scripts/overview/run_stat_grid.py \\
         --cohort-mode default --hc-source ACS \\
         --designs cross_naive cross_matched longitudinal_naive longitudinal_matched
 """

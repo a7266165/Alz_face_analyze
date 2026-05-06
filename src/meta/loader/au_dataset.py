@@ -12,7 +12,7 @@ from typing import List, Optional
 import numpy as np
 import pandas as pd
 
-from src.meta_analysis.loader.base import Dataset
+from src.meta.loader.base import Dataset
 from src.config import DEMOGRAPHICS_DIR
 from src.extractor.features.emotion.extractor.au_config import AU_AGGREGATED_DIR
 
