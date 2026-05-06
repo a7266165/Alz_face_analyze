@@ -77,6 +77,8 @@ SCOPES_BY_DIRECTION = {
 }
 
 # Display label for each partition (used in suptitle).
+# Insertion order also defines the output-file ordering: filenames get
+# `{idx}_<part>_<scope>.png` so alphabetical FS display matches this order.
 PARTITION_LABELS = {
     "ad_vs_hc":  "AD vs HC",
     "ad_vs_nad": "AD vs NAD",
@@ -84,6 +86,7 @@ PARTITION_LABELS = {
     "mmse_hilo": "MMSE Hi-Lo",
     "casi_hilo": "CASI Hi-Lo",
 }
+PARTITION_ORDER = list(PARTITION_LABELS.keys())
 
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s [%(levelname)s] %(message)s")
@@ -210,14 +213,21 @@ def main():
     direction_dir = out / args.direction
     direction_dir.mkdir(parents=True, exist_ok=True)
 
-    partitions = sorted(df["partition"].unique())
-    for part in partitions:
+    # Custom partition ordering: PARTITION_ORDER first, then any unknown
+    # partitions tail-appended in alphabetical order so they remain reachable.
+    found = set(df["partition"].unique())
+    ordered = [p for p in PARTITION_ORDER if p in found]
+    unknown = sorted(p for p in found if p not in PARTITION_ORDER)
+    partitions = ordered + unknown
+    for idx, part in enumerate(partitions, start=1):
         for scope_val, file_tag, scope_label, prefix in scopes:
             fig = _draw_partition_scope(df, eig_df, part, scope_val,
                                         scope_label, shade_ci=shade_ci)
             if fig is None:
                 continue
-            png = direction_dir / f"{part}_{file_tag}.png"
+            # `{idx}_` prefix makes filesystem alphabetical sort match the
+            # PARTITION_ORDER intent (hc, nad, acs, mmse, casi).
+            png = direction_dir / f"{idx}_{part}_{file_tag}.png"
             fig.savefig(png, dpi=150)
             plt.close(fig)
             logger.info(f"Wrote {png}")
