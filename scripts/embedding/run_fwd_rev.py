@@ -87,7 +87,6 @@ FEATURE_TYPES = [
     "difference", "absolute_difference", "average",
     "relative_differences", "absolute_relative_differences",
 ]
-VISIT_MODES = ["first", "all"]
 PHOTO_MODES = ["mean", "all"]
 
 
@@ -96,7 +95,6 @@ _FEATURE_TYPE = "original"
 _DROP_CORR_THRESHOLD = None  # None = disabled; float = enabled at this Pearson threshold
 _DROP_CORR_METHOD = "pearson"
 _PCA_COMPONENTS = None       # None = disabled; int = n_components; float<1 = variance ratio
-_VISIT_MODE = "first"  # "first" = current behavior; "all" = include every qualifying visit per base_id
 _PHOTO_MODE = "mean"   # "mean" = current behavior (mean over 10 photos); "all" = one row per photo
 _COHORT_MODE = os.environ.get("COHORT_MODE", "default")  # default=p_first_hc_first / p_first_hc_all / p_all_hc_all
 _LR_C = 1.0  # LogisticRegression C; encoded at cell-level leaf as logistic/C_<value>/
@@ -129,11 +127,11 @@ def _reducer_label():
     return "no_drop"
 
 
-def output_dir_for(feature_type, drop_corr=None, visit_mode="first",
+def output_dir_for(feature_type, drop_corr=None,
                     photo_mode="mean", pca_components=None,
                     cohort_mode="default"):
     """Build per-cell output dir for the chosen feature_type / reducer /
-    cohort / visit-photo mode combination.
+    cohort / photo mode combination.
 
     Tree layout:
       embedding/analysis/classification/<variant>/<cohort>/<reducer>/
@@ -141,9 +139,14 @@ def output_dir_for(feature_type, drop_corr=None, visit_mode="first",
     Variants: original / difference / absolute_difference / average /
               relative_differences / absolute_relative_differences
 
-    cohort_mode='default'        -> p_first_hc_first (default visit=first, photo=mean)
-    cohort_mode='p_first_hc_all' -> p_first_hc_all    (default visit=all,   photo=mean)
-    cohort_mode='p_all_hc_all'   -> p_all_hc_all      (default visit=all,   photo=mean)
+    cohort_mode='default'        -> p_first_hc_first  (P first + HC first)
+    cohort_mode='p_first_hc_all' -> p_first_hc_all    (P first + HC all visits)
+    cohort_mode='p_all_hc_all'   -> p_all_hc_all      (P all + HC all visits)
+
+    Visit selection is fully encoded in the cohort_mode name — no separate
+    visit_mode flag (removed 2026-05-06; cohort_mode names are self-explanatory
+    so a separate orthogonal knob just produces footgun `visit_first/` suffix
+    drift).
 
     Reducer naming:
       drop_corr=X.X    → drop_feats/pearson_r_X.X
@@ -151,10 +154,8 @@ def output_dir_for(feature_type, drop_corr=None, visit_mode="first",
       pca_components=R → pca/var_ratio_R               (float R<1)
       neither          → no_drop
 
-    Variant subdir `<visit_X>[_<photo_Y>]` is appended as a nested
-    sub-directory under the reducer dir when (visit, photo) differ from the
-    cohort's default — e.g. p_first_hc_first + visit_mode=all yields
-    `pca/n_components_100/visit_all`.
+    Photo subdir `photo_<mode>` is appended only when photo_mode differs from
+    the default 'mean'.
 
     Cell-leaf path: <output_dir>/<partition>/<fwd|rev>/<emb>/<clf>/[C_<value>/]
     LR `C` value is encoded at the cell-level leaf (logistic/C_<lr_C:g>/) by
@@ -171,23 +172,14 @@ def output_dir_for(feature_type, drop_corr=None, visit_mode="first",
         reducer = Path("no_drop")
     else:
         reducer = Path("drop_feats") / f"pearson_r_{drop_corr:g}"
-    if cohort_mode in ("p_first_hc_all", "p_all_hc_all"):
-        default_visit, default_photo = "all", "mean"
-    else:
-        default_visit, default_photo = "first", "mean"
-    suffix_parts = []
-    if visit_mode != default_visit:
-        suffix_parts.append(f"visit_{visit_mode}")
-    if photo_mode != default_photo:
-        suffix_parts.append(f"photo_{photo_mode}")
-    if suffix_parts:
-        reducer = reducer / "_".join(suffix_parts)
+    if photo_mode != "mean":
+        reducer = reducer / f"photo_{photo_mode}"
     cohort_dir = cohort_name(cohort_mode)
     return EMBEDDING_CLASSIFICATION_DIR / feature_type / cohort_dir / reducer
 
 
 OUTPUT_DIR = output_dir_for(_FEATURE_TYPE, _DROP_CORR_THRESHOLD,
-                              _VISIT_MODE, _PHOTO_MODE, _PCA_COMPONENTS,
+                              _PHOTO_MODE, _PCA_COMPONENTS,
                               _COHORT_MODE)
 
 
@@ -373,7 +365,7 @@ def _train_cache_key(partition, embedding, classifier, n_folds, seed):
               else partition)
     return (family, embedding, classifier,
             _FEATURE_TYPE, _DROP_CORR_THRESHOLD, _DROP_CORR_METHOD,
-            _PCA_COMPONENTS, _VISIT_MODE, _PHOTO_MODE, _LR_C,
+            _PCA_COMPONENTS, _PHOTO_MODE, _LR_C,
             tuple(sorted(_XGB_PARAMS.items())),
             n_folds, seed)
 
@@ -403,108 +395,6 @@ def _filter_pairs_by_pred_age(matched, pairs):
     return matched, pairs
 
 
-def _expand_to_all_visits_ad_hc(full_first, hc_source):
-    """For ad_vs_hc family: build an all-visits version of the full training
-    cohort by re-applying per-visit filters (Global_CDR>=0.5 for AD; strict
-    HC criteria for HC) and restricting to base_ids that are in `full_first`.
-
-    Each visit row carries the same `label` / `group` as the first-visit row
-    (the cohort's identity is fixed by the first-visit selection — we only
-    add more visits as additional training samples).
-    """
-    import os as _os
-    DEMOGRAPHICS_DIR = _COHORT_DEMOGRAPHICS_DIR
-    HC_SOURCE_MODE = _HC_SOURCE_MODE
-
-    frames = []
-    groups_to_load = ["P", "NAD"]
-    if HC_SOURCE_MODE != "EACS":
-        groups_to_load.append("ACS")
-    for grp in groups_to_load:
-        df = pd.read_csv(DEMOGRAPHICS_DIR / f"{grp}.csv")
-        if "ID" not in df.columns:
-            for col in df.columns:
-                if col in ("ACS", "NAD"):
-                    df = df.rename(columns={col: "ID"})
-                    break
-        df["group"] = grp
-        df["Source"] = "internal"
-        frames.append(df)
-    if HC_SOURCE_MODE in ("ACS_ext", "EACS"):
-        df_e = pd.read_csv(DEMOGRAPHICS_DIR / "EACS.csv")
-        eacs_sources_env = _os.environ.get("EACS_SOURCES", "").strip()
-        if eacs_sources_env:
-            wanted = {s.strip() for s in eacs_sources_env.split(",") if s.strip()}
-            if "Source" in df_e.columns:
-                df_e = df_e[df_e["Source"].isin(wanted)].copy()
-        df_e["group"] = "ACS"
-        frames.append(df_e)
-    demo = pd.concat(frames, ignore_index=True)
-    if "Source" not in demo.columns:
-        demo["Source"] = "internal"
-    demo["Source"] = demo["Source"].fillna("internal")
-    demo["Age"] = pd.to_numeric(demo["Age"], errors="coerce")
-    demo["Global_CDR"] = pd.to_numeric(demo.get("Global_CDR"), errors="coerce")
-    demo["MMSE"] = pd.to_numeric(demo.get("MMSE"), errors="coerce")
-    demo["base_id"] = demo["ID"].str.extract(r"^(.+)-\d+$")
-    demo["visit"] = demo["ID"].str.extract(r"-(\d+)$").astype(float)
-
-    ad_all = demo[(demo["group"] == "P") & (demo["Global_CDR"] >= 0.5)
-                  & demo["Age"].notna()].copy()
-    ad_all["label"] = 1
-    hc_all = _strict_hc_filter_all_visits(demo, hc_source, _COHORT_MODE)
-    hc_all = hc_all[hc_all["Age"].notna()].copy()
-    full_all = pd.concat([ad_all, hc_all], ignore_index=True)
-    full_all["mmse_group"] = np.nan
-
-    # Restrict to base_ids that are in the original (first-visit) cohort, and
-    # propagate that cohort's `label` / `group` to every visit row of the same
-    # base_id (in case an ad-side visit has CDR<0.5 etc., we keep the AD label).
-    keep_base_ids = set(full_first["base_id"])
-    full_all = full_all[full_all["base_id"].isin(keep_base_ids)].copy()
-    bid_to_label = full_first.set_index("base_id")["label"].to_dict()
-    bid_to_group = full_first.set_index("base_id")["group"].to_dict()
-    full_all["label"] = full_all["base_id"].map(bid_to_label)
-    full_all["group"] = full_all["base_id"].map(bid_to_group)
-    full_all = full_all.dropna(subset=["label"]).copy()
-    full_all["label"] = full_all["label"].astype(int)
-    return full_all.reset_index(drop=True)
-
-
-def _expand_matched_to_all_visits(matched_first, full_all):
-    """Add all qualifying visits per base_id to the matched cohort, propagating
-    `pair_id` (always) and `label` / `group` (if present) from the first-visit
-    row. The first-visit IDs in `matched_first` are kept (they remain the
-    canonical pair members for Wilcoxon); additional visits are appended for
-    richer training signal.
-    """
-    matched_first = matched_first.copy()
-    if "base_id" not in matched_first.columns:
-        matched_first["base_id"] = matched_first["ID"].str.extract(
-            r"^(.+)-\d+$"
-        )[0]
-    keep_base_ids = set(matched_first["base_id"])
-    extra = full_all[full_all["base_id"].isin(keep_base_ids)].copy()
-    # Drop visits that are already in matched_first (avoid duplicates).
-    extra = extra[~extra["ID"].isin(set(matched_first["ID"]))].copy()
-    extra["pair_id"] = extra["base_id"].map(
-        matched_first.set_index("base_id")["pair_id"].to_dict()
-    )
-    if "label" in matched_first.columns:
-        extra["label"] = extra["base_id"].map(
-            matched_first.set_index("base_id")["label"].to_dict()
-        ).astype(int)
-    if "group" in matched_first.columns:
-        extra["group"] = extra["base_id"].map(
-            matched_first.set_index("base_id")["group"].to_dict()
-        )
-    common_cols = [c for c in matched_first.columns if c in extra.columns]
-    expanded = pd.concat(
-        [matched_first[common_cols], extra[common_cols]], ignore_index=True,
-    )
-    return expanded
-
-
 def _build_ad_vs_hcgroup(hc_source):
     """ad_vs_hc / ad_vs_nad / ad_vs_acs.
 
@@ -513,19 +403,12 @@ def _build_ad_vs_hcgroup(hc_source):
     'cross_matched' (1:1 age) with the predicted_age post-hoc filter applied
     so n_pairs matches the cross_matched reference.
 
-    visit_mode + cohort_mode interaction:
-      cohort_mode='default' (p_first_hc_first) picks one visit per subject on
-      both sides; visit_mode='all' expands to all qualifying visits restricted
-      to the same base_id set.
-
-      cohort_mode in ('p_first_hc_all', 'p_all_hc_all') already controls visit
-      selection at cohort-build time (HC unfiltered all-visits in both; AD
-      first-visit in p_first_hc_all vs all-visits in p_all_hc_all). The
-      expansion path is intentionally skipped — re-deriving from
-      base_id-restricted demographics would collapse both modes onto the
-      same expanded cohort, defeating the purpose of the cohort_mode flag.
+    Visit selection is fully encoded in cohort_mode:
+      'default' (p_first_hc_first): P first + HC first
+      'p_first_hc_all':              P first + HC all visits
+      'p_all_hc_all':                P all + HC all visits
     """
-    full_first, _ = build_cohort_ad_vs_HCgroup(
+    full, _ = build_cohort_ad_vs_HCgroup(
         hc_source, design="cross_naive",
         cohort_mode=_COHORT_MODE, hc_source_mode=_HC_SOURCE_MODE,
     )
@@ -534,29 +417,7 @@ def _build_ad_vs_hcgroup(hc_source):
         cohort_mode=_COHORT_MODE, hc_source_mode=_HC_SOURCE_MODE,
     )
     matched, pairs = _filter_pairs_by_pred_age(matched, pairs)
-    if _VISIT_MODE == "all" and _COHORT_MODE == "default":
-        full = _expand_to_all_visits_ad_hc(full_first, hc_source)
-        matched = _expand_matched_to_all_visits(matched, full)
-        return full, matched, pairs
-    return full_first, matched, pairs
-
-
-def _expand_hilo_to_all_visits(cohort_first, metric):
-    """Expand a first-visit hi-lo cohort to all qualifying visits.
-    Each visit row keeps the same `label` / hi-lo group from the first-visit
-    row (the hi-lo split is defined on first-visit metric only)."""
-    metric_low = metric.lower()
-    group_col = f"{metric_low}_group"
-    df = load_p_demographics()
-    df = df[(df["Global_CDR"] >= 0.5)].copy()
-    df_all = df.dropna(subset=[metric, "Age"]).copy()
-    keep_base_ids = set(cohort_first["base_id"])
-    df_all = df_all[df_all["base_id"].isin(keep_base_ids)].copy()
-    bid_to_label = cohort_first.set_index("base_id")["label"].to_dict()
-    bid_to_group = cohort_first.set_index("base_id")[group_col].to_dict()
-    df_all["label"] = df_all["base_id"].map(bid_to_label).astype(int)
-    df_all[group_col] = df_all["base_id"].map(bid_to_group)
-    return df_all.reset_index(drop=True)
+    return full, matched, pairs
 
 
 def _build_metric_hilo(metric):
@@ -565,9 +426,6 @@ def _build_metric_hilo(metric):
     Splits by median, matches 1:1 by age (caliper 2y), then drops pairs
     where either side lacks predicted_age (parity with arm_b convention).
     Labels: high=1, low=0.
-
-    When _VISIT_MODE == "all": cohort + matched are expanded to all qualifying
-    visits per base_id (label / group propagated from first-visit row).
     """
     metric_low = metric.lower()
     group_col = f"{metric_low}_group"
@@ -589,16 +447,6 @@ def _build_metric_hilo(metric):
                             suffixes=("", "_p"))
     matched = matched.drop(columns=[c for c in matched.columns if c.endswith("_p")])
     matched, pairs = _filter_pairs_by_pred_age(matched, pairs)
-
-    # See `_build_ad_vs_hcgroup` for cohort_mode × visit_mode interaction.
-    # Expansion only meaningful for the legacy strict cohort (default); the
-    # other two cohort_modes' visit-selection semantics are already controlled
-    # at cohort-build time, so re-deriving via base_id-restrict would collapse
-    # them onto a common expanded set.
-    if _VISIT_MODE == "all" and _COHORT_MODE == "default":
-        cohort_all = _expand_hilo_to_all_visits(cohort, metric)
-        matched_all = _expand_matched_to_all_visits(matched, cohort_all)
-        return cohort_all, matched_all, pairs
     return cohort, matched, pairs
 
 
@@ -638,11 +486,11 @@ def build_partition_cohort(partition):
 def build_feature_matrix(cohort, embedding):
     """Returns (X, y, base_ids, ids). Drops subjects without .npy.
 
-    Row count depends on (visit_mode, photo_mode):
-      - first / mean: 1 row per base_id (current default)
-      - first / all : 10 rows per base_id (one per photo)
-      - all   / mean: 1 row per (base_id, visit)
-      - all   / all : 10 rows per (base_id, visit)
+    Row count depends on (cohort_mode, photo_mode):
+      - default            + mean: 1 row per base_id
+      - default            + all : 10 rows per base_id (one per photo)
+      - p_*_hc_all (multi) + mean: 1 row per (base_id, visit)
+      - p_*_hc_all (multi) + all : 10 rows per (base_id, visit)
 
     GroupKFold by `base_ids` keeps every row of the same subject in the same
     fold regardless of mode, so there's no leakage between train and val.
@@ -887,7 +735,6 @@ def _forward_train(full_cohort, embedding, classifier, n_folds, seed):
         "n_features_kept_per_fold": [int(n) for n in n_kept_per_fold],
         "n_rows_input": int(X.shape[0]),
         "n_unique_subjects": int(pd.unique(base_ids).size),
-        "visit_mode": _VISIT_MODE,
         "photo_mode": _PHOTO_MODE,
     }
 
@@ -1121,7 +968,6 @@ def _reverse_train(full_cohort, matched_cohort, embedding, classifier,
         "n_rows_full": int(Xf.shape[0]),
         "n_unique_subjects_matched": int(pd.unique(gm).size),
         "n_unique_subjects_full": int(pd.unique(_gf).size),
-        "visit_mode": _VISIT_MODE,
         "photo_mode": _PHOTO_MODE,
     }
 
@@ -1601,12 +1447,6 @@ def main():
                              "Fitted per-fold on training data only. Output "
                              "goes to <base>/pca_<value>/. Mutually exclusive "
                              "with --drop-correlated-threshold.")
-    parser.add_argument("--visit-mode", default="first", choices=VISIT_MODES,
-                        help="'first' (default): one visit per base_id "
-                             "(current behavior). 'all': include every "
-                             "qualifying visit per base_id (more training "
-                             "samples; GroupKFold(base_id) keeps same person "
-                             "in same fold so no leakage).")
     parser.add_argument("--photo-mode", default="mean", choices=PHOTO_MODES,
                         help="'mean' (default): mean-pool the 10 photos per "
                              "subject into 1 feature vector (current "
@@ -1660,7 +1500,7 @@ def main():
     args = parser.parse_args()
 
     global _FEATURE_TYPE, _DROP_CORR_THRESHOLD, _DROP_CORR_METHOD
-    global _PCA_COMPONENTS, _VISIT_MODE, _PHOTO_MODE, _COHORT_MODE, _LR_C, OUTPUT_DIR
+    global _PCA_COMPONENTS, _PHOTO_MODE, _COHORT_MODE, _LR_C, OUTPUT_DIR
     global _RFE_DROP, _RFE_ITERS, _SAVE_OOF_PROB
     global EMBEDDING_CLASSIFICATION_DIR, EMBEDDING_FEAT_DIR
     if args.embedding_abtest:
@@ -1684,7 +1524,6 @@ def main():
         if isinstance(_PCA_COMPONENTS, float) and not (0 < _PCA_COMPONENTS < 1):
             parser.error("--pca-components float must be in (0, 1) for "
                          "variance ratio")
-    _VISIT_MODE = args.visit_mode
     _PHOTO_MODE = args.photo_mode
     _COHORT_MODE = args.cohort_mode
     _LR_C = args.lr_C
@@ -1692,7 +1531,7 @@ def main():
     _RFE_ITERS = args.rfe_iters
     _SAVE_OOF_PROB = args.save_oof_probabilities
     OUTPUT_DIR = output_dir_for(_FEATURE_TYPE, _DROP_CORR_THRESHOLD,
-                                  _VISIT_MODE, _PHOTO_MODE,
+                                  _PHOTO_MODE,
                                   _PCA_COMPONENTS, _COHORT_MODE)
 
     partitions = expand_axis(args.partition, PARTITIONS)
@@ -1707,8 +1546,8 @@ def main():
     else:
         reducer_label = "no_drop"
     logger.info(f"Feature type: {_FEATURE_TYPE}  ·  {reducer_label}  ·  "
-                f"visit={_VISIT_MODE}  ·  photo={_PHOTO_MODE}  ·  "
-                f"cohort={_COHORT_MODE}  ·  lr_C={_LR_C}  →  {OUTPUT_DIR}")
+                f"photo={_PHOTO_MODE}  ·  cohort={_COHORT_MODE}  ·  "
+                f"lr_C={_LR_C}  →  {OUTPUT_DIR}")
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     summary_dir = OUTPUT_DIR / "_summary"
     summary_dir.mkdir(parents=True, exist_ok=True)

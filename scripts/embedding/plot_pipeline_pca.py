@@ -4,13 +4,14 @@ embedding classifier (run_fwd_rev_embedding.py).
 
 Three diagrams are emitted:
     pipeline_pca_classifier_original.{png,pdf}
-        — pre-flag pipeline: visit=first / photo=mean only. One row per
-          subject (1280); no visit/photo expansion; no subject-aggregation
+        — pre-flag pipeline: cohort='default' (first visit) / photo=mean. One
+          row per subject; no visit/photo expansion; no subject-aggregation
           step at eval (1:1 already).
     pipeline_pca_classifier.{png,pdf}
-        — current pipeline with --visit-mode / --photo-mode flags. Feature
-          matrix can expand to multiple rows per subject; GroupKFold(base_id)
-          plus per-fold subject-level aggregation keeps eval leak-free.
+        — current pipeline with --photo-mode flag. Feature matrix can expand
+          to multiple rows per subject (multi-visit cohort + photo='all');
+          GroupKFold(base_id) plus per-fold subject-level aggregation keeps
+          eval leak-free.
     pipeline_pca_eigenvalue.{png,pdf}
         — post-hoc PCA on the full feature pool that produces the
           cumulative eigenvalue / total ratio bottom panel.
@@ -207,13 +208,13 @@ def build_classifier_pca_original():
 
 
 # ============================================================
-# Diagram 2 — current pipeline (with --visit-mode / --photo-mode)
+# Diagram 2 — current pipeline (with --photo-mode)
 # ============================================================
 
 def build_classifier_pca():
     g = make_graph(
         "pca_classifier",
-        "Per-fold PCA with --visit-mode / --photo-mode flags "
+        "Per-fold PCA with --photo-mode flag "
         "(no train/eval leakage)",
     )
 

@@ -17,9 +17,8 @@ Reducer naming (a single positional value, parsed):
     "drop_<thr>"   -> DropCorrelatedFeatures(threshold=<thr>)
 
 Default settings:
-    --cohort-mode p_first_hc_all
-    --visit-mode all       (use all qualifying HC visits per base_id)
-    --photo-mode mean      (mean-pool 10 photos -> 1 vector per visit)
+    --cohort-mode p_first_hc_all   (P first-visit + HC all visits)
+    --photo-mode mean              (mean-pool 10 photos -> 1 vector per visit)
 
 Usage:
     conda run -n Alz_face_main_analysis python \
@@ -98,7 +97,6 @@ def run_one(feat, kind, value, args):
     cmd = [PYTHON, str(PROJECT_ROOT / "scripts" / "embedding" /
                         "run_fwd_rev.py"),
            "--cohort-mode", args.cohort_mode,
-           "--visit-mode", args.visit_mode,
            "--photo-mode", args.photo_mode,
            "--feature-type", feat]
     if kind == "pca":
@@ -127,7 +125,6 @@ def main():
                          "drop_<thr>). Default: full grid (32 reducers).")
     p.add_argument("--cohort-mode", default="p_first_hc_all",
                     choices=["default", "p_first_hc_all", "p_all_hc_all"])
-    p.add_argument("--visit-mode", default="all", choices=["first", "all"])
     p.add_argument("--photo-mode", default="mean", choices=["mean", "all"])
     p.add_argument("--skip-existing", action="store_true",
                     help="Skip invocations whose output dir already has a "
@@ -142,7 +139,6 @@ def main():
     parsed = [parse_reducer(s) for s in specs]
 
     print(f"Cohort mode:    {args.cohort_mode}")
-    print(f"Visit mode:     {args.visit_mode}")
     print(f"Photo mode:     {args.photo_mode}")
     print(f"Feature types:  {args.feature_types}")
     print(f"Reducers ({len(parsed)}): "
@@ -167,7 +163,7 @@ def main():
                 imp = globals()["_imp"]
                 pca = value if kind == "pca" else None
                 drop = value if kind == "drop" else None
-                out = imp.output_dir_for(feat, drop, args.visit_mode,
+                out = imp.output_dir_for(feat, drop,
                                           args.photo_mode, pca, args.cohort_mode)
                 if (out / "_summary" / "combined_summary.csv").exists():
                     skip += 1
