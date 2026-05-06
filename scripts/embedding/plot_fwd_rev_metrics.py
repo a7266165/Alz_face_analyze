@@ -10,9 +10,9 @@ writes a confusion matrix PNG next to the JSON. Also emits a flattened CSV +
 markdown summary.
 
 Usage:
-    conda run -n Alz_face_main_analysis python scripts/visualization/plot_fwd_rev_metrics.py \\
+    conda run -n Alz_face_main_analysis python scripts/embedding/plot_fwd_rev_metrics.py \\
         --root workspace/embedding/analysis/classification/original/p_all_hc_all/no_drop
-    conda run -n Alz_face_main_analysis python scripts/visualization/plot_fwd_rev_metrics.py \\
+    conda run -n Alz_face_main_analysis python scripts/embedding/plot_fwd_rev_metrics.py \\
         --partition ad_vs_hc --embedding arcface
 """
 import argparse
@@ -312,8 +312,19 @@ def main():
     args = parser.parse_args()
 
     global ROOT, SUMMARY
-    ROOT = Path(args.root) if Path(args.root).is_absolute() else \
-        EMBEDDING_CLASSIFICATION_DIR / args.root
+    root_path = Path(args.root)
+    if root_path.is_absolute():
+        ROOT = root_path
+    else:
+        cwd_candidate = (Path.cwd() / root_path).resolve()
+        proj_candidate = (PROJECT_ROOT / root_path).resolve()
+        short_candidate = (EMBEDDING_CLASSIFICATION_DIR / root_path).resolve()
+        for cand in (cwd_candidate, proj_candidate, short_candidate):
+            if cand.exists():
+                ROOT = cand
+                break
+        else:
+            ROOT = proj_candidate
     SUMMARY = ROOT / "_summary"
     SUMMARY.mkdir(parents=True, exist_ok=True)
     logger.info(f"Scanning: {ROOT}")
