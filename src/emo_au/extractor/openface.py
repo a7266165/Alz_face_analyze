@@ -15,7 +15,7 @@ import torch
 import logging
 
 from .base import BaseAUExtractor
-from src.extractor.features.emotion.extractor.au_config import (
+from src.emo_au.extractor.au_config import (
     OPENFACE_AU_INDEX,
     OPENFACE_EMOTION_INDEX,
     OPENFACE_GAZE_COLUMNS,

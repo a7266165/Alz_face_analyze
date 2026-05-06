@@ -8,7 +8,7 @@ from typing import Tuple
 import numpy as np
 import matplotlib.pyplot as plt
 
-from src.extractor.features.rotation.angle_calc import (
+from src.rotation.angle_calc import (
     SequenceResult,
     VectorAngleCalculator,
     PnPAngleCalculator,

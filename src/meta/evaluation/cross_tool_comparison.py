@@ -13,7 +13,7 @@ from itertools import combinations
 import numpy as np
 import pandas as pd
 
-from src.extractor.features.emotion.extractor.au_config import (
+from src.emo_au.extractor.au_config import (
     HARMONIZED_AUS,
     HARMONIZED_EMOTIONS,
     AU_HARMONIZED_DIR,

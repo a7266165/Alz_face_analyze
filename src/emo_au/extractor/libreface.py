@@ -14,7 +14,7 @@ import pandas as pd
 import logging
 
 from .base import BaseAUExtractor
-from src.extractor.features.emotion.extractor.au_config import LIBREFACE_AU_MAP, LIBREFACE_EMOTION_MAP, LIBREFACE_WEIGHTS_DIR
+from src.emo_au.extractor.au_config import LIBREFACE_AU_MAP, LIBREFACE_EMOTION_MAP, LIBREFACE_WEIGHTS_DIR
 
 logger = logging.getLogger(__name__)
 

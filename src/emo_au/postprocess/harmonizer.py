@@ -14,7 +14,7 @@ import pandas as pd
 import numpy as np
 import logging
 
-from src.extractor.features.emotion.extractor.au_config import (
+from src.emo_au.extractor.au_config import (
     HARMONIZED_AUS,
     HARMONIZED_EMOTIONS,
     HARMONIZED_FEATURES,

@@ -20,9 +20,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
 from _paths import PROJECT_ROOT
 
 from src.config import ALIGNED_DIR
-from src.extractor.features.emotion.extractor.au_config import AU_RAW_DIR, AUExtractionConfig
-from src.extractor.features.emotion.postprocess.harmonizer import AUHarmonizer
-from src.extractor.features.emotion.postprocess.aggregator import TemporalAggregator
+from src.emo_au.extractor.au_config import AU_RAW_DIR, AUExtractionConfig
+from src.emo_au.postprocess.harmonizer import AUHarmonizer
+from src.emo_au.postprocess.aggregator import TemporalAggregator
 
 logging.basicConfig(
     level=logging.INFO,
@@ -39,31 +39,31 @@ ALL_STEPS = ["extract", "harmonize", "aggregate"]
 
 def _get_extractor_class(tool_name: str):
     if tool_name == "openface":
-        from src.extractor.features.emotion.extractor.openface import OpenFaceExtractor
+        from src.emo_au.extractor.openface import OpenFaceExtractor
         return OpenFaceExtractor
     elif tool_name == "pyfeat":
-        from src.extractor.features.emotion.extractor.pyfeat import PyFeatExtractor
+        from src.emo_au.extractor.pyfeat import PyFeatExtractor
         return PyFeatExtractor
     elif tool_name == "libreface":
-        from src.extractor.features.emotion.extractor.libreface import LibreFaceExtractor
+        from src.emo_au.extractor.libreface import LibreFaceExtractor
         return LibreFaceExtractor
     elif tool_name == "poster_pp":
-        from src.extractor.features.emotion.extractor.poster_pp import PosterPPExtractor
+        from src.emo_au.extractor.poster_pp import PosterPPExtractor
         return PosterPPExtractor
     elif tool_name == "dan":
-        from src.extractor.features.emotion.extractor.dan import DANExtractor
+        from src.emo_au.extractor.dan import DANExtractor
         return DANExtractor
     elif tool_name == "emonet":
-        from src.extractor.features.emotion.extractor.emonet import EmoNetExtractor
+        from src.emo_au.extractor.emonet import EmoNetExtractor
         return EmoNetExtractor
     elif tool_name == "fer":
-        from src.extractor.features.emotion.extractor.fer_extractor import FERExtractor
+        from src.emo_au.extractor.fer_extractor import FERExtractor
         return FERExtractor
     elif tool_name == "hsemotion":
-        from src.extractor.features.emotion.extractor.hsemotion import HSEmotionExtractor
+        from src.emo_au.extractor.hsemotion import HSEmotionExtractor
         return HSEmotionExtractor
     elif tool_name == "vit":
-        from src.extractor.features.emotion.extractor.vit import ViTExtractor
+        from src.emo_au.extractor.vit import ViTExtractor
         return ViTExtractor
     return None
 

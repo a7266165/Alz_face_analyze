@@ -33,7 +33,7 @@ from src.config import (
     ALIGNED_DIR as _ALIGNED_DIR,
     ALIGNED_BACKGROUND_DIR as _ALIGNED_BACKGROUND_DIR,
 )
-from src.extractor.features.embedding import FeatureExtractor
+from src.embedding import FeatureExtractor
 
 # 設定日誌
 logging.basicConfig(

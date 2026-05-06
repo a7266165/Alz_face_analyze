@@ -26,10 +26,9 @@ from _paths import PROJECT_ROOT
 project_root = PROJECT_ROOT
 
 from src.config import RAW_IMAGES_DIR, FEATURES_DIR, MIRRORS_DIR, AnalyzeConfig, MirrorConfig
-from src.extractor.preprocess import PreprocessPipeline, ProcessedFace
-from src.extractor.mirror import MirrorGenerator
-from src.extractor.features.embedding import FeatureExtractor
-from src.extractor.features.asymmetry import calculate_differences
+from src.preprocess import PreprocessPipeline, ProcessedFace, MirrorGenerator
+from src.embedding import FeatureExtractor
+from src.asymmetry import calculate_differences
 
 # 設定日誌
 logging.basicConfig(

@@ -71,11 +71,11 @@ def main():
                fillcolor="#BBDEFB", color="#1565C0")
 
     # ════════════════════════════════════════
-    # src/extractor/
+    # src/ — modality-flat layout
     # ════════════════════════════════════════
     with g.subgraph(name="cluster_extractor") as ext:
         ext.attr(
-            label="src/extractor/  —  特徵提取層",
+            label="src/  —  特徵提取與處理層（modality-flat）",
             style="rounded,filled",
             fillcolor="#F1F8E9",
             color="#33691E",
@@ -123,7 +123,7 @@ def main():
                       "age/\nMiVOLO v2 + Bootstrap 校正\n→ predicted age JSON",
                       fillcolor="#E8EAF6", color="#283593", fontcolor="#283593")
             feat.node("emotion",
-                      "emotion/\nOpenFace · LibreFace · Py-Feat\nHarmonize → Aggregate\n→ 60-124 features CSV",
+                      "emo_au/\nOpenFace · LibreFace · Py-Feat\nHarmonize → Aggregate\n→ 60-124 features CSV",
                       fillcolor="#FBE9E7", color="#BF360C", fontcolor="#BF360C")
             feat.node("asymmetry",
                       "asymmetry/\ncalculate_differences (5 methods)\nLandmark 幾何不對稱\n→ L/R difference vectors",
@@ -139,16 +139,16 @@ def main():
     # workspace/ (intermediate storage)
     # ════════════════════════════════════════
     g.node("workspace",
-           "workspace/\npreprocess/ │ embedding/ │ age/ │ emotion/ │ asymmetry/ │ rotation/",
+           "workspace/\npreprocess/ │ embedding/ │ age/ │ emo_au/ │ asymmetry/ │ rotation/",
            shape="folder", fillcolor="#E0F7FA", color="#00695C",
            fontcolor="#00695C", fontsize="9")
 
     # ════════════════════════════════════════
-    # src/meta_analysis/
+    # src/meta/
     # ════════════════════════════════════════
     with g.subgraph(name="cluster_meta") as meta:
         meta.attr(
-            label="src/meta_analysis/  —  分析建模層",
+            label="src/meta/  —  分析建模層",
             style="rounded,filled",
             fillcolor="#F3E5F5",
             color="#4A148C",

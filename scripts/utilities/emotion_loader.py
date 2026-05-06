@@ -49,7 +49,7 @@ STATS: List[str] = ["mean", "std", "range", "entropy"]
 
 def _safe_entropy(values: np.ndarray, n_bins: int = 10) -> float:
     """Histogram entropy (base-2). Mirrors
-    src/extractor/features/emotion/postprocess/aggregator.py:_safe_entropy.
+    src/emo_au/postprocess/aggregator.py:_safe_entropy.
     """
     values = values[~np.isnan(values)]
     if values.size < 2:

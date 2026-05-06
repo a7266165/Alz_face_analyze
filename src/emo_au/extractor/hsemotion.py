@@ -16,7 +16,7 @@ import numpy as np
 import logging
 
 from .base import BaseAUExtractor
-from src.extractor.features.emotion.extractor.au_config import HARMONIZED_EMOTIONS
+from src.emo_au.extractor.au_config import HARMONIZED_EMOTIONS
 
 logger = logging.getLogger(__name__)
 

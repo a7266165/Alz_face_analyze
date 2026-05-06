@@ -21,7 +21,7 @@ import torchvision.transforms as transforms
 import logging
 
 from .base import BaseAUExtractor
-from src.extractor.features.emotion.extractor.au_config import (
+from src.emo_au.extractor.au_config import (
     POSTER_PP_EMOTION_INDEX,
     POSTER_PP_WEIGHTS_DIR,
     WEIGHTS_DIR,

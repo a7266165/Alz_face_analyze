@@ -20,7 +20,7 @@ from torch import nn
 import logging
 
 from .base import BaseAUExtractor
-from src.extractor.features.emotion.extractor.au_config import (
+from src.emo_au.extractor.au_config import (
     EMONET_EMOTION_INDEX,
     HARMONIZED_EMOTIONS,
     EMONET_DIR,

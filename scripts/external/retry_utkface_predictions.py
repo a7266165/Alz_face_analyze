@@ -25,7 +25,7 @@ from src.config import (
     EXTERNAL_FILTERED_DIR,
     PREDICTED_AGES_FILE,
 )
-from src.extractor.features.age import MiVOLOPredictor
+from src.age import MiVOLOPredictor
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)

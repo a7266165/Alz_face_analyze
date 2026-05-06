@@ -13,7 +13,7 @@ import pandas as pd
 import logging
 from scipy.stats import linregress
 
-from src.extractor.features.emotion.extractor.au_config import (
+from src.emo_au.extractor.au_config import (
     HARMONIZED_FEATURES,
     TEMPORAL_STATS,
     AU_HARMONIZED_DIR,

@@ -20,7 +20,7 @@ import torchvision.transforms as transforms
 import logging
 
 from .base import BaseAUExtractor
-from src.extractor.features.emotion.extractor.au_config import (
+from src.emo_au.extractor.au_config import (
     HARMONIZED_EMOTIONS,
     DAN_DIR,
     DAN_WEIGHTS_DIR,

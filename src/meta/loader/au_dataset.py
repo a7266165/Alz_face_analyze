@@ -14,7 +14,7 @@ import pandas as pd
 
 from src.meta.loader.base import Dataset
 from src.config import DEMOGRAPHICS_DIR
-from src.extractor.features.emotion.extractor.au_config import AU_AGGREGATED_DIR
+from src.emo_au.extractor.au_config import AU_AGGREGATED_DIR
 
 logger = logging.getLogger(__name__)
 

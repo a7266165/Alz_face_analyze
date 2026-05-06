@@ -14,7 +14,7 @@ import numpy as np
 import logging
 
 from .base import BaseAUExtractor
-from src.extractor.features.emotion.extractor.au_config import PYFEAT_AU_MAP, PYFEAT_EMOTION_MAP
+from src.emo_au.extractor.au_config import PYFEAT_AU_MAP, PYFEAT_EMOTION_MAP
 
 logger = logging.getLogger(__name__)
 
