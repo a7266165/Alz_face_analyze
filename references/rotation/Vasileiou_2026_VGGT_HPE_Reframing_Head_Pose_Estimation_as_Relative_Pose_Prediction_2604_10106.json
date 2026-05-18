@@ -1,0 +1,24 @@
+{
+  "title": "VGGT-HPE: Reframing Head Pose Estimation as Relative Pose Prediction",
+  "authors": [
+    "Vasiliki Vasileiou",
+    "Panagiotis P. Filntisis",
+    "Petros Maragos",
+    "Kostas Daniilidis"
+  ],
+  "year": 2026,
+  "abstract": "We propose reframing head pose estimation from absolute regression to relative pose prediction. Our method, built on a geometry foundation model (VGGT) and trained exclusively on synthetic facial renders, achieves state-of-the-art results on the BIWI benchmark without real-world training data. The relative formulation allows runtime anchor selection to control prediction difficulty.",
+  "doi": null,
+  "arxiv_id": "2604.10106",
+  "venue": "arXiv preprint",
+  "citation_count": null,
+  "source": "manual",
+  "pdf_url": "https://arxiv.org/pdf/2604.10106v1",
+  "project_page": "https://vasilikivas.github.io/VGGT-HPE",
+  "relevance_score": null,
+  "extra": {
+    "submission_date": "2026-04-11"
+  },
+  "pdf_status": "ok",
+  "primary_id": "arxiv:2604.10106"
+}
