@@ -1,5 +1,5 @@
 """
-Train ArcFace → BMI regression models (Ridge + XGBoost).
+Train ArcFace → BMI regression models (Ridge + SVR + XGBoost).
 
 10-fold GroupKFold cross-validation (grouped by base_id to prevent leakage).
 Saves trained models, OOF predictions, and per-fold / aggregate metrics.
@@ -44,9 +44,9 @@ logger = logging.getLogger(__name__)
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--models", nargs="*", default=["ridge", "xgb"],
-        choices=["ridge", "xgb"],
-        help="Models to train (default: both)")
+        "--models", nargs="*", default=["ridge", "svr", "xgb"],
+        choices=["ridge", "svr", "xgb"],
+        help="Models to train (default: all three)")
     parser.add_argument("--n-folds", type=int, default=10)
     parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()

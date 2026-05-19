@@ -16,10 +16,11 @@ from scipy import stats
 from sklearn.linear_model import RidgeCV
 from sklearn.model_selection import GroupKFold
 from sklearn.preprocessing import StandardScaler
+from sklearn.svm import SVR
 
 logger = logging.getLogger(__name__)
 
-ModelName = Literal["ridge", "xgb"]
+ModelName = Literal["ridge", "svr", "xgb"]
 
 EMBEDDING_DIM = 512
 
@@ -124,6 +125,10 @@ def _make_ridge():
     return RidgeCV(alphas=np.logspace(-2, 6, 50), scoring="neg_mean_absolute_error")
 
 
+def _make_svr():
+    return SVR(kernel="rbf", C=10.0, epsilon=0.1, gamma="scale")
+
+
 def _make_xgb():
     from xgboost import XGBRegressor
     return XGBRegressor(
@@ -144,6 +149,8 @@ def _make_xgb():
 def make_model(name: ModelName):
     if name == "ridge":
         return _make_ridge()
+    if name == "svr":
+        return _make_svr()
     if name == "xgb":
         return _make_xgb()
     raise ValueError(f"Unknown model: {name}")

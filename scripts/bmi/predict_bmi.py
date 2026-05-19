@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--model", default="ridge", choices=["ridge", "xgb"],
+        "--model", default="ridge", choices=["ridge", "svr", "xgb"],
         help="Which trained model to use (default: ridge)")
     args = parser.parse_args()
 
