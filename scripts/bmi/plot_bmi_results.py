@@ -46,7 +46,11 @@ def _parse_group(sid: str) -> str:
     return "OTHER"
 
 
+GROUP_LABELS = {"P": "Dementia (P)", "NAD": "Non-Dementia (NAD)", "ACS": "ACS"}
+
+
 def plot_scatter(df, model_name, out_dir):
+    """Combined scatter: all groups in one plot."""
     fig, ax = plt.subplots(figsize=(7, 7))
     groups = df["group"]
     for grp in ["P", "NAD", "ACS"]:
@@ -74,7 +78,43 @@ def plot_scatter(df, model_name, out_dir):
     out = out_dir / f"scatter_{model_name}.png"
     fig.savefig(out, dpi=150, bbox_inches="tight")
     plt.close(fig)
-    return out
+    return [out]
+
+
+def plot_scatter_per_group(df, model_name, out_dir):
+    """One scatter subplot per group (P / NAD / ACS)."""
+    grp_order = [g for g in ["P", "NAD", "ACS"] if (df["group"] == g).sum() > 0]
+    n = len(grp_order)
+    fig, axes = plt.subplots(1, n, figsize=(7 * n, 7))
+    if n == 1:
+        axes = [axes]
+
+    lo = min(df["y_true"].min(), df["y_pred"].min()) - 1
+    hi = max(df["y_true"].max(), df["y_pred"].max()) + 1
+
+    for ax, grp in zip(axes, grp_order):
+        sub = df[df["group"] == grp]
+        ax.scatter(sub["y_true"], sub["y_pred"],
+                   c=GROUP_COLORS[grp], alpha=0.4, s=20)
+        ax.plot([lo, hi], [lo, hi], "k--", lw=1, alpha=0.5)
+
+        r, _ = stats.pearsonr(sub["y_true"], sub["y_pred"])
+        mae = np.mean(np.abs(sub["y_true"] - sub["y_pred"]))
+        ax.set_title(f"{GROUP_LABELS[grp]}  (n={len(sub)})\n"
+                     f"r={r:.3f}  MAE={mae:.2f}", fontsize=14)
+        ax.set_xlabel("True BMI", fontsize=12)
+        ax.set_ylabel("Predicted BMI (OOF)", fontsize=12)
+        ax.set_xlim(lo, hi)
+        ax.set_ylim(lo, hi)
+        ax.set_aspect("equal")
+
+    fig.suptitle(f"{model_name.upper()} — per group", fontsize=16, y=1.02)
+    fig.tight_layout()
+
+    out = out_dir / f"scatter_per_group_{model_name}.png"
+    fig.savefig(out, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    return [out]
 
 
 def plot_residual(df, model_name, out_dir):
@@ -98,7 +138,7 @@ def plot_residual(df, model_name, out_dir):
     out = out_dir / f"residual_{model_name}.png"
     fig.savefig(out, dpi=150, bbox_inches="tight")
     plt.close(fig)
-    return out
+    return [out]
 
 
 def plot_error_dist(df, model_name, out_dir):
@@ -120,12 +160,12 @@ def plot_error_dist(df, model_name, out_dir):
     out = out_dir / f"error_dist_{model_name}.png"
     fig.savefig(out, dpi=150, bbox_inches="tight")
     plt.close(fig)
-    return out
+    return [out]
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--models", nargs="*", default=["ridge", "xgb"])
+    parser.add_argument("--models", nargs="*", default=["ridge", "svr", "xgb"])
     args = parser.parse_args()
 
     n_plots = 0
@@ -139,10 +179,12 @@ def main():
         df["group"] = df["ID"].apply(_parse_group)
         logger.info(f"{model_name}: {len(df)} OOF predictions loaded")
 
-        for plot_fn in (plot_scatter, plot_residual, plot_error_dist):
-            out = plot_fn(df, model_name, BMI_ANALYSIS_DIR)
-            logger.info(f"  {out.name}")
-            n_plots += 1
+        for plot_fn in (plot_scatter, plot_scatter_per_group,
+                        plot_residual, plot_error_dist):
+            paths = plot_fn(df, model_name, BMI_ANALYSIS_DIR)
+            for p in paths:
+                logger.info(f"  {p.name}")
+                n_plots += 1
 
     logger.info(f"Done: {n_plots} plots written to {BMI_ANALYSIS_DIR}")
 
