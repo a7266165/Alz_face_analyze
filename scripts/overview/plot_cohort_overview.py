@@ -23,7 +23,7 @@ import sys as _sys
 _sys.path.insert(0, str(ROOT))
 from src.config import cohort_name  # noqa: E402
 
-COHORT = cohort_name("default")  # V2.2 canonical
+COHORT = cohort_name("p_first_cdr05_hc_first_cdrall_or_mmseall")  # V2.2 canonical
 OVERVIEW_COHORT = ROOT / "workspace" / "overview" / COHORT
 CROSS_NAIVE_CSV   = OVERVIEW_COHORT / "cross_naive" / "cohort.csv"
 CROSS_MATCHED_CSV = OVERVIEW_COHORT / "cross_matched" / "mmse_high_vs_low" / "matched_features.csv"

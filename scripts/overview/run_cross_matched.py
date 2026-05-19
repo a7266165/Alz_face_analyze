@@ -435,7 +435,7 @@ def _select_ad_for_hilo(demo, metric, cohort_mode):
         elig = apply_p_cdr_filter(elig, spec)
         elig = elig.sort_values(["base_id", "visit"])
         return _keep_visits_with_features(elig)
-    if cohort_mode in ("p_first_hc_all",) or spec.hc_visit == "all":
+    if spec.hc_visit == "all":
         elig = demo[demo[metric].notna() & demo["Age"].notna()].copy()
         elig = apply_p_cdr_filter(elig, spec)
         elig = elig.sort_values(["base_id", "visit"])
@@ -463,7 +463,8 @@ def _run_hilo(args, metric):
 
     # 1. Cohort
     demo = load_p_demographics()
-    if args.cohort_mode in ("p_first_hc_all", "p_all_hc_all"):
+    spec = cohort_spec_from_name(args.cohort_mode)
+    if spec.hc_visit == "all" or spec.p_visit == "all":
         cohort = _select_ad_for_hilo(demo, metric, args.cohort_mode)
         logger.info(f"P patients ({args.cohort_mode}, CDR≥0.5 + features): "
                     f"n={len(cohort)}")
@@ -488,7 +489,7 @@ def _run_hilo(args, metric):
     cohort.to_csv(comparison_dir / "cohort.csv", index=False)
 
     # 4. 1:1 age matching
-    match_mode = ("subject_first" if args.cohort_mode == "p_all_hc_all"
+    match_mode = ("subject_first" if spec.p_visit == "all"
                   else "visit")
     matched, pairs_df, (minor_label, major_label) = match_1to1(
         cohort, caliper=args.caliper, seed=args.seed,
@@ -644,7 +645,7 @@ def main():
                              "+ AUC supplement.")
     parser.add_argument("--cohort-mode",
                         choices=VALID_COHORT_CHOICES,
-                        default="default")
+                        default="p_first_cdr05_hc_first_cdrall_or_mmseall")
     parser.add_argument("--hc-source-mode", choices=["ACS", "ACS_ext", "EACS"],
                         default="ACS",
                         help="Only affects ad_vs_{hc,nad,acs} comparisons.")

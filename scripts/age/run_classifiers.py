@@ -276,7 +276,7 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--cohort-mode",
                         choices=VALID_COHORT_CHOICES,
-                        default="default")
+                        default="p_first_cdr05_hc_first_cdrall_or_mmseall")
     parser.add_argument("--hc-source-mode",
                         choices=["ACS", "ACS_ext", "EACS"], default="ACS")
     parser.add_argument("--designs", nargs="+", choices=ALL_DESIGNS,

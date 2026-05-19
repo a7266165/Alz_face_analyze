@@ -41,7 +41,7 @@ PREDICTED_AGES_FILE = PREDICTED_AGES_CALIBRATED_FILE
 # user 想換 (feature_type, cohort, reducer) 組合直接改 PREDICTIONS_DIR 的值。
 from src.config import cohort_name  # noqa: E402
 EMBEDDING_CLF_DIR = WORKSPACE_DIR / "embedding" / "analysis" / "classification"
-PREDICTIONS_DIR = (EMBEDDING_CLF_DIR / "original" / cohort_name("default")
+PREDICTIONS_DIR = (EMBEDDING_CLF_DIR / "original" / cohort_name("p_first_cdr05_hc_first_cdrall_or_mmseall")
                    / "no_drop" / "pred_probability")
 
 # Emotion 分數檔案

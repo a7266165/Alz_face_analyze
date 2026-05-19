@@ -79,10 +79,10 @@ def load_demographics_for_calibration(
     cohort_mode:
         "all" (default, backward-compat): every visit per subject. Drops only
             visits without predicted_age or real Age.
-        "p_first_hc_all": P keeps only first-visit (with Global_CDR>=0.5 and
+        "p_first_cdr05_hc_all_cdrall_or_mmseall": P keeps only first-visit (with Global_CDR>=0.5 and
             .npy fallback); NAD/ACS keep ALL visits without strict HC filter.
     """
-    if cohort_mode not in ("all", "p_first_hc_all"):
+    if cohort_mode not in ("all", "p_first_cdr05_hc_all_cdrall_or_mmseall"):
         raise ValueError(f"unknown cohort_mode: {cohort_mode}")
 
     predicted_ages = json.loads(predicted_ages_file.read_text(encoding="utf-8"))
@@ -99,12 +99,9 @@ def load_demographics_for_calibration(
         df["error"] = df["real_age"] - df["predicted_age"]
         df["age_int"] = df["real_age"].apply(lambda x: int(np.floor(x)))
 
-        if cohort_mode == "p_first_hc_all" and group == "P":
+        if cohort_mode == "p_first_cdr05_hc_all_cdrall_or_mmseall" and group == "P":
             # P side: filter to Global_CDR>=0.5 visits, then pick earliest
             # eligible visit per subject (with .npy fallback).
-            # NOTE: this routine is invoked only by p_first_hc_all (legacy alias);
-            # the V2.2 spec-aware path goes through scripts/utilities/cohort.py
-            # which uses ``apply_p_cdr_filter`` / ``CohortSpec``.
             cdr = pd.to_numeric(df.get("Global_CDR"), errors="coerce")
             df_eligible = df[cdr >= 0.5].copy()
             df = _pick_first_visit_with_npy_fallback(df_eligible, predicted_ages)

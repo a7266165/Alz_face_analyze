@@ -1,5 +1,5 @@
 """
-Embedding-classifier sweep for the p_first_hc_all cohort.
+Embedding-classifier sweep for the p_first_cdr05_hc_all_cdrall_or_mmseall cohort.
 
 Runs run_fwd_rev.py across:
     - feature_type:    original + 5 asymmetry variants (6 total)
@@ -17,7 +17,7 @@ Reducer naming (a single positional value, parsed):
     "drop_<thr>"   -> DropCorrelatedFeatures(threshold=<thr>)
 
 Default settings:
-    --cohort-mode p_first_hc_all   (P first-visit + HC all visits)
+    --cohort-mode p_first_cdr05_hc_all_cdrall_or_mmseall   (P first-visit + HC all visits)
     --photo-mode mean              (mean-pool 10 photos -> 1 vector per visit)
 
 Usage:
@@ -132,7 +132,8 @@ def main():
                     help="Reducer specs (no_drop, pca_<N>, pca_<ratio>, "
                          "drop_<thr>). Default: full grid (32 reducers).")
     from src.config import VALID_COHORT_CHOICES
-    p.add_argument("--cohort-mode", default="p_first_hc_all",
+    p.add_argument("--cohort-mode",
+                    default="p_first_cdr05_hc_all_cdrall_or_mmseall",
                     choices=VALID_COHORT_CHOICES)
     p.add_argument("--photo-mode", default="mean", choices=["mean", "all"])
     p.add_argument("--skip-existing", action="store_true",

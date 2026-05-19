@@ -82,8 +82,8 @@ def filter_cohort(df_matched: pd.DataFrame, cohort_mode: str) -> pd.DataFrame:
     """Apply cohort_mode filter on top of the matched DataFrame.
 
     'all'           : no-op (every visit per subject; current default).
-    'p_first_hc_all'  : P → first eligible visit (CDR>=0.5) with .npy fallback;
-                      NAD/ACS → all visits, no strict HC filter.
+    'p_first_cdr05_hc_all_cdrall_or_mmseall' : P → first eligible visit
+                      (CDR>=0.5) with .npy fallback; NAD/ACS → all visits.
     """
     if cohort_mode == "all":
         return df_matched
@@ -580,12 +580,9 @@ def plot_error_by_age_combined(output_dir: Path):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    # NOTE: this script's `--cohort-mode` predates the V2.2 5-axis canonical
-    # naming and only takes two custom plotting modes ("all" = no filter,
-    # "p_first_hc_all" = first-visit P + all HC). NOT shared with the rest
-    # of the pipeline's VALID_COHORT_CHOICES; see src/config.py if expanding.
     parser.add_argument("--cohort-mode", default="all",
-                        choices=["all", "p_first_hc_all"])
+                        choices=["all",
+                                 "p_first_cdr05_hc_all_cdrall_or_mmseall"])
     parser.add_argument("--output-dir", type=Path, default=AGE_PREDICTION_DIR)
     parser.add_argument("--stat-dir", type=Path, default=CALIBRATION_DIR,
                         help="Where the patient-stratified per-score analyses "

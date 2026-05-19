@@ -23,7 +23,7 @@ Outputs (per cohort_mode + ad_vs_hc partition):
 
 Usage:
     conda run -n Alz_face_main_analysis python scripts/overview/run_cross_naive.py \\
-        --cohort-mode default
+        --cohort-mode p_first_cdr05_hc_first_cdrall_or_mmseall
 """
 import argparse
 import logging
@@ -169,7 +169,7 @@ def main():
                         help="skip bootstrap AUC CI (for quick smoke test)")
     parser.add_argument("--cohort-mode",
                         choices=VALID_COHORT_CHOICES,
-                        default="default")
+                        default="p_first_cdr05_hc_first_cdrall_or_mmseall")
     parser.add_argument("--hc-source-mode",
                         choices=["ACS", "ACS_ext", "EACS"], default="ACS")
     args = parser.parse_args()

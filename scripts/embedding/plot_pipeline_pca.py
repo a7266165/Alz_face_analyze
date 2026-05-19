@@ -4,7 +4,7 @@ embedding classifier (run_fwd_rev_embedding.py).
 
 Three diagrams are emitted:
     pipeline_pca_classifier_original.{png,pdf}
-        — pre-flag pipeline: cohort='default' (first visit) / photo=mean. One
+        — pre-flag pipeline: cohort='p_first_cdr05_hc_first_cdrall_or_mmseall' (first visit) / photo=mean. One
           row per subject; no visit/photo expansion; no subject-aggregation
           step at eval (1:1 already).
     pipeline_pca_classifier.{png,pdf}
@@ -332,13 +332,13 @@ def build_classifier_pca():
 
 
 # ============================================================
-# Diagram 3 — current pipeline: p_first_hc_all cohort × GPU PCA / GPU XGB
+# Diagram 3 — current pipeline: p_first_cdr05_hc_all_cdrall_or_mmseall cohort × GPU PCA / GPU XGB
 # ============================================================
 
-def build_classifier_pca_p_first_hc_all():
+def build_classifier_pca_p_first_cdr05_hc_all_cdrall_or_mmseall():
     g = make_graph(
-        "pca_classifier_p_first_hc_all",
-        "Current PCA pipeline — p_first_hc_all cohort",
+        "pca_classifier_p_first_cdr05_hc_all_cdrall_or_mmseall",
+        "Current PCA pipeline — p_first_cdr05_hc_all_cdrall_or_mmseall cohort",
     )
 
     # Input
@@ -518,8 +518,8 @@ def main():
     render(g1, "pipeline_pca_classifier")
     g2 = build_eigenvalue_panel()
     render(g2, "pipeline_pca_eigenvalue")
-    g3 = build_classifier_pca_p_first_hc_all()
-    render(g3, "pipeline_pca_classifier_p_first_hc_all")
+    g3 = build_classifier_pca_p_first_cdr05_hc_all_cdrall_or_mmseall()
+    render(g3, "pipeline_pca_classifier_p_first_cdr05_hc_all_cdrall_or_mmseall")
 
 
 if __name__ == "__main__":

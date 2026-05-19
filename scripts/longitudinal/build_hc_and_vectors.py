@@ -319,7 +319,8 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--include-eacs", action="store_true",
                     help="額外產 eacs_patient_deltas.csv（僅 IMDB multi-visit 有效）")
-    ap.add_argument("--cohort-mode", default="default",
+    ap.add_argument("--cohort-mode",
+                    default="p_first_cdr05_hc_first_cdrall_or_mmseall",
                     choices=VALID_COHORT_CHOICES,
                     help="Cohort spec (V2.2). Controls CDR/HC filters.")
     args = ap.parse_args()

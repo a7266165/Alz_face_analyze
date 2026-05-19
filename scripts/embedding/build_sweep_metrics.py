@@ -26,7 +26,7 @@ Output:
 Usage:
     conda run -n Alz_face_main_analysis python \
         scripts/utilities/build_asym_sweep_metrics_with_cm.py \
-        --cohort-mode p_all_hc_all
+        --cohort-mode p_all_cdr05_hc_all_cdrall_or_mmseall
 """
 import argparse
 import json
@@ -232,7 +232,7 @@ def main():
         cohort_name,
     )
     p = argparse.ArgumentParser(__doc__)
-    p.add_argument("--cohort-mode", default="default",
+    p.add_argument("--cohort-mode", default="p_first_cdr05_hc_first_cdrall_or_mmseall",
                     choices=VALID_COHORT_CHOICES)
     args = p.parse_args()
     cohort_dir = cohort_name(args.cohort_mode)

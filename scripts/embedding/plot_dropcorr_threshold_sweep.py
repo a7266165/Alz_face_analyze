@@ -11,7 +11,7 @@ Output:
 
 Usage:
     conda run -n Alz_face_main_analysis python scripts/visualization/plot_dropcorr_threshold_sweep.py
-    conda run -n Alz_face_main_analysis python scripts/visualization/plot_dropcorr_threshold_sweep.py --variant difference --cohort-mode p_all_hc_all
+    conda run -n Alz_face_main_analysis python scripts/visualization/plot_dropcorr_threshold_sweep.py --variant difference --cohort-mode p_all_cdr05_hc_all_cdrall_or_mmseall
 """
 import argparse
 import logging
@@ -31,7 +31,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 logger = logging.getLogger(__name__)
 
 
-def resolve_paths(variant, cohort_mode="default"):
+def resolve_paths(variant, cohort_mode="p_first_cdr05_hc_first_cdrall_or_mmseall"):
     """Return (class_root, out, reducer_dirs)."""
     from src.config import EMBEDDING_CLASSIFICATION_DIR, cohort_name
     cohort_dir = cohort_name(cohort_mode)
@@ -86,7 +86,7 @@ def main():
     parser.add_argument("--variant", default=None, choices=ASYM_VARIANTS,
                         help="Asymmetry variant; if omitted, uses original.")
     from src.config import VALID_COHORT_CHOICES
-    parser.add_argument("--cohort-mode", default="default",
+    parser.add_argument("--cohort-mode", default="p_first_cdr05_hc_first_cdrall_or_mmseall",
                         choices=VALID_COHORT_CHOICES)
     args = parser.parse_args()
 

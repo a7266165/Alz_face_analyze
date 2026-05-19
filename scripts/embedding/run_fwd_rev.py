@@ -33,7 +33,7 @@ Usage:
     # Hyperparameter grid search (LR C + XGB n_estimators×max_depth×lr).
     # Writes per-cell grid_results.csv + best_params.json under OUTPUT_DIR/grid_search/.
     conda run -n Alz_face_main_analysis python scripts/embedding/run_fwd_rev.py \\
-        --feature-type original_background --cohort-mode p_first_hc_all \\
+        --feature-type original_background --cohort-mode p_first_cdr05_hc_all_cdrall_or_mmseall \\
         --partition ad_vs_hc --embedding arcface --classifier both \\
         --strategy forward --grid-search
 """
@@ -93,7 +93,7 @@ _DROP_CORR_THRESHOLD = None  # None = disabled; float = enabled at this Pearson 
 _DROP_CORR_METHOD = "pearson"
 _PCA_COMPONENTS = None       # None = disabled; int = n_components; float<1 = variance ratio
 _PHOTO_MODE = "mean"   # "mean" = current behavior (mean over 10 photos); "all" = one row per photo
-_COHORT_MODE = os.environ.get("COHORT_MODE", "default")  # default=p_first_hc_first / p_first_hc_all / p_all_hc_all
+_COHORT_MODE = os.environ.get("COHORT_MODE", "p_first_cdr05_hc_first_cdrall_or_mmseall")  # default=p_first_cdr05_hc_first_cdrall_or_mmseall / p_first_cdr05_hc_all_cdrall_or_mmseall / p_all_cdr05_hc_all_cdrall_or_mmseall
 _LR_C = 1.0  # LogisticRegression C; encoded at cell-level leaf as logistic/C_<value>/
 _XGB_PARAMS = {"n_estimators": 300, "max_depth": 6, "learning_rate": 0.1}
 _RFE_DROP = None   # iterative RFE: drop N weakest features per iter (None/0 = off)
@@ -126,7 +126,7 @@ def _reducer_label():
 
 def output_dir_for(feature_type, drop_corr=None,
                     photo_mode="mean", pca_components=None,
-                    cohort_mode="default"):
+                    cohort_mode="p_first_cdr05_hc_first_cdrall_or_mmseall"):
     """Build per-cell output dir for the chosen feature_type / reducer /
     cohort / photo mode combination.
 
@@ -136,14 +136,8 @@ def output_dir_for(feature_type, drop_corr=None,
     Variants: original / difference / absolute_difference / average /
               relative_differences / absolute_relative_differences
 
-    cohort_mode='default'        -> p_first_hc_first  (P first + HC first)
-    cohort_mode='p_first_hc_all' -> p_first_hc_all    (P first + HC all visits)
-    cohort_mode='p_all_hc_all'   -> p_all_hc_all      (P all + HC all visits)
-
-    Visit selection is fully encoded in the cohort_mode name — no separate
-    visit_mode flag (removed 2026-05-06; cohort_mode names are self-explanatory
-    so a separate orthogonal knob just produces footgun `visit_first/` suffix
-    drift).
+    Visit selection is fully encoded in the canonical cohort_mode name
+    (e.g. p_first_cdr05_hc_first_cdrall_or_mmseall).
 
     Reducer naming:
       drop_corr=X.X    → drop_feats/pearson_r_X.X
@@ -288,7 +282,7 @@ from scripts.utilities.stats_helpers import bootstrap_auc_ci
 
 # Module-level _COHORT_MODE is set in main() after argparse; cohort builders
 # get it threaded as a parameter (no env-var-at-load globals).
-_COHORT_MODE = "default"
+_COHORT_MODE = "p_first_cdr05_hc_first_cdrall_or_mmseall"
 _HC_SOURCE_MODE = os.environ.get("HC_SOURCE_MODE", "ACS")
 
 
@@ -377,9 +371,9 @@ def _build_ad_vs_hcgroup(hc_source):
     so n_pairs matches the cross_matched reference.
 
     Visit selection is fully encoded in cohort_mode:
-      'default' (p_first_hc_first): P first + HC first
-      'p_first_hc_all':              P first + HC all visits
-      'p_all_hc_all':                P all + HC all visits
+      'p_first_cdr05_hc_first_cdrall_or_mmseall' (p_first_cdr05_hc_first_cdrall_or_mmseall): P first + HC first
+      'p_first_cdr05_hc_all_cdrall_or_mmseall':              P first + HC all visits
+      'p_all_cdr05_hc_all_cdrall_or_mmseall':                P all + HC all visits
     """
     full, _ = build_cohort_ad_vs_HCgroup(
         hc_source, design="cross_naive",
@@ -1428,10 +1422,10 @@ def main():
                              "subject into 1 feature vector (current "
                              "behavior). 'all': keep all 10 photos as "
                              "individual training rows.")
-    parser.add_argument("--cohort-mode", default="default",
+    parser.add_argument("--cohort-mode", default="p_first_cdr05_hc_first_cdrall_or_mmseall",
                         choices=VALID_COHORT_CHOICES,
-                        help="'default' (p_first_hc_first), 'p_first_hc_all' "
-                             "(first-visit P + ALL NAD/ACS), or 'p_all_hc_all' "
+                        help="'p_first_cdr05_hc_first_cdrall_or_mmseall' (p_first_cdr05_hc_first_cdrall_or_mmseall), 'p_first_cdr05_hc_all_cdrall_or_mmseall' "
+                             "(first-visit P + ALL NAD/ACS), or 'p_all_cdr05_hc_all_cdrall_or_mmseall' "
                              "(ALL P visits + ALL NAD/ACS). Output goes to "
                              "<cohort>/embedding_*classification/ . "
                              "Threaded as a function parameter to "

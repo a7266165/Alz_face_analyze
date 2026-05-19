@@ -23,7 +23,7 @@ Output:
 
 Usage:
     conda run -n Alz_face_main_analysis python scripts/embedding/plot_grid_search.py \\
-        --root workspace/embedding_ABtest/analysis/classification/original_background/p_first_hc_all/no_drop
+        --root workspace/embedding/analysis/classification/original_background/p_first_cdr05_hc_all_cdrall_or_mmseall/no_drop
 """
 import argparse
 from pathlib import Path

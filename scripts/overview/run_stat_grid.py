@@ -13,7 +13,7 @@ comparison):
 
 Usage:
     conda run -n Alz_face_test_2 python scripts/overview/run_stat_grid.py \\
-        --cohort-mode default --hc-source ACS \\
+        --cohort-mode p_first_cdr05_hc_first_cdrall_or_mmseall --hc-source ACS \\
         --designs cross_naive cross_matched longitudinal_naive longitudinal_matched
 """
 import argparse
@@ -514,7 +514,7 @@ def run_all(output_dir, cohort_mode, hc_source_mode, designs_to_run,
     """Run the cross-design × cross-modality stat grid.
 
     output_dir: where stat_grid_long.csv etc. land
-    cohort_mode: 'default' | 'p_first_hc_all' | 'p_all_hc_all'
+    cohort_mode: canonical 5-axis name (see src.config.VALID_COHORT_CHOICES)
     hc_source_mode: 'ACS' | 'ACS_ext' | 'EACS'
     designs_to_run: subset of DESIGNS to run (others marked n/a in grid)
     modality_keys: subset of MODALITY_SPECS' parent names (None → all)
@@ -697,7 +697,7 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--cohort-mode",
                    choices=VALID_COHORT_CHOICES,
-                   default="default")
+                   default="p_first_cdr05_hc_first_cdrall_or_mmseall")
     p.add_argument("--hc-source", choices=["ACS", "ACS_ext", "EACS"],
                    default="ACS",
                    help="ACS 群體組成：ACS=內部 91 人 (default)；"

@@ -12,18 +12,18 @@ Steps:
     5. age classifiers (cross_naive + cross_matched)     → age/run_classifiers.py
 
 Cohort modes (see src.config.CohortSpec for full 5-axis spec):
-    default          first-visit P + first-visit HC (CDR≥0.5, no HC cognitive filter)
-    p_first_hc_all   first-visit P + ALL HC visits
-    p_all_hc_all     ALL P visits + ALL HC visits (most permissive)
+    p_first_cdr05_hc_first_cdrall_or_mmseall  first-visit P + first-visit HC (default)
+    p_first_cdr05_hc_all_cdrall_or_mmseall    first-visit P + ALL HC visits
+    p_all_cdr05_hc_all_cdrall_or_mmseall      ALL P visits + ALL HC visits (most permissive)
 
 Longitudinal designs are not invoked by default — they need build_longitudinal_*
 producers and are out of scope for cross-sectional cohort pipelines.
 
 Usage:
     conda run -n Alz_face_main_analysis python scripts/overview/run_cohort_pipeline.py \\
-        --cohort-mode p_first_hc_all
+        --cohort-mode p_first_cdr05_hc_all_cdrall_or_mmseall
     conda run -n Alz_face_main_analysis python scripts/overview/run_cohort_pipeline.py \\
-        --cohort-mode p_all_hc_all --summary-only
+        --cohort-mode p_all_cdr05_hc_all_cdrall_or_mmseall --summary-only
 """
 import argparse
 import logging
@@ -52,35 +52,35 @@ AGE_SCRIPTS_DIR = PROJECT_ROOT / "scripts" / "age"
 # ============================================================
 
 README_TEMPLATES = {
-    "default": {
+    "p_first_cdr05_hc_first_cdrall_or_mmseall": {
         "title": "cohort: first-visit P + first-visit NAD/ACS (V2.2 default = canonical p_first_cdr05_hc_first_cdrall_or_mmseall)",
         "definition": (
             "| Side | Filter |\n"
             "|---|---|\n"
             "| **P (AD)** | First-visit + `Global_CDR >= 0.5` + `.npy fallback` |\n"
             "| **NAD / ACS (HC)** | First-visit per HC subject; **no cognitive filter** "
-            "(strict CDR=0 / MMSE>=26 was dropped in commit b6cf31e, 2026-05-06) |\n"
+            "(CDR=0 / MMSE>=26 cognitive filter not applied by default) |\n"
         ),
         "intro": (
-            "V2.2 default cohort. AD side first-visit + CDR>=0.5; HC side first-visit "
-            "without strict cognitive criteria. To opt back into legacy strict HC, "
-            "use `--cohort-mode p_first_cdr05_hc_first_cdr0_or_mmse26` (Legacy OR rule).\n"
+            "Default cohort. AD side first-visit + CDR>=0.5; HC side first-visit "
+            "without cognitive filter. To enable HC cognitive filter, "
+            "use `--cohort-mode p_first_cdr05_hc_first_cdr0_or_mmse26`.\n"
         ),
         "caveats": (
             "1. **AD 端 first-visit only**：每 base_id 只用一筆 visit（feature "
             "fallback 規則：若第一 visit 無 embedding+landmark feature，退而求"
             "其次選最早有 feature 的 visit）。\n"
             "2. **HC 不再做 cog 篩**：NAD / ACS 不過濾 CDR / MMSE；若需要可改用 "
-            "`p_first_cdr05_hc_first_cdr0_or_mmse26` 恢復 Legacy OR strict。\n"
+            "`p_first_cdr05_hc_first_cdr0_or_mmse26` 恢復 HC 認知篩選。\n"
         ),
     },
-    "p_first_hc_all": {
+    "p_first_cdr05_hc_all_cdrall_or_mmseall": {
         "title": "cohort: first-visit P + ALL NAD/ACS",
         "definition": (
             "| Side | Filter |\n"
             "|---|---|\n"
             "| **P (AD)** | First-visit + `Global_CDR >= 0.5` + `.npy fallback` |\n"
-            "| **NAD / ACS (HC)** | **No strict HC filter** — every visit kept "
+            "| **NAD / ACS (HC)** | **No HC cognitive filter** — every visit kept "
             "(CDR=0 / MMSE>=26 not required, no first-visit pick per HC subject) |\n"
         ),
         "intro": (
@@ -88,24 +88,24 @@ README_TEMPLATES = {
             "visit regardless of CDR/MMSE.\n"
         ),
         "caveats": (
-            "1. **HC 含 MCI / 失智 visit**：因為 NAD / ACS 不再做 strict HC 篩，"
+            "1. **HC 含 MCI / 失智 visit**：因為 NAD / ACS 不再做 HC 認知篩選，"
             "這個 cohort 的「HC pool」其實混了 CDR>=0.5 的 visit。對 ad_vs_hc "
             "effect size 可能造成低估（部分 HC 樣本本身就是 dementia）。\n"
             "2. **多 visit 不獨立**：NAD / ACS 同一個 subject 多 visit 的特徵 "
             "correlated；GroupKFold 用 base_id 切 fold 仍然成立，但 1:1 age-"
             "matched pair 內可能同 subject 出現多次。\n"
-            "3. **cross_matched pair 數會比 strict cohort 多**：HC pool 大幅"
+            "3. **cross_matched pair 數會增多**：HC pool 大幅"
             "擴張後，每個 AD 都更容易在 caliper 2 年內找到 match。\n"
         ),
     },
-    "p_all_hc_all": {
+    "p_all_cdr05_hc_all_cdrall_or_mmseall": {
         "title": "cohort: ALL P visits + ALL NAD/ACS",
         "definition": (
             "| Side | Filter |\n"
             "|---|---|\n"
             "| **P (AD)** | All visits with `Global_CDR>=0.5` AND embedding+landmark "
             ".npy features available |\n"
-            "| **NAD / ACS (HC)** | All visits, no strict HC filter |\n"
+            "| **NAD / ACS (HC)** | All visits, no HC cognitive filter |\n"
         ),
         "intro": (
             "Most permissive cohort. AD side has multi-visit records, so 1:1 "
@@ -116,7 +116,7 @@ README_TEMPLATES = {
         "caveats": (
             "1. **AD 端多 visit**：同一 base_id 多 visit 都進 cohort，"
             "subject-first 兩階段配對。\n"
-            "2. **HC 端含 dementia visit**：NAD / ACS 不再做 strict HC 篩，"
+            "2. **HC 端含 dementia visit**：NAD / ACS 不再做 HC 認知篩選，"
             "HC pool 混了高 CDR 個案。\n"
             "3. **每個 base_id 配對次數會變多**：HC pool 大幅擴張下，每個 AD "
             "都更容易在 caliper 內找到 match。\n"
@@ -232,8 +232,8 @@ def _generic_readme_template(cohort_mode):
     p_cdr_text = "no CDR filter" if spec.p_cdr == "cdrall" else "Global_CDR >= 0.5"
     hc_visit_text = "All HC visits" if spec.hc_visit == "all" else "First-visit per HC subject"
     hc_strict_text = (
-        "Legacy OR strict: CDR=0 OR (CDR=NaN AND MMSE>=26)"
-        if spec.hc_strict else "no cognitive filter (loose)"
+        "HC cognitive filter: CDR=0 OR (CDR=NaN AND MMSE>=26)"
+        if spec.hc_strict else "no cognitive filter"
     )
     return {
         "title": f"cohort: {spec.canonical_name}",
@@ -249,7 +249,7 @@ def _generic_readme_template(cohort_mode):
         ),
         "caveats": (
             "Auto-generated template; review hand-written templates in "
-            "README_TEMPLATES for `default` / `p_first_hc_all` / `p_all_hc_all` "
+            "README_TEMPLATES for `default` / `p_first_cdr05_hc_all_cdrall_or_mmseall` / `p_all_cdr05_hc_all_cdrall_or_mmseall` "
             "for the historical cohorts.\n"
         ),
     }

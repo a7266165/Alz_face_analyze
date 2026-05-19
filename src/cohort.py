@@ -4,7 +4,7 @@ and cohort building.
 
 All dataset-filtering logic lives here:
   - CDR filters (per-visit and subject-level max)
-  - HC strict Legacy OR filter (CDR==0 OR CDR.isna() AND MMSE>=26)
+  - HC strict HC cognitive filter (CDR==0 OR CDR.isna() AND MMSE>=26)
   - Predicted-age existence / threshold filter
   - Follow-up duration filter
   - Multi-visit filter
@@ -23,6 +23,7 @@ import pandas as pd
 
 from src.config import (
     CohortSpec,
+    DEFAULT_COHORT_MODE,
     EMO_AU_FEATURES_DIR,
     LONGITUDINAL_FEATURES_DIR,
     PREDICTED_AGES_FILE,
@@ -93,7 +94,7 @@ def apply_p_cdr_filter(df, spec: CohortSpec):
 
 
 def apply_hc_strict_filter(df, spec: CohortSpec):
-    """HC Legacy OR filter.  Keeps CDR==0 OR (CDR.isna() AND MMSE>=26)
+    """HC HC cognitive filter.  Keeps CDR==0 OR (CDR.isna() AND MMSE>=26)
     when spec.hc_strict is True; returns df unmodified otherwise."""
     if not spec.hc_strict:
         return df
@@ -302,7 +303,7 @@ def split_by_metric_median(cohort, tiebreak="high", metric="MMSE",
 
 
 # ====================================================================
-# HC visit selection + optional Legacy OR strict filter
+# HC visit selection + optional HC cognitive strict filter
 # ====================================================================
 
 def _select_hc_visits_all(demo, hc_source, spec: CohortSpec):
@@ -556,7 +557,7 @@ def _load_combined_demographics(hc_source_mode):
 def build_cohort_ad_vs_HCgroup(
     hc_source,
     design,
-    cohort_mode="default",
+    cohort_mode=DEFAULT_COHORT_MODE,
     hc_source_mode="ACS",
     caliper=2.0,
     seed=42,
@@ -715,7 +716,7 @@ def _annualize_patient_deltas(df):
 
 def build_cohort_ad_hi_lo(
     design,
-    cohort_mode="default",
+    cohort_mode=DEFAULT_COHORT_MODE,
     caliper=2.0,
     seed=42,
     metric="MMSE",

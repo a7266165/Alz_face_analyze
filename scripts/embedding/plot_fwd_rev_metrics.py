@@ -11,7 +11,7 @@ markdown summary.
 
 Usage:
     conda run -n Alz_face_main_analysis python scripts/embedding/plot_fwd_rev_metrics.py \\
-        --root workspace/embedding/analysis/classification/original/p_all_hc_all/no_drop
+        --root workspace/embedding/analysis/classification/original/p_all_cdr05_hc_all_cdrall_or_mmseall/no_drop
     conda run -n Alz_face_main_analysis python scripts/embedding/plot_fwd_rev_metrics.py \\
         --partition ad_vs_hc --embedding arcface
 """
@@ -30,7 +30,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 import sys as _sys
 _sys.path.insert(0, str(PROJECT_ROOT))
 from src.config import EMBEDDING_CLASSIFICATION_DIR, cohort_name
-DEFAULT_ROOT = EMBEDDING_CLASSIFICATION_DIR / "original" / cohort_name("default") / "no_drop"
+DEFAULT_ROOT = EMBEDDING_CLASSIFICATION_DIR / "original" / cohort_name("p_first_cdr05_hc_first_cdrall_or_mmseall") / "no_drop"
 ROOT = DEFAULT_ROOT  # set by main() when --root is passed
 SUMMARY = ROOT / "_summary"
 

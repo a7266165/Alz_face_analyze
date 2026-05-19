@@ -66,7 +66,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 logger = logging.getLogger(__name__)
 
 
-def resolve_paths(variant, cohort_mode="default"):
+def resolve_paths(variant, cohort_mode="p_first_cdr05_hc_first_cdrall_or_mmseall"):
     """Return (class_root, out, reducer_dirs, cell_json_for, feature_subdir, feat_root).
 
     class_root             → <classification_root>/<variant>/<cohort>
@@ -297,11 +297,11 @@ def main():
     parser.add_argument("--variant", default=None,
                         choices=ASYM_VARIANTS + ["original", "original_background"],
                         help="Variant under classification/.  Default None == 'original'.")
-    parser.add_argument("--cohort-mode", default="default",
+    parser.add_argument("--cohort-mode", default="p_first_cdr05_hc_first_cdrall_or_mmseall",
                         choices=VALID_COHORT_CHOICES,
-                        help="Output cohort routing. 'default'=p_first_hc_first; "
-                             "'p_first_hc_all'=p_first_hc_all/; "
-                             "'p_all_hc_all'=p_all_hc_all/.")
+                        help="Output cohort routing. 'p_first_cdr05_hc_first_cdrall_or_mmseall'=p_first_cdr05_hc_first_cdrall_or_mmseall; "
+                             "'p_first_cdr05_hc_all_cdrall_or_mmseall'=p_first_cdr05_hc_all_cdrall_or_mmseall/; "
+                             "'p_all_cdr05_hc_all_cdrall_or_mmseall'=p_all_cdr05_hc_all_cdrall_or_mmseall/.")
     parser.add_argument("--eigen-source", default="all_npy",
                         choices=["all_npy", "visit_all"],
                         help="Eigenvalue panel data source. 'all_npy' (default): "

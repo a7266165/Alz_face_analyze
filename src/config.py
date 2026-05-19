@@ -66,8 +66,7 @@ EMBEDDING_CLASSIFICATION_DIR = EMBEDDING_ANALYSIS_DIR / "classification"
 # -----------------------------------------------------------------------------
 AGE_DIR = WORKSPACE_DIR / "age"
 AGE_PREDICTIONS_DIR = AGE_DIR / "predictions"
-# 預設指向 V2.2 default canonical (p_first_cdr05_hc_first_cdrall_or_mmseall)；
-# 其他 cohort 用 AGE_PREDICTIONS_DIR / cohort_name(...) 動態組合。
+# 預設指向 DEFAULT_COHORT_MODE；其他 cohort 用 AGE_PREDICTIONS_DIR / <canonical> 動態組合。
 AGE_PREDICTION_DIR = AGE_PREDICTIONS_DIR / "p_first_cdr05_hc_first_cdrall_or_mmseall"
 AGE_BENCHMARK_DIR = AGE_PREDICTIONS_DIR / "benchmark"
 
@@ -134,18 +133,18 @@ OVERVIEW_DIR = WORKSPACE_DIR / "overview"
 #   hc_cdr:   cdr0  (Global_CDR==0)   | cdrall (no filter)
 #   hc_mmse:  mmse26 (MMSE>=26)       | mmseall (no filter)
 #
-# HC two tokens are coupled (Legacy OR rule).  Only two valid combos:
-#   (cdrall, mmseall) -> HC loose (no filter)
-#   (cdr0,   mmse26)  -> HC strict: CDR==0 OR (CDR.isna() AND MMSE>=26)
+# HC two tokens are coupled.  Only two valid combos:
+#   (cdrall, mmseall) -> no HC cognitive filter
+#   (cdr0,   mmse26)  -> HC cognitive filter: CDR==0 OR (CDR.isna() AND MMSE>=26)
 # -----------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)
 class CohortSpec:
-    """5-axis cohort specification (V2.2).
+    """5-axis cohort specification.
 
-    Use ``cohort_spec_from_name`` to parse from alias/canonical strings, or
-    construct directly.  ``canonical_name`` always returns the explicit form.
+    Use ``cohort_spec_from_name`` to parse canonical strings, or construct
+    directly.  ``canonical_name`` always returns the explicit form.
     """
 
     p_visit: Literal["first", "all"]
@@ -159,7 +158,7 @@ class CohortSpec:
             raise ValueError(
                 f"Invalid HC filter combo: hc_cdr={self.hc_cdr!r}, "
                 f"hc_mmse={self.hc_mmse!r}. Only (cdrall, mmseall) and "
-                f"(cdr0, mmse26) are supported (Legacy OR rule)."
+                f"(cdr0, mmse26) are supported."
             )
 
     @property
@@ -169,7 +168,7 @@ class CohortSpec:
 
     @property
     def hc_strict(self) -> bool:
-        """True iff HC applies the Legacy OR strict rule."""
+        """True when HC cognitive filter is active (CDR==0 OR MMSE>=26)."""
         return (self.hc_cdr, self.hc_mmse) == ("cdr0", "mmse26")
 
 
@@ -181,26 +180,16 @@ DEFAULT_COHORT_SPEC = CohortSpec(
     hc_visit="first", hc_cdr="cdrall", hc_mmse="mmseall",
 )
 
+DEFAULT_COHORT_MODE = DEFAULT_COHORT_SPEC.canonical_name
 
-# Aliases (V0/V1 names → V2 canonical).
-COHORT_ALIASES = {
-    "default":           "p_first_cdr05_hc_first_cdrall_or_mmseall",
-    "p_first_hc_first":  "p_first_cdr05_hc_first_cdrall_or_mmseall",
-    "p_first_hc_all":    "p_first_cdr05_hc_all_cdrall_or_mmseall",
-    "p_all_hc_all":      "p_all_cdr05_hc_all_cdrall_or_mmseall",
-}
-
-# 16 valid canonical names + 4 legacy aliases (de-duped).
-VALID_COHORT_CHOICES = sorted(set([
-    *COHORT_ALIASES.keys(),
-    *[
-        CohortSpec(pv, pc, hv, hc, hm).canonical_name
-        for pv in ("first", "all")
-        for pc in ("cdr05", "cdrall")
-        for hv in ("first", "all")
-        for (hc, hm) in _VALID_HC_COMBOS
-    ],
-]))
+# 16 valid canonical names (4 p_visit×p_cdr combos × 2 hc_visit × 2 hc_filter).
+VALID_COHORT_CHOICES = sorted([
+    CohortSpec(pv, pc, hv, hc, hm).canonical_name
+    for pv in ("first", "all")
+    for pc in ("cdr05", "cdrall")
+    for hv in ("first", "all")
+    for (hc, hm) in _VALID_HC_COMBOS
+])
 
 
 _CANONICAL_RE = re.compile(
@@ -210,24 +199,20 @@ _CANONICAL_RE = re.compile(
 
 
 def cohort_name(cohort_mode: str) -> str:
-    """Resolve alias → canonical, or pass through if already canonical.
-
-    Examples:
-        ``cohort_name("default")`` →
-            ``"p_first_cdr05_hc_first_cdrall_or_mmseall"``
-        ``cohort_name("p_first_cdrall_hc_first_cdr0_or_mmse26")`` →
-            same (already canonical)
-    """
-    return COHORT_ALIASES.get(cohort_mode, cohort_mode)
+    """Validate and return the canonical cohort name (passthrough)."""
+    if cohort_mode not in VALID_COHORT_CHOICES:
+        raise ValueError(
+            f"Unknown cohort_mode {cohort_mode!r}. "
+            f"Must be one of the 16 canonical names.")
+    return cohort_mode
 
 
 def cohort_spec_from_name(name: str) -> CohortSpec:
-    """Parse alias or canonical name to CohortSpec; raise on invalid."""
-    canonical = cohort_name(name)
-    m = _CANONICAL_RE.match(canonical)
+    """Parse canonical name to CohortSpec; raise on invalid."""
+    m = _CANONICAL_RE.match(name)
     if m is None:
         raise ValueError(
-            f"Cannot parse cohort name {name!r} (resolved to {canonical!r}). "
+            f"Cannot parse cohort name {name!r}. "
             f"Expected canonical form "
             f"'p_<first|all>_<cdr05|cdrall>_hc_<first|all>_<cdr0|cdrall>_or_<mmse26|mmseall>'."
         )

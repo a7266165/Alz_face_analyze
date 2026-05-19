@@ -41,7 +41,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 logger = logging.getLogger(__name__)
 
 
-def resolve_paths(variant, cohort_mode="default"):
+def resolve_paths(variant, cohort_mode="p_first_cdr05_hc_first_cdrall_or_mmseall"):
     from src.config import EMBEDDING_CLASSIFICATION_DIR, cohort_name
     cohort_dir = cohort_name(cohort_mode)
     v = variant if variant is not None else "original"
@@ -115,7 +115,7 @@ def main():
     parser = argparse.ArgumentParser(__doc__)
     parser.add_argument("--variant", default=None, choices=ASYM_VARIANTS)
     from src.config import VALID_COHORT_CHOICES
-    parser.add_argument("--cohort-mode", default="default",
+    parser.add_argument("--cohort-mode", default="p_first_cdr05_hc_first_cdrall_or_mmseall",
                         choices=VALID_COHORT_CHOICES)
     args = parser.parse_args()
 
