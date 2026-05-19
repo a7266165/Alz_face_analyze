@@ -4,9 +4,10 @@
 路徑常數、專案級設定、處理參數
 """
 
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import List, Literal, Optional, Tuple
 
 
 # =============================================================================
@@ -72,8 +73,9 @@ EMBEDDING_CLASSIFICATION_DIR = EMBEDDING_ANALYSIS_DIR / "classification"
 # -----------------------------------------------------------------------------
 AGE_DIR = WORKSPACE_DIR / "age"
 AGE_PREDICTIONS_DIR = AGE_DIR / "predictions"
-# 預設指向 p_first_hc_first；其他 cohort 用 AGE_PREDICTIONS_DIR / cohort_name(...) 動態組合
-AGE_PREDICTION_DIR = AGE_PREDICTIONS_DIR / "p_first_hc_first"
+# 預設指向 V2.2 default canonical (p_first_cdr05_hc_first_cdrall_or_mmseall)；
+# 其他 cohort 用 AGE_PREDICTIONS_DIR / cohort_name(...) 動態組合。
+AGE_PREDICTION_DIR = AGE_PREDICTIONS_DIR / "p_first_cdr05_hc_first_cdrall_or_mmseall"
 AGE_BENCHMARK_DIR = AGE_PREDICTIONS_DIR / "benchmark"
 
 CORRECTIONS_DIR = AGE_PREDICTION_DIR / "corrections"
@@ -127,19 +129,119 @@ ASYMMETRY_CLASSIFICATION_DIR = ASYMMETRY_ANALYSIS_DIR / "classification"
 OVERVIEW_DIR = WORKSPACE_DIR / "overview"
 
 # -----------------------------------------------------------------------------
-# Helper: cohort name 對映
+# Cohort spec (V2.2 — explicit 5-axis canonical naming)
+#
+# Canonical:
+#   p_<p_visit>_<p_cdr>_hc_<hc_visit>_<hc_cdr>_or_<hc_mmse>
+#
+# Axes:
+#   p_visit:  first | all
+#   p_cdr:    cdr05 (Global_CDR>=0.5) | cdrall (no filter)
+#   hc_visit: first | all
+#   hc_cdr:   cdr0  (Global_CDR==0)   | cdrall (no filter)
+#   hc_mmse:  mmse26 (MMSE>=26)       | mmseall (no filter)
+#
+# HC two tokens are coupled (Legacy OR rule).  Only two valid combos:
+#   (cdrall, mmseall) -> HC loose (no filter)
+#   (cdr0,   mmse26)  -> HC strict: CDR==0 OR (CDR.isna() AND MMSE>=26)
 # -----------------------------------------------------------------------------
-COHORT_DIRS = {
-    "default": "p_first_hc_first",
-    "p_first_hc_first": "p_first_hc_first",
-    "p_first_hc_all": "p_first_hc_all",
-    "p_all_hc_all": "p_all_hc_all",
+
+
+@dataclass(frozen=True)
+class CohortSpec:
+    """5-axis cohort specification (V2.2).
+
+    Use ``cohort_spec_from_name`` to parse from alias/canonical strings, or
+    construct directly.  ``canonical_name`` always returns the explicit form.
+    """
+
+    p_visit: Literal["first", "all"]
+    p_cdr: Literal["cdr05", "cdrall"]
+    hc_visit: Literal["first", "all"]
+    hc_cdr: Literal["cdr0", "cdrall"]
+    hc_mmse: Literal["mmse26", "mmseall"]
+
+    def __post_init__(self) -> None:
+        if (self.hc_cdr, self.hc_mmse) not in _VALID_HC_COMBOS:
+            raise ValueError(
+                f"Invalid HC filter combo: hc_cdr={self.hc_cdr!r}, "
+                f"hc_mmse={self.hc_mmse!r}. Only (cdrall, mmseall) and "
+                f"(cdr0, mmse26) are supported (Legacy OR rule)."
+            )
+
+    @property
+    def canonical_name(self) -> str:
+        return (f"p_{self.p_visit}_{self.p_cdr}"
+                f"_hc_{self.hc_visit}_{self.hc_cdr}_or_{self.hc_mmse}")
+
+    @property
+    def hc_strict(self) -> bool:
+        """True iff HC applies the Legacy OR strict rule."""
+        return (self.hc_cdr, self.hc_mmse) == ("cdr0", "mmse26")
+
+
+_VALID_HC_COMBOS = frozenset({("cdrall", "mmseall"), ("cdr0", "mmse26")})
+
+
+DEFAULT_COHORT_SPEC = CohortSpec(
+    p_visit="first", p_cdr="cdr05",
+    hc_visit="first", hc_cdr="cdrall", hc_mmse="mmseall",
+)
+
+
+# Aliases (V0/V1 names → V2 canonical).
+COHORT_ALIASES = {
+    "default":           "p_first_cdr05_hc_first_cdrall_or_mmseall",
+    "p_first_hc_first":  "p_first_cdr05_hc_first_cdrall_or_mmseall",
+    "p_first_hc_all":    "p_first_cdr05_hc_all_cdrall_or_mmseall",
+    "p_all_hc_all":      "p_all_cdr05_hc_all_cdrall_or_mmseall",
 }
+
+# 16 valid canonical names + 4 legacy aliases (de-duped).
+VALID_COHORT_CHOICES = sorted(set([
+    *COHORT_ALIASES.keys(),
+    *[
+        CohortSpec(pv, pc, hv, hc, hm).canonical_name
+        for pv in ("first", "all")
+        for pc in ("cdr05", "cdrall")
+        for hv in ("first", "all")
+        for (hc, hm) in _VALID_HC_COMBOS
+    ],
+]))
+
+
+_CANONICAL_RE = re.compile(
+    r"^p_(?P<pv>first|all)_(?P<pc>cdr05|cdrall)"
+    r"_hc_(?P<hv>first|all)_(?P<hc>cdr0|cdrall)_or_(?P<hm>mmse26|mmseall)$"
+)
 
 
 def cohort_name(cohort_mode: str) -> str:
-    """將 cohort mode 對映到實際 dir 名稱。"""
-    return COHORT_DIRS.get(cohort_mode, cohort_mode)
+    """Resolve alias → canonical, or pass through if already canonical.
+
+    Examples:
+        ``cohort_name("default")`` →
+            ``"p_first_cdr05_hc_first_cdrall_or_mmseall"``
+        ``cohort_name("p_first_cdrall_hc_first_cdr0_or_mmse26")`` →
+            same (already canonical)
+    """
+    return COHORT_ALIASES.get(cohort_mode, cohort_mode)
+
+
+def cohort_spec_from_name(name: str) -> CohortSpec:
+    """Parse alias or canonical name to CohortSpec; raise on invalid."""
+    canonical = cohort_name(name)
+    m = _CANONICAL_RE.match(canonical)
+    if m is None:
+        raise ValueError(
+            f"Cannot parse cohort name {name!r} (resolved to {canonical!r}). "
+            f"Expected canonical form "
+            f"'p_<first|all>_<cdr05|cdrall>_hc_<first|all>_<cdr0|cdrall>_or_<mmse26|mmseall>'."
+        )
+    return CohortSpec(
+        p_visit=m["pv"], p_cdr=m["pc"],
+        hc_visit=m["hv"], hc_cdr=m["hc"], hc_mmse=m["hm"],
+    )
 
 
 def embedding_classification_path(
@@ -159,7 +261,7 @@ def embedding_classification_path(
     Args:
         variant: original | difference | absolute_difference | average |
                  relative_differences | absolute_relative_differences
-        cohort: cohort name (will be mapped via COHORT_DIRS)
+        cohort: alias or canonical cohort name (will be resolved via cohort_name)
         reducer: no_drop | pca/n_components_X | drop_feats/pearson_r_X.X
         partition, direction, emb, clf: 可選、None 時止於前面那層
     """

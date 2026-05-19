@@ -29,7 +29,11 @@ import pandas as pd
 from sklearn.metrics import confusion_matrix
 
 ROOT = Path(__file__).resolve().parents[2]
-COHORT = "p_first_hc_first"
+import sys as _sys
+_sys.path.insert(0, str(ROOT))
+from src.config import cohort_name  # noqa: E402
+
+COHORT = cohort_name("default")  # V2.2: p_first_cdr05_hc_first_cdrall_or_mmseall
 AGE_CLF_ROOT = ROOT / "workspace" / "age" / "analysis" / "classification" / COHORT
 LONGI_AGE_CLF_ROOT = (ROOT / "workspace" / "longitudinal_analysis" / "age"
                       / "analysis" / "classification" / COHORT)

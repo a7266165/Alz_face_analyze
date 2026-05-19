@@ -6,7 +6,8 @@
 3. Bootstrap Correction           — ×1000 iter
 4. Mean Correction                — single fit
 
-輸出: workspace/age/predictions/p_first_hc_first/age_correction_methods_flowchart.png
+輸出: workspace/age/predictions/<default-cohort>/age_correction_methods_flowchart.png
+（以 src.config.AGE_PREDICTION_DIR 為準）
 """
 
 import sys

@@ -85,8 +85,9 @@ def main():
     parser = argparse.ArgumentParser(__doc__)
     parser.add_argument("--variant", default=None, choices=ASYM_VARIANTS,
                         help="Asymmetry variant; if omitted, uses original.")
+    from src.config import VALID_COHORT_CHOICES
     parser.add_argument("--cohort-mode", default="default",
-                        choices=["default", "p_first_hc_all", "p_all_hc_all"])
+                        choices=VALID_COHORT_CHOICES)
     args = parser.parse_args()
 
     class_root, out, reducer_dirs = resolve_paths(args.variant, args.cohort_mode)

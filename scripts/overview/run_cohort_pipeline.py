@@ -55,24 +55,25 @@ AGE_SCRIPTS_DIR = PROJECT_ROOT / "scripts" / "age"
 
 README_TEMPLATES = {
     "default": {
-        "title": "cohort: first-visit P + strict-HC NAD/ACS (legacy main cohort)",
+        "title": "cohort: first-visit P + first-visit NAD/ACS (V2.2 default = canonical p_first_cdr05_hc_first_cdrall_or_mmseall)",
         "definition": (
             "| Side | Filter |\n"
             "|---|---|\n"
             "| **P (AD)** | First-visit + `Global_CDR >= 0.5` + `.npy fallback` |\n"
-            "| **NAD / ACS (HC)** | Strict HC: `CDR=0` OR (`CDR=NaN` AND `MMSE>=26`) "
-            "+ first-visit per HC subject |\n"
+            "| **NAD / ACS (HC)** | First-visit per HC subject; **no cognitive filter** "
+            "(strict CDR=0 / MMSE>=26 was dropped in commit b6cf31e, 2026-05-06) |\n"
         ),
         "intro": (
-            "Original main analysis cohort. Conservative on both sides — strict "
-            "HC criteria + first-visit only.\n"
+            "V2.2 default cohort. AD side first-visit + CDR>=0.5; HC side first-visit "
+            "without strict cognitive criteria. To opt back into legacy strict HC, "
+            "use `--cohort-mode p_first_cdr05_hc_first_cdr0_or_mmse26` (Legacy OR rule).\n"
         ),
         "caveats": (
             "1. **AD 端 first-visit only**：每 base_id 只用一筆 visit（feature "
             "fallback 規則：若第一 visit 無 embedding+landmark feature，退而求"
             "其次選最早有 feature 的 visit）。\n"
-            "2. **HC 嚴篩**：NAD / ACS 必須 `CDR=0` 或 (`CDR=NaN` AND `MMSE>=26`) "
-            "才入選。\n"
+            "2. **HC 不再做 cog 篩**：NAD / ACS 不過濾 CDR / MMSE；若需要可改用 "
+            "`p_first_cdr05_hc_first_cdr0_or_mmse26` 恢復 Legacy OR strict。\n"
         ),
     },
     "p_first_hc_all": {
@@ -221,8 +222,45 @@ def write_cohort_summary(cohort_dir, output_dir):
 # README writer
 # ============================================================
 
+def _generic_readme_template(cohort_mode):
+    """Build a generic README template from a CohortSpec name.
+
+    Used for V2.2 canonical cohort_modes that don't have a hand-written
+    template in README_TEMPLATES.
+    """
+    from src.config import cohort_spec_from_name
+    spec = cohort_spec_from_name(cohort_mode)
+    p_visit_text = "All visits with feature .npy" if spec.p_visit == "all" else "First-visit + .npy fallback"
+    p_cdr_text = "no CDR filter" if spec.p_cdr == "cdrall" else "Global_CDR >= 0.5"
+    hc_visit_text = "All HC visits" if spec.hc_visit == "all" else "First-visit per HC subject"
+    hc_strict_text = (
+        "Legacy OR strict: CDR=0 OR (CDR=NaN AND MMSE>=26)"
+        if spec.hc_strict else "no cognitive filter (loose)"
+    )
+    return {
+        "title": f"cohort: {spec.canonical_name}",
+        "definition": (
+            "| Side | Filter |\n"
+            "|---|---|\n"
+            f"| **P (AD)** | {p_visit_text}; {p_cdr_text} |\n"
+            f"| **NAD / ACS (HC)** | {hc_visit_text}; {hc_strict_text} |\n"
+        ),
+        "intro": (
+            f"V2.2 cohort `{spec.canonical_name}` "
+            f"(alias: `{cohort_mode}` if differs).\n"
+        ),
+        "caveats": (
+            "Auto-generated template; review hand-written templates in "
+            "README_TEMPLATES for `default` / `p_first_hc_all` / `p_all_hc_all` "
+            "for the historical cohorts.\n"
+        ),
+    }
+
+
 def write_readme(cohort_mode, cohort_dir, output_dir, df_summary):
-    tmpl = README_TEMPLATES[cohort_mode]
+    # V2.2: cohort_mode is one of 20 valid choices; only 3 have specific
+    # README templates. Fall back to a generic template for the rest.
+    tmpl = README_TEMPLATES.get(cohort_mode, _generic_readme_template(cohort_mode))
     readme = output_dir / "README.md"
     text = f"""# {tmpl['title']}
 
@@ -281,8 +319,9 @@ embedding/analysis/feature_stat/{{original,difference}}/{cohort_dir}/<partition>
 def main():
     parser = argparse.ArgumentParser(description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter)
+    from src.config import VALID_COHORT_CHOICES
     parser.add_argument("--cohort-mode", required=True,
-                        choices=list(README_TEMPLATES.keys()))
+                        choices=VALID_COHORT_CHOICES)
     parser.add_argument("--summary-only", action="store_true",
                         help="Skip the 5 producer steps; only re-write "
                              "cohort_summary.csv + README.md from existing outputs")

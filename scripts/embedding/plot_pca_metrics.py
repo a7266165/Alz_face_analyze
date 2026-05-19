@@ -189,8 +189,9 @@ def main():
     parser.add_argument("--variant", default=None,
                         choices=ASYM_VARIANTS + ["original", "original_background"],
                         help="Variant under classification/.  Default None == 'original'.")
+    from src.config import VALID_COHORT_CHOICES
     parser.add_argument("--cohort-mode", default="default",
-                        choices=["default", "p_first_hc_all", "p_all_hc_all"])
+                        choices=VALID_COHORT_CHOICES)
     parser.add_argument("--embedding-abtest", action="store_true",
                         help="Read from embedding_ABtest/ tree.")
     args = parser.parse_args()

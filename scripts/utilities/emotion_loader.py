@@ -18,9 +18,9 @@ Public API:
     load_emotion_matrix(ids, methods=None) -> pd.DataFrame
         wide table merging all methods, columns named `<method>__<col>` —
         backward-compatible with the previous loader signatures used in
-        run_cross_naive / run_stat_grid / run_cross_matched /
-        run_age_window_classifier / build_longitudinal_dataset /
-        build_longitudinal_hc_and_vectors.
+        scripts/overview/{run_cross_naive,run_cross_matched,run_stat_grid}.py /
+        scripts/age/run_window_classifier.py /
+        scripts/longitudinal/{build_dataset,build_hc_and_vectors}.py.
 """
 from __future__ import annotations
 

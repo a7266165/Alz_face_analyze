@@ -3,11 +3,12 @@
 
 Prerequisites：
   - data/demographics/EACS.csv（含 Age 欄，從檔名回推）
-  - workspace/age/predictions/p_first_hc_first/predicted_ages{_calibrated,}.json
-    （優先用 calibrated 版本；無則用 raw；以 src.config.AGE_PREDICTION_DIR 為準）
+  - workspace/age/predictions/<default-cohort>/predicted_ages{_calibrated,}.json
+    （以 src.config.AGE_PREDICTION_DIR 為準；
+    優先用 calibrated 版本；無則用 raw）
 
 Outputs：
-  workspace/age/predictions/p_first_hc_first/eacs_age_error.csv
+  workspace/age/predictions/<default-cohort>/eacs_age_error.csv
     欄：subject_id, Source, real_age, pred_age, age_error, abs_age_error
 
 此 CSV 可直接被 scripts.utilities.feature_loaders.load_age_error / load_age_error_pairs

@@ -4,12 +4,10 @@
 
 ## 專案結構（modality-flat，三軸對齊）
 
-`src/`、`scripts/`、`workspace/` 三個 tree 都按相同的 modality 鍵組織：
-
 ```
 Alz_face_analyze/
 ├── src/                              # Library code
-│   ├── config.py                     # 全專案路徑常數 + COHORT_DIRS
+│   ├── config.py                     # 全專案路徑常數 + CohortSpec (V2.2 5-axis)
 │   ├── common/                       # 跨模態 helpers (demographics, mediapipe, metrics)
 │   ├── meta/                         # 跨模態 modeling layer (loader / classifier / stacking / evaluation)
 │   ├── preprocess/                   # 對齊 / 偵測 / 鏡射 / 選圖
@@ -53,50 +51,12 @@ Alz_face_analyze/
 └── paper/                            # 論文草稿
 ```
 
-## 主要 entry point
-
-跨模態 cohort 分析（一鍵跑 5 步：cross_naive、3 種 cross_matched、2 種 hi-lo、stat_grid、age classifiers）：
-```bash
-conda run -n Alz_face_main_analysis python scripts/overview/run_cohort_pipeline.py \
-    --cohort-mode {default | p_first_hc_all | p_all_hc_all}
-```
-
-Embedding fwd/rev sweep（PCA grid × feature_type grid）：
-```bash
-conda run -n Alz_face_main_analysis python scripts/embedding/run_sweep.py \
-    --cohort-mode p_first_hc_all
-```
-
-每個 modality folder 內的 entry script 也可獨立跑（含 `--help`）。
-
-## Cohort modes
-
-`src/config.py` 內 `cohort_name()` 由 cohort_mode 決定：
-
-| `--cohort-mode` | AD 視作 | HC 視作 | workspace dir |
-|---|---|---|---|
-| `default` | 首次 visit + strict-HC filter | 首次 visit + strict | `p_first_hc_first/` |
-| `p_first_hc_all` | 首次 visit | 全部 visit（HC 不 filter） | `p_first_hc_all/` |
-| `p_all_hc_all` | 全部 visit | 全部 visit | `p_all_hc_all/` |
-
-`--hc-source-mode {ACS | ACS_ext | EACS}` 控制 ACS group 來源（內部 / 內部+外部 / 純外部）。
-
-## Conda envs
-
-詳見 [`envs/README.md`](envs/README.md)。一句話總結：
-
-- **Consumer**：`Alz_face_main_analysis`（torch 2.7.1 + tabpfn / xgboost / sklearn / matplotlib，所有 cohort / classifier / sweep / plot 用這個）
-- **Producer**：`Alz_face_age` / `Alz_face_asymmetry` / `Alz_face_embedding_{other,vggface}` / `Alz_face_rotation` / `Alz_face_emo_au_{openface,libreface,pyfeat,other}`（依工具版本衝突拆 9 個）
-- **Deployment**：`Alz_face_api` / `Alz_face_ui` / `graphviz` / `Alz_face_test_2`（不主動跑 pipeline）
-
-依賴沒有單一 lockfile — 不同 producer envs 各有 cu118 / cu121 + 特殊套件版本衝突，無法用 poetry / uv / pip-tools 統一 lock。各 env 用 `envs/<name>.txt` pip-freeze 快照保留。
-
 ## 開發慣例
 
-- `src/` 不主動改（以 [feedback_src_off_limits] 為主）；共用 helper 落在 `scripts/utilities/`
-- workspace 結構是 source of truth — 改了要同步更新 `src/config.py` 的 `COHORT_DIRS` 跟相關 README
-- 新套件先建 `tmp_env` 試裝，確認穩定再進主 env
-- Windows cp950 環境：`conda run` 偶爾吞中文輸出；含中文輸出的腳本改用絕對路徑直跑：
-  ```
-  "C:/Users/4080/anaconda3/envs/<env>/python.exe" scripts/...
-  ```
+**核心原則：路徑規劃改動時，下面五邊必須同步：**
+
+- `src/<modality>/`
+- `src/config.py`
+- `scripts/<modality>/`
+- `workspace/<modality>/`
+- `memory/`（`.claude/projects/<proj>/memory/`）

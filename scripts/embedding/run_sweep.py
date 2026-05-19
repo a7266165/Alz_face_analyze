@@ -35,7 +35,15 @@ import sys
 import time
 from pathlib import Path
 
+# Windows-only: avoid subprocess.run spawning a visible console window per
+# invocation (TabPFN / xgboost / etc. otherwise pop tabs each spawn).
+_SUBPROCESS_KWARGS = {}
+if sys.platform == "win32":
+    _SUBPROCESS_KWARGS["creationflags"] = getattr(
+        subprocess, "CREATE_NO_WINDOW", 0x08000000)
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(PROJECT_ROOT))
 PYTHON = sys.executable
 
 DEFAULT_FEATURE_TYPES = [
@@ -105,12 +113,14 @@ def run_one(feat, kind, value, args):
         cmd += ["--drop-correlated-threshold", str(value)]
     if args.embedding_abtest:
         cmd.append("--embedding-abtest")
+    if args.exclude_classifiers:
+        cmd += ["--exclude-classifiers", *args.exclude_classifiers]
     label = label_for(kind, value)
     print(f"\n{'='*70}\n[{time.strftime('%H:%M:%S')}] {feat} / "
           f"{label}\n{'='*70}", flush=True)
     print(" ".join(cmd), flush=True)
     t0 = time.time()
-    proc = subprocess.run(cmd, cwd=PROJECT_ROOT)
+    proc = subprocess.run(cmd, cwd=PROJECT_ROOT, **_SUBPROCESS_KWARGS)
     dt = time.time() - t0
     print(f"[{time.strftime('%H:%M:%S')}] {feat} / {label} "
           f"-> exit={proc.returncode} in {dt/60:.1f} min", flush=True)
@@ -123,8 +133,9 @@ def main():
     p.add_argument("--reducers", nargs="*", default=None,
                     help="Reducer specs (no_drop, pca_<N>, pca_<ratio>, "
                          "drop_<thr>). Default: full grid (32 reducers).")
+    from src.config import VALID_COHORT_CHOICES
     p.add_argument("--cohort-mode", default="p_first_hc_all",
-                    choices=["default", "p_first_hc_all", "p_all_hc_all"])
+                    choices=VALID_COHORT_CHOICES)
     p.add_argument("--photo-mode", default="mean", choices=["mean", "all"])
     p.add_argument("--skip-existing", action="store_true",
                     help="Skip invocations whose output dir already has a "
@@ -133,6 +144,11 @@ def main():
                     help="Forward to run_fwd_rev.py: read features "
                          "from embedding_ABtest/features/ and write outputs "
                          "to embedding_ABtest/analysis/classification/.")
+    p.add_argument("--exclude-classifiers", nargs="*", default=[],
+                    choices=["logistic", "xgb", "tabpfn"],
+                    help="Forward to run_fwd_rev.py: skip these classifiers "
+                         "(e.g. --exclude-classifiers tabpfn to avoid Windows "
+                         "subprocess console popups).")
     args = p.parse_args()
 
     specs = args.reducers if args.reducers else DEFAULT_REDUCERS
@@ -154,7 +170,7 @@ def main():
                 from importlib.util import spec_from_file_location, module_from_spec
                 if "_imp" not in globals():
                     sp = spec_from_file_location("rfre",
-                        PROJECT_ROOT / "scripts" / "experiments" /
+                        PROJECT_ROOT / "scripts" / "embedding" /
                         "run_fwd_rev.py")
                     m = module_from_spec(sp); sp.loader.exec_module(m)
                     if args.embedding_abtest:

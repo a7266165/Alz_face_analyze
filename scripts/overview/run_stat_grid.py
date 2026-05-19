@@ -39,7 +39,7 @@ from scipy import stats
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))
 from src.config import (
-    LONGITUDINAL_FEATURES_DIR, OVERVIEW_DIR, cohort_name,
+    LONGITUDINAL_FEATURES_DIR, OVERVIEW_DIR, VALID_COHORT_CHOICES, cohort_name,
 )
 from scripts.utilities.cohort import (
     build_cohort_ad_hi_lo, build_cohort_ad_vs_HCgroup, VALID_DESIGNS,
@@ -58,8 +58,7 @@ from scripts.utilities.stats_helpers import (
 # Paths
 # ----------------------------------------------------------------------
 DEMOGRAPHICS_DIR = PROJECT_ROOT / "data" / "demographics"
-AGES_FILE = (PROJECT_ROOT / "workspace" / "age" / "predictions" /
-              "p_first_hc_first" / "predicted_ages.json")
+from src.config import PREDICTED_AGES_FILE as AGES_FILE
 LANDMARK_FEATURES_CSV = (PROJECT_ROOT / "workspace" / "asymmetry" /
                          "features" / "pair_features.csv")
 LONGITUDINAL_CSV = LONGITUDINAL_FEATURES_DIR / "patient_deltas.csv"
@@ -707,7 +706,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--cohort-mode",
-                   choices=["default", "p_first_hc_all", "p_all_hc_all"],
+                   choices=VALID_COHORT_CHOICES,
                    default="default")
     p.add_argument("--hc-source", choices=["ACS", "ACS_ext", "EACS"],
                    default="ACS",

@@ -43,7 +43,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from src.config import (
     AGE_PRED_ERROR_STAT_DIR, ASYMMETRY_FEATURE_STAT_DIR,
     EMBEDDING_FEATURE_STAT_DIR, EMO_AU_FEATURE_STAT_DIR,
-    OVERVIEW_DIR, cohort_name,
+    OVERVIEW_DIR, VALID_COHORT_CHOICES, cohort_name,
 )
 from scripts.utilities.cohort import build_cohort_ad_vs_HCgroup
 from scripts.utilities.feature_loaders import (
@@ -168,7 +168,7 @@ def main():
     parser.add_argument("--skip-ci", action="store_true",
                         help="skip bootstrap AUC CI (for quick smoke test)")
     parser.add_argument("--cohort-mode",
-                        choices=["default", "p_first_hc_all", "p_all_hc_all"],
+                        choices=VALID_COHORT_CHOICES,
                         default="default")
     parser.add_argument("--hc-source-mode",
                         choices=["ACS", "ACS_ext", "EACS"], default="ACS")

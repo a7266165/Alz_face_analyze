@@ -118,7 +118,9 @@ def _draw_3x2(rows_full, rows_matched_by_part, classifier, out_path,
     rows_matched_by_part: dict[partition] → DataFrame of forward_matched rows,
         sorted by combo. Multiple partitions ⇒ multiple lines per matched panel.
     """
-    fig, axes = plt.subplots(3, 2, figsize=(11, 10), sharex="col")
+    fig, axes = plt.subplots(3, 2, figsize=(16, 13), sharex="col")
+    for ax in axes.flat:
+        ax.tick_params(axis="both", labelsize=20)
 
     canonical = (rows_full if rows_full is not None and not rows_full.empty
                  else next(iter(rows_matched_by_part.values())))
@@ -146,27 +148,27 @@ def _draw_3x2(rows_full, rows_matched_by_part, classifier, out_path,
 
         # X-axis only on bottom row
         if row == len(METRICS) - 1:
-            ax_full.set_xlabel(xlab)
-            ax_m.set_xlabel(xlab)
+            ax_full.set_xlabel(xlab, fontsize=22)
+            ax_m.set_xlabel(xlab, fontsize=22)
             if classifier == "xgb":
                 step = max(1, n_combos // 9)
                 tick_idx = list(range(0, n_combos, step))
                 for ax in (ax_full, ax_m):
                     ax.set_xticks(np.array(tick_idx))
                     ax.set_xticklabels([tick_labels[i] for i in tick_idx],
-                                        rotation=60, ha="right", fontsize=7)
+                                        rotation=60, ha="right", fontsize=14)
 
     # Column headers (full / matched)
-    axes[0, 0].set_title("full union eval", fontsize=12, fontweight="bold",
+    axes[0, 0].set_title("full union eval", fontsize=24, fontweight="bold",
                           pad=10)
-    axes[0, 1].set_title("matched eval", fontsize=12, fontweight="bold",
+    axes[0, 1].set_title("matched eval", fontsize=24, fontweight="bold",
                           pad=10)
 
-    # Legends — first row each col
-    axes[0, 0].legend(loc="best", fontsize=8)
-    axes[0, 1].legend(loc="best", fontsize=8)
+    # Legends — first row each col, lower-left for uniform placement
+    axes[0, 0].legend(loc="lower left", fontsize=14)
+    axes[0, 1].legend(loc="lower left", fontsize=14)
 
-    fig.suptitle(title_prefix, fontsize=12, y=0.995)
+    fig.suptitle(title_prefix, fontsize=24, y=0.995)
     fig.tight_layout(rect=(0, 0, 1, 0.97))
     fig.savefig(out_path, dpi=130, bbox_inches="tight")
     plt.close(fig)

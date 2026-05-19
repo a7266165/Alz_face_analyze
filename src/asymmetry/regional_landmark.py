@@ -15,7 +15,6 @@ import logging
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
-import cv2
 import numpy as np
 import pandas as pd
 
@@ -125,6 +124,7 @@ def extract_landmarks_from_image(image_path: Path, face_mesh) -> Optional[np.nda
     Returns:
         (468, 2) normalized landmark array, or None if detection failed
     """
+    import cv2  # lazy: 只有 producer 端 (Alz_face_asymmetry env) 用得到
     image = cv2.imread(str(image_path))
     if image is None:
         return None

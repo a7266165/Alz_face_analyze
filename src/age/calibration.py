@@ -52,7 +52,9 @@ def _pick_first_visit_with_npy_fallback(
 ) -> pd.DataFrame:
     """Per subject: pick the earliest visit that has a predicted_age (= has
     .npy + age extraction). Falls back to the earliest visit if none qualify.
-    Mirrors `_pick_first_visit_with_features` in run_4arm_deep_dive.py.
+    Mirrors `_pick_first_visit_with_features` in
+    scripts/utilities/cohort.py (originally lived in legacy
+    run_4arm_deep_dive.py before the V2 split).
     """
     picked = []
     for subj, g in df_visits.groupby("subject", as_index=False, sort=False):
@@ -102,6 +104,9 @@ def load_demographics_for_calibration(
         if cohort_mode == "p_first_hc_all" and group == "P":
             # P side: filter to Global_CDR>=0.5 visits, then pick earliest
             # eligible visit per subject (with .npy fallback).
+            # NOTE: this routine is invoked only by p_first_hc_all (legacy alias);
+            # the V2.2 spec-aware path goes through scripts/utilities/cohort.py
+            # which uses ``apply_p_cdr_filter`` / ``CohortSpec``.
             cdr = pd.to_numeric(df.get("Global_CDR"), errors="coerce")
             df_eligible = df[cdr >= 0.5].copy()
             df = _pick_first_visit_with_npy_fallback(df_eligible, predicted_ages)

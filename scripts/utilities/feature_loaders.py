@@ -22,8 +22,8 @@ sys.path.insert(0, str(PROJECT_ROOT))
 # ----------------------------------------------------------------------
 EMBEDDING_DIR = PROJECT_ROOT / "workspace" / "embedding" / "features"
 LANDMARK_FEATURES_CSV = PROJECT_ROOT / "workspace" / "asymmetry" / "features" / "pair_features.csv"
-PREDICTED_AGES_FILE = (PROJECT_ROOT / "workspace" / "age" / "predictions" /
-                        "p_first_hc_first" / "predicted_ages.json")
+# Default cohort = V2.2 canonical (p_first_cdr05_hc_first_cdrall_or_mmseall).
+from src.config import PREDICTED_AGES_FILE  # noqa: E402
 
 # ----------------------------------------------------------------------
 # Constants

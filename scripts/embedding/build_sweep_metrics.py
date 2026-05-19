@@ -229,11 +229,12 @@ def main():
     from src.config import (
         EMBEDDING_CLASSIFICATION_DIR,
         EMBEDDING_ABTEST_CLASSIFICATION_DIR,
+        VALID_COHORT_CHOICES,
         cohort_name,
     )
     p = argparse.ArgumentParser(__doc__)
     p.add_argument("--cohort-mode", default="default",
-                    choices=["default", "p_first_hc_all", "p_all_hc_all"])
+                    choices=VALID_COHORT_CHOICES)
     p.add_argument("--embedding-abtest", action="store_true",
                     help="Walk embedding_ABtest/analysis/classification/ "
                          "instead of production embedding/analysis/classification/.")

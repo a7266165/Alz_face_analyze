@@ -19,7 +19,11 @@ import numpy as np
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[2]
-COHORT = "p_first_hc_first"
+import sys as _sys
+_sys.path.insert(0, str(ROOT))
+from src.config import cohort_name  # noqa: E402
+
+COHORT = cohort_name("default")  # V2.2 canonical
 OVERVIEW_COHORT = ROOT / "workspace" / "overview" / COHORT
 CROSS_NAIVE_CSV   = OVERVIEW_COHORT / "cross_naive" / "cohort.csv"
 CROSS_MATCHED_CSV = OVERVIEW_COHORT / "cross_matched" / "mmse_high_vs_low" / "matched_features.csv"

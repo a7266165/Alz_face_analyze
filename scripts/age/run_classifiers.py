@@ -40,13 +40,12 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))
 from src.config import (
     AGE_CLASSIFICATION_DIR, LONGI_AGE_CLASSIFICATION_DIR,
-    OVERVIEW_DIR, cohort_name,
+    OVERVIEW_DIR, VALID_COHORT_CHOICES, cohort_name,
 )
 from scripts.utilities.cohort import build_cohort_ad_vs_HCgroup, VALID_DESIGNS
 from scripts.utilities.stats_helpers import bootstrap_auc_ci
 
-AGES_FILE = (PROJECT_ROOT / "workspace" / "age" / "predictions" /
-             "p_first_hc_first" / "predicted_ages.json")
+from src.config import PREDICTED_AGES_FILE as AGES_FILE
 COMPARISONS = ["HC", "NAD", "ACS"]
 ALL_DESIGNS = list(VALID_DESIGNS)
 N_FOLDS = 10
@@ -276,7 +275,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--cohort-mode",
-                        choices=["default", "p_first_hc_all", "p_all_hc_all"],
+                        choices=VALID_COHORT_CHOICES,
                         default="default")
     parser.add_argument("--hc-source-mode",
                         choices=["ACS", "ACS_ext", "EACS"], default="ACS")

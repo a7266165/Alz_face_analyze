@@ -580,6 +580,10 @@ def plot_error_by_age_combined(output_dir: Path):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    # NOTE: this script's `--cohort-mode` predates the V2.2 5-axis canonical
+    # naming and only takes two custom plotting modes ("all" = no filter,
+    # "p_first_hc_all" = first-visit P + all HC). NOT shared with the rest
+    # of the pipeline's VALID_COHORT_CHOICES; see src/config.py if expanding.
     parser.add_argument("--cohort-mode", default="all",
                         choices=["all", "p_first_hc_all"])
     parser.add_argument("--output-dir", type=Path, default=AGE_PREDICTION_DIR)

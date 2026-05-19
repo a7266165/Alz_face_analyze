@@ -32,6 +32,17 @@ import pandas as pd
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 import sys as _sys
 _sys.path.insert(0, str(PROJECT_ROOT))
+
+from src.config import (  # noqa: E402
+    CohortSpec,
+    DEFAULT_COHORT_SPEC,
+    VALID_COHORT_CHOICES,
+    cohort_spec_from_name,
+)
+from scripts.utilities.cohort import (  # noqa: E402
+    apply_hc_strict_filter,
+    apply_p_cdr_filter,
+)
 ASYM_VARIANTS = ["difference", "absolute_difference", "average",
                  "relative_differences", "absolute_relative_differences"]
 
@@ -127,14 +138,14 @@ def _parse_pca_label(name):
         return None
 
 
-def _load_visit_all_cohort_ids():
+def _load_visit_all_cohort_ids(spec: CohortSpec = DEFAULT_COHORT_SPEC):
     """Build the union of visit=all cohort IDs across the 5 partitions
     (ad_vs_hc / ad_vs_nad / ad_vs_acs / mmse_hilo / casi_hilo).
 
-    Each partition's visit-all cohort = subjects passing per-visit eligibility
-    (Global_CDR>=0.5 for AD; strict HC criteria for HC; metric+age present for
-    hi-lo). Union ≈ 3478 unique visit IDs (cf. ad_vs_hc visit=all = 3478,
-    hilo cohorts overlap with the AD subset).
+    Each partition's visit-all cohort = subjects passing per-visit eligibility:
+      - AD-side: P group + ``apply_p_cdr_filter(spec)``
+      - HC-side: NAD/ACS group + ``apply_hc_strict_filter(spec)``
+      - hi-lo: AD-side + metric+age present
 
     Returns: set of visit-level IDs (e.g. {"P1-2", "P1-3", "ACS5-1", ...}).
     """
@@ -160,32 +171,33 @@ def _load_visit_all_cohort_ids():
     demo["base_id"] = demo["ID"].astype(str).str.extract(r"^(.+)-\d+$")[0]
     demo["visit"] = demo["ID"].astype(str).str.extract(r"-(\d+)$").astype(float)
 
-    # AD-side per-visit eligibility (P, CDR>=0.5, Age present)
-    ad_mask = (demo["group"] == "P") & (demo["Global_CDR"] >= 0.5) \
-              & demo["Age"].notna()
+    # AD-side per-visit eligibility (P group + spec.p_cdr + Age present)
+    ad_pool = demo[(demo["group"] == "P") & demo["Age"].notna()].copy()
+    ad_pool = apply_p_cdr_filter(ad_pool, spec)
+    ad_ids = set(ad_pool["ID"].astype(str))
 
-    # HC-side per-visit eligibility (NAD/ACS strict)
-    has_cog = demo["Global_CDR"].notna() | demo["MMSE"].notna()
-    ok_strict = has_cog & (
-        (demo["Global_CDR"] == 0)
-        | (demo["Global_CDR"].isna() & (demo["MMSE"] >= 26))
-    )
-    hc_mask = demo["group"].isin(["NAD", "ACS"]) & ok_strict \
-              & demo["Age"].notna()
+    # HC-side per-visit eligibility (NAD/ACS + spec.hc_strict + Age present)
+    hc_pool = demo[demo["group"].isin(["NAD", "ACS"]) & demo["Age"].notna()].copy()
+    hc_pool = apply_hc_strict_filter(hc_pool, spec)
+    hc_ids = set(hc_pool["ID"].astype(str))
 
-    # Hi-lo (mmse / casi): AD-only with Global_CDR>=0.5 + metric+Age present
-    hilo_mmse_mask = ad_mask & demo["MMSE"].notna()
-    hilo_casi_mask = ad_mask & demo["CASI"].notna()
+    # Hi-lo (mmse / casi): AD-side + metric present
+    mmse_pool = ad_pool[ad_pool["MMSE"].notna()]
+    casi_pool = ad_pool[ad_pool["CASI"].notna()]
+    mmse_ids = set(mmse_pool["ID"].astype(str))
+    casi_ids = set(casi_pool["ID"].astype(str))
 
-    union = (ad_mask | hc_mask | hilo_mmse_mask | hilo_casi_mask)
-    ids = set(demo.loc[union, "ID"].astype(str))
+    ids = ad_ids | hc_ids | mmse_ids | casi_ids
     logger.info(f"visit=all union cohort: {len(ids)} unique IDs "
-                f"(ad={ad_mask.sum()}, hc={hc_mask.sum()}, "
-                f"mmse={hilo_mmse_mask.sum()}, casi={hilo_casi_mask.sum()})")
+                f"(ad={len(ad_ids)}, hc={len(hc_ids)}, "
+                f"mmse={len(mmse_ids)}, casi={len(casi_ids)})  "
+                f"spec={spec.canonical_name}")
     return ids
 
 
-def compute_cumulative_eigenvalue_ratio(feature_subdir, cohort_mode="all_npy", feat_root=None):
+def compute_cumulative_eigenvalue_ratio(feature_subdir, cohort_mode="all_npy",
+                                         feat_root=None,
+                                         spec: CohortSpec = DEFAULT_COHORT_SPEC):
     """For each embedding model, fit PCA on the feature pool determined by
     cohort_mode and return the cumulative explained-variance ratio.
 
@@ -197,11 +209,14 @@ def compute_cumulative_eigenvalue_ratio(feature_subdir, cohort_mode="all_npy", f
                          visit-all cohort IDs (≈ 3478 visits). Use this when
                          analyzing visit=all sweeps so the eigenvalue panel
                          matches the data the classifier actually saw.
+
+    ``spec`` is forwarded to ``_load_visit_all_cohort_ids`` to drive the
+    P CDR + HC strict filters per V2.2 cohort spec.
     """
     from sklearn.decomposition import PCA
     keep_ids = None
     if cohort_mode == "visit_all":
-        keep_ids = _load_visit_all_cohort_ids()
+        keep_ids = _load_visit_all_cohort_ids(spec=spec)
     if feat_root is None:
         feat_root = EMBEDDING_FEAT_DIR
     rows = []
@@ -287,7 +302,7 @@ def main():
                         choices=ASYM_VARIANTS + ["original", "original_background"],
                         help="Variant under classification/.  Default None == 'original'.")
     parser.add_argument("--cohort-mode", default="default",
-                        choices=["default", "p_first_hc_all", "p_all_hc_all"],
+                        choices=VALID_COHORT_CHOICES,
                         help="Output cohort routing. 'default'=p_first_hc_first; "
                              "'p_first_hc_all'=p_first_hc_all/; "
                              "'p_all_hc_all'=p_all_hc_all/.")
@@ -325,7 +340,8 @@ def main():
     # forward/reverse plot scripts to read).
     eig_df = compute_cumulative_eigenvalue_ratio(feature_subdir,
                                                    cohort_mode=args.eigen_source,
-                                                   feat_root=feat_root)
+                                                   feat_root=feat_root,
+                                                   spec=cohort_spec_from_name(args.cohort_mode))
     if len(eig_df):
         eig_csv_name = ("cumulative_eigenvalue_ratio.csv"
                         if args.eigen_source == "all_npy"
