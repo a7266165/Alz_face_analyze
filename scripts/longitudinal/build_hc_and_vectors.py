@@ -24,10 +24,9 @@ from scipy.spatial.distance import cosine as cosine_distance
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))
-from src.config import LONGITUDINAL_FEATURES_DIR
+from src.config import LONGITUDINAL_FEATURES_DIR, PREDICTED_AGES_FILE as AGE_FILE
 
 DEMOGRAPHICS_DIR = PROJECT_ROOT / "data" / "demographics"
-AGE_FILE = PROJECT_ROOT / "workspace" / "age" / "predictions" / "p_first_hc_first" / "predicted_ages.json"
 EMBEDDING_DIR = PROJECT_ROOT / "workspace" / "embedding" / "features"
 LANDMARK_FEATURES_CSV = PROJECT_ROOT / "workspace" / "asymmetry" / "features" / "pair_features.csv"
 LONGITUDINAL_DIR = LONGITUDINAL_FEATURES_DIR
@@ -63,26 +62,9 @@ def _load_emb_vec(npy_path):
 
 
 def _visits_with_features():
-    """Return set of visit_ids that have ArcFace original .npy extracted.
-
-    Demographics contains rows for visits whose photo folder is absent
-    (e.g. P62-1, P75-1 — recorded but no photo taken). We filter those
-    out before selecting first/last visit for Δ, otherwise the first
-    visit picked is one without embeddings and the subject is dropped
-    from vector_deltas.npz entirely.
-    """
-    arcface_dir = EMBEDDING_DIR / "arcface" / "original"
-    ids = set()
-    if arcface_dir.exists():
-        ids.update(p.stem for p in arcface_dir.glob("*.npy"))
-    # EACS 沒跑 embedding，但有 emotion / age prediction → 用 emotion CSV 作 proxy
-    # 讓 build_group 不會把 EACS 全部過濾掉
-    for tool in ("dan", "openface", "pyfeat", "vit"):
-        emo_raw = (PROJECT_ROOT / "workspace" / "emo_au" / "features"
-                    / "raw" / tool)
-        if emo_raw.exists():
-            ids.update(p.stem for p in emo_raw.glob("EACS_*.csv"))
-    return ids
+    """Delegate to src.cohort.visits_with_features (backward-compat wrapper)."""
+    from src.cohort import visits_with_features
+    return visits_with_features(include_emotion_proxy=True)
 
 
 def _load_all_demographics(include_eacs=False):
@@ -287,9 +269,8 @@ def build_group(demo_all, groups, label, emo_dict, pred_ages, lmk_dict):
     logger.info(f"{label}: filtered {n_before - len(sel)} demo rows without "
                 f"feature npy ({len(sel)} visits remain)")
     sel = sel.sort_values(["base_id", "visit"])
-    # Multi-visit filter
-    vcnt = sel.groupby("base_id")["visit"].count()
-    sel = sel[sel["base_id"].isin(vcnt[vcnt >= 2].index)]
+    from src.cohort import apply_multivisit_filter
+    sel = apply_multivisit_filter(sel, min_visits=2)
 
     scalar_rows, vec_store = [], {}
     for bid, g in sel.groupby("base_id"):
@@ -333,10 +314,17 @@ def save_vector_npz(vec_store, out_path):
 
 def main():
     import argparse
+    from src.config import VALID_COHORT_CHOICES, cohort_spec_from_name
+    from src.cohort import (apply_hc_strict_filter, apply_max_cdr_filter)
+
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--include-eacs", action="store_true",
                     help="額外產 eacs_patient_deltas.csv（僅 IMDB multi-visit 有效）")
+    ap.add_argument("--cohort-mode", default="default",
+                    choices=VALID_COHORT_CHOICES,
+                    help="Cohort spec (V2.2). Controls CDR/HC filters.")
     args = ap.parse_args()
+    spec = cohort_spec_from_name(args.cohort_mode)
 
     LONGITUDINAL_DIR.mkdir(parents=True, exist_ok=True)
     demo_all = _load_all_demographics(include_eacs=args.include_eacs)
@@ -345,18 +333,20 @@ def main():
         pred_ages = json.load(f)
     lmk_dict = _load_landmark_dict()
 
-    # HC/NAD/ACS side
-    df_hc, vec_hc = build_group(demo_all, ["NAD", "ACS"], "HC(NAD+ACS)",
+    # HC/NAD/ACS side — apply HC strict filter if spec requires it
+    demo_hc = demo_all[demo_all["group"].isin(["NAD", "ACS"])].copy()
+    demo_hc = apply_hc_strict_filter(demo_hc, spec)
+    demo_for_hc = pd.concat([demo_all[demo_all["group"] == "P"], demo_hc],
+                            ignore_index=True)
+    df_hc, vec_hc = build_group(demo_for_hc, ["NAD", "ACS"], "HC(NAD+ACS)",
                                  emo_dict, pred_ages, lmk_dict)
     df_hc.to_csv(LONGITUDINAL_DIR / "hc_patient_deltas.csv", index=False)
     logger.info(f"Saved hc_patient_deltas.csv")
 
-    # AD side — CDR>=0.5 multi-visit (same filter as patient_deltas.csv)
-    ad_patients = demo_all[demo_all["group"] == "P"].groupby(
-        "base_id")["Global_CDR"].max()
-    ad_patients = ad_patients[ad_patients >= 0.5].index
-    demo_ad = demo_all[(demo_all["group"] == "P") &
-                        (demo_all["base_id"].isin(ad_patients))].copy()
+    # AD side — CDR filter per spec
+    demo_ad = demo_all[demo_all["group"] == "P"].copy()
+    if spec.p_cdr != "cdrall":
+        demo_ad = apply_max_cdr_filter(demo_ad, min_cdr=0.5)
     df_ad, vec_ad = build_group(demo_ad, ["P"], "AD",
                                  emo_dict, pred_ages, lmk_dict)
     df_ad.to_csv(LONGITUDINAL_DIR / "ad_patient_deltas.csv", index=False)

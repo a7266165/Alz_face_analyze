@@ -70,12 +70,13 @@ from src.config import (
     EMBEDDING_FEATURES_DIR,
     EMBEDDING_ABTEST_CLASSIFICATION_DIR,
     FEATURES_DIR as EMBEDDING_ABTEST_FEAT_DIR,
+    VALID_COHORT_CHOICES,
     cohort_name,
+    cohort_spec_from_name,
 )
 
 EMBEDDING_FEAT_DIR = EMBEDDING_FEATURES_DIR
-AGES_FILE = (PROJECT_ROOT / "workspace" / "age" / "predictions" /
-             "p_first_hc_first" / "predicted_ages.json")
+from src.config import PREDICTED_AGES_FILE as AGES_FILE
 
 PARTITIONS = ["ad_vs_hc", "ad_vs_nad", "ad_vs_acs", "mmse_hilo", "casi_hilo"]
 EMBEDDINGS = ["arcface", "topofr", "dlib"]
@@ -278,7 +279,7 @@ logger = logging.getLogger(__name__)
 # ============================================================
 
 from scripts.utilities.cohort import (
-    _strict_hc_filter_all_visits,
+    apply_p_cdr_filter,
     build_cohort_ad_vs_HCgroup,
     DEMOGRAPHICS_DIR as _COHORT_DEMOGRAPHICS_DIR,
     load_p_demographics,
@@ -344,8 +345,6 @@ def load_embedding(ids, model, feature_type="original", photo_mode=None):
 # Cohort builders (5 partitions)
 # ============================================================
 
-_PRED_AGES_CACHE = None
-
 # Training-output caches keyed by _train_cache_key(...). Lets the 3 ad_vs_*
 # partitions share one trained model per (embedding, classifier, reducer,
 # feature_type, ...) since they only differ in eval-time keep_groups filtering.
@@ -370,29 +369,7 @@ def _train_cache_key(partition, embedding, classifier, n_folds, seed):
             n_folds, seed)
 
 
-def _load_pred_ages():
-    """Load predicted_ages.json (cached). Used for the matched-pair filter
-    that mirrors run_cross_matched.run_hc_groups_comparison's predicted-age
-    filter — drop pairs whose either side lacks a predicted_age, so matched
-    n_pairs aligns with arm_b's reference (HC=180, NAD=169, ACS=29 / hi-lo
-    equivalent)."""
-    global _PRED_AGES_CACHE
-    if _PRED_AGES_CACHE is None:
-        with open(AGES_FILE) as f:
-            _PRED_AGES_CACHE = json.load(f)
-    return _PRED_AGES_CACHE
-
-
-def _filter_pairs_by_pred_age(matched, pairs):
-    """Drop pairs where either minor_id or major_id lacks a predicted_age."""
-    if pairs is None or len(pairs) == 0:
-        return matched, pairs
-    pred_ages = _load_pred_ages()
-    keep = pairs["minor_id"].isin(pred_ages) & pairs["major_id"].isin(pred_ages)
-    pairs = pairs[keep].copy().reset_index(drop=True)
-    kept_ids = set(pairs["minor_id"]).union(pairs["major_id"])
-    matched = matched[matched["ID"].isin(kept_ids)].copy().reset_index(drop=True)
-    return matched, pairs
+from src.cohort import filter_pairs_by_predicted_age as _filter_pairs_by_pred_age
 
 
 def _build_ad_vs_hcgroup(hc_source):
@@ -421,7 +398,7 @@ def _build_ad_vs_hcgroup(hc_source):
 
 
 def _build_metric_hilo(metric):
-    """mmse_hilo / casi_hilo (AD-only, P group with Global_CDR>=0.5).
+    """mmse_hilo / casi_hilo (AD-only, P group; CDR filter per CohortSpec.p_cdr).
 
     Splits by median, matches 1:1 by age (caliper 2y), then drops pairs
     where either side lacks predicted_age (parity with arm_b convention).
@@ -430,8 +407,9 @@ def _build_metric_hilo(metric):
     metric_low = metric.lower()
     group_col = f"{metric_low}_group"
 
+    spec = cohort_spec_from_name(_COHORT_MODE)
     df = load_p_demographics()
-    df = df[(df["Global_CDR"] >= 0.5)].copy()
+    df = apply_p_cdr_filter(df, spec).copy()
     cohort = select_visit(df, visit_selection="first", metric=metric)
     cohort, _median = split_by_metric_median(
         cohort, metric=metric, group_col=group_col,
@@ -1425,6 +1403,10 @@ def main():
                         choices=EMBEDDINGS + ["all"])
     parser.add_argument("--classifier", default="both",
                         choices=CLASSIFIERS + ["both"])
+    parser.add_argument("--exclude-classifiers", nargs="*", default=[],
+                        choices=CLASSIFIERS,
+                        help="Skip these classifiers from the sweep "
+                             "(e.g. --exclude-classifiers tabpfn).")
     parser.add_argument("--strategy", default="both",
                         choices=STRATEGIES + ["both"])
     parser.add_argument("--feature-type", default="original",
@@ -1453,7 +1435,7 @@ def main():
                              "behavior). 'all': keep all 10 photos as "
                              "individual training rows.")
     parser.add_argument("--cohort-mode", default="default",
-                        choices=["default", "p_first_hc_all", "p_all_hc_all"],
+                        choices=VALID_COHORT_CHOICES,
                         help="'default' (p_first_hc_first), 'p_first_hc_all' "
                              "(first-visit P + ALL NAD/ACS), or 'p_all_hc_all' "
                              "(ALL P visits + ALL NAD/ACS). Output goes to "
@@ -1537,6 +1519,8 @@ def main():
     partitions = expand_axis(args.partition, PARTITIONS)
     embeddings = expand_axis(args.embedding, EMBEDDINGS)
     classifiers = expand_axis(args.classifier, CLASSIFIERS)
+    if args.exclude_classifiers:
+        classifiers = [c for c in classifiers if c not in args.exclude_classifiers]
     strategies = expand_axis(args.strategy, STRATEGIES)
 
     if _DROP_CORR_THRESHOLD is not None:

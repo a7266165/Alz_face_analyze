@@ -42,10 +42,11 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))
 from src.config import (
     AGE_PRED_ERROR_STAT_DIR, EMO_AU_FEATURE_STAT_DIR,
-    OVERVIEW_DIR, cohort_name,
+    OVERVIEW_DIR, VALID_COHORT_CHOICES, cohort_name, cohort_spec_from_name,
 )
 from scripts.utilities.cohort import (
     _keep_visits_with_features, _pick_first_visit_with_features,
+    apply_p_cdr_filter,
     build_cohort_ad_vs_HCgroup, load_p_demographics, match_1to1,
     select_visit, split_by_metric_median,
 )
@@ -59,8 +60,7 @@ from scripts.utilities.stats_helpers import (
 )
 
 DEMOGRAPHICS_DIR = PROJECT_ROOT / "data" / "demographics"
-AGES_FILE = (PROJECT_ROOT / "workspace" / "age" / "predictions" /
-              "p_first_hc_first" / "predicted_ages.json")
+from src.config import PREDICTED_AGES_FILE as AGES_FILE
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s")
 logger = logging.getLogger(__name__)
@@ -266,14 +266,10 @@ def run_hc_groups_comparison(comparison, cohort_dir, cohort_mode,
     )
     n_pairs_raw = len(pairs) if pairs is not None else len(cohort) // 2
 
+    from src.cohort import filter_pairs_by_predicted_age
     with open(AGES_FILE) as f:
         pred_ages = json.load(f)
-
-    if pairs is not None:
-        keep = pairs["minor_id"].isin(pred_ages) & pairs["major_id"].isin(pred_ages)
-        pairs = pairs[keep].copy()
-        kept_ids = set(pairs["minor_id"]).union(pairs["major_id"])
-        cohort = cohort[cohort["ID"].isin(kept_ids)].copy()
+    cohort, pairs = filter_pairs_by_predicted_age(cohort, pairs, pred_ages)
     n_pairs = len(pairs) if pairs is not None else len(cohort) // 2
     logger.info(f"Matched pairs: {n_pairs}/{n_pairs_raw} after predicted_age filter "
                 f"(caliper={caliper}y)")
@@ -428,26 +424,29 @@ def _run_auc_supplement(matched, comparison_dir, group_col):
 # ============================================================
 
 def _select_ad_for_hilo(demo, metric, cohort_mode):
-    """Pick AD subjects for hi-lo splits per cohort_mode:
-      default          first-visit per base_id, CDR>=0.5
-      p_first_hc_all   first-visit per base_id with feature fallback (CDR>=0.5)
-      p_all_hc_all     all visits with embedding+landmark features (CDR>=0.5)
+    """Pick AD subjects for hi-lo splits per cohort_mode (V2.2 spec-aware).
+
+    P-side CDR filter is read from ``CohortSpec.p_cdr`` (cdr05 default;
+    cdrall opt-out for sensitivity). P-visit selection from ``CohortSpec.p_visit``.
     """
+    spec = cohort_spec_from_name(cohort_mode)
     demo = demo.copy()
     demo["Global_CDR"] = pd.to_numeric(demo.get("Global_CDR"), errors="coerce")
-    if cohort_mode in ("p_first_hc_all", "p_all_hc_all"):
-        elig = demo[(demo["Global_CDR"] >= 0.5) &
-                    demo[metric].notna() &
-                    demo["Age"].notna()].copy()
+    if spec.p_visit == "all":
+        elig = demo[demo[metric].notna() & demo["Age"].notna()].copy()
+        elig = apply_p_cdr_filter(elig, spec)
         elig = elig.sort_values(["base_id", "visit"])
-        if cohort_mode == "p_all_hc_all":
-            return _keep_visits_with_features(elig)
+        return _keep_visits_with_features(elig)
+    if cohort_mode in ("p_first_hc_all",) or spec.hc_visit == "all":
+        elig = demo[demo[metric].notna() & demo["Age"].notna()].copy()
+        elig = apply_p_cdr_filter(elig, spec)
+        elig = elig.sort_values(["base_id", "visit"])
         return _pick_first_visit_with_features(elig)
-    # default: first visit + CDR≥0.5 + metric+Age non-null
+    # p_visit=first + hc_visit=first: first visit per base_id + CDR filter
     cohort = demo.dropna(subset=[metric, "Age"]).copy()
     cohort = cohort.sort_values(["base_id", "visit"]).groupby(
         "base_id", as_index=False).first()
-    return cohort[cohort["Global_CDR"] >= 0.5].copy()
+    return apply_p_cdr_filter(cohort, spec).copy()
 
 
 def _run_hilo(args, metric):
@@ -646,7 +645,7 @@ def main():
                              "{mmse,casi}_hilo: AD within-cohort hi-lo full analysis "
                              "+ AUC supplement.")
     parser.add_argument("--cohort-mode",
-                        choices=["default", "p_first_hc_all", "p_all_hc_all"],
+                        choices=VALID_COHORT_CHOICES,
                         default="default")
     parser.add_argument("--hc-source-mode", choices=["ACS", "ACS_ext", "EACS"],
                         default="ACS",

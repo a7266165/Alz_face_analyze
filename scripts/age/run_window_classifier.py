@@ -49,8 +49,10 @@ from sklearn.metrics import (
 from sklearn.model_selection import GroupKFold
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(PROJECT_ROOT))
+from src.config import PREDICTED_AGES_FILE  # noqa: E402
+
 DEMOGRAPHICS_DIR = PROJECT_ROOT / "data" / "demographics"
-PREDICTED_AGES_FILE = PROJECT_ROOT / "workspace" / "age" / "predictions" / "p_first_hc_first" / "predicted_ages.json"
 OUTPUT_BASE = PROJECT_ROOT / "workspace" / "age" / "analysis" / "classification" / "window_classifier"
 
 # Load emotion via shared helper.
@@ -133,24 +135,26 @@ def apply_labels_and_hc_filter(df):
     """P with CDR≥0.5 → label=1; NAD/ACS 走 strict HC filter → label=0；
     外部 EACS rows (is_external=True) 直接 label=0（無認知評估，age-only control）。
     Unlabelled rows dropped."""
-    rows = []
-    for _, r in df.iterrows():
-        g = r["group"]
-        is_ext = bool(r.get("is_external", False))
-        if g == "P":
-            cdr = r.get("Global_CDR")
-            if pd.notna(cdr) and cdr >= 0.5:
-                rows.append({**r.to_dict(), "label": 1})
-        elif is_ext:
-            # external rows bypass strict HC filter (no cognitive scores)
-            rows.append({**r.to_dict(), "label": 0})
-        else:  # NAD / ACS — strict healthy filter
-            cdr = r.get("Global_CDR")
-            mmse = r.get("MMSE")
-            if (pd.notna(cdr) and cdr == 0) or (
-                    pd.isna(cdr) and pd.notna(mmse) and mmse >= 26):
-                rows.append({**r.to_dict(), "label": 0})
-    return pd.DataFrame(rows)
+    from src.config import CohortSpec
+    from src.cohort import apply_p_cdr_filter, apply_hc_strict_filter
+    strict_spec = CohortSpec(
+        p_visit="first", p_cdr="cdr05",
+        hc_visit="first", hc_cdr="cdr0", hc_mmse="mmse26",
+    )
+    # P side
+    p = df[df["group"] == "P"].copy()
+    p = apply_p_cdr_filter(p, strict_spec)
+    p["label"] = 1
+    # External rows bypass strict filter
+    ext = df[df.get("is_external", False) == True].copy()
+    ext["label"] = 0
+    # HC side (NAD/ACS internal)
+    hc_mask = (~df["group"].isin(["P"])
+               & (df.get("is_external", False) != True))
+    hc = df[hc_mask].copy()
+    hc = apply_hc_strict_filter(hc, strict_spec)
+    hc["label"] = 0
+    return pd.concat([p, ext, hc], ignore_index=True)
 
 
 # ============================================================

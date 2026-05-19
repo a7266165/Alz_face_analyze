@@ -23,14 +23,13 @@ from scipy.spatial.distance import cosine as cosine_distance
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))
-from src.config import LONGITUDINAL_FEATURES_DIR
+from src.config import LONGITUDINAL_FEATURES_DIR, PREDICTED_AGES_FILE as AGE_FILE
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 # === Paths ===
 DEMOGRAPHICS_DIR = PROJECT_ROOT / "data" / "demographics"
-AGE_FILE = PROJECT_ROOT / "workspace" / "age" / "predictions" / "p_first_hc_first" / "predicted_ages.json"
 EMBEDDING_DIR = PROJECT_ROOT / "workspace" / "embedding" / "features"
 OUTPUT_DIR = LONGITUDINAL_FEATURES_DIR
 
@@ -60,15 +59,9 @@ def load_base_table():
     p["base_id"] = p["ID"].str.extract(r"^([A-Z]+\d+)", expand=False)
     p["visit_num"] = p["ID"].str.extract(r"-(\d+)$", expand=False).astype(int)
 
-    # Patient-level filter: keep any patient with at least one visit at CDR>=0.5
-    ad_patients = p.groupby("base_id")["Global_CDR"].max()
-    ad_patients = ad_patients[ad_patients >= 0.5].index
-    p = p[p["base_id"].isin(ad_patients)].copy()
-
-    # Keep only multi-visit patients
-    visit_counts = p.groupby("base_id")["visit_num"].count()
-    multi_visit_ids = visit_counts[visit_counts >= 2].index
-    p = p[p["base_id"].isin(multi_visit_ids)].copy()
+    from src.cohort import apply_max_cdr_filter, apply_multivisit_filter
+    p = apply_max_cdr_filter(p, min_cdr=0.5)
+    p = apply_multivisit_filter(p, min_visits=2, visit_col="visit_num")
 
     p = p.sort_values(["base_id", "visit_num"])
     logger.info(f"Base table: {len(p)} visits from {p['base_id'].nunique()} patients")

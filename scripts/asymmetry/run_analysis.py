@@ -36,11 +36,20 @@ from xgboost import XGBClassifier
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))
 
+from src.config import (
+    ASYMMETRY_ANALYSIS_DIR,
+    ASYMMETRY_LANDMARKS_DIR,
+    ASYMMETRY_PAIR_FEATURES_FILE,
+    LONGITUDINAL_FEATURES_DIR,
+    PREDICTED_AGES_FILE,
+)
+
 # Import directly to avoid __init__.py chain that pulls in unresolvable deps
+# (src/asymmetry/__init__.py 會吃 mediapipe — consumer env 無 mediapipe)
 import importlib.util
 _spec = importlib.util.spec_from_file_location(
     "regional_landmark",
-    PROJECT_ROOT / "src" / "extractor" / "features" / "asymmetry" / "regional_landmark.py",
+    PROJECT_ROOT / "src" / "asymmetry" / "regional_landmark.py",
 )
 _mod = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_mod)
@@ -56,12 +65,11 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 # === Paths ===
-LANDMARK_FEATURES_CSV = PROJECT_ROOT / "workspace" / "asymmetry" / "landmark_features.csv"
-LANDMARKS_DIR = PROJECT_ROOT / "workspace" / "asymmetry" / "landmarks"
+LANDMARK_FEATURES_CSV = ASYMMETRY_PAIR_FEATURES_FILE
+LANDMARKS_DIR = ASYMMETRY_LANDMARKS_DIR
 DEMOGRAPHICS_CSV = PROJECT_ROOT / "data" / "demographics" / "P.csv"
-PREDICTED_AGES_FILE = PROJECT_ROOT / "workspace" / "age" / "age_prediction" / "predicted_ages.json"
-PATIENT_DELTAS_CSV = PROJECT_ROOT / "workspace" / "longitudinal" / "features" / "patient_deltas.csv"
-OUTPUT_DIR = PROJECT_ROOT / "workspace" / "asymmetry" / "analysis"
+PATIENT_DELTAS_CSV = LONGITUDINAL_FEATURES_DIR / "patient_deltas.csv"
+OUTPUT_DIR = ASYMMETRY_ANALYSIS_DIR
 
 N_FOLDS = 5
 RANDOM_SEED = 42
@@ -244,9 +252,10 @@ def prepare_cross_sectional_data(visit_selection):
     merged = feat_df.merge(demo[["ID", "Global_CDR", "Age"]], left_on="subject_id", right_on="ID", how="inner")
     merged = merged.drop(columns=["ID"])
 
-    # Filter: CDR >= 0.5, predicted_age >= 65
-    merged = merged[merged["Global_CDR"] >= 0.5]
-    merged = merged[merged["subject_id"].apply(lambda x: pred_ages.get(x, 65) >= 65)]
+    from src.cohort import apply_predicted_age_filter
+    merged = merged[pd.to_numeric(merged["Global_CDR"], errors="coerce") >= 0.5]
+    merged = apply_predicted_age_filter(merged, pred_ages=pred_ages,
+                                        min_age=65, id_col="subject_id")
 
     # Severity labels
     def severity_label(cdr):
