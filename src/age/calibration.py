@@ -52,9 +52,7 @@ def _pick_first_visit_with_npy_fallback(
 ) -> pd.DataFrame:
     """Per subject: pick the earliest visit that has a predicted_age (= has
     .npy + age extraction). Falls back to the earliest visit if none qualify.
-    Mirrors `_pick_first_visit_with_features` in
-    scripts/utilities/cohort.py (originally lived in legacy
-    run_4arm_deep_dive.py before the V2 split).
+    Mirrors ``src.cohort._pick_first_visit_with_features``.
     """
     picked = []
     for subj, g in df_visits.groupby("subject", as_index=False, sort=False):

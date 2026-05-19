@@ -12,12 +12,10 @@ from .config import (
     DATA_DIR,
     DEMOGRAPHICS_DIR,
     WORKSPACE_DIR,
-    # Embedding ABtest (extraction target)
-    EMBEDDING_ABTEST_DIR,
+    # Embedding
+    EMBEDDING_DIR,
     FEATURES_DIR,
     STATISTICS_DIR,
-    # Embedding production
-    EMBEDDING_DIR,
     EMBEDDING_FEATURES_DIR,
     EMBEDDING_ANALYSIS_DIR,
     EMBEDDING_FEATURE_STAT_DIR,
@@ -84,12 +82,10 @@ __all__ = [
     "DATA_DIR",
     "DEMOGRAPHICS_DIR",
     "WORKSPACE_DIR",
-    # Embedding ABtest
-    "EMBEDDING_ABTEST_DIR",
+    # Embedding
+    "EMBEDDING_DIR",
     "FEATURES_DIR",
     "STATISTICS_DIR",
-    # Embedding production
-    "EMBEDDING_DIR",
     "EMBEDDING_FEATURES_DIR",
     "EMBEDDING_ANALYSIS_DIR",
     "EMBEDDING_FEATURE_STAT_DIR",

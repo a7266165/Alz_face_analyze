@@ -37,16 +37,11 @@ ASYM_VARIANTS = ["difference", "absolute_difference", "average",
                  "relative_differences", "absolute_relative_differences"]
 
 
-def resolve_paths(variant, cohort_mode="default", abtest=False):
-    from src.config import (
-        EMBEDDING_CLASSIFICATION_DIR,
-        EMBEDDING_ABTEST_CLASSIFICATION_DIR,
-        cohort_name,
-    )
+def resolve_paths(variant, cohort_mode="default"):
+    from src.config import EMBEDDING_CLASSIFICATION_DIR, cohort_name
     cohort_dir = cohort_name(cohort_mode)
     v = variant if variant is not None else "original"
-    root = EMBEDDING_ABTEST_CLASSIFICATION_DIR if abtest else EMBEDDING_CLASSIFICATION_DIR
-    return root / v / cohort_dir / "pca" / "_summary"
+    return EMBEDDING_CLASSIFICATION_DIR / v / cohort_dir / "pca" / "_summary"
 
 
 INPUT_DIM = {"arcface": 512, "topofr": 512, "dlib": 128}
@@ -192,11 +187,9 @@ def main():
     from src.config import VALID_COHORT_CHOICES
     parser.add_argument("--cohort-mode", default="default",
                         choices=VALID_COHORT_CHOICES)
-    parser.add_argument("--embedding-abtest", action="store_true",
-                        help="Read from embedding_ABtest/ tree.")
     args = parser.parse_args()
 
-    out = resolve_paths(args.variant, args.cohort_mode, abtest=args.embedding_abtest)
+    out = resolve_paths(args.variant, args.cohort_mode)
     logger.info(f"OUT: {out}")
     long_csv = out / "all_pca_metrics.csv"
     eig_csv = out / "cumulative_eigenvalue_ratio.csv"

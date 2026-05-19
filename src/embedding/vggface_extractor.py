@@ -73,15 +73,7 @@ class VGGFaceExtractor(BaseExtractor):
             logger.warning(f"VGGFace 初始化失敗: {e}")
 
     def extract(self, image: np.ndarray) -> Optional[np.ndarray]:
-        """
-        提取 VGGFace 特徵 (4096維)
-
-        Args:
-            image: BGR 格式的影像
-
-        Returns:
-            4096 維特徵向量
-        """
+        """提取 VGGFace 特徵 (4096維)。接受 BGR numpy array。"""
         result = self._deepface.represent(
             img_path=image,
             model_name='VGG-Face',

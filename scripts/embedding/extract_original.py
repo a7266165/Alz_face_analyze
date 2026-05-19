@@ -43,7 +43,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # ========== 預設常數（會被 CLI 覆寫） ==========
-OUTPUT_DIR = FEATURES_DIR  # workspace/embedding[_ABtest]/features
+OUTPUT_DIR = FEATURES_DIR  # workspace/embedding/features
 EMBEDDING_MODELS = ["arcface", "topofr", "dlib"]
 MAX_CPU_CORES = 2
 

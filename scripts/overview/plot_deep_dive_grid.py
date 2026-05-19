@@ -15,7 +15,7 @@ GRID_VARIANT examples:
   subsets/acs_ext_utkface_AB_age_only_age_error    (subset exploration)
 
 Header rows:
-  1 — arm group label (A/B/C/D with descriptor)
+  1 — design label (cross_naive / cross_matched / longitudinal_naive / longitudinal_matched)
   2 — comparison full name (e.g. `AD vs HC`, `AD high-MMSE vs AD low-MMSE`)
   3 — n_all (raw visits across cohort base_ids) / n_unique (subjects)
   4 — Age mean±SD per group + Welch t p-value
@@ -233,7 +233,7 @@ _header_row5_text_plain = lambda h, cmp: _header_row5_text(h, cmp, sep="\n")
 
 # ---- PNG ----
 
-N_HEADER_ROWS = 5  # arm / compare / n / age / cog
+N_HEADER_ROWS = 5  # design / compare / n / age / cog
 # Heights (row units): halved from prior values for a compact header.
 ROW_HEIGHTS = [0.5, 1.1, 1.2, 0.6, 1.9]
 DATA_ROW_H = 0.9  # data cells are short (2 lines) — squash vertically
@@ -261,7 +261,7 @@ def render_grid(long_df, hdr_df, out_png, out_md, row_order=None):
         row_y_offsets.append(row_y_offsets[-1] + h)
     # row i spans [row_y_offsets[i], row_y_offsets[i+1]]
 
-    # Row 1: arm label
+    # Row 1: design label
     y0, y1 = row_y_offsets[0], row_y_offsets[1]
     for ai, arm in enumerate(DESIGN_ORDER):
         x0 = ai * len(COMPARE_ORDER)
@@ -371,7 +371,7 @@ def render_grid(long_df, hdr_df, out_png, out_md, row_order=None):
                                  linewidth=3.0))
 
     plt.title(f"Section 3.5 Deep-dive — {n_rows} rows × {n_cols} cells "
-               "(5-row header: arm / comparison / n / Age / cog)",
+               "(5-row header: design / comparison / n / Age / cog)",
                fontsize=18)
     plt.tight_layout()
     plt.savefig(out_png, dpi=150, bbox_inches="tight")
@@ -386,7 +386,7 @@ def render_grid(long_df, hdr_df, out_png, out_md, row_order=None):
 
     html = ["<table>", "<thead>"]
 
-    # Row 1: Modality rowspan=5 + arm labels
+    # Row 1: Modality rowspan=5 + design labels
     html.append("<tr>")
     html.append(f'<th rowspan="5" {center}>Modality</th>')
     for i, arm in enumerate(DESIGN_ORDER):

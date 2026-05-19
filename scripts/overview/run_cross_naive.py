@@ -1,5 +1,5 @@
 """
-Cross-sectional naive AD vs HC classification (was run_arm_a_ad_vs_hc.py).
+Cross-sectional naive AD vs HC classification.
 
 No age balance — intentionally so, to demonstrate the age-confound baseline.
 Each feature modality gets 5-fold GroupKFold XGBoost (AUC/BalAcc/MCC/F1/Sens/Spec

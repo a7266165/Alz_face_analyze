@@ -1,22 +1,20 @@
 """
-Cohort orchestration pipeline (merge of run_arms_pipeline_p_*.py × 2).
+Cohort orchestration pipeline.
 
 One entry point parametrized by --cohort-mode. Each cohort runs the same 5
 producer steps + writes cohort_summary.csv + README.md.
 
-5 steps (post-refactor; AUC supplement is now folded into step 3):
+Steps:
     1. cross_naive (ad_vs_hc)                  → overview/run_cross_naive.py
     2. cross_matched × {ad_vs_hc, ad_vs_nad, ad_vs_acs}  → overview/run_cross_matched.py
     3. cross_matched × {mmse_hilo, casi_hilo}  → overview/run_cross_matched.py
-                                                  (auto-includes AUC supplement)
     4. stat grid (cross_naive + cross_matched, HC=ACS)   → overview/run_stat_grid.py
     5. age classifiers (cross_naive + cross_matched)     → age/run_classifiers.py
 
-Cohort modes:
-    default          strict-HC + first-visit (legacy main cohort)
-    p_first_hc_all   first-visit P + ALL NAD/ACS (HC unfiltered)
-    p_all_hc_all     ALL P visits + ALL NAD/ACS (most permissive, multi-visit
-                     subject-first matching)
+Cohort modes (see src.config.CohortSpec for full 5-axis spec):
+    default          first-visit P + first-visit HC (CDR≥0.5, no HC cognitive filter)
+    p_first_hc_all   first-visit P + ALL HC visits
+    p_all_hc_all     ALL P visits + ALL HC visits (most permissive)
 
 Longitudinal designs are not invoked by default — they need build_longitudinal_*
 producers and are out of scope for cross-sectional cohort pipelines.
@@ -154,7 +152,7 @@ def write_cohort_summary(cohort_dir, output_dir):
     """Compute cohort summary from artifacts; works across all cohort modes."""
     rows = []
 
-    # cross_naive (was arm_a)
+    # cross_naive
     cn_csv = OVERVIEW_DIR / cohort_dir / "cross_naive" / "cohort.csv"
     if cn_csv.exists():
         df = pd.read_csv(cn_csv)

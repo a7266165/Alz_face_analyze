@@ -47,7 +47,7 @@ ASYM_VARIANTS = ["difference", "absolute_difference", "average",
                  "relative_differences", "absolute_relative_differences"]
 
 EMBEDDING_FEAT_DIR = (PROJECT_ROOT / "workspace" / "embedding" / "features")
-EMBEDDING_ABTEST_FEAT_DIR = (PROJECT_ROOT / "workspace" / "embedding_ABtest" / "features")
+EMBEDDING_FEAT_DIR = (PROJECT_ROOT / "workspace" / "embedding" / "features")
 INPUT_DIM = {"arcface": 512, "topofr": 512, "dlib": 128}
 EMB_COLOR = {"arcface": "#1f77b4", "topofr": "#ff7f0e", "dlib": "#2ca02c"}
 # Per (embedding, classifier): same hue per embedding but lighter for LR /
@@ -66,11 +66,11 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 logger = logging.getLogger(__name__)
 
 
-def resolve_paths(variant, cohort_mode="default", abtest=False):
+def resolve_paths(variant, cohort_mode="default"):
     """Return (class_root, out, reducer_dirs, cell_json_for, feature_subdir, feat_root).
 
     class_root             → <classification_root>/<variant>/<cohort>
-    feat_root              → workspace/embedding[_ABtest]/features
+    feat_root              → workspace/embedding/features
     reducer_dirs           → list of reducer dirs to walk
                               (no_drop + pca/n_components_X + pca/var_ratio_X)
     cell_json_for(reducer, part, emb, clf) → cell metrics json
@@ -80,17 +80,13 @@ def resolve_paths(variant, cohort_mode="default", abtest=False):
     """
     from src.config import (
         EMBEDDING_CLASSIFICATION_DIR,
-        EMBEDDING_ABTEST_CLASSIFICATION_DIR,
         cohort_name,
     )
     cohort_dir = cohort_name(cohort_mode)
     feature_subdir = variant if variant is not None else "original"
-    classification_root = (
-        EMBEDDING_ABTEST_CLASSIFICATION_DIR if abtest else EMBEDDING_CLASSIFICATION_DIR
-    )
-    class_root = classification_root / feature_subdir / cohort_dir
+    class_root = EMBEDDING_CLASSIFICATION_DIR / feature_subdir / cohort_dir
     out = class_root / "pca" / "_summary"
-    feat_root = EMBEDDING_ABTEST_FEAT_DIR if abtest else EMBEDDING_FEAT_DIR
+    feat_root = EMBEDDING_FEAT_DIR
 
     def _reducer_dirs():
         if not class_root.is_dir():
@@ -313,13 +309,10 @@ def main():
                              "(no cohort filter). 'visit_all': filter to the "
                              "union of visit=all cohort IDs so the panel "
                              "matches what a --visit-mode all sweep saw.")
-    parser.add_argument("--embedding-abtest", action="store_true",
-                        help="Read from embedding_ABtest/ tree (features + "
-                             "analysis/classification) instead of production embedding/.")
     args = parser.parse_args()
 
     class_root, out, reducer_dirs, cell_json_for, feature_subdir, feat_root = resolve_paths(
-        args.variant, args.cohort_mode, abtest=args.embedding_abtest
+        args.variant, args.cohort_mode
     )
     out.mkdir(parents=True, exist_ok=True)
     logger.info(f"ROOT: {class_root}")

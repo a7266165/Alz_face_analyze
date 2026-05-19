@@ -12,8 +12,7 @@ Comparisons (--comparison):
                           (2) 8 emotion methods × 7 emotions × 4 stats
                           (3) landmark asymmetry L2 + area_diff
                           (4) 3-model embedding asymmetry L2
-                        Plus per-modality AUC supplement (was the standalone
-                        run_arm_b_auc_supplement.py): age_only, age_error,
+                        Plus per-modality AUC supplement: age_only, age_error,
                         emotion, landmark_asymmetry, embedding_asymmetry,
                         embedding_{arcface,topofr,dlib}_mean.
 
@@ -316,7 +315,7 @@ def run_hc_groups_comparison(comparison, cohort_dir, cohort_mode,
 
 
 # ============================================================
-# AUC supplement (was run_arm_b_auc_supplement.py)
+# AUC supplement
 # ============================================================
 
 def _auc_for_modality(name, X_df, matched, model_cls="xgb"):
@@ -344,8 +343,7 @@ def _auc_for_modality(name, X_df, matched, model_cls="xgb"):
 
 
 def _run_auc_supplement(matched, comparison_dir, group_col):
-    """Per-modality AUC on the matched hi-lo cohort. Mirrors the legacy
-    run_arm_b_auc_supplement.py output shape; merged into _run_hilo here."""
+    """Per-modality AUC on the matched hi-lo cohort."""
     matched = matched.copy()
     matched["label"] = (matched[group_col] == "high").astype(int)
     if "base_id" not in matched.columns:
@@ -618,7 +616,7 @@ def _run_hilo(args, metric):
     plot_emotion_heatmap(summary, emo_stat_dir / "fig_emotion_grid_heatmap.png",
                          metric=metric)
 
-    # 11. AUC supplement (was the standalone run_arm_b_auc_supplement.py)
+    # 11. AUC supplement
     _run_auc_supplement(merged, comparison_dir, group_col)
 
     logger.info(f"Done. Artifacts at {comparison_dir}; "

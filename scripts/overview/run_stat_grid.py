@@ -1,24 +1,15 @@
 """
 Cross-design × cross-modality statistical grid.
 
-Replaces the old v6.1 3.5 master table (AUC-only, 7×3 grid) with a richer
-statistical characterization:
+14 data rows (10 modality parents) × 20 comparison cells (4 design × 5
+comparison):
 
-  - 14 data rows from 10 modality parents (3 embedding mean, 3 embedding
-    asymmetry split into L2-scalar + full-vector sub-rows, landmark split into
-    4-d per-region L2 + 130-d raw pair diff, emotion, age_error, age_only)
-  - 20 comparison cells = 4 design × 5 comparison
-        cross_naive          (was Arm A): HC | NAD | ACS | mmse-hi-lo | casi-hi-lo
-        cross_matched        (was Arm B): HC | NAD | ACS | mmse-hi-lo | casi-hi-lo
-        longitudinal_naive   (was Arm C): HC | NAD | ACS | mmse-hi-lo | casi-hi-lo
-        longitudinal_matched (was Arm D): HC | NAD | ACS | mmse-hi-lo | casi-hi-lo
-  - Cell primary = per-modality statistical test (Welch t / Hotelling T² /
-    PERMANOVA / per-method-Hotelling-Fisher) + effect size + q
-  - Cell secondary (inline annotation) = AUC + 95% CI
+  Designs:  cross_naive | cross_matched | longitudinal_naive | longitudinal_matched
+  Comparisons: HC | NAD | ACS | mmse-hi-lo | casi-hi-lo
 
-This script absorbs the standalone run_arm_c_longitudinal_matched.py — its
-core logic was the longitudinal_matched cohort × per-modality stats, which is
-already represented as the longitudinal_matched design column here.
+  Cell primary  = per-modality test (Welch t / Hotelling T² / PERMANOVA /
+                  per-method-Hotelling-Fisher) + effect size + BH-FDR q
+  Cell secondary = AUC + 95% CI
 
 Usage:
     conda run -n Alz_face_test_2 python scripts/overview/run_stat_grid.py \\
@@ -69,8 +60,7 @@ VECTOR_DELTAS_NPZ = LONGITUDINAL_FEATURES_DIR / "vector_deltas.npz"
 # ----------------------------------------------------------------------
 # Constants
 # ----------------------------------------------------------------------
-N_PERMS = int(os.environ.get("STAT_GRID_N_PERMS",
-              os.environ.get("DEEP_DIVE_N_PERMS", 1000)))
+N_PERMS = int(os.environ.get("STAT_GRID_N_PERMS", 1000))
 SEED = 42
 MIN_CELL_N = 20  # cells with min(n_pos,n_neg) < 20 → marked n/a
 

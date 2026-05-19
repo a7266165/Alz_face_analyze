@@ -537,7 +537,7 @@ def main():
     ap.add_argument("--n-select", type=int, default=10)
     ap.add_argument("--max-cpu-cores", type=int, default=2)
     ap.add_argument("--no-aligned-background", action="store_true",
-                    help="不產出 aligned_background/（debug 用；ABtest branch 預設會產）")
+                    help="不產出 aligned_background/（debug 用；預設會產）")
     args = ap.parse_args()
 
     raw_dir = args.input_root if args.input_root is not None else RAW_IMAGES_DIR

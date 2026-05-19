@@ -7,16 +7,14 @@ Forward strategy:
     2. Train 10-fold GroupKFold(base_id) classifier (LR or XGB) on the raw
        embedding 512-dim mean vector → out-of-fold prediction score per subject.
     3. Subset OOF scores to the age 1:1 matched cohort
-       (matched count must equal arm_b counts: HC=180, NAD=169, ACS=29).
-       Same predicted_age post-hoc filter as arm_b is applied — pairs with
-       either side missing from predicted_ages.json are dropped, so the
-       matched cohort here is identical to arm_b's matched cohort.
+       (predicted_age post-hoc filter applied — pairs with either side
+       missing from predicted_ages.json are dropped).
     4. Paired Wilcoxon signed-rank on score by pair_id +
        classification metrics (AUC + 95% bootstrap CI / BalAcc / MCC / F1 /
        Sens / Spec) on the matched subset.
 
 Reverse strategy:
-    1. Build matched cohort first (same matching as arm_b).
+    1. Build matched cohort first (same matching as cross_matched).
     2. 10-fold GroupKFold(base_id) on the matched cohort → 10 fold-models
        (each LR fold also fits its own StandardScaler).
     3. Each fold-model predicts proba over the *full* partition cohort →
@@ -68,8 +66,6 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from src.config import (
     EMBEDDING_CLASSIFICATION_DIR,
     EMBEDDING_FEATURES_DIR,
-    EMBEDDING_ABTEST_CLASSIFICATION_DIR,
-    FEATURES_DIR as EMBEDDING_ABTEST_FEAT_DIR,
     VALID_COHORT_CHOICES,
     cohort_name,
     cohort_spec_from_name,
@@ -262,7 +258,7 @@ def _apply_reducer(reducer, X):
 _fit_drop_correlated = _fit_reducer
 _apply_drop_correlated = _apply_reducer
 
-# Expected matched pair counts per arm_b (sanity check; raises if mismatch)
+# Expected matched pair counts for cross_matched (sanity check)
 EXPECTED_PAIRS = {
     "ad_vs_hc": 180,
     "ad_vs_nad": 169,
@@ -401,7 +397,7 @@ def _build_metric_hilo(metric):
     """mmse_hilo / casi_hilo (AD-only, P group; CDR filter per CohortSpec.p_cdr).
 
     Splits by median, matches 1:1 by age (caliper 2y), then drops pairs
-    where either side lacks predicted_age (parity with arm_b convention).
+    where either side lacks predicted_age.
     Labels: high=1, low=0.
     """
     metric_low = metric.lower()
@@ -1133,7 +1129,7 @@ def assert_matched_size(partition, matched_cohort, is_derived=False):
     if expected is not None and n_pairs != expected:
         logger.warning(
             f"{partition}: matched n_pairs={n_pairs} != expected {expected} "
-            f"(arm_b reference). Continuing anyway."
+            f"(cross_matched reference). Continuing anyway."
         )
     return n_pairs
 
@@ -1385,8 +1381,6 @@ def _refresh_summary_csv():
         str(PROJECT_ROOT / "scripts" / "embedding" / "build_sweep_metrics.py"),
         "--cohort-mode", _COHORT_MODE,
     ]
-    if EMBEDDING_CLASSIFICATION_DIR is EMBEDDING_ABTEST_CLASSIFICATION_DIR:
-        cmd.append("--embedding-abtest")
     logger.info(f"Refreshing summary CSV: {' '.join(cmd)}")
     try:
         subprocess.run(cmd, check=True)
@@ -1450,11 +1444,6 @@ def main():
                              "logistic/C_<value>/ (e.g. C_1, C_10), so "
                              "different C values can coexist alongside xgb/. "
                              "Has no effect on xgb cells.")
-    parser.add_argument("--embedding-abtest", action="store_true",
-                        help="Read features from embedding_ABtest/features/ "
-                             "and write outputs to "
-                             "embedding_ABtest/analysis/classification/.  "
-                             "Default: production embedding/ tree.")
     parser.add_argument("--save-oof-probabilities", action="store_true",
                         help="Additionally write pred_probability/<config>.csv "
                              "alongside per-cell outputs (consumed by "
@@ -1485,9 +1474,6 @@ def main():
     global _PCA_COMPONENTS, _PHOTO_MODE, _COHORT_MODE, _LR_C, OUTPUT_DIR
     global _RFE_DROP, _RFE_ITERS, _SAVE_OOF_PROB
     global EMBEDDING_CLASSIFICATION_DIR, EMBEDDING_FEAT_DIR
-    if args.embedding_abtest:
-        EMBEDDING_CLASSIFICATION_DIR = EMBEDDING_ABTEST_CLASSIFICATION_DIR
-        EMBEDDING_FEAT_DIR = EMBEDDING_ABTEST_FEAT_DIR
     if args.drop_correlated_threshold is not None and args.pca_components is not None:
         parser.error("--drop-correlated-threshold and --pca-components are "
                      "mutually exclusive")

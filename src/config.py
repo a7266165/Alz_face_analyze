@@ -40,28 +40,21 @@ EXTERNAL_FILTERED_DIR = EXTERNAL_PUBLIC_FACE_DIR / "filtered"
 WORKSPACE_DIR = PROJECT_ROOT / "workspace"
 
 # -----------------------------------------------------------------------------
-# Preprocess（ABtest branch 預設）
+# Preprocess
 # -----------------------------------------------------------------------------
-PREPROCESSING_DIR = WORKSPACE_DIR / "preprocess_ABtest"
+PREPROCESSING_DIR = WORKSPACE_DIR / "preprocess"
 SELECTED_DIR = PREPROCESSING_DIR / "selected"
 ALIGNED_DIR = PREPROCESSING_DIR / "aligned"
 ALIGNED_BACKGROUND_DIR = PREPROCESSING_DIR / "aligned_background"
 MIRRORS_DIR = PREPROCESSING_DIR / "mirrors"
 
 # -----------------------------------------------------------------------------
-# Embedding (ABtest branch — extraction target)
-# -----------------------------------------------------------------------------
-EMBEDDING_ABTEST_DIR = WORKSPACE_DIR / "embedding_ABtest"
-FEATURES_DIR = EMBEDDING_ABTEST_DIR / "features"
-STATISTICS_DIR = EMBEDDING_ABTEST_DIR / "statistics"
-EMBEDDING_ABTEST_ANALYSIS_DIR = EMBEDDING_ABTEST_DIR / "analysis"
-EMBEDDING_ABTEST_CLASSIFICATION_DIR = EMBEDDING_ABTEST_ANALYSIS_DIR / "classification"
-
-# -----------------------------------------------------------------------------
 # Embedding
 # -----------------------------------------------------------------------------
 EMBEDDING_DIR = WORKSPACE_DIR / "embedding"
-EMBEDDING_FEATURES_DIR = EMBEDDING_DIR / "features"
+FEATURES_DIR = EMBEDDING_DIR / "features"
+EMBEDDING_FEATURES_DIR = FEATURES_DIR
+STATISTICS_DIR = EMBEDDING_DIR / "statistics"
 EMBEDDING_ANALYSIS_DIR = EMBEDDING_DIR / "analysis"
 EMBEDDING_FEATURE_STAT_DIR = EMBEDDING_ANALYSIS_DIR / "feature_stat"
 EMBEDDING_CLASSIFICATION_DIR = EMBEDDING_ANALYSIS_DIR / "classification"
@@ -330,7 +323,7 @@ class PreprocessConfig:
     subject_id: Optional[str] = None  # 受試者 ID（用於建立子目錄）
 
     # 額外輸出未去背版本到 ALIGNED_BACKGROUND_DIR（不影響既有 aligned/）
-    # ABtest branch 預設 True，產出 aligned/ + aligned_background/ 雙變體
+    # 預設 True，產出 aligned/ + aligned_background/ 雙變體
     also_save_aligned_background: bool = True
 
     # ========== 處理流程控制 ==========
