@@ -1,8 +1,7 @@
 """
-Build Arm-C longitudinal Δ supplements:
-  (A) HC/NAD/ACS scalar Δ (hc_patient_deltas.csv) — enables Arm C × {HC/NAD/ACS}
-  (B) AD + HC/NAD/ACS full-vector Δ (vector_deltas.npz) — enables Arm C × hi-lo
-      full-vector embedding-asymmetry and 130-d landmark raw-xy modalities
+Build longitudinal Δ supplements:
+  (A) HC/NAD/ACS scalar Δ (hc_patient_deltas.csv)
+  (B) AD + HC/NAD/ACS full-vector Δ (vector_deltas.npz)
 
 Outputs:
   workspace/longitudinal/features/hc_patient_deltas.csv
@@ -114,7 +113,7 @@ def _load_emotion_dict():
     """Map subject_id -> {f"{method}__{emo}": mean_value} across all 8 methods.
 
     Expanded from openface-only to 8 methods × 7 emotions = 56 entries per subject,
-    enabling Arm C/D emotion_fisher Δ tests to parallel A/B.
+    enabling longitudinal emotion_fisher Δ tests.
     """
     out = {}
     methods_root = _emotion_loader.EMO_AU_FEATURES_DIR
@@ -351,7 +350,7 @@ def main():
                                  emo_dict, pred_ages, lmk_dict)
     df_ad.to_csv(LONGITUDINAL_DIR / "ad_patient_deltas.csv", index=False)
     logger.info(f"Saved ad_patient_deltas.csv "
-                 f"(AD mirror with lmk_delta_* + ann_* for deep-dive)")
+                 f"(AD mirror with lmk_delta_* + ann_* for stat_grid)")
 
     # External ACS side — IMDB multi-visit（optional）
     vec_eacs = {}

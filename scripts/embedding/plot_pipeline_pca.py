@@ -438,7 +438,7 @@ def build_classifier_pca_p_first_hc_all():
                fillcolor="#FFFFFF")
 
     g.edge("npy", "cohort")
-    g.edge("cohort", "match", label="Arm B 1:1 age match")
+    g.edge("cohort", "match", label="1:1 age match")
     g.edge("match", "mean_pool", style="dashed", label="matched cohort")
     g.edge("mean_pool", "gkf", label="train / val rows")
     g.edge("gkf", "scaler")

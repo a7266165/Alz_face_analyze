@@ -1,5 +1,5 @@
 """
-Per-arm confusion-matrix grid: 3 (groups) × 4 (model × feat-set) = 12 cells per arm.
+Per-design confusion-matrix grid: 3 (groups) × 4 (model × feat-set) = 12 cells per design.
 
 X-axis = model × feat-set:
   - XGBoost ┌ 2-feat
