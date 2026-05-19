@@ -84,6 +84,14 @@ AGE_CLASSIFICATION_DIR = AGE_ANALYSIS_DIR / "classification"
 AGE_WINDOW_CLASSIFIER_DIR = AGE_CLASSIFICATION_DIR / "window_classifier"
 
 # -----------------------------------------------------------------------------
+# BMI
+# -----------------------------------------------------------------------------
+BMI_DIR = WORKSPACE_DIR / "bmi"
+BMI_MODELS_DIR = BMI_DIR / "models"
+BMI_PREDICTIONS_DIR = BMI_DIR / "predictions"
+BMI_ANALYSIS_DIR = BMI_DIR / "analysis"
+
+# -----------------------------------------------------------------------------
 # Longitudinal — features (raw deltas) + analysis (per-modality)
 # -----------------------------------------------------------------------------
 LONGITUDINAL_DIR = WORKSPACE_DIR / "longitudinal"
