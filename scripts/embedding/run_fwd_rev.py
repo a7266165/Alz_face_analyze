@@ -72,7 +72,6 @@ from src.config import (
 )
 
 EMBEDDING_FEAT_DIR = EMBEDDING_FEATURES_DIR
-from src.config import PREDICTED_AGES_FILE as AGES_FILE
 
 PARTITIONS = ["ad_vs_hc", "ad_vs_nad", "ad_vs_acs", "mmse_hilo", "casi_hilo"]
 EMBEDDINGS = ["arcface", "topofr", "dlib"]
@@ -247,11 +246,28 @@ def _apply_reducer(reducer, X):
     raise ValueError(f"unknown reducer kind: {kind}")
 
 
-# Backward-compat aliases (kept so older callers in this module — and the
-# dropcorr sweep helper scripts — still resolve). They forward to the new
-# generic reducer interface.
-_fit_drop_correlated = _fit_reducer
-_apply_drop_correlated = _apply_reducer
+def _apply_rfe_mask(X, rfe_mask):
+    if rfe_mask is not None and not rfe_mask.all():
+        return X[:, rfe_mask]
+    return X
+
+
+def _scale_and_reduce(X_train, X_test, classifier, *extra_arrays):
+    """Scale (if needed) + fit reducer on X_train, apply to X_test and extras.
+
+    Returns (X_train, X_test, *extra_transformed, n_kept).
+    """
+    if needs_scaler(classifier):
+        scaler = StandardScaler().fit(X_train)
+        X_train = scaler.transform(X_train)
+        X_test = scaler.transform(X_test)
+        extra_arrays = tuple(scaler.transform(a) for a in extra_arrays)
+    sel, n_kept = _fit_reducer(X_train)
+    X_train = _apply_reducer(sel, X_train)
+    X_test = _apply_reducer(sel, X_test)
+    extra_arrays = tuple(_apply_reducer(sel, a) for a in extra_arrays)
+    return (X_train, X_test, *extra_arrays, n_kept)
+
 
 # Expected matched pair counts for cross_matched (sanity check)
 EXPECTED_PAIRS = {
@@ -278,7 +294,6 @@ from scripts.utilities.cohort import (
     select_visit,
     split_by_metric_median,
 )
-from scripts.utilities.feature_loaders import load_embedding_mean
 from scripts.utilities.stats_helpers import bootstrap_auc_ci
 
 # Module-level _COHORT_MODE is set in main() after argparse; cohort builders
@@ -664,18 +679,10 @@ def _forward_train(full_cohort, embedding, classifier, n_folds, seed):
     oof_fold = np.full(len(y), -1, dtype=int)
     n_kept_per_fold = []
     for fold_idx, (tri, tei) in enumerate(gkf.split(X, y, groups=base_ids)):
-        if needs_scaler(classifier):
-            scaler = StandardScaler().fit(X[tri])
-            Xtr, Xte = scaler.transform(X[tri]), scaler.transform(X[tei])
-        else:
-            Xtr, Xte = X[tri], X[tei]
-        sel, n_kept = _fit_drop_correlated(Xtr)
-        Xtr = _apply_drop_correlated(sel, Xtr)
-        Xte = _apply_drop_correlated(sel, Xte)
+        Xtr, Xte, n_kept = _scale_and_reduce(X[tri], X[tei], classifier)
         n_kept_per_fold.append(n_kept)
         clf, rfe_mask = _fit_with_optional_rfe(Xtr, y[tri], classifier, seed)
-        Xte_eval = Xte[:, rfe_mask] if rfe_mask is not None and not rfe_mask.all() else Xte
-        oof_score[tei] = clf.predict_proba(Xte_eval)[:, 1]
+        oof_score[tei] = clf.predict_proba(_apply_rfe_mask(Xte, rfe_mask))[:, 1]
         oof_fold[tei] = fold_idx
 
     oof_df_base = pd.DataFrame({
@@ -731,8 +738,7 @@ def _forward_eval(train, matched_cohort, keep_groups, seed):
     sort_cols = ["base_id"] + (["visit"] if "visit" in pool.columns else [])
     matched_eval = pool.sort_values(sort_cols).drop_duplicates("base_id", keep="first")
 
-    matched_min = matched_eval[["base_id", "ID", "pair_id", "label"]].copy()
-    oof_matched = matched_min.merge(
+    oof_matched = matched_eval[["base_id", "pair_id", "label"]].merge(
         train["oof_subj"][["base_id", "y_score"]],
         on="base_id", how="inner",
     )
@@ -881,21 +887,12 @@ def _reverse_train(full_cohort, matched_cohort, embedding, classifier,
     full_preds = []
     n_kept_per_fold = []
     for fold_idx, (tri, tei) in enumerate(gkf.split(Xm, ym, groups=gm)):
-        if needs_scaler(classifier):
-            scaler = StandardScaler().fit(Xm[tri])
-            Xm_tr = scaler.transform(Xm[tri])
-            Xm_te = scaler.transform(Xm[tei])
-            Xf_t = scaler.transform(Xf)
-        else:
-            Xm_tr, Xm_te, Xf_t = Xm[tri], Xm[tei], Xf
-        sel, n_kept = _fit_drop_correlated(Xm_tr)
-        Xm_tr = _apply_drop_correlated(sel, Xm_tr)
-        Xm_te = _apply_drop_correlated(sel, Xm_te)
-        Xf_t = _apply_drop_correlated(sel, Xf_t)
+        Xm_tr, Xm_te, Xf_t, n_kept = _scale_and_reduce(
+            Xm[tri], Xm[tei], classifier, Xf)
         n_kept_per_fold.append(n_kept)
         clf, rfe_mask = _fit_with_optional_rfe(Xm_tr, ym[tri], classifier, seed)
-        if rfe_mask is not None and not rfe_mask.all():
-            Xm_te, Xf_t = Xm_te[:, rfe_mask], Xf_t[:, rfe_mask]
+        Xm_te = _apply_rfe_mask(Xm_te, rfe_mask)
+        Xf_t = _apply_rfe_mask(Xf_t, rfe_mask)
         oof_m[tei] = clf.predict_proba(Xm_te)[:, 1]
         full_preds.append(clf.predict_proba(Xf_t)[:, 1])
 

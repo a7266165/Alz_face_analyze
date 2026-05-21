@@ -16,7 +16,7 @@ analysis (run_*) + visualization (plot_*)。
 | `meta/` | `workspace/analysis_<ts>/`、`workspace/tabpfn_meta_analysis_<ts>/` | legacy M1-M4 paper（對應 `src/meta/`），保留至確認無 active caller |
 | `external/` | `external/public_face_datasets/` | 公開亞裔人臉資料集整合 (見 `external/README.md`) |
 | `literature_monitor/` | `references/` | 文獻自動 monitor (self-contained sub-package) |
-| `utilities/` | (cross-cutting libraries, 不對應單一 workspace tree) | `cohort.py` / `feature_loaders.py` / `stats_helpers.py` / `emotion_loader.py` / `facial_landmarks.py` |
+| `utilities/` | (cross-cutting libraries, 不對應單一 workspace tree) | `cohort.py` / `feature_loaders.py` / `stats_helpers.py` / `emotion_loader.py` |
 
 ## 主要 entry point
 

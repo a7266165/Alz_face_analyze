@@ -338,7 +338,7 @@ def _select_hc_visits(demo, hc_source, spec: CohortSpec,
 # ====================================================================
 
 def match_1to1(cohort, caliper=2.0, seed=42, metric="MMSE", group_col=None,
-               match_mode="visit", priority_groups=None):
+               match_mode="visit", priority_groups=None, id_col="ID"):
     """1:1 age NN match; cohort must have *group_col* set to 'high'/'low'.
 
     match_mode:
@@ -351,6 +351,10 @@ def match_1to1(cohort, caliper=2.0, seed=42, metric="MMSE", group_col=None,
       pick of partners).  Within each priority tier the random shuffle
       (controlled by *seed*) is preserved via stable sort.
 
+    id_col: column name used as the matching ID (default "ID").
+
+    metric: if None, metric columns are omitted from pairs_df and matched.
+
     Returns (matched_df, pairs_df, (minor_label, major_label)).
     """
     if group_col is None:
@@ -362,7 +366,7 @@ def match_1to1(cohort, caliper=2.0, seed=42, metric="MMSE", group_col=None,
     if match_mode == "subject_first" and "base_id" not in cohort.columns:
         raise ValueError(
             "match_mode='subject_first' requires base_id column in cohort")
-    metric_low = metric.lower()
+    metric_low = metric.lower() if metric else None
     rng = np.random.RandomState(seed)
     high = cohort[cohort[group_col] == "high"].copy()
     low = cohort[cohort[group_col] == "low"].copy()
@@ -392,12 +396,13 @@ def match_1to1(cohort, caliper=2.0, seed=42, metric="MMSE", group_col=None,
     def _make_pair(minor_row, picked_row, pass_label):
         rec = {
             "pair_id": None,
-            "minor_id": minor_row["ID"], "minor_age": minor_row["Age"],
-            f"minor_{metric_low}": minor_row[metric],
-            "major_id": picked_row["ID"], "major_age": picked_row["Age"],
-            f"major_{metric_low}": picked_row[metric],
+            "minor_id": minor_row[id_col], "minor_age": minor_row["Age"],
+            "major_id": picked_row[id_col], "major_age": picked_row["Age"],
             "age_diff": picked_row["Age"] - minor_row["Age"],
         }
+        if metric_low:
+            rec[f"minor_{metric_low}"] = minor_row[metric]
+            rec[f"major_{metric_low}"] = picked_row[metric]
         if match_mode == "subject_first":
             rec["match_pass"] = pass_label
         return rec
@@ -407,7 +412,7 @@ def match_1to1(cohort, caliper=2.0, seed=42, metric="MMSE", group_col=None,
         md = diffs.min()
         if pd.isna(md) or md > caliper:
             return None, None
-        cands = cand_pool[diffs == md].sort_values("ID")
+        cands = cand_pool[diffs == md].sort_values(id_col)
         return cands.iloc[0], md
 
     pairs_records = []
@@ -440,10 +445,10 @@ def match_1to1(cohort, caliper=2.0, seed=42, metric="MMSE", group_col=None,
             pairs_records.append(_make_pair(row, picked, "subject"))
             used_major_subjects.add(picked["base_id"])
             used_minor_subjects.add(row["base_id"])
-            matched_minor_ids.add(row["ID"])
+            matched_minor_ids.add(row[id_col])
             used_idx.add(picked.name)
         unmatched_minor = minor_order[
-            ~minor_order["ID"].isin(matched_minor_ids)]
+            ~minor_order[id_col].isin(matched_minor_ids)]
         for _, row in unmatched_minor.iterrows():
             cand = available[~available.index.isin(used_idx)]
             if len(cand) == 0:
@@ -457,64 +462,23 @@ def match_1to1(cohort, caliper=2.0, seed=42, metric="MMSE", group_col=None,
     matched_records = []
     for i, rec in enumerate(pairs_records):
         rec["pair_id"] = i
-        matched_records.append({
-            "pair_id": i, "ID": rec["minor_id"],
-            "Age": rec["minor_age"], metric: rec[f"minor_{metric_low}"],
-            group_col: minor_label,
-        })
-        matched_records.append({
-            "pair_id": i, "ID": rec["major_id"],
-            "Age": rec["major_age"], metric: rec[f"major_{metric_low}"],
-            group_col: major_label,
-        })
+        minor_rec = {
+            "pair_id": i, id_col: rec["minor_id"],
+            "Age": rec["minor_age"], group_col: minor_label,
+        }
+        major_rec = {
+            "pair_id": i, id_col: rec["major_id"],
+            "Age": rec["major_age"], group_col: major_label,
+        }
+        if metric_low:
+            minor_rec[metric] = rec[f"minor_{metric_low}"]
+            major_rec[metric] = rec[f"major_{metric_low}"]
+        matched_records.append(minor_rec)
+        matched_records.append(major_rec)
     pairs_df = pd.DataFrame(pairs_records)
     matched = pd.DataFrame(matched_records)
     return matched, pairs_df, (minor_label, major_label)
 
-
-def _match_longitudinal_1to1(prep, caliper, seed):
-    """1:1 age NN match using 'Age' (= baseline first_age) on
-    'mmse_group'."""
-    rng = np.random.RandomState(seed)
-    g_hi = prep[prep["mmse_group"] == "high"].copy()
-    g_lo = prep[prep["mmse_group"] == "low"].copy()
-    if len(g_lo) <= len(g_hi):
-        minor, major = g_lo, g_hi
-        minor_lbl, major_lbl = "low", "high"
-    else:
-        minor, major = g_hi, g_lo
-        minor_lbl, major_lbl = "high", "low"
-    minor_order = minor.sample(frac=1.0, random_state=rng).reset_index(
-        drop=True)
-    available = major.copy().reset_index(drop=True)
-
-    pairs = []
-    for _, row in minor_order.iterrows():
-        if len(available) == 0:
-            break
-        age = row["Age"]
-        diffs = (available["Age"] - age).abs()
-        md = diffs.min()
-        if md > caliper:
-            continue
-        cands = available[diffs == md].sort_values("base_id")
-        pk = cands.iloc[0]
-        pairs.append({
-            "pair_id": len(pairs),
-            "minor_id": row["base_id"], "minor_age": age,
-            "major_id": pk["base_id"], "major_age": pk["Age"],
-            "age_diff": pk["Age"] - age,
-        })
-        available = available.drop(pk.name).reset_index(drop=True)
-    pairs_df = pd.DataFrame(pairs)
-
-    records = []
-    for _, p in pairs_df.iterrows():
-        records.append({"pair_id": p["pair_id"], "base_id": p["minor_id"],
-                        "mmse_group": minor_lbl})
-        records.append({"pair_id": p["pair_id"], "base_id": p["major_id"],
-                        "mmse_group": major_lbl})
-    return pd.DataFrame(records), pairs_df
 
 
 # ====================================================================
@@ -600,7 +564,7 @@ def build_cohort_ad_vs_HCgroup(
     hc_all = _select_hc_visits(demo, hc_source, spec, visit_selection="all")
     hc_all = hc_all[hc_all["Age"].notna()].copy()
     if spec.hc_visit == "all":
-        hc = hc_all.reset_index(drop=True).copy()
+        hc = hc_all.reset_index(drop=True)
     else:
         hc = _pick_first_visit_with_features(hc_all)
 
@@ -691,10 +655,9 @@ def _build_longitudinal_cohort_hc(hc_source, demo, hc_source_mode,
                           sort=False)
 
     if not do_match:
-        cohort = all_delta.copy()
-        cohort["mmse_group"] = np.where(
-            cohort["label"] == 1, "high", "low")
-        return cohort, None
+        all_delta["mmse_group"] = np.where(
+            all_delta["label"] == 1, "high", "low")
+        return all_delta, None
 
     ad_delta["mmse_group"] = "high"
     hc_delta["mmse_group"] = "low"
@@ -706,7 +669,9 @@ def _build_longitudinal_cohort_hc(hc_source, demo, hc_source_mode,
                   "follow_up_years", "follow_up_days", "label"]].rename(
             columns={"first_age": "Age"}),
     ], ignore_index=True)
-    matched, pairs_df = _match_longitudinal_1to1(prep, caliper, seed)
+    matched, pairs_df, _ = match_1to1(
+        prep, caliper=caliper, seed=seed, metric=None,
+        group_col="mmse_group", id_col="base_id")
     cohort = matched.merge(all_delta, on="base_id", how="left",
                            suffixes=("", "_p"))
     return cohort, pairs_df
@@ -820,11 +785,9 @@ def build_cohort_ad_hi_lo(
         ad_d[first_metric] >= med, "high", "low")
     prep = ad_d.copy()
     prep["Age"] = prep["first_age"]
-    if group_col != "mmse_group":
-        prep["mmse_group"] = prep[group_col]
-    matched, pairs_df = _match_longitudinal_1to1(prep, caliper, seed)
-    if "mmse_group" in matched.columns and group_col != "mmse_group":
-        matched = matched.rename(columns={"mmse_group": group_col})
+    matched, pairs_df, _ = match_1to1(
+        prep, caliper=caliper, seed=seed, metric=None,
+        group_col=group_col, id_col="base_id")
     cohort = matched.merge(ad_d, on="base_id", how="left",
                            suffixes=("", "_p"))
     cohort["label"] = (cohort[group_col] == "high").astype(int)
