@@ -96,6 +96,7 @@ _PHOTO_MODE = "mean"   # "mean" = current behavior (mean over 10 photos); "all" 
 _COHORT_MODE = os.environ.get("COHORT_MODE", "p_first_cdr05_hc_first_cdrall_or_mmseall")  # default=p_first_cdr05_hc_first_cdrall_or_mmseall / p_first_cdr05_hc_all_cdrall_or_mmseall / p_all_cdr05_hc_all_cdrall_or_mmseall
 _LR_C = 1.0  # LogisticRegression C; encoded at cell-level leaf as logistic/C_<value>/
 _XGB_PARAMS = {"n_estimators": 300, "max_depth": 6, "learning_rate": 0.1}
+_MATCH_PRIORITY = None  # e.g. ["ACS", "NAD"] — HC sub-group priority for matching
 _RFE_DROP = None   # iterative RFE: drop N weakest features per iter (None/0 = off)
 _RFE_ITERS = 5     # number of RFE iterations
 _SAVE_OOF_PROB = False  # write pred_probability/<config>.csv for meta_analysis stacking
@@ -356,7 +357,8 @@ def _train_cache_key(partition, embedding, classifier, n_folds, seed):
             _FEATURE_TYPE, _DROP_CORR_THRESHOLD, _DROP_CORR_METHOD,
             _PCA_COMPONENTS, _PHOTO_MODE, _LR_C,
             tuple(sorted(_XGB_PARAMS.items())),
-            n_folds, seed)
+            n_folds, seed,
+            tuple(_MATCH_PRIORITY) if _MATCH_PRIORITY else None)
 
 
 from src.cohort import filter_pairs_by_predicted_age as _filter_pairs_by_pred_age
@@ -382,6 +384,7 @@ def _build_ad_vs_hcgroup(hc_source):
     matched, pairs = build_cohort_ad_vs_HCgroup(
         hc_source, design="cross_matched",
         cohort_mode=_COHORT_MODE, hc_source_mode=_HC_SOURCE_MODE,
+        priority_groups=_MATCH_PRIORITY,
     )
     matched, pairs = _filter_pairs_by_pred_age(matched, pairs)
     return full, matched, pairs
@@ -618,13 +621,6 @@ def paired_wilcoxon_by_pair(matched_with_score):
 # Forward strategy
 # ============================================================
 
-def _filter_pairs_complete(matched_df):
-    """Drop pairs where either side was filtered out (so each kept pair has 2 rows)."""
-    counts = matched_df.drop_duplicates(["pair_id", "label"])["pair_id"].value_counts()
-    complete = counts[counts == 2].index
-    return matched_df[matched_df["pair_id"].isin(complete)].copy()
-
-
 def _aggregate_to_subject(scores_df, score_cols):
     """Collapse multi-row-per-(base_id) scores to one row per base_id (mean of
     score_cols, first of y_true). Idempotent when there's already one row per
@@ -719,14 +715,16 @@ def _forward_train(full_cohort, embedding, classifier, n_folds, seed):
 def _forward_eval(train, matched_cohort, keep_groups, seed):
     """Eval-time (keep_groups) part: matched-subset metrics + per-cell oof_df
     with in_matched column. Always runs (cheap)."""
-    matched_first = matched_cohort.sort_values(
-        ["base_id"] + (["visit"] if "visit" in matched_cohort.columns else [])
-    ).drop_duplicates("base_id", keep="first")
     if keep_groups is not None:
-        matched_eval = matched_first[matched_first["group"].isin(keep_groups)]
-        matched_eval = _filter_pairs_complete(matched_eval)
+        target_groups = set(keep_groups) - {"P"}
+        target_pair_ids = matched_cohort[
+            matched_cohort["group"].isin(target_groups)
+        ]["pair_id"].unique()
+        pool = matched_cohort[matched_cohort["pair_id"].isin(target_pair_ids)]
     else:
-        matched_eval = matched_first
+        pool = matched_cohort
+    sort_cols = ["base_id"] + (["visit"] if "visit" in pool.columns else [])
+    matched_eval = pool.sort_values(sort_cols).drop_duplicates("base_id", keep="first")
 
     matched_min = matched_eval[["base_id", "ID", "pair_id", "label"]].copy()
     oof_matched = matched_min.merge(
@@ -1462,11 +1460,20 @@ def main():
                              "tidy. TabPFN is silently skipped (no exposed "
                              "hyperparams). Edits to default grids: tweak "
                              "_DEFAULT_LR_GRID / _DEFAULT_XGB_GRID at module top.")
+    parser.add_argument("--match-priority", nargs="*", default=None,
+                        help="Priority ordering for HC sub-groups in the minor "
+                             "pool during 1:1 age matching. Groups listed first "
+                             "get first pick of P partners. "
+                             "Example: --match-priority ACS NAD "
+                             "(ACS subjects match before NAD). "
+                             "Default: None (random shuffle). "
+                             "Output goes to classification/match_<first>_first/; "
+                             "without this flag output goes to match_randomly/.")
     args = parser.parse_args()
 
     global _FEATURE_TYPE, _DROP_CORR_THRESHOLD, _DROP_CORR_METHOD
     global _PCA_COMPONENTS, _PHOTO_MODE, _COHORT_MODE, _LR_C, OUTPUT_DIR
-    global _RFE_DROP, _RFE_ITERS, _SAVE_OOF_PROB
+    global _RFE_DROP, _RFE_ITERS, _SAVE_OOF_PROB, _MATCH_PRIORITY
     global EMBEDDING_CLASSIFICATION_DIR, EMBEDDING_FEAT_DIR
     if args.drop_correlated_threshold is not None and args.pca_components is not None:
         parser.error("--drop-correlated-threshold and --pca-components are "
@@ -1492,6 +1499,12 @@ def main():
     _RFE_DROP = args.rfe_drop
     _RFE_ITERS = args.rfe_iters
     _SAVE_OOF_PROB = args.save_oof_probabilities
+    _MATCH_PRIORITY = args.match_priority
+    if _MATCH_PRIORITY:
+        match_subdir = f"match_{_MATCH_PRIORITY[0].lower()}_first"
+        os.environ["ALZ_MATCH_SUBDIR"] = match_subdir
+        from src.config import _EMBEDDING_CLASSIFICATION_BASE
+        EMBEDDING_CLASSIFICATION_DIR = _EMBEDDING_CLASSIFICATION_BASE / match_subdir
     OUTPUT_DIR = output_dir_for(_FEATURE_TYPE, _DROP_CORR_THRESHOLD,
                                   _PHOTO_MODE,
                                   _PCA_COMPONENTS, _COHORT_MODE)
@@ -1511,7 +1524,8 @@ def main():
         reducer_label = "no_drop"
     logger.info(f"Feature type: {_FEATURE_TYPE}  ·  {reducer_label}  ·  "
                 f"photo={_PHOTO_MODE}  ·  cohort={_COHORT_MODE}  ·  "
-                f"lr_C={_LR_C}  →  {OUTPUT_DIR}")
+                f"lr_C={_LR_C}  ·  match_priority={_MATCH_PRIORITY}  "
+                f"→  {OUTPUT_DIR}")
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     summary_dir = OUTPUT_DIR / "_summary"
     summary_dir.mkdir(parents=True, exist_ok=True)

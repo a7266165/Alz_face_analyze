@@ -4,6 +4,7 @@
 路徑常數、專案級設定、處理參數
 """
 
+import os
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -57,7 +58,10 @@ EMBEDDING_FEATURES_DIR = FEATURES_DIR
 STATISTICS_DIR = EMBEDDING_DIR / "statistics"
 EMBEDDING_ANALYSIS_DIR = EMBEDDING_DIR / "analysis"
 EMBEDDING_FEATURE_STAT_DIR = EMBEDDING_ANALYSIS_DIR / "feature_stat"
-EMBEDDING_CLASSIFICATION_DIR = EMBEDDING_ANALYSIS_DIR / "classification"
+_EMBEDDING_CLASSIFICATION_BASE = EMBEDDING_ANALYSIS_DIR / "classification"
+# matching 策略子目錄：match_randomly / match_acs_first / match_nad_first
+_MATCH_SUBDIR = os.environ.get("ALZ_MATCH_SUBDIR", "match_randomly")
+EMBEDDING_CLASSIFICATION_DIR = _EMBEDDING_CLASSIFICATION_BASE / _MATCH_SUBDIR
 # 6 個 variant 為 EMBEDDING_CLASSIFICATION_DIR 之 L1 sub-dir：
 # original / difference / absolute_difference / average / relative_differences / absolute_relative_differences
 

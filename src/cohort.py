@@ -342,13 +342,18 @@ def _select_hc_visits_first(demo, hc_source, spec: CohortSpec):
 # ====================================================================
 
 def match_1to1(cohort, caliper=2.0, seed=42, metric="MMSE", group_col=None,
-               match_mode="visit"):
+               match_mode="visit", priority_groups=None):
     """1:1 age NN match; cohort must have *group_col* set to 'high'/'low'.
 
     match_mode:
       'visit'         each visit can match once.
       'subject_first' two-pass: pass 1 subject-level 1:1; pass 2 visit
                       fallback.  Requires ``base_id`` column.
+
+    priority_groups: optional list of ``group`` column values to sort first
+      in the minor pool (e.g. ``["ACS", "NAD"]`` gives ACS subjects first
+      pick of partners).  Within each priority tier the random shuffle
+      (controlled by *seed*) is preserved via stable sort.
 
     Returns (matched_df, pairs_df, (minor_label, major_label)).
     """
@@ -375,6 +380,17 @@ def match_1to1(cohort, caliper=2.0, seed=42, metric="MMSE", group_col=None,
 
     minor_order = minor.sample(frac=1.0, random_state=rng).reset_index(
         drop=True)
+    if priority_groups is not None and "group" in minor_order.columns:
+        _pg_rank = {g: i for i, g in enumerate(priority_groups)}
+        _max_rank = len(priority_groups)
+        minor_order = (
+            minor_order
+            .assign(_priority=minor_order["group"].map(
+                lambda g: _pg_rank.get(g, _max_rank)))
+            .sort_values("_priority", kind="mergesort")
+            .drop(columns="_priority")
+            .reset_index(drop=True)
+        )
     available = major.copy().reset_index(drop=True)
 
     def _make_pair(minor_row, picked_row, pass_label):
@@ -561,6 +577,7 @@ def build_cohort_ad_vs_HCgroup(
     hc_source_mode="ACS",
     caliper=2.0,
     seed=42,
+    priority_groups=None,
 ):
     """Build cohort for AD vs {HC, NAD, ACS}.  Returns (cohort_df,
     pairs_df)."""
@@ -603,6 +620,7 @@ def build_cohort_ad_vs_HCgroup(
         matched, pairs, _ = match_1to1(
             prep, caliper=caliper, seed=seed, metric="MMSE",
             group_col="mmse_group", match_mode=match_mode,
+            priority_groups=priority_groups,
         )
         cohort = matched.merge(
             prep[["ID", "base_id", "group", "Age", "MMSE", "Global_CDR",
