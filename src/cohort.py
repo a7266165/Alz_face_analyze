@@ -114,13 +114,23 @@ def apply_max_cdr_filter(df, min_cdr=0.5, group_col="base_id",
     return df[df[group_col].isin(keep)].copy()
 
 
+_PRED_AGES_CACHE = None
+
+
+def _load_predicted_ages():
+    global _PRED_AGES_CACHE
+    if _PRED_AGES_CACHE is None:
+        with open(PREDICTED_AGES_FILE) as f:
+            _PRED_AGES_CACHE = json.load(f)
+    return _PRED_AGES_CACHE
+
+
 def apply_predicted_age_filter(df, pred_ages=None, min_age=None,
                                id_col="ID"):
     """Keep rows whose *id_col* exists in *pred_ages*.  Optionally enforce
     predicted_age >= *min_age*."""
     if pred_ages is None:
-        with open(PREDICTED_AGES_FILE) as f:
-            pred_ages = json.load(f)
+        pred_ages = _load_predicted_ages()
     mask = df[id_col].astype(str).isin(pred_ages)
     if min_age is not None:
         mask = mask & df[id_col].astype(str).apply(
@@ -135,8 +145,7 @@ def filter_pairs_by_predicted_age(matched, pairs, pred_ages=None):
     if pairs is None or len(pairs) == 0:
         return matched, pairs
     if pred_ages is None:
-        with open(PREDICTED_AGES_FILE) as f:
-            pred_ages = json.load(f)
+        pred_ages = _load_predicted_ages()
     keep = (pairs["minor_id"].astype(str).isin(pred_ages)
             & pairs["major_id"].astype(str).isin(pred_ages))
     pairs = pairs[keep].copy().reset_index(drop=True)
@@ -306,8 +315,9 @@ def split_by_metric_median(cohort, tiebreak="high", metric="MMSE",
 # HC visit selection + optional HC cognitive strict filter
 # ====================================================================
 
-def _select_hc_visits_all(demo, hc_source, spec: CohortSpec):
-    """HC group-source filter, all qualifying visits kept."""
+def _select_hc_visits(demo, hc_source, spec: CohortSpec,
+                      visit_selection="all"):
+    """HC group-source filter with optional first-visit dedup."""
     if hc_source == "HC":
         mask = demo["group"].isin(["NAD", "ACS"])
     else:
@@ -317,22 +327,8 @@ def _select_hc_visits_all(demo, hc_source, spec: CohortSpec):
     sub["MMSE"] = pd.to_numeric(sub.get("MMSE"), errors="coerce")
     sub = apply_hc_strict_filter(sub, spec)
     sub = sub.sort_values(["base_id", "visit"])
-    sub["label"] = 0
-    return sub
-
-
-def _select_hc_visits_first(demo, hc_source, spec: CohortSpec):
-    """HC group-source filter, first visit per base_id."""
-    if hc_source == "HC":
-        mask = demo["group"].isin(["NAD", "ACS"])
-    else:
-        mask = demo["group"] == hc_source
-    sub = demo[mask].copy()
-    sub["Global_CDR"] = pd.to_numeric(sub.get("Global_CDR"), errors="coerce")
-    sub["MMSE"] = pd.to_numeric(sub.get("MMSE"), errors="coerce")
-    sub = apply_hc_strict_filter(sub, spec)
-    sub = sub.sort_values(["base_id", "visit"]).groupby(
-        "base_id", as_index=False).first()
+    if visit_selection == "first":
+        sub = sub.groupby("base_id", as_index=False).first()
     sub["label"] = 0
     return sub
 
@@ -415,16 +411,18 @@ def match_1to1(cohort, caliper=2.0, seed=42, metric="MMSE", group_col=None,
         return cands.iloc[0], md
 
     pairs_records = []
+    used_idx = set()
 
     if match_mode == "visit":
         for _, row in minor_order.iterrows():
-            if len(available) == 0:
+            cand = available[~available.index.isin(used_idx)]
+            if len(cand) == 0:
                 break
-            picked, _ = _pick_nearest(available, row["Age"])
+            picked, _ = _pick_nearest(cand, row["Age"])
             if picked is None:
                 continue
             pairs_records.append(_make_pair(row, picked, "visit"))
-            available = available.drop(picked.name).reset_index(drop=True)
+            used_idx.add(picked.name)
     else:
         used_major_subjects = set()
         used_minor_subjects = set()
@@ -432,46 +430,45 @@ def match_1to1(cohort, caliper=2.0, seed=42, metric="MMSE", group_col=None,
         for _, row in minor_order.iterrows():
             if row["base_id"] in used_minor_subjects:
                 continue
-            cand_pool = available[
-                ~available["base_id"].isin(used_major_subjects)]
-            if len(cand_pool) == 0:
+            cand = available[~available.index.isin(used_idx)
+                             & ~available["base_id"].isin(used_major_subjects)]
+            if len(cand) == 0:
                 break
-            picked, _ = _pick_nearest(cand_pool, row["Age"])
+            picked, _ = _pick_nearest(cand, row["Age"])
             if picked is None:
                 continue
             pairs_records.append(_make_pair(row, picked, "subject"))
             used_major_subjects.add(picked["base_id"])
             used_minor_subjects.add(row["base_id"])
             matched_minor_ids.add(row["ID"])
-            available = available.drop(picked.name).reset_index(drop=True)
+            used_idx.add(picked.name)
         unmatched_minor = minor_order[
             ~minor_order["ID"].isin(matched_minor_ids)]
         for _, row in unmatched_minor.iterrows():
-            if len(available) == 0:
+            cand = available[~available.index.isin(used_idx)]
+            if len(cand) == 0:
                 break
-            picked, _ = _pick_nearest(available, row["Age"])
+            picked, _ = _pick_nearest(cand, row["Age"])
             if picked is None:
                 continue
             pairs_records.append(_make_pair(row, picked, "visit_fallback"))
-            available = available.drop(picked.name).reset_index(drop=True)
+            used_idx.add(picked.name)
 
+    matched_records = []
     for i, rec in enumerate(pairs_records):
         rec["pair_id"] = i
-    pairs_df = pd.DataFrame(pairs_records)
-
-    records = []
-    for _, p in pairs_df.iterrows():
-        records.append({
-            "pair_id": p["pair_id"], "ID": p["minor_id"],
-            "Age": p["minor_age"], metric: p[f"minor_{metric_low}"],
+        matched_records.append({
+            "pair_id": i, "ID": rec["minor_id"],
+            "Age": rec["minor_age"], metric: rec[f"minor_{metric_low}"],
             group_col: minor_label,
         })
-        records.append({
-            "pair_id": p["pair_id"], "ID": p["major_id"],
-            "Age": p["major_age"], metric: p[f"major_{metric_low}"],
+        matched_records.append({
+            "pair_id": i, "ID": rec["major_id"],
+            "Age": rec["major_age"], metric: rec[f"major_{metric_low}"],
             group_col: major_label,
         })
-    matched = pd.DataFrame(records)
+    pairs_df = pd.DataFrame(pairs_records)
+    matched = pd.DataFrame(matched_records)
     return matched, pairs_df, (minor_label, major_label)
 
 
@@ -600,7 +597,7 @@ def build_cohort_ad_vs_HCgroup(
     ad["label"] = 1
 
     # HC side
-    hc_all = _select_hc_visits_all(demo, hc_source, spec)
+    hc_all = _select_hc_visits(demo, hc_source, spec, visit_selection="all")
     hc_all = hc_all[hc_all["Age"].notna()].copy()
     if spec.hc_visit == "all":
         hc = hc_all.reset_index(drop=True).copy()
@@ -679,7 +676,7 @@ def _build_longitudinal_cohort_hc(hc_source, demo, hc_source_mode,
                 [hc_delta_all, eacs_delta_all],
                 ignore_index=True, sort=False)
 
-    hc_pool = _select_hc_visits_first(demo, hc_source, spec)
+    hc_pool = _select_hc_visits(demo, hc_source, spec, visit_selection="first")
     allowed_base = set(hc_pool["base_id"])
     hc_delta = hc_delta_all[
         hc_delta_all["base_id"].isin(allowed_base)].copy()

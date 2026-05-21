@@ -412,11 +412,11 @@ def _build_metric_hilo(metric):
     matched, pairs, _labels = match_1to1(
         cohort, caliper=2.0, seed=42, metric=metric, group_col=group_col,
     )
-    # match_1to1 returns matched without label / base_id; merge them back
-    extra = cohort[["ID", "base_id", "label", group_col]].drop_duplicates("ID")
-    matched = matched.merge(extra, on="ID", how="left",
-                            suffixes=("", "_p"))
-    matched = matched.drop(columns=[c for c in matched.columns if c.endswith("_p")])
+    existing = set(matched.columns) - {"ID"}
+    extra_cols = ["ID"] + [c for c in ["base_id", "label", group_col]
+                           if c not in existing]
+    extra = cohort[extra_cols].drop_duplicates("ID")
+    matched = matched.merge(extra, on="ID", how="left")
     matched, pairs = _filter_pairs_by_pred_age(matched, pairs)
     return cohort, matched, pairs
 
@@ -600,13 +600,16 @@ def paired_wilcoxon_by_pair(matched_with_score):
 
     Returns dict: W, p, n_pairs, mean_diff (label1 − label0).
     """
-    pos = (matched_with_score[matched_with_score["label"] == 1]
-           .sort_values("pair_id")["y_score"].to_numpy(dtype=float))
-    neg = (matched_with_score[matched_with_score["label"] == 0]
-           .sort_values("pair_id")["y_score"].to_numpy(dtype=float))
-    n = min(len(pos), len(neg))
-    pos, neg = pos[:n], neg[:n]
-    if n < 2 or np.allclose(pos, neg):
+    wide = matched_with_score.pivot_table(
+        index="pair_id", columns="label", values="y_score", aggfunc="first",
+    ).dropna()
+    n = len(wide)
+    if n < 2 or (1 not in wide.columns) or (0 not in wide.columns):
+        return {"W": float("nan"), "p": float("nan"),
+                "n_pairs": int(n), "mean_diff": float("nan")}
+    pos = wide[1].to_numpy(dtype=float)
+    neg = wide[0].to_numpy(dtype=float)
+    if np.allclose(pos, neg):
         return {"W": float("nan"), "p": float("nan"),
                 "n_pairs": int(n), "mean_diff": float("nan")}
     res = stats.wilcoxon(pos, neg, zero_method="wilcox", alternative="two-sided")
@@ -641,6 +644,8 @@ def _aggregate_to_subject(scores_df, score_cols):
         agg_dict["fold"] = "first"
     if "in_matched" in scores_df.columns:
         agg_dict["in_matched"] = "max"  # any row in_matched → subject in_matched
+    if "group" in scores_df.columns:
+        agg_dict["group"] = "first"
     return scores_df.groupby("base_id", as_index=False).agg(agg_dict)
 
 
@@ -913,7 +918,6 @@ def _reverse_train(full_cohort, matched_cohort, embedding, classifier,
     })
     full_df_rows["group"] = full_df_rows["base_id"].map(base_to_group)
     full_subj = _aggregate_to_subject(full_df_rows, score_cols=["y_score"])
-    full_subj["group"] = full_subj["base_id"].map(base_to_group)
 
     matched_base_ids = set(pd.unique(gm))
     full_df_rows["in_matched"] = full_df_rows["base_id"].isin(
@@ -962,11 +966,14 @@ def _reverse_eval(train, matched_cohort, keep_groups, seed):
     full_df_visits = train["full_df_visits"]
     matched_base_ids = train["matched_base_ids"]
 
+    # ---- build group lookup once ----
+    if keep_groups is not None:
+        bid_to_group = matched_cohort.set_index("base_id")["group"].to_dict()
+
     # ---- matched_oof: subject-level, filtered by group ----
     if keep_groups is not None:
-        bid_to_group_m = matched_cohort.set_index("base_id")["group"].to_dict()
         keep_m_subj = np.array([
-            bid_to_group_m.get(b) in keep_groups
+            bid_to_group.get(b) in keep_groups
             for b in matched_oof_subj["base_id"]
         ])
     else:
@@ -997,9 +1004,8 @@ def _reverse_eval(train, matched_cohort, keep_groups, seed):
 
     # ---- scores_df (subject-level) keep_groups-aware ----
     if keep_groups is not None:
-        bid_to_group_all = matched_cohort.set_index("base_id")["group"].to_dict()
         matched_keep_base = {b for b in matched_base_ids
-                              if bid_to_group_all.get(b) in keep_groups}
+                              if bid_to_group.get(b) in keep_groups}
     else:
         matched_keep_base = matched_base_ids
     full_df = full_subj.copy()
