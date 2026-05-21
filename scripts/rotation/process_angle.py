@@ -31,8 +31,10 @@ CATEGORIES = {
 }
 
 # 輸出目錄
-OUTPUT_DIR_PNP = PROJECT_ROOT / "workspace" / "rotation" / "PnP"
-OUTPUT_DIR_VECTOR = PROJECT_ROOT / "workspace" / "rotation" / "vector_angle"
+OUTPUT_DIR_PNP = PROJECT_ROOT / "workspace" / "rotation" / "fig" / "PnP"
+OUTPUT_DIR_VECTOR = PROJECT_ROOT / "workspace" / "rotation" / "fig" / "vector_angle"
+FEATURES_DIR_PNP = PROJECT_ROOT / "workspace" / "rotation" / "features" / "PnP"
+FEATURES_DIR_VECTOR = PROJECT_ROOT / "workspace" / "rotation" / "features" / "vector_angle"
 
 # 目標相片數量
 TARGET_COUNT = 1200
@@ -69,36 +71,19 @@ def extract_person_id(folder_name: str) -> str:
     return folder_name
 
 
-def check_already_processed(
-    folder_name: str,
-    category: str,
-    output_dir_pnp: Path,
-    output_dir_vector: Path
-) -> dict:
-    """
-    檢查資料夾是否已經處理過
-
-    Returns:
-        dict: {'pnp': bool, 'vector': bool} 表示各方法是否已完成
-    """
-    pnp_output = output_dir_pnp / category / f"{folder_name}.png"
-    vector_output = output_dir_vector / category / f"{folder_name}.png"
-
-    return {
-        'pnp': pnp_output.exists(),
-        'vector': vector_output.exists()
-    }
-
-
 def is_fully_processed(
     folder_name: str,
     category: str,
-    output_dir_pnp: Path,
-    output_dir_vector: Path
 ) -> bool:
-    """檢查資料夾是否兩種方法都已處理完成"""
-    status = check_already_processed(folder_name, category, output_dir_pnp, output_dir_vector)
-    return status['pnp'] and status['vector']
+    """檢查資料夾是否圖片與 npy 都已處理完成"""
+    return all(
+        (d / category / f"{folder_name}{ext}").exists()
+        for d in (OUTPUT_DIR_PNP, OUTPUT_DIR_VECTOR)
+        for ext in (".png",)
+    ) and all(
+        (d / category / f"{folder_name}.npy").exists()
+        for d in (FEATURES_DIR_PNP, FEATURES_DIR_VECTOR)
+    )
 
 
 # ============================================================
@@ -113,13 +98,13 @@ def main():
     print("=" * 70)
 
     # 建立輸出目錄
-    OUTPUT_DIR_PNP.mkdir(parents=True, exist_ok=True)
-    OUTPUT_DIR_VECTOR.mkdir(parents=True, exist_ok=True)
+    for d in (OUTPUT_DIR_PNP, OUTPUT_DIR_VECTOR, FEATURES_DIR_PNP, FEATURES_DIR_VECTOR):
+        d.mkdir(parents=True, exist_ok=True)
 
     # 為每個類別建立子目錄
     for category in CATEGORIES.keys():
-        (OUTPUT_DIR_PNP / category).mkdir(parents=True, exist_ok=True)
-        (OUTPUT_DIR_VECTOR / category).mkdir(parents=True, exist_ok=True)
+        for d in (OUTPUT_DIR_PNP, OUTPUT_DIR_VECTOR, FEATURES_DIR_PNP, FEATURES_DIR_VECTOR):
+            (d / category).mkdir(parents=True, exist_ok=True)
 
     # 統計資訊
     stats = {cat: {"人": set(), "人次": 0, "處理成功": 0, "處理失敗": 0, "已跳過": 0}
@@ -137,20 +122,20 @@ def main():
         print(f"{'─' * 70}")
 
         if not category_path.exists():
-            print(f"  ⚠ 路徑不存在，跳過")
+            print(f"  [WARN] 路徑不存在，跳過")
             continue
 
         # 取得符合條件的資料夾
         qualified_folders = get_qualified_folders(category_path, TARGET_COUNT)
 
         if not qualified_folders:
-            print(f"  ⚠ 沒有找到 {TARGET_COUNT} 張相片的資料夾")
+            print(f"  [WARN] 沒有找到 {TARGET_COUNT} 張相片的資料夾")
             continue
 
         # 先統計已處理數量
         already_done = sum(
             1 for f in qualified_folders
-            if is_fully_processed(f.name, category, OUTPUT_DIR_PNP, OUTPUT_DIR_VECTOR)
+            if is_fully_processed(f.name, category)
         )
         print(f"  找到 {len(qualified_folders)} 個符合條件的資料夾 (已處理: {already_done}, 待處理: {len(qualified_folders) - already_done})")
 
@@ -160,12 +145,12 @@ def main():
             person_id = extract_person_id(folder_name)
 
             # 檢查是否已處理
-            if is_fully_processed(folder_name, category, OUTPUT_DIR_PNP, OUTPUT_DIR_VECTOR):
+            if is_fully_processed(folder_name, category):
                 stats[category]["已跳過"] += 1
                 stats[category]["人"].add(person_id)
                 stats[category]["人次"] += 1
                 total_skipped += 1
-                print(f"  [{idx}/{len(qualified_folders)}] {folder_name} - ⏭ 已存在，跳過")
+                print(f"  [{idx}/{len(qualified_folders)}] {folder_name} - SKIP")
                 continue
 
             print(f"\n  [{idx}/{len(qualified_folders)}] {folder_name}")
@@ -176,7 +161,9 @@ def main():
                     folder_path=folder,
                     output_dir_pnp=OUTPUT_DIR_PNP / category,
                     output_dir_vector=OUTPUT_DIR_VECTOR / category,
-                    verbose=True
+                    features_dir_pnp=FEATURES_DIR_PNP / category,
+                    features_dir_vector=FEATURES_DIR_VECTOR / category,
+                    verbose=True,
                 )
 
                 # 更新統計
@@ -185,12 +172,12 @@ def main():
                 stats[category]["處理成功"] += 1
                 total_processed += 1
 
-                print(f"  ✓ 完成 (Vector: {vector_result.length}, PnP: {pnp_result.length} frames)")
+                print(f"  [OK] (Vector: {vector_result.length}, PnP: {pnp_result.length} frames)")
 
             except Exception as e:
                 stats[category]["處理失敗"] += 1
                 total_failed += 1
-                print(f"  ✗ 錯誤: {e}")
+                print(f"  [FAIL] {e}")
 
     # 輸出統計報告
     print("\n")
@@ -221,8 +208,10 @@ def main():
 
     # 輸出檔案位置
     print(f"\n輸出位置:")
-    print(f"  PnP 方法:    {OUTPUT_DIR_PNP}")
-    print(f"  Vector 方法: {OUTPUT_DIR_VECTOR}")
+    print(f"  圖片 PnP:      {OUTPUT_DIR_PNP}")
+    print(f"  圖片 Vector:   {OUTPUT_DIR_VECTOR}")
+    print(f"  角度 PnP npy:  {FEATURES_DIR_PNP}")
+    print(f"  角度 Vector npy: {FEATURES_DIR_VECTOR}")
 
     print(f"\n結束時間: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 

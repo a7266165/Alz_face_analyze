@@ -110,10 +110,19 @@ class AnglePlotter:
         plt.close(fig)
 
 
+def _save_angles_npy(result: SequenceResult, output_path: Path) -> None:
+    """將角度序列存為 npy（shape: 3 × T，row order: pitch, yaw, roll）"""
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    arr = np.array([result.pitch_list, result.yaw_list, result.roll_list])
+    np.save(output_path, arr)
+
+
 def process_single_folder(
     folder_path: Path,
     output_dir_pnp: Path,
     output_dir_vector: Path,
+    features_dir_pnp: Path | None = None,
+    features_dir_vector: Path | None = None,
     verbose: bool = True,
 ) -> Tuple[SequenceResult, SequenceResult]:
     """
@@ -121,8 +130,10 @@ def process_single_folder(
 
     Args:
         folder_path: 影像資料夾路徑
-        output_dir_pnp: PnP 結果輸出目錄
-        output_dir_vector: Vector 結果輸出目錄
+        output_dir_pnp: PnP 圖片輸出目錄
+        output_dir_vector: Vector 圖片輸出目錄
+        features_dir_pnp: PnP 角度序列 npy 輸出目錄
+        features_dir_vector: Vector 角度序列 npy 輸出目錄
         verbose: 是否顯示進度
 
     Returns:
@@ -141,6 +152,8 @@ def process_single_folder(
         vector_result,
         output_dir_vector / f"{folder_name}.png",
     )
+    if features_dir_vector is not None:
+        _save_angles_npy(vector_result, features_dir_vector / f"{folder_name}.npy")
 
     # PnP 方法
     if verbose:
@@ -153,5 +166,7 @@ def process_single_folder(
         pnp_result,
         output_dir_pnp / f"{folder_name}.png",
     )
+    if features_dir_pnp is not None:
+        _save_angles_npy(pnp_result, features_dir_pnp / f"{folder_name}.npy")
 
     return vector_result, pnp_result
