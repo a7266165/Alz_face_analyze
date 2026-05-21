@@ -1,0 +1,1512 @@
+TYPE Original Research
+PUBLISHED 25 November 2022
+DOI 10.3389/fnhum.2022.1001229
+OPEN ACCESS
+EDITED BY
+Björn H. Schott,
+Leibniz Institute for Neurobiology (LG),
+Germany
+REVIEWED BY
+Ramit Ravona-Springer,
+Sheba Medical Center, Israel
+Carles Falcon,
+Barcelonaβeta Brain Research Center,
+Spain
+*CORRESPONDENCE
+Jermon A. Drake
+jad305@pitt.edu
+SPECIALTY SECTION
+This article was submitted to
+Brain Health and Clinical
+Neuroscience,
+a section of the journal
+Frontiers in Human Neuroscience
+RECEIVED 23 July 2022
+ACCEPTED 07 November 2022
+PUBLISHED 25 November 2022
+CITATION
+Drake JA, Jakicic JM, Rogers RJ,
+Aghjayan SL, Stillman CM,
+Donofry SD, Roecklein KA, Lang W
+and Erickson KI (2022) Reduced brain
+activity during a working memory task
+in middle-aged apolipoprotein E ε4
+carriers with overweight/obesity.
+Front. Hum. Neurosci. 16:1001229.
+doi: 10.3389/fnhum.2022.1001229
+COPYRIGHT
+© 2022 Drake, Jakicic, Rogers,
+Aghjayan, Stillman, Donofry, Roecklein,
+Lang and Erickson. This is an
+open-access article distributed under
+the terms of the Creative Commons
+Attribution License (CC BY). The use,
+distribution or reproduction in other
+forums is permitted, provided the
+original author(s) and the copyright
+owner(s) are credited and that the
+original publication in this journal is
+cited, in accordance with accepted
+academic practice. No use, distribution
+or reproduction is permitted which
+does not comply with these terms.
+Reduced brain activity during a
+working memory task in
+middle-aged apolipoprotein E ε4
+carriers with overweight/obesity
+Jermon A. Drake1,2*, John M. Jakicic3, Renee J. Rogers4,
+Sarah L. Aghjayan1,2, Chelsea M. Stillman1,
+Shannon D. Donofry1,5, Kathryn A. Roecklein1, Wei Lang6 and
+Kirk I. Erickson1,2,7,8
+1Department of Psychology, University of Pittsburgh, Pittsburgh, PA, United States, 2Center
+for Neural Basis of Cognition, Carnegie Mellon University, Pittsburgh, PA, United States, 3Division
+of Physical Activity and Weight Management, Department of Internal Medicine, University of Kansas
+Medical Center, Kansas City, KS, United States, 4Wondr Health, Inc., Dallas, TX, United States,
+5Allegheny Health Network, Psychiatry and Behavioral Health Institute, Pittsburgh, PA, United States,
+6Center on Aging and Mobility, University Hospital Zurich, University of Zurich, Zurich, Switzerland,
+7PROFITH “PROmoting FITness and Health Through Physical Activity” Research Group, Department
+of Physical and Sports Education, Faculty of Sport Sciences, Sport and Health University Research
+Institute (iMUDS), University of Granada, Granada, Spain, 8AdventHealth Research Institute,
+Neuroscience Institute, Orlando, FL, United States
+Objective: The apolipoprotein E ε4 (APOE ε4) allele and midlife obesity are
+independent risk factors for Alzheimer’s disease (AD). Both of these risk factors
+are also associated with differences in brain activation, as measured by blood
+oxygenation level-dependent (BOLD) responses, in the absence of detectable
+cognitive deﬁcits. Although the presence of these risk factors may inﬂuence
+brain activity during working memory tasks, no study to date has examined
+whether the presence of the ε4 allele explains variation in working memory
+brain activity while matching for levels of overweight/obesity. The primary
+aim of this study was to determine whether the presence of the ε4 allele is
+associated with differences in task-functional magnetic resonance imaging
+(fMRI) brain activation in adults with overweight/obesity. We predicted that ε4
+carriers would have greater brain activation in regions that support working
+memory.
+Methods: This ancillary study included 48 (n = 24 APOE ε4 carriers;
+n
+=
+24
+APOE
+ε4
+non-carriers),
+sedentary
+middle-aged
+adults
+(Mean
+age
+=
+44.63
+±
+8.36
+years)
+with
+overweight/obesity
+(Mean
+BMI
+=
+32.43
+±
+4.12
+kg/m2)
+who
+were
+matched
+on
+demographic
+characteristics.
+Participants
+were
+a
+subsample
+enrolled
+in
+12-month
+randomized clinical trial examining the impact of energy-restricted diet
+and exercise on cardiovascular health outcomes. Participants completed
+a n-back working memory task with fMRI, which were completed within
+one month of the start of the intervention. Participants also underwent
+pseudo-continuous arterial spin labeling scans, a MRI measure of cerebral
+blood ﬂow (CBF).
+Frontiers in Human Neuroscience
+01
+frontiersin.org
+
+Drake et al.
+10.3389/fnhum.2022.1001229
+Results: Compared to non-ε4 carriers with overweight/obesity, ε4 carriers
+with overweight/obesity had lower fMRI brain activity in the middle frontal
+gyrus, pre and post central gyrus, supramarginal gyrus, superior temporal
+gyrus, lateral occipital cortex, and angular gyrus (z range = 2.52–3.56) during
+the n-back working memory task. Differences persisted even when controlling
+for CBF in these brain regions.
+Conclusion: These results indicate that presence of the APOE ε4 allele in
+middle-aged adults with overweight/obesity is related to altered brain activity
+during a working memory paradigm, which may confer risk for accelerated
+neurocognitive decline in late adulthood. Future research is needed to clarify
+the clinical implications of these ﬁndings in the context of risk for AD.
+KEYWORDS
+APOE, fMRI, cerebral blood ﬂow (CBF), obesity, working memory
+Introduction
+The apolipoprotein E (APOE) ε4 allele is associated with
+risk for accelerated neurocognitive decline (Espeseth et al.,
+2008; Whitehair et al., 2010; Xu et al., 2013; Rieckmann et al.,
+2016) and alterations in cerebrovascular function (Thambisetty
+et al., 2010; Wierenga et al., 2013, Brandon et al., 2018; Hays
+et al., 2019). In addition, the ε4 allele is also considered the
+primary genetic risk factor for late-onset Alzheimer’s disease
+(AD) (Sando et al., 2008; Liu et al., 2014; Di Battista et al., 2016).
+The frequency of the ε4 allele in the population ranges from 9
+to 23% (Bertram et al., 2007; Jia et al., 2020), and relative to
+ε3 homozygotes, individuals that possess one ε4 allele are one
+to four times more likely to develop AD, and individuals with
+two ε4 alleles are on average 15 times more likely to develop
+AD (Farrer et al., 1997). AD-related pathology, such as amyloidbeta (Aβ), begins to form 10 to 20 years or several decades
+before the onset of behavioral and neurocognitive deﬁcits, and
+is more prevalent in ε4 carriers in midlife (Bateman et al.,
+2012; Sperling et al., 2014; Stocker et al., 2020). For example,
+in a post-mortem sample of individuals who died from non-
+AD-related causes, Kok et al. (2009) found that 40.7% of ε4
+carriers aged 50–59 had at least one Aβ plaque, compared to
+only 8.2% of non-carriers in the same age range. Such ﬁndings
+suggest that it may be possible to detect changes in neurological
+health in midlife, well before AD symptom manifestation,
+especially among those at a greater genetic risk for developing
+AD.
+One method for detecting preclinical brain changes is
+through the use of functional magnetic resonance imaging
+(fMRI) (Wagner, 2000). Cross-sectional fMRI studies suggest
+that cognitively normal carriers of the ε4 allele, ranging
+from younger to older adults, have altered functional brain
+activation during several cognitive tasks such as working
+memory, episodic memory, semantic, naming, and selfappraisal tasks (for review see Trachtenberg et al., 2012).
+More speciﬁcally, studies conducted in middle-aged or older
+adults have shown that cognitively normal ε4 carriers have
+elevated neural activity during cognitive tasks relative to noncarriers in frontal, parietal, and temporal regions, even in
+the absence of reduced cognitive performance (Bookheimer
+et
+al.,
+2000;
+Wishart
+et
+al.,
+2006;
+Chen
+et
+al.,
+2013;
+Scheller et al., 2017). This ﬁnding has been interpreted as
+evidence that ε4 carriers must compensate for early-stages of
+developing neuropathology by recruiting additional neuronal
+resources to perform similarly to non-carriers on cognitive
+tasks (Bondi et al., 2005; for review see Han et al., 2009).
+However, few studies have taken into account individual
+diﬀerences in other factors that could be inﬂuencing blood
+oxygenation level-dependent (BOLD) responses, which captures
+localized changes in deoxyhemoglobin concentrations, such
+as variation in resting state cerebral blood ﬂow (CBF) and
+overweight/obesity. Here, we take advantage of multi-modal
+neuroimaging methodologies to address this gap in our
+mechanistic understanding of the relationship between ε4 and
+task-fMRI brain function.
+Diﬀerences in, or changes to, task-fMRI BOLD signal
+are attributable to alterations in neuronal activity through
+cerebrovascular
+coupling
+(Gore,
+2003).
+Since
+the
+fMRI
+response is an indirect measure of neuronal activity that
+is dependent upon CBF (Havlicek et al., 2017) and the ε4
+allele aﬀects cerebrovascular function (Thambisetty et al.,
+2010; Wierenga et al., 2013, Brandon et al., 2018; Hays
+et al., 2019), it is plausible that genetic variation in CBF
+is confounding interpretations of fMRI signal diﬀerences
+between ε4 carriers and non-carriers (Fleisher et al., 2009; Han
+et al., 2009; Trachtenberg et al., 2012). As such, controlling
+for diﬀerences in resting CBF could help clarify whether
+Frontiers in Human Neuroscience
+02
+frontiersin.org
+
+Drake et al.
+10.3389/fnhum.2022.1001229
+diﬀerences in task-fMRI patterns between ε4 carriers and
+non-carriers are reﬂective of diﬀerences in task-fMRI neural
+activity or CBF.
+Obesity might be another important factor to consider when
+evaluating brain activation diﬀerences between ε4 carriers and
+non-carriers. Obesity in midlife has been associated with a
+higher prevalence of cognitive impairment and dementia in
+late adulthood, including AD (Gunstad et al., 2010; Profenno
+et al., 2010; Luchsinger et al., 2012), with weight-related
+decrements in cognitive performance emerging decades before
+the development of overt pathology. This is alarming given
+that, according to data from the 2015 to 2016 National
+Health and Nutrition Examination Survey, nearly 40% of
+adults in the United States have obesity (Hales et al., 2017),
+with more than 1.9 billion adults meeting clinical criteria for
+overweight or obesity worldwide (World Health Organization
+[WHO], 2018). Yet research exploring how measures of
+overweight/obesity status might be confounding interpretations
+of fMRI results in ε4 carriers has not been considered in
+prior studies.
+Although both the ε4 allele and obesity confer risk for
+cognitive decline and dementia, the relationship between these
+factors and how they interact to aﬀect brain function is complex
+and not well understood. For instance, studies suggest that ε4
+carriers tend to have a lower body mass index (BMI) than
+non-ε4 carriers. Yet, ε4 carriers appear to be more impacted
+by excess body fat (Jones and Rebeck, 2018). For example,
+compared to non-carriers with excess body fat, ε4 carriers with
+excess body fat have been found to have elevated levels of
+glucose and insulin (Elosua et al., 2003). Further, the relationship
+between proxy measures of body fat (i.e., BMI and waist
+circumference) and brain function is in the opposite direction
+of that observed for the ε4 allele. Speciﬁcally, larger waist
+circumference has been associated with lower fMRI signal in the
+superior frontal and middle frontal gyrus, and slower reaction
+times on a n-back working memory task among middleaged/older adults (Gonzales et al., 2014). Similarly, middle-aged
+individuals with obesity show reduced brain activation in the
+right parietal cortex relative to individuals with normal-weight
+and overweight on a n-back working memory task (Gonzales
+et al., 2010). As mentioned above, these patterns are in contrast
+to those observed among ε4 carriers without overweight or
+obesity, with ε4 carriers tending to exhibit elevated brain
+activation during cognitive tasks compared to non-carriers
+(Bookheimer et al., 2000; Wishart et al., 2006; Chen et al., 2013;
+Scheller et al., 2017).
+Considering the high prevalence of obesity, it is likely
+that many individuals with overweight/obesity carry at least
+one ε4 allele. Despite this, to our knowledge, no published
+study has examined brain activity of APOE ε4 allele carriers
+with overweight/obesity during a working memory task, let
+alone while controlling for potentially confounding factors
+such as body weight and cerebral perfusion. Accounting for
+CBF and measures of overweight/obesity in a single fMRI
+study on working memory related brain activity among ε4
+carriers may be especially important for several reasons. One
+is that, CBF changes have been observed among individuals
+with overweight/obesity and ε4 carriers (Thambisetty et al.,
+2010; Wierenga et al., 2013; Dorrance et al., 2014, Brandon
+et al., 2018; Hays et al., 2019), and CBF is inherently related
+to fMRI brain activity through the BOLD response (Havlicek
+et al., 2017). Similarly, changes in working memory performance
+and brain activity have also been observed among both ε4
+carriers (Reinvang et al., 2010; Gu et al., 2017), and in
+overweight/obesity (Smith et al., 2011; Coppin et al., 2014;
+Yang et al., 2020).
+As such, using a n-back working memory task along
+with a measure of resting cerebral perfusion in a sample
+of mostly midlife adults with overweight/obesity, who were
+relatively sedentary, but otherwise relatively healthy, we tested
+the following: (1) whether there are diﬀerences between ε4
+carriers and non-carriers on task-related brain activity during
+a working memory (n-back) task, (2) whether genetic-related
+variation in brain activity relates to performance on the
+n-back working memory task, (3) whether controlling for
+resting state CBF would account for associations between the
+ε4 allele and working memory (n-back) task-related brain
+activity. We predicted that ε4 carriers would show greater
+activity in regions that support working memory performance
+during the n-back task relative to non-carriers. Based on
+prior work, we predicted that greater fMRI responses in
+frontal-striatal regions among ε4 carriers would be associated
+with better performance on the n-back task. Finally, we
+hypothesized that controlling for CBF would not suppress
+any associations between the ε4 allele and working memory
+related brain activity.
+Materials and methods
+Participants
+Participants included in the present study were drawn
+from a larger sample of individuals enrolled in a 12-month
+randomized clinical trial examining the impact of energyrestricted diet and exercise on cardiovascular health outcomes
+among adults with overweight or obesity (ClinicalTrials.gov
+NCT01500356; R01HL103646; PI: Jakicic) (Jakicic et al., 2022).
+Of the 383 individuals enrolled in the intervention, 125
+(32.6%) consented to neuroimaging assessments. Individuals
+who participated in the neuroimaging arm of the study did
+not diﬀer from the parent intervention sample on any clinical
+or demographic indicator, with the exception of systolic blood
+pressure; however, this diﬀerence was not clinically meaningful
+[parent sample, 120.2 (11.7) mm Hg; neuroimaging sample,
+118.4 (11.7) mm Hg]. To be eligible for the parent trial,
+Frontiers in Human Neuroscience
+03
+frontiersin.org
+
+Drake et al.
+10.3389/fnhum.2022.1001229
+individuals had to be between the ages of 18 and 55 and
+have a BMI in the overweight or obese range from 25.0
+to <40.0 kg/m2. As previously reported, participants were
+ineligible for the trial if they reported: (1) engagement in
+>60 min per week of structured moderate-to-vigorous intensity
+physical activity, (2) weight loss of >5% within the prior
+6 months or a history of bariatric surgery, (3) history of
+cardiometabolic disease, diabetes mellitus, or cancer, (4) taking
+medication that could aﬀect heart rate or blood pressure,
+(5) taking medication that could inﬂuence body weight, (6)
+treatment for psychological conditions that included medication
+or counseling, (7) currently pregnant, pregnant within the
+prior 6 months, or planning a pregnancy within the next
+12 months, (8) planning on geographical relocation outside
+of the region within 12 months, or (9) inability to comply
+with the components of the interventions (Rogers et al., 2019;
+Jakicic et al., 2022). Participants also had to be free of any
+contraindication that would prohibit MRI scanning for both the
+parent and the brain ancillary project that we describe here.
+The present study focused on data collected during baseline
+assessments, which were completed within one month of the
+start of the intervention. Data for the neuroimaging arm of
+the study were collected between November 2013 and July
+2016. All study procedures were approved by the University
+of Pittsburgh Institutional Review Board, and all participants
+provided informed consent before initiation of any procedures.
+A subset of 100 individuals in the neuroimaging arm of the
+trial (80%) provided a saliva sample for genotyping (10 refused,
+12 were unable to be contacted). From the group of participants
+with available genetic information, 24 possessed at least one
+APOE ε4 allele (21 ε3/ε4 carriers; 3 ε4/ε4 carriers). To minimize
+between group variability, these individuals were matched to
+a subsample of 24 non-carriers on factors that may inﬂuence
+the outcomes of interest such as age, years of education, and
+BMI. APOE ε4 allele carriers were matched to a non-carrier who
+was within ± 5 years for age, ± 2 years for years of education,
+and within ± 5 kg/m2 for BMI. The average diﬀerence between
+ε4 carriers and non-carriers matched pairs for age, years of
+education, and BMI was 0.58 years, 0.13 years, and 0.62 kg/m2,
+respectively. Race/ethnicity and sex were secondarily considered
+in matching; however, age, years of education, and BMI was used
+as the primary basis for matching ε4 carriers to non-carriers.
+Apolipoprotein E genotyping
+Apolipoprotein E genotype was determined using the
+i-PLEX Gold single nucleotide polymorphism (SNP) assay,
+which relied on DNA that was extracted from saliva samples.
+For the purpose of our analyses, the APOE genotype was
+dichotomized, such that ε4 non-carriers were assigned a value
+of 0 and ε4 carriers received a value of 1.
+Working memory task
+Working memory was assessed using a n-back task, which
+consisted of alternating blocks of 1-back and 2-back conditions
+interleaved with blocks of a visual crosshair acting as a baseline
+period (Peven et al., 2020). During this task, participants were
+asked to identify whether the current letter was the same as
+the letter that immediately preceded it (1-back) or two letters
+before (2-back). Participants pressed a button in the case of a
+match and a diﬀerent button in the case of a non-match. In each
+block, a series of 16 letters were presented for 1.5 s (1-s interstimulus interval). This task consisted of six task blocks (three
+1-back and three 2-back) for a total of 48 trials per condition
+that were interleaved with a visual crosshair period for the same
+length of time as the task blocks. Participants’ performance
+was evaluated in terms of accuracy in determining match and
+non-match trials.
+Neuroimaging protocol
+Acquisition
+As previously reported (Donofry et al., 2020; Aghjayan
+et al., 2021; Stillman et al., 2021), A Siemens 3.0 Tesla
+MR Verio system (Munich, Germany) with a 32-channel
+head
+coil
+was
+used
+for
+MR
+sequence
+data
+collection.
+High
+resolution,
+T1-weighted
+images
+were
+acquired
+with
+the
+following
+sequence
+parameters:
+Magnetization
+Prepared Rapid Acquisition of Gradient Echo (MPRAGE),
+matrix
+=
+256,
+ﬁeld-of-view
+(FOV)
+=
+250
+mm,
+voxel
+size = 1.0 × 1.0 × 1.0 mm, slices = 192 (sagittal plane,
+acquired left to right), slice thickness = 1.0 mm, repetition
+time
+(TR)
+=
+1,900
+ms,
+echo
+time
+(TE)
+=
+2.93
+ms,
+inversion time (TI) = 900 ms, ﬂip angle = 9◦, sequence
+duration
+=
+4:26
+min.
+Functional
+MRI
+images
+for
+the
+n-back
+task
+were
+acquired
+using
+echo-planar
+imaging
+with BOLD contrast (TR = 2,000 ms, TE = 30 ms, ﬁeld
+of view = 24 × 24 cm, 64 × 64 matrix, 42 axial slices,
+3.5 × 3.5 × 3.2 mm slice thickness, 0.3 mm gap, slices = 34).
+Perfusion-weighted images were collected using a multi-slice
+pseudo-continuous arterial spin labeling (pcASL) sequence
+with the following parameters (Jung et al., 2010): matrix
+size = 64, FOV = 220 mm, voxel size = 3.40 × 3.40 × 5.0 mm,
+slices = 20 (axial plane, acquired in ascending order), slice
+thickness = 5.0 mm, gap between slices = 1 mm, single
+slice acquisition time = 48 ms, label duration = 1,500 ms,
+post-label
+delay
+=
+1,500
+ms,
+TR/TE
+=
+4,090/21
+ms,
+volumes = 80, number of label/control pairs = 40, ﬂip
+angle = 90◦, RF blocks = 80, RF pulses = 20, gap between
+pulses = 360 µs, bandwidth = 2,298 Hz/Px, and sequence
+duration = 5:35 min.
+Frontiers in Human Neuroscience
+04
+frontiersin.org
+
+Drake et al.
+10.3389/fnhum.2022.1001229
+Neuroimaging analyses
+Functional magnetic resonance imaging data
+preprocessing
+Functional
+magnetic
+resonance
+imaging
+data
+were
+preprocessed with tools available from FMRIB’s Software
+Library 5.0.8 (FSL) fMRI Expert Analysis Tool 6.0 (FEAT)
+(Woolrich et al., 2001, 2009). The following pre-processing
+steps were conducted: motion correction using MCFLIRT
+(Jenkinson et al., 2002), removal of non-brain tissue using
+BET (Smith, 2002), spatial smoothing using a Gaussian
+kernel of full-width at half-maximum (FWHM) of 7.0 mm,
+and high-pass temporal ﬁltering at a threshold of 150.0 s.
+Functional images were registered to participant’s T1-weighted
+MPRAGE and the Montreal Neurological Institute (MNI)
+152 standard space template using 7- and 12-parameter
+aﬃne
+transformations,
+respectively.
+Registration
+quality
+was visually inspected, and no registration errors were
+identiﬁed.
+Functional magnetic resonance
+imaging general linear model analysis
+After completing the preprocessing and registration steps,
+we used FEAT in a ﬁrst-level statistical analysis of the n-back
+task. Linear contrasts were created to examine activation in each
+of the task conditions, as follows: 1-back > rest, 2-back > rest,
+and 2-back > 1-back. Each contrast generated a statistical
+parametric map. These maps were used for higher-level mixedeﬀects whole-brain group analyses and ROI analyses (see
+below) using FMRIB’s Local Analysis of Mixed Eﬀects (FLAME)
+(Beckmann et al., 2003).
+Whole-brain analysis
+We ﬁrst conducted a whole-brain omnibus analysis that
+tested for (1) brain regions where ε4 carriers had greater
+activation and (2) brain regions where ε4 carriers exhibited less
+activation than non-carriers during the n-back task (n = 48). Our
+group-level maps were thresholded using a voxel-wise z-score of
+2.3 and a cluster threshold of p < 0.05.
+ROI analysis
+We conducted an ROI analysis to examine whether the
+regions identiﬁed in the whole-brain voxel-wise analysis for
+the contrast between ε4 carriers and non-carriers were related
+to either n-back performance or CBF. Speciﬁcally, we created
+10 mm spheres around statistical peaks of activation from the
+voxel-wise whole-brain examination and then extracted the
+mean percent signal change within each of these spherical
+ROIs for each participant. These data were imported into
+SPSS for evaluating associations between fMRI activity, n-back
+performance and CBF.
+Pseudo-continuous arterial spin
+labeling data preprocessing and blood
+ﬂow quantiﬁcation
+Following
+reconstruction,
+the
+ﬁrst
+four
+volumes
+of
+the image time-series were discarded to assist in signal
+stabilization (Stillman et al., 2021). After removing these
+volumes, the middle volume was used as a reference and the
+data were co-registered with the participant’s T1-weighted
+anatomical image and to MNI space (FLIRT; FSL’s Linear
+Registration
+Tool,
+Oxford,
+UK)
+(Jenkinson
+and
+Smith,
+2001; Jenkinson et al., 2002). Partial volume estimates were
+derived from the T1-weighted anatomical image using FSL’s
+Fully
+Automated
+Segmentation
+Toolbox
+(FAST)
+(Zhang
+et al., 2001). Finally, we used these high-resolution tissuetype maps for partial volume correction, nuisance signal
+regression, and tissue-speciﬁc CBF quantiﬁcation (Stillman
+et al., 2021). Additional details on the preprocessing procedures
+for the pCASL data can be found in a previous report
+(Stillman et al., 2021).
+To quantify CBF, we used tools available from FSL’s Bayesian
+Inference for Arterial Spin Labelling toolbox (BASIL) (Chappell
+et al., 2009). First, CBF images were obtained from pairwise
+tag-control subtraction of the co-registered CBF time-series.
+These images were adjusted for slice-time delay and BASIL’s
+oxford_asl command was run with the partial volume and
+spatial correction options turned on to help control for spurious
+signals (Groves et al., 2009; Chappell et al., 2011). We used
+the cerebral spinal ﬂuid image from FAST as the reference
+tissue for nuisance regression. The CSF was used to compute
+the magnetization equilibrium (M0) of the white and gray
+matter tissue, which was then used to estimate the M0 of the
+arterial blood and convert the relative CBF values into absolute
+units of ml/100 g/min (asl_calib). These calibrated images
+were normalized to MNI space. The calibrated and normalized
+perfusion images from each person were combined into a 4D ﬁle
+for group-level analyses (Stillman et al., 2021). For our grouplevel analyses, we constructed a general linear model (glm_gui)
+to test for areas where (1) ε4 carrier CBF > non-carrier CBF
+and (2) non-carrier CBF > ε4 carrier CBF. The model was
+run using FSL’s ﬂameo command, and results were corrected
+for multiple comparisons using FSL’s cluster tool at a threshold
+of p < 0.05.
+Planned analyses
+Analysis sample consisted of 24 participants of the HEART
+HEALTH trial neuroimaging ancillary study who were ε4
+Frontiers in Human Neuroscience
+05
+frontiersin.org
+
+Drake et al.
+10.3389/fnhum.2022.1001229
+carriers and another 24 non-carriers who were matched based
+on age, years of education, and BMI. To test for diﬀerence in
+working memory task-related brain activity between ε4 carriers
+and non-carriers, we conducted a whole-brain analysis of the
+n-back data by modeling a contrast between ε4 carriers and
+non-carriers for each condition of the n-back task. Second,
+after identifying ROIs that signiﬁcantly diﬀered between ε4
+carriers and non-carriers, we conducted one-way ANOVA to
+address our second and third aims. To address our second
+aim and determine whether genetic-related variation in brain
+activity relates to performance on the n-back working memory
+task including the following four outcomes we conducted four
+sets of regression analyses stratiﬁed by APOE genotype. Each
+model diﬀered with respect to the outcome variable, such
+that we evaluated whether fMRI brain activity for each ROI
+that statistically diﬀered between ε4 carriers and non-carriers
+predicted: (1) accuracy during the 1-back condition, (2) reaction
+time during the 1-back condition, (3) accuracy during the 2back condition, (4) reaction time during the 2-back condition.
+Regression models controlled for race/ethnicity, years of
+education, BMI, and sex. Finally, to address our ﬁnal aim and
+determine whether any diﬀerences in CBF inﬂuenced fMRI
+activity between ε4 carriers and non-carriers, we conducted an
+ANCOVA controlling for CBF in each of the ROIs.
+Results
+Participant characteristics
+Demographic characteristics for each group are presented in
+Table 1. In brief, ε4 carriers and non-carriers were intentionally
+matched on demographic variables (i.e., age, years of education,
+and BMI) and therefore did not signiﬁcantly diﬀer with regards
+to these measures. Additionally, demographic characteristics of
+the subsample presented in Table 1 did not signiﬁcantly diﬀer
+from the remainder of the neuroimaging sample (ps > 0.05).
+Functional magnetic resonance
+imaging brain activation
+Contrary to our hypothesis, ε4 carriers had signiﬁcantly
+lower activation than non-carriers during the 1-back and 2back conditions relative to the resting crosshair periods (refer
+to Figure 1 and Table 2) in numerous brain regions including
+areas of the prefrontal cortex, superior parietal cortex, lateral
+temporal lobe, occipital lobe, and basal ganglia. To account for
+any confounding eﬀects of diminished CBF in ε4 carriers, we
+ran one-way ANCOVAs between genotype on n-back activation
+controlling for regional CBF in each ROI to compare between ε4
+carriers and non-carriers. All of the results remained signiﬁcant
+when controlling for CBF (see Figure 2 for mean CBF for
+carriers and non-carriers showing no group diﬀerences in CBF).
+Importantly, there were no signiﬁcant group diﬀerences for the
+2-back > 1-back contrast.
+N-back working memory performance
+Consistent with prior research of the APOE genotype in this
+age range, neither accuracy rates nor reaction times for either the
+1-back or 2-back conditions were signiﬁcantly diﬀerent between
+ε4 carriers and non-carriers (refer to Table 1).
+Linking functional magnetic resonance
+imaging brain activation and n-back
+performance
+To examine the association between fMRI brain activation
+during the n-back working memory task and performance,
+we extracted the fMRI signal from the ROIs described above.
+The beneﬁt of this approach is that it focuses the analyses
+on the regions that were identiﬁed at the voxel-wise level
+that diﬀered between ε4 carriers and non-carriers and thereby
+reduces the number of multiple comparisons. Among ε4
+carriers, fMRI percent signal change for each ROI was not
+signiﬁcantly related to reaction time during the 1-back or 2back conditions (ps > 0.05). Similarly, there was no association
+between activation in any of the ROIs and accuracy rates for
+the 1-back condition or 2-back condition (ps > 0.05) among ε4
+carriers. Similarly, among non-carriers, activation in the ROIs
+was not signiﬁcantly correlated with either reaction time or
+accuracy during the 1-back or 2-back conditions (ps > 0.05).
+Cerebral blood ﬂow
+There were no signiﬁcant diﬀerences in CBF for the
+comparison between ε4 carriers and non-carriers in each ROI.
+As described above, when including CBF as a covariate, the fMRI
+results between ε4 carriers and non-carriers did not change
+indicating that diﬀerences in CBF cannot explain the genetic
+diﬀerences in fMRI activity.
+Linking body mass index to functional
+magnetic resonance imaging brain
+activation and n-back performance
+Testing whether BMI was associated with working memory
+related fMRI brain activity or working memory performance
+was not a primary aim of the current study. However,
+to probe the association between BMI and fMRI brain
+activation, we conducted a whole-brain analysis of the
+Frontiers in Human Neuroscience
+06
+frontiersin.org
+
+Drake et al.
+10.3389/fnhum.2022.1001229
+TABLE 1 Demographic and n-back performance data for participants.
+APOE ε4+ (n = 24)
+APOE ε4−(n = 24)
+Remaining sample
+(n = 77)
+APOE ε4+ vs. APOE ε4−
+P-value
+Age
+45.44 (8.90)
+44.88 (8.14)
+44.32 (8.79)
+0.81
+Female (%)
+75%
+83%
+77%
+0.49
+Race/ethnicity n (% White)
+16 (67%)
+17 (70%)
+58 (75%)
+0.81
+Years of education
+16.21
+16.08
+16.49
+0.87
+BMI
+32.43 (4.34)
+32.22 (4.1)
+30.91 (3.68)
+0.61
+1-Back accuracy
+0.93 (0.10)
+0.91 (0.16)
+0.89 (0.24)
+0.72
+1-Back reaction time
+879.32 (151.17)
+890.24 (145.37)
+871.10 (165.29)
+0.80
+2-Back accuracy
+0.83 (0.13)
+0.81 (0.18)
+0.79 (0.26)
+0.65
+2-Back reaction time
+1,009.95 (174.34)
+1,015.53 (145.71)
+1,060.17 (176.54)
+0.90
+APOE ε4+ indicates an ε4 carrier; APOE ε4−indicates a non-carrier; BMI, body mass index.
+TABLE 2 Results of the whole-brain analysis of the n-back data modeling APOE genotype group differences in activation during the n-back.
+Regions
+Maximam
+z-score
+Peak X
+(MM)
+Peak Y
+(MM)
+Peak Z
+(MM)
+Signal change ε 4
+carriers (%)
+Signal change
+non-carriers (%)
+P-value
+Left middle frontal gyrus1
+3.56
+−47
+32
+26
+0.26 ± 0.50
+0.62 ± 0.31
+<0.01
+Left precentral gyrus1
+2.86
+−61
+5
+27
+0.08 ± 0.53
+0.41 ± 0.40
+<0.05
+Left postcentral gyrus1
+2.52
+−63
+4
+27
+0.13 ± 0.75
+0.63 ± 0.78
+<0.05
+Left supramarginal gyrus1
+3.51
+−61
+−46
+33
+0.01 ± 0.35
+0.24 ± 0.30
+<0.05
+Left superior temporal gyrus1
+2.98
+−57
+−33
+11
+−0.17 ± 0.24
+0.07 ± 0.25
+<0.01
+Right putamen/insula2
+3.45
+28.5
+6
+−9.5
+0.08 ± 0.16
+0.27 ± 0.19
+<0.001
+Right lateral occipital cortex2
+3.82
+31
+−70
+37
+0.16 ± 0.33
+0.59 ± 0.28
+<0.001
+Left lateral occipital cortex2
+2.70
+−31
+−63
+33
+0.19 ± 0.25
+0.42 ± 0.32
+<0.05
+Left angular gyrus2
+3.07
+−60
+−51
+37
+−0.04 ± 0.51
+0.42 ± 0.32
+<0.001
+Left supramarginal gyrus2
+2.99
+−61
+−46
+33
+−0.07 ± 0.30
+0.23 ± 0.36
+<0.01
+Regions were created from 10 mm spheres generated around the peak activation from the voxel-wise and cluster thresholded maps from the whole-brain analysis. This analysis did not
+include covariates.
+1Regions signiﬁcantly diﬀerent during the 1-back condition (p < 0.05).
+2Regions signiﬁcantly diﬀerent during the 2-back condition (p < 0.05).
+FIGURE 1
+Clusters where ε4 carriers exhibited reduced activity during the n-back task compared to non-carriers. Each cluster met a cluster threshold of
+z > 2.3 and p < 0.05. These clusters are described further in Table 2.
+n-back data by examining brain regions in which BMI was
+associated with greater activation, and lower activation, for
+each condition of the n-back task. Using a voxel-wise z-score
+of 2.3 and a cluster threshold of p < 0.05, BMI was
+not associated with activation during any condition of the
+n-back task. Similarly, BMI was not associated with accuracy
+or reaction time during the 1-back or 2-back conditions
+(ps > 0.05).
+Frontiers in Human Neuroscience
+07
+frontiersin.org
+
+Drake et al.
+10.3389/fnhum.2022.1001229
+FIGURE 2
+The bar graphs display mean CBF for the ε4 carriers and non-carriers in the ROIs derived from the whole-brain analysis of the n-back data.
+Body mass index and apolipoprotein E
+interaction on functional magnetic
+resonance imaging brain activation
+and n-back performance
+We explored whether APOE genotype moderated any
+association between BMI and fMRI activity. To test this, we
+conducted a whole-brain analysis of the n-back data and
+examined brain regions in which BMI and APOE statistically
+interacted with level of fMRI activation. Using a voxel-wise
+z-score of 2.3 and a cluster threshold of p < 0.05, the
+BMI × APOE genotype interaction term was not associated with
+activation during any condition of the n-back task. Similarly, the
+APOE genotype and BMI interaction term was not associated
+with accuracy or reaction times during the 1-back or 2-back
+conditions of the n-back task (ps > 0.05).
+Discussion
+The present study examined whether the APOE ε4 allele
+was associated with working memory-related neural activity
+in sedentary midlife adults with overweight or obesity. We
+predicted that (1) ε4 carriers would have greater fMRI responses
+during a n-back working memory paradigm, (2) greater
+activation would be associated with better task performance for
+ε4 carriers. Contrary to our hypothesis, we found that ε4 carriers
+had lower fMRI responses than non-carriers in several brain
+regions across frontal, parietal, temporal, occipital, and striatal
+regions during the 1-back and 2-back conditions, including the
+left middle frontal gyrus, left precentral gyrus, left postcentral
+gyrus, left supramarginal gyrus, right putamen, right lateral
+occipital cortex, left lateral occipital cortex, and left angular
+gyrus. In contrast to Fleisher et al. (2009) who found that higher
+baseline CBF accounted for lower fMRI brain activity among ε4
+carriers, we did not observe any signiﬁcant diﬀerences in CBF
+(see Figure 2). As such, we can conclude that the association
+between the ε4 allele and task-fMRI activation was statistically
+independent of diﬀerences in CBF in our sample of adults with
+overweight/obesity, but who were otherwise relatively healthy.
+Additionally, among ROIs that signiﬁcantly diﬀered between
+ε4 carriers and non-carriers, activation was not associated with
+reaction time nor accuracy during the n-back task.
+We observed no signiﬁcant diﬀerences between ε4 carriers
+and non-carriers in working memory task performance, a
+ﬁnding that is in line with several other studies of cognitively
+normal middle-aged ε4 carriers (Wishart et al., 2006; Chen et al.,
+2013) and cognitively normal older adult ε4 carriers (Scheller
+et al., 2017). This pattern has been interpreted as reﬂecting
+changes in brain function that are not yet manifest in behavioral
+outcomes such as reaction time measures and accuracy rates.
+Yet, the lack of an association with behavioral patterns makes
+the interpretation of the diﬀerences in brain activity more
+challenging because of the lack of a variable or outcome that
+could be used to anchor the results in a behavioral outcome.
+The pattern of ε4 related fMRI activation observed in
+this study is diﬀerent than other studies, which have reported
+increased task-related activation among cognitively normal ε4
+carriers in this age range (Bookheimer et al., 2000; Wishart
+et al., 2006; Chen et al., 2013; Scheller et al., 2017). One possible
+explanation for this diﬀerence is that our sample is comprised
+entirely of individuals with overweight and obesity. Prior studies
+have not reported measure of overweight/obesity status in the
+context of the patterns of their results. Assuming prior studies
+were comprised of mostly normal weight individuals, or a
+combination of normal weight to overweight/obese individuals,
+our ﬁndings suggest that the presence of the ε4 allele may
+exert an eﬀect on task-fMRI neural activity that diﬀers as a
+function of obesity. However, this possible interpretation is
+Frontiers in Human Neuroscience
+08
+frontiersin.org
+
+Drake et al.
+10.3389/fnhum.2022.1001229
+weakened since we failed to ﬁnd signiﬁcant interactions between
+APOE genotype and BMI on brain activity patterns. Yet, low
+power might also be contributing to the lack of a statistically
+signiﬁcant interaction term to adequately test this hypothesis.
+The interpretations and behavioral relevance of our ﬁndings
+are further questioned by the lack of associations between
+n-back fMRI activity and task performance. Such lack of an
+association between activity and performance is not unique
+to this study but it does raise questions about whether such
+activation diﬀerences are immaterial with respect to behavior or
+whether the activation diﬀerences reﬂect a pattern that might be
+predictive of longitudinal changes in performance.
+Other studies have found that fMRI brain activity among
+ε4 carriers may confer increased risk for AD and the presence
+of AD-related pathology, particularly Aβ. Several fMRI studies
+report hypoactivation of regions that show early increases in
+pathology, including prefrontal and medial temporal regions
+among older adults with mild cognitive impairment (Johnson
+et al., 2006a; Petrella et al., 2006) and cognitively normal middle
+age/older adults with elevated levels of Aβ (Foster et al., 2018; for
+review see Sperling et al., 2010). The sample in the present study
+is relatively young and ε4 carriers did not display performance
+deﬁcits on the n-back working memory task, which may indicate
+alterations in other underlying pathways related to brain health
+rather than frank cognitive impairments as observed among
+individuals with AD.
+The mechanisms linking APOE to variation in brain
+function are not well understood, however; prior research
+suggests that altered cholinergic or dopaminergic functioning
+may be pathways through which APOE gene variation impacts
+fMRI related brain activity (Reverte et al., 2016). Indeed,
+alterations in dopaminergic function have been found to
+inﬂuence
+the
+hemodynamic
+response
+and
+neurovascular
+coupling,
+the
+process
+by
+which
+neural
+activity
+elicits
+cerebrovascular changes to fulﬁll metabolic demands of
+neurons (for review see Bruinsma et al., 2018). Dopamine
+is heavily implicated in the fronto-striatal network, which is
+comprised of many of the structures that ε4 carriers exhibited
+reductions in working memory-related brain activity. As
+such, dopaminergic system dysfunction may relate to the lower
+activity observed in prefrontal and the striatal regions, including
+the middle frontal gyrus, precentral gyrus, postcentral gyrus,
+and putamen.
+Although dopaminergic alterations may be a plausible
+explanation for diﬀerences in activity in regions of the frontostriatal network, reduced activity observed in the lateral occipital
+cortex and angular gyrus of ε4 carriers may be better explained
+by reductions in cerebral glucose metabolism. Not only has
+the ε4 allele been shown to play an important role in lipid
+metabolism more generally (Dupuy et al., 2001), but this also
+seems to extend to how the brain metabolizes glucose as
+reductions in cerebral glucose metabolism have been detected
+in ε4 carriers as early as their 20–30 s in the absence
+of cognitive deﬁcits (Reiman et al., 2004). While glucose
+metabolism has been found to associate with Aβ (Furst and Lal,
+2011; Carbonell et al., 2016), the ε4 allele may exert an eﬀect
+on brain physiology independent of Aβ. This idea has been
+supported by a study that reported that the ε4 allele, but not
+Aβ, was associated with reduced cerebral glucose metabolism
+(Jagust et al., 2012).
+Strengths and limitations
+The current study leveraged cross-sectional data from a
+large randomized clinical trial of mostly midlife adults with
+overweight/obesity. Additionally, data from this trial provided
+advanced multimodal neuroimaging data and genetic data
+which allowed us to test our aims. Unique to this study
+is that it examined diﬀerences in task-fMRI brain activity
+between midlife ε4 carriers and non-carriers matched on
+overweight/obesity, age, and years of education, as well as one
+of the ﬁrst to control for a possible confounding factor (CBF),
+there are several limitations that must be considered.
+First, while an eﬀort was made to match the sample based on
+age, years of education, and BMI using a range of ± 5 years for
+age, ± 2 years for years of education, and ± 5 kg/m2 for BMI,
+future studies may beneﬁt by using a smaller a priori cut oﬀ
+criteria for matching purposes. Similarly, sex and race/ethnicity
+did not signiﬁcantly diﬀer between ε4 carriers and non-carriers,
+but more deliberate matching on these characteristics could
+also eliminate potential confounding by these diﬀerences. In
+this study we were able to make a direct match on 83% of
+the cases by sex and 79% of the cases for race/ethnicity and
+the intent of the study was not to test for sex diﬀerences.
+While little work has been done to determine the extent to
+which sex and race/ethnicity diﬀerences may impact fMRI brain
+activity during the n-back task, the current study may have
+beneﬁted by having more participants to allow for even greater
+matching on age, years of education, and BMI in addition to
+matching on sex and race/ethnic characteristics. Furthermore,
+conducting additional analyses to explore the independent
+eﬀects that sex and race/ethnicity have on fMRI brain activity
+during the n-back working memory task may be useful to
+elucidate their importance as potential demographic features for
+matching. Future research should determine whether sex and
+race/ethnicity act as additional moderators by designing studies
+that would a priori match for these participant characteristics
+across ε4 carriers and non-carriers.
+Another important consideration is that the lack of ﬁndings
+regarding n-back working memory performance may be
+attributable to the task conditions not being diﬃcult enough.
+Indeed, accuracy rates were around 0.90 and 0.80 across the
+1-back and 2-back conditions respectively. Future studies may
+beneﬁt by incorporating conditions of the n-back task that
+require a greater working memory load, such as a 3-back
+Frontiers in Human Neuroscience
+09
+frontiersin.org
+
+Drake et al.
+10.3389/fnhum.2022.1001229
+condition, and/or evaluating a wider variety of working memory
+tasks to more holistically capture working memory function.
+Another limitation is that we had a relatively small sample
+size. While evaluating brain activity among ε4 carriers with
+overweight/obesity was interesting and novel, a larger sample
+would have provided greater statistical power to determine
+the associations between BMI and working memory related
+brain activity among ε4 carriers, and we may have been
+more suﬃciently powered to detect APOE genotype × BMI
+interactions on working memory related brain activity. Instead,
+we primarily characterized the impact of the ε4 allele on
+working memory related brain activity among individuals with
+overweight/obesity by matching individuals on BMI across
+APOE genotype group. A more nuanced focus on BMI could
+have been informative given that greater BMI has additive
+eﬀects on other indicators of brain health, including cognitive
+functioning, brain volume, and white matter integrity (Zade
+et al., 2013; Rajan et al., 2014). Along these lines, we excluded
+individuals with normal-weight in this study, which prevented
+us from knowing how this sample is performing relative to
+adults with normal-weight.
+We also lacked observational longitudinal data (i.e.,
+data that demonstrates functioning of the sample into late
+adulthood) in this sample. Therefore, we were unable to
+determine the current or long-term impact of reduced taskfMRI brain activity on neurocognitive health. Indeed, while
+the reduced task-fMRI brain activity among ε4 carriers was
+interpreted as potentially maladaptive given the co-occurrence
+of metabolic and genetic risk, lower activation in the context of
+similar cognitive performance to non-carriers could represent
+neural eﬃciency for ε4 carriers such that they could perform
+similarly while using fewer neural resources. It is also important
+to consider that up to 63% of ε4 carriers may never develop AD
+(Crean et al., 2011), so the lack of observational longitudinal
+data makes it diﬃcult to determine the extent to which the
+lower task-fMRI brain activity observed among ε4 carriers in the
+current study is related to risk of future development of AD.
+Another limitation of the present study was the use of
+a cross-sectional design, which allows for the possibility that
+individual characteristics other than APOE genotype may be
+related to diﬀerences in brain activation. Although the ε4 allele
+has been consistently shown to be related to diﬀerences in
+brain activation, it is important to acknowledge that other
+individual factors have been shown to inﬂuence the association
+between the ε4 allele and neurocognitive function such as
+race/ethnicity (Barnes et al., 2013) and these may also be
+inﬂuencing the relationship between ε4 allele and fMRI brain
+activity. Furthermore, epigenetic factors could be inﬂuencing
+APOE gene expression, which could further complicate the
+impact of the ε4 on fMRI brain activity.
+Finally, the present study lacked data on Aβ deposition
+and family history of AD, both of which have been associated
+with variation in fMRI brain activity in other studies (Johnson
+et al., 2006b; Foster et al., 2018; Kennedy et al., 2018). Such
+data may have (1) provided insight into what accounts for
+diﬀerences in fMRI brain activity among ε4 carriers with
+overweight/obesity and (2) further shown that alterations in
+fMRI brain activity among ε4 carriers with overweight/obesity
+may indicate additional risk for AD and neurocognitive decline
+in late adulthood.
+Conclusion
+In conclusion, our ﬁndings demonstrate that in this mostly
+midlife age range of participants with overweight/obesity, we
+can detect signiﬁcant diﬀerences in working memory-related
+brain activity as a function of APOE genotype. Our results
+suggest that these diﬀerences in brain activation are not related
+to a common comorbid condition in midlife that also elevates
+risk for neurocognitive decline – overweight/obesity – given
+that all participants were matched for BMI. We can also rule
+out the likelihood that diﬀerences in task-related working
+memory brain activity were confounded by diﬀerences in CBF.
+Finally, diﬀerences in brain activation did not translate to
+diﬀerences in performance on the n-back task. Although the
+APOE ε4 allele does not appear to be related to reduced
+performance on the n-back task, this does not preclude deﬁcits
+in cognitive function on other tasks. Additionally, the ﬁndings
+of the current study do not rule out the possibility that ε4
+carriers with overweight/obesity may be at increased risk for
+accelerated neurocognitive aging in late adulthood. However,
+longitudinal studies with larger sample sizes are required to
+determine the long-term impact of decreased neural activity,
+and to better characterize the individual and joint contributions
+of body fat and the ε4 allele in this rapidly growing and
+at-risk population. Such studies would allow researchers to
+pinpoint the pathophysiological basis for the brain activation
+patterns observed in ε4 carriers with overweight/obesity. Doing
+so could further promote the adoption of healthy lifestyle
+habits, such as physical activity, which has the potential
+to mitigate future neurocognitive declines (Erickson et al.,
+2011). Future research needs to clarify the long-term clinical
+implications of these ﬁndings with respect to brain health in
+the context of both overweight/obesity and genetic risk for AD.
+Nonetheless, our novel results could help inform policies to
+target individuals at greatest risk for dementia, well before the
+onset of clinical symptoms.
+Data availability statement
+The data that support the ﬁndings of this study are available
+from JJ and KE, who were the Principal Investigators on
+the parent study and the ancillary study, respectively, upon
+reasonable request.
+Frontiers in Human Neuroscience
+10
+frontiersin.org
+
+Drake et al.
+10.3389/fnhum.2022.1001229
+Ethics statement
+The studies involving human participants were reviewed
+and approved by the University of Pittsburgh Institutional
+Review Board. The patients/participants provided their written
+informed consent to participate in this study.
+Author contributions
+JD, KE, and SA contributed to conception and study
+design. JJ, RR, WL, KE, KR, and SD contributed to data
+collection and acquisition. JD, SA, CS, SD, and KE contributed
+to statistical analysis and interpretation of results. JD and KE
+drafted the manuscript. JD, KE, JJ, SA, CS, WL, RR, SD, and
+KR critically revised the manuscript for important intellectual
+content. All authors approved the ﬁnal version to be published
+and agreement to be accountable for the integrity and accuracy
+of all aspects of the work.
+Funding
+This research was supported by grants awarded from the
+National Institutes of Health to KE (3R01AG060741-03S1;
+awardee: JD), KE (R01 DK095172), JJ (R01-HL103646), and
+University of Pittsburgh Clinical and Translational Science
+Institute (CTSI) (UL1 TR001857). JJ received compensation for
+serving on the Scientiﬁc Advisory Board for Wondr Health, Inc.
+and for WW International, Inc.
+Acknowledgments
+We recognize the contribution of the staﬀand graduate
+students at the Physical Activity and Weight Management
+Research Center at the University of Pittsburgh who contributed
+to this project.
+Conﬂict of interest
+RR was employed by Wondr Health, Inc.
+The remaining authors declare that the research was
+conducted in the absence of any commercial or ﬁnancial
+relationships that could be construed as a potential conﬂict of
+interest.
+Publisher’s note
+All claims expressed in this article are solely those of the
+authors and do not necessarily represent those of their aﬃliated
+organizations, or those of the publisher, the editors and the
+reviewers. Any product that may be evaluated in this article, or
+claim that may be made by its manufacturer, is not guaranteed
+or endorsed by the publisher.
+References
+Aghjayan, S. L., Jakicic, J. M., Rogers, R. J., Esteban-Cornejo, I., Peven,
+J. C., Stillman, C. M., et al. (2021). The ﬁtness versus body fat hypothesis in
+relation to hippocampal structure. Psychophysiology 58:e13591. doi: 10.1111/psyp.
+13591
+Barnes, L. L., Arvanitakis, Z., Yu, L., Kelly, J., De Jager, P. L., and Bennett, D. A.
+(2013). Apolipoprotein E and change in episodic memory in blacks and whites.
+Neuroepidemiology 40, 211–219. doi: 10.1159/000342778
+Bateman, R. J., Xiong, C., Benzinger, T. L., Fagan, A. M., Goate, A., Fox, N. C.,
+et al. (2012). Clinical and biomarker changes in dominantly inherited Alzheimer’s
+disease. N. Engl. J. Med. 367, 795–804. doi: 10.1056/NEJMoa1202753
+Beckmann, C. F., Jenkinson, M., and Smith, S. M. (2003). General multilevel
+linear modeling for group analysis in FMRI. NeuroImage 20, 1052–1063. doi:
+10.1016/S1053-8119(03)00435-X
+Bertram, L., McQueen, M. B., Mullin, K., Blacker, D., and Tanzi, R. E.
+(2007). Systematic meta-analyses of Alzheimer disease genetic association
+studies: The AlzGene database. Nat. Genet. 39, 17–23. doi: 10.1038/ng
+1934
+Bondi, M. W., Houston, W. S., Eyler, L. T., and Brown, G. G. (2005).
+fMRI evidence of compensatory mechanisms in older adults at genetic risk for
+Alzheimer disease. Neurology 64, 501–508. doi: 10.1212/01.WNL.0000150885.
+00929.7E
+Bookheimer, S. Y., Strojwas, M. H., Cohen, M. S., Saunders, A. M., Pericak-
+Vance, M. A., Mazziotta, J. C., et al. (2000). Patterns of brain activation in people
+at risk for Alzheimer’s disease. N. Engl. J. Med. 343, 450–456. doi: 10.1056/
+NEJM200008173430701
+Brandon, J. A., Farmer, B. C., Williams, H. C., and Johnson, L. A. (2018).
+APOE and Alzheimer’s Disease: Neuroimaging of Metabolic and Cerebrovascular
+Dysfunction. Front. Aging Neurosci. 10:180. doi: 10.3389/fnagi.2018.00180
+Bruinsma, T. J., Sarma, V. V., Oh, Y., Jang, D. P., Chang, S. Y., Worrell,
+G. A., et al. (2018). The Relationship Between Dopamine Neurotransmitter
+Dynamics and the Blood-Oxygen-Level-Dependent (BOLD) Signal: A Review
+of Pharmacological Functional Magnetic Resonance Imaging. Front. Neurosci.
+12:238. doi: 10.3389/fnins.2018.00238
+Carbonell, F., Zijdenbos, A. P., McLaren, D. G., Iturria-Medina, Y., Bedell, B. J.,
+and Alzheimer’s Disease Neuroimaging Initiative (2016). Modulation of glucose
+metabolism and metabolic connectivity by β-amyloid. J. Cerebr. Blood Flow Metab.
+36, 2058–2071. doi: 10.1177/0271678X16654492
+Chappell, M. A., Groves, A. R., MacIntosh, B. J., Donahue, M. J., Jezzard, P.,
+and Woolrich, M. W. (2011). Partial volume correction of multiple inversion time
+arterial spin labeling MRI data. Magn. Reson. Med. 65, 1173–1183. doi: 10.1002/
+mrm.22641
+Chappell, M. A., Groves, A. R., Whitcher, B., and Woolrich, M. W. (2009).
+Variational Bayesian Inference for a Nonlinear Forward Model. Trans. Sig. Process.
+57, 223–236.
+Chen, C. J., Chen, C. C., Wu, D., Chi, N. F., Chen, P. C., Liao, Y. P., et al. (2013).
+Eﬀects of the apolipoprotein E ε4 allele on functional MRI during n-back working
+memory tasks in healthy middle-aged adults. Am. J. Neuroradiol. 34, 1197–1202.
+Coppin, G., Nolan-Poupart, S., Jones-Gotman, M., and Small, D. M. (2014).
+Working memory and reward association learning impairments in obesity.
+Neuropsychologia 65, 146–155. doi: 10.1016/j.neuropsychologia.2014.10.004
+Frontiers in Human Neuroscience
+11
+frontiersin.org
+
+Drake et al.
+10.3389/fnhum.2022.1001229
+Crean, S., Ward, A., Mercaldi, C. J., Collins, J. M., Cook, M. N., Baker, N. L.,
+et al. (2011). Apolipoprotein E ε4 prevalence in Alzheimer’s disease patients
+varies across global populations: A systematic literature review and meta-analysis.
+Dement. Geriatr. Cogn. Disord. 31, 20–30. doi: 10.1159/000321984
+Di Battista, A. M., Heinsinger, N. M., and Rebeck, G. W. (2016). Alzheimer’s
+Disease Genetic Risk Factor APOE-ε4 Also Aﬀects Normal Brain Function. Curr.
+Alzheimer Res. 13, 1200–1207. doi: 10.2174/1567205013666160401115127
+Donofry, S. D., Jakicic, J. M., Rogers, R. J., Watt, J. C., Roecklein, K. A.,
+and Erickson, K. I. (2020). Comparison of Food Cue-Evoked and Resting-State
+Functional Connectivity in Obesity. Psychosom. Med. 82, 261–271. doi: 10.1097/
+PSY.0000000000000769
+Dorrance, A. M., Matin, N., and Pires, P. W. (2014). The eﬀects of obesity
+on the cerebral vasculature. Curr. Vasc. Pharmacol. 12, 462–472. doi: 10.2174/
+1570161112666140423222411
+Dupuy, A. M., Mas, E., Ritchie, K., Descomps, B., Badiou, S., Cristol, J. P.,
+et al. (2001). The relationship between apolipoprotein E4 and lipid metabolism is
+impaired in Alzheimer’s disease. Gerontology 47, 213–218. doi: 10.1159/000052801
+Elosua, R., Demissie, S., Cupples, L. A., Meigs, J. B., Wilson, P. W., Schaefer, E. J.,
+et al. (2003). Obesity Modulates the Association among APOE Genotype, Insulin,
+and Glucose in Men. Obesity Res. 11, 1502–1508. doi: 10.1038/oby.2003.201
+Erickson, K. I., Voss, M. W., Prakash, R. S., Basak, C., Szabo, A., Chaddock,
+L., et al. (2011). Exercise training increases size of hippocampus and improves
+memory. Proc. Natl. Acad. Sci. U. S. A. 108, 3017–3022. doi: 10.1073/pnas.
+1015950108
+Espeseth, T., Westlye, L. T., Fjell, A. M., Walhovd, K. B., Rootwelt, H., and
+Reinvang, I. (2008). Accelerated age-related cortical thinning in healthy carriers
+of apolipoprotein E epsilon 4. Neurobiol. Aging 29, 329–340. doi: 10.1016/j.
+neurobiolaging.2006.10.030
+Farrer, L. A., Cupples, L. A., Haines, J. L., Hyman, B., Kukull, W. A., Mayeux,
+R., et al. (1997). Eﬀects of age, sex, and ethnicity on the association between
+apolipoprotein E genotype and Alzheimer disease. A meta-analysis. APOE and
+Alzheimer Disease Meta Analysis Consortium. JAMA 278, 1349–1356.
+Fleisher, A. S., Podraza, K. M., Bangen, K. J., Taylor, C., Sherzai, A., Sidhar, K.,
+et al. (2009). Cerebral perfusion and oxygenation diﬀerences in Alzheimer’s disease
+risk. Neurobiol. Aging 30, 1737–1748. doi: 10.1016/j.neurobiolaging.2008.01.012
+Foster, C. M., Kennedy, K. M., Horn, M. M., Hoagey, D. A., and Rodrigue, K. M.
+(2018). Both hyper- and hypo-activation to cognitive challenge are associated
+with increased beta-amyloid deposition in healthy aging: A nonlinear eﬀect.
+Neuroimage 166, 285–292. doi: 10.1016/j.neuroimage.2017.10.068
+Furst, A. J., and Lal, R. A. (2011). Amyloid-β and glucose metabolism in
+Alzheimer’s disease. J. Alzheimers Dis. 26, 105–116. doi: 10.3233/JAD-2011-0066
+Gonzales, M. M., Kaur, S., Eagan, D. E., Goudarzi, K., Pasha, E., Doan, D. C.,
+et al. (2014). Central adiposity and the functional magnetic resonance imaging
+response to cognitive challenge. Int. J. Obesity 38, 1193–1199. doi: 10.1038/ijo.
+2014.5
+Gonzales, M. M., Tarumi, T., Miles, S. C., Tanaka, H., Shah, F., and Haley, A. P.
+(2010). Insulin sensitivity as a mediator of the relationship between BMI and
+working memory-related brain activation. Obesity 18, 2131–2137. doi: 10.1038/
+oby.2010.183
+Gore, J. C. (2003). Principles and practice of functional MRI of the human brain.
+J. Clin. Investig. 112, 4–9. doi: 10.1172/JCI19010
+Groves, A. R., Chappell, M. A., and Woolrich, M. W. (2009). Combined spatial
+and non-spatial prior for inference on MRI time-series. Neuroimage 45, 795–809.
+doi: 10.1016/j.neuroimage.2008.12.027
+Gu, L. H., Chen, J., Gao, L. J., Shu, H., Wang, Z., Liu, D., et al. (2017). The
+Eﬀect of Apolipoprotein E ε4 (APOE ε4) on Visuospatial Working Memory in
+Healthy Elderly and Amnestic Mild Cognitive Impairment Patients: An Event-
+Related Potentials Study. Front. Aging Neurosci. 9:145. doi: 10.3389/fnagi.2017.0
+0145
+Gunstad, J., Lhotsky, A., Wendell, C. R., Ferrucci, L., and Zonderman, A. B.
+(2010). Longitudinal examination of obesity and cognitive function: Results from
+the Baltimore longitudinal study of aging. Neuroepidemiology 34, 222–229. doi:
+10.1159/000297742
+Hales, C. M., Carroll, M. D., Fryar, C. D., and Ogden, C. L. (2017). Prevalence
+of obesity among adults and youth: United States, 2015-2016. NCHS Data Brief
+288, 1–8.
+Han, S. D., Bangen, K. J., and Bondi, M. W. (2009). Functional magnetic
+resonance imaging of compensatory neural recruitment in aging and risk for
+Alzheimer’s disease: Review and recommendations. Dement. Geriatr. Cogn.
+Disord. 27, 1–10. doi: 10.1159/000182420
+Havlicek, M., Ivanov, D., Roebroeck, A., and Uludað, K. (2017). Determining
+Excitatory and Inhibitory Neuronal Activity from Multimodal fMRI Data Using
+a Generative Hemodynamic Model. Front. Neurosci. 11:616. doi: 10.3389/fnins.
+2017.00616
+Hays, C. C., Zlatar, Z. Z., Meloy, M. J., Bondi, M. W., Gilbert, P. E., Liu, T. T.,
+et al. (2019). APOE modiﬁes the interaction of entorhinal cerebral blood ﬂow
+and cortical thickness on memory function in cognitively normal older adults.
+Neuroimage 202:116162. doi: 10.1016/j.neuroimage.2019.116162
+Jagust, W. J., Landau, S. M., and Alzheimer’s Disease Neuroimaging Initiative
+(2012). Apolipoprotein E, not ﬁbrillar β-amyloid, reduces cerebral glucose
+metabolism in normal aging. J. Neurosci. 32, 18227–18233. doi: 10.1523/
+JNEUROSCI.3266-12.2012
+Jakicic, J. M., Rogers, R. J., Lang, W., Gibbs, B. B., Yuan, N., Fridman, Y., et al.
+(2022). Impact of weight loss with diet or diet plus physical activity on cardiac
+magnetic resonance imaging and cardiovascular disease risk factors: Heart Health
+Study randomized trial. Obesity 30, 1039–1056. doi: 10.1002/oby.23412
+Jenkinson, M., Bannister, P., Brady, M., and Smith, S. (2002). Improved
+optimization for the robust and accurate linear registration and motion correction
+of brain images. Neuroimage 17, 825–841. doi: 10.1016/s1053-8119(02)91132-8
+Jenkinson, M., and Smith, S. (2001). A global optimisation method for robust
+aﬃne registration of brain images. Med. Image Anal. 5, 143–156. doi: 10.1016/
+s1361-8415(01)00036-6
+Jia, L., Xu, H., Chen, S., Wang, X., Yang, J., Gong, M., et al. (2020). The APOE
+ε4 exerts diﬀerential eﬀects on familial and other subtypes of Alzheimer’s disease.
+Alzheimers Dement. 16, 1613–1623. doi: 10.1002/alz.12153
+Johnson, S. C., Schmitz, T. W., Moritz, C. H., Meyerand, M. E., Rowley,
+H. A., Alexander, A. L., et al. (2006a). Activation of brain regions vulnerable to
+Alzheimer’s disease: The eﬀect of mild cognitive impairment. Neurobiol. Aging 27,
+1604–1612. doi: 10.1016/j.neurobiolaging.2005.09.017
+Johnson, S. C., Schmitz, T. W., Trivedi, M. A., Ries, M. L., Torgerson, B. M.,
+Carlsson, C. M., et al. (2006b). The inﬂuence of Alzheimer disease family history
+and apolipoprotein E epsilon4 on mesial temporal lobe activation. J. Neurosci. 26,
+6069–6076. doi: 10.1523/JNEUROSCI.0959-06.2006
+Jones, N. S., and Rebeck, G. W. (2018). The Synergistic Eﬀects of APOE
+Genotype and Obesity on Alzheimer’s Disease Risk. Int. J. Mol. Sci. 20:63. doi:
+10.3390/ijms20010063
+Jung, Y., Wong, E. C., and Liu, T. T. (2010). Multiphase pseudocontinuous
+arterial spin labeling (MP-PCASL) for robust quantiﬁcation of cerebral blood ﬂow.
+Magn. Reson. Med. 64, 799–810. doi: 10.1002/mrm.22465
+Kennedy, K. M., Foster, C. M., and Rodrigue, K. M. (2018). Increasing
+beta-amyloid deposition in cognitively healthy aging predicts nonlinear change
+in BOLD modulation to diﬃculty. Neuroimage 183, 142–149. doi: 10.1016/j.
+neuroimage.2018.08.017
+Kok, E., Haikonen, S., Luoto, T., Huhtala, H., Goebeler, S., Haapasalo, H., et al.
+(2009). Apolipoprotein E-dependent accumulation of Alzheimer disease-related
+lesions begins in middle age. Ann. Neurol. 65, 650–657. doi: 10.1002/ana.21696
+Liu, M., Bian, C., Zhang, J., and Wen, F. (2014). Apolipoprotein E gene
+polymorphism and Alzheimer’s disease in Chinese population: A meta-analysis.
+Sci. Rep. 4:4383. doi: 10.1038/srep04383
+Luchsinger, J. A., Cheng, D., Tang, M. X., Schupf, N., and Mayeux, R. (2012).
+Central obesity in the elderly is related to late-onset Alzheimer disease. Alzheimer
+Dis. Assoc. Disord. 26, 101–105. doi: 10.1097/WAD.0b013e318222f0d4
+Petrella, J. R., Krishnan, S., Slavin, M. J., Tran, T. T., Murty, L., and Doraiswamy,
+P. M. (2006). Mild cognitive impairment: Evaluation with 4-T functional MR
+imaging. Radiology 240, 177–186. doi: 10.1148/radiol.2401050739
+Peven, J. C., Jakicic, J. M., Rogers, R. J., Lesnovskaya, A., Erickson, K. I.,
+Kang, C., et al. (2020). The Eﬀects of a 12-Month Weight Loss Intervention on
+Cognitive Outcomes in Adults with Overweight and Obesity. Nutrients 12:2988.
+doi: 10.3390/nu12102988
+Profenno, L. A., Porsteinsson, A. P., and Faraone, S. V. (2010). Metaanalysis of Alzheimer’s disease risk with obesity, diabetes, and related
+disorders.
+Biol.
+Psychiatry
+67,
+505–512.
+doi:
+10.1016/j.biopsych.2009.
+02.013
+Rajan, K. B., Skarupski, K. A., Rasmussen, H. E., and Evans, D. A. (2014). Geneenvironment interaction of body mass index and apolipoprotein E ε4 allele on
+cognitive decline. Alzheimer Dis. Assoc. Disord. 28, 134–140. doi: 10.1097/WAD.
+0000000000000013
+Reiman, E. M., Chen, K., Alexander, G. E., Caselli, R. J., Bandy, D., Osborne,
+D., et al. (2004). Functional brain abnormalities in young adults at genetic risk
+for late-onset Alzheimer’s dementia. Proc. Natl. Acad. Sci. U. S. A. 101, 284–289.
+doi: 10.1073/pnas.2635903100
+Reinvang, I., Winjevoll, I. L., Rootwelt, H., and Espeseth, T. (2010). Working
+memory deﬁcits in healthy APOE epsilon 4 carriers. Neuropsychologia 48, 566–
+573. doi: 10.1016/j.neuropsychologia.2009.10.018
+Frontiers in Human Neuroscience
+12
+frontiersin.org
+
+Drake et al.
+10.3389/fnhum.2022.1001229
+Reverte, I., Peris-Sampedro, F., Basaure, P., Campa, L., Suñol, C., Moreno, M.,
+et al. (2016). Attentional performance, impulsivity, and related neurotransmitter
+systems in apoE2, apoE3, and apoE4 female transgenic mice. Psychopharmacology
+233, 295–308. doi: 10.1007/s00213-015-4113-9
+Rieckmann, A., Van Dijk, K. R., Sperling, R. A., Johnson, K. A., Buckner, R. L.,
+and Hedden, T. (2016). Accelerated decline in white matter integrity in clinically
+normal individuals at risk for Alzheimer’s disease. Neurobiol. Aging 42, 177–188.
+doi: 10.1016/j.neurobiolaging.2016.03.016
+Rogers, R. J., Schelbert, E. B., Lang, W., Fridman, Y., Yuan, N., and Jakicic,
+J. M. (2019). Association of ﬁtness and body fatness with left ventricular mass:
+The Heart Health Study. Obesity Sci. Pract. 6, 19–27. doi: 10.1002/osp4.380
+Sando, S. B., Melquist, S., Cannon, A., Hutton, M. L., Sletvold, O., Saltvedt,
+I., et al. (2008). APOE epsilon 4 lowers age at onset and is a high risk factor for
+Alzheimer’s disease; a case control study from central Norway. BMC Neurol. 8:9.
+doi: 10.1186/1471-2377-8-9
+Scheller, E., Peter, J., Schumacher, L. V., Lahr, J., Mader, I., Kaller, C. P., et al.
+(2017). APOE moderates compensatory recruitment of neuronal resources during
+working memory processing in healthy older adults. Neurobiol. Aging 56, 127–137.
+doi: 10.1016/j.neurobiolaging.2017.04.015
+Smith, E., Hay, P., Campbell, L., and Trollor, J. N. (2011). A review of
+the association between obesity and cognitive function across the lifespan:
+Implications for novel approaches to prevention and treatment. Obesity Rev. 12,
+740–755. doi: 10.1111/j.1467-789X.2011.00920.x
+Smith, S. M. (2002). Fast robust automated brain extraction. Hum. Brain Mapp.
+17, 143–155. doi: 10.1002/hbm.10062
+Sperling, R., Mormino, E., and Johnson, K. (2014). The evolution of preclinical
+Alzheimer’s disease: Implications for prevention trials. Neuron 84, 608–622. doi:
+10.1016/j.neuron.2014.10.038
+Sperling, R. A., Dickerson, B. C., Pihlajamaki, M., Vannini, P., LaViolette, P. S.,
+Vitolo, O. V., et al. (2010). Functional alterations in memory networks in early
+Alzheimer’s disease. Neuromol. Med. 12, 27–43. doi: 10.1007/s12017-009-8109-7
+Stillman, C. M., Jakicic, J., Rogers, R., Alﬁni, A. J., Smith, J. C., Watt, J., et al.
+(2021). Changes in cerebral perfusion following a 12-month exercise and diet
+intervention. Psychophysiology 58:e13589. doi: 10.1111/psyp.13589
+Stocker, H., Nabers, A., Perna, L., Möllers, T., Rujescu, D., Hartmann, A., et al.
+(2020). Prediction of Alzheimer’s disease diagnosis within 14 years through Aβ
+misfolding in blood plasma compared to APOE4 status, and other risk factors.
+Alzheimers Dement. 16, 283–291. doi: 10.1016/j.jalz.2019.08.189
+Thambisetty, M., Beason-Held, L., An, Y., Kraut, M. A., and Resnick, S. M.
+(2010). APOE epsilon4 genotype and longitudinal changes in cerebral blood ﬂow
+in normal aging. Arch. Neurol. 67, 93–98. doi: 10.1001/archneurol.2009.913
+Trachtenberg, A. J., Filippini, N., and Mackay, C. E. (2012). The eﬀects of
+APOE-ε4 on the BOLD response. Neurobiol. Aging 33, 323–334. doi: 10.1016/j.
+neurobiolaging.2010.03.009
+Wagner, A. D. (2000). Early detection of Alzheimer’s disease: An fMRI marker
+for people at risk? Nat. Neurosci. 3, 973–974. doi: 10.1038/79904
+Whitehair, D. C., Sherzai, A., Emond, J., Raman, R., Aisen, P. S., Petersen, R. C.,
+et al. (2010). Inﬂuence of apolipoprotein E varepsilon4 on rates of cognitive and
+functional decline in mild cognitive impairment. Alzheimers Dement. 6, 412–419.
+doi: 10.1016/j.jalz.2009.12.003
+Wierenga, C. E., Clark, L. R., Dev, S. I., Shin, D. D., Jurick, S. M.,
+Rissman, R. A., et al. (2013). Interaction of age and APOE genotype on
+cerebral blood ﬂow at rest. J. Alzheimers Dis. 34, 921–935. doi: 10.3233/JAD-12
+1897
+Wishart, H. A., Saykin, A. J., Rabin, L. A., Santulli, R. B., Flashman, L. A., Guerin,
+S. J., et al. (2006). Increased brain activation during working memory in cognitively
+intact adults with the APOE epsilon4 allele. Am. J. Psychiatry 163, 1603–1610.
+doi: 10.1176/ajp.2006.163.9.1603
+Woolrich, M. W., Jbabdi, S., Patenaude, B., Chappell, M., Makni, S., Behrens,
+T., et al. (2009). Bayesian analysis of neuroimaging data in FSL. Neuroimage 45,
+S173–S186. doi: 10.1016/j.neuroimage.2008.10.055
+Woolrich, M. W., Ripley, B. D., Brady, M., and Smith, S. M. (2001). Temporal
+autocorrelation in univariate linear modeling of FMRI data. Neuroimage 14,
+1370–1386. doi: 10.1006/nimg.2001.0931
+World Health Organization [WHO] (2018). Overweight and Obesity. Geneva:
+World Health Organization.
+Xu, W. L., Caracciolo, B., Wang, H. X., Santoni, G., Winblad, B., and Fratiglioni,
+L. (2013). Accelerated progression from mild cognitive impairment to dementia
+among APOE ε4ε4 carriers. J. Alzheimers Dis. 33, 507–515. doi: 10.3233/JAD-
+2012-121369
+Yang, Y., Shields, G. S., Wu, Q., Liu, Y., Chen, H., and Guo, C. (2020).
+The association between obesity and lower working memory is mediated by
+inﬂammation: Findings from a nationally representative dataset of U.S. adults.
+Brain Behav. Immun. 84, 173–179. doi: 10.1016/j.bbi.2019.11.022
+Zade, D., Beiser, A., McGlinchey, R., Au, R., Seshadri, S., Palumbo, C., et al.
+(2013). Apolipoprotein epsilon 4 allele modiﬁes waist-to-hip ratio eﬀects on
+cognition and brain structure. J. Stroke Cerebrovasc. Dis. 22, 119–125. doi: 10.1016/
+j.jstrokecerebrovasdis.2011.06.020
+Zhang, Y., Brady, M., and Smith, S. (2001). Segmentation of brain MR
+images through a hidden Markov random ﬁeld model and the expectationmaximization algorithm. IEEE Trans. Med. Imaging 20, 45–57. doi: 10.1109/42.90
+6424
+Frontiers in Human Neuroscience
+13
+frontiersin.org

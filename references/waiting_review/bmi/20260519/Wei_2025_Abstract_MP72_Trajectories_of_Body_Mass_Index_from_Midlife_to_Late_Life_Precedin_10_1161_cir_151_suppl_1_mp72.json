@@ -1,0 +1,23 @@
+{
+  "title": "Abstract MP72: Trajectories of Body Mass Index from Midlife to Late Life Preceding Incident Dementia: The Health and Retirement Study",
+  "authors": [
+    "Jingkai Wei",
+    "Yanan Zhang",
+    "Ambar Kulshreshtha",
+    "Casey Crump"
+  ],
+  "year": 2025,
+  "abstract": "Introduction: Midlife high body mass index (BMI) is a known risk factor for dementia, while late-life BMI shows inconsistent associations. Understanding BMI trajectories leading to dementia may aid in identifying risk and inform preventive interventions. However, BMI patterns in general U.S. populations remain underexplored. We aimed to estimate BMI trajectories from midlife to late life preceding dementia onset in a nationally representative U.S. sample. Hypothesis: Individuals who develop dementia have higher BMI levels decades before the onset of dementia, but experience lower BMI as they approach dementia onset, compared to those who do not develop dementia. Methods: A total of 12,368 individuals across midlife and late life (mean age: 71.9 years, 49% women) from the Health and Retirement Study were included in the analysis. BMI was calculated using self-reported weight and height. Incident dementia was defined using the established Langa-Weir Classification of Cognitive Function. BMI trajectories were examined prior to \"Year 0,\" defined as the year of dementia onset for individuals with dementia, or the last wave before death, loss to follow-up, or the end of the study (2020). Linear mixed-effects models were used to estimate BMI over the up to 28 years preceding Year 0 (-28 to 0 years), with dementia as an indicator. The models were adjusted for age at Year 0, sex, education, birth cohort (Health and Retirement Study, born 1931-1941; War Baby, born 1942-1947; Early Baby Boomers, born 1948-1953) time, time squared, and interactions between time and time squared with age, sex, education, and dementia. Random effects were specified for intercept and slope. Results: Individuals with dementia (n = 1,817) had significantly higher BMI around a decade before the onset of dementia compared to those without dementia. However, starting 8 years before dementia onset, individuals with dementia had significantly lower BMI than those without dementia (Figure 1). Conclusions: A steep BMI decline near dementia onset may be an important early predictor of dementia.",
+  "doi": "10.1161/cir.151.suppl_1.mp72",
+  "arxiv_id": null,
+  "venue": "Circulation",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W4409541306"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.1161/cir.151.suppl_1.mp72"
+}

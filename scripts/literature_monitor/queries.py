@@ -10,7 +10,7 @@ Conventions:
 """
 from __future__ import annotations
 
-TOPICS = ("embedding", "asymmetry", "emotion", "age")
+TOPICS = ("embedding", "asymmetry", "emotion", "age", "bmi")
 
 TOPIC_QUERIES: dict[str, list[str]] = {
     "embedding": [
@@ -55,6 +55,16 @@ TOPIC_QUERIES: dict[str, list[str]] = {
         '"facial biomarker" ("Alzheimer" OR "dementia" OR "MCI")',
         '"face image" "Alzheimer" diagnosis',
         '"facial features" "AD" detection',
+    ],
+    "bmi": [
+        '("body mass index" OR "BMI") AND ("Alzheimer" OR "dementia" OR "MCI" OR "cognitive decline")',
+        '"obesity" ("Alzheimer" OR "dementia") ("risk" OR "protective" OR "paradox")',
+        '"underweight" ("Alzheimer" OR "dementia" OR "cognitive impairment")',
+        '"midlife obesity" ("Alzheimer" OR "dementia")',
+        '"late-life BMI" ("Alzheimer" OR "dementia" OR "cognitive")',
+        '"weight loss" ("Alzheimer" OR "dementia") preclinical',
+        '"anthropometric" ("Alzheimer" OR "dementia") ("body mass" OR "BMI")',
+        '"obesity paradox" ("Alzheimer" OR "dementia" OR "cognitive")',
     ],
     "age": [
         # Face-image-explicit only. AVOID: "age estimation" alone, "brain age",

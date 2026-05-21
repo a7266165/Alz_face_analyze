@@ -1,0 +1,21 @@
+{
+  "title": "Childhood obesity and risk of Alzheimer's disease: a Mendelian randomization study.",
+  "authors": [
+    "Qing W",
+    "Qian Y"
+  ],
+  "year": 2024,
+  "abstract": "BACKGROUND: Midlife obesity is a modifiable risk factor for Alzheimer's disease. However, the association between childhood obesity and Alzheimer's disease remains largely unknown. Therefore, we conducted a mendelian randomization analysis (MR) to assess the causal link between childhood obesity and Alzheimer's disease. METHODS: Using summary statistics from publicly available genome-wide association studies (GWAS) database, we explored the genetic link between childhood obesity and Alzheimer's disease through a two-sample MR. The primary analysis employed the inverse-variance weighted (IVW) method. To complement our findings, we also employed MR-Egger, weighted median, simple model, and weighted model methods for MR estimates. Furthermore, we conducted Cochrane's Q-statistic test, Egger intercept test, and a leave-one-out sensitivity test to ensure the robustness and reliability of our results. RESULTS: The IVW analysis yielded non-significant results, indicating no significant genetic association between childhood obesity and Alzheimer's disease (OR = 0.958, 95% CI = 0.910-1.008, p = 0.095). Consistent with this, the results from MR-Egger, the weighted median, simple model, and weighted model approaches all supported these findings. Furthermore, we did not detect any signs of heterogeneity or pleiotropy, and our leave-one-out analysis confirmed that no single nucleotide polymorphisms had a substantial impact on the reliability of our results. CONCLUSIONS: The evidence from our MR analyses suggests that there is no causal effect of childhood obesity on the risk of Alzheimer's disease.",
+  "doi": "10.1186/s13690-024-01271-y",
+  "arxiv_id": null,
+  "venue": "Archives of public health = Archives belges de sante publique",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "38500220"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.1186/s13690-024-01271-y"
+}

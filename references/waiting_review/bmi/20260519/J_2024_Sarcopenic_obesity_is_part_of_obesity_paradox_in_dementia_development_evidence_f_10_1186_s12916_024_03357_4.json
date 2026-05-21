@@ -1,0 +1,33 @@
+{
+  "title": "Sarcopenic obesity is part of obesity paradox in dementia development: evidence from a population-based cohort study.",
+  "authors": [
+    "Zhang J",
+    "Na X",
+    "Li Z",
+    "Ji JS",
+    "Li G",
+    "Yang H",
+    "Yang Y",
+    "Tan Y",
+    "Zhang J",
+    "Xi M",
+    "Su D",
+    "Zeng H",
+    "Wu L",
+    "Zhao A"
+  ],
+  "year": 2024,
+  "abstract": "BACKGROUND: Sarcopenic obesity, a clinical and functional condition characterized by the coexistence of obesity and sarcopenia, has not been investigated in relation to dementia risk and its onset. METHODS: We included 208,867 participants from UK biobank, who aged 60 to 69 years at baseline. Dementia diagnoses were identified using hospital records and death register data. Hazard ratios (HRs) and 95% confidence intervals (CIs) were estimated using Cox proportional hazards models to evaluate the associations of obesity, sarcopenia, and sarcopenic obesity with dementia risk, stratified by sex. Stratified analyses were performed across dementia-related polygenic risk score (PRS). Restricted mean survival time models were established to estimate the difference and 95%CIs of dementia onset across different status. Additionally, linear regression models were employed to estimate associations of different status with brain imaging parameters. The mediation effects of chronic diseases were also examined. RESULTS: Obese women with high PRS had a decreased risk (HR = 0.855 [0.761-0.961]), but obese men with low PRS had an increased risk (HR = 1.223 [1.045-1.431]). Additionally, sarcopenia was associated with elevated dementia risk (HRwomen = 1.323 [1.064-1.644]; HRmen = 2.144 [1.753-2.621]) in those with low PRS. Among those with high PRS, however, the association was only significant in early-life (HRwomen = 1.679 [1.355-2.081]; HRmen = 2.069 [1.656-2.585]). Of note, sarcopenic obesity was associated with higher dementia risk (HRwomen = 1.424 [1.227-1.653]; HRmen = 1.989 [1.702-2.323]), and results remained similar stratified by PRS. Considering dementia onset, obesity was associated with dementia by 1.114 years delayed in women, however, 0.170 years advanced in men. Sarcopenia (women: 0.080 years; men: 0.192 years) and sarcopenic obesity (women: 0.109 years; men: 0.511 years) respectively advanced dementia onset. Obesity, sarcopenia, and sarcopenic obesity were respectively related to alterations in different brain regions. Association between sarcopenic obesity and dementia was mediated by chronic diseases. CONCLUSIONS: Sarcopenic obesity and sarcopenia were respectively associated with increased dementia risk and advanced dementia onset to vary degree. The role of obesity in dementia may differ by sex and genetic background.",
+  "doi": "10.1186/s12916-024-03357-4",
+  "arxiv_id": null,
+  "venue": "BMC medicine",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "38520024"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.1186/s12916-024-03357-4"
+}

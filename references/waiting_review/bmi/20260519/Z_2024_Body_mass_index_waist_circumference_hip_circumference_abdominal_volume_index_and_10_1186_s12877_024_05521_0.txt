@@ -1,0 +1,1355 @@
+Liang et al. BMC Geriatrics          (2024) 24:925
+https://doi.org/10.1186/s12877-024-05521-0
+RESEARCH
+Open Access
+© The Author(s) 2024. Open Access This article is licensed under a Creative Commons Attribution-NonCommercial-NoDerivatives 4.0
+International License, which permits any non-commercial use, sharing, distribution and reproduction in any medium or format, as long
+as you give appropriate credit to the original author(s) and the source, provide a link to the Creative Commons licence, and indicate if
+you modified the licensed material. You do not have permission under this licence to share adapted material derived from this article or
+parts of it. The images or other third party material in this article are included in the article’s Creative Commons licence, unless indicated
+otherwise in a credit line to the material. If material is not included in the article’s Creative Commons licence and your intended use is not
+permitted by statutory regulation or exceeds the permitted use, you will need to obtain permission directly from the copyright holder. To
+view a copy of this licence, visit http://creativecommons.org/licenses/by-nc-nd/4.0/.
+BMC Geriatrics
+Body mass index, waist circumference,
+hip circumference, abdominal volume index,
+and cognitive function in older Chinese people:
+a nationwide study
+Zhenzhen Liang1, Wei Jin3, Li Huang2* and Huajian Chen2*
+Abstract
+Background  Numerous studies have indicated an obesity paradox in observational research on aging health,
+where being normal weight or underweight adversely affects cognitive function, while moderate obesity may offer
+protective benefits. This study aims to investigate the association between body mass index (BMI), waist circumference (WC), hip circumference (HC), waist-to-height ratio (WHtR), waist-to-hip ratio (WHR), abdominal volume index
+(AVI), and the joint effect of BMI and HC on cognitive impairment in older Chinese people.
+Methods  A total of 10,579 participants aged 65 years and older from the 2018 Chinese Longitudinal Healthy Longevity Survey (CLHLS) were included in this cross-sectional study. BMI, WC, HC, WHtR, WHR, and AVI were calculated
+from height, weight, WC, and HC measurements, where weight, WC, and HC were obtained by direct measurement.
+Mini-Mental State Examination was used to assess cognitive impairment. Odds ratios (ORs) and 95% confidence
+intervals (95% CIs) were estimated using binary logistic regression. Non-linear correlations were investigated using
+restricted cubic spline curves.
+Results  In multivariate logistic regression models fully adjusted for confounding variables, our analyses showed
+significant negative associations of WC [OR 0.93 (95%CI 0.88–0.98), P = .012], HC [OR 0.92 (95%CI 0.87–0.97), P = .004],
+lower WHR (Q2) [OR 0.85 (95%CI 0.72-1.00), P = .044], and AVI [OR 0.93 (95%CI 0.88–0.98), P = .011] with cognitive impairment. Nonlinear curve analysis showed that the risk of cognitive impairment was lowest when the BMI
+was about 25.5 kg/m², suggesting that the optimal BMI for older Chinese people to maintain good cognitive ability
+may be in the overweight range. In addition, there was a non-linear “N” shaped relationship between HC and cognitive impairment, with HC having the highest risk of cognitive impairment at about 82 cm and the lowest risk
+at about 101 cm. The joint effects analysis indicated that the lowest risk was observed among those with normal
+or higher BMI but higher HC compared with participants with normal BMI levels and lower HC levels.
+Conclusion  In older Chinese people, a low-waisted and high-hip circumference body figure is favorable for cognitive function in older people. It also found a significant association between AVI and cognitive impairment. The joint
+*Correspondence:
+Li Huang
+cloeandecho@gmail.com
+Huajian Chen
+chjcreatec@gmail.com
+Full list of author information is available at the end of the article
+
+Page 2 of 14
+Liang et al. BMC Geriatrics          (2024) 24:925
+analysis of BMI and HC suggests that maintaining a normal or higher BMI with a higher HC may be more conducive
+to maintaining good cognitive function.
+Keywords  Body mass index, Waist circumference, Hip circumference, Abdominal volume index, Cognitive
+impairment
+Introduction
+Cognitive decline is a major public health challenge
+that can lead to mild cognitive impairment or dementia
+worldwide [1]. Dementia has become one of the leading
+causes of death among older people globally, not only
+imposing a heavy burden on families and society in terms
+of long-term care, but also failing to ensure their quality of life [2]. The World Health Organization (WHO)
+estimates that 55 million older people worldwide are living with dementia, with China in particular accounting
+for 15 million, and the number will continue to rise [3].
+Maintaining cognitive functioning is a core component
+of successful aging and is essential to improving the quality of life of older people and reducing social burdens [4].
+Globally, obesity has emerged as a key health issue
+and has spread rapidly in recent decades. Obesity is
+thought to significantly increase the risk of poor health
+in older people [5–8], so weight management in older
+people is in the spotlight. However, different studies
+have reached inconsistent conclusions. Several studies have shown that obese older people can improve
+cardiovascular-metabolic function and quality of life
+through conscious weight loss [9]. In contrast, other
+studies have found that loss of muscle mass during
+weight loss negatively impacts cardiovascular health
+[10]. In addition, weight loss has been linked to cognitive impairment, depression, and other physical and
+mental problems in older people [11–13]. New research
+shows that older people who are overweight or mildly
+obese have the lowest mortality risk [14]. Therefore,
+guidelines for weight management in older people
+should be carefully designed and implemented. Body
+mass index (BMI) and waist circumference (WC) are
+the most commonly used measures of obesity. There
+are inevitable major changes in the human body’s composition with aging, including a progressive loss of
+muscle [15]. Therefore, different indicators should be
+used when assessing obesity in older people based on
+their unique circumstances. BMI is commonly used to
+assess general obesity and nutritional status [14]. However, BMI alone does not reflect changes in body fat
+and muscle mass as we age [16]. WC is used to assess
+central obesity and reflects the size of abdominal adipose tissue [17]. The Abdominal Volume Index (AVI)
+is one of the best metrics for assessing the accumulation of abdominal fat, allowing for a better assessment
+of abdominal fat accumulation and a more accurate
+assessment of body fat percentage [18]. Hip circumference (HC) as an indicator of lower body fat is often
+overlooked because of its role as a key component of
+the original concept of waist-to-hip ratio (WHR) [19,
+20]. Many studies have investigated HC independently
+and found that HC is strongly associated with many
+adverse health outcomes [19, 21–30].
+The effect of obesity on the risk of cognitive impairment or dementia remains controversial [31]. Previous studies have shown that obesity leads to cognitive
+impairment and dementia in middle age [32, 33]. On
+the contrary, studies have shown that being overweight
+and obese may be helpful to older people [33] and that
+BMI shows a protective effect on cognitive function in
+older people [32, 34–36], supporting the concept of the
+“obesity paradox” [37, 38], which suggests that obesity
+confers a disease benefit or survival advantage over
+normal weight or underweight [39]. As for HC, it has
+been reported that narrow hips will increase the risk
+of diabetes [40], and diabetes is considered to be one
+of the main causes of cognitive decline in older people
+[41]. In addition, although the relationship between
+diabetes and cognitive decline has been widely recognized, there are relatively few studies on HC and cognitive function in the older people, especially the research
+on the potential impact of HC on cognitive health is
+still insufficient. In contrast, a large number of studies
+have focused on the association between BMI and cognitive function, however, there is a lack of research on
+how the combined effects of BMI and HC affect cognitive function in older people.
+Currently, there are fewer studies on the relationship between multiple obesity indicators (BMI, WC,
+HC, waist-to-height ratio [WHtR], WHR, and AVI)
+and cognitive impairment by conducting them in older
+Chinese people. We hypothesized that these obesity
+indicators may be differentially associated with cognitive impairment in older people. Therefore, this study
+aimed to assess the potential associations between traditional and novel obesity indicators (BMI, WC, HC,
+WHtR, WHR, and AVI) and cognitive impairment
+using data from the Chinese Longitudinal Healthy Longevity Survey (CLHLS), and to further explore the association between BMI and HC joint effects on cognitive
+impairment.
+
+Page 3 of 14
+Liang et al. BMC Geriatrics          (2024) 24:925
+
+Methods
+Study design and population
+CLHLS is conducted by the Chinese Center for Disease
+Control and Prevention and directed by the Center for
+Healthy Aging and Development at Peking University
+and the Center for the Study of Healthy Aging at Duke
+University [42]. Established in 1998, the CLHLS used
+a questionnaire to collect data, targeting older people
+aged 65 years and older, and utilized multistage whole
+population sampling to recruit participants from 23 of
+China’s 31 provinces, covering 85% of China’s total population. Meanwhile, trained interviewers collected data
+through face-to-face surveys to ensure a good response
+rate. The CLHLS study was approved by the Biomedical
+Ethics Committee of Peking University, Beijing, China
+(IRB00001052-13074).
+To explore the associations of BMI, WC, HC, WHtR,
+WHR, and AVI with cognitive impairment, we used the
+most recent cross-sectional data from the 2018 CLHLS.
+In 2018, a total of 15,874 participants completed the
+CLHLS. Of these, 103 participants aged less than 65 years
+were excluded. Further excluded were 361 participants
+with dementia, 4038 participants with missing MMSE
+information, 551 participants with missing anthropometric measurements (weight, height, WC, and HC), 239
+participants with outliers in anthropometric measurements (weight, height, WC, and HC), and 3 participants
+with extreme values of BMI (BMI < 10 kg/m2, BMI > 50
+kg/ ­m2) [12]. Anthropometric outliers are detected using
+the Z-Score method, a standard deviation-based method
+that standardizes the data and detects observations that
+are far from the mean. If any of the data points are outside the range of three standard deviations, these points
+can be considered outliers. We used multiple interpolation to fill in missing data [43, 44]. Age, sex, occupation, education, marital status, drinker, smoker, diabetes,
+hypertension, basic activities of daily living (BADL) and
+instrumental activities of daily living (IADL) variables
+were included in the estimation model. The missing data
+analysis process used the mice function of the R package
+mice with the method set to random forest. A chi-square
+test on the data before and after interpolation showed
+no significant difference in the baseline data before and
+after interpolation (Supplementary Table S1). Details of
+how participants were selected are shown in Fig. 1. At the
+same time, we provide the baseline characteristics of the
+excluded participants in Supplementary Table S2.
+Measures
+Assessment of cognitive impairment
+Cognitive impairment is defined by the Chinese version
+of the Brief Mental State Examination (MMSE) [45],
+which was translated from the international standard
+of the MMSE questionnaire. The Chinese version of the
+MMSE contains 24 items in six dimensions (5 orientation items, 3 registration items, 1 naming item, 5 attention and calculation items, 3 recall items, and 7 language
+items). The Chinese version of the MMSE is scored from
+0 to 30, with higher scores on the MMSE assessment
+indicating better cognitive ability. This MMSE has been
+validated in a population of older people in China, where
+scores below 24 are defined as cognitive impairment [12,
+46].
+BMI, WC, HC, WHtR, WHR and AVI
+For the survey, height (cm) and weight (kg) were measured with a tape measure and a scale without shoes or
+heavy clothing. When WC was measured, the participant
+was asked to exhale calmly, and the interviewer placed
+the tape measure directly against the skin and waited for
+the elderly person to record near the end of their exhalation. HC is measured at the point of maximum gluteal
+muscle prominence and the anterior plane pubic symphysis [47, 48].
+BMI was calculated with the following formula:
+WHtR was calculated with the following formula:
+WHR was calculated with the following formula:
+AVI was calculated with the following formula:
+BMI was classified into four types according to the Chinese guideline [49], which were underweight (BMI < 18.5
+kg/m2), normal weight (18.5 kg/m2 ≤ BMI < 24.0 kg/m2),
+overweight (24.0 kg/m2 ≤ BMI < 28 kg/m2) and obesity
+(BMI ≥ 28 kg/m2). Central obesity was defined as ≥ 85 cm
+in men and ≥ 80 cm in women and vice versa as Noncentral obesity according to the criteria of the available studies [29, 30]. HC, WHtR, WHR and AVI were quartered.
+Covariates
+This study adjusted for many covariates including age,
+sex, type of residence, marital status, education, occupation, current smoking status, current smoking status,
+BMI = Weight (kg)/Height2 (m)
+WHtR = WC (cm)/Height (cm)
+WHR = WC (cm)/HC (cm)
+AVI = 2 × WC2 (cm) + 0.7 × (WC (cm) −HC (cm))2 /1000
+
+Page 4 of 14
+Liang et al. BMC Geriatrics          (2024) 24:925
+hypertension, diabetes mellitus, BADL, and IADL. Gender was categorized as male and female. The type of residence was categorized as urban and rural. Marital status
+was categorized as married and other. Education was categorized as formal education (≥ 1 year of education) and
+no formal education (< 1 year of education). The occupation (occupation before the age of 60) was categorized
+as professional work (skilled professionals, government,
+management) and non-professional work (agriculture,
+fishing, services, industry, domestic work). Participants
+were defined as smokers/drinkers if current smokers/
+drinkers, regardless of frequency and quantity. Hypertension/diabetes was defined as whether they self-reported
+having hypertension/diabetes [50, 51].
+The BADL were measured on six subscales: (1) bathing; (2) dressing; (3) toileting; (4) indoor activities; (5)
+bowel control; and (6) eating. Each item is rated on a
+scale from 1 to 3 (1 for complete independence; 2 for
+partial dependence; and 3 for complete dependence).
+The IADL were assessed through eight questions: (1)
+Can you visit your neighbors by yourself? (2) Can you
+do your own shopping? (3) Can you cook for yourself
+if necessary? (4) Can you do your own laundry if necessary? (5) Can you walk alone for one kilometer at a
+time? (6) Can you lift 5 kg, such as a heavy bag of groceries? (7) Can you squat down and stand up three
+times in a row? (8) Can you take public transportation
+alone? Each item is rated on a three-point scale ranging from 1 (fully independent) to 3 (fully dependent).
+The higher the respondent’s score on the BADL/IADL
+assessment, the higher the level of functional dependency [52, 53]. Need help was defined when “partial and
+full dependence” was selected for at least one of the
+BADL assessments, and Dependence was defined when
+“partial and full dependence” was selected for at least
+one of the IADL assessments.
+Fig. 1  Flow diagram of how to select participants
+
+Page 5 of 14
+Liang et al. BMC Geriatrics          (2024) 24:925
+
+Statistical analysis
+Data management and statistical analysis were performed
+using R software (version 4.3.1). Continuous variables
+were tested for normality using the Kolmogorov-Smirnov
+test and reported as mean ± standard deviation (SD) if
+they conformed to a normal distribution or median (Q1,
+Q3) if they did not. Categorical variables were reported
+as n (%). Wilcoxon rank-sum test and chi-square test
+were used to compare baseline characteristics between
+the two groups. Odds ratios (ORs) and 95% confidence
+intervals (95% CIs) were calculated using multivariate
+binary logistic regression models to assess the association of BMI, WC, HC, WHtR, WHR and AVI with cognitive impairment. To control for the effect of potential
+confounders on the findings, we developed three models
+for each BMI, WC, HC, WHtR, WHR and AVI to adjust
+for potential confounders in this study. Model 1: unadjusted; Model 2: adjusted for gender and age; Model 3:
+Model 2 was further adjusted for type of residence, marital status, education, occupation, current smoking status,
+current smoking status, hypertension, diabetes, BADL,
+and IADL. Restricted cubic spline (RCS) regression was
+used to analyze the nonlinear relationship between BMI,
+WC, HC, and AVI and cognitive impairment. RCS analysis was performed using the lrm function of the R package “rms” with the node set to 4-knot. These nodes were
+automatically placed at the 5%, 35%, 65%, and 95% quantiles based on the distribution of the respective variables.
+This method of node selection adequately captures the
+nonlinear relationship between variables and cognitive
+functioning while avoiding model overfitting, and this
+method of node setting has been widely used in previous
+studies [54, 55]. Fully adjusted models were also used in
+subgroup analyses to investigate whether the associations
+between BMI, WC, HC, and AVI and cognitive impairment varied by age (65–79, ≥ 80 years), sex, marital
+status, type of residence, marital status, education, occupation, current smoking status, current smoking status,
+hypertension, diabetes, BADL, and IADL. Sensitivity
+analyses were performed to test the stability of the results
+by including 206 dementia patients with complete information. All statistical tests were two-sided, with P < .05
+considered statistically significant.
+Results
+Participant characteristics
+A total of 10,594 participants with a median age of 82
+(74, 91) years were enrolled in this study, of which 5629
+(53.1%) participants were female. The median (Q1, Q3)
+of BMI, WC, HC, WHtR, WHR and AVI of the participants were 22.23 (19.78, 24.91) kg/m2, 85 (78, 92) cm,
+92 (86, 98) cm, 0.55 (0.50, 0.59), 0.92 (0.88, 0.97) and
+14.49 (12.24, 16.95) liters (L), respectively. Cognitive
+impairment was defined as an MMSE score of less than
+24. The results showed that 2325 (21.9%) participants
+had cognitive impairment (Table  1). Among the older
+Chinese people in this study, the prevalence of cognitive
+impairment was 35.9% in the underweight group, 14.0%
+in the overweight group, and 15.4% in the obese group.
+Additionally, the prevalence of cognitive impairment in
+those with central obesity, defined by the WC threshold,
+was 19.7% (Supplementary Table S3). Compared to participants with normal cognitive function (Table 1), participants with cognitive impairment tended to be older,
+female, with no formal education, performing nonprofessional work, live in rural, of other marital status, nonsmokers, non-drinkers, not hypertensive and diabetic,
+BADL/IADL assessments reflecting dependence, underweight, no abdominal obesity, low HC and low AVI persons (All P < .05).
+Associations of BMI, WC, HC, WHtR, WHR and AVI
+with cognitive impairment
+Table  2 demonstrates the association between BMI,
+WC, HC, WHtR, WHR and AVI and cognitive impairment. Analyzed according to continuous variables, WC,
+HC and AVI were associated with cognitive impairment.
+After adjusting for potential confounders (Model 3), the
+adjusted ORs for WC, HC, and AVI were 0.93 (95% CI:
+0.88–0.98, P = .012), 0.92 (95% CI: 0.87–0.97, P = .004),
+and 0.93 (95% CI: 0.88–0.98, P = .011), respectively.
+When analyzed by categorical variables, the associations
+of BMI, HC, WHR, and AVI with cognitive impairment
+were statistically significant after adjusting for covariates. The adjusted OR for HC (Q4) compared with HC
+(Q1) was 0.71 (95% CI: 0.60–0.84, P < .001). The adjusted
+OR for WHR (Q2) compared with WHR (Q1) was 0.85
+(95% CI: 0.72-1.00, P = .044). The adjusted OR for AVI
+(Q4) compared with AVI (Q1) was 0.81 (95% CI: 0.69–
+0.95, P = .010). In addition, an adjusted OR of 1.16 (95%
+CI: 1.00-1.34, P = .045) was also found in our study for
+underweight participants compared with normal BMI,
+suggesting that underweight older people have a higher
+risk of developing cognitive impairment, which is consistent with previous studies [12].
+Sensitivity analysis
+Based on the 10,594 participants, we further included
+206 dementia patients with complete information for
+sensitivity analysis to test the stability of the results. As
+shown in Supplementary Table S4, in the fully adjusted
+model (Model 3), the results of the sensitivity analysis were largely similar to the primary results, only BMI
+(continuous variable) (OR [95% CI]: 0.93 [0.88, 0.99];
+P = .018) and central obesity (WC, categorical variable)
+(OR [95% CI]: 0.89 [0.79, 0.99]; P = .035) were different
+
+Page 6 of 14
+Liang et al. BMC Geriatrics          (2024) 24:925
+Table 1  Baseline characteristics of participants grouped by cognitive impairment
+Characteristic
+Overall (n = 10594)
+Normal cognitive function
+(n = 8269)
+Cognitive impairment
+(n = 2325)
+P
+Age, median (Q1, Q3) (year)
+82 (74, 91)
+79 (72, 87)
+93 (86, 100)
+< 0.001
+Sex (%)
+< 0.001
+  Female
+5629 (53.1)
+4007 (48.5)
+1622 (69.8)
+  Male
+4965 (46.9)
+4262 (51.5)
+703 (30.2)
+Education (%)
+< 0.001
+  Formal education
+5874 (55.4)
+5346 (64.7)
+528 (22.7)
+  No formal education
+4720 (44.6)
+2923 (35.3)
+1797 (77.3)
+Occupation (%)
+< 0.001
+  Nonprofessional work
+9364 (88.4)
+7134 (86.3)
+2230 (95.9)
+  Professional work
+1230 (11.6)
+1135 (13.7)
+95 (4.1)
+Residence (%)
+< 0.001
+  Rural
+4633 (43.7)
+3542 (42.8)
+1091 (46.9)
+  Urban
+5961 (56.3)
+4727 (57.2)
+1234 (53.1)
+Marital status (%)
+< 0.001
+  Married
+5077 (47.9)
+4586 (55.5)
+491 (21.1)
+  Other
+5517 (52.1)
+3683 (44.5)
+1834 (78.9)
+Smoker (%)
+< 0.001
+  No
+8833 (83.4)
+6778 (82)
+2055 (88.4)
+  Yes
+1761 (16.6)
+1491 (18)
+270 (11.6)
+Drinker (%)
+< 0.001
+  No
+8939 (84.4)
+6844 (82.8)
+2095 (90.1)
+  Yes
+1655 (15.6)
+1425 (17.2)
+230 (9.9)
+Hypertension (%)
+< 0.001
+  No
+5951 (56.2)
+4486 (54.3)
+1465 (63)
+  Yes
+4643 (43.8)
+3783 (45.7)
+860 (37)
+Diabetes (%)
+< 0.001
+  No
+9556 (90.2)
+7372 (89.2)
+2184 (93.9)
+  Yes
+1038 (9.8)
+897 (10.8)
+141 (6.1)
+BADL (%)
+< 0.001
+  Don’t need help
+9024 (85.2)
+7528 (91)
+1496 (64.3)
+  Need help
+1570 (14.8)
+741 (9)
+829 (35.7)
+IADL (%)
+< 0.001
+  Independence
+4369 (41.2)
+4180 (50.6)
+189 (8.1)
+  Dependence
+6225 (58.8)
+4089 (49.4)
+2136 (91.9)
+BMI, median (Q1, Q3) (kg/m2)
+22.23 (19.78, 24.91)
+22.66 (20.13, 25.24)
+20.92 (18.63, 23.46)
+< 0.001
+BMI (%)
+< 0.001
+  Normal weight
+5550 (52.4)
+4282 (51.8)
+1268 (54.5)
+  Obesity
+831 (7.8)
+703 (8.5)
+128 (5.5)
+  Overweight
+2668 (25.2)
+2294 (27.7)
+374 (16.1)
+  Underweight
+1545 (14.6)
+990 (12)
+555 (23.9)
+WC, median (Q1, Q3) (cm)
+85 (78, 92)
+86 (79, 93)
+82 (75, 90)
+< 0.001
+WC (%)
+< 0.001
+  Central obesity
+6649 (62.8)
+5339 (64.6)
+1310 (56.3)
+  Noncentral obesity
+3945 (37.2)
+2930 (35.4)
+1015 (43.7)
+HC, median (Q1, Q3) (cm)
+92 (86, 98)
+93 (87, 99)
+90 (84, 95)
+< 0.001
+HC (%)
+< 0.001
+  Q1 (HC < 86 cm)
+2398 (22.6)
+1589 (19.2)
+809 (34.8)
+  Q2 (86 ≤ HC < 92 cm)
+2583 (24.4)
+1964 (23.8)
+619 (26.6)
+  Q3 (92 ≤ HC < 98 cm)
+2547 (24)
+2067 (25)
+480 (20.6)
+
+Page 7 of 14
+Liang et al. BMC Geriatrics          (2024) 24:925
+
+from the primary results. Overall, sensitivity analysis
+demonstrated the stability and reliability of the results
+generated by logistical regression analysis.
+Subgroup analysis
+We also conducted subgroup analyses to explore whether
+the associations between BMI, WC, HC, and AVI and
+cognitive impairment remained stable across subgroups
+(including age, sex, type of residence, marital status,
+education, occupation, current smoking status, current
+smoking status, hypertension, diabetes mellitus, BADL,
+and IADL). As shown in Fig. 2, except for sex and occupation, the associations between BMI, WC, HC, and AVI
+and cognitive impairment were not significantly affected
+in other categorical variables including age (65–79 and
+≥ 80 years), type of residence, marital status, education,
+smoking, drinking, diabetes, hypertension, BADL, and
+IADL (P for interaction > 0.05). Also, we found from the
+results of the study that BMI, HC and AVI had a stronger
+protective effect among females compared to males. BMI,
+WC and AVI had a stronger protective effect among nonprofessional work compared to professional work.
+Smoothed curve fitting and threshold effect analysis
+We further assessed the relationship between BMI,
+WC, HC, and AVI and cognitive impairment using RCS
+regression. The results showed evidence of nonlinearity
+for the association of BMI (P for overall (used to assess
+whether there is a significant association between the
+independent variable and the dependent variable) < 0.001,
+P for nonlinearity = 0.005) and HC (P for overall < 0.001,
+P for nonlinearity = 0.004) with the risk of cognitive
+impairment (Fig.  3A and C). There was a linear negative correlation between WC (P for overall < 0.024, P for
+nonlinearity = 0.896) and AVI (P for overall < 0.019, P for
+nonlinearity = 0.695) and cognitive impairment (Fig.  3B
+and D). In addition, given that WC and HC are likely
+to differ significantly between sexes, especially in older
+populations, further analyses stratified by gender were
+conducted to address the relationship between WC and
+HC and cognitive impairment. The results showed that
+there was a linear negative correlation between WC (P
+for overall = 0.015, P for nonlinearity = 0.825) and HC (P
+for overall < 0.001, P for nonlinearity = 0.134) and cognitive impairment in female, and there was no statistically significant association between WC and cognitive
+impairment in male (P for overall = 0.695, P for nonlinearity = 0.690), as well as nonlinearity for the association
+of HC with the risk of cognitive impairment in male (P
+for overall = 0.002, P for nonlinearity < 0.001) (Supplementary Figure S1A and 1B). As shown in Fig.  3, BMI
+has a “U” shape with an inflection point of 25.5 kg/m2,
+while HC has a skewed “N” shape with a peak inflection
+point of 83 cm and a trough inflection point of 101 cm.
+BADL Basic activities of daily living, IADL Instrumental activities of daily living, BMI Body mass index, WC Waist circumference, HC Hip circumference, WHtR Waist-toheight ratio, WHR Waist-to-hip ratio, AVI Abdominal volume index
+Table 1  (continued)
+Characteristic
+Overall (n = 10594)
+Normal cognitive function
+(n = 8269)
+Cognitive impairment
+(n = 2325)
+P
+  Q4 (HC ≥ 98 cm)
+3066 (28.9)
+2649 (32)
+417 (17.9)
+WHtR, median (Q1, Q3)
+0.55 (0.50, 0.59)
+0.54 (0.50, 0.59)
+0.55 (0.50, 0.60)
+0.185
+WHtR (%)
+< 0.001
+  Q1 (WHtR < 0.50)
+2492 (23.5)
+1906 (23)
+586 (25.2)
+  Q2 (0.50 ≤ WHtR < 0.55)
+2792 (26.4)
+2238 (27.1)
+554 (23.8)
+  Q3 (0.55 ≤ WHtR < 0.59)
+2660 (25.1)
+2131 (25.8)
+529 (22.8)
+  Q4 (WHtR ≥ 0.59)
+2650 (25)
+1994 (24.1)
+656 (28.2)
+WHR, median (Q1, Q3)
+0.92 (0.88, 0.97)
+0.92 (0.88, 0.97)
+0.93 (0.88, 0.97)
+0.082
+WHR (%)
+0.005
+  Q1 (WHR < 0.88)
+2636 (24.9)
+2066 (25)
+570 (24.5)
+  Q2 (0.88 ≤ WHR < 0.92)
+2625 (24.8)
+2108 (25.5)
+517 (22.2)
+  Q3 (0.92 ≤ WHR < 0.97)
+2660 (25.1)
+2040 (24.7)
+620 (26.7)
+  Q4 (WHR ≥ 0.97)
+2673 (25.2)
+2055 (24.9)
+618 (26.6)
+AVI, median (Q1, Q3) (L)
+14.49 (12.24, 16.95)
+14.80 (12.57, 17.30)
+13.57 (11.35, 16.20)
+< 0.001
+AVI (%)
+< 0.001
+  Q1 (AVI < 12.2 L)
+2620 (24.7)
+1830 (22.1)
+790 (34)
+  Q2 (12.2 ≤ AVI < 14.5 L)
+2656 (25.1)
+2043 (24.7)
+613 (26.4)
+  Q3 (14.5 ≤ A VI < 16.9 L)
+2655 (25.1)
+2148 (26)
+507 (21.8)
+  Q4 (AVI ≥ 16.9 L)
+2663 (25.1)
+2248 (27.2)
+415 (17.8)
+
+Page 8 of 14
+Liang et al. BMC Geriatrics          (2024) 24:925
+BMI was negatively associated with cognitive impairment when BMI was 25.5 kg/m2 or lower. In contrast,
+with a BMI of 25.5 kg/m2or higher, there was no statistically significant relationship between BMI and cognitive
+impairment. HC was negatively associated with cognitive impairment in the range of 83–101 cm (P < .001). In
+contrast, there was no statistically significant association
+between HC and cognitive impairment at HC less than
+83 cm or greater than 101 cm (Supplementary Table S5).
+Analyses of the joint effect of BMI and HC on cognitive
+impairment
+To determine the joint effect of BMI and HC, we set
+up various combinations of BMI and HC to condition
+participants of different body figures and considered
+keeping a significant number of samples in each group,
+where BMI was divided into three groups including
+Normal BMI (18.5 ≤ BMI < 24.0 kg/m2), Lower BMI
+(BMI < 18.5 kg/m2) and Higher BMI (BMI ≥ 24.0 kg/
+m2), and HC was categorized into two groups including Lower HC (HC < 92 cm) and Higher HC (HC ≥ 92
+cm). The cutoff value of 92 cm for HC was chosen
+based both on the median of the population to ensure
+a balanced sample size across groups and the point of
+intersection with the reference line in the RCS analysis. Participants with normal BMI levels and higher HC
+[OR 0.83 (95%CI, 0.72–0.97)] and participants with
+higher BMI levels and higher HC [OR 0.79 (95%CI,
+0.68–0.92)] had a lower risk of cognitive impairment
+compared with participants with normal BMI levels
+Table 2  Binomial logistic regression analysis of the relationship between BMI, WC, HC, WHtR, WHR and AVI and cognitive impairment
+Model 1: No covariates were adjusted. Model 2: Age and sex were adjusted. Model 3: Age, sex, education, occupation, residence, marital status, smoker, drinker,
+hypertension, diabetes, BADL and IADL were adjusted
+BADL Basic activities of daily living, IADL Instrumental activities of daily living, OR Odds ratio, CI Confidence interval, BMI Body mass index, WC Waist circumference, HC
+Hip circumference, WHtR Waist-to-height ratio, WHR Waist-to-hip ratio, AVI Abdominal volume index
+Characteristic
+Model 1
+Model 2
+Model 3
+OR (95% CI)
+P
+OR (95% CI)
+P
+OR (95% CI)
+P
+BMI
+Per SD
+0.66 (0.63–0.69)
+< 0.001
+0.92 (0.87–0.97)
+0.003
+0.95 (0.89-1.00)
+0.057
+Normal weight
+1.00 (reference)
+1.00 (reference)
+1.00 (reference)
+Obesity
+0.61 (0.50–0.75)
+< 0.001
+0.98 (0.79–1.22)
+0.846
+0.97 (0.77–1.22)
+0.787
+Overweight
+0.55 (0.49–0.62)
+0.001
+0.88 (0.76–1.01)
+0.071
+0.93 (0.80–1.08)
+0.366
+Underweight
+1.89 (1.68–2.14)
+< 0.001
+1.21 (1.05–1.38)
+0.008
+1.16 (1.00-1.34)
+0.045
+WC
+Per SD
+0.73 (0.70–0.77)
+< 0.001
+0.92 (0.87–0.97)
+0.002
+0.93 (0.88–0.98)
+0.012
+Normal weight
+1.00 (reference)
+1.00 (reference)
+1.00 (reference)
+Central obesity
+0.71 (0.65–0.78)
+< 0.001
+0.89 (0.80–0.99)
+0.031
+0.91 (0.81–1.02)
+0.094
+HC
+Per SD
+0.66 (0.63–0.69)
+< 0.001
+0.90 (0.85–0.95)
+< 0.001
+0.92 (0.87–0.97)
+0.004
+Q1 (HC < 86 cm)
+1.00 (reference)
+1.00 (reference)
+1.00 (reference)
+Q2 (86 ≤ HC < 92 cm)
+0.62 (0.55–0.70)
+< 0.001
+0.91 (0.79–1.05)
+0.211
+0.95 (0.82–1.11)
+0.535
+Q3 (92 ≤ HC < 98 cm)
+0.46 (0.40–0.52)
+< 0.001
+0.85 (0.73–0.99)
+0.038
+0.90 (0.77–1.06)
+0.202
+Q4 (HC ≥ 98 cm)
+0.31 (0.27–0.35)
+< 0.001
+0.68 (0.58–0.79)
+< 0.001
+0.71 (0.60–0.84)
+< 0.001
+WHtR
+Per SD
+1.04 (0.99–1.09)
+0.098
+1.01 (0.96–1.06)
+0.801
+1.00 (0.94–1.05)
+0.889
+Q1 (WHtR < 0.50)
+1.00 (reference)
+1.00 (reference)
+1.00 (reference)
+Q2 (0.50 ≤ WHtR < 0.55)
+0.81 (0.71–0.92)
+0.001
+0.87 (0.75–1.01)
+0.075
+0.93 (0.79–1.09)
+0.344
+Q3 (0.55 ≤ WHtR < 0.59)
+0.81 (0.71–0.92)
+0.002
+0.88 (0.76–1.03)
+0.105
+0.91 (0.77–1.06)
+0.233
+Q4 (WHtR ≥ 0.59)
+1.07 (0.94–1.22)
+0.299
+1.01 (0.87–1.18)
+0.847
+1.01 (0.86–1.18)
+0.913
+WHR
+Per SD
+1.04 (0.99–1.08)
+0.137
+1.00 (0.95–1.05)
+0.991
+0.99 (0.93–1.04)
+0.618
+Q1 (WHR < 0.88)
+1.00 (reference)
+1.00 (reference)
+1.00 (reference)
+Q2 (0.88 ≤ WHR < 0.92)
+0.89 (0.78–1.02)
+0.084
+0.91 (0.78–1.06)
+0.232
+0.85 (0.72-1.00)
+0.044
+Q3 (0.92 ≤ WHR < 0.97)
+1.10 (0.97–1.25)
+0.142
+1.06 (0.92–1.23)
+0.420
+0.99 (0.85–1.15)
+0.870
+Q4 (WHR ≥ 0.97)
+1.09 (0.96–1.24)
+0.191
+1.02 (0.88–1.18)
+0.839
+0.98 (0.84–1.14)
+0.766
+AVI
+Per SD
+0.73 (0.69–0.76)
+< 0.001
+0.92 (0.87–0.97)
+0.002
+0.93 (0.88–0.98)
+0.011
+Q1 (AVI < 12.2 L)
+1.00 (reference)
+1.00 (reference)
+1.00 (reference)
+Q2 (12.2 ≤ AVI < 14.5 L)
+0.70 (0.61–0.79)
+< 0.001
+0.94 (0.82–1.08)
+0.383
+0.97 (0.84–1.12)
+0.669
+Q3 (14.5 ≤ A VI < 16.9 L)
+0.55 (0.48–0.62)
+< 0.001
+0.87 (0.75–1.01)
+0.066
+0.89 (0.76–1.03)
+0.121
+Q4 (AVI ≥ 16.9 L)
+0.43 (0.37–0.49)
+< 0.001
+0.79 (0.68–0.92)
+0.002
+0.81 (0.69–0.95)
+0.010
+
+Page 9 of 14
+Liang et al. BMC Geriatrics          (2024) 24:925
+
+and lower HC levels (Table 3). In addition, we also conducted a stratified analysis according to gender. We
+found that the results in male were consistent with the
+overall results, but in female, excepted for the participants with lower BMI and higher HC, the other combinations showed significant differences compared with
+participants with normal BMI and lower HC (Supplementary Table S6).
+Discussion
+This study focused on the associations between obesity indicators (BMI, WC, HC, WHtR, WHR, and AVI)
+and cognitive impairment in older people in China,
+and further analyzed the joint effects of BMI and HC
+on cognitive impairment. Results found that WC, HC,
+lower WHR (Q2), and AVI were significantly associated with lower risk of cognitive impairment. BMI and
+Fig. 2  Subgroup analysis of the associations between BMI, WC, HC, and AVI and cognitive impairment. Model 3-based associations between BMI
+(A), WC (B), HC (C), and AVI (D) and cognitive impairment. BADL, basic activities of daily living; IADL, instrumental activities of daily living; OR, odds
+ratio; CI, confidence interval; BMI, body mass index; WC, waist circumference; HC, hip circumference; WHtR, waist-to-height ratio; WHR, waist-to-hip
+ratio; AVI, abdominal volume index
+
+Page 10 of 14
+Liang et al. BMC Geriatrics          (2024) 24:925
+overweight/obesity were associated with a lower risk
+of cognitive impairment before adjustment for confounders, but this association was not significant after
+adjustment. In addition, we found that central obesity,
+defined by the WC threshold, was not associated with
+cognitive impairment, but WC was negatively associated with cognitive impairment when expressed as a
+continuous variable. HC, lower WHR (Q2), and AVI
+were also negatively associated with cognitive impairment. Considering the joint effect of BMI and HC, the
+risk of cognitive impairment was lowest among individuals with normal BMI levels and higher HC, as well as
+those with higher BMI levels and higher HC.
+In a study of Fuzhou, China, the prevalence of cognitive dysfunction in participants aged 70 years and older
+who were overweight (as defined by BMI) and centrally
+obese (as defined by WC) was 13.4% and 18.8%, respectively [56]. This result is consistent with our study. A
+Fig. 3  RCS curves for BMI, WC, HC, and AVI associated with cognitive impairment. A 4-knot RCS regression was used to characterize the nonlinear
+associations of BMI (A), WC (B), HC (C), and AVI (D) with cognitive impairment, controlling for confounders of age and sex. RCS, restricted cubic
+spline; BMI, body mass index; WC, waist circumference; HC, hip circumference; AVI, abdominal volume index
+Table 3  Analyses of BMI and HC with cognitive impairment
+a Data were adjusted for sex and age
+Characteristic
+Number of
+participants
+OR (95% CI)a
+P
+Normal BMI + Lower HC
+3068
+1.00 (reference)
+Lower BMI + Lower HC
+1333
+1.12 (0.96–1.31)
+0.152
+Higher BMI + Lower HC
+580
+1.01 (0.79–1.28)
+0.937
+Normal BMI + Higher HC
+2479
+0.83 (0.72–0.97)
+0.015
+Lower BMI + Higher HC
+191
+1.07 (0.75–1.53)
+0.715
+Higher BMI + Higher HC
+2943
+0.79 (0.68–0.92)
+0.002
+
+Page 11 of 14
+Liang et al. BMC Geriatrics          (2024) 24:925
+
+survey of older people in Indonesia similarly showed
+that obese people were less likely to have cognitive
+impairment than normal weight people [57]. And a
+study of elderly Caucasian adults in Poland showed that
+obesity did e [58]. In addition, a study of older people in
+China found that the risk of cognitive impairment was
+significantly higher in underweight people than in normal weight people, while overweight/obese people were
+less likely to develop cognitive impairment [59]. In our
+study, unadjusted for confounders, overweight/obese
+participants demonstrated a reduced risk of cognitive
+impairment (OR < 1). In addition, our study similarly
+found that underweight has a negative impact on cognitive function in older people.
+BMI is an important objective indicator for evaluating the nutritional status of older people. Previous studies have shown that older people with a BMI > 25 kg/m2
+are associated with good nutritional status and a low risk
+of cognitive impairment [60]. One other study reported
+that older people with a BMI ≥ 25 kg/m2 had a lower
+risk of dementia, and that a decrease in BMI has been
+shown to be a marker of early dementia [61]. These studies all point to the existence of an “obesity paradox” in
+older people. A study analyzed 72 papers from 1999 to
+2019 on the obesity paradox in older people. The results
+showed that most of the studies indicating the existence
+of an obesity paradox used BMI only as an indicator of
+obesity, ignoring the effects of body composition and
+fat distribution, and therefore inaccurately assessed the
+relationship between obesity and poor outcomes [62].
+Significant changes in body composition and fat distribution occur with age. Older people typically experience
+a loss of muscle [15] and a redistribution of adipose tissue from the periphery to the center [63]. These changes
+may cause BMI to underestimate visceral fat accumulation, so relying on BMI alone may misclassify metabolic
+risk [64, 65]. Our study found that a BMI of 25.5 kg/m2
+possessed minimal risk of cognitive impairment and, in
+conjunction with previous studies, suggests that the traditional way of defining BMI may not be applicable as
+an indicator of obesity in older people. As a result, some
+researchers have suggested selecting different indicators
+of obesity or modifying anthropometric measures that
+define obesity for older people. In a growing number of
+studies, BMI-defined obesity criteria in older people are
+being reevaluated, including their impact on all-cause
+mortality, cardiovascular disease, and cognitive function
+[14, 60, 66]. Meanwhile, researchers have also developed
+different obesity indicators to better assess the impact of
+“true obesity” on adverse health outcomes among older
+people [67–70]. In our study, there was a linear negative
+correlation between AVI, which is sensitive to abdominal obesity, and cognitive impairment. This phenomenon
+may be attributed to leptin, an adipocytokine expressed
+in adipose tissue, which has been shown to enhance
+learning and memory in animal models by modulating
+hippocampal synaptic plasticity and amyloid processes
+[71]. Many previous studies have also demonstrated the
+potent neurotrophic and neuroprotective effects of leptin in a variety of animal studies, as well as its protective
+effects against the development or progression of Alzheimer’s disease pathology [72–75].
+Overweight or obesity in older people may stem from
+increased muscle mass or fat accumulation outside the
+abdomen. Previous studies have shown that increased
+leg fat in older people is associated with improved glucose metabolism, ultimately reducing the risk of cognitive impairment [76]. In the present study, we found that
+HC was negatively associated with cognitive impairment
+using logistic regression analysis, a result that supports
+the idea that HC contributes to reducing the risk of cognitive impairment in older people. This phenomenon
+may be explained by the protective effect that larger HC
+has against high blood glucose levels, thus slowing cognitive decline in older people [40, 77, 78]. In addition,
+we found no significant differences in cognitive impairment between older people with higher WHR (Q3) and
+highest WHR (Q4) compared to the lowest WHR (Q1),
+while older people with lower WHR (Q2) showed better
+cognitive functioning. This suggested that older people
+who maintained a reasonable waist and hip circumference had the lowest risk of developing cognitive impairment. A study of 30,697 participants aged 60 to 70 also
+found that older people with lower WHR had a lower risk
+of cognitive decline [79]. In the RCS regression analysis,
+we found a nonlinear relationship between HC and cognitive impairment in an “N” shape. By segmental analysis
+of HC, we found that elevated HC was protective against
+cognitive impairment when HC was between 83 and 101.
+However, the risk of cognitive impairment did not change
+significantly with HC below 83 cm or above 101 cm.
+Finally, our study examined the joint effect of BMI and
+HC on cognitive impairment in older people, suggesting
+that those with normal/higher BMI levels and higher HC
+had the lowest risk of cognitive impairment.
+The results of this study showed that a BMI of 25.5 kg/
+m² and HC of 101 cm were the thresholds for the lowest
+risk of cognitive impairment, respectively. These cutoff
+values may be important in clinical practice, especially
+in the maintenance of cognitive function in older people. However, the use of single metrics may be biased,
+so we performed a joint analysis of BMI and HC. The
+study showed that older people with normal or high BMI
+had a lower risk of cognitive impairment in conditions
+of high HC (≥ 92 cm). Clinically, regular screening for
+body shape indicators such as BMI and HC, combined
+
+Page 12 of 14
+Liang et al. BMC Geriatrics          (2024) 24:925
+with assessment of other risk factors, can help to provide personalized health management recommendations for older people. The interaction between BMI and
+HC needs to be considered when weight management
+or body shape modification is undertaken to avoid an
+increased risk of cognitive impairment due to over-intervention. In addition, strict weight loss interventions may
+not be necessary for older people with higher HC and
+BMI, which is consistent with some of the literature supporting the protective effects of moderate overweight in
+older people [13, 14, 76, 79].
+Strengths and limitations
+This study has several strengths. First, weight, height,
+waist and hip circumference were measured by trained
+professionals, reducing misclassification bias in selfreported measurements. Second, we fully adjusted for
+covariates and conducted subgroup analyses to minimize the interference of potential confounders with the
+results. Third, this study is one of the few to simultaneously measure the associations between six obesity indicators (i.e., BMI, WC, HC, WHtR, WHR, and AVI) and
+cognitive impairment in a large sample, and found that
+lower WHR, AVI, and HC had a protective effect on
+cognitive impairment in older Chinese people. Fourth,
+the study used BMI and HC as continuous variables to
+explore their potential nonlinear associations with cognitive impairment, thereby identifying the optimal range
+of BMI and HC associated with lower cognitive impairment. Finally, we further investigated the joint effect of
+BMI and HC on cognitive impairment, and our results
+showed that people with normal or higher BMI but
+higher HC had the lowest risk of cognitive impairment,
+providing a valuable reference for rational body shape in
+older Chinese people.
+This study also has some limitations. (1) This study
+used 2018 CLHLS cross-sectional data, so causality could not be determined. (2) Although there was a
+four-year interval between the last assessments, some
+of the participants were part of the follow-up group and
+may have experienced learning effects from the MMSE
+test, which could have affected the results of the assessment of cognitive function. (3) The respondents’ cognitive impairment was assessed using the MMSE, which
+is not a clinical diagnostic tool, although it is highly
+correlated with cognitive impairment. (4) Self-reported
+health status or behavior due to personal memory deficits and subjective interpretations may introduce misclassification bias when adjusting for confounders. (5)
+Subjects excluded due to missing primary and dependent variables resulted in a reduced sample size, which
+may affect the accuracy of the analyzed results. (6) Due
+to the high missing rate of medication use data for diseases such as hypertension and diabetes in the original
+survey, if these variables are included in the analysis,
+the sample size may be significantly reduced, which
+may lead to selection bias and affect the reliability and
+representativeness of the results. Therefore, we did not
+include these potentially important confounders in
+our analysis. This may result in some of the confounders not being adequately controlled for, thus affecting
+the interpretation of the study results. (7) Because the
+apolipoprotein E (ApoE) genotype has a close association with cognitive function in older people, but the
+data limitations of this study do not make it possible to
+assess ApoE genotype.
+Conclusion
+This study suggests that WC, HC, lower WHR (Q2) and
+AVI are negatively associated with cognitive impairment in older Chinese people, whereas underweight
+is a risk factor for cognitive impairment. In addition,
+there was an “N” type nonlinear relationship between
+HC and cognitive impairment, with the highest and
+lowest risk HC values being approximately 83 and 101,
+respectively. The joint effects analysis showed that participants with higher or normal BMI but higher HC had
+the lowest risk of cognitive impairment, suggesting that
+both BMI and HC should be taken into account in the
+weight management of older Chinese people. Weight
+management programs for older people should focus
+on achieving and maintaining optimal weight and, in so
+doing, improving cognitive function.
+Supplementary Information
+The online version contains supplementary material available at https://​doi.​
+org/​10.​1186/​s12877-​024-​05521-0.
+Supplementary Material 1.
+Supplementary Material 2.
+Authors’ contributions
+ZZL conceived the study and contributed to original draft; WJ and LH contributed to the data cleaning and the interpretation of the data; HJC designed the
+study, analyzed the data and revised the article critically for important intellectual content, and determined the final version to be submitted. All authors
+reviewed the manuscript.
+Funding
+This work was supported by the National Natural Sciences Foundation of
+China (grant number 82304081).
+Data availability
+This study was based on the datasets from the Chinese Longitudinal Healthy
+Longevity Survey (CLHLS). The CLHLS data can be publicly obtained through
+the National Archive of Computerized Data on Aging (NACDA) (https://www.
+icpsr.umich.edu/icpsrweb/NACDA/series/487). The analysis data used are
+available from the first author on reasonable request.
+
+Page 13 of 14
+Liang et al. BMC Geriatrics          (2024) 24:925
+
+Declarations
+Ethics approval and consent to participate
+The data from CLHLS survey already obtained the ethical approval and
+informed consent and was approved by the Ethics Committee of Peking University (IRB00001052-13074). All participants or their surrogate respondents
+provided a written informed consent.
+Competing interests
+The authors declare no competing interests.
+Content for publication
+Not applicable.
+Author details
+1 Department of Epidemiology and Health Statistics, School of Public Health,
+Xinxiang Medical University, Xinxiang 453003, China. 2 Wenzhou Medical
+University, Wenzhou 325035, China. 3 Department of Vascular Surgery, the First
+Affiliated Hospital of Xinxiang Medical University, Weihui 453199, China.
+Received: 6 August 2024   Accepted: 28 October 2024
+References
+	1.
+2021 Alzheimer’s disease facts and figures. Alzheimers Dement.
+2021;17(3):327–406.
+	2.
+GBD 2016 Neurology Collaborators. Global, regional, and national burden
+of neurological disorders, 1990–2016: a systematic analysis for the global
+burden of disease study 2016. Lancet Neurol. 2019;18(5):459–80.
+	3.
+Jia L, Du Y, Chu L, Zhang Z, Li F, Lyu D, Li Y, Li Y, Zhu M, Jiao H, et al. Prevalence, risk factors, and management of dementia and mild cognitive
+impairment in adults aged 60 years or older in China: a cross-sectional
+study. Lancet Public Health. 2020;5(12):e661-71.
+	4.
+Rowe JW, Kahn RL. Successful aging. Gerontologist. 1997;37(4):433–40.
+	5.
+Mina T, Yew YW, Ng HK, Sadhu N, Wansaicheong G, Dalan R, Low DYW,
+Lam BCC, Riboli E, Lee ES, et al. Adiposity impacts cognitive function in
+Asian populations: an epidemiological and mendelian randomization
+study. Lancet Reg Health West Pac. 2023;33:100710.
+	6.
+Zhang J, Xu L, Li J, Sun L, Qin W. Association between obesity-related
+anthropometric indices and multimorbidity among older adults in Shandong, China: a cross-sectional study. BMJ Open. 2020;10(5): e036664.
+	7.
+Sturm R, Ringel JS, Andreyeva T. Increasing obesity rates and disability
+trends. Health Aff (Millwood). 2004;23(2):199–205.
+	8.
+Patel KV, Segar MW, Lavie CJ, Kondamudi N, Neeland IJ, Almandoz JP,
+Martin CK, Carbone S, Butler J, Powell-Wiley TM, et al. Diabetes Status
+Modifies the Association between Different Measures of Obesity and
+heart failure risk among older adults: a pooled analysis of communitybased NHLBI cohorts. Circulation. 2022;145(4):268–78.
+	9.
+Buch A, Marcus Y, Shefer G, Zimmet P, Stern N. Approach to obesity in the
+older population. J Clin Endocrinol Metab. 2021;106(9):2788–805.
+	10.	 Cai X, Liu M, Xu X, Zhang S, Huang R, Wang P, He L, Chen Z, Liu Z, Zhou Y,
+et al. Cardiovascular effects of weight loss in old adults with overweight/
+obesity according to change in skeletal muscle mass. J Cachexia Sarcopenia Muscle. 2024;15(1):342–51.
+	11.	 Fabbri E, Tanaka T, An Y, Zoli M, Bandinelli S, Guralnik JM, Simonsick EM,
+Boyd CM, Studenski SA, Harris TB, et al. Loss of weight in obese older
+adults: a biomarker of Impending Expansion of Multimorbidity? J Am
+Geriatr Soc. 2015;63(9):1791–7.
+	12.	 Ren Z, Li Y, Li X, Shi H, Zhao H, He M, Zha S, Qiao S, Pu Y, Liu H, et al. Associations of body mass index, waist circumference and waist-to-height
+ratio with cognitive impairment among Chinese older adults: based on
+the CLHLS. J Affect Disord. 2021;295:463–70.
+	13.	 Luo H, Li J, Zhang Q, Cao P, Ren X, Fang A, Liao H, Liu L. Obesity and the
+onset of depressive symptoms among middle-aged and older adults in
+China: evidence from the CHARLS. BMC Public Health. 2018;18(1):909.
+	14.	 Lv Y, Zhang Y, Li X, Gao X, Ren Y, Deng L, Xu L, Zhou J, Wu B, Wei Y,
+et al. Body mass index, waist circumference, and mortality in subjects
+older than 80 years: a mendelian randomization study. Eur Heart J.
+2024;45(24):2145–54.
+	15.	 Cruz-Jentoft AJ, Baeyens JP, Bauer JM, Boirie Y, Cederholm T, Landi F,
+Martin FC, Michel JP, Rolland Y, Schneider SM, et al. Sarcopenia: European
+consensus on definition and diagnosis: report of the European Working
+Group on Sarcopenia in Older people. Age Ageing. 2010;39(4):412–23.
+	16.	 Rothman KJ. BMI-related errors in the measurement of obesity. Int J Obes
+(Lond). 2008;32(Suppl 3):S56–59.
+	17.	 Ness-Abramof R, Apovian CM. Waist circumference measurement in clinical practice. Nutr Clin Pract. 2008;23(4):397–404.
+	18.	 Ehrampoush E, Arasteh P, Homayounfar R, Cheraghpour M, Alipour M,
+Naghizadeh MM, Hadibarhaghtalab M, Davoodi SH, Askari A, Razaz JM.
+New anthropometric indices or old ones: which is the better predictor of
+body fat? Diabetes Metab Syndr. 2017;11(4):257–63.
+	19.	 Lissner L, Björkelund C, Heitmann BL, Seidell JC, Bengtsson C. Larger hip
+circumference independently predicts health and longevity in a Swedish
+female cohort. Obes Res. 2001;9(10):644–6.
+	20.	 Lean ME, Han TS, Morrison CE. Waist circumference as a measure for
+indicating need for weight management. BMJ. 1995;311(6998):158–61.
+	21.	 Heitmann BL, Frederiksen P, Lissner L. Hip circumference and cardiovascular morbidity and mortality in men and women. Obes Res.
+2004;12(3):482–7.
+	22.	 Canoy D, Boekholdt SM, Wareham N, Luben R, Welch A, Bingham S,
+Buchan I, Day N, Khaw KT. Body fat distribution and risk of coronary heart
+disease in men and women in the European prospective investigation
+into Cancer and Nutrition in Norfolk cohort: a population-based prospective study. Circulation. 2007;116(25):2933–43.
+	23.	 Zhang C, Rexrode KM, van Dam RM, Li TY, Hu FB. Abdominal obesity and
+the risk of all-cause, cardiovascular, and cancer mortality: sixteen years of
+follow-up in US women. Circulation. 2008;117(13):1658–67.
+	24.	 Parker ED, Pereira MA, Stevens J, Folsom AR. Association of hip circumference with incident diabetes and coronary heart disease: the atherosclerosis risk in communities study. Am J Epidemiol. 2009;169(7):837–47.
+	25.	 Heitmann BL, Lissner L. Hip hip Hurrah! Hip size inversely related to heart
+disease and total mortality. Obes Rev. 2011;12(6):478–81.
+	26.	 Cameron AJ, Magliano DJ, Söderberg S. A systematic review of the
+impact of including both waist and hip circumference in risk models for cardiovascular diseases, diabetes and mortality. Obes Rev.
+2013;14(1):86–94.
+	27.	 Østergaard JN, Grønbaek M, Angquist L, Schnohr P, Sørensen TI, Heitmann
+BL. Combined influence of leisure-time physical activity and hip circumference on all-cause mortality. Obes (Silver Spring). 2013;21(1):E78–85.
+	28.	 Hu Y, Xia C, Chen H, Song W, Zhou Q, Yang X, Yang J. Sex differences in the
+association between different obesity parameters and cognitive function in older adults: a cross-sectional study in rural China. Gerontology.
+2022;68(7):799–807.
+	29.	 Jove AG, Holmes HM, Tan MC, El-Serag HB, Thrift AP. Inverse association
+between gluteofemoral obesity and risk of non-cardia gastric intestinal
+metaplasia. Clin Gastroenterol Hepatol. 2023;21(1):64–71.
+	30.	 Kendall BJ, Rubenstein JH, Cook MB, Vaughan TL, Anderson LA, Murray
+LJ, Shaheen NJ, Corley DA, Chandar AK, Li L, et al. Inverse Association
+between gluteofemoral obesity and risk of Barrett’s esophagus in a
+pooled analysis. Clin Gastroenterol Hepatol. 2016;14(10):1412-e14191413.
+	31.	 Gustafson D. BMI and dementia: feast or famine for the brain? Lancet
+Diabetes Endocrinol. 2015;3(6):397–8.
+	32.	 Pedditzi E, Peters R, Beckett N. The risk of overweight/obesity in mid-life
+and late life for the development of dementia: a systematic review and
+meta-analysis of longitudinal studies. Age Ageing. 2016;45(1):14–21.
+	33.	 Norton S, Matthews FE, Barnes DE, Yaffe K, Brayne C. Potential for primary
+prevention of Alzheimer’s disease: an analysis of population-based data.
+Lancet Neurol. 2014;13(8):788–94.
+	34.	 Albanese E, Launer LJ, Egger M, Prince MJ, Giannakopoulos P, Wolters
+FJ, Egan K. Body mass index in midlife and dementia: systematic review
+and meta-regression analysis of 589,649 men and women followed in
+longitudinal studies. Alzheimers Dement (Amst). 2017;8:165–78.
+	35.	 Xu X, Xu Y, Shi R. Association between obesity, physical activity, and
+cognitive decline in Chinese middle and old-aged adults: a mediation
+analysis. BMC Geriatr. 2024;24(1):54.
+	36.	 Zhang W, Chen Y, Chen N. Body mass index and trajectories of the
+cognition among Chinese middle and old-aged adults. BMC Geriatr.
+2022;22(1):613.
+
+Page 14 of 14
+Liang et al. BMC Geriatrics          (2024) 24:925
+	37.	 Kim G, Choi S, Lyu J. Body mass index and trajectories of cognitive decline
+among older Korean adults. Aging Ment Health. 2020;24(5):758–64.
+	38.	 Momtaz YA, Haron SA, Hamid TA, Ibrahim R, Tanjani PT. Body Mass Index (BMI)
+and cognitive functions in later life. Curr Alzheimer Res. 2018;15(2):195–200.
+	39.	 Banack HR, Kaufman JS. The obesity paradox: understanding the effect of
+obesity on mortality among individuals with cardiovascular disease. Prev
+Med. 2014;62:96–102.
+	40.	 Seidell JC, Han TS, Feskens EJ, Lean ME. Narrow hips and broad waist
+circumferences independently contribute to increased risk of non-insulindependent diabetes mellitus. J Intern Med. 1997;242(5):401–6.
+	41.	 Biessels GJ, Despa F. Cognitive decline and dementia in diabetes
+mellitus: mechanisms and clinical implications. Nat Rev Endocrinol.
+2018;14(10):591–604.
+	42.	 Gu D, Dupre ME, Sautter J, Zhu H, Liu Y, Yi Z. Frailty and mortality among Chinese at advanced ages. J Gerontol B Psychol Sci Soc Sci. 2009;64(2):279–89.
+	43.	 Yi W, Xuan L, Zakaly HMH, Markovic V, Miszczyk J, Guan H, Zhou PK, Huang
+R. Association between per- and polyfluoroalkyl substances (PFAS) and
+depression in U.S. adults: a cross-sectional study of NHANES from 2005 to
+2018. Environ Res. 2023;238(Pt 2):117188.
+	44.	 Janssen KJ, Donders AR, Harrell FE Jr, Vergouwe Y, Chen Q, Grobbee DE,
+Moons KG. Missing covariate data in medical research: to impute is better
+than to ignore. J Clin Epidemiol. 2010;63(7):721–7.
+	45.	 Hu M, Shu X, Yu G, Wu X, Välimäki M, Feng H. A risk prediction model based
+on machine learning for cognitive impairment among chinese communitydwelling elderly people with normal cognition: Development and Validation Study. J Med Internet Res. 2021;23(2): e20298.
+	46.	 Zhang Y, Xiong Y, Yu Q, Shen S, Chen L, Lei X. The activity of daily living (ADL)
+subgroups and health impairment among Chinese elderly: a latent profile
+analysis. BMC Geriatr. 2021;21(1):30.
+	47.	 Gunstad J, Lhotsky A, Wendell CR, Ferrucci L, Zonderman AB. Longitudinal
+examination of obesity and cognitive function: results from the Baltimore
+longitudinal study of aging. Neuroepidemiology. 2010;34(4):222–9.
+	48.	 Ma W, Zhang H, Wu N, Liu Y, Han P, Wang F, Wang J, Xie F, Niu S, Hu H, et al.
+Relationship between obesity-related anthropometric indicators and
+cognitive function in Chinese suburb-dwelling older adults. PLoS ONE.
+2021;16(10): e0258922.
+	49.	 Chen C, Lu FC. The guidelines for prevention and control of overweight and
+obesity in Chinese adults. Biomed Environ Sci. 2004;17 Suppl:1–36.
+	50.	 Lv X, Li W, Ma Y, Chen H, Zeng Y, Yu X, Hofman A, Wang H. Cognitive decline
+and mortality among community-dwelling Chinese older people. BMC
+Med. 2019;17(1):63.
+	51.	 Chen Y, Ji H, Shen Y, Liu D. Chronic disease and multimorbidity in the
+Chinese older adults’ population and their impact on daily living ability: a
+cross-sectional study of the Chinese longitudinal healthy longevity survey
+(CLHLS). Arch Public Health. 2024;82(1):17.
+	52.	 Sun J, Lin J, Shen W, Ding P, Yang W, Huang L, Chen H. Associations of body
+mass index, waist circumference and the weight-adjusted waist index with
+daily living ability impairment in older Chinese people: a cross-sectional
+study of the Chinese longitudinal healthy longevity survey. Diabetes Obes
+Metab. 2024;26(9):4069–77.
+	53.	 Huang M, Liu K, Liang C, Wang Y, Guo Z. The relationship between living
+alone or not and depressive symptoms in older adults: a parallel mediation
+effect of sleep quality and anxiety. BMC Geriatr. 2023;23(1):506.
+	54.	 Chen ZT, Wang XM, Zhong YS, Zhong WF, Song WQ, Wu XB. Association of
+changes in waist circumference, waist-to-height ratio and weight-adjustedwaist index with multimorbidity among older Chinese adults: results from
+the Chinese longitudinal healthy longevity survey (CLHLS). BMC Public
+Health. 2024;24(1):318.
+	55.	 Zhang X, Ma N, Lin Q, Chen K, Zheng F, Wu J, Dong X, Niu W. Body roundness index and all-cause Mortality among US adults. JAMA Netw Open.
+2024;7(6):e2415051.
+	56.	 Liu Z, Yang H, Chen S, Cai J, Huang Z. The association between body mass
+index, waist circumference, waist–hip ratio and cognitive disorder in older
+adults. J Public Health. 2018;41(2):305–12.
+	57.	 Vidyanti AN, Hardhantyo M, Wiratama BS, Prodjohardjono A, Hu CJ. Obesity
+is less frequently associated with cognitive impairment in elderly individuals:
+a cross-sectional study in Yogyakarta, Indonesia. Nutrients. 2020;12(2):367.
+	58.	 Puzianowska-Kuznicka M, Kurylowicz A, Wierucki L, Owczarek AJ, Jagiello
+K, Mossakowska M, Zdrojewski T, Chudek J. Obesity in Caucasian Seniors
+on the Rise: Is It Truly Harmful? Results of the PolSenior2 Study. Nutrients.
+2022;14(21):4621.
+	59.	 Dong W, Kan L, Zhang X, Li M, Wang M, Cao Y. Association between body
+mass index and cognitive impairment in Chinese older adults. Front Public
+Health. 2023;11: 1255101.
+	60.	 Coin A, Veronese N, De Rui M, Mosele M, Bolzetta F, Girardi A, Manzato E,
+Sergi G. Nutritional predictors of cognitive impairment severity in demented
+elderly patients: the key role of BMI. J Nutr Health Aging. 2012;16(6):553–6.
+	61.	 Atti AR, Palmer K, Volpato S, Winblad B, De Ronchi D, Fratiglioni L. Late-life
+body mass index and dementia incidence: nine-year follow-Up data from
+the Kungsholmen project. J Am Geriatr Soc. 2008;56(1):111–6.
+	62.	 Bosello O, Vanzo A. Obesity paradox and aging. Eat Weight Disord.
+2021;26(1):27–35.
+	63.	 Nguyen TT, Corvera S. Adipose tissue as a linchpin of organismal ageing. Nat
+Metab. 2024;6(5):793–807.
+	64.	 Gao M, Lv J, Yu C, Guo Y, Bian Z, Yang R, Du H, Yang L, Chen Y, Li Z, et al.
+Metabolically healthy obesity, transition to unhealthy metabolic status, and
+vascular disease in Chinese adults: a cohort study. PLoS Med. 2020;17(10):
+e1003351.
+	65.	 Lin L, Zhang J, Jiang L, Du R, Hu C, Lu J, Wang T, Li M, Zhao Z, Xu Y, et al.
+Transition of metabolic phenotypes and risk of subclinical atherosclerosis
+according to BMI: a prospective study. Diabetologia. 2020;63(7):1312–23.
+	66.	 Antonopoulos AS, Oikonomou EK, Antoniades C, Tousoulis D. From the
+BMI paradox to the obesity paradox: the obesity-mortality association in
+coronary heart disease. Obes Rev. 2016;17(10):989–1000.
+	67.	 Zhang A, Li Y, Ma S, Bao Q, Sun J, Cai S, Li M, Su Y, Cheng B, Dong J, et al.
+Conicity-index predicts all-cause mortality in Chinese older people: a
+10-year community follow-up. BMC Geriatr. 2022;22(1):971.
+	68.	 Wang D, Chen Z, Wu Y, Ren J, Shen D, Hu G, Mao C. Association between
+two novel anthropometric measures and type 2 diabetes in a Chinese
+population. Diabetes Obes Metab. 2024;26(8):3238–47.
+	69.	 Sun J, Lin J, Shen W, Ding P, Yang W, Huang L, Chen H. Associations of body
+mass index, waist circumference and the weight-adjusted waist index with
+daily living ability impairment in older Chinese people: a cross-sectional
+study of the Chinese longitudinal healthy longevity survey. Diabetes Obes
+Metab. 2024;26(9):4069–77.
+	70.	 Ji M, Zhang S, An R. Effectiveness of a body shape index (ABSI) in predicting
+chronic diseases and mortality: a systematic review and meta-analysis. Obes
+Rev. 2018;19(5):737–59.
+	71.	 Oomura Y, Hori N, Shiraishi T, Fukunaga K, Takeda H, Tsuji M, Matsumiya T,
+Ishibashi M, Aou S, Li XL, et al. Leptin facilitates learning and memory performance and enhances hippocampal CA1 long-term potentiation and CaMK
+II phosphorylation in rats. Peptides. 2006;27(11):2738–49.
+	72.	 Ahima RS, Bjorbaek C, Osei S, Flier JS. Regulation of neuronal and glial
+proteins by leptin: implications for Brain Development*. Endocrinology.
+1999;140(6):2755–62.
+	73.	 Zhang F, Chen J. Leptin protects hippocampal CA1 neurons against
+ischemic injury. J Neurochem. 2008;107(2):578–87.
+	74.	 Zhang F, Wang S, Signore AP, Chen J. Neuroprotective effects of leptin
+against ischemic injury induced by oxygen-glucose deprivation and transient cerebral ischemia. Stroke. 2007;38(8):2329–36.
+	75.	 Lee S, Byun MS, Yi D, Ahn H, Jung G, Jung JH, Chang YY, Kim K, Choi H,
+Choi J, et al. Plasma leptin and Alzheimer Protein pathologies among older
+adults. JAMA Netw Open. 2024;7(5):e249539.
+	76.	 Snijder MB, Dekker JM, Visser M, Bouter LM, Stehouwer CD, Yudkin JS, Heine
+RJ, Nijpels G, Seidell JC. Trunk fat and leg fat have independent and opposite
+associations with fasting and postload glucose levels: the Hoorn study.
+Diabetes Care. 2004;27(2):372–7.
+	77.	 Snijder MB, Dekker JM, Visser M, Bouter LM, Stehouwer CD, Kostense PJ,
+Yudkin JS, Heine RJ, Nijpels G, Seidell JC. Associations of hip and thigh
+circumferences independent of waist circumference with the incidence of
+type 2 diabetes: the Hoorn Study. Am J Clin Nutr. 2003;77(5):1192–7.
+	78.	 Seidell JC, Pérusse L, Després JP, Bouchard C. Waist and hip circumferences
+have independent and opposite effects on cardiovascular disease risk factors: the Quebec Family Study. Am J Clin Nutr. 2001;74(3):315–21.
+	79.	 Lin WY. Associations of five obesity indicators with cognitive performance in
+30,697 Taiwan Biobank participants. BMC Geriatr. 2022;22(1):839.
+Publisher’s Note
+Springer Nature remains neutral with regard to jurisdictional claims in published maps and institutional affiliations.

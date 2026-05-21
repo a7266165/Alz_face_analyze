@@ -1,0 +1,39 @@
+{
+  "title": "Vision Transformer-Based Segmentation of Abdominal Subcutaneous and Visceral Fat on MRI.",
+  "authors": [
+    "Kassani SH",
+    "Patel K",
+    "Commean PK",
+    "Naghashzadeh M",
+    "Dolatshahi M",
+    "Rahmani F",
+    "Wu S",
+    "Liu J",
+    "Lloyd L",
+    "Nguyen C",
+    "Hantler N",
+    "McBee-Kemper A",
+    "Schindler S",
+    "Brier MR",
+    "Ippolito JE",
+    "Sirlin C",
+    "Mittendorfer B",
+    "Morris JC",
+    "Benzinger TLS",
+    "Raji CA"
+  ],
+  "year": 2026,
+  "abstract": "The purpose of this study is to validate a deep learning-based vision transformer for automated quantification and segmentation of abdominal adipose tissue from T1-weighted MRI. This study included abdominal T1 MRI volumes from 107 participants (mean age, 49.9 years; 35 males, 72 females; BMI range, 18.2-49.6) who were midlife adults enrolled in a prospective study assessing the link between abdominal adiposity and biomarkers of dementia. For each abdominal image, visceral and subcutaneous adipose tissues were annotated by an expert reader as the ground truth. Inter- and intra-reader reliability were assessed to establish ground truth validity. A deep learning-based vision transformer was trained using a fivefold cross-validation scheme, and its performance was evaluated using various segmentation metrics against the manually annotated ground truths. The SwinUNETR48 model achieved average Dice coefficients of 96.56% ± 2.38% (p < .001) for SAT and 88.35% ± 8.82% (p < .001) for VAT in cross-validation. The model generalized well to different adiposity and body sizes within the abdominal cavity. Automated segmentation of abdominal adipose tissue provides a promising option for facilitating large-scale investigation of abdominal fat distribution on MRI.",
+  "doi": "10.1007/s10278-026-01970-8",
+  "arxiv_id": null,
+  "venue": "Journal of imaging informatics in medicine",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "42067725"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.1007/s10278-026-01970-8"
+}

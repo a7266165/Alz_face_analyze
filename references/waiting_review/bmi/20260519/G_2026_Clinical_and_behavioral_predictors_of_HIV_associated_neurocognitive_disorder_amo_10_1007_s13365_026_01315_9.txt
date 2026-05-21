@@ -1,0 +1,1936 @@
+RESEARCH
+Journal of NeuroVirology           (2026) 32:18
+https://doi.org/10.1007/s13365-026-01315-9
+
+ Kesheng Wang
+kesheng@mailbox.sc.edu
+1
+Department of Psychology, College of Arts and Sciences,
+Emory University, Atlanta, GA 30322, USA
+2
+South Carolina SmartState Center for Healthcare Quality,
+Arnold School of Public Health, University of South
+Carolina, Columbia, Columbia, SC 29208, USA
+3
+Department of Health Promotion, Education, and Behavior,
+Arnold School of Public Health, University of South
+Carolina, Columbia, SC 29208, USA
+4
+Department of Biobehavioral Health & Nursing Science,
+College of Nursing, University of South Carolina, 1601
+Greene Street, Columbia, SC 29208, USA
+5
+Health Affairs Institute, Health Sciences Center, West
+Virginia University, Morgantown, WV 26506, USA
+Abstract
+This study examined behavioral, clinical, and hematologic factors associated with HIV-associated neurocognitive disorder
+(HAND) among people with HIV (PWH) using the International HIV Dementia Scale (IHDS) within a randomized clini­
+cal trial. This secondary analysis used data from the Hospital Visit as Opportunity for Prevention and Engagement for
+HIV-Infected Drug Users (HOPE) study, which enrolled 801 PWH who use substances from 11 U.S. hospitals. CD4 cell
+count, HIV-1 viral load, Global Severity Index (GSI), Global Assessment of Functioning (GAF), and Physical and Mental
+Component Scores (PCS, MCS) were assessed at baseline, 6 months, and 12 months. HAND was defined as an IHDS
+score ≤ 10. Multivariable linear and logistic regression models were used to identify baseline correlates of IHDS score
+and HAND, respectively. Linear mixed models were applied to evaluate the longitudinal changes in clinical outcomes.
+HAND prevalence was 76.3% (84.2% for females and 72.5% for males). Multivariable linear models revealed that obe­
+sity, CD4 cell counts < 200 cells/ µL, higher hemoglobin level and hematocrit, and higher GAF scores were significantly
+associated with IHDS score (p < 0.05). Furthermore, logistic models showed that recent alcohol use, obesity, viral suppres­
+sion (≤ 200 copies/mL), hemoglobin and hematocrit levels, and GAF scores were associated with lower odds of HAND,
+whereas platelet count was linked to higher odds. Longitudinal analyses demonstrated significant increases in hemoglobin,
+hematocrit, PCS, and MCS over time, alongside decreases in platelet count and GSI. Compared with participants without
+HAND, those with HAND consistently exhibited lower hemoglobin, hematocrit, GAF, and GSI scores, and higher plate­
+let counts and MCS scores across follow-up. These findings underscore the complex interplay between hematologic and
+mental health, substance use, and functional status in shaping neurocognitive outcomes among PWH. Targeting modifi­
+able hematologic, behavioral, and psychosocial factors may help reduce HAND risk and improve long-term cognitive and
+functional outcomes. ClinicalTrials.gov ID: NCT01612169.
+Keywords  HIV-associated neurocognitive disorder (HAND) · International HIV Dementia Scale (IHDS) · Substance
+use · Hematologic biomarkers · Cognitive function · Longitudinal analysis
+Received: 3 January 2026 / Revised: 31 March 2026 / Accepted: 24 April 2026
+© The Author(s) 2026
+Clinical and behavioral predictors of HIV-associated neurocognitive
+disorder among people with HIV who use substances: a secondary
+analysis of the HOPE trial
+Gloria Wang1 · Xueying Yang2,3 · Kesheng Wang2,4 · Xiaoming Li2,3 · Zheng Dai5 · Shan Qiao2,3
+1 3
+
+Journal of NeuroVirology           (2026) 32:18
+Introduction
+Despite the transformative effect of combination antiretro­
+viral therapy (ART) on the survival and general health of
+people with HIV (PWH), neurocognitive complications
+remain a persistent and significant concern. HIV-associated
+neurocognitive disorder (HAND) continues to be a prevalent
+comorbidity among PWH, with substantial consequences for
+ART adherence, everyday functioning, employment, driv­
+ing performance, and health-related quality of life (Saloner
+and Cysique 2017). Globally, meta-analyses and system­
+atic reviews reflect wide variability in HAND prevalence
+estimates typically in the range of ~ 30–50%, but spanning
+widely from ~ 7% to ~ 88% across different settings, under­
+scoring heterogeneity in methodology, diagnostic criteria,
+and population characteristics (Ellis et al. 2023; Mekuriaw
+et al. 2023; Wei et al. 2020).
+The concept of HAND encompasses a spectrum of
+neurocognitive impairment among PWH, ranging from
+asymptomatic neurocognitive impairment (ANI) to mild
+neurocognitive disorder (MND) and HIV-associated demen­
+tia (HAD), as defined by the Frascati criteria (Antinori et al.
+2007). Although HAD has become uncommon in the ART
+era, milder forms (ANI and MND) remain prevalent and
+may impact functional capacity (Ellis et al. 2023; Fatokun
+et al. 2025). Estimates of HAND prevalence varies widely.
+For example, one meta-analysis of Frascati-based studies
+reported a pooled prevalence of 44.9% (Wei et al. 2020),
+while other reviews have reported similarly broad ranges
+across global and regional samples (Mekuriaw et al. 2023;
+Zenebe et al. 2022). This variability reflects differences in
+population characteristics (e.g., age, education, comorbid­
+ity burden), HIV-related clinical factors (e.g., nadir CD4,
+ART adherence), and methodological factors, including the
+diagnostic instruments and thresholds used (Nightingale et
+al. 2023; Ellis et al. 2023).
+The risk architecture of HAND is multifactorial, encom­
+passing HIV-specific, demographic, psychiatric, vascular,
+metabolic, and behavioral domains. Among the most con­
+sistently identified predictors is nadir CD4 + T-cell count, a
+marker of historical immunosuppression that reflects cumu­
+lative central nervous system (CNS) injury prior to initiation
+of ART. Ronald J. Ellis et al. (2011) demonstrated that higher
+nadir CD4 counts were associated with substantially lower
+odds of neuropsychological impairment, underscoring the
+critical importance of early ART initiation (Ellis et al. 2011).
+More recent work by Ronald J. Ellis et al. (2023) further
+highlights the mechanistic complexity of HAND, empha­
+sizing the roles of persistent immune activation, residual
+viral replication, and co-occurring metabolic and vascular
+comorbidities in driving neurocognitive decline despite
+virologic suppression (Ellis et al. 2023). Demographic and
+psychosocial factors also contribute substantially to HAND
+risk. Aging-related processes, including neurodegeneration,
+increased cerebrovascular burden, and reduced neural plas­
+ticity, interact with HIV-associated neuropathology to exac­
+erbate cognitive vulnerability in older PWH (Saloner and
+Cysique 2017). In addition, psychiatric comorbidities, par­
+ticularly major depressive disorder and anxiety disorders,
+are highly prevalent among PWH and are consistently asso­
+ciated with poorer cognitive outcomes. These associations
+are thought to be mediated through interconnected inflam­
+matory, neuroendocrine, and behavioral pathways (Fatokun
+et al. 2025; Salis et al. 2024).
+Cardiometabolic and vascular disease represent a second
+major axis of risk for HAND in the contemporary ART era.
+Conditions such as hypertension, type 2 diabetes, metabolic
+syndrome, and obesity are increasingly prevalent with aging
+among PWH and are independently associated with mecha­
+nisms that plausibly accelerate neurocognitive decline,
+including white matter abnormalities, small-vessel cerebro­
+vascular injury, and impaired neurovascular coupling (Ellis
+et al. 2023; Yu et al. 2019). Evidence from meta-analyses
+and longitudinal cohort studies indicates that vascular risk
+factors are linked to substantially higher odds of HAND, as
+well as poorer performance across executive function, pro­
+cessing speed, and motor domains (McIntosh et al. 2021; Yu
+et al. 2019). Behavioral factors, particularly substance use,
+represent a critical and modifiable domain within this risk
+architecture. Stimulant use (e.g., cocaine) has been shown to
+potentiate neuroinflammation and front striatal injury, with
+several cohort studies suggesting additive or synergistic
+effects with HIV on neurocognitive impairment, although
+findings remain heterogeneous and are often influenced by
+co-occurring psychiatric conditions (Kennedy and Zerbo
+2014; Meade et al. 2015). Similarly, alcohol use among
+virally suppressed individuals has demonstrated incon­
+sistent associations with neurocognitive outcomes, likely
+reflecting variability in dose, patterns of consumption, tim­
+ing, and comorbidity profiles (Sanmartí et al. 2021). These
+findings support the inclusion of substance use variables as
+key behavioral exposures in HAND research.
+Psychosocial and functional factors are likewise integral
+to understanding HAND. Psychiatric symptoms and psy­
+chological distress are highly prevalent among PWH and
+are consistently linked to worse cognitive outcomes through
+interconnected inflammatory, neuroendocrine, and behav­
+ioral pathways (Nightingale et al. 2023; Salis et al. 2024).
+Moreover, functional measures, such as the Global Assess­
+ment of Functioning (GAF) and health-related quality-oflife indices such as physical component scores (PCS) and
+mental component scores (MCS), capture the real-world
+impact of cognitive impairment and align with established
+HAND frameworks that emphasize both neurocognitive
+1 3
+   18
+
+Page 2 of 16
+
+Journal of NeuroVirology           (2026) 32:18
+performance and functional decline (Saloner and Cysique
+2017). Additionally, the Global Severity Index (GSI) pro­
+vides an index of psychiatric distress that is frequently incor­
+porated into HAND-related research (Rytilä-Manninen et
+al. 2016). Accordingly, inclusion of these measures enables
+a more comprehensive assessment of both determinants and
+consequences of HAND.
+Emerging evidence also highlights hematologic indices
+as accessible systemic biomarkers linked to HAND. A land­
+mark study by Sanjay Kallianpur et al. (2016) demonstrated
+that anemia was associated with incident HAND, while
+elevated mean corpuscular volume (MCV) and mean cor­
+puscular hemoglobin (MCH) were correlated with poorer
+cognitive performance, even after adjustment for poten­
+tial confounders (Kallianpur et al. 2016). These associa­
+tions may reflect underlying mechanisms such as chronic
+hypoxia, iron dysregulation, mitochondrial dysfunction, and
+systemic inflammation (Ellis et al. 2023; Kallianpur et al.
+2016).
+Given the high prevalence and burden of HAND, effec­
+tive screening for neurocognitive impairment and its func­
+tional impact is critical. The International HIV Dementia
+Scale (IHDS) is a brief, cross-cultural bedside screening
+tool that has demonstrated feasibility and utility across
+diverse settings, including its original validation in the U.S.
+and Uganda (Sacktor et al. 2005). Owing to its brevity and
+ease of administration, the IHDS is widely used to identify
+individuals at risk for HAND, particularly in clinical and
+research contexts where comprehensive neuropsychological
+testing is not feasible. A raw IHDS cut-point of ≤ 10 is com­
+monly applied as a standard screening threshold (Goodkin
+et al. 2014; Marin-Webb et al. 2016; Milanini et al. 2018;
+Nascimento et al. 2025; Riedel et al. 2006; Rosca et al.
+2021) although subsequent studies have reported variability
+in sensitivity and specificity depending on the population
+and cut-point used (Haddow et al. 2013; Marin-Webb et al.
+2016; Milanini et al. 2018; Rosca et al. 2021). For example,
+a cut-off of ≤ 11 may improve sensitivity, whereas ≤ 10 may
+increase specificity (Marin-Webb et al. 2016). While the
+IHDS does not provide a definitive diagnosis and may be
+less sensitive for milder forms of impairment, it remains a
+practical and valuable screening instrument for identifying
+individuals who may benefit from further evaluations.
+Despite substantial progress, critical gaps remain.
+Prevalence of HAND estimates vary widely across tools
+and contexts; the contribution of modifiable systemic fac­
+tors particularly hematologic and cardiometabolic mark­
+ers remains under-characterized; and the cognitive effects
+of using substances such as alcohol and stimulants are
+insufficiently understood in virally suppressed populations
+(Meade et al. 2015). Few adequately powered longitudinal
+or interventional studies integrate multi-domain outcomes
+spanning cognition, functioning, mental health, biomarkers.
+Moreover, evolving ART landscapes and earlier treatment
+initiation necessitate updated frameworks to disentangle
+HIV-specific, vascular, aging-related, and cognitive-reserve
+mechanisms (Ellis et al. 2023; McIntosh et al. 2021; Night­
+ingale et al. 2023). The present study aimed to examine
+how HAND relates to routine hematologic markers includ­
+ing hemoglobin, hematocrit, and platelet count, substance
+use, psychosocial, and functional measures in a randomized
+clinical trial.
+Methods
+Data source
+This study is a secondary data analysis from the Hospital
+Visit as Opportunity for Prevention and Engagement for
+HIV-Infected Drug Users (HOPE) randomized clinical trial
+conducted in the National Institute on Drug Abuse (NIDA)
+Clinical Trials Network (CTN-0049), which evaluated the
+effectiveness of a brief intervention to improve HIV care
+engagement among PWH who use substances across 11
+hospitals in the United States (Metsch et al. 2016). The
+HOPE trial enrolled 801 PWH who use substances from 11
+U.S. hospitals between 2012 and 2017. Participants must
+meet all the following criteria: (1) Be hospitalized and live
+with HIV at the time of recruitment. (2) Be 18 years of age
+or older. (3) Meet at least one of the following clinical con­
+ditions: (a) Have an AIDS-defining illness during the cur­
+rent hospital admission; (b) Have a CD4 count < 350 cells/
+µL and HIV viral load > 200 copies/mL within the past 6
+months; or (c) Have a CD4 count ≤ 500 cells/µL and viral
+load > 200 copies/mL (or unknown) within the past 12
+months, with the Site Principal Investigator (PI) determin­
+ing that the patient likely has a current viral load > 200
+copies/mL, is not effectively taking antiretroviral therapy
+(ART), and requires ART. (4). Report or have documented
+opioid use, stimulant use, or heavy alcohol use within the
+past 12 months. (5) Have a Karnofsky Performance Status
+score ≥ 60. (6). Be able to provide informed consent, com­
+plete baseline procedures, provide locator information and
+HIPAA authorization, reside locally for follow-up, and com­
+municate in English. Individuals will be excluded if they:
+(1) Do not meet the inclusion criteria. (2) Are unable to
+provide informed consent due to cognitive impairment. (3)
+Are withdrawn at the discretion of the Site PI, with approval
+from the Lead Investigator. For this secondary analysis,
+we included participants with complete baseline data on
+the IHDS, hematologic variables, and psychosocial mea­
+sures. Participants were assessed at baseline, 6 months, and
+12 months, with standardized clinical, psychosocial, and
+1 3
+Page 3 of 16
+   18
+
+Journal of NeuroVirology           (2026) 32:18
+hematocrit (%), and platelet count (×10⁹/L), all measured
+using standard hospital laboratory assays. Lower hemoglo­
+bin and platelet levels have been associated with greater
+cognitive impairment in PWH, supporting their inclusion
+as potential predictors. Clinical labs data were measured
+at baseline, 6 and 12 months. Body mass index (BMI) was
+calculated as weight (kg) divided by square of height (m²),
+with obesity defined as BMI ≥ 30 kg/m².
+Psychosocial and functional measures
+Psychosocial and functional measures were included given
+their established associations with neurocognitive impair­
+ment and HAND among PWH, and providing a more
+comprehensive assessment of factors potentially related to
+neurocognitive outcomes.
+Global severity index (GSI)  Psychological distress was mea­
+sured using the GSI from the Brief Symptom Inventory
+(BSI-18), which is a brief, easy-to-administer, abbreviated
+version of the BSI (Derogatis 2011; Recklitis et al. 2006).
+The BSI-18 consists of 18 five-point scale items (0 = “not
+at all,” to 4 = “extremely”) evaluating the degree of distress
+experienced over the past seven days. The sum of responses
+yields a GSI. The GSI is a continuous score reflecting over­
+all psychological symptom burden, with higher values indi­
+cating greater distress. The GSI was measured at baseline, 6
+months, and 12 months.
+Global assessment of functioning (GAF)  Functional status
+was evaluated with the GAF scale, a clinician-rated mea­
+sure ranging from 0 to 100 that captures psychological,
+social, and occupational functioning (Aas 2010; Yamauchi
+et al. 2001). Higher GAF scores indicate better overall func­
+tioning. GAF assessments were conducted at baseline, 6
+months, and 12 months.
+Perceived health  Both perceived physical and mental
+health were assessed using the SF-12 health survey, a vali­
+dated 12-item instrument derived from the SF-36. Items
+cover domains such as physical functioning, physical role,
+bodily pain, general health, vitality, social functioning, role
+emotional, and mental health (Ware et al. 1996). Responses
+are used to calculate PCS and MCS, with higher scores
+reflecting better perceived health. SF-12 was administered
+at baseline, 6 months, and 12 months.
+Substance use and health behaviors
+Substance use variables were included due to their known
+relevance to neurocognitive outcomes in PWH, as substance
+laboratory evaluations. All participants provided written
+informed consent under Institutional Review Board (IRB)
+approval at each participating institution, consistent with
+ethical principles of the Declaration of Helsinki. The cur­
+rent study was exempted from IRB review due to secondary
+data analysis using publicly available databases.
+HIV-associated neurocognitive disorder (HAND)
+screening
+Cognitive function was assessed using the IHDS, a validated
+three-item instrument measuring motor speed (0–4 points),
+psychomotor speed (0–4 points), and memory recall (0–4
+points) (Sacktor et al. 2005). The total IHDS scores range
+from 0 to 12, with values ≤ 10 indicating probable HAND
+(Marin-Webb et al. 2016; Rosca et al. 2021). The IHDS has
+shown good sensitivity and specificity for detecting sub­
+cortical cognitive impairment among PWH across diverse
+settings, including low- and middle-income countries (Had­
+dow et al. 2013; Nightingale et al. 2023).
+Demographic information
+Participants provided demographic information through a
+self-reported questionnaire. Age was categorized into four
+groups (18–25 years, 26–49 years, 50–60 years and 61 years
+or older). Sex was classified as male or female. Race/ethnic­
+ity included three groups (Hispanic, non-Hispanic African
+American, and non-Hispanic White and other). Marital sta­
+tus was categorized as never married, widowed/divorced/
+separated, and married or cohabiting. Educational level was
+recorded as ≤ high school or ≥ high school, and employment
+was recorded as currently working (Yes) and unemployed
+(No).
+Clinical and laboratory variables
+Clinical data included plasma HIV-1 RNA levels (copies/
+mL) and CD4 cell counts, extracted from medical records.
+CD4 cell count and viral load were measured using stan­
+dard clinical assays performed in CLIA-certified laborato­
+ries. CD4 cell count and HIV-1 viral load were assessed at
+baseline, 6 months, and 12 months. HIV viral suppression
+was defined as having a viral load of ≤ 200 copies/mL. CD4
+cell count was categorized as a binary variable (< 200 cells/
+µL and ≥ 200 cells/ µL). Hemoglobin, hematocrit, and plate­
+let counts were obtained as part of routine complete blood
+count testing using automated hematology analyzers at each
+site. Laboratory biomarkers were selected based on evidence
+linking hematologic indices to neurocognitive performance
+in HIV (Kallianpur et al. 2016; Okwuegbuna et al. 2023;
+Ragin et al. 2011). This study included hemoglobin (g/dL),
+1 3
+   18
+
+Page 4 of 16
+
+Journal of NeuroVirology           (2026) 32:18
+overall prevalence of HAND among PWH was 76.3%, with
+a notably higher rate among females (84.2%) compared with
+males (72.5%). A clear age-related gradient was observed,
+with prevalence increasing across age categories: 52.5%
+among individuals aged 18–25, 78.0% in those aged 26–49,
+76.3% among participants aged 50–60, and 81.3% among
+those aged 61 years and older. Higher prevalence was also
+observed among participants with lower educational attain­
+ment (81.4%), those who were unemployed (77.7%), and
+individuals identifying as non-Hispanic African American
+(80.7%).
+Substance use patterns showed differential associa­
+tions with HAND (Table 3). Baseline use of rock or crack
+use may independently affect cognition and interact with
+HIV-related factors. Substance use was self-reported using
+a modified version of the Timeline Follow-Back method
+(Sobell and Sobell 1992), capturing frequency and type of
+substances used within the past 30 days, including alcohol,
+heroin, cocaine, marijuana, and other illicit drugs. Sub­
+stance use in the past year was defined by this question:
+“How many times in the past year have you used an ille­
+gal drug or used a prescription medication for nonmedical
+reasons?” Responses were coded as binary (Yes/No) for
+specific substances including cocaine, heroin, rock or crack
+cocaine, and marijuana. Current cigarette smoking was also
+recorded as a binary variable (yes/no).
+Statistical analysis
+Categorical variables were presented as frequencies and
+percentages, while continuous variables were presented
+as mean and standard deviation (SD). Baseline differences
+between participants with and without probable HAND
+(IHDS ≤ 10) were assessed using independent t-tests for
+continuous variables, and χ² tests for categorical variables.
+Multivariable linear regression models were used to iden­
+tify baseline correlates of IHDS score as a continuous
+outcome. Multivariable logistic regression (MLR) models
+with adjusted odd ratio (aOR) and their 95% confidence
+intervals (95% CI) were used to identify baseline predictors
+of HAND status (IHDS ≤ 10 vs. > 10). Predictors included
+age, sex, race/ethnicity, education, substance use (alcohol,
+cocaine, heroin, marijuana, smoking), obesity, CD4 cell
+count, hemoglobin, hematocrit, platelet count, GSI, GAF,
+PCS, and MCS (Kallianpur et al. 2016; Okwuegbuna et al.
+2023). Longitudinal changes in clinical and psychosocial
+measures across the three time points (baseline, 6 months,
+12 months) were assessed using linear mixed model, with
+time as a within-subject factor and HAND status as a
+between-subject factor. Interaction terms tested whether
+changes over time differed by HAND group. All models
+were adjusted for key demographic covariates (age, sex,
+education, race/ethnicity). R packages MASS (Venables
+and Ripley 2002) and SPSS Statistics for Windows, Ver­
+sion 29.0 (IBM Corp., Armonk, NY) were used for data
+analysis. All statistical tests were two-tailed, with p < 0.05
+considered statistically significant.
+Results
+Participant characteristics
+Table  1 shows the descriptive statistics (mean, SD and
+range) of IHDS and 3 components. As shown in Table 2, the
+Table 1  Descriptive statistics of IHDS and 3 components
+Variable
+Total (N)
+Mean ± SD
+Range
+Motor speed
+801
+2.38 ± 1.16
+4
+Psychomotor speed
+799
+2.86 ± 1.14
+4
+Memory recall
+801
+3.56 ± 0.82
+4
+IHDS
+799
+8.80 ± 2.19
+11
+IHDS International HIV dementia scale, SD Standard deviation
+Table 2  Prevalence of HAND across demographics
+Variable
+Total
+(N)
+Non-
+HAND
+HAND Preva­
+lence (%)
+p-value
+Sex
+  Female
+260
+41
+219
+84.2
+< 0.0001
+  Male
+539
+148
+391
+72.5
+Age group (years)
+  18–25
+40
+19
+21
+52.5
+0.0033
+  26–49
+495
+109
+386
+78.0
+  50–60
+232
+55
+177
+76.3
+  61+
+32
+6
+26
+81.3
+Race /ethnicity
+  Hispanic
+88
+34
+54
+61.4
+< 0.0001
+  Non-Hispanic
+African American
+597
+115
+482
+80.7
+  Non-Hispanic
+Whites + Other
+114
+40
+74
+64.7
+Education
+  < High School
+318
+59
+259
+81.4
+0.0058
+  ≥ High School
+481
+130
+351
+73.0
+Marital status
+  Never married
+528
+123
+405
+76.7
+0.0939
+  Widowed/
+Divorced/Separated
+181
+37
+144
+79.6
+  Married or
+cohabiting
+90
+29
+61
+68.7
+Employment
+  No
+704
+157
+547
+77.7
+0.0099
+  Yes
+93
+32
+61
+65.6
+Overall
+799
+189
+610
+76.3
+HAND HIV-associated neurocognitive disorder, p-value is based on
+χ2 test
+1 3
+Page 5 of 16
+   18
+
+Journal of NeuroVirology           (2026) 32:18
+groups. Individuals with HAND had statistically signifi­
+cantly lower hemoglobin levels, lower hematocrit, and
+lower GAF scores, but higher platelet counts compared
+with those without HAND (p < 0.05).
+cocaine during the past year was associated with a higher
+prevalence of HAND (79.1%). Individuals with viral sup­
+pression had lower HAND prevalence (66.4%). Moreover,
+independent samples t-tests indicated significant differ­
+ences in key laboratory and functional measures between
+Variable
+Total
+(N)
+Non-HAND (N/
+mean ± SD)
+HAND
+(N/mean ± SD)
+Prevalence
+(%)/t-value
+p-value
+Alcohol use in the past 30 days
+  No
+338
+72
+266
+78.7
+0.1748
+  Yes
+460
+117
+343
+74.6
+Cocaine use in the past 30 days
+  No
+499
+123
+376
+75.4
+0.4364
+  Yes
+297
+66
+231
+77.7
+Heroin use in the past 30 days
+  No
+698
+160
+538
+77.1
+0.1812
+  Yes
+100
+29
+71
+71.0
+Marijuana use in the past 30 days
+  No
+555
+127
+428
+77.1
+0.3864
+  Yes
+241
+62
+179
+74.3
+Current smoking
+  No
+236
+52
+184
+78.0
+0.4852
+  Yes
+563
+137
+426
+75.7
+Cocaine use in the last year
+  No
+416
+96
+320
+76.9
+0.2349
+  Yes
+231
+83
+168
+75.4
+Heroin use in the last year
+  No
+511
+118
+393
+76.9
+0.0894
+  Yes
+136
+41
+95
+69.9
+Rock or Crack Cocaine in last year
+  No
+298
+86
+212
+71.1
+0.0193
+  Yes
+349
+73
+276
+79.1
+Marijuana use in last year
+  No
+292
+77
+215
+73.6
+0.3362
+  Yes
+355
+82
+273
+76.9
+Obesity
+  Normal
+709
+162
+547
+77.2
+0.0787
+  Obesity
+86
+27
+59
+68.5
+CD4 cell count < 200 cells/µl
+  No
+271
+69
+202
+74.5
+0.3893
+  Yes
+528
+120
+408
+77.3
+Viral suppression ≤ 200 copies/mL
+  No
+712
+160
+552
+77.5
+0.0244
+  Yes
+87
+29
+58
+66.4
+Hepatitis C virus positive
+  No
+528
+117
+411
+77.8
+0.3436
+  Yes
+258
+65
+193
+74.8
+Hemoglobin (mean ± SD)
+738
+11.69 ± 1.87
+11.18 ± 2.11
+3.05
+0.0024
+Hematocrit (mean ± SD)
+738
+35.42 ± 5.47
+34.28 ± 6.17
+2.67
+0.0078
+Platelets (mean ± SD)
+738
+209.48 ± 112.01
+233.17 ± 117.49
+-2.42
+0.0156
+GAF (mean ± SD)
+796
+83.37 ± 10.91
+77.29 ± 10.93
+6.68
+< 0.0001
+PCS (mean ± SD)
+796
+36.54 ± 11.94
+35.15 ± 10.76
+1.69
+0.0922
+MCS (mean ± SD)
+796
+41.12 ± 13.75
+42.94 ± 12.78
+-1.62
+0.1066
+GSI (mean ± SD)
+796
+24.15 ± 17.05
+21.97 ± 15.80
+1.62
+0.1057
+Table 3  Descriptive statistics by
+substance use and clinical factors
+HAND HIV-associated neuro­
+cognitive disorder, GSI Global
+severity index; GAF Global
+assessment of functioning; PCS
+Physical component scores; MCS
+Mental component scores; SD
+Standard deviation; p-value is
+based on χ2 test/t-test
+
+1 3
+   18
+
+Page 6 of 16
+
+Journal of NeuroVirology           (2026) 32:18
+contrast, viral suppression status, higher hemoglobin and
+hematocrit levels, and higher GAF scores were associated
+with reduced odds of HAND.
+After adjusting for demographic characteristics, the
+multivariable logistic regression model identified several
+protective behavioral and clinical factors. Alcohol use in
+the past 30 days (OR = 0.70, 95% CI [0.49, 0.99]), obesity
+(OR = 0.50, 95% CI [0.30, 0.86]), viral suppression sta­
+tus (OR = 0.51, 95% CI [0.31, 0.86]), higher hemoglobin
+levels (OR = 0.92, 95% CI [0.84, 0.99]), and higher GAF
+scores (OR = 0.96, 95% CI [0.94, 0.97]) were also inversely
+associated with HAND. Conversely, higher platelet counts
+(OR = 1.01, 95% CI [1.00, 1.01]) remained significantly
+associated with increased odds of HAND (p < 0.05).
+Longitudinal changes in clinical variables
+Table 6 summarizes the results of linear mixed models exam­
+ining longitudinal changes in seven clinical outcomes, and
+Fig. 1 visualizes these trajectories by HAND status. Longi­
+tudinal analyses demonstrated significant increases in hemo­
+globin, hematocrit, PCS, and MCS over time, alongside
+decreases in platelet count and GSI. Compared with partici­
+pants without HAND, those with HAND consistently exhib­
+ited lower hemoglobin, hematocrit, GAF, and GSI scores,
+and higher platelet counts and MCS scores across follow-up.
+The relationship between potential risk factors and
+IHDS
+Table  4 summarizes the results of multivariable linear
+regression analyses examining factors associated with
+overall IHDS scores and its three component domains. In
+domain-specific analyses, marijuana use in the past year,
+obesity, CD4 cell count < 200 cells/µL, hepatitis C status,
+and GAF scores were significantly associated with the
+motor speed component. Psychomotor speed was signifi­
+cantly associated with viral suppression status, hemoglobin
+and hematocrit levels, as well as GAF and MCS scores (all
+p < 0.05). In contrast, no variables were significantly asso­
+ciated with the memory recall component. For the overall
+IHDS score, multivariable models indicated that obesity,
+CD4 cell count < 200 cells/µL, higher hemoglobin and
+hematocrit levels, and higher GAF scores were indepen­
+dently associated with IHDS performance (all p < 0.05).
+The relationship between potential risk factors and
+HAND
+Table 5 presents the logistic regression results for factors
+associated with HAND. In the bivariate logistic model, rock
+or crack cocaine use in the past year and higher platelet
+counts were associated with increased odds of HAND. In
+Variable
+Motor speed
+(β ± SE)
+Psychomotor
+speed
+(β ± SE)
+Memory
+recall
+(β ± SE)
+IHDS
+(β ± SE)
+Alcohol use in the past 30 days(ref = No)
+0.05 ± 0.08
+0.07 ± 0.08
+-0.02 ± 0.06
+0.10 ± 0.15
+Cocaine use in the past 30 days(ref = No)
+0.04 ± 0.09
+0.05 ± 0.09
+0.01 ± 0.06
+0.08 ± 0.16
+Heroin use in the past 30 days(ref = No)
+0.23 ± 0.12
+0.20 ± 0.12
+0.01 ± 0.09
+0.42 ± 0.23
+Marijuana use in the past 30
+days(ref = No)
+-0.02 ± 0.09
+0.12 ± 0.09
+0.02 ± 0.06
+0.11 ± 0.17
+Current smoking (ref = No)
+0.09 ± 0.09
+0.13 ± 0.097
+0.04 ± 0.06
+0.25 ± 0.17
+Heroin use in the past year (ref = No)
+0.201 ± 0.11
+0.12 ± 0.11
+-0.02 ± 0.03
+0.31 ± 0.21
+Cocaine use in the past year (ref = No)
+0.02 ± 0.10
+0.04 ± 0.09
+0.01 ± 0.06
+0.05 ± 0.17
+Rock or Crack Cocaine in last year
+(ref = No)
+-0.01 ± 0.10
+0.12 ± 0.10
+0.02 ± 0.06
+0.15 ± 0.17
+Marijuana use in the past year(ref = No)
+0.19 ± 0.10*
+0.01 ± 0.01
+-0.01 ± 0.06
+-0.19 ± 0.17
+Obesity (ref = No)
+0.25 ± 0.13*
+0.18 ± 0.13
+0.09 ± 0.10
+0.52 ± 0.25*
+CD4 cell count < 200 cells/µL (ref = No)
+-0.26 ± 0.09**
+-0.12 ± 0.09
+-0.07 ± 0.06
+-0.44 ± 0.16**
+Viral suppression ≤ 200 copies/mL
+(ref = No)
+0.419 ± 0.13
+0.26 ± 0.13*
+0.01 ± 0.09
+0.45 ± 0.24
+Hepatitis C virus positive(ref = No)
+0.20 ± 0.10*
+0.04 ± 0.09
+0.05 ± 0.07
+0.21 ± 0.17
+Hemoglobin
+0.02 ± 0.02
+0.05 ± 0.02*
+0.02 ± 0.01
+0.09 ± 0.04*
+Hematocrit
+0.01 ± 0.01
+0.02 ± 0.01**
+0.01 ± 0.01
+0.03 ± 0.01*
+Platelets
+-0.01 ± 0.01
+-0.01 ± 0.01
+-0.01 ± 0.01
+0.01 ± 0.01
+GAF
+0.02 ± 0.01***
+0.02 ± 0.01***
+0.01 ± 0.01
+0.05 ± 0.01***
+PCS
+0.01 ± 0.01
+0.01 ± 0.01
+0.01 ± 0.01
+0.01 ± 0.01
+MCS
+-0.01 ± 0.01
+-0.01 ± 0.01*
+-0.01 ± 0.01
+-0.01 ± 0.01
+GSI
+0.01 ± 0.01
+0.01 ± 0.01
+0.01 ± 0.01
+0.01 ± 0.01
+Table 4  Multiple linear regres­
+sion analyses of factors with
+IHDS and 3 components
+IHDS International HIV demen­
+tia scale, GSI Global severity
+index; GAF Global assessment
+of functioning; PCS Physical
+component scores; MCS Mental
+component scores; β adjusted
+regression coefficient; SE Stan­
+dard error; OR Odds ratio; CI
+confidence interval; p-value is
+based on logistic regression
+* p < 0.05; ** p < 0.01, ***
+p < 0.001
+
+1 3
+Page 7 of 16
+   18
+
+Journal of NeuroVirology           (2026) 32:18
+prevalence, whereas viral suppression was associated with
+lower prevalence. In adjusted analyses, multiple behav­
+ioral, clinical, and hematologic factors were significantly
+associated with neurocognitive performance. Motor and
+psychomotor speed were influenced by substance use, CD4
+counts < 200 cells/µL, viral suppression, hematologic mark­
+ers, and functional status, while memory recall showed no
+significant associations. Multivariable models indicated that
+Discussion
+Among 801 people living with HIV, the prevalence of
+HAND was high (76.3%), with a disproportionate burden
+among females, older adults, individuals with lower edu­
+cational attainment, the unemployed, and non-Hispanic
+African Americans. Substance use showed mixed associa­
+tions; recent crack/cocaine use was linked to higher HAND
+Variable
+(β ± SE)
+Crude OR
+(95% CI)
+(β ± SE)
+Adjusted OR
+(95% CI)
+Alcohol use in the past 30
+days(ref = No)
+  Yes
+-0.23 ± 0.13
+0.79(0.57–1.02)
+-0.36 ± 0.18
+0.70(0.49–0.99)*
+Cocaine use in the past 30
+days(ref = No)
+  Yes
+0.14 ± 0.17
+1.15(0.81–1.61)
+-0.07 ± 0.17
+0.93(0.65–1.33)
+Heroin use in the past 30
+days(ref = No)
+  Yes
+-0.32 ± 0.24
+0.73(0.46–1.16)
+-0.43 ± 0.44
+0.65(0.40–1.09)
+Marijuana use in the past 30
+days(ref = No)
+  Yes
+-0.15 ± 0.17
+0.86(0.60–1.22)
+-0.16 ± 0.19
+0.86(0.59–1.24)
+Current smoking (ref = No)
+  Yes
+-0.13 ± 0.19
+0.88(0.61–1.26)
+-0.26 ± 0.20
+0.77(0.53–1.13)
+Heroin use in the past year (ref = No)
+  Yes
+-0.36 ± 0.21
+0.70(0.46–1.06)
+-0.44 ± 0.23
+0.64(0.41–1.01)
+Cocaine use in the past year (ref = No)
+  Yes
+0.22 ± 0.19
+0.80(0.55–1.15)
+-0.13 ± 0.20
+0.88(0.60–1.29)
+Rock or Crack Cocaine in last year
+(ref = No)
+  Yes
+0.43 ± 0.18
+1.53(1.07–2.20)*
+0.10 ± 0.20
+1.10(0.75–1.63)
+Marijuana use in the past
+year(ref = No)
+  Yes
+0.18 ± 0.18
+1.198(0.83–1.71)
+-0.23 ± 0.20
+126(0.85–1.87)
+Obesity (ref = No)
+  Yes
+-0.44 ± 0.25
+0.64(0.40–1.05)
+-0.67 ± 0.27
+0.51(0.30–0.86)*
+CD4 cell count < 200 cells/µl
+(ref = No)
+  Yes
+0.15 ± 0.17
+1.26(0.83–1.63)
+0.30 ± 0.18
+1.35(0.94–1.93)
+Viral suppression ≤ 200 copies/mL
+(ref = No)
+  Yes
+-015 ± 0.25
+0.58(0.40–0.94)*
+-0.67 ± 0.26
+0.51(0.31–
+0.86)**
+Hepatitis C virus positive(ref = No)
+  Yes
+-0.16 ± 0.18
+0.85(0.60–1.20)
+-0.18 ± 0.19
+0.83(0.57–1.22)
+Hemoglobin
+-0.14 ± 0.04
+0.88(0.83–
+0.96)**
+-0.08 ± 0.04
+0.92(0.84–0.99)*
+Hematocrit
+-0.05 ± 0.01
+0.96(0.94–
+0.98)***
+-0.03 ± 0.21
+0.97(0.95–1.05)
+Platelets
+0.01 ± 0.01
+1.00(1.00-1.01)*
+0.01 ± 0.01
+1.01(1.00-1.01)*
+GAF
+-0.04 ± 0.01
+0.95(0.94–
+0.97)***
+-0.04 ± 0.01
+0.96(0.94–
+0.97)***
+PCS
+-0.01 ± 0.01
+0.99(0.98-1.00)
+-0.01 ± 0.01
+0.99(0.98–1.01)
+MCS
+0.01 ± 0.01
+1.01(0.99–1.02)
+0.02 ± 0.01
+1.02(0.99–1.03)
+GSI
+-0.01 ± 0.01
+0.99(0.99-1.00)
+-0.01 ± 0.01
+0.99(0.98–1.01)
+Table 5  Univariate and multiple
+logistic regression analyses of
+factors associated with HAND
+HAND HIV-associated neuro­
+cognitive disorder, GSI Global
+severity index; GAF Global
+assessment of functioning; PCS
+Physical component scores; MCS
+Mental component scores; OR
+Odds ratio; CI confidence inter­
+val; p-value is based on logistic
+regression
+
+1 3
+   18
+
+Page 8 of 16
+
+Journal of NeuroVirology           (2026) 32:18
+international cohorts (Maki and Martin-Thormeyer 2009;
+Rubin et al. 2018). Sex differences may be due to differ­
+ential ART adherence, higher prevalence of comorbidities,
+and social disadvantage (Maki et al., 2018). Consistent with
+prior studies, we observed that older age, African American
+race, lower education, and unemployment were associated
+with greater risk of HAND. However, the observed HAND
+prevalence (76.3%) is higher than previous studies due to
+PWH who use substances. These findings underscore the
+influence of sociodemographic determinants on neurocog­
+nitive health among PWH (Gorman et al. 2009; Petersen et
+al. 2023).
+Hematologic factors and neurocognitive function
+The association of lower hemoglobin and hematocrit with
+HAND in our cohort aligns with multicenter evidence link­
+ing anemia and red-cell indices to neurocognitive decline in
+the ART era (Kallianpur et al. 2016; Ku et al. 2014). Anemia
+may contribute through mechanisms plausibly relevant to
+psychiatric symptomatology, such as reduced cerebral oxy­
+gen delivery, iron dysregulation, mitochondrial dysfunc­
+tion, or by serving as an inflammatory marker coinciding
+with systemic immune activation (Kallianpur et al. 2016).
+Although hemoglobin levels differed statistically between
+alcohol use, obesity, viral suppression, higher hemoglobin
+levels, and better functioning were associated with reduced
+odds of HAND, whereas elevated platelet count increased
+risk. Longitudinally, hematologic and quality-of-life mea­
+sures improved, but individuals with HAND exhibited per­
+sistently poorer clinical and functional outcomes.
+Prevalence and population context
+Our observed HAND prevalence (76.3%) is higher than
+many pooled estimates but consistent with other clinicbased and population-specific reports, which vary widely
+(~ 20–70%) depending on sample composition, assessment
+instruments, and regional context (e.g., ART access, CD4).
+Large meta-analyses estimate a global pooled prevalence
+of HAND of approximately 42.6% (Wang et al. 2020), and
+other systematic reviews report substantial heterogeneity
+across settings (Wei et al. 2020; Zenebe et al. 2022). Clinicbased cohorts that include a higher proportion of older indi­
+viduals, those with medical or psychiatric comorbidities,
+lower education attainment, or socioeconomic disadvantage,
+often report markedly higher HAND prevalence, which
+helps contextualize our findings (Wang et al. 2020; Zenebe
+et al. 2022). Furthermore, the higher prevalence among
+women is consistent with findings from several U.S. and
+Table 6  Clinical Outcomes at Baseline and Follow-up by HAND Status
+Variable
+Overall
+Mean ± SE
+Baseline
+Mean ± SE
+6 months
+Mean ± SE
+12 months
+Mean ± SE
+F1, p-value1
+Hemoglobin
+Non-HAND
+12.43 ± 0.13
+11.73 ± 0.16
+12.86 ± 0.14
+12.70 ± 0.15
+122.91, < 0.0001
+HAND
+11.95 ± 0.07
+11.26 ± 0.09
+12.27 ± 0.08
+12.31 ± 0.09
+F2 / p-value2
+10.61, < 0.0001
+6.48, 0.0112
+12.82, < 0.0001
+4.83, 0.0282
+Hematocrit
+Non-HAND
+37.75 ± 0.36
+35.50 ± 0.46
+39.15 ± 0.42
+38.61 ± 0.43
+122.15, < 0.0001
+HAND
+36.47 ± 0.21
+34.35 ± 0.27
+37.45 ± 0.24
+37.60 ± 0.25
+F2 / p-value2
+9.33, 0.0023
+4.61, 0.0321
+12.50, < 0.0001
+4.07,0.0442
+Platelets
+Non-HAND
+209.58 ± 5.80
+212.18 ± 9.17
+209.552 ± 6.02
+207.03 ± 6.82
+9.61, 0.0020
+HAND
+225.39 ± 3.53
+239.39 ± 5.27
+223.22 ± 3.46
+213.55 ± 3.63
+F2 / p-value2
+5.59, 0.0184
+6.61, 0.0103
+3.88, 0.0492
+0.80, 0.3709
+GAF
+Non-HAND
+84.43 ± 0.75
+83.91 ± 0.87
+85.53 ± 0.95
+83.84 ± 1.02
+14.67, < 0.0001
+HAND
+80.51 ± 0.44
+77.74 ± 0.50
+82.32 ± 0.55
+81.47 ± 0.59
+F2 / p-value2
+20.19, < 0.0001
+37.71, < 0.0001
+8.51, 0.0821
+4.07, 0.0442
+GSI
+Non-HAND
+20.18 ± 0.97
+24.80 ± 1.29
+19.41 ± 1.20
+16.33 ± 1.21
+112.91, < 0.0001
+HAND
+16.72 ± 0.56
+22.36 ± 0.74
+14.26 ± 0.69
+13.53 ± 0.70
+F2 / p-value2
+9.42, 0.0022
+2.68, 0.1022
+13.80, < 0.0001
+4.02, 0.0455
+PCS
+Non-HAND
+40.75 ± 0.76
+37.28 ± 0.88
+42.41 ± 0.95
+42.61 ± 1.01
+62.64, < 0.0001
+HAND
+39.85 ± 0.43
+36.06 ± 0.50
+41.53 ± 0.54
+41.97 ± 0.58
+F2 / p-value2
+1.05, 0.3057
+1.33, 0.2502
+0.64, 0.4225
+0.31, 0.5800
+MCS
+Non-HAND
+44.02 ± 0.79
+40.85 ± 1.05
+45.13 ± 1.06
+46.09 ± 1.03
+54.81, < 0.0001
+HAND
+45.94 ± 0.45
+42.58 ± 0.59
+47.16 ± 0.60
+48.02 ± 0.59
+F2 / p-value2
+4.44, 0.0355
+2.08, 0.1494
+2.78, 0.0960
+2.81, 0.0944
+HAND HIV-associated neurocognitive disorder, GSI Global severity index; GAF Global assessment of functioning; PCS Physical component
+scores; MCS Mental component scores; SE Standard error; F1 F value based on F test for comparing 3 time points from linear mixed model;
+p-value1 p-value for comparing 3 time points based on F test from linear mixed model; F2 F value based on F test for comparing HAND with
+non-HAND from linear mixed model; p-value2 p-value for comparing HAND with non-HAND based on F test from linear mixed model
+1 3
+Page 9 of 16
+   18
+
+Journal of NeuroVirology           (2026) 32:18
+
+1 3
+   18
+
+Page 10 of 16
+
+Journal of NeuroVirology           (2026) 32:18
+associations for alcohol use in adjusted models likely
+reflect confounding, selection or survivor biases, varia­
+tions in dose, frequency, timing, interactions with ART
+or comorbidities, or measurement error in self-reported
+use. Prior literature underscores that the cognitive effects
+of substances vary by class, recency, dose, route, and cooccurring psychiatric disorders; stimulants (e.g., cocaine,
+methamphetamine) show the clearest adverse associa­
+tions with cognition in PWH (Litvin et al. 2021; Meade
+et al. 2015). Our results highlight the need for granular
+substance-use measurement and cautious interpretation of
+cross-sectional associations.
+Psychosocial and functional correlates
+Persistently lower GAF scores among participants with
+HAND reinforce the clinical significance of HAND for
+everyday functioning and psychiatric morbidity. HAND
+often co-occurs with mood, anxiety, and substance-use
+disorders and may amplify disability and treatment non­
+adherence (Applebaum et al. 2009; Hu et al. 2024). The
+association of better psychosocial functioning (higher
+GAF) with reduced HAND risk highlights the critical
+role of mental health in neurocognitive outcomes among
+PWH (Fazeli et al. 2014; Treisman and Soudry 2016).
+The higher MCS scores observed in the HAND group are
+counterintuitive and may reflect a disconnection between
+subjective mental health reporting and objective function­
+ing (e.g., self-report bias, somatic attribution, differing
+constructs captured by MCS versus clinician-rated GAF).
+Similar divergences between subjective and objective
+measures have been reported in HIV and psychiatric pop­
+ulations, reinforcing the need for integrated assessment
+approach combing clinician-rating, self-report, and objec­
+tive neuropsychological testing (Hu et al. 2024; Shahriar
+et al. 2003). Additionally, baseline obesity was negatively
+associated with HAND. The protective role of obesity
+contrasts with literature linking metabolic syndrome to
+cognitive impairment (Guaraldi et al. 2011; Moran et
+al. 2013), however, one study found that central obesity
+measured by waist circumference, rather than BMI alone,
+increased the risk of neurocognitive impairment (NCI),
+and greater body mass may be protective if the deleteri­
+ous effect of central obesity is accounted for (McCutchan
+et al. 2012).
+Longitudinal patterns and clinical implications for
+psychiatric practice
+Two notable longitudinal patterns emerged. First, hema­
+tologic indices (hemoglobin and hematocrit) increased
+across the cohort, potentially reflecting improved medical
+groups, the magnitude of this difference was small and
+remained within the normal clinical range, suggesting lim­
+ited clinical significance. In addition, anemia was not for­
+mally defined or assessed in this study, and thus it is unclear
+how many participants met diagnostic criteria for anemia
+versus exhibiting relatively lower, but still normal, hemo­
+globin levels.
+Our finding of higher baseline platelet counts among par­
+ticipants with HAND adds to the existing literature impli­
+cating platelet activation, platelet–monocyte complexes,
+and platelet-mediated endothelial dysfunction in HIVrelated neuroinflammation (Mesquita et al. 2018; Singh et
+al. 2014). Previous studies have found that greater platelet
+reactivity (without antiplatelet therapy) was associated with
+a higher risk of late-life dementia and poorer cognitive and
+functional status (Chiva-Blanch et al. 2021; Ramos-Cejudo
+et al. 2022). Platelet activation could therefore represent
+a peripheral biomarker of neurovascular or inflammatory
+processes contributing to cognitive dysfunction. Although
+we observed a statistically significant association between
+higher platelet count and HAND, the direction of this finding
+differs from some prior studies that have reported decreased
+platelet counts in this population, though literature remains
+inconsistent on this issue. Importantly, the magnitude of the
+difference in platelet count between those with and without
+HAND in our sample was small and within the normal clini­
+cal range, suggesting limited clinical significance. There­
+fore, these findings should be interpreted cautiously and not
+as evidence of a clinically meaningful alteration in plate­
+let levels. In addition, while platelet activation has been
+proposed as a potential mechanism linking hematologic
+factors to neurocognitive outcomes, the present study did
+not include direct measures of platelet activation. As such,
+platelet count should be considered a limited and indirect
+marker, and no conclusions can be drawn regarding platelet
+activation or its role in HAND from these data. Future stud­
+ies incorporating more specific biomarkers of platelet func­
+tion and activation are needed to clarify these relationships.
+Substance use and cognitive vulnerability
+The relationships between substance use and cognition
+were heterogeneous. Cocaine use was associated with
+increased odds of HAND in our bivariate analyses, con­
+sistent with studies showing that cocaine exacerbates HIVrelated deficits in verbal memory and learning (Litvin et al.
+2021; Meade et al. 2015). Conversely, unexpected inverse
+Fig. 1  Clinical outcomes at baseline (time 1), 6-month (time 2), and
+12-month (time 3) follow-up by HAND status. HAND: HIV-associ­
+ated neurocognitive disorder. GSI: Global severity index; GAF: Global
+Assessment of Functioning; PCS: Physical component scores; MCS:
+Mental component scores
+1 3
+Page 11 of 16
+   18
+
+Journal of NeuroVirology           (2026) 32:18
+Limitations
+Several limitations should be considered when interpret­
+ing these findings. First, the data are archival and were col­
+lected approximately 9–14 years ago. During this period,
+substantial advances in ART, as well as changes in clini­
+cal management, diagnostic practices, and the epidemiol­
+ogy of PWH, have occurred. Consequently, the predictors
+and clinical presentation of HAND may have evolved,
+potentially limiting the generalizability of these results to
+contemporary populations. Furthermore, HAND classifica­
+tion relied on the IHDS, a screening tool rather than a diag­
+nostic gold standard. The IHDS has limited sensitivity and
+specificity, particularly for milder forms of impairment, and
+does not substitute for comprehensive neuropsychological
+assessment. In addition, the study did not apply IHDS cutoff
+scores to distinguish HAND subtypes (e.g., ANI vs. MND),
+precluding subtype-specific analyses. Although HAD is
+now rare in the modern treatment era, the lack of detailed
+phenotyping limits clinical interpretability. Thus, findings
+should be interpreted as reflecting screening-level neuro­
+cognitive risk rather than definitive diagnoses.
+Second, the study sample consisted exclusively of PWH
+who use substances. Because substance use can indepen­
+dently affect neurocognitive functioning and may interact
+with HIV-related factors, the identified predictors of HAND
+may not generalize to PWH who do not use substances. In
+addition, substance use was self-reported and assessed only
+over the past 30 days and past year, which may introduce
+recall and social desirability bias while limiting temporal
+resolution. The dichotomous operationalization (use vs. no
+use) further obscures variation in frequency, quantity, and
+severity. The absence of formal diagnoses of substance use
+disorders (SUDs) or measures of SUD severity restricts dif­
+ferentiation between occasional and clinically significant
+use. Moreover, substance use data were incomplete across
+categories (e.g., limited assessment of methamphetamine
+and non-heroin opioids), and smoking was measured without
+detailed exposure history (e.g., pack–years). Third, several
+measurement limitations warrant attention. Neurocognitive
+impairment prior to HIV infection, including that related to
+earlier substance use, could not be accounted for and may
+confound observed associations. Psychiatric comorbidities
+were assessed using global indices (e.g., GSI, MCS) rather
+than specific diagnostic categories, limiting the ability to
+evaluate disorder-specific effects such as major depressive
+disorder. Relatedly, SUDs as psychiatric conditions were not
+directly characterized. Furthermore, unmeasured confound­
+ing remains possible. The dataset lacked detailed informa­
+tion on ART regimens, nadir CD4 count, viral reservoir or
+cerebrospinal fluid (CSF) markers, inflammatory biomark­
+ers (e.g., cytokines), iron indices, and precise substance-use
+management or recovery from reversible anemia; however,
+individuals with HAND remained relatively lower at followup, suggesting persistent biological vulnerability or incom­
+plete recovery. Second, although psychological distress
+(GSI) declined over time, functional impairment (GAF)
+remained comparatively low among those with HAND.
+This dissociation indicates that reductions in subjective dis­
+tress do not necessarily translate into improvements in func­
+tional capacity, highlighting the multidimensional nature of
+neurocognitive impairment.
+These findings have important implications for both
+research and clinical care. From a research perspective,
+they underscore the need for longitudinal studies that
+simultaneously assess biological, psychological, and func­
+tional domains to better understand recovery trajectories
+in HAND. Clinically, the persistence of functional impair­
+ment despite improvements in distress supports the need for
+integrated care approaches that extend beyond symptom
+reduction. In particular, the observed associations between
+hematologic measures and neurocognitive status suggest
+that routine clinical indicators may serve as accessible sig­
+nals for further cognitive evaluation, while the relationship
+with substance use highlights the importance of integrating
+addiction and psychiatric services. Together, these find­
+ings support a multidisciplinary care model that incorpo­
+rates cognitive screening, functional rehabilitation (e.g.,
+occupational therapy, cognitive remediation), and coordi­
+nated management across medical, psychiatric, and social
+domains to address the complex needs of individuals with
+HAND.
+Plausible biological mechanisms
+The observed pattern, anemia/low red blood cell indices and
+platelet activation to HAND, reflects biologically plausible
+and convergent mechanisms. Anemia can reduce cerebral
+oxygenation and alter iron homeostasis, both critical for
+neuronal metabolism and neurotransmission (Kallianpur et
+al. 2016). Platelet activation and platelet–monocyte aggre­
+gates can compromise the blood–brain barrier and drive
+neuroinflammation by facilitating monocyte transmigration
+and microglial activation (Mesquita et al. 2018; Singh et al.
+2014). Substance use, especially stimulants may exacerbate
+neuroinflammation, oxidative stress, and dopaminergic dys­
+function, compounding HIV-related neural injury (Litvin et
+al. 2021). Psychosocial stress and psychiatric comorbidity
+may further increase systemic inflammation and allostatic
+load, thereby potentiating cognitive vulnerability (Hu et al.
+2024). Together these pathways support a biopsychosocial
+model in which peripheral hematologic and inflammatory
+processes, substance-related neurotoxicity, and psychoso­
+cial factors interact to shape cognitive trajectories.
+1 3
+   18
+
+Page 12 of 16
+
+Journal of NeuroVirology           (2026) 32:18
+(CD4 < 200 cells/µL), hematologic indices, and functional
+status were significantly associated with neurocognitive
+performance. Logistic models indicated that alcohol use,
+viral suppression, higher hemoglobin and hematocrit levels,
+and better functioning were associated with reduced odds
+of HAND, while higher platelet count was associated with
+increased odds. Longitudinally, the cohort showed improve­
+ments in hematologic and psychosocial measures; however,
+individuals with HAND consistently exhibited poorer hema­
+tologic profiles and functional outcomes, suggesting incom­
+plete recovery despite overall health gains. These findings
+highlight the complex interplay among hematologic, behav­
+ioral, and psychosocial factors in shaping neurocognitive
+outcomes. While the observed associations suggest poten­
+tial clinical correlates, causal inferences cannot be made.
+Future research should incorporate comprehensive neuro­
+psychological assessments, multimodal biomarkers, and
+more granular measures of substance use and psychiatric
+comorbidity. Longitudinal designs capable of identifying
+heterogeneous cognitive trajectories are needed, as are stud­
+ies evaluating integrated care models that address medical,
+behavioral, and functional domains to improve outcomes
+for people with HIV at risk for HAND.
+Acknowledgements  The information reported here results from sec­
+ondary analyses of data from NIDA CTN-0049 (Project HOPE - Hos­
+pital Visit as Opportunity for Prevention and Engagement for HIV-
+Infected Drug Users), a clinical trial conducted by the NIDA Clinical
+Trials Network.
+Author contributions  GW, KW, and ZD contributed to design, data
+management, statistical analysis, drafted, and reviewed statistical
+methods. XY, XL, and SQ interpreted the results, managed the litera­
+ture searches, and drafted part of this manuscript. All authors were in­
+volved in critical revision of the article. All authors read and approved
+the manuscript.
+Funding  Open access funding provided by the Carolinas Consortium.
+No funding source is given for the present paper.
+Data availability  The data that support the findings of this study are
+openly available in https:/​/datash​are.nid​a.nih​.gov/study/nida-ctn-0049.
+Declarations
+Conflict of interest  The authors declare that they have no conflict of
+interest.
+Competing interests  The authors declare no competing interests.
+Open Access   This article is licensed under a Creative Commons
+Attribution 4.0 International License, which permits use, sharing,
+adaptation, distribution and reproduction in any medium or format,
+as long as you give appropriate credit to the original author(s) and the
+source, provide a link to the Creative Commons licence, and indicate
+if changes were made. The images or other third party material in this
+article are included in the article’s Creative Commons licence, unless
+timing and dose—all of which may influence neurocogni­
+tive outcomes. Incorporation of objective measures (e.g.,
+toxicology data) would strengthen future analyses. Fourth,
+functional status was assessed using the GAF, which relies
+on clinician judgment and combines symptom severity with
+functional impairment, introducing subjectivity. This limi­
+tation is notable given the removal of GAF from DSM–5
+due to concerns regarding its psychometric properties. The
+divergence observed between GAF and MCS may reflect
+differences between clinician-rated functioning and patientreported mental health–related quality of life. Additionally,
+inter-rater reliability of GAF was not formally assessed.
+Future studies should incorporate standardized, multidi­
+mensional measures such as the World Health Organization
+Disability Assessment Schedule 2.0 (WHODAS 2.0). More
+broadly, reliance on self-report psychiatric measures (MCS,
+GSI) and the absence of a comprehensive neuropsychologi­
+cal battery (or adjustment for premorbid cognitive reserve)
+limit diagnostic precision. Fifth, some statistically signifi­
+cant findings (e.g., hemoglobin, hematocrit, platelet count)
+reflected small differences within normal clinical ranges,
+suggesting limited clinical significance. In particular, plate­
+let count represents an indirect marker, and the absence of
+measures of platelet activation further constrains interpre­
+tation. Sixth, the analytic approach also has limitations.
+While linear mixed models capture average group-level
+change, they may not detect heterogeneous individual tra­
+jectories (e.g., subgroups with decline, stability, or improve­
+ment). More flexible approaches, such as growth mixture
+or random-slope models, could better characterize individ­
+ual variability. Finally, generalizability may be limited by
+clinic- and region-specific sampling, and findings may differ
+across settings, particularly in low-resource environments.
+Future research using more recent cohorts, more detailed
+substance use and psychiatric assessments, and comprehen­
+sive neurocognitive evaluations is needed to confirm and
+extend these findings.
+Conclusions and future directions
+This RCT-based analysis indicates that HAND remains
+highly prevalent among people with HIV in the United
+States, with persistent sex and racial disparities. Individuals
+with HAND were more likely to be older, have lower edu­
+cational attainment, be unemployed, and identify as Afri­
+can American, and they exhibited lower hemoglobin and
+hematocrit levels. In contrast, obesity and better psychoso­
+cial functioning were associated with lower likelihood of
+HAND, whereas higher platelet counts were associated with
+greater likelihood, although these effects were small and of
+limited clinical significance. Multivariable analyses fur­
+ther demonstrated that obesity, severe immunosuppression
+1 3
+Page 13 of 16
+   18
+
+Journal of NeuroVirology           (2026) 32:18
+Haddow LJ, Floyd S, Copas A, Gilson RJC (2013) A Systematic
+Review of the Screening Accuracy of the HIV Dementia Scale
+and International HIV Dementia Scale. PLoS ONE 8:e61826. ​h​t​t​
+p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​3​7​1​/​j​o​u​r​n​a​l​.​p​o​n​e​.​0​0​6​1​8​2​6
+Hu A, Zaongo SD, Harypursat V, Wang X, Ouyang J, Chen Y (2024)
+HIV-associated neurocognitive disorder: key implications of the
+microbiota-gut-brain axis. Front Microbiol 15:1428239. ​h​t​t​p​s​:​/​/​d​
+o​i​.​o​r​g​/​1​0​.​3​3​8​9​/​f​m​i​c​b​.​2​0​2​4​.​1​4​2​8​2​3​9
+Kallianpur AR, Wang Q, Jia P, Hulgan T, Zhao Z, Letendre SL, Ellis
+RJ, Heaton RK, Franklin DR, Barnholtz-Sloan J, Collier AC,
+Marra CM, Clifford DB, Gelman BB, McArthur JC, Morgello
+S, Simpson DM, McCutchan JA, Grant I (2016) Anemia and
+Red Blood Cell Indices Predict HIV-Associated Neurocognitive
+Impairment in the Highly Active Antiretroviral Therapy Era. J
+Infect Dis 213:1065–1073. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​0​9​3​/​i​n​f​d​i​s​/​j​i​v​7​5​4
+Kennedy CA, Zerbo E (2014) HIV-Related Neurocognitive Disorders
+and Drugs of Abuse: Mired in Confound, Surrounded by Risk.
+Curr Addict Rep 1:229–236. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​0​0​7​/​s​4​0​4​2​9​-​0​1​
+4​-​0​0​2​8​-​5
+Ku NS, Lee Y, Ahn JY, Song JE, Kim MH, Kim SB, Jeong SJ, Hong
+K-W, Kim E, Han SH, Song JY, Cheong HJ, Song YG, Kim WJ,
+Kim JM, Smith DM, Choi JY (2014) HIV-associated neurocogni­
+tive disorder in HIV-infected Koreans: the Korean NeuroAIDS
+Project. HIV Med 15:470–477. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​1​1​1​/​h​i​v​.​1​2​1​3​7
+Litvin PY, Siders CA, Waite EN, Woo E, Romero E, Foley J, Etten­
+hofer ML, Gooding AL, Castellon S, Hinkin C, Wright MJ (2021)
+Recent cocaine use and memory impairment in HIV. Appl Neu­
+ropsychology: Adult 28:685–696. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​0​8​0​/​2​3​2​7​9​
+0​9​5​.​2​0​1​9​.​1​6​8​3​5​6​2
+Maki PM, Martin-Thormeyer E (2009) HIV, Cognition and Women.
+Neuropsychol Rev 19:204–214. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​0​0​7​/​s​1​1​0​6​5​-​0​
+0​9​-​9​0​9​3​-​2
+Maki PM, Rubin LH, Springer G, Seaberg EC, Sacktor N, Miller EN,
+Valcour V, Young MA, Becker JT, Martin EM Neuropsychology
+Working Groups of the Womenʼs Interagency HIV Study and the
+Multicenter AIDS Cohort Study, 2018. Differences in Cognitive
+Function Between Women and Men With HIV. J Acquir Immune
+Defic Syndr 79, 101–107. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​0​9​7​/​Q​A​I​.​0​0​0​0​0​0​0​
+0​0​0​0​0​1​7​6​4
+Marin-Webb V, Jessen H, Kopp U, Jessen AB, Hahn K (2016) Vali­
+dation of the International HIV Dementia Scale as a Screening
+Tool for HIV-Associated Neurocognitive Disorders in a German-
+Speaking HIV Outpatient Clinic. PLoS ONE 11:e0168225. ​h​t​t​p​s​:​
+/​/​d​o​i​.​o​r​g​/​1​0​.​1​3​7​1​/​j​o​u​r​n​a​l​.​p​o​n​e​.​0​1​6​8​2​2​5
+McCutchan JA, Marquie-Beck JA, FitzSimons CA, Letendre SL,
+Ellis RJ, Heaton RK, Wolfson T, Rosario D, Alexander TJ, Marra
+C, Ances BM, Grant I (2012) Role of obesity, metabolic vari­
+ables, and diabetes in HIV-associated neurocognitive disorder.
+Neurology 78:485–492. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​2​1​2​/​W​N​L​.​0​b​0​1​3​e​3​
+1​8​2​4​7​8​d​6​4
+McIntosh EC, Tureson K, Rotblatt LJ, Singer EJ, Thames AD (2021)
+Vascular Risk Factors, and Cognition in the Combination Antiret­
+roviral Therapy Era: A Systematic Review and Meta-Analysis. J
+Int Neuropsychol Soc 27:365–381. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​0​1​7​/​S​1​3​5​
+5​6​1​7​7​2​0​0​0​1​0​2​2
+Meade CS, Towe SL, Skalski LM, Robertson KR (2015) Independent
+effects of HIV infection and cocaine dependence on neurocogni­
+tive impairment in a community sample living in the southern
+United States. Drug Alcohol Depend 149:128–135. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​
+g​/​1​0​.​1​0​1​6​/​j​.​d​r​u​g​a​l​c​d​e​p​.​2​0​1​5​.​0​1​.​0​3​4
+Mekuriaw B, Belayneh Z, Teshome W, Akalu Y (2023) Prevalence and
+variability of HIV/AIDS-associated neurocognitive impairments
+in Africa: a systematic review and meta-analysis. BMC Public
+Health 23:997. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​1​8​6​/​s​1​2​8​8​9​-​0​2​3​-​1​5​9​3​5​-​x
+Mesquita EC, Hottz ED, Amancio RT, Carneiro AB, Palhinha L,
+Coelho LE, Grinsztejn B, Zimmerman GA, Rondina MT, Weyrich
+indicated otherwise in a credit line to the material. If material is not
+included in the article’s Creative Commons licence and your intended
+use is not permitted by statutory regulation or exceeds the permitted
+use, you will need to obtain permission directly from the copyright
+holder. To view a copy of this licence, visit ​h​t​t​p​:​/​/​c​r​e​a​t​i​v​e​c​o​m​m​o​n​s​.​o​
+r​g​/​l​i​c​e​n​s​e​s​/​b​y​/​4​.​0​/.
+References
+Aas IM (2010) Global Assessment of Functioning (GAF): properties
+and frontier of current knowledge. Ann Gen Psychiatry 9:20. ​h​t​t​p​
+s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​1​8​6​/​1​7​4​4​-​8​5​9​X​-​9​-​2​0
+Antinori A, Arendt G, Becker JT, Brew BJ, Byrd DA, Cherner M, Clif­
+ford DB, Cinque P, Epstein LG, Goodkin K, Gisslen M, Grant I,
+Heaton RK, Joseph J, Marder K, Marra CM, McArthur JC, Nunn
+M, Price RW, Pulliam L, Robertson KR, Sacktor N, Valcour V,
+Wojna VE (2007) Updated research nosology for HIV-associated
+neurocognitive disorders. Neurology 69:1789–1799. ​h​t​t​p​s​:​/​/​d​o​i​.​o​
+r​g​/​1​0​.​1​2​1​2​/​0​1​.​W​N​L​.​0​0​0​0​2​8​7​4​3​1​.​8​8​6​5​8​.​8​b
+Applebaum AJ, Reilly LC, Gonzalez JS, Richardson MA, Leveroni
+CL, Safren SA (2009) The impact of neuropsychological func­
+tioning on adherence to HAART in HIV-infected substance abuse
+patients. AIDS Patient Care STDS 23:455–462. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​
+0​.​1​0​8​9​/​a​p​c​.​2​0​0​8​.​0​1​8​1
+Chiva-Blanch G, Vilella-Figuerola A, Padró T, Formiga F, Fer­
+rer A, Badimon L (2021) Functional and Cognitive Decline Is
+Associated With Increased Endothelial Cell Inflammation and
+Platelet Activation: Liquid Biopsy of Microvesicles in Commu­
+nity- Dwelling Octogenarians. Front Cell Dev Biol 9:716435. ​h​t​t​
+p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​3​3​8​9​/​f​c​e​l​l​.​2​0​2​1​.​7​1​6​4​3​5
+Derogatis LR (2011) Brief Symptom Inventory-18. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​
+.​1​0​3​7​/​t​0​7​5​0​2​-​0​0​0
+Ellis RJ, Badiee J, Vaida F, Letendre S, Heaton RK, Clifford D, Col­
+lier AC, Gelman B, McArthur J, Morgello S, McCutchan JA,
+Grant I (2011) CD4 nadir is a predictor of HIV neurocognitive
+impairment in the era of combination antiretroviral therapy. AIDS
+25:1747–1751. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​0​9​7​/​Q​A​D​.​0​b​0​1​3​e​3​2​8​3​4​a​4​0​c​d
+Ellis RJ, Marquine MJ, Kaul M, Fields JA, Schlachetzki JCM (2023)
+Mechanisms underlying HIV-associated cognitive impairment
+and emerging therapies for its management. Nat Rev Neurol
+19:668–687. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​0​3​8​/​s​4​1​5​8​2​-​0​2​3​-​0​0​8​7​9​-​y
+Fatokun BS, Uwishema O, Mugisha N, Abdulraheem BO, Rivera-Cazaño
+CV, d’Arc UJ, Bekele HT (2025) Psychiatric comorbidities in HIV/
+AIDS patients and its overlap with neurological disorders. Discov
+Ment Health 5:165. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​0​0​7​/​s​4​4​1​9​2​-​0​2​5​-​0​0​3​0​8​-​0
+Fazeli PL, Crowe M, Ross LA, Wadley V, Ball K, Vance DE (2014)
+Cognitive Functioning in Adults Aging with HIV: A Cross-Sec­
+tional Analysis of Cognitive Subtypes and Influential Factors. J
+Clin Res HIV AIDS Prev 1:155–169. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​4​3​0​2​/​i​s​s​
+n​.​2​3​2​4​-​7​3​3​9​.​j​c​r​h​a​p​-​1​3​-​1​9​1
+Goodkin K, Hardy DJ, Singh D, Lopez E (2014) Diagnostic Utility of
+the International HIV Dementia Scale for HIV-Associated Neuro­
+cognitive Impairment and Disorder in South Africa. J Neuropsy­
+chiatry Clin Neurosci 26:352–358. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​1​7​6​/​a​p​p​i​.​n​
+e​u​r​o​p​s​y​c​h​.​1​3​0​8​0​1​7​8
+Gorman AA, Foley JM, Ettenhofer ML, Hinkin CH, Van Gorp WG
+(2009) Functional Consequences of HIV-Associated Neuropsy­
+chological Impairment. Neuropsychol Rev 19:186–203. ​h​t​t​p​s​:​/​/​d​
+o​i​.​o​r​g​/​1​0​.​1​0​0​7​/​s​1​1​0​6​5​-​0​0​9​-​9​0​9​5​-​0
+Guaraldi G, Orlando G, Zona S, Menozzi M, Carli F, Garlassi E, Berti
+A, Rossi E, Roverato A, Palella F (2011) Premature Age-Related
+Comorbidities Among HIV-Infected Persons Compared With the
+General Population. Clin Infect Dis 53:1120–1126. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​
+g​/​1​0​.​1​0​9​3​/​c​i​d​/​c​i​r​6​2​7
+1 3
+   18
+
+Page 14 of 16
+
+Journal of NeuroVirology           (2026) 32:18
+C-infected population in India. J Neurovirol 12:34–38. ​h​t​t​p​s​:​/​/​d​
+o​i​.​o​r​g​/​1​0​.​1​0​8​0​/​1​3​5​5​0​2​8​0​5​0​0​5​1​6​5​0​0
+Rosca EC, Tadger P, Cornea A, Tudor R, Oancea C, Simu M (2021)
+International HIV Dementia Scale for HIV-Associated Neuro­
+cognitive Disorders: A Systematic Review and Meta-Analysis.
+Diagnostics (Basel) 11:1124. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​3​3​9​0​/​d​i​a​g​n​o​s​t​i​c​s​
+1​1​0​6​1​1​2​4
+Rubin LH, Radtke KK, Eum S, Tamraz B, Kumanan KN, Springer
+G, Maki PM, Anastos K, Merenstein D, Karim R, Weber KM,
+Gustafson D, Greenblatt RM, Bishop JR (2018) Cognitive Bur­
+den of Common Non-antiretroviral Medications in HIV-Infected
+Women. JAIDS J Acquir Immune Defic Syndr 79:83–91. ​h​t​t​p​s​:​/​/​
+d​o​i​.​o​r​g​/​1​0​.​1​0​9​7​/​Q​A​I​.​0​0​0​0​0​0​0​0​0​0​0​0​1​7​5​5
+Rytilä-Manninen M, Fröjd S, Haravuori H, Lindberg N, Marttunen M,
+Kettunen K, Therman S (2016) Psychometric properties of the
+Symptom Checklist-90 in adolescent psychiatric inpatients and
+age- and gender-matched community youth. Child Adolesc Psy­
+chiatry Ment Health 10:23. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​1​8​6​/​s​1​3​0​3​4​-​0​1​6​-​0​
+1​1​1​-​x
+Sacktor NC, Wong M, Nakasujja N, Skolasky RL, Selnes OA, Musisi
+S, Robertson K, McArthur JC, Ronald A, Katabira E (2005) The
+International HIV Dementia Scale: a new rapid screening test for
+HIV dementia. AIDS 19:1367–1374
+Salis F, Belfiori M, Bellisai A, Bernardini E, Murtas M, Piras R, Serreli
+S, Ortu F, Piano P, Del Giacco S, Mandas A (2024) Cognitive
+Impairment in People Living with HIV and the Impact of Mood:
+Results from a Cross-Sectional Study. JCM 13:1631. ​h​t​t​p​s​:​/​/​d​o​i​.​o​
+r​g​/​1​0​.​3​3​9​0​/​j​c​m​1​3​0​6​1​6​3​1
+Saloner R, Cysique LA (2017) HIV-Associated Neurocognitive Disor­
+ders: A Global Perspective. J Int Neuropsychol Soc 23:860–869. ​
+h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​0​1​7​/​S​1​3​5​5​6​1​7​7​1​7​0​0​1​1​0​2
+Sanmartí M, Meyer AC, Jaen A, Robertson K, Tan N, Mapesi H, Sam­
+son L, Ndaki R, Battegay M, Tanner M, Weisser M, Dalmau D,
+Letang E, Group KIULARCO (2021) HIV-associated neurocog­
+nitive impairment in stable people living with HIV on ART in
+rural Tanzania. HIV Med 22:102–112. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​1​1​1​/​h​
+i​v​.​1​2​9​7​9
+Shahriar J, Delate T, Hays RD, Coons SJ (2003) Commentary on using
+the SF-36 or MOS-HIV in studies of persons with HIV disease.
+Health Qual Life Outcomes 1:25. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​1​8​6​/​1​4​7​7​-​7​
+5​2​5​-​1​-​2​5
+Singh MV, Davidson DC, Jackson JW, Singh VB, Silva J, Ramirez
+SH, Maggirwar SB (2014) Characterization of Platelet–Mono­
+cyte Complexes in HIV-1–Infected Individuals: Possible Role in
+HIV-Associated Neuroinflammation. J Immunol 192:4674–4684. ​
+h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​4​0​4​9​/​j​i​m​m​u​n​o​l​.​1​3​0​2​3​1​8
+Sobell LC, Sobell MB (1992) Timeline Follow-Back. In: Litten
+RZ, Allen JP (eds) Measuring Alcohol Consumption. Humana,
+Totowa, NJ, pp 41–72. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​0​0​7​/​9​7​8​-​1​-​4​6​1​2​-​0​3​5​
+7​-​5​_​3
+Treisman GJ, Soudry O (2016) Neuropsychiatric Effects of HIV Anti­
+viral Medications. Drug Saf 39:945–957. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​0​0​7​
+/​s​4​0​2​6​4​-​0​1​6​-​0​4​4​0​-​y
+Venables W, Ripley B (2002) Modern Applied Statistics with S, Fourth
+edition. ed. Springer, New York
+Wang Y, Liu M, Lu Q, Farrell M, Lappin JM, Shi J, Lu L, Bao Y (2020)
+Global prevalence and burden of HIV-associated neurocognitive
+disorder: A meta-analysis. Neurol 95. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​2​1​2​/​W​
+N​L​.​0​0​0​0​0​0​0​0​0​0​0​1​0​7​5​2
+Ware J, Kosinski M, Keller SD (1996) A 12-Item Short-Form Health
+Survey: construction of scales and preliminary tests of reliability
+and validity. Med Care 34:220–233. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​0​9​7​/​0​0​0​0​
+5​6​5​0​-​1​9​9​6​0​3​0​0​0​-​0​0​0​0​3
+Wei J, Hou J, Su B, Jiang T, Guo C, Wang W, Zhang Y, Chang B, Wu H,
+Zhang T (2020) The Prevalence of Frascati-Criteria-Based HIV-
+Associated Neurocognitive Disorder (HAND) in HIV-Infected
+AS, Bozza PT, Bozza FA (2018) Persistent platelet activation and
+apoptosis in virologically suppressed HIV-infected individuals.
+Sci Rep 8:14999. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​0​3​8​/​s​4​1​5​9​8​-​0​1​8​-​3​3​4​0​3​-​0
+Metsch LR, Feaster DJ, Gooden L, Matheson T, Stitzer M, Das M, Jain
+MK, Rodriguez AE, Armstrong WS, Lucas GM, Nijhawan AE,
+Drainoni M-L, Herrera P, Vergara-Rodriguez P, Jacobson JM,
+Mugavero MJ, Sullivan M, Daar ES, McMahon DK, Ferris DC,
+Lindblad R, VanVeldhuisen P, Oden N, Castellón PC, Tross S,
+Haynes LF, Douaihy A, Sorensen JL, Metzger DS, Mandler RN,
+Colfax GN, del Rio C (2016) Effect of Patient Navigation With
+or Without Financial Incentives on Viral Suppression Among
+Hospitalized Patients With HIV Infection and Substance Use: A
+Randomized Clinical Trial. JAMA 316:156–170. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​
+1​0​.​1​0​0​1​/​j​a​m​a​.​2​0​1​6​.​8​9​1​4
+Milanini B, Paul R, Bahemana E, Adamu Y, Kiweewa F, Langat R,
+Owuoth J, Allen E, Polyak C, Ake J, Valcour V, AFRICOS study
+Team (2018) Limitations of the International HIV Dementia
+Scale in the current era. AIDS 32:2477–2483. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​
+.​1​0​9​7​/​Q​A​D​.​0​0​0​0​0​0​0​0​0​0​0​0​1​9​6​8
+Moran C, Phan TG, Chen J, Blizzard L, Beare R, Venn A, Münch
+G, Wood AG, Forbes J, Greenaway TM, Pearson S, Srikanth
+V (2013) Brain Atrophy in Type 2 Diabetes. Diabetes Care
+36:4036–4042. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​2​3​3​7​/​d​c​1​3​-​0​1​4​3
+Nascimento JCMD, Wendt GW, Titon JP, Vicentini GE, Azevedo
+LBHD, Ferreto LED (2025) Factors associated with neurocogni­
+tive disorders in people living with HIV aged ≥ 50 years old in
+Brazil: a cross-sectional study. ABCS Health Sci 50:e025218. ​h​t​t​
+p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​7​3​2​2​/​a​b​c​s​h​s​.​2​0​2​3​1​5​2​.​2​4​4​0
+Nightingale S, Ances B, Cinque P, Dravid A, Dreyer AJ, Gisslén M,
+Joska JA, Kwasa J, Meyer A-C, Mpongo N, Nakasujja N, Pebody
+R, Pozniak A, Price RW, Sandford C, Saylor D, Thomas KGF,
+Underwood J, Vera JH, Winston A (2023) Cognitive impairment
+in people living with HIV: consensus recommendations for a new
+approach. Nat Rev Neurol 19:424–433. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​0​3​8​/​s​
+4​1​5​8​2​-​0​2​3​-​0​0​8​1​3​-​2
+Okwuegbuna OK, Kaur H, Jennifer I, Bush WS, Bharti A, Umlauf A,
+Ellis RJ, Franklin DR, Heaton RK, McCutchan JA, Kallianpur
+AR, Letendre SL (2023) Anemia and Erythrocyte Indices Are
+Associated With Neurocognitive Performance Across Multiple
+Ability Domains in Adults With HIV. J Acquir Immune Defic
+Syndr 92:414–421. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​0​9​7​/​Q​A​I​.​0​0​0​0​0​0​0​0​0​0​0​0​
+3​1​5​5
+Petersen KJ, Lu T, Wisch J, Roman J, Metcalf N, Cooley SA, Babulal
+GM, Paul R, Sotiras A, Vaida F, Ances BM (2023) Effects of clin­
+ical, comorbid, and social determinants of health on brain age­
+ing in people with and without HIV: a retrospective case-control
+study. Lancet HIV 10:e244–e253. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​0​1​6​/​S​2​3​5​2​
+-​3​0​1​8​(​2​2​)​0​0​3​7​3​-​3
+Ragin AB, D’Souza G, Reynolds S, Miller E, Sacktor N, Selnes OA,
+Martin E, Visscher BR, Becker JT (2011) Platelet decline as a pre­
+dictor of brain injury in HIV infection. J Neurovirol 17:487–495. ​
+h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​0​0​7​/​s​1​3​3​6​5​-​0​1​1​-​0​0​5​3​-​2
+Ramos-Cejudo J, Johnson AD, Beiser A, Seshadri S, Salinas J, Berger
+JS, Fillmore NR, Do N, Zheng C, Kovbasyuk Z, Ardekani BA,
+Pomara N, Bubu OM, Parekh A, Convit A, Betensky RA, Wis­
+niewski TM, Osorio RS (2022) Platelet Function Is Associated
+With Dementia Risk in the Framingham Heart Study. JAHA
+11:e023918. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​1​6​1​/​J​A​H​A​.​1​2​1​.​0​2​3​9​1​8
+Recklitis CJ, Parsons SK, Shih M-C, Mertens A, Robison LL, Zeltzer
+L (2006) Factor structure of the brief symptom inventory–18 in
+adult survivors of childhood cancer: results from the childhood
+cancer survivor study. Psychol Assess 18:22–32. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​
+0​.​1​0​3​7​/​1​0​4​0​-​3​5​9​0​.​1​8​.​1​.​2​2
+Riedel D, Ghate M, Nene M, Paranjape R, Mehendale S, Bollinger
+R, Sacktor N, McArthur J, Nath A (2006) Screening for human
+immunodeficiency virus (HIV) dementia in an HIV clade
+1 3
+Page 15 of 16
+   18
+
+Journal of NeuroVirology           (2026) 32:18
+Zenebe Y, Necho M, Yimam W, Akele B (2022) Worldwide Occur­
+rence of HIV-Associated Neurocognitive Disorders and Its
+Associated Factors: A Systematic Review and Meta-Analysis.
+Front Psychiatry 13:814362. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​3​3​8​9​/​f​p​s​y​t​.​2​0​2​2​
+.​8​1​4​3​6​2
+Publisher’s note  Springer Nature remains neutral with regard to juris­
+dictional claims in published maps and institutional affiliations.
+Adults: A Systematic Review and Meta-Analysis. Front Neurol
+11:581346. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​3​3​8​9​/​f​n​e​u​r​.​2​0​2​0​.​5​8​1​3​4​6
+Yamauchi K, Ono Y, Baba K, Ikegami N (2001) The actual process of
+rating the global assessment of functioning scale. Compr Psychi­
+atr 42:403–409. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​0​5​3​/​c​o​m​p​.​2​0​0​1​.​2​6​2​6​8
+Yu B, Pasipanodya E, Montoya JL, Moore RC, Gianella S, McCutchan
+A, Ellis R, Heaton RK, Jeste DV, Moore DJ, Marquine MJ (2019)
+Metabolic Syndrome and Neurocognitive Deficits in HIV Infec­
+tion. J Acquir Immune Defic Syndr 81:95–101. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​
+.​1​0​9​7​/​Q​A​I​.​0​0​0​0​0​0​0​0​0​0​0​0​1​9​6​4
+1 3
+   18
+
+Page 16 of 16

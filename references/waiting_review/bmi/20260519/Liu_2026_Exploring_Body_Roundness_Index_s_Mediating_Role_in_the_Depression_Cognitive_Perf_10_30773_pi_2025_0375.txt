@@ -1,0 +1,1001 @@
+Copyright © 2026 Korean Neuropsychiatric Association  685
+eISSN 1976-3026
+OPEN ACCESS
+ORIGINAL ARTICLE
+Exploring Body Roundness Index’s Mediating Role in the
+Depression-Cognitive Performance Relationship Among
+US Adults (≥60 Years): Evidence From National Health
+and Nutrition Examination Survey
+Hongwei Liu1,2*, Wenzhi Niu1*, Peng Wei1*, Minheng Zhang3, Zhinan Ye4 , and Caidi He5 
+1Department of Neurology, Taiyuan City Central Hospital, The Ninth Clinical Medical College of Shanxi Medical University, Taiyuan, China
+2Department of Neurology, Xuanwu Hospital of Capital Medical University, Beijing, China
+3Department of Gerontology, The First People’s Hospital of Jinzhong, Jinzhong, China
+4Department of Neurology, Taizhou Municipal Hospital (Taizhou University Affiliated Municipal Hospital), School of Medicine, Taizhou University,
+Taizhou, China
+5Department of Nursing, Taizhou Municipal Hospital (Taizhou University Affiliated Municipal Hospital), School of Medicine, Taizhou University,
+Taizhou, China
+Objective   Late-life depression is a known risk factor for cognitive decline, yet the role of central adiposity, measured by the body
+roundness index (BRI), remains unclear. This study examined whether BRI mediates the relationship between depressive symptoms and
+cognitive performance in older adults.
+Methods   Our analysis included 2,580 adults aged 60 and over, using data from NHANES. Depressive symptoms were assessed via the
+Patient Health Questionnaire-9 (PHQ-9), cognitive function was evaluated using the Consortium to Establish a Registry for Alzheimer’s
+Disease (CERAD) Word Learning and Delayed Recall (CERAD-WL/DR), Animal Fluency test (AFT), and Digit Symbol Substitution
+Test (DSST), and BRI was calculated from waist circumference and height. Analyses included weighted multivariable logistic regression,
+restricted cubic spline analyses, subgroup and sensitivity analyses, and mediation analyses.
+Results   Across all assessment modalities, there was a significant link between high PHQ-9 scores and cognitive performance. For continuous PHQ-9 scores, each 1-point increase corresponded to: CERAD (odds ratio [OR]=1.034, 95% confidence interval [CI]: 1.000–
+1.070, p=0.049), AFT (OR=1.046, 95% CI: 1.014–1.079, p=0.007), and DSST (OR=1.080, 95% CI: 1.040–1.123, p<0.001). Categorical
+analysis revealed particularly strong effects for moderate-to-severe depression (PHQ-9 ≥10) versus minimal symptoms (PHQ-9, 0–4):
+DSST (OR=2.562, 95% CI: 1.432–4.584, p=0.004), AFT (OR=1.834, 95% CI: 1.239–2.714, p=0.005), with CERAD showing marginal
+significance (OR=1.454, 95% CI: 0.936–2.259, p=0.090). Sensitivity analyses confirmed the stability of these associations in multiply imputed datasets. BRI exhibited a statistical mediation effect, accounting for 7.23% (β=-0.021, p=0.006) of the depression-DSST association, though mediation effects were nonsignificant for CERAD (6.21%, p=0.184) or AFT (4.41%, p=0.448).
+Conclusion   Depression severity was independently linked to lower cognitive performance, with BRI partially mediating this relationship.
+
+Psychiatry Investig 2026;23(5):685-695
+Keywords   Depression; Cognitive performance; Body roundness index; NHANES; Mediation analyses.
+Received: November 12, 2025    Revised: March 2, 2026    Accepted: March 14, 2026
+ Correspondence: Caidi He, MD
+Department of Nursing, Taizhou Municipal Hospital (Taizhou University Affiliated Municipal Hospital), School of Medicine, Taizhou University, No. 581 of Shifu
+Avenue, Jiaojiang District, Taizhou 318000, China
+Tel: +86-576-88858027, E-mail: SLYY_02141@tzc.edu.cn
+ Correspondence: Zhinan Ye, MD
+Department of Neurology, Taizhou Municipal Hospital (Taizhou University Affiliated Municipal Hospital), School of Medicine, Taizhou University, No. 581 of Shifu
+Avenue, Jiaojiang District, Taizhou 318000, China
+Tel: +86-576-88855233, E-mail: SLYY_01682@tzc.edu.cn
+*These authors contributed equally to this work.
+cc This is an Open Access article distributed under the terms of the Creative Commons Attribution Non-Commercial License (https://creativecommons.org/licenses/by-nc/4.0)
+which permits unrestricted non-commercial use, distribution, and reproduction in any medium, provided the original work is properly cited.
+https://doi.org/10.30773/pi.2025.0375
+
+686  Psychiatry Investig  2026;23(5):685-695
+BRI Mediates Depression-Related Cognitive Decline
+INTRODUCTION
+Cognitive decline is a major public health concern affecting
+the aging population worldwide. In the United States, approximately one in nine adults aged 60 years and older experience
+cognitive impairment, with numbers projected to rise due to
+demographic shifts.1 Among the key psychosocial determinants of late-life cognitive impairment, depression has consistently emerged as a critical risk factor. Numerous longitudinal
+studies have demonstrated that late-life depression is associated with accelerated cognitive deterioration and increased risk
+of developing dementia.2,3 While the mechanistic pathways
+linking depression and cognitive decline remain under active
+investigation, growing attention has been given to intermediary physiological processes, particularly those associated with
+metabolic dysfunction and body composition. However, few
+studies have systematically examined whether indices of body
+fat distribution mediate this relationship in older adults.
+The body roundness index (BRI) is an anthropometric indicator designed to capture body shape and visceral adiposity
+more precisely than traditional measures such as body mass
+index (BMI) or waist circumference (WC).4 BRI’s relevance
+to cognition stems from its ability to capture central adiposity
+deposition, a source of pro-inflammatory cytokines (e.g., interleukin-6 [IL-6], tumor necrosis factor-alpha [TNF-α]) that
+disrupt blood-brain barrier integrity and promote neurodegeneration.5-7 Cross-sectional studies report associations between higher BRI and lower Digit Symbol Substitution Test
+(DSST) scores.8 While numerous studies have documented a
+positive association between elevated BRI and increased risk
+of depression,9,10 the reverse causal pathway, in which depression contributes to elevated BRI, remains largely unexplored.
+This represents a critical gap in the literature, given the wellestablished metabolic consequences of depression. These consequences include weight gain resulting from psychotropic
+medications, particularly atypical antipsychotics; behavioral
+mechanisms such as decreased physical activity and sedentary lifestyles; and neuroendocrine alterations, especially leptin
+resistance, which impair appetite regulation and disrupt energy balance. In addition, no prior study has formally examined
+whether BRI mediates the relationship between depression and
+cognitive function using causal inference methodologies. This
+gap is of particular importance, as depression may worsen metabolic dysfunction through biological mechanisms such as
+cortisol-induced central adiposity redistribution, thereby initiating a self-reinforcing cycle that accelerates cognitive deterioration.11,12 A deeper understanding of these bidirectional interactions is essential for clarifying the complex relationship
+among mental health, metabolic dysregulation, and cognitive
+decline in later life.
+The National Health and Nutrition Examination Survey
+(NHANES) offers a unique opportunity to investigate these
+relationships in a representative sample of U.S. older adults.
+Drawing on its extensive anthropometric, psychological, and
+cognitive data, this study seeks to examine whether BRI mediates the relationship between depressive symptoms and lower cognitive performance in adults aged 60 years and older.
+We hypothesize that higher levels of depression are associated
+with lower cognitive performance and that BRI statistically
+mediates this relationship. By integrating body composition
+metrics into the psychological-cognitive framework, this study
+contributes to a more nuanced understanding of late-life cognitive aging.
+METHODS
+Study participants
+This study utilized data from the NHANES, a nationally
+representative program administered by the Centers for Disease Control and Prevention (CDC), which employs a complex, multistage probability sampling design. The initial analytic sample comprised 3,632 adults aged 60 years and older
+from the 2011–2014 NHANES cycles, which provided comprehensive and validated data on depressive symptoms, cognitive function, and anthropometric indicators, including the
+BRI. Participants were excluded if data on key covariates, depression status, or cognitive performance were missing. Following the application of these exclusion criteria, the final
+analysis included 2,580 participants (Figure 1).
+All NHANES protocols were approved by the National Center for Health Statistics (NCHS) Research Ethics Review Board,
+and written informed consent was obtained from all participants prior to data collection. The present study was approved
+by the Ethics Committee of Taizhou Municipal Hospital (Approval No. LWYJ2025297). As the analysis was conducted using publicly available data, the requirement for informed consent was waived by the ethics committee.
+Assessment of cognitive function
+The NHANES 2011–2014 modules comprise the Consortium to Establish a Registry for Alzheimer’s Disease (CERAD)
+battery for immediate word list learning and delayed word
+recall (CERAD Word Learning [CERAD-WL] and CERAD
+Delayed Recall [CERAD-DR]),13 the Animal Fluency test
+(AFT),14 and the DSST,15 which represent key cognitive domains, including memory (both immediate and delayed recall), verbal fluency (semantic memory and word retrieval),
+and processing speed/executive function (information processing and cognitive flexibility), respectively. These tests were
+chosen because they are the only standardized cognitive eval-
+
+H Liu et al.
+   www.psychiatryinvestigation.org  687
+uations available for older adults in the NHANES 2011–2014
+dataset.
+Focusing on both immediate and delayed recall, the CERAD-
+WL subtest evaluates verbal learning capacity. Included in the
+assessment are three consecutive trials for immediate recall
+and one for delayed recall. Participants are given a list of ten
+unrelated words during each immediate trial and required to
+recall as many as they can right after the words are read aloud.
+Participants perform a delayed recall task around 10 minutes
+after the final immediate recall trial, recalling the words they
+were shown earlier without any visual prompts. In CERAD-
+WL, the total score can be between 0 and 40, with each of the
+three immediate trials permitting up to 10 points (30 points
+in total) and the delayed recall trial providing 10 points. For
+this analysis, the CERAD test was made up of the CERAD-
+WL and CERAD-DR cognitive performance evaluations.
+In the fields of epidemiological and cognitive screening studies, the AFT is commonly used to assess executive functioning, focusing on verbal fluency and cognitive flexibility. Participants are tasked with naming as many different animals as
+they can within a 1-minute timeframe. Each animal correctly
+named earns a point, and the total score demonstrates the individual’s proficiency in semantic memory retrieval and executive control. In a variety of populations, the AFT has proven
+to be effective in detecting cognitive decline due to aging.
+Through the evaluation of short-term memory, sustained
+attention, processing speed, and visual scanning, the DSST
+offers a detailed assessment of brain health. The DSST was
+administered in paper format during the examination session.
+Nine digit-symbol pairs were displayed in a reference key at
+the top of the test sheet. This key required participants to
+match each number in a random sequence to its corresponding symbol within a set time limit, assessing processing speed,
+attention, and executive function. In a span of 2 minutes, participants needed to connect 133 numbers to the appropriate
+symbols, receiving a point for every accurate match.
+Presently, no universally accepted standard exists for the
+CERAD test (CERAD-WL and CERAD-DR), AFT, and DSST
+tests to evaluate cognitive decline. Accordingly, we utilized the
+25th percentile of the score, the lowest quartile, as the cutoff,
+consistent with approaches in prior published studies.16,17 To
+assess the robustness of our findings and address potential
+concerns regarding the dichotomization of data, we will also
+conduct a sensitivity analysis using continuous test scores, which
+will allow us to examine the associations without relying on the
+arbitrary cutoff. By summing the individual scores, a composite score was generated to reflect overall cognitive performance,
+where higher scores suggest improved cognitive function. Poor
+cognitive performance was identified by a composite score exceeding 1 standard deviation (SD) below the analytic population’s mean,18 with scores below 47 marking poor performance.
+Definitions of depression
+The Patient Health Questionnaire-9 (PHQ-9) represents a
+well-validated, 9-item self-report instrument that operationalizes diagnostic criteria for major depressive disorder as outlined in the Diagnostic and Statistical Manual of Mental Disorders, Fifth Edition. Made up of nine items, the PHQ-9 is
+scored from 0 (not at all) to 3 (nearly every day) to measure
+how often depressive symptoms were experienced in the past
+2 weeks. With scores ranging from 0 to 27, higher scores denote more severe symptoms. Participants with a PHQ-9 score
+of 10 or higher were considered to have moderate to severe
+depression.19 Kroenke et al.20 reported that this cutoff has an
+88% sensitivity and an 88% specificity for diagnosing major
+depression. Its concise format and dual functionality for screening and severity evaluation have established it as the most frequently used depression metric in research and clinical settings internationally.
+Assessment of BRI
+The BRI, an innovative anthropometric measure, calculates
+body type based on height and WC, assessing central adiposity, where a higher score indicates more fat accumulation.
+Data on height and WC were obtained from the participants’
+examination records. Trained health technicians, with the help
+NHANES 2013–2014
+(N=19,931)
+Excluded (N=16,299):
+Age <60 years old; pregnant female
+Excluded (N=743):
+Missing data on depression and BRI;
+  missing data on cognitive decline
+Excluded (N=309):
+Missing data on covariates (marital status,
+  PIR, education level, BMI, drinking status,
+smoking status, hypertension, stroke)
+3,632 Subjects included
+2,889 Subjects included
+2,580 Subjects included
+Figure 1. Chart showing the criteria for participant inclusion and
+exclusion. NHANES, National Health and Nutrition Examination
+Survey; BRI, body roundness index; BMI, body mass index; PIR,
+poverty income ratio.
+
+688  Psychiatry Investig  2026;23(5):685-695
+BRI Mediates Depression-Related Cognitive Decline
+of a recorder, measured body dimensions at Mobile Examination Centers to ensure accuracy. Before taking measurements, participants had to remove their clothing and shoes. In
+an upright position, participants had their standing height
+measured directly, and their WC was measured at the midpoint
+between the lower rib and the top of the hips. BRI was computed by 364.2-365.5*(1-[WC(m)/2π]2/[0.5*height(m)]2)½.4
+Covariates
+Potential confounding variables adjusted for in the analysis
+included demographic characteristics (age [continuous, years,
+mean±SD], sex [male/female], race/ethnicity [Mexican American/non-Hispanic Black/non-Hispanic White/other], marital
+status [married or living with partner/non-married]), socioeconomic factors (education level [less than high school/high
+school/more than high school], poverty income ratio [PIR:
+<1/1–3/>3]), lifestyle behaviors (smoking status [never/former/current], alcohol use [never/former/current]), anthropometric measures (BMI [continuous, kg/m², mean±SD]), and
+health conditions (hypertension [yes/no], stroke [yes/no]).
+Health conditions, including hypertension and stroke, were
+identified through self-reported physician diagnoses obtained
+during the household interview. According to NHANES protocol, hypertension is diagnosed when the systolic blood pressure is 130 mm Hg or higher, the diastolic blood pressure is
+80 mm Hg or higher, or there is ongoing use of prescribed antihypertensive medication. In a face-to-face interview, stroke
+was defined by a previous diagnosis reported by the individual and confirmed by a physician. Those who replied “yes” to
+the question, “Has a medical professional ever told you that
+you suffered a stroke?” were deemed to have had a stroke. According to U.S. weight classification standards (CDC, 2021),
+BMI is computed by dividing a person’s weight in kilograms
+by their height in meters squared.
+Statistical analysis
+We applied the appropriate NHANES weights to account
+for the complex survey design, ensuring the results were representative of the U.S. adult population. Specifically, the sampling weights prescribed for the 2011–2014 combined cycles
+were used, combining the weights from individual survey years
+to account for the multi-year design. In the analysis, the strata
+and primary sampling units (PSU) supplied by NHANES were
+used to adjust for the clustering effects of the survey. The design features were vital for securing unbiased estimates and
+maintaining the reproducibility of our outcomes. The analyses
+were performed using logistic regression models that were
+survey-weighted, adjusting for the complex survey design by
+including weights, strata, and PSU. For continuous variables,
+weighted means with SEs were used, and categorical variables were expressed in terms of weighted proportions. We
+formulated a series of multivariable survey-weighted logistic
+regression models for each cognitive domain (CERAD-WL/
+DR, AFT, and DSST) to examine the relationship between
+depression severity and cognitive performance. Both continuous variables and categorical indicators representing clinically relevant severity levels were used to analyze PHQ-9 scores.
+By employing Schoenfeld residuals, we tested the proportional
+hazards assumption, which was satisfied for all covariates in
+the Cox models (all p>0.05), ensuring the models were appropriate. To minimize multicollinearity and overadjustment, we
+conducted a variance inflation factor (VIF) analysis before including covariates in the model, ensuring that only variables
+with a VIF less than 3 were included, with no variable exceeding this threshold in the final model, thereby minimizing the
+risk of multicollinearity and overadjustment (Supplementary
+Table 1). Confounders were identified using prior research and
+expert knowledge to understand potential influences on the relationship between depressive symptoms and cognitive performance. In order to assess the association between depressive symptoms and cognitive performance, three hierarchical
+regression models were constructed, with progressively adjusted covariates. The unadjusted crude model, referred to as
+Model 1, provided an initial estimate of the associations without controlling for potential confounders. To mitigate basic
+confounding factors, Model 2 was adjusted for demographic
+variables including age, sex, race, and marital status. To fully
+account for potential confounders, Model 3 added more lifestyle and health-related factors, such as drinking and smoking status, education level, PIR, BMI, hypertension, and stroke.
+Odds ratios (ORs) with their respective 95% confidence intervals (CIs) were used to report all estimates. To analyze potential
+non-linear connections between depressive symptoms and
+cognitive outcomes, survey-weighted restricted cubic spline
+(RCS) models with four knots at the 5th, 35th, 65th, and 95th
+percentiles of the PHQ-9 distribution were developed. To assess the robustness of our findings and mitigate potential biases from the dichotomization of data, we performed a sensitivity analysis using continuous test scores. Subgroup analyses
+were executed across demographic and clinical layers, and interaction terms were tested to explore effect heterogeneity. For
+analyzing mediation, logistic regression models were employed
+to estimate the mediator (BRI) and the outcome (cognitive
+performance). Using mediation analysis, we assessed the extent
+to which BRI acted as a mediator in the relationship between
+depressive symptoms and cognitive performance. Specifically, we evaluated the indirect effect of depression on cognitive
+performance through BRI, while controlling for relevant covariates such as age, sex, race/ethnicity, and health conditions.
+By employing bootstrap resampling with 1,000 iterations, we
+
+H Liu et al.
+   www.psychiatryinvestigation.org  689
+estimated the CIs for the indirect effects, achieving robust estimates that take into account their non-normal distribution.
+Chained equations were used for multivariate multiple imputation to deal with missing data, generating 20 imputed datasets with the assumption that the data were missing at random.
+The robustness of the primary findings was assessed through
+sensitivity analyses using the imputed datasets. The statistical
+tests were two-sided, with p-values less than 0.05 indicating
+statistical significance. Analyses were performed with R (version 4.3.2; R Foundation for Statistical Computing).
+RESULTS
+Baseline characteristics
+Table 1 details baseline characteristics based on depressive
+symptom severity, as measured by the PHQ-9. In the group
+of 2,580 participants, 75.3% reported minimal symptoms with
+a PHQ-9 score of 0–4, 15.5% had mild symptoms with scores
+from 5 to 9, and 9.1% experienced moderate to severe symptoms with scores ranging from 10 to 27. Differences in demographic, socioeconomic, behavioral, and clinical profiles were
+evident among the various severity groups. The burden of depressive symptoms was greater among younger individuals
+(mean age: 67.48 vs. 69.09 years; p=0.020), those with higher
+BMI (31.71 vs. 28.68 kg/m²; p<0.001), and a higher proportion of females (65.07% vs. 50.93%; p<0.001). More severe
+groups had a higher proportion of Non-Hispanic Black individuals (p<0.001). People experiencing more severe symptoms
+were also more likely to be unmarried, have lower levels of education, and belong to lower-income brackets (all p<0.001).
+The behavior analysis indicated that former drinking increased
+with symptom severity (p<0.001), but smoking status showed
+no significant difference (p=0.88). In clinical terms, an increased prevalence of hypertension and stroke was observed
+in individuals with moderate to severe depressive symptoms,
+with p-values of 0.040 and less than 0.001, respectively. Cognitive function, evaluated through CERAD, AFT, and DSST,
+showed a progressive decline with increasing symptom severity (all p<0.01).
+Associations of depression severity with cognitive
+performance
+Increased severity of depressive symptoms was consistently
+related to higher chances of lower cognitive performance in
+every domain assessed. In fully adjusted models (Model 3),
+each one-point increase in PHQ-9 score was significantly associated with poorer performance on the CERAD test score
+(OR=1.034, 95% CI: 1.000–1.070, p=0.049) (Table 2), AFT
+score (OR=1.046, 95% CI: 1.014–1.079, p=0.007) (Table 3),
+and DSST score (OR=1.080, 95% CI: 1.040–1.123, p<0.001)
+(Table 4).
+Individuals with moderate to severe depression, as measured by a PHQ-9 score between 10 and 27, had increased
+odds of experiencing lower cognitive performance compared
+to those with minimal symptoms, who scored between 0 and 4.
+The most robust associations were with DSST scores (OR=
+2.562, 95% CI: 1.432–4.584, p=0.004) (Table 4), followed by
+AFT (OR=1.834, 95% CI: 1.239–2.714, p=0.005) (Table 3). Although the connection with CERAD test score in this group
+wasn’t statistically significant (OR=1.454, 95% CI: 0.936–2.259,
+p=0.090) (Table 2), the linear trend across the severity of depression categories was significant (p for trend=0.026).
+RCS analyses provided additional insights into the dose-response relationships between the severity of depressive symptoms and cognitive performance across multiple domains. The
+CERAD test score revealed a modest linear association, where
+increased PHQ-9 scores were linked to higher odds of lower
+cognitive performance (p for overall=0.026), but the non-linear component was not significant (p for non-linear=0.303)
+(Figure 2A). The AFT score showed a similar pattern, where
+increased depressive symptoms were linearly related to lower
+cognitive performance (p for overall=0.002; p for non-linear=
+0.483) (Figure 2B). DSST scores showed a significant non-linear relationship (overall p<0.001; non-linear p=0.012), notably indicating that the effect of depressive symptoms on processing speed and executive function may increase past a
+certain threshold (Figure 2C).
+Association between depression severity and
+cognitive performance among diverse subgroups
+Analyses of subgroups showed that the link between the severity of depression and cognitive performance, as indicated
+by CERAD, AFT, and DSST scores, differed among various
+demographic and clinical groups. For CERAD, the association
+was statistically significant among females (OR=1.051, 95%
+CI: 1.016–1.087, p=0.005) and individuals with less than a high
+school education (OR=1.057, 95% CI: 1.001–1.115, p=0.044),
+with no significant interactions detected for age, sex, race,
+education, or other covariates (p for interaction>0.05) (Supplementary Table 2). In contrast, depression severity was significantly associated with lower AFT scores across nearly all
+subgroups, including both younger and older adults, males
+and females, and individuals of diverse racial backgrounds.
+Notably, the relationship was especially pronounced in participants with less than a high school education (OR=1.069,
+95% CI: 1.018–1.122, p=0.009), current smokers (OR=1.142,
+95% CI: 1.066–1.223, p<0.001), and non-drinkers (OR=1.115,
+95% CI: 1.046–1.189, p=0.002), though none of the interaction terms reached statistical significance (Supplementary Table 3). For DSST scores, a robust and consistent association
+
+690  Psychiatry Investig  2026;23(5):685-695
+BRI Mediates Depression-Related Cognitive Decline
+with depression severity was observed across all demographic
+categories, with the effect most prominent in individuals with
+lower educational attainment (less than high school: OR=1.126,
+95% CI: 1.074–1.180, p<0.001) and those married or living
+with a partner (OR=1.120, 95% CI: 1.079–1.162, p<0.001)
+(Supplementary Table 4). Importantly, significant interaction
+Table 1. Baseline characteristics of participants stratified by graded severity of depressive symptoms
+Characteristic
+Total
+(N=2,580)
+PHQ-9 [0–4]
+(N=1,944)
+PHQ-9 [5–9]
+(N=400)
+PHQ-9P [10–27]
+(N=236)
+p
+Age (yr)
+69.05±0.20
+69.09±0.23
+69.73±0.41
+67.48±0.61
+0.020
+BMI (kg/m2)
+29.16±0.23
+28.68±0.25
+30.55±0.57
+31.71±0.78
+<0.001
+Sex
+<0.001
+Female
+1,329 (54.08)
+930 (50.93)
+251 (65.95)
+148 (65.07)
+Male
+1,251 (45.92)
+1,014 (49.07)
+149 (34.05)
+88 (34.93)
+Race/ethnicity
+<0.001
+Mexican American
+219 (3.23)
+144 (2.70)
+40 (4.44)
+35 (6.52)
+Non-Hispanic Black
+1,264 (80.26)
+983 (81.59)
+185 (77.21)
+96 (71.98)
+Non-Hispanic White
+606 (8.11)
+445 (7.52)
+106 (10.19)
+55 (10.42)
+Other
+491 (8.40)
+372 (8.19)
+69 (8.16)
+50 (11.09)
+Marital_status
+<0.001
+Married/living with partner
+1,492 (63.52)
+1,171 (66.15)
+216 (56.77)
+105 (48.37)
+Non-married/living with partner
+1,088 (36.48)
+773 (33.85)
+184 (43.23)
+131 (51.63)
+Education_level
+<0.001
+Less than high school
+619 (15.22)
+420 (13.41)
+100 (17.59)
+99 (29.97)
+High school
+601 (21.58)
+436 (20.88)
+112 (24.57)
+53 (23.36)
+More than high school
+1,360 (63.20)
+1,088 (65.71)
+188 (57.84)
+84 (46.68)
+PIR
+<0.001
+<1
+431 (8.91)
+273 (7.39)
+80 (11.11)
+78 (20.86)
+1–3
+1,139 (39.02)
+835 (36.58)
+185 (44.16)
+119 (55.13)
+>3
+1,010 (52.07)
+836 (56.03)
+135 (44.73)
+39 (24.01)
+Drinking_status
+<0.001
+Never
+396 (12.76)
+288 (12.48)
+66 (13.86)
+42 (13.66)
+Former
+731 (23.28)
+529 (21.16)
+123 (28.78)
+79 (35.42)
+Current
+1,453 (63.96)
+1,127 (66.37)
+211 (57.37)
+115 (50.92)
+Smoking_status
+0.880
+Never
+1,265 (49.21)
+972 (49.72)
+188 (48.57)
+105 (44.99)
+Former
+991 (39.70)
+747 (39.33)
+153 (40.56)
+91 (41.96)
+Current
+324 (11.10)
+225 (10.95)
+59 (10.87)
+40 (13.05)
+Hypertension
+0.040
+No
+753 (33.21)
+607 (34.95)
+93 (27.18)
+53 (26.05)
+Yes
+1,827 (66.79)
+1,337 (65.05)
+307 (72.82)
+183 (73.95)
+Stroke
+<0.001
+No
+2,395 (93.46)
+1,832 (94.76)
+362 (90.34)
+201 (85.50)
+Yes
+185 (6.54)
+112 (5.24)
+38 (9.66)
+35 (14.50)
+CERAD test score
+6.27±0.10
+6.36±0.10
+5.89±0.15
+6.05±0.21
+0.004
+AFT score
+18.31±0.20
+18.68±0.23
+17.35±0.36
+16.11±0.44
+<0.001
+DSST score
+52.44±0.57
+53.87±0.58
+48.12±1.10
+45.45±2.14
+<0.001
+The CERAD test included CERAD-WL and CERAD-DR. Continuous variables were shown in mean±SD and categorical variables were
+shown in percentages. PHQ-9, Patient Health Questionnaire-9; BMI, body mass index; PIR, poverty income ratio; CERAD, Consortium to
+Establish a Registry for Alzheimer’s Disease; AFT, Animal Fluency test; DSST, Digit Symbol Substitution Test.
+
+H Liu et al.
+   www.psychiatryinvestigation.org  691
+effects were noted for race (p for interaction=0.024), education level (p for interaction=0.003), and marital status (p for
+interaction<0.001), suggesting that the detrimental impact of
+depressive symptoms on cognitive performance may be moderated by social and educational contexts (Supplementary
+Table 4).
+Mediation analyses-association between depression
+severity and cognitive performance
+Mediation analysis revealed heterogeneous effects of BRI
+on the relationship between depressive symptoms and domain-specific cognitive function. For the DSST, BRI statistically mediated the association between depression severity and
+cognitive performance, with an indirect effect of β=-0.021
+(p=0.006), accounting for 7.23% of the total effect (95% CI:
+1.14% to 12.46%) (Figure 3). It implies that BRI is partially responsible for the detrimental impact of depression on processing speed and executive function. In contrast, mediation was
+not statistically significant for the CERAD (indirect effect β=
+-0.005, p=0.184; proportion mediated: 6.21%) or AFT (indi-
+Table 4. Association between depression and lower cognitive performance (DSST score) in weighted multivariable logistic regression
+Characteristic
+Model 1
+Model 2
+Model 3
+OR (95% CI)
+p
+OR (95% CI)
+p
+OR (95% CI)
+p
+PHQ-9 score (continuous)
+1.094 (1.059–1.129)
+<0.001
+1.111 (1.069–1.156)
+<0.001
+1.080 (1.040–1.123)
+<0.001
+PHQ-9 score (category)
+PHQ-9 [0–4]
+Reference
+Reference
+Reference
+PHQ-9 [5–9]
+2.271 (1.604–3.213)
+<0.001
+2.274 (1.508–3.430)
+<0.001
+2.323 (1.529–3.530)
+<0.001
+PHQ-9P [10–27]
+3.100 (1.941–4.952)
+<0.001
+3.980 (2.161–7.328)
+<0.001
+2.562 (1.432–4.584)
+0.004
+p for trend
+<0.001
+<0.0001
+<0.001
+Model 1 (crude model). Model 2: age, sex, race, marital_status. Model 3: age, sex, race, marital_status, drinking_status, smoking_status, education_level, poverty income ratio, body mass index, hypertension, stroke. DSST, Digit Symbol Substitution Test; OR, odds ratio; CI, confidence interval; PHQ-9, Patient Health Questionnaire-9.
+Table 2. Association between depression and lower cognitive performance (CERAD test score) in weighted multivariable logistic regression
+Characteristic
+Model 1
+Model 2
+Model 3
+OR (95% CI)
+p
+OR (95% CI)
+p
+OR (95% CI)
+p
+PHQ-9 score (continuous)
+1.028 (0.995–1.062)
+0.090
+1.048 (1.013–1.083)
+0.008
+1.034 (1.000–1.070)
+0.049
+PHQ-9 score (category)
+PHQ-9 [0–4]
+Reference
+Reference
+Reference
+PHQ-9 [5–9]
+1.410 (1.078–1.844)
+0.014
+1.469 (1.035–2.085)
+0.032
+1.398 (0.985–1.983)
+0.059
+PHQ-9P [10–27]
+1.308 (0.818–2.090)
+0.252
+1.725 (1.123–2.650)
+0.015
+1.454 (0.936–2.259)
+0.090
+p for trend
+0.052
+0.004
+0.026
+Model 1 (crude model). Model 2: age, sex, race, marital_status. Model 3: age, sex, race, marital_status, drinking_status, smoking_status, education_level, poverty income ratio, body mass index, hypertension, stroke. CERAD, Consortium to Establish a Registry for Alzheimer’s Disease; OR, odds ratio; CI, confidence interval; PHQ-9, Patient Health Questionnaire-9.
+Table 3. Association between depression and lower cognitive performance (AFT score) in weighted multivariable logistic regression
+Characteristic
+Model 1
+Model 2
+Model 3
+OR (95% CI)
+p
+OR (95% CI)
+p
+OR (95% CI)
+p
+PHQ-9 score (continuous)
+1.060 (1.028–1.093)
+<0.001
+1.066 (1.030–1.102)
+<0.001
+1.046 (1.014–1.079)
+0.007
+PHQ-9 score (category)
+PHQ-9 [0–4]
+Reference
+Reference
+Reference
+PHQ-9 [5–9]
+1.542 (1.058–2.246)
+0.026
+1.457 (0.955–2.224)
+0.079
+1.366 (0.908–2.053)
+0.124
+PHQ-9P [10–27]
+2.089 (1.414–3.086)
+<0.001
+2.344 (1.535–3.578)
+<0.001
+1.834 (1.239–2.714)
+0.005
+p for trend
+<0.001
+0.001
+0.008
+Model 1 (crude model). Model 2: age, sex, race, marital_status. Model 3: age, sex, race, marital_status, drinking_status, smoking_status, education_level, poverty income ratio, body mass index, hypertension, stroke. AFT, Animal Fluency test; OR, odds ratio; CI, confidence interval;
+PHQ-9, Patient Health Questionnaire-9.
+
+692  Psychiatry Investig  2026;23(5):685-695
+BRI Mediates Depression-Related Cognitive Decline
+rect effect β=-0.002, p=0.448; proportion mediated: 4.41%)
+scores (Figure 3), with wide CIs indicating substantial uncertainty in the mediating role of BRI for memory and verbal
+fluency outcomes.
+Sensitivity analysis
+Sensitivity analyses bolstered the reliability of the link between depression severity and cognitive performance. The direction and magnitude of the associations remained consistent across all cognitive domains in multiply imputed datasets.
+Every one-point rise in the PHQ-9 score was consistently linked
+to a significant increase in the odds of lower cognitive performance, as measured by CERAD, AFT, and DSST scores (Supplementary Tables 5-7). Upon categorizing depression severity,
+individuals exhibiting moderate to severe symptoms (PHQ-9
+score 10–27) demonstrated a notably higher risk of lower
+cognitive performance than those with minimal symptoms
+(score 0–4) (Supplementary Tables 5-7) with the strongest associations observed for DSST, followed by AFT; CERAD results remained directionally consistent though slightly attenuated. To confirm the stability of our results and resolve any
+concerns about categorizing cognitive performance, we executed a sensitivity analysis using continuous test scores. Model 3, which included adjustments for a full range of covariates,
+found that depression was still significantly associated with
+diminished cognitive performance. The depression group had
+an OR of 2.23 (95% CI: 1.33–3.79, p<0.001) compared to the
+non-depression group (Supplementary Table 8). The findings
+of this analysis were in line with the main results, revealing a
+significant connection between depression and lower cognitive function.
+DISCUSSION
+In this representative sample of U.S. adults aged 60 years
+and up, we observed that more severe depressive symptoms
+were significantly associated with a higher likelihood of poor
+cognitive performance across various domains, including memory, executive function, and processing speed. The strongest
+associations were observed with the DSST score, followed by
+the AFT score, and these associations remained consistent
+across subgroups and sensitivity analyses. Significantly, the
+BRI, a geometry-based marker of central adiposity, emerged
+as a partial mediator in the statistical analysis, implying that
+central adiposity could be related to the association between
+late-life depression and cognitive performance. These findings suggest the complex relationships between mental health,
+metabolic health, and cognitive decline with age, highlighting the potential value of addressing both psychological and
+metabolic factors to help preserve cognitive abilities in aging
+individuals.
+Our study contributes to the growing body of evidence linking depressive symptoms to accelerated impairment in cognitive performance in older adults.2,3 Cohort studies conducted
+previously have consistently indicated that depression occurring in late life elevates the risk of dementia and cognitive decline through both psychological and biological mechanisms.
+However, the majority of past research has been centered on
+standard anthropometric indices like as BMI and WC, without
+considering their potential mediating roles. Our investigation
+adds to the literature and reveals new insights into the potential impact of visceral adiposity on depression-related lower
+cognitive performance. Studies from the past have identified
+associations between elevated BRI and poorer cognitive abilities and between higher BRI and an increased risk of depression,8,9 but to our knowledge, no study has explicitly tested
+BRI’s mediating role in the depression-cognition pathway. Furthermore, it is evident that obesity heightens neuroinflammation, insulin resistance, and blood-brain barrier dysfunction,
+all contributing factors to depression and cognitive decline.21-24
+Our research confirms that a geometry-derived adiposity measure plays a partial role in mediating these effects. Hence, this
+study not only supports established links but also moves the
+field forward by merging psychological and metabolic ideas
+1.5
+1.0
+0.5
+0.0
+2.0
+1.5
+1.0
+0.5
+0.0
+1.5
+1.0
+0.5
+0.0
+0
+5
+10
+15
+20
+0
+5
+10
+15
+20
+0
+5
+10
+15
+20
+CERAD test score
+DSST score
+AFT score
+p overall: 0.026
+p for non-linear: 0.303
+p overall: <0.001
+p for non-linear: 0.012
+p overall: 0.002
+p for non-linear: 0.483
+OR (95% CI)
+OR (95% CI)
+OR (95% CI)
+A
+C
+B
+Figure 2. RCS evaluation of the relationship between depression and cognitive decline. Cognitive decline is measured using tests such as
+CERAD test score (A), AFT score (B), and DSST score (C). OR, odds ratio; CI, confidence interval; CERAD, Consortium to Establish a
+Registry for Alzheimer’s Disease; AFT, Animal Fluency test; DSST, Digit Symbol Substitution Test.
+
+H Liu et al.
+   www.psychiatryinvestigation.org  693
+within a causal inference framework.
+The BRI could serve as a mediator in the relationship between depression and cognitive decline among older adults,
+involving several interconnected biological pathways. Central
+obesity, measured by the BRI, leads to systemic inflammation
+by increasing the secretion of adipokines like leptin and resistin, along with proinflammatory cytokines such as IL-6 and
+TNF-α from visceral adipose tissue.7,25-27 The blood-brain barrier can be crossed by these circulating inflammatory mediators, which may negatively impact hippocampal neurogenesis and neural plasticity, thus accelerating cognitive decline in
+older populations.28,29 According to previous research, neuroinflammation resulting from microglial activation and oxidative stress contributes to depressive symptoms and neurodegeneration.29-32 Insulin resistance and dyslipidemia, as part
+of metabolic dysfunction tied to increased BRI, aggravate cerebral glucose hypometabolism and diminish BDNF levels,
+particularly in memory-related brain regions.33-35 The gutbrain axis may mediate this relationship through BRI-associated alterations in gut microbiota diversity and decreased production of neuroprotective short-chain fatty acids, which have
+been linked to both depression and cognitive impairment.36-38
+High-BRI conditions often involve shared endocrine issues,
+including leptin resistance and a lack of adiponectin, which
+may directly influence synaptic plasticity and amyloid-β removal and accelerate tau phosphorylation.39,40 Moreover, identifying BRI as a potential mediator may support the development of dual-purpose interventions that simultaneously address
+depressive symptoms and metabolic risk to preserve cognitive
+health in aging populations.12,41-43 According to recent evidence,
+BRI could be a more sensitive measure of these pathological
+processes than BMI, due to its enhanced ability to reflect central adiposity distribution.44,45 Research in the future should
+look into whether interventions that target body composition,
+such as resistance training or adopting a Mediterranean diet,
+might improve metabolic and cognitive results by breaking
+this adverse cycle. Our results suggest a meaningful connection between depressive symptoms and cognitive performance
+in the elderly, with BRI, an indicator of central adiposity, statistically mediating this relationship. We performed a VIF
+analysis to examine possible collinearity between BMI and BRI,
+and the results indicated no significant collinearity, with VIF
+values being far below the threshold of 3. This indicates that
+including both BMI and BRI in the model did not introduce
+multicollinearity. In epidemiological studies, BMI is often
+used to represent overall body fat, while BRI is used to measure central fat, which has a stronger link to metabolic and
+cognitive health. Given that collinearity is not present, we feel
+that the inclusion of both variables presents a more thorough
+view of the connection between body composition and cognitive performance. Although over-adjustment in cross-sectional
+studies is a concern, our method offers important insights into
+how body fat affects depression and cognitive function.
+This study offers new insights into the mediating role of the
+BRI in the link between depressive symptoms and lower cognitive performance, but several limitations must be taken into
+account. The cross-sectional design restricts the ability to draw
+Proportion of mediation:
+6.21%
+(95% CI: -8.52% to 44.17%)
+Proportion of mediation:
+4.41%
+(95% CI: -59.63% to 83.90%)
+Proportion of mediation:
+7.23%
+(95% CI: 1.14% to 12.46%)
+A
+B
+C
+Figure 3. Estimated proportion of the association between depression and cognitive decline mediated by BRI. Cognitive decline is measured using tests such as CERAD test score (A), AFT
+score (B), and DSST score (C). CI, confidence interval; BRI, body
+roundness index; CERAD, Consortium to Establish a Registry for
+Alzheimer’s Disease; AFT, Animal Fluency test; DSST, Digit Symbol Substitution Test.
+Indirect effect
+β: -0.005, p=0.184
+Indirect effect
+β: -0.002, p=0.448
+Indirect effect
+β: -0.021, p=0.006
+Direct effect
+β: -0.081, p=0.064
+Direct effect
+β: 0.045, p=0.254
+Direct effect
+β: -0.279, p=0.004
+BRI
+BRI
+BRI
+Depression
+Depression
+Depression
+CERAD test score
+AFT score
+DSST score
+β: 0.026, p=0.007
+β: 0.026, p=0.007
+β: 0.026, p=0.007
+β: -0.204, p=0.133
+β: 0.079, p=0.495
+β: -0.830, p=0.005
+
+694  Psychiatry Investig  2026;23(5):685-695
+BRI Mediates Depression-Related Cognitive Decline
+causal conclusions, stressing the need for longitudinal studies
+to clarify the order of events over time. Second, relying on selfreported depression assessments using the PHQ-9 might cause
+recall or reporting bias, although the instrument’s strong psychometric properties lend support to the findings. Third, although a wide variety of covariates were adjusted for, residual
+confounding could still exist due to unmeasured elements like
+genetic susceptibility, dietary habits, or inflammation. Fourth,
+although CERAD and DSST are recognized as valid tools, they
+might not completely capture every cognitive domain that depression impacts. Fifth, Survey weights were not incorporated into the mediation analysis in this study because of constraints in the software. Despite using survey weights in the
+primary regression model analyses, the mediation procedure’s
+lack of weight support may constrain the generalizability of the
+mediation outcomes. Future research could be improved by employing different techniques or software that facilitate weighted mediation analysis, which would better address the intricate sampling design of NHANES.
+Conclusion
+This study found that more severe depressive symptoms
+are associated with lower cognitive performance in older U.S.
+adults, with BRI, a measure of central obesity, statistically mediating this relationship. The findings suggest a role for metabolic dysfunction in the association between depression and
+cognitive performance, underscoring the need for further research and interventions that consider both psychological and
+metabolic factors to support cognitive health in aging populations.
+Supplementary Materials
+The Supplement is available with this article at https://doi.org/10.30773/
+pi.2025.0375.
+Availability of Data and Material
+The data that support the findings of this study are available from the
+corresponding author upon reasonable request.
+Conflicts of Interest
+The authors have no potential conflicts of interest to disclose.
+Author Contributions
+Conceptualization: Hongwei Liu, Wenzhi Niu, Peng Wei, Zhinan Ye,
+Caidi He. Data curation: Hongwei Liu, Wenzhi Niu, Peng Wei. Formal
+analysis: Hongwei Liu, Wenzhi Niu, Peng Wei. Funding acquisition: Zhinan Ye, Caidi He. Investigation: Hongwei Liu, Wenzhi Niu, Peng Wei,
+Minheng Zhang. Methodology: Hongwei Liu, Wenzhi Niu, Peng Wei,
+Zhinan Ye. Project administration: Zhinan Ye, Caidi He. Resources: Minheng Zhang, Zhinan Ye, Caidi He. Software: Hongwei Liu, Wenzhi Niu,
+Peng Wei. Supervision: Zhinan Ye, Caidi He. Validation: Hongwei Liu,
+Wenzhi Niu, Peng Wei, Zhinan Ye, Caidi He. Visualization: Hongwei Liu,
+Wenzhi Niu, Peng Wei. Writing—original draft: Hongwei Liu, Wenzhi
+Niu, Peng Wei. Writing—review & editing: all authors.
+ORCID iDs
+Hongwei Liu
+https://orcid.org/0000-0001-6275-9766
+Wenzhi Niu
+https://orcid.org/0009-0005-9841-8775
+Peng Wei
+https://orcid.org/0009-0004-9604-088X
+Minheng Zhang
+https://orcid.org/0009-0007-3213-6622
+Zhinan Ye
+https://orcid.org/0009-0006-7301-1300
+Caidi He
+https://orcid.org/0009-0009-7511-2924
+Funding Statement
+This research was supported by Taiyuan Bureau of Science and Technology, Science, Technology, and Innovation Medical Center (202270) and
+Zhejiang Provincial Health Science and Technology Program (Grant No.
+2022KY439).
+Acknowledgments
+The authors express their gratitude to all NHANES 2011-2014 participants for their valuable contributions.
+REFERENCES
+1.	2023 Alzheimer’s disease facts and figures. Alzheimers Dement 2023;
+19:1598-1695.
+2.	Yang L, Deng YT, Leng Y, Ou YN, Li YZ, Chen SD, et al. Depression,
+depression treatments, and risk of incident dementia: a prospective
+cohort study of 354,313 participants. Biol Psychiatry 2023;93:802-809.
+3.	Huang YY, Gan YH, Yang L, Cheng W, Yu JT. Depression in Alzheimer’s disease: epidemiology, mechanisms, and treatment. Biol Psychiatry
+2024;95:992-1005.
+4.	Thomas DM, Bredlau C, Bosy-Westphal A, Mueller M, Shen W, Gallagher D, et al. Relationships between body roundness with body fat and
+visceral adipose tissue emerging from a new geometrical model. Obesity (Silver Spring) 2013;21:2264-2271.
+5.	Nguyen JC, Killcross AS, Jenkins TA. Obesity and cognitive decline:
+role of inflammation and vascular changes. Front Neurosci 2014;8:375.
+6.	Gugliucci A. Biomarkers of dysfunctional visceral fat. Adv Clin Chem
+2022;109:1-30.
+7.	Kolb H. Obese visceral fat tissue inflammation: from protective to detrimental? BMC Med 2022;20:494.
+8.	Zhang F, Ning Z, Wang C. Body roundness index and cognitive function in older adults: a nationwide perspective. Front Aging Neurosci
+2024;16:1466464.
+9.	Zhang L, Yin J, Sun H, Dong W, Liu Z, Yang J, et al. The relationship
+between body roundness index and depression: a cross-sectional study
+using data from the National Health and Nutrition Examination Survey (NHANES) 2011-2018. J Affect Disord 2024;361:17-23.
+10.	Gong H, Zhao Y. Association between body roundness index and sleep
+disorder: the mediating role of depression. BMC Psychiatry 2025;25:212.
+11.	Marazziti D, Arone A, Palermo S, Annuzzi E, Cappellato G, Chiarantini I, et al. The wicked relationship between depression and metabolic
+syndrome. Clin Neuropsychiatry 2023;20:100-108.
+12.	Zhang M, Chen J, Yin Z, Wang L, Peng L. The association between depression and metabolic syndrome and its components: a bidirectional
+two-sample Mendelian randomization study. Transl Psychiatry 2021;
+11:633.
+13.	Morris JC, Heyman A, Mohs RC, Hughes JP, van Belle G, Fillenbaum
+G, et al. The Consortium to Establish a Registry for Alzheimer’s Disease
+(CERAD). Part I. Clinical and neuropsychological assessment of Alzheimer’s disease. Neurology 1989;39:1159-1165.
+14.	Clark LJ, Gatz M, Zheng L, Chen YL, McCleary C, Mack WJ. Longitudinal verbal fluency in normal aging, preclinical, and prevalent Alzheimer’s disease. Am J Alzheimers Dis Other Demen 2009;24:461-468.
+15.	Salthouse TA. What do adult age differences in the Digit Symbol Substitution Test reflect? J Gerontol 1992;47:P121-P128.
+16.	Chen SP, Bhattacharya J, Pershing S. Association of vision loss with
+
+H Liu et al.
+   www.psychiatryinvestigation.org  695
+cognition in older adults. JAMA Ophthalmol 2017;135:963-970.
+17.	Dong X, Li S, Chen J, Li Y, Wu Y, Zhang D. Association of dietary ω-3
+and ω-6 fatty acids intake with cognitive performance in older adults:
+National Health and nutrition examination Survey (NHANES) 2011-
+2014. Nutr J 2020;19:25.
+18.	Smagula SF, Zhang G, Gujral S, Covassin N, Li J, Taylor WD, et al. Association of 24-hour activity pattern phenotypes with depression symptoms and cognitive performance in aging. JAMA Psychiatry 2022;79:
+1023-1031.
+19.	Manea L, Gilbody S, McMillan D. A diagnostic meta-analysis of the
+Patient Health Questionnaire-9 (PHQ-9) algorithm scoring method as
+a screen for depression. Gen Hosp Psychiatry 2015;37:67-75.
+20.	Kroenke K, Spitzer RL, Williams JB. The PHQ-9: validity of a brief depression severity measure. J Gen Intern Med 2001;16:606-613.
+21.	Tang X, Zhao W, Lu M, Zhang X, Zhang P, Xin Z, et al. Relationship
+between central obesity and the incidence of cognitive impairment and
+dementia from cohort studies involving 5,060,687 participants. Neurosci Biobehav Rev 2021;130:301-313.
+22.	Leigh SJ, Morris MJ. Diet, inflammation and the gut microbiome: mechanisms for obesity-associated cognitive impairment. Biochim Biophys
+Acta Mol Basis Dis 2020;1866:165767.
+23.	Zhang Q, Jin K, Chen B, Liu R, Cheng S, Zhang Y, et al. Overnutrition
+induced cognitive impairment: insulin resistance, gut-brain axis, and
+neuroinflammation. Front Neurosci 2022;16:884579.
+24.	Barber TM, Kyrou I, Randeva HS, Weickert MO. Mechanisms of insulin resistance at the crossroad of obesity with associated metabolic abnormalities and cognitive dysfunction. Int J Mol Sci 2021;22:546.
+25.	Unamuno X, Gómez-Ambrosi J, Rodríguez A, Becerril S, Frühbeck G,
+Catalán V. Adipokine dysregulation and adipose tissue inflammation
+in human obesity. Eur J Clin Invest 2018;48:e12997.
+26.	Risum K, Olarescu NC, Godang K, Marstein HS, Bollerslev J, Sanner
+H. Visceral adipose tissue is related to interleukin 6 and resistin in juvenile idiopathic arthritis - a case-control study. Rheumatol Int 2025;
+45:63.
+27.	Ren Y, Zhao H, Yin C, Lan X, Wu L, Du X, et al. Adipokines, hepatokines and myokines: focus on their role and molecular mechanisms in
+adipose tissue inflammation. Front Endocrinol (Lausanne) 2022;13:
+873699.
+28.	Stranahan AM. Visceral adiposity, inflammation, and hippocampal
+function in obesity. Neuropharmacology 2022;205:108920.
+29.	Kim YK, Jo D, Arjunan A, Ryu Y, Lim YH, Choi SY, et al. Identification
+of IGF-1 effects on white adipose tissue and hippocampus in Alzheimer’s disease mice via transcriptomic and cellular analysis. Int J Mol Sci
+2024;25:2567.
+30.	Troubat R, Barone P, Leman S, Desmidt T, Cressant A, Atanasova B, et
+al. Neuroinflammation and depression: a review. Eur J Neurosci 2021;
+53:151-171.
+31.	Ly M, Yu GZ, Mian A, Cramer A, Meysami S, Merrill DA, et al. Neuroinflammation: a modifiable pathway linking obesity, Alzheimer’s disease, and depression. Am J Geriatr Psychiatry 2023;31:853-866.
+32.	Lin JT, Morisaki M, Sampathkumar SA, Lau LC, Boche D, Khandaker
+GM, et al. Neuroinflammation in comorbid depression in Alzheimer’s
+disease: a pilot study using post-mortem brain tissue. Neurosci Appl
+2024;3:104051.
+33.	Chornenkyy Y, Wang WX, Wei A, Nelson PT. Alzheimer’s disease and
+type 2 diabetes mellitus are distinct diseases with potential overlapping
+metabolic dysfunction upstream of observed cognitive decline. Brain
+Pathol 2019;29:3-17.
+34.	Yang H, Tang L, Qu Z, Lei SH, Li W, Wang YH. Hippocampal insulin
+resistance and the Sirtuin 1 signaling pathway in diabetes-induced
+cognitive dysfunction. Neural Regen Res 2021;16:2465-2474.
+35.	Motamedi S, Karimi I, Jafari F. The interrelationship of metabolic syndrome and neurodegenerative diseases with focus on brain-derived
+neurotrophic factor (BDNF): kill two birds with one stone. Metab Brain
+Dis 2017;32:651-665.
+36.	Jia M, Fan Y, Ma Q, Yang D, Wang Y, He X, et al. Gut microbiota dysbiosis promotes cognitive impairment via bile acid metabolism in major depressive disorder. Transl Psychiatry 2024;14:503.
+37.	Barrio C, Arias-Sánchez S, Martín-Monzón I. The gut microbiotabrain axis, psychobiotics and its influence on brain and behaviour: a
+systematic review. Psychoneuroendocrinology 2022;137:105640.
+38.	U-Din M, Ahmed BA, Syed SA, Ong FJ, Oreskovich SM, Gunn E, et
+al. Characteristics of abdominal visceral adipose tissue, metabolic
+health and the gut microbiome in adults. J Clin Endocrinol Metab
+2024;109:680-690.
+39.	Platt TL, Beckett TL, Kohler K, Niedowicz DM, Murphy MP. Obesity,
+diabetes, and leptin resistance promote tau pathology in a mouse
+model of disease. Neuroscience 2016;315:162-174.
+40.	Campolim CM, Schimenes BC, Veras MM, Kim YB, Prada PO. Air
+pollution accelerates the development of obesity and Alzheimer’s disease: the role of leptin and inflammation - a mini-review. Front Immunol 2024;15:1401800.
+41.	Milaneschi Y, Simmons WK, van Rossum EFC, Penninx BW. Depression and obesity: evidence of shared biological mechanisms. Mol Psychiatry 2019;24:18-33.
+42.	Chen W, Feng J, Jiang S, Guo J, Zhang X, Zhang X, et al. Mendelian
+randomization analyses identify bidirectional causal relationships of
+obesity with psychiatric disorders. J Affect Disord 2023;339:807-814.
+43.	Park SC, Kato TA, Lee JH, Yu SH. Exploring the bidirectional relationship between depression and obesity. Endocrinol Metab Clin North
+Am 2025;54:193-206.
+44.	Rico-Martín S, Calderón-García JF, Sánchez-Rey P, Franco-Antonio C,
+Martínez Alvarez M, Sánchez Muñoz-Torrero JF. Effectiveness of body
+roundness index in predicting metabolic syndrome: a systematic review and meta-analysis. Obes Rev 2020;21:e13023.
+45.	Li Z, Fan C, Huang J, Chen Z, Yu X, Qian J. Non-linear relationship
+between the body roundness index and metabolic syndrome: data
+from National Health and Nutrition Examination Survey (NHANES)
+1999-2018. Br J Nutr 2024;131:1852-1859.

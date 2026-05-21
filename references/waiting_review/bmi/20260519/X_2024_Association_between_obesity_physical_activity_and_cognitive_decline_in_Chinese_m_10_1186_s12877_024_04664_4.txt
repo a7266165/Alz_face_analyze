@@ -1,0 +1,1087 @@
+RESEARCH
+Open Access
+© The Author(s) 2024. Open Access  This article is licensed under a Creative Commons Attribution 4.0 International License, which permits use,
+sharing, adaptation, distribution and reproduction in any medium or format, as long as you give appropriate credit to the original author(s) and
+the source, provide a link to the Creative Commons licence, and indicate if changes were made. The images or other third party material in this
+article are included in the article’s Creative Commons licence, unless indicated otherwise in a credit line to the material. If material is not included
+in the article’s Creative Commons licence and your intended use is not permitted by statutory regulation or exceeds the permitted use, you will
+need to obtain permission directly from the copyright holder. To view a copy of this licence, visit http://creativecommons.org/licenses/by/4.0/. The
+Creative Commons Public Domain Dedication waiver (http://creativecommons.org/publicdomain/zero/1.0/) applies to the data made available
+in this article, unless otherwise stated in a credit line to the data.
+Xu et al. BMC Geriatrics           (2024) 24:54
+https://doi.org/10.1186/s12877-024-04664-4
+BMC Geriatrics
+†Xin Xu and Yi Xu contributed equally to this work.
+*Correspondence:
+Ruolin Shi
+shiruolin1@163.com
+1Operating Room, Department of Nursing, The First Affiliated Hospital of
+Wenzhou Medical University, Wenzhou, Zhejiang 325000, China
+2Xinhua Hospital, Shanghai Jiao Tong University School of Medicine,
+Shanghai, China
+3Wenzhou Medical University, Wenzhou, Zhejiang, China
+Abstract
+Background and objectives  Epidemiological evidence on obesity and cognitive decline in middle and old-aged
+individuals is controversial and the effect of physical activity in this chain is sparse and limited. This study aimed to
+characterize the association between obesity and cognitive decline and the mediating role of physical activity.
+Methods  Data from China Health and Retirement Longitudinal Study (CHARLS) were used, including 7,392
+participants aged ≥ 45 years between 2011 and 2018. Cognitive function was assessed via episodic memory and
+mental status. The total score of cognitive function was the sum of the above two dimensions (0–31 points). The
+Group-based trajectory modeling (GBTM) was applied to identify the potential heterogeneity of longitudinal changes
+in cognitive function. Multivariable ordinal logistic regression was used to investigate associations between obesity
+and cognitive trajectories, taking body mass index (BMI) as the indicator of obesity. Mediation analysis was performed
+to examine the potential causal chain in which physical activity mediates the relationship between BMI and cognitive
+decline.
+Results  Of the 7,392 analyzed patients (mean [SD] age, 58.0 [8.5] years; 3,916 [53%] male), the median (interquartile
+range [IQR]) of BMI was 23.4 (21.1–26.0). Four trajectories were identified by the GBTM model, including the high
+stable (14.9%), the middle stable (46.0%), the middle decline (29.9%), and the low decline groups (9.2%). After
+controlling potential confounders, obesity was associated with the low decline groups compared with normal weight
+(adjusted OR 0.81; 95% CI, 0.70–0.94). Mediation analyses showed that only vigorous physical activity significantly
+explained 5.94% (95% CI, 0.29-11.60%) of the relationship between obesity and cognitive decline. Sensitivity analyses
+in different subgroups showed comparable results.
+Conclusion  This study suggests that vigorous physical activity mediates less than 10% of the association between
+obesity and cognitive decline in middle and old-aged adults. Further studies are warranted to explore the potential
+factors related to the obesity paradox in the cognitive field.
+Keywords  Obesity, Physical activity, Cognitive decline, CHARLS, Mediation analysis
+Association between obesity, physical activity,
+and cognitive decline in Chinese middle
+and old-aged adults: a mediation analysis
+Xin Xu1,2,3†, Yi Xu3† and Ruolin Shi1*
+
+Page 2 of 10
+Xu et al. BMC Geriatrics           (2024) 24:54
+Background
+Cognitive decline is a major public health challenge that
+may lead to mild cognitive impairment or dementia glob­
+ally [1]. Dementia has become the fifth leading cause of
+death worldwide, posing a significant burden on longterm care for families and society [2]. The World Health
+Organization (WHO) estimates that 55  million older
+adults are living with dementia worldwide, with 15 mil­
+lion residing in China [3]. Furthermore, this number is
+expected to rise to 30 million by 2050 [4].
+Meanwhile, the prevalence of obesity has significantly
+increased over the past few decades and obesity have
+been verified to be related to all-cause mortality risk and
+to worse health conditions [5, 6], while the impact on
+cognitive impairment or dementia risk remains debated
+[7]. Previous studies have shown that obesity is detri­
+mental to cognitive impairment and dementia in midlife,
+accounting for one third of all dementia cases worldwide
+[8, 9]. Conversely, studies have shown that overweight
+and obesity may be helpful in late life [9], with a grow­
+ing number of meta-analyses demonstrating protective
+effects of body mass index (BMI) on cognitive decline in
+both midlife and late-life [8, 10], supporting the concept
+of an “obesity paradox” [11, 12].
+Nevertheless, the mechanisms responsible for this
+paradox remain unclear. One plausible explanation pos­
+tulates that physical activity has been proposed as a pos­
+sible mediator in the relationship between obesity and
+cognitive decline. Recent evidence suggests that individ­
+uals with higher BMI may engage in physical activity to
+mitigate the detrimental effects of their weight on brain
+health [13]. The favorable impact of physical activity on
+cognitive function is widely acknowledged, especially
+in improving overall cognitive function as an important
+neuroprotective modulator [14]. Nevertheless, the idea
+still needs to be further proved that the extent to which
+physical activity mediates the association between obe­
+sity and cognitive function.
+In this study, we hypothesized that the relationship
+between obesity and cognitive decline is mediated by
+physical activity. Based on data from China Health and
+Retirement Longitudinal Study (CHARLS), we investi­
+gated to what extent, if any, physical activity mediated
+the relationship between obesity and cognitive decline
+among middle and old-aged Chinese adults and assessed
+the mediation effect in key important subgroups and on
+varying degrees of physical activity.
+Methods
+Study design and participants
+The data for this study were derived from the China
+Health and Retirement Longitudinal Study, which is
+a nationally representative longitudinal cohort study.
+The study design and patient enrollment have been
+described previously [15]. Briefly, the study recruited
+17,708 participants from 150 counties or districts and
+450 villages within 28 provinces in China between June
+2011 and March 2012, using the multistage stratified
+probability-proportional-to-size
+sampling
+technique.
+These respondents were followed up once every 2 years
+to repeat the survey, and four national waves of data are
+available to date (waves in 2011, 2013, 2015, and 2018).
+All participants underwent a standardized question­
+naire assessment via one-to-one interviews to collect
+data on demographic backgrounds, health status and
+functioning, social and economic status, and retirement
+information. The overall response rate to the CHARLS
+was 80.5% at baseline [16]. We excluded 648 individuals
+younger than 45 years, 5,062 without cognitive function
+assessments at baseline, 2,740 without cognitive func­
+tion assessments at 3 follow-up visits, and 1,866 without
+BMI at baseline. Finally, a total of 7,392 participants were
+included in the analysis, and 5,582 (75.5%) of them pro­
+vided blood samples at baseline.
+Cognitive function assessments
+The cognitive assessment included two dimensions, epi­
+sodic memory, and mental status [17]. Episodic memory
+was assessed by immediate word recall (0–10 points)
+and delayed word recall (0–10 points). Mental status was
+assessed using questions from the Telephone Interview
+of Cognitive Status (TICS) battery, which included items
+such as orientation, visuo-construction, and attention.
+Orientation (0–5 points) was assessed by asking respon­
+dents to name today’s date (month, day, year, and season)
+and the day of the week; visuo-construction (0–1 points)
+was evaluated by testing the ability to redraw a previously
+displayed figure; attention (0–5 points) was assessed by
+serial subtraction of 7 from 100 for five times. The total
+score of cognitive function was the sum of these two
+dimensions, ranging from 0 to 31. A higher score indi­
+cates better cognitive function.
+To explore the heterogeneity of cognitive function tra­
+jectories, group-based trajectory modeling (GBTM) was
+employed using the longitudinal data. GBTM is a poten­
+tial class growth model that identifies distinct trajectory
+groups and estimates the shape of their cognitive func­
+tion trajectories over time [18]. To determine the opti­
+mal number of trajectory groups and their structure, an
+iterative process of model selection was conducted. This
+process involved considering multiple factors, including
+statistical measures such as p-values of model parameters
+and confidence intervals of trajectory estimates, visual
+inspection of predicted trajectories, Akike Information
+Criterion (AIC), Bayesian Information Criterion (BIC),
+and the average posterior probabilities (AvePP) [19].
+
+Page 3 of 10
+Xu et al. BMC Geriatrics           (2024) 24:54
+Body mass index
+The weight and height were collected at baseline as well
+as during follow-up interviews. BMI was calculated as
+weight (kg) divided by height square (m2). Refer to the
+Chinese criteria for adults, underweight was defined as a
+BMI of less than 18.5 kg/m2, normal weight was defined
+as a BMI between 18.5 and 23.9 kg/m2, overweight was
+defined as a BMI between 24 and 27.9 kg/m2, and obesity
+was defined as a BMI of 28 kg/m2 or higher.
+Physical activity
+To evaluate the physical activity of the participants, an
+abbreviated version of the International Physical Activ­
+ity Questionnaire (IPAQ) was used. This questionnaire is
+widely recognized as a tool for measuring and soliciting
+physical activity. Healthy physical activity was defined as
+at least three times per week and 30 min each time vigor­
+ous (i.e., heavy lifting, cycling with a heavy load, and aer­
+obics) or moderate physical activities (such as bicycling
+at a regular pace, doing tai-chi, walking at a quick pace,
+etc.). Mild activity intensity was defined as walking.
+Covariates
+The study utilized a structured questionnaire to gather
+baseline data on sociodemographic status and healthrelated factors. Trained interviewers collected infor­
+mation on age, gender, living residence, marital status,
+and educational level. Marital status was categorized
+as either married or another marital status (never mar­
+ried, separated, divorced, and widowed). Educational
+level was classified into four categories, including no for­
+mal education, primary school, middle or high school,
+and college or above. Additionally, health-related fac­
+tors were assessed, including self-reported smoking and
+drinking status (never, former, or current), self-reported
+physician-diagnosed medical conditions (cardiovascu­
+lar disease (CVD), diabetes, dyslipidemia, hypertension,
+and chronic kidney disease), and use of medications
+for CVD, diabetes, hypertension, and dyslipidemia. A
+sub-cohort of 5,582 participants underwent metabolic
+examinations, which included measuring total choles­
+terol, triglycerides, high-density lipoprotein choles­
+terol, low-density lipoprotein, fasting plasma glucose,
+and high-sensitivity C-reactive protein. The study also
+calculated the estimated glomerular filtration rate
+using the Chronic Kidney Disease Epidemiology Col­
+laboration’s 2009 creatinine equation. Diabetes was then
+defined as fasting plasma glucose ≥ 126  mg/dL, current
+use of antidiabetic medication, or self-reported history
+of diabetes; dyslipidemia was defined as total choles­
+terol ≥ 240  mg/dL, triglycerides ≥ 150  mg/dL, low-den­
+sity lipoprotein cholesterol ≥ 160  mg/dL, high-density
+lipoprotein cholesterol < 40 mg/dL, current use of lipidlowering medication, or self-reported history of dys­
+lipidemia; hypertension was defined as systolic blood
+pressure ≥ 140 mm Hg, diastolic blood pressure ≥ 90 mm
+Hg, current use of the antihypertensive medication, or
+self-reported history of hypertension; and chronic kid­
+ney disease was defined as estimated glomerular filtra­
+tion rate < 60 mL/min/1.73 m2 or self-reported history of
+chronic kidney disease.
+Statistical analysis
+Normally distributed continuous variables were reported
+as the means and SDs and nonnormally distributed
+continuous variables were reported as medians and
+interquartile ranges (IQRs). Categorical variables were
+presented as frequencies and percentages. Baseline char­
+acteristics are summarized according to BMI categories
+and compared using the analysis of variance (ANOVA),
+Mann-Whitney U test, or χ2 test, as appropriate.
+Associations of BMI and physical activity with 4 cog­
+nitive function trajectories were measured by odds ratios
+(ORs) and 95% CIs based on multivariable ordinal logis­
+tic regression models. The BMI was first treated as a
+categorical variable with normal weight category as the
+reference group and then treated as a continuous vari­
+able with increments of 1 standard deviation (BMI per
+SD) in the ordinal logistic models. We also explored the
+association between the lipid biomarkers and cogni­
+tive trajectory in the sub-cohort underwent metabolic
+examinations.
+To explicate the association of BMI with cognitive
+decline, indirect associations acting through physical
+activity as a mediating variable and direct associations
+not mediated by physical activity were quantified (Fig. 1).
+A causal mediation analysis under a counterfactual
+framework was performed, which decomposes the total
+Fig. 1  Illustration of mediation effect
+Abbreviation: NDE, natural direct effect. NIE, natural indirect effect. Total effect = NDE + NIE
+
+
+Page 4 of 10
+Xu et al. BMC Geriatrics           (2024) 24:54
+effect (TE) into two components: the natural direct effect
+(NDE) and the natural indirect effect (NIE) [20, 21]. The
+NDE represents the effect of obesity on the cognitive
+decline that is independent of physical activity, while the
+NIE represents the effect of obesity on cognitive decline
+that is mediated by changes in physical activity. The
+mediation effect is measured by the percentage medi­
+ated (PM), which is the percentage of the total effect that
+is mediated by the mediator [22]. Figure S1 showed the
+trajectories of cognitive function and its five measure­
+ment dimensions stratified by 4 latent trajectory groups,
+and the high stable and middle stable trajectory groups
+were clearly distinguished from the middle decline and
+low decline groups. Therefore, we divided the 4 trajec­
+tory groups into a binary outcome (taking high stable
+and middle stable trajectories as stable groups, middle
+decline and low decline trajectories as decline groups), to
+improve the interpretability of the mediation results. Two
+models were then fitted: a multivariate logistic regres­
+sion model for physical activity (mediator) conditional
+on BMI per SD (exposure) and all study confounders and
+another multivariate logistic regression model for cogni­
+tive decline (outcome, decline groups vs. stable groups)
+conditional on BMI per SD, physical activity, and all study
+confounders. Factors known to be associated with physi­
+cal activity and cognitive decline were included in the
+analyses as confounders, which included age, gender, res­
+idence, marital status, educational level, smoking status,
+drinking status, medical history (CVD, diabetes, hyper­
+tension, dyslipidemia, and chronic kidney disease), and
+history of medication use (CVD medications, hyperten­
+sion medications, diabetes medications, and lipid-lower­
+ing therapy). Subgroup analyses were applied to test the
+robustness of the findings.
+All statistical analyses were performed using R 4.2.0 (R
+core team, Wien, Austria), with two-sided p-values < 0.05
+used to determine statistical significance.
+Results
+Descriptive characteristics
+Table 1 displayed the characteristics of these patients at
+baseline (2011) categorized by BMI. Of the 7,392 patients
+included in the analysis, the mean [SD] age was 58.0
+[8.5] years old, with 53% [n = 3,916] being male. A major­
+ity of the patients were married (86% [n = 6,367]) and
+resided in rural areas (60%, [n = 4,462]). The most preva­
+lent comorbidity among the patients was hypertension
+(23% [n = 1,867]), followed by CVD (13% [n = 1,018]). The
+majority of participants fell in the normal BMI (40.6%
+[n = 2,999]), followed by the obese (33.2% [n = 2,453]) and
+overweight (21.0% [n = 1,556]) categories. Only a small
+proportion of patients were classified as underweight
+(5.2%). The average follow-up time of this study was 5.41
+years.
+Compared to their normal-weight counterparts, the
+obese participants were found to be younger (56.3 ± 7.96
+vs. 62.7 ± 9.5, ANOVA P <.001), and had a higher preva­
+lence of several chronic conditions. These included CVD
+(194 [21.2%] vs. 39 [10.2%], chi-square test P <.001), dia­
+betes (116 [12.7%] vs. 8 [2.1%], chi-square test P <.001),
+dyslipidemia (212 [23.7%] vs. 15 [4.0%], chi-square test
+P <.001), hypertension (426 [46.6%] vs. 37 [9.7%], chisquare test P <.001), and chronic kidney disease (47
+[5.2%] vs. 33 [8.6%], chi-square test P =.027). Obese
+patients were also more likely to be taking medication for
+these conditions, with higher percentages taking medica­
+tion for CVD (112 [12.2%] vs. 17 [4.4%], chi-square test
+P <.001), hypertension (345 [37.7%] vs. 25 [6.5%], chisquare test P <.001), and the lipid-lowering therapy (110
+[12.3%] vs. 8 [2.1%], chi-square test P <.001) (Table  1).
+The mean [SD] cognitive function scores at baseline were
+14.0 [4.5] scores for underweight, 15.1 [4.4] scores for
+normal weight, 15.9 [4.3] scores for overweight, and 16.0
+[4.5] scores for obese, respectively (P <.001).
+Cognitive trajectory modeling
+According to the AIC and BIC, four trajectories were
+identified by the GBTM model, including the high stable
+(14.9%), the middle stable (46.0%), the middle decline
+(29.9%), and the low decline groups (9.2%, Table S1). The
+AvePP values of 4 groups were greater than 0.75, with
+proportions over 10%. Table S2 displayed the character­
+istics of these patients categorized by four cognitive func­
+tion trajectory groups.
+Association between BMI, physical activity with
+trajectories of cognitive function scores
+Table  2 described the association of BMI category and
+physical activity with 4 trajectories groups of cognitive
+decline based on multivariable ordered logistic regres­
+sion. Compared to normal-weight participants, under­
+weight participants were associated with a 26% increase
+in cognitive trajectory decline risk (adjusted odds ratio
+[aOR] 1.26, 95% CI, 1.02–1.55), while overweight were
+associated with a 16% decrease (aOR 0.84, 95% CI, 0.76–
+0.93), and obese were associated with a 19% decrease
+(aOR 0.81, 95% CI, 0.71–0.94) after adjusting for age,
+gender, residence, marital status, educational level, smok­
+ing status, drinking status, medical history, and history of
+medication use. In addition, a 1-SD increase in BMI was
+associated with a 10% decrease in the cognitive trajec­
+tory decline risk (aOR 0.90, 95% CI 0.85–0.95). Table S3
+showed that a 1-SD increase in HDL level was associated
+with a 14.9% increased cognitive trajectory decline risk
+(aOR 1.149, 95% CI 1.082–1.22). Participants with regu­
+lar physical activity were independently associated with a
+lower risk of cognitive trajectory decline (aOR 0.66, 95%
+CI 0.52–0.84).
+
+Page 5 of 10
+Xu et al. BMC Geriatrics           (2024) 24:54
+Mediation effect of physical activity
+Of 3,172 participants with physical activity measures,
+the total, direct associations, and indirect associations of
+BMI per SD with trajectories of cognitive decline (decline
+groups vs. stable groups) mediated by physical activities
+were presented in Table 3. The result showed that over­
+all physical activity cannot significantly be mediate the
+relationship between BMI per SD and cognitive decline
+(adjusted PM 0.14%; 95% CI -1.21-1.50%). After stratified
+by the intensity of physical activities, vigorous physical
+activities significantly mediated the association between
+BMI per SD and cognitive decline (adjusted PM 5.94%;
+95% CI 0.29%-11.60%), while moderate and mild physi­
+cal activities cannot mediate the relation. The indirect
+Table 1  Baseline characteristics of 7,392 participants by body mass index category
+Characteristic
+Underweight
+(n = 384)
+Normal weight
+(n = 2,999)
+Overweight
+(n = 1,556)
+Obese
+(n = 2,453)
+P Value
+a
+Age, mean (SD), y
+62.7 ± 9.5
+58.4 ± 8.6
+57.1 ± 8.1
+56.3 ± 7.9
+< 0.001
+Male
+217(56.5)
+2275(59.3)
+1065(47.3)
+359(39.2)
+< 0.001
+Rural residence
+273(71.1)
+2505(65.3)
+1231(54.6)
+453(49.5)
+< 0.001
+Married
+319(83.1)
+3255(84.8)
+1976(87.7)
+817(89.2)
+< 0.001
+Educational level
+< 0.001
+  No formal education
+81(21.1)
+613(16.0)
+334(14.8)
+137(15.0)
+  Primary school
+195(50.8)
+1796(46.8)
+920(40.8)
+370(40.4)
+  Middle or high school
+107(27.9)
+1371(35.7)
+957(42.5)
+394(43.0)
+  College or above
+1(0.3)
+59(1.5)
+42(1.9)
+15(1.6)
+Smoking status b
+< 0.001
+  Never
+178(46.4)
+1977(51.5)
+1424(63.2)
+640(69.9)
+  Former
+39(10.2)
+343(8.9)
+244(10.8)
+95(10.4)
+  Current
+167(43.5)
+1518(39.6)
+585(26.0)
+181(19.8)
+Drinking status
+< 0.001
+  Never
+212(55.2)
+1979(51.5)
+1331(59.1)
+584(63.8)
+  Former
+36(9.4)
+322(8.4)
+168(7.5)
+80(8.7)
+  Current
+136(35.4)
+1538(40.1)
+754(33.5)
+252(27.5)
+History of comorbidities
+  CVD
+39(10.2)
+438(11.4)
+347(15.4)
+194(21.2)
+< 0.001
+  Diabetes b
+8(2.1)
+159(4.2)
+202(9.1)
+116(12.7)
+< 0.001
+  Dyslipidemia b
+15(4.0)
+221(5.8)
+330(14.9)
+212(23.7)
+< 0.001
+  Hypertension b
+37(9.7)
+697(18.2)
+707(31.5)
+426(46.6)
+< 0.001
+  Chronic kidney disease b
+33(8.6)
+199(5.2)
+138(6.1)
+47(5.2)
+0.027
+History of medication use
+  CVD medications
+17(4.4)
+210(5.5)
+179(7.9)
+112(12.2)
+< 0.001
+  Diabetes medications b
+0(0.0)
+24(0.6)
+23(1.0)
+9(1.0)
+0.085
+  Hypertension medications b
+25(6.5)
+442(11.6)
+515(23.0)
+345(37.7)
+< 0.001
+  Lipid-lowering therapy b
+8(2.1)
+99(2.6)
+141(6.4)
+110(12.3)
+< 0.001
+Blood pressure, mean (SD), mm Hg b
+  Systolic
+125.4 ± 22.2
+126.6 ± 20.0
+132.8 ± 20.4
+137.2 ± 21.1
+< 0.001
+  Diastolic
+71.6 ± 12.1
+73.9 ± 11.6
+78.5 ± 11.8
+81.5 ± 12.1
+< 0.001
+Metabolic biomarkers c
+  Total cholesterol, mean (SD), mg/dL
+186.2 ± 35.0
+191.1 ± 37.1
+197.3 ± 38.1
+199.4 ± 39.5
+< 0.001
+  Triglycerides, median (IQR), mg/dL
+85.0(65.5,108.9)
+95.6(69.0,138.9)
+123.9(87.6,180.5)
+140.7(99.1,210.6)
+< 0.001
+  High-density lipoprotein, mean (SD), mg/dL
+61.0 ± 18.0
+53.6 ± 15.6
+47.1 ± 13.2
+43.3 ± 12.1
+< 0.001
+  Low-density lipoprotein, mean (SD), mg/dL
+107.9 ± 30.9
+114.6 ± 33.6
+120.6 ± 35.2
+118.7 ± 36.8
+< 0.001
+  Fasting plasma glucose, mean (SD), mg/dL
+104.2 ± 35.5
+107.5 ± 34.5
+113.7 ± 39.3
+116.9 ± 38.5
+< 0.001
+  Estimated glomerular filtration rate, mean (SD), mL/min/1.73
+m2
+87.0 ± 20.1
+88.2 ± 21.3
+90.9 ± 21.8
+93.9 ± 21.4
+< 0.001
+  High-sensitivity C-reactive protein, median (IQR), mg/L
+0.8(0.4,1.9)
+0.9(0.5,1.8)
+1.1(0.6,2.1)
+1.6(0.9,3.2)
+< 0.001
+Cognitive scores at baseline
+14.0 ± 4.5
+15.1 ± 4.4
+15.9 ± 4.3
+16.0 ± 4.5
+< 0.001
+Abbreviation: SD, standard deviation. IQR, interquartile range (75th quartile minus 25th quartile). aP value was based on χ2 or analysis of variance or Mann-Whitney
+U test where appropriate. b Missing data: 11 for abdominal obesity, 1 for smoking, 46 for diabetes, 27 for hypertension, 106 for dyslipidemia, 19 for chronic kidney
+disease, 47 for diabetes medications, 27 for hypertension medications, 110 for lipid-lowering therapy, 80 for systolic blood pressure, and 83 for diastolic blood
+pressure. c Measured in a subpopulation of 5582 participants
+
+Page 6 of 10
+Xu et al. BMC Geriatrics           (2024) 24:54
+association via vigorous physical activities implied that
+a 1% increase in the risk of cognitive decline (aOR 0.99;
+95% CI, 0.97-1.00) would be observed on average. Data
+across major strata defined by age, gender, marital status,
+smoking status, drinking status, and history of comorbid­
+ities showed comparable results, with the mediated per­
+centage in the range of 0.43–20.21% (Fig. 2).
+Discussion
+This study examined the cognitive trajectories of a
+nationally representative sample of 7,392 middle and
+old-aged adults in China who were followed up for four
+waves, as well as the relationship between baseline BMI
+and cognitive trajectories, and the mediating role of
+physical activity. The results indicated that there were
+four distinct cognitive trajectories, each associated with
+different BMI statuses. Additionally, vigorous physi­
+cal activity partially mediated the association between
+Table 2  Association between body mass index, abdominal obesity, and physical activity with trajectories of cognitive function scores
+Variable
+No of
+patients
+Crude OR
+(95% CI)
+Crude
+P
+Adjusted OR
+(95% CI) a
+Ad­
+justed
+P a
+Adjusted OR
+(95% CI) b
+Ad­
+justed
+P b
+Body mass index, kg/m2
+  Underweight (< 18.5)
+384
+1.77(1.46,2.15)
+< 0.001
+1.29(1.05,1.58)
+0.014
+1.26(1.02,1.55)
+0.029
+  Normal (18.5–23.9)
+3,839
+1.00(1.00,1.00)
+Ref.
+1.00(1.00,1.00)
+Ref.
+1.00(1.00,1.00)
+Ref.
+  Overweight (24–27.9)
+2,253
+0.71(0.64,0.78)
+< 0.001
+0.84(0.76,0.93)
+0.001
+0.84(0.76,0.93)
+0.001
+  Obesity (≥ 28)
+916
+0.64(0.56,0.73)
+< 0.001
+0.81(0.71,0.94)
+0.004
+0.81(0.70,0.94)
+0.006
+Per SD
+7,392
+0.77(0.74,0.81)
+< 0.001
+0.89(0.85,0.94)
+< 0.001
+0.90(0.85,0.95)
+< 0.001
+Physical activity
+3,172
+0.72(0.57,0.90)
+0.004
+0.64(0.50,0.81)
+< 0.001
+0.66(0.52,0.84)
+0.001
+Abbreviations: SD indicates standard deviation
+a Adjusted for age, gender, residence, marital status, educational level, smoking status, and drinking status
+b Further adjusted for medical history (CVD, diabetes, hypertension, dyslipidemia, and chronic kidney disease) and history of medication use (CVD medications,
+hypertension medications, diabetes medications, and lipid-lowering therapy)
+Table 3  Proportion of association of per SD of body mass index with trajectories of cognitive function scores mediated by physical
+activity
+Effect
+Model 1
+Model 2
+Model 3
+Estimate (95%
+CI)
+P
+Estimate (95%
+CI)
+P
+Estimate (95%
+CI)
+P
+Physical activity (n = 3,172)
+Total Effect (TE), Odds Ratio
+0.81(0.73,0.89)
+< 0.001
+0.81(0.73,0.89)
+< 0.001
+0.82(0.73,0.90)
+< 0.001
+Natural Direct Effect (NDE), Odds Ratio
+0.81(0.73,0.89)
+< 0.001
+0.81(0.73,0.89)
+< 0.001
+0.82(0.73,0.90)
+< 0.001
+Natural Indirect Effect (NIE), Odds Ratio
+1.00(1.00,1.00)
+0.958
+1.00(1.00,1.00)
+0.958
+1.00(1.00,1.00)
+0.834
+Percentage Mediated (PM)
+-0.03(-1.33,1.26)
+0.958
+-0.03(-1.25,1.18) 0.958
+0.14(-1.21,1.50)
+0.834
+Vigorous physical activity (n = 3,172)
+Total Effect (TE), Odds Ratio
+0.81(0.73,0.89)
+< 0.001
+0.80(0.72,0.88)
+< 0.001
+0.81(0.72,0.89)
+< 0.001
+Natural Direct Effect (NDE), Odds Ratio
+0.83(0.75,0.91)
+< 0.001
+0.81(0.73,0.89)
+< 0.001
+0.82(0.73,0.90)
+< 0.001
+Natural Indirect Effect (NIE), Odds Ratio
+0.98(0.96,0.99)
+0.000
+0.98(0.97,0.99)
+0.002
+0.99(0.97,1.00)
+0.012
+Percentage Mediated (PM)
+10.74(3.26,18.22)
+0.005
+8.06(1.43,14.69)
+0.017
+5.94(0.29,11.60)
+0.040
+Moderately energetic physical activity (n = 3,169)
+Total Effect (TE), Odds Ratio
+0.81(0.73,0.89)
+< 0.001
+0.81(0.73,0.89)
+< 0.001
+0.82(0.73,0.90)
+< 0.001
+Natural Direct Effect (NDE), Odds Ratio
+0.81(0.73,0.89)
+< 0.001
+0.81(0.73,0.89)
+< 0.001
+0.82(0.73,0.90)
+< 0.001
+Natural Indirect Effect (NIE), Odds Ratio
+1.00(1.00,1.00)
+0.898
+1.00(1.00,1.00)
+0.764
+1.00(1.00,1.00)
+0.742
+Percentage Mediated (PM)
+-0.09(-1.54,1.36)
+0.898
+-0.27(-2.01,1.48) 0.764
+-0.25(-1.72,1.23) 0.743
+Mildly energetic physical activity (n = 3,165)
+Total Effect (TE), Odds Ratio
+0.81(0.73,0.89)
+< 0.001
+0.81(0.73,0.89)
+< 0.001
+0.82(0.73,0.90)
+< 0.001
+Natural Direct Effect (NDE), Odds Ratio
+0.81(0.73,0.89)
+< 0.001
+0.81(0.73,0.89)
+< 0.001
+0.82(0.74,0.90)
+< 0.001
+Natural Indirect Effect (NIE), Odds Ratio
+1.00(0.99,1.00)
+0.455
+1.00(0.99,1.00)
+0.464
+1.00(0.99,1.00)
+0.365
+Percentage Mediated (PM)
+0.66(-1.10,2.43)
+0.461
+0.68(-1.16,2.52)
+0.470
+0.99(-1.21,3.19)
+0.378
+Abbreviations: SD indicates standard deviation
+*Model 1 was adjusted for age and gender; Model 2 was further adjusted for the interaction of BMI per SD and Physical activity; Model 3 was further adjusted for marital
+status, medical history (CVD, diabetes, hypertension, dyslipidemia, and chronic kidney disease), and history of medication use (CVD medications, hypertension
+medications, diabetes medications, and lipid-lowering therapy)
+
+Page 7 of 10
+Xu et al. BMC Geriatrics           (2024) 24:54
+Fig. 2  Causal mediation analysis stratified by prespecified subgroup
+Abbreviation: OR, odds ratio. CVD, cardiovascular disease
+
+
+Page 8 of 10
+Xu et al. BMC Geriatrics           (2024) 24:54
+obesity and cognitive decline, explaining approximately
+5.94% of the total effect.
+In this study, we found no evidence that overall physical
+activity played a mediating role, we further investigated
+the mediating role of three different exercise intensities.
+Specifically, we explored the mediating effect of vigor­
+ous, moderate, and mild regular physical activity on the
+association between obesity and cognitive decline. Our
+results indicated that vigorous and regular physical activ­
+ity partially mediated the association, while moderate or
+mild regular physical activity did not. We consider that
+individuals in the middle-aged and elderly cohorts who
+exhibit the capacity to engage in intense and recurrent
+physical exertion are frequently characterized by obesity
+without concurrent organic pathologies. Furthermore,
+this group tends to be more physically active compared
+to individuals with normal weight, which in turn slows
+cognitive decline. On the other hand, individuals with
+chronic diseases, who may have organic impairments,
+might mask this mediating effect.
+The previous evidence indicated that individuals with
+obesity may exhibit higher levels of physical activity as a
+result of their health concerns [13], which corroborated
+the initial phase of the mediating pathway from obesity
+to physical activity. Despite previous studies suggesting a
+mediating role of physical activity, our study represented
+the first empirical validation of this notion [13]. Further­
+more, the second half of our mediation pathway (physical
+activity to cognitive decline) is corroborated by accumu­
+lating evidence that some previous studies showed that
+physical activity was a protective factor against cognitive
+decline [23, 24]. Physical activity can help foster healthy
+lifestyles, improve social relationships, and enhance selfregulation, which are favorable determinants of cognitive
+function in late adulthood [25].
+Our study provided evidence for a statistically signifi­
+cant partial mediating effect of physical activity on the
+link between obesity and cognitive decline. However,
+we observed that the magnitude of this effect was rela­
+tively small, which implies that there may be other, as yet
+unknown, factors that are involved in this association.
+Possible factors that should be taken into account include
+dietary habits, genetic predispositions, familial support,
+and social support. Thus, further research is necessary to
+confirm the presence of these alternative mediators and
+to investigate their potential influence on the relation­
+ship between obesity and cognitive decline, which may
+provide new opportunities for intervention and preven­
+tion strategies. Our results underscore the complexity of
+the association between obesity and cognitive decline,
+emphasizing the importance of ongoing research in this
+field.
+The study also observed the “obesity paradox”, and the
+use of a distinct cognitive function assessment scale and
+a longer follow-up cohort compared to prior research
+reinforced this observation. Furthermore, the study
+population is different from previous studies, and which
+can effectively improve the extrapolation of the conclu­
+sion. To clarify the paradox, we explored the associations
+between lipids and cognitive trajectory decline. It showed
+that higher HDL level was associated with an increased
+cognitive trajectory decline risk. Previous evidence on
+the relationship between HDL levels and risk of cognitive
+declines remained controversial [26]. Sultana et al. found
+a significant association of HDL-C higher than 80 mg/dL
+with increased accelerated cognitive decline among par­
+ticipants in the Aspirin in Reducing Events in the Elderly
+(ASPREE) trial [27], while higher HDL-C was reported to
+be associated with better cognitive function in the Maine
+Syracuse Study and lower dementia risk in the Japan
+Public Health Centre-based prospective (JPHC) Study
+[28, 29]. Furthermore, our study also showed that HDL
+level was lower in the obesity population, therefore, the
+metabolic disturbance (higher HDL levels and under­
+weight) was related with higher risk of cognitive trajec­
+tory decline.
+The current study boasts several notable strengths.
+Firstly, the study featured a sizeable, nationally repre­
+sentative sample, lending itself to a wide-ranging gener­
+alizability of the findings to the general middle-aged and
+older Chinese population. Secondly, the investigation of
+longitudinal associations utilizing repeated measures of
+the study’s variables facilitated a comprehensive com­
+prehension of the direction of the relationship between
+obesity and cognitive decline. Furthermore, the study
+evaluated the underlying mechanisms of this association,
+revealing that the prospective link between obesity and
+cognitive decline is partially mediated by vigorous physi­
+cal activity, thereby presenting avenues for the develop­
+ment of health interventions.
+Nevertheless, this study has several limitations. Firstly,
+since the information related to cognitive function scores
+and covariates was mainly self-reported, recall bias was
+inevitable. To minimize the bias, we applied the health
+examination data to identify patients with undiagnosed
+medical conditions. Secondly, although this prospective
+study firstly demonstrated the epidemiological associa­
+tions between obesity, vigorous physical activity, and cog­
+nitive trajectory decline, it cannot directly draw a causal
+relationship. Future Mendelian randomization studies
+should be applied to establish the potential causal rela­
+tionships. Thirdly, another potential bias is healthy par­
+ticipant bias because an upward trend of high and middle
+stable groups was observed in terms of delayed recall. If
+that was the case, then the observed association between
+obesity and cognitive trajectory decline possibly could be
+underestimated. Finally, this study involved only the Chi­
+nese population, and the generalizability of our findings
+
+Page 9 of 10
+Xu et al. BMC Geriatrics           (2024) 24:54
+should be verified in other ethnic groups to determine
+whether heterogeneity exists in different ethnicities.
+Conclusion
+In summary, our study reveals that vigorous physical
+exercise accounts for a meager proportion of the corre­
+lation between cognitive decline and obesity in middle
+and old-aged adults. This finding emphasizes the need for
+further exploration of alternative factors that may serve
+as mediators in the relationship between obesity and cog­
+nitive decline. Additionally, our results underscore the
+importance of examining the generalizability of our find­
+ings to diverse cultural and demographic contexts. Future
+research endeavors in this field should prioritize investi­
+gating these crucial areas.
+Supplementary Information
+The online version contains supplementary material available at https://doi.
+org/10.1186/s12877-024-04664-4.
+Supplementary Material 1: Table S1. Permutations of trajectory groups
+of cognitive function scores and corresponding Bayesian Information
+Criterion. Table S2. The participants' characteristics according to the
+cognitive function trajectory groups. Table S3. Association between lipid
+metabolites with trajectories of cognitive function. Figure S1. Trajectories
+of the cognitive function score and its five measures (immediate word
+recall, delayed word recall, orientation, visuo-construction, and attention).
+The solid lines mean estimated values and the dotted lines display the
+95% CIs
+Acknowledgements
+We would like to express our sincere gratitude to Peking University for
+providing data of CHARLS and to those involved in data collection and
+management. We also would like to thank MD. Chengnan Guo from the
+School of Public health, University of Fudan, who provided insightful
+methodological advice throughout the study.
+Author contributions
+Conception and design of study, collating data, drafting the manuscript: Xin
+Xu; Analysis and/or interpretation of data: Yi Xu; Revising the manuscript
+critically: Ruolin Shi.
+Funding
+The funders had no role in the design and conduct of the study; collection,
+management, analysis, and interpretation of the data; preparation, review,
+or approval of the manuscript; and decision to submit the manuscript for
+publication.
+Data availability
+The National School of Development at Peking University provided the data
+sets in the China Health and Retirement Longitudinal Survey (http://charls.
+pku.edu.cn/).
+Declarations
+Ethics approval and consent to participate
+All participants provided written informed consent, and the protocol was
+approved by the Ethical Review Committee of Peking University (approval
+number: IRB00001052 − 11015). This study followed the Strengthening the
+Reporting of Observational Studies in Epidemiology (STROBE) reporting
+guideline.
+Consent for publication
+Not applicable.
+Competing interests
+The authors declare no competing interests.
+Received: 24 May 2023 / Accepted: 3 January 2024
+References
+1.
+2021 Alzheimer’s disease facts and figures. Alzheimers Dement.
+2021;17(3):327–406.
+2.
+Global regional, national burden of neurological disorders. 1990–2016: a sys­
+tematic analysis for the global burden of Disease Study 2016. Lancet Neurol.
+2019;18(5):459–80.
+3.
+Jia L, Du Y, Chu L, Zhang Z, Li F, Lyu D, Li Y, Li Y, Zhu M, Jiao H, et al. Prevalence,
+risk factors, and management of dementia and mild cognitive impairment in
+adults aged 60 years or older in China: a cross-sectional study. Lancet Public
+Health. 2020;5(12):e661–71.
+4.
+Realdon O, Rossetto F, Nalin M, Baroni I, Cabinio M, Fioravanti R, Saibene FL,
+Alberoni M, Mantovani F, Romano M, et al. Technology-enhanced multidomain at home continuum of care program with respect to usual care
+for people with cognitive impairment: the Ability-TelerehABILITation study
+protocol for a randomized controlled trial. BMC Psychiatry. 2016;16(1):425.
+5.
+Global BMIMC, Di Angelantonio E, Bhupathiraju Sh N, Wormser D, Gao
+P, Kaptoge S, Berrington de Gonzalez A, Cairns BJ, Huxley R, Jackson Ch
+L, et al. Body-mass index and all-cause mortality: individual-participantdata meta-analysis of 239 prospective studies in four continents. Lancet.
+2016;388(10046):776–86.
+6.
+Lu Y, Hajifathalian K, Ezzati M, Woodward M, Rimm EB, Danaei G. Metabolic
+mediators of the effects of body-mass index, overweight, and obesity on
+coronary heart disease and stroke: a pooled analysis of 97 prospective
+cohorts with 1·8 million participants. Lancet. 2014;383(9921):970–83.
+7.
+Gustafson D. BMI and dementia: feast or famine for the brain? Lancet Diabe­
+tes Endocrinol. 2015;3(6):397–8.
+8.
+Pedditzi E, Peters R, Beckett N. The risk of overweight/obesity in mid-life and
+late life for the development of dementia: a systematic review and metaanalysis of longitudinal studies. Age Ageing. 2016;45(1):14–21.
+9.
+Norton S, Matthews FE, Barnes DE, Yaffe K, Brayne C. Potential for primary pre­
+vention of Alzheimer’s disease: an analysis of population-based data. Lancet
+Neurol. 2014;13(8):788–94.
+10.	 Albanese E, Launer LJ, Egger M, Prince MJ, Giannakopoulos P, Wolters FJ, Egan
+K. Body mass index in midlife and dementia: systematic review and metaregression analysis of 589,649 men and women followed in longitudinal
+studies. Alzheimers Dement (Amst). 2017;8:165–78.
+11.	 Kim G, Choi S, Lyu J. Body mass index and trajectories of cognitive decline
+among older Korean adults. Aging Ment Health. 2020;24(5):758–64.
+12.	 Talaei M, Feng L, Barrenetxea J, Yuan JM, Pan A, Koh WP. Adiposity, weight
+change, and risk of cognitive impairment: the Singapore Chinese health
+study. J Alzheimers Dis. 2020;74(1):319–29.
+13.	 Surrow S, Jessen-Winge C, Ilvig PM, Christensen JR. The motivation and
+opportunities for weight loss related to the everyday life of people with
+obesity: a qualitative analysis within the DO:IT study. Scand J Occup Ther.
+2021;28(6):479–87.
+14.	 Jia RX, Liang JH, Xu Y, Wang YQ. Effects of physical activity and exercise on the
+cognitive function of patients with Alzheimer disease: a meta-analysis. BMC
+Geriatr. 2019;19(1):181.
+15.	 Li C, Miles T, Shen L, Shen Y, Liu T, Zhang M, Li S, Huang C. Early-life exposure
+to severe famine and subsequent risk of depressive symptoms in late adult­
+hood: the China health and retirement longitudinal study. Br J Psychiatry.
+2018;213(4):579–86.
+16.	 Zhao Y, Atun R, Oldenburg B, McPake B, Tang S, Mercer SW, Cowling TE, Sum
+G, Qin VM, Lee JT. Physical multimorbidity, health service use, and cata­
+strophic health expenditure by socioeconomic groups in China: an analysis
+of population-based panel data. Lancet Glob Health. 2020;8(6):e840–9.
+17.	 Luo Y, Pan X, Zhang Z. Productive activities and cognitive decline among
+older adults in China: evidence from the China health and retirement longitu­
+dinal study. Soc Sci Med. 2019;229:96–105.
+18.	 Nagin DS, Odgers CL. Group-based trajectory modeling in clinical research.
+Annu Rev Clin Psychol. 2010;6:109–38.
+19.	 Zhang W, Chen Y, Chen N. Body mass index and trajectories of the cognition
+among Chinese middle and old-aged adults. BMC Geriatr. 2022;22(1):613.
+
+Page 10 of 10
+Xu et al. BMC Geriatrics           (2024) 24:54
+20.	 Robins JM, Greenland S. Identifiability and exchangeability for direct and
+indirect effects. Epidemiology. 1992;3(2):143–55.
+21.	 Valeri L, Vanderweele TJ. Mediation analysis allowing for exposure-mediator
+interactions and causal interpretation: theoretical assumptions and imple­
+mentation with SAS and SPSS macros. Psychol Methods. 2013;18(2):137–50.
+22.	 Vanderweele TJ, Vansteelandt S. Odds ratios for mediation analysis for a
+dichotomous outcome. Am J Epidemiol. 2010;172(12):1339–48.
+23.	 Pethick J, Piasecki M. Alterations in muscle force control with aging: is there
+a modulatory effect of lifelong physical activity? Front Sports Act Living.
+2022;4:817770.
+24.	 Emmerzaal TL, Kiliaan AJ, Gustafson DR. 2003–2013: a decade of body
+mass index, Alzheimer’s disease, and dementia. J Alzheimers Dis.
+2015;43(3):739–55.
+25.	 Ouanes S, Castelao E, Gebreab S, von Gunten A, Preisig M, Popp J. Life events,
+salivary cortisol, and cognitive performance in nondemented subjects: a
+population-based study. Neurobiol Aging. 2017;51:1–8.
+26.	 Reitz C. Dyslipidemia and dementia: current epidemiology, genetic evidence,
+and mechanisms behind the associations. J Alzheimers Dis. 2012;30(Suppl
+2):127–45.
+27.	 Hussain SM, Robb C, Tonkin AM, Lacaze P, Chong TTJ, Beilin LJ, Yu C, Watts
+GF, Ryan J, Ernst ME et al. Association of plasma high-density lipoprotein
+cholesterol level with risk of incident dementia: a cohort study of healthy
+older adults. Lancet Reg Health– Western Pac.
+28.	 Crichton GE, Elias MF, Davey A, Sullivan KJ, Robbins MA. Higher HDL choles­
+terol is associated with better cognitive function: the Maine-Syracuse study. J
+Int Neuropsychol Soc. 2014;20(10):961–70.
+29.	 Svensson T, Sawada N, Mimura M, Nozaki S, Shikimoto R, Tsugane S. The
+association between midlife serum high-density lipoprotein and mild cogni­
+tive impairment and dementia after 19 years of follow-up. Transl Psychiatry.
+2019;9(1):26.
+Publisher’s Note
+Springer Nature remains neutral with regard to jurisdictional claims in
+published maps and institutional affiliations.

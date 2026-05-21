@@ -1,0 +1,25 @@
+{
+  "title": "Associations of dynapenic abdominal obesity and its components with cognitive impairment among hemodialysis patients.",
+  "authors": [
+    "Zhou C",
+    "Peng J",
+    "Qian Z",
+    "Zhan L",
+    "Yuan J",
+    "Zha Y"
+  ],
+  "year": 2025,
+  "abstract": "OBJECTIVE: Cognitive impairment (CI) is a prevalent and significant health concern among patients undergoing maintenance hemodialysis (MHD). Recent studies have highlighted the growing interest in dynapenic abdominal obesity (DAO), which combines both low muscle strength and excess abdominal fat. Despite the increasing recognition of DAO, its association with CI in MHD patients remains uncertain. The objective of this study was to investigate the relationship between DAO and CI in MHD patients. METHODS: We conducted a multicenter, cross-sectional study in twenty dialysis centers, encompassing 3767 adult MHD patients. Participants were categorized into four distinct groups based on the criteria for abdominal obesity (AO), defined as waist circumference (WC) ≥ 90 cm for men and ≥ 85 cm for women, and dynapenia, characterized by handgrip strength (HGS) < 28 kg in men and < 18 kg in women. The groups were: non-dynapenic/non-abdominal obesity (NDNAO), non-dynapenic/abdominal obesity (NDAO), dynapenic/non-abdominal obesity (DNAO), and dynapenic/abdominal obesity (DAO). Cognitive function was assessed using the Mini-Mental State Examination (MMSE), with a score below 27 indicating cognitive impairment (CI). Multivariate logistic models were used to investigate the correlations between DAO and its components with the risk of CI. Smooth curve fittings were used to identify the potential nonlinear relationship between WC and the MMSE scores. The piecewise regression model was used for fitting while the log-likelihood ratio test was used to determine whether a significant inflection point existed. Additionally, we conducted a series of subgroup analyses to test the robustness of our results. RESULTS: The multi-variable adjusted odds ratios (ORs) of CI for DNAO and DAO were 2.10 (1.68-2.62, P < 0.001) and 1.81 (1.40-2.33, P < 0.001), respectively. These findings were consistently observed across subgroup analyses, indicating robustness in our results. AO was associated with increased risk of CI in the crude model (OR 1.22, 95%CI 1.05-1.41; P = 0.008), however, it became a protective factor after adjusting for potential confounders (OR 0.84, 95%CI 0.71-0.98; P = 0.03). We identified a significant nonlinear relationship between WC, HGS, and MMSE scores (P for non-linearity < 0.05). Notably, an inflection point at 23.29 kg for HGS was determined through threshold effect analysis. Below a WC threshold of 101 cm, MMSE scores demonstrated a positive correlation with WC (β = 0.03, 95% CI 0.01-0.04, P < 0.001). However, this relationship did not achieve statistical significance for WC values above 101 cm. CONCLUSIONS: Both DAO and DNAO are associated with increased odds of CI in MHD patients, with dynapenia being the major factor contributing to the increased odds of CI, while AO appears to play a protective role against CI.",
+  "doi": "10.1186/s12877-024-05580-3",
+  "arxiv_id": null,
+  "venue": "BMC geriatrics",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "39962377"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.1186/s12877-024-05580-3"
+}

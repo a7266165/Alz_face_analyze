@@ -1,0 +1,24 @@
+{
+  "title": "Age-dependent effects of body mass index across the adult life span on the risk of dementia: a cohort study with a genetic approach.",
+  "authors": [
+    "Karlsson IK",
+    "Lehto K",
+    "Gatz M",
+    "Reynolds CA",
+    "Dahl Aslan AK"
+  ],
+  "year": 2020,
+  "abstract": "BACKGROUND: While a high body mass index (BMI) in midlife is associated with higher risk of dementia, high BMI in late-life may be associated with lower risk. This study combined genetic designs with longitudinal data to achieve a better understanding of this paradox. METHODS: We used longitudinal data from 22,156 individuals in the Swedish Twin Registry (STR) and 25,698 from the Health and Retirement Study (HRS). The STR sample had information about BMI from early adulthood through late-life, and the HRS sample from age 50 through late-life. Survival analysis was applied to investigate age-specific associations between BMI and dementia risk. To examine if the associations are influenced by genetic susceptibility to higher BMI, an interaction between BMI and a polygenic score for BMI (PGSBMI) was included in the models and results stratified into those with genetic predisposition to low, medium, and higher BMI. In the STR, co-twin control models were applied to adjust for familial factors beyond those captured by the PGSBMI. RESULTS: At age 35-49, 5 units higher BMI was associated with 15% (95% CI 7-24%) higher risk of dementia in the STR. There was a significant interaction (p = 0.04) between BMI and the PGSBMI, and the association present only among those with genetic predisposition to low BMI (HR 1.38, 95% CI 1.08-1.78). Co-twin control analyses indicated genetic influences. After age 80, 5 units higher BMI was associated with 10-11% lower risk of dementia in both samples. There was a significant interaction between late-life BMI and the PGSBMI in the STR (p = 0.01), but not the HRS, with the inverse association present only among those with a high PGSBMI (HR 0.70, 95% CI 0.52-0.94). No genetic influences were evident from co-twin control models of late-life BMI. CONCLUSIONS: Not only does the association between BMI and dementia differ depending on age at BMI measurement, but also the effect of genetic influences. In STR, the associations were only present among those with a BMI in opposite direction of their genetic predisposition, indicating that the association between BMI and dementia across the life course might be driven by environmental factors and hence likely modifiable.",
+  "doi": "10.1186/s12916-020-01600-2",
+  "arxiv_id": null,
+  "venue": "BMC medicine",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "32513281"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.1186/s12916-020-01600-2"
+}

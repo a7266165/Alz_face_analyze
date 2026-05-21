@@ -1,0 +1,751 @@
+Lee et al. Alzheimer’s Research & Therapy          (2023) 15:108
+https://doi.org/10.1186/s13195-023-01259-w
+RESEARCH
+Open Access
+© The Author(s) 2023. Open Access  This article is licensed under a Creative Commons Attribution 4.0 International License, which
+permits use, sharing, adaptation, distribution and reproduction in any medium or format, as long as you give appropriate credit to the
+original author(s) and the source, provide a link to the Creative Commons licence, and indicate if changes were made. The images or
+other third party material in this article are included in the article’s Creative Commons licence, unless indicated otherwise in a credit line
+to the material. If material is not included in the article’s Creative Commons licence and your intended use is not permitted by statutory
+regulation or exceeds the permitted use, you will need to obtain permission directly from the copyright holder. To view a copy of this
+licence, visit http://​creat​iveco​mmons.​org/​licen​ses/​by/4.​0/. The Creative Commons Public Domain Dedication waiver (http://​creat​iveco​
+mmons.​org/​publi​cdoma​in/​zero/1.​0/) applies to the data made available in this article, unless otherwise stated in a credit line to the data.
+Alzheimer’s
+Research & Therapy
+Body mass index and two‑year change
+of in vivo Alzheimer’s disease pathologies
+in cognitively normal older adults
+Seunghoon Lee1, Min Soo Byun2,3, Dahyun Yi4, Min Jung Kim5, Joon Hyung Jung2, Nayeong Kong2,
+Gijung Jung4, Hyejin Ahn4, Jun‑Young Lee6, Koung Mi Kang7, Chul‑Ho Sohn7, Yun‑Sang Lee8, Yu Kyeong Kim9,
+Dong Young Lee2,3,4* and for the KBASE Research Group
+Abstract
+Background  Low body mass index (BMI) or underweight status in late life is associated with an increased risk of
+dementia or Alzheimer’s disease (AD). However, the relationship between late-life BMI and prospective longitudinal
+changes of in-vivo AD pathology has not been investigated.
+Methods  This prospective longitudinal study was conducted as part of the Korean Brain Aging Study for Early Diag‑
+nosis and Prediction of Alzheimer’s Disease (KBASE). A total of 194 cognitive normal older adults were included in the
+analysis. BMI at baseline was measured, and two-year changes in brain Aβ and tau deposition on PET imaging were
+used as the main outcomes. Linear mixed-effects (LME) models were used to examine the relationships between latelife BMI and longitudinal change in AD neuropathological biomarkers.
+Results  A lower BMI at baseline was significantly associated with a greater increase in tau deposition in AD-signature
+region over 2 years (β, -0.018; 95% CI, -0.028 to -0.004; p = .008), In contrast, BMI was not related to two-year changes
+in global Aβ deposition (β, 0.0002; 95% CI, -0.003 to 0.002, p = .671). An additional exploratory analysis for each sex
+showed lower baseline BMI was associated with greater increases in tau deposition in males (β, -0.027; 95% CI, -0.046
+to -0.009; p = 0.007), but not in females.
+Discussion  The findings suggest that lower BMI in late-life may predict or contribute to the progression of tau
+pathology over the subsequent years in cognitively unimpaired older adults.
+Keywords  Body mass index, Alzheimer disease, Beta-amyloid, Tau, Longitudinal changes
+*Correspondence:
+Dong Young Lee
+selfpsy@snu.ac.kr
+1 Department of Psychiatry, Myongji Hospital, Hanyang University College
+of Medicine, Goyang 10475, Republic of Korea
+2 Department of Neuropsychiatry, Seoul National University Hospital,
+Seoul 03080, Republic of Korea
+3 Department of Psychiatry, Seoul National University College
+of Medicine, Seoul 03080, Republic of Korea
+4 Institute of Human Behavioral Medicine, Medical Research Center, Seoul
+National University, 101 Daehak‑Ro, Jongno‑Gu, Seoul 03080, Republic
+of Korea
+5 Department of Neuropsychiatry, Nowon Eulji University Hospital,
+Seoul 01830, Republic of Korea
+6 Department of Neuropsychiatry, SMG-SNU Boramae Medical Center,
+Seoul 07061, Republic of Korea
+7 Department of Radiology, Seoul National University Hospital,
+Seoul 03080, Republic of Korea
+8 Department of Nuclear Medicine, Seoul National University College
+of Medicine, Seoul 03080, Republic of Korea
+9 Department of Nuclear Medicine, SMG-SNU Boramae Medical Center,
+Seoul 07061, Republic of Korea
+
+Page 2 of 7
+Lee et al. Alzheimer’s Research & Therapy          (2023) 15:108
+Introduction
+A large amount of evidence indicates that body mass
+index (BMI) is related to the risk of Alzheimer’s disease
+(AD) dementia [1–3]. Several studies have shown that
+being overweight or obese in midlife increases the risk
+of AD dementia or cerebral beta-amyloid (Aβ) deposition [4–6]. However, multiple studies have also reported
+that low BMI or being underweight in late life was associated with an increased risk of dementia [1, 3, 7] and
+that higher BMI in late life was a protective factor for AD
+dementia [3, 8].
+Several amyloid positron emission topography (PET)
+studies with cross-sectional design demonstrated that
+lower BMI in late life was associated with increased brain
+Aβ burden in cognitive normal(CN) elderly individuals [9–12]. Other cross-sectional studies also reported
+a correlation between lower late-life BMI and increased
+CSF total tau or phosphorylated-tau [9, 13, 14]. A study
+has reported that there is a correlation between frailty
+and brain atrophy as measured by MR imaging, with
+greater frailty being associated with greater brain atrophy in community dwelling older adults [15]. All these
+findings are consistent with the association between
+low BMI in late life and a higher risk of AD dementia. In
+regard of longitudinal approach, some prospective studies have reported that brain Aβ is associated with future
+decreased of BMI, suggesting that weight loss, as well as
+cognitive decline, may be a clinical manifestation of AD
+process [16, 17]. However, the relationship between latelife BMI and prospective longitudinal changes of in-vivo
+AD pathology has not yet been investigated. Understanding such relationship of current BMI and future prospective changes of AD pathological biomarkers in cognitively
+unimpaired older adults could make it clearer whether
+lower BMI can predict or contribute to the progression
+of AD pathology and subsequently to AD dementia risk.
+In this context, we tested the hypothesis that a lower
+late-life BMI is related to a greater prospective increase
+in in-vivo AD pathology, including Aβ and tau deposition, in cognitively healthy individuals. Additionally, as
+several previous studies showed prominent sex-related
+differences for the relationship between BMI and AD
+dementia risk [18, 19] and brain Aβ deposition [11, 20],
+we explored the same relationship for each sex separately.
+Methods
+Participants
+This study was performed as part of the Korean Brain
+Aging Study for Early Diagnosis and Prediction of Alzheimer’s Disease (KBASE), an ongoing prospective cohort
+study conducted from 2014 [21]. As of 2018, 297 CN
+adults between 55 and 90 years old were recruited and
+received a baseline evaluation, including a comprehensive clinical assessment and BMI measurement. Among
+them, 194 participants who had completed both baseline
+and two-year follow-up neuroimaging scans for brain
+Aβ deposition were included in the current study. The
+inclusion criteria were as follows: (a) age 55–90  years,
+(b) Clinical Dementia Rating score of 0, and (c) no diagnosis of mild cognitive impairment or dementia. The
+exclusion criteria were as follows: (a) any serious medical, psychiatric, or neurological disorder that could affect
+mental function; (b) any severe communication problem
+that would render clinical examination or brain scanning
+difficult; (c) contraindications to magnetic resonance
+imaging (MRI), such as a pacemaker or claustrophobia;
+(d) absence of a reliable informant; (e) illiteracy defined
+as a lack of the ability to read; and (f) participation in
+another clinical trial or treatment with an investigational
+product. Research clinicians determined the presence of
+any exclusion criteria by referring to the results of laboratory examinations and MRI scans. They also evaluated the clinical data collected by trained nurses during
+systematic interviews of participants and their reliable
+informants during the screening period. More detailed
+information on the recruitment of the KBASE cohort has
+been presented in a previous report [21]. The study was
+approved by the Institutional Review Board of the Seoul
+National University Hospital and SNU-SMG Boramae
+Medical Center, South Korea. All participants provided
+written informed consent.
+Clinical assessment
+The participants underwent comprehensive baseline
+clinical assessments based on the KBASE protocol [21]
+by trained psychiatrists. The assessments incorporated
+the Korean version of the Consortium to Establish a Registry for Alzheimer`s Disease Assessment (CERAD-K)
+[22, 23]. The presence of vascular risk factors (VRFs),
+including diabetes, hypertension, dyslipidemia, coronary
+heart disease, transient ischemic attack, and stroke, was
+assessed from data collected during systematic interviews
+by trained nurses with participants and their informants.
+Based on the number of VRFs, the vascular risk score
+(VRS) was calculated [24] and treated as a continuous
+variable for analyses. The Geriatric Depression Scale
+(GDS) [25] was used to measure the severity of depressive symptoms. Smoking status (never/former/smoker),
+alcohol intake status (never/former/drinker), and lifetime
+physical activity were evaluated through interviews with
+nurses. The Lifetime Total Physical Activity Questionnaire [26] was used to assess lifetime physical activity. A
+metabolic equivalent (MET) value was assigned to the
+intensity of activity based on the compendium of physical
+activities [27].
+
+Page 3 of 7
+Lee et al. Alzheimer’s Research & Therapy          (2023) 15:108
+
+BMI measurement
+BMI was calculated as weight in kilograms divided by the
+square of the height in meters. It was measured at the
+baseline visit. Trained research nurses measured the participants’ height and body weight using standard anthropometric methods.
+Measurement of Aβ biomarker
+All participants underwent ­[11C] Pittsburgh compound B
+(PiB)-positron emission tomography (PET) scans using
+a 3.0  T Biograph mMR (PET-MR) scanner (Siemens,
+Washington DC, USA). These scans were conducted
+according to the manufacturer’s protocols at baseline
+and two-year follow-up visit. We described the details
+of PiB-PET image acquisition and preprocessing previously [28]. The automatic anatomic labeling algorithm
+and the region combination method [29] were used to
+determine regions of interest (ROIs) and to characterize
+PiB retention in the frontal, lateral parietal, posterior cingulate-precuneus, and lateral temporal regions. A global
+cortical ROI (consisting of the four smaller ROIs) was
+also defined. The global Aβ retention value, the standardized uptake value ratio (SUVR) for the global cortical ROI, was calculated by dividing the mean values for
+all voxels of the global cortical ROI by a mean reference
+region. For the analysis of baseline data, the inferior cerebellar gray matter in the spatially unbiased infratentorial
+template for the cerebellum (SUIT) atlas [30] was used
+as the reference region. A participant was classified as
+Aβ positive if the SUVR was > 1.21 [31]. For longitudinal
+analysis, the reference region included the inferior cerebellar grey matter, cerebellar white matter (thresholded
+at 50%), pons, and cerebrum white matter (thresholded at
+95% and eroded by three voxels) [32, 33].
+Measurement of cerebral tau deposition
+A subset of subjects (n = 45) underwent two ­[18F]
+AV-1451 PET scans using a Biograph True Point 40 PET/
+CT platform (Siemens, USA) per the manufacturer’s
+guidelines at a two-year time interval. While the first PiB-
+PET imaging was performed during the baseline visit, the
+first AV-1451 PET imaging was performed at an average of 2.55 (standard deviation = 0.26) years after that
+visit. The details of AV-1451 PET imaging acquisition
+and preprocessing have been described previously [28].
+We quantified the AV-1451 SUVR of a priori ROI of the
+“AD-signature region” of tau accumulation to estimate
+cerebral tau deposition. This was a size-weighted average
+of the partial volume-corrected uptake by the entorhinal,
+amygdala, parahippocampal, fusiform, inferior temporal,
+and middle temporal ROIs [34, 35]. It was done using the
+cerebral hemispheric white matter ROI from FreeSurfer
+in the partial volume code [36] as a reference region. The
+literature recommends using cerebral white matter as the
+reference region for intensity normalization in longitudinal AV-1451 PET data analysis [37].
+Statistical analyses
+We tested linear mixed-effects (LME) models with random intercepts to examine the relationships between
+late-life BMI and longitudinal change in AD neuropathological biomarkers. All models included Aβ or tau
+deposition values as dependent variables on the first and
+second PET scan. Model 1 included baseline BMI, age,
+sex, APOE4, baseline Aβ or Tau and their interactions
+with time. In Model 2, we additionally controlled for
+VRS and its interaction with time to adjust for the confounding effects of vascular risk factors, considering the
+well perceived role of vascular risk factors in AD development [38, 39]. A random intercept was included for
+each subject, and time was calculated as the number of
+years from baseline. For exploratory purposes, the LME
+model including baseline BMI, age, APOE4, baseline Aβ
+or tau and their interactions with time was analyzed for
+each sex. Statistical analyses were performed using R
+version 4.0, and jamovi version 2.2.1 (The jamovi project, www.​jamovi.​org). In all analyses, p < 0.05 was considered as statistical significance.
+Availability of data and materials
+The datasets generated and analyzed during the present
+study are not publicly available, owing to ethics considerations and privacy restrictions. Data might be obtained
+from the corresponding author after approval by the
+Institutional Review Board of the Seoul National University Hospital, South Korea.
+Results
+Participant characteristics
+The demographic and clinical characteristics of all subjects are presented in Table 1.
+Association of BMI at baseline with cerebral Aβ and tau
+deposition change over two years
+Baseline BMI was not significantly associated with global
+Aβ deposition change during the two-year follow-up
+period for models 1 and 2. In contrast, a lower baseline
+BMI was significantly associated with a greater increase
+in tau deposition in the AD-signature region over two
+years (Table 2). When we conducted the same analyses
+including three BMI strata (below -1 SD, median BMI,
+above 1SD) instead of BMI as a continuous variable for
+the purpose of demonstration, the results were similar
+(Fig. 1 and Table 3). We also performed sensitivity analyses, including the GDS score, smoking status, alcohol
+
+Page 4 of 7
+Lee et al. Alzheimer’s Research & Therapy          (2023) 15:108
+intake status, and lifetime physical activity as additional
+covariates, which showed similar findings (Table 4).
+Association of BMI with cerebral Aβ and tau deposition
+change over two years stratified based on sex
+A lower baseline BMI was associated with increased tau
+deposition over two years in men, but not in women
+(Table  5). As for Aβ changes, neither women nor men
+showed significant association between baseline BMI and
+cerebral Aβ changes over two years.
+Discussion
+The present study found that a lower BMI was associated
+with greater increase of brain tau deposition over two
+years in cognitively healthy older adults. Further exploratory analyses showed that this association was significant
+in men, but not in women. In contrast, baseline BMI was
+not significantly associated with the change in cerebral
+Aβ deposition.
+Our findings on the relationship between lower baseline BMI and greater increase in brain tau deposition are
+in agreement with previous reports of a cross-sectional
+association between lower BMI and higher CSF tau levels in older individuals [9, 13, 14, 40]. Although it is not
+easy to clearly explain the mechanisms underlying the
+relationship between lower BMI and greater increase in
+brain tau deposition, some possible explanations can be
+provided. First, the association between lower BMI and
+increased tau in the brain may be mediated by decreased
+leptin levels, a hormone synthesized from body fat that
+regulates appetite and energy metabolism [41]. Several
+laboratory studies have demonstrated that leptin reduces
+phosphorylated tau in in  vivo and in  vitro experiments
+[42–44]. This possibility of leptin mediation may further
+explain why the association is more prominent in males
+than females. As leptin expression is higher in subcutaneous than visceral fat [41, 45], it is more likely to be lower
+in thin males than thin females. Even at the same BMI,
+males have less subcutaneous fat than females [41, 46].
+Second, alterations in insulin regulation may influence
+brain tau pathology [47]. Insulin inhibits tau hyperphosphorylation [48, 49], and plasma insulin can be transported via the blood–brain barrier into the cerebrospinal
+fluid [50]. Given people with low BMI have lower plasma
+insulin levels than those with higher BMI [51], decreased
+insulin levels in thin individuals may accelerate the brain
+deposition of pathological tau protein by ameliorating
+the insulin function to inhibit tau phosphorylation.
+Additional exploratory analyses demonstrated malespecific association between lower baseline BMI and
+increased tau deposition over two years. The finding is
+generally in line with our previous report which showed
+a male-specific association between mid-life lower BMI
+Table 1  Participant characteristics
+Abbreviations: Aβ β-amyloid protein, IQR Interquartile range, MET metabolic
+equivalent, SD standard deviation, SUVR standardized uptake value ratio, VRS
+vascular risk score
+Variable
+Total
+Tau PET
+No. of individuals
+194
+45
+Age at baseline, year (mean ± SD)
+68.4 ± 8.1
+70.3 ± 7.3
+Female, No. (%)
+102 (53)
+25 (55.6)
+Education, year, median (IQR)
+12 (7)
+12(4)
+APOE ε4 carriers, No. (%)
+35 (18.0)
+8 (17.8)
+Baseline BMI, kg/m2 (mean ± SD)
+24.20 ± 3.01
+24.5 ± 2.55
+Vascular risk factor, No. (%)
+  Diabetes mellitus
+35 (18.0)
+10 (22.2)
+  Hypertension
+87 (44.8)
+21 (46.7)
+  Hyperlipidemia
+69 (35.6)
+15 (33.3)
+  Coronary heart disease
+11 (5.7)
+3 (6.7)
+  Stroke
+0
+0
+  TIA
+1 (0.5)
+1 (2.2)
+VRS, median (IQR)
+1 (0–2)
+1 (0–2)
+Alcohol use, No. (%)
+  Never
+98 (50.5)
+25(55.6)
+  Former
+23 (11.9)
+7 (15.6)
+  Drinker
+73 (37.6)
+13 (28.9)
+Smoking status, No. (%)
+  Never
+125 (64.4)
+30 (66.7)
+  Former
+57 (29.4)
+13 (28.9)
+  Drinker
+12 (6.2)
+2 (4.4)
+Lifetime physical activity, MET, median (IQR)
+68.7 (57.2)
+64.5 (42.1)
+Cerebral Aβ deposition, SUVR
+  Baseline global Aβ retention, median (IQR)
+1.12 (0.11)
+1.13 (0.11)
+  Baseline Aβ positive (> 1.20), No, (%)
+43 (22)
+13 (28.9)
+Global Tau deposition, SUVR
+  Baseline Tau retention, median (IQR)
+1.02 (0.14)
+1.00 (0.16)
+Table 2  Association of the baseline BMI with neuroimaging
+biomarker changes for 2-year
+Abbreviations: Aβ β-amyloid protein, BMI body mass index, CI confidence interval
+a Adjusted for age, sex, APOE4, baseline Aβ or Tau and their interactions with
+time
+b Adjusted for age, sex, APOE4, baseline Aβ a or Tau, vascular risk score, and their
+interactions with time
+Estimate
+95% CI
+t value
+p value
+Dependent variable: Aβ deposition
+  Model ­1a
+    Baseline BMI x time
+0.000
+-0.003 to 0.002
+-0.359
+.720
+  Model ­2b
+    Baseline BMI x time
+0.000
+-0.003 to 0.002
+-0.426
+.671
+Dependent variable: Tau deposition
+  Model ­1a
+    Baseline BMI x time
+-0.018
+-0.030 to -0.006
+-3.027
+.003
+  Model ­2b
+    Baseline BMI x time
+-0.016
+-0.028 to -0.004
+-2.703
+.008
+
+Page 5 of 7
+Lee et al. Alzheimer’s Research & Therapy          (2023) 15:108
+
+and reduced AD-signature region cortical thickness [11].
+Both findings may explain the neuropathological links
+underlying sex-specific association between BMI and AD
+dementia risk repeatedly shown by epidemiological studies [18, 19, 52].
+We did not find a significant relationship between
+baseline BMI and longitudinal brain Aβ changes for all
+participants. This disagrees with previous cross-sectional
+findings for the association between lower BMI and
+higher Aβ deposition in cognitively healthy older individuals [9–12]. Given very gradual accumulation of Aβ
+in the brain [53], the two-year follow-up period may
+be relatively short to assess changes in Aβ deposition.
+Such short-term observations may affect the null finding for the association between BMI and changes in Aβ
+deposition.
+Our finding for the relationship between lower late-life
+BMI and prospective increase in in  vivo tau pathology
+is a novel one. Nevertheless, the present study had several potential limitations that should be addressed. First,
+as the proportion of participants with obesity (BMI over
+30  mg/kg2) and underweight (BMI below 18.5  mg/kg2)
+was very small in our sample [3.1% (n = 6) and 1% (n = 2)
+of overall participants, respectively], it might be difficult
+to investigate the influence of higher BMI, obesity or very
+low BMI on the change in AD pathologies. Second, the
+first tau PET was performed at an average of 2.55 years
+(standard deviation 0.26 years) after BMI measurement
+at baseline, whereas the first amyloid PET was performed
+at baseline. This temporal gap may have influenced the
+results. However, when we controlled for the temporal
+gap as an additional covariate, the results did not change.
+Third, only a subset of participants (n = 45) underwent
+two tau PET scans, whereas all participants underwent
+two amyloid PET scans. Despite the smaller sample size
+for tau, we found a statistically significant relationship
+between BMI and change in tau deposition. This indicates that a small sample size may not be a critical issue.
+Nevertheless, a study with a larger sample size is required
+to confirm the sex-specific association between BMI and
+pathological changes in AD patients. Finally, mood status and various lifestyle factors may confound the association between BMI and changes in AD biomarkers. To
+minimize this possibility, we performed additional sensitivity analyses including smoking status, alcohol status,
+Fig. 1  Changes of Global Amyloid and tau deposition over 2 years according to the baseline BMI strata. Estimates are from a linear mixed model
+predicting change in Aβ deposition (A) and in tau deposition (B). Controlling for age, sex, APOE4, baseline tau or Aβ and their interactions with
+time. Error bars represent standard error
+Table 3  Association
+of
+the
+baseline
+BMI
+strata
+with
+neuroimaging biomarker changes for 2 years
+Abbreviations: Aβ β-amyloid protein, APOE apolipoprotein e, BMI body mass
+index, CI confidence interval
+Adjusted for age, sex, APOE e4, baseline Aβ or Tau and their interactions with
+time
+Estimate
+95% CI
+t value
+p value
+Dependent variable: Aβ retention
+  Baseline BMI strata
+x time
+-0.004
+-0.016 to 0.008
+-0.653
+.514
+Dependent variable: Tau deposition
+  Baseline BMI strata
+x time
+-0.067
+-0.118 to -0.017
+-2.606
+.011
+Table 4  Results from sensitivity analyses for the association
+of the baseline BMI with neuroimaging biomarker changes for
+2 years
+Abbreviations: Aβ β-amyloid protein, APOE apolipoprotein e, BMI body mass
+index, CI confidence interval
+Adjusted for smoking status, alcohol intake status, and lifetime physical activity
+as well as age, sex, apolipoprotein e4, vascular risk score, baseline Aβ or tau and
+their interactions with time
+Estimate
+95% CI
+t value
+p value
+Dependent variable: Aβ retention
+  Baseline BMI x time
+0.0003
+-0.003 to 0.002
+-0.232
+.817
+Dependent variable: Tau deposition
+  Baseline BMI x time
+-0.016
+-0.028 to -0.004
+-2.551
+.012
+
+Page 6 of 7
+Lee et al. Alzheimer’s Research & Therapy          (2023) 15:108
+lifetime physical activity, and GDS as additional covariates and still obtained similar results. However, we could
+not control for food intake or dietary quality due to the
+lack of information.
+Conclusion
+The present findings suggest that lower BMI in late
+life may predict or contribute to the progression of tau
+pathology over subsequent years in cognitively unimpaired older adults. Concerning the prevention of AD
+dementia or related cognitive decline, more attention
+needs to be paid to avoid being underweight in late life,
+particularly in men.
+Acknowledgements
+The authors are grateful to all participants in this study.
+A complete list of KBASE research group members can be found athttp://​
+kbase.​kr/.
+Authors’ contributions
+Conception and design of the study: S.H.L., D.Y.L. Acquisition, analysis and
+interpretation of data: All authors. Drafting of text and figures: S.H.L, D.Y.L.
+Funding
+This study was supported by a grant from the Ministry of Science and ICT,
+Republic of Korea (grant No: NRF-2014M3C7A1046042), a grant from the
+Ministry of Health & Welfare, Republic of Korea (HI18C0630 & HI19C0149),
+a grant from the Seoul National University Hospital, Republic of Korea (No.
+3020200030) and a grant from the National Institute of Aging, United States of
+America (U01AG072177). The funding source had no role in the study design,
+data collection, data analysis, data interpretation, writing of the manuscript, or
+decision to submit it for publication.
+Availability of data and materials
+The datasets generated and analyzed during the present study are not
+publicly available, owing to ethics considerations and privacy restrictions. Data
+might be obtained from the corresponding author after approval by the Insti‑
+tutional Review Board of the Seoul National University Hospital, South Korea.
+Declarations
+Ethics approval and consent to participate
+All studies were conducted in accordance with the approved guidelines. The
+study was approved by the Institutional Review Board of the Seoul National
+University Hospital and SNU-SMG Boramae Medical Center, South Korea. All
+participants provided written informed consent.
+Consent for publication
+Not applicable.
+Competing interests
+The authors declare no competing interests.
+Received: 10 August 2022   Accepted: 1 June 2023
+References
+	1.
+Tolppanen A-M, Ngandu T, Kåreholt I, Laatikainen T, Rusanen M,
+Soininen H, et al. Midlife and late-life body mass index and late-life
+dementia: results from a prospective population-based cohort. J
+Alzheimers Dis. 2014;38:201–9.
+	2.
+Qizilbash N, Gregson J, Johnson ME, Pearce N, Douglas I, Wing K, et al.
+BMI and risk of dementia in two million people over two decades: a
+retrospective cohort study. Lancet Diabetes Endocrinol. 2015;3:431–6.
+	3.
+Hughes T, Borenstein A, Schofield E, Wu Y, Larson E. Association
+between late-life body mass index and dementia The Kame Project.
+Neurology. 2009;72:1741–6.
+	4.
+Xu W, Atti A, Gatz M, Pedersen N, Johansson B, Fratiglioni L. Midlife
+overweight and obesity increase late-life dementia risk A populationbased twin study. Neurology. 2011;76:1568–74.
+	5.
+Whitmer RA, Gunderson EP, Barrett-Connor E, Quesenberry CP, Yaffe K.
+Obesity in middle age and future risk of dementia: a 27 year longitudi‑
+nal population based study. BMJ. 2005;330:1360.
+	6.
+Gottesman RF, Schneider ALC, Zhou Y, Coresh J, Green E, Gupta N, et al.
+Association between midlife vascular risk factors and estimated brain
+amyloid deposition. JAMA. 2017;317:1443–50.
+	7.
+Fitzpatrick AL, Kuller LH, Lopez OL, Diehr P, O’Meara ES, Longstreth W,
+et al. Midlife and late-life obesity and the risk of dementia: cardiovascu‑
+lar health study. Arch Neurol. 2009;66:336–42.
+	8.
+Atti AR, Palmer K, Volpato S, Winblad B, De Ronchi D, Fratiglioni L. Latelife body mass index and dementia incidence: nine-year follow-up data
+from the Kungsholmen Project. J Am Geriatr Soc. 2008;56:111–6.
+	9.
+Vidoni ED, Townley RA, Honea RA, Burns JM, Alzheimer’s Disease Neu‑
+roimaging I. Alzheimer disease biomarkers are associated with body
+mass index. Neurology. 2011;77:1913–20.
+	10.	 Hsu DC, Mormino EC, Schultz AP, Amariglio RE, Donovan NJ, Rentz
+DM, et al. Lower Late-Life Body-Mass Index is Associated with Higher
+Cortical Amyloid Burden in Clinically Normal Elderly. J Alzheimers Dis.
+2016;1–9.
+	11.	 Lee SH, Byun MS, Lee JH, Yi D, Sohn BK, Lee JY, et al. Sex-Specific Associa‑
+tion of Lifetime Body Mass Index with Alzheimer’s Disease Neuroimaging
+Biomarkers. J Alzheimers Dis. 2020;75:767–77.
+	12.	 Thirunavu V, McCullough A, Su Y, Flores S, Dincer A, Morris JC, et al.
+Higher Body Mass Index Is Associated with Lower Cortical Amyloid-beta
+Burden in Cognitively Normal Individuals in Late-Life. J Alzheimers Dis.
+2019;69:817–27.
+	13.	 Ewers M, Schmitz S, Hansson O, Walsh C, Fitzpatrick A, Bennett D, et al.
+Body mass index is associated with biological CSF markers of core brain
+pathology of Alzheimer’s disease. Neurobiol Aging. 2012;33:1599–608.
+Table 5  Association of the baseline BMI with neuroimaging biomarker changes according to Sex
+Abbreviations: Aβ β-amyloid protein, BMI body mass index, CI confidence interval
+Adjusted for age, APOE4, baseline Aβ or tau and their interactions with time
+Female
+Male
+Estimate
+95% CI
+p value
+Estimate
+95% CI
+p value
+Dependent variable: global Aβ retention
+  Baseline BMI x time
+0.001
+-0.002 to 0.004
+.671
+-0.002
+-0.005 to 0.001
+.250
+Dependent variable: Global Tau deposition
+  Baseline BMI x time
+-0.013
+-0.029 to 0.003
+.115
+-0.027
+-0.046 to -0.009
+.007
+
+Page 7 of 7
+Lee et al. Alzheimer’s Research & Therapy          (2023) 15:108
+
+	14.	 Sun Z, Wang ZT, Sun FR, Shen XN, Xu W, Ma YH, et al. Late-life obesity is a
+protective factor for prodromal Alzheimer’s disease: a longitudinal study.
+Aging. 2020;12:2005–17.
+	15.	 Del Brutto OH, Mera RM, Cagino K, Fanning KD, Milla-Martinez MF, Nieves
+JL, et al. Neuroimaging signatures of frailty: A population-based study in
+community-dwelling older adults (the Atahualpa Project). Geriatr Geron‑
+tol Int. 2017;17:270–6.
+	16.	 Buchman AS, Capuano AW, VanderHorst V, Wilson RS, Oveisgharan S,
+Schneider JA, et al. Brain β-amyloid links the association of change in BMI
+with cognitive decline in community-dwelling older adults. J Gerontol A
+Biol Sci Med Sci. 2021;glab320.
+	17.	 Xu W, Sun F-R, Tan C-C, Tan L, Alzheimer’s Disease Neuroimaging Initia‑
+tive. Weight Loss is a Preclinical Signal of Cerebral Amyloid Deposition
+and Could Predict Cognitive Impairment in Elderly Adults. J Alzheimers
+Dis JAD. 2020;77:449–56.
+	18.	 Beydoun MA, Lhotsky A, Wang Y, Dal Forno G, An Y, Metter EJ, et al. Asso‑
+ciation of adiposity status and changes in early to mid-adulthood with
+incidence of Alzheimer’s disease. Am J Epidemiol. 2008;168:1179–89.
+	19.	 Dahl AK, Löppönen M, Isoaho R, Berg S, Kivelä S. Overweight and obesity
+in old age are not associated with greater dementia risk. J Am Geriatr Soc.
+2008;56:2261–6.
+	20.	 Chuang Y, An Y, Bilgel M, Wong D, Troncoso J, O’Brien RJ, et al. Midlife
+adiposity predicts earlier onset of Alzheimer’s dementia, neuropathology
+and presymptomatic cerebral amyloid accumulation. Mol Psychiatry.
+2015;
+	21.	 Byun MS, Yi D, Lee JH, Choe YM, Sohn BK, Lee JY, et al. Korean Brain Aging
+Study for the Early Diagnosis and Prediction of Alzheimer’s Disease:
+Methodology and Baseline Sample Characteristics. Psychiatry Investig.
+2017;14:851–63.
+	22.	 Morris JC, Heyman A, Mohs RC, Hughes J, van Belle G, Fillenbaum G, et al.
+The consortium to establish a registry for Alzheimer’s disease (CERAD):
+I. Clinical and neuropsychological assessment of Alzheimer’s disease.
+Neurology. 1989;
+	23.	 Lee JH, Lee KU, Lee DY, Kim KW, Jhoo JH, Kim JH, et al. Development
+of the Korean Version of the Consortium to Establish a Registry for
+Alzheimer’s Disease Assessment Packet (CERAD-K): Clinical and Neu‑
+ropsychological Assessment Batteries. J Gerontol B Psychol Sci Soc Sci.
+2002;57:P47-53.
+	24.	 DeCarli C, Mungas D, Harvey D, Reed B, Weiner M, Chui H, et al. Memory
+impairment, but not cerebrovascular disease, predicts progression of MCI
+to dementia. Neurology. 2004;63:220–7.
+	25.	 Kim JY, Park JH, Lee JJ, Huh Y, Lee SB, Han SK, et al. Standardization of the
+Korean version of the geriatric depression scale: reliability, validity, and
+factor structure. Psychiatry Investig. 2008;5:232.
+	26.	 Friedenreich CM, Courneya KS, Bryant HE. The lifetime total physical
+activity questionnaire: development and reliability. Med Sci Sports Exerc.
+1998;30:266–74.
+	27.	 Ainsworth BE, Haskell WL, Herrmann SD, Meckes N, Bassett DR Jr, Tudor-
+Locke C, et al. 2011 Compendium of Physical Activities: a second update
+of codes and MET values. Med Sci Sports Exerc. 2011;43:1575–81.
+	28.	 Park J-C, Han S-H, Yi D, Byun MS, Lee JH, Jang S, et al. Plasma tau/
+amyloid-β1–42 ratio predicts brain tau deposition and neurodegenera‑
+tion in Alzheimer’s disease. Brain. 2019;142:771–86.
+	29.	 Reiman EM, Chen K, Liu X, Bandy D, Yu M, Lee W, et al. Fibrillar amyloid-β
+burden in cognitively normal people at 3 levels of genetic risk for Alzhei‑
+mer’s disease. Proc Natl Acad Sci. 2009;106:6820–5.
+	30.	 Diedrichsen J, Balsters JH, Flavell J, Cussans E, Ramnani N. A probabilistic
+MR atlas of the human cerebellum. Neuroimage. 2009;46:39–46.
+	31.	 Villeneuve S, Rabinovici GD, Cohn-Sheehy BI, Madison C, Ayakta N, Ghosh
+PM, et al. Existing Pittsburgh Compound-B positron emission tomogra‑
+phy thresholds are too high: statistical and pathological evaluation. Brain.
+2015;138:2020–33.
+	32.	 Lowe VJ, Lundt ES, Senjem ML, Schwarz CG, Min H-K, Przybelski SA, et al.
+White Matter Reference Region in PET Studies of 11C-Pittsburgh Com‑
+pound B Uptake: Effects of Age and Amyloid-β Deposition. J Nucl Med.
+2018;59:1583–9.
+	33.	 Schwarz CG, Senjem ML, Gunter JL, Tosakulwong N, Weigand SD, Kemp
+BJ, et al. Optimizing PiB-PET SUVR change-over-time measurement by a
+large-scale analysis of longitudinal reliability, plausibility, separability, and
+correlation with MMSE. Neuroimage. 2017;144:113–27.
+	34.	 Jack CR Jr, Wiste HJ, Weigand SD, Therneau TM, Lowe VJ, Knopman DS,
+et al. Defining imaging biomarker cut points for brain aging and Alzhei‑
+mer’s disease. Alzheimers Dement. 2017;13:205–16.
+	35.	 Maass A, Landau S, Baker SL, Horng A, Lockhart SN, La Joie R, et al.
+Comparison of multiple tau-PET measures as biomarkers in aging and
+Alzheimer’s disease. Neuroimage. 2017;157:448–63.
+	36.	 Baker SL, Maass A, Jagust WJ. Considerations and code for partial volume
+correcting [18F]-AV-1451 tau PET data. Data Brief. 2017;15:648–57.
+	37.	 Harrison TM, La Joie R, Maass A, Baker SL, Swinnerton K, Fenton L, et al.
+Longitudinal tau accumulation and atrophy in aging and alzheimer
+disease. Ann Neurol. 2019;85:229–40.
+	38.	 Luchsinger JA, Reitz C, Honig LS, Tang MX, Shea S, Mayeux R. Aggregation
+of vascular risk factors and risk of incident Alzheimer disease. Neurol‑
+ogy. Wolters Kluwer Health, Inc. on behalf of the American Academy of
+Neurology; 2005;65:545–51.
+	39.	 de Bruijn RFAG, Ikram MA. Cardiovascular risk factors and future risk of
+Alzheimer’s disease. BMC Med. 2014;12:130.
+	40.	 Mathys J, Gholamrezaee M, Henry H, von Gunten A, Popp J. Decreas‑
+ing body mass index is associated with cerebrospinal fluid markers
+of Alzheimer’s pathology in MCI and mild dementia. Exp Gerontol.
+2017;100:45–53.
+	41.	 Ahima RS, Flier JS. Adipose tissue as an endocrine organ. Trends Endo‑
+crinol Metab. 2000;11:327–32.
+	42.	 Marwarha G, Dasari B, Prasanthi JR, Schommer J, Ghribi O. Leptin
+reduces the accumulation of Abeta and phosphorylated tau induced
+by 27-hydroxycholesterol in rabbit organotypic slices. J Alzheimers Dis.
+2010;19:1007–19.
+	43.	 Greco SJ, Sarkar S, Johnston JM, Zhu X, Su B, Casadesus G, et al. Leptin
+reduces Alzheimer’s disease-related tau phosphorylation in neuronal
+cells. Biochem Biophys Res Commun. 2008;376:536–41.
+	44.	 Greco SJ, Bryan KJ, Sarkar S, Zhu X, Smith MA, Ashford JW, et al. Leptin
+reduces pathology and improves memory in a transgenic mouse model
+of Alzheimer’s disease. J Alzheimers Dis. 2010;19:1155–67.
+	45.	 Van Harmelen V, Reynisdottir S, Eriksson P, Thörne A, Hoffstedt J, Lön‑
+nqvist F, et al. Leptin secretion from subcutaneous and visceral adipose
+tissue in women. Diabetes. 1998;47:913–7.
+	46.	 Pradhan AD. Sex differences in the metabolic syndrome: implications for
+cardiovascular health in women. Clin Chem. 2014;60:44–52.
+	47.	 Craft S, Watson GS. Insulin and neurodegenerative disease: shared and
+specific mechanisms. Lancet Neurol. 2004;3:169–78.
+	48.	 Hong M, Lee VMY. Insulin and insulin-like growth factor-1 regu‑
+late tau phosphorylation in cultured human neurons. J Biol Chem.
+1997;272:19547–53.
+	49.	 Schubert M, Brazil DP, Burks DJ, Kushner JA, Ye J, Flint CL, et al. Insulin
+receptor substrate-2 deficiency impairs brain growth and promotes tau
+phosphorylation. J Neurosci. 2003;23:7084–92.
+	50.	 Poduslo JF, Curran GL, Wengenack TM, Malester B, Duff K. Permeability
+of proteins at the blood–brain barrier in the normal adult mouse and
+double transgenic mouse model of Alzheimer’s disease. Neurobiol Dis.
+2001;8:555–67.
+	51.	 Neeland IJ, Turer AT, Ayers CR, Powell-Wiley TM, Vega GL, Farzaneh-Far
+R, et al. Dysfunctional adiposity and the risk of prediabetes and type 2
+diabetes in obese adults. JAMA. 2012;308:1150–9.
+	52.	 Rahmani F, Wang Q, McKay NS, Keefe S, Hantler N, Hornbeck R, et al.
+Sex-specific patterns of body mass index relationship with white matter
+connectivity. J Alzheimers Dis. 86:1831–48.
+	53.	 Jack CR, Wiste HJ, Lesnick TG, Weigand SD, Knopman DS, Vemuri P,
+et al. Brain β-amyloid load approaches a plateau. Neurology. Wolters
+Kluwer Health, Inc. on behalf of the American Academy of Neurology;
+2013;80:890–6.
+Publisher’s Note
+Springer Nature remains neutral with regard to jurisdictional claims in pub‑
+lished maps and institutional affiliations.

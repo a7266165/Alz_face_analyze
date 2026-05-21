@@ -1,0 +1,25 @@
+{
+  "title": "Machine Learning Classification of Cognitive Status in Community-Dwelling Sarcopenic Women: A SHAP-Based Analysis of Physical Activity and Anthropometric Factors.",
+  "authors": [
+    "Gormez Y",
+    "Yagin FH",
+    "Aygun Y",
+    "Alzakari SA",
+    "Alhussan AA",
+    "Aghaei M"
+  ],
+  "year": 2025,
+  "abstract": "Background and Objectives: Sarcopenia, characterized by progressive loss of skeletal muscle mass and function, has increasingly been recognized not only as a physical health concern but also as a potential risk factor for cognitive decline. This study investigates the application of machine learning algorithms to classify cognitive status based on Mini-Mental State Examination (MMSE) scores in community-dwelling sarcopenic women. Materials and Methods: A dataset of 67 participants was analyzed, with MMSE scores categorized into severe (≤17) and mild (>17) cognitive impairment. Eight classification models-MLP, CatBoost, LightGBM, XGBoost, Random Forest (RF), Gradient Boosting (GB), Logistic Regression (LR), and AdaBoost-were evaluated using a repeated holdout strategy over 100 iterations. Hyperparameter optimization was performed via Bayesian optimization, and model performance was assessed using metrics including weighted F1-score (w_f1), accuracy, precision, recall, PR-AUC, and ROC-AUC. Results: Among the models, CatBoost achieved the highest w_f1 (87.05 ± 2.85%) and ROC-AUC (90 ± 5.65%), while AdaBoost and GB showed superior PR-AUC scores (92.49% and 91.88%, respectively), indicating strong performance in handling class imbalance and threshold sensitivity. SHAP (SHapley Additive exPlanations) analysis revealed that moderate physical activity (moderatePA minutes), walking days, and sitting time were among the most influential features, with higher physical activity associated with reduced risk of cognitive impairment. Anthropometric factors such as age, BMI, and weight also contributed significantly. Conclusions: The results highlight the effectiveness of boosting-based models in capturing complex patterns in clinical data and provide interpretable evidence supporting the role of modifiable lifestyle factors in cognitive health. These findings suggest that machine learning, combined with explainable AI, can enhance risk assessment and inform targeted interventions for cognitive decline in older women.",
+  "doi": "10.3390/medicina61101834",
+  "arxiv_id": null,
+  "venue": "Medicina (Kaunas, Lithuania)",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "41155821"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.3390/medicina61101834"
+}

@@ -1,0 +1,28 @@
+{
+  "title": "Genetic influence on within-person longitudinal change in anthropometric traits in the UK Biobank.",
+  "authors": [
+    "Kemper KE",
+    "Sidorenko J",
+    "Wang H",
+    "Hayes BJ",
+    "Wray NR",
+    "Yengo L",
+    "Keller MC",
+    "Goddard M",
+    "Visscher PM"
+  ],
+  "year": 2024,
+  "abstract": "The causes of temporal fluctuations in adult traits are poorly understood. Here, we investigate the genetic determinants of within-person trait variability of 8 repeatedly measured anthropometric traits in 50,117 individuals from the UK Biobank. We found that within-person (non-directional) variability had a SNP-based heritability of 2-5% for height, sitting height, body mass index (BMI) and weight (P ≤ 2.4 × 10-3). We also analysed longitudinal trait change and show a loss of both average height and weight beyond about 70 years of age. A variant tracking the Alzheimer's risk APOE- E 4 allele (rs429358) was significantly associated with weight loss ( β  = -0.047 kg per yr, s.e. 0.007, P = 2.2 × 10-11), and using 2-sample Mendelian Randomisation we detected a relationship consistent with causality between decreased lumbar spine bone mineral density and height loss (bxy = 0.011, s.e. 0.003, P = 3.5 × 10-4). Finally, population-level variance quantitative trait loci (vQTL) were consistent with within-person variability for several traits, indicating an overlap between trait variability assessed at the population or individual level. Our findings help elucidate the genetic influence on trait-change within an individual and highlight disease risks associated with these changes.",
+  "doi": "10.1038/s41467-024-47802-7",
+  "arxiv_id": null,
+  "venue": "Nature communications",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "38710707"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.1038/s41467-024-47802-7"
+}

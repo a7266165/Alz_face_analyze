@@ -1,0 +1,812 @@
+O R I G I N A L  R E S E A R C H
+Association of Vegetable and Fruit Consumption
+Patterns with Cognitive Function in Older People
+with Different BMI Ranges: Findings from China
+Liang Huang
+1,*, Zixuan Hong2,*, Ying Guo2, Wenjin Song2, Jiawei Huang2, Wenwen Cao2,
+Chenglin Cao2, Ren Chen2,3, Zhongliang Bai
+2
+1Department of Medical Affairs Management, The First Affiliated Hospital of Wannan Medical College, Wuhu, Anhui, People’s Republic of China;
+2Department of Health Services Management, School of Health Services Management, Anhui Medical University, Hefei, Anhui, People’s Republic of
+China; 3Department of Geriatrics, Chaohu Hospital of Anhui Medical University, Chaohu, Anhui, People’s Republic of China
+*These authors contributed equally to this work
+Correspondence: Ren Chen; Zhongliang Bai, Department of Health Services Management, School of Health Services Management, Anhui Medical
+University, Hefei, Anhui, 230032, People’s Republic of China, Email chenren2006@hotmail.com; baizhongliang@ahmu.edu.cn
+Purpose: There is a lack of research on how vegetable and fruit consumption patterns affect cognitive function in older adults with
+varying BMIs. Therefore, this study aims to explore their relationship, with a special focus on gender differences.
+Patients and Methods: A cross-sectional survey was conducted in Anhui Province, China, between July and September 2019, and
+information was collected from 6211 participants regarding socio-demographics, the frequency of vegetable and fruit consumption per
+week, and cognitive function. The study utilized descriptive analysis and binary logistic regression to determine the association
+between cognitive function and consumption patterns of vegetable and fruit.
+Results: There were no statistically significant associations between vegetable and fruit consumption patterns and cognitive function
+in underweight and obese older adults. Among normal weight men, older adults in the V+/F- (AOR=1.65; 95% CI: 1.16–2.35) and V-/
+F- (AOR=3.95; 95% CI: 1.86–8.42) groups were more likely to have cognitive impairment compared with the V+/F+ group. However,
+no associations were observed between the two in women of normal weight. For the overweight women, a higher risk of cognitive
+impairment was found in the V+/F- group (AOR=1.54; 95% CI: 1.12–2.11), while older men did not.
+Conclusion: The correlation between vegetable and fruit consumption patterns and cognitive function varies among older adults with
+different BMIs. Findings suggest the need for targeted nutritional interventions for these communities to maintain cognitive function in
+older adults.
+Keywords: vegetable and fruit consumption, cognitive function, older people, cross-sectional, China
+Introduction
+China is facing population aging.1 Under this challenging situation, cognitive impairment in older people has become
+a public health concern that needs to be addressed.2,3 It has been reported that Alzheimer’s disease (AD) affects over
+55 million people worldwide, and this figure is anticipated to rise to a new peak by 2050.4 Despite great efforts, there are
+no clinically effective means and drugs to treat Alzheimer’s disease.5 Previous studies have shown that mild cognitive
+impairment (MCI) is an early stage in a patient’s development of AD.6,7 Therefore, early prevention for MCI has become
+a new perspective and approach to addressing AD effectively.8
+Recently, the impact of vegetable and fruit consumption on health in later life has been documented.9–11 For example,
+a meta-analysis showed that vegetable and fruit consumption related to a reduced risk of cardiovascular disease and
+cancer mortality.12 Besides, a prospective Australian study of older women showed that increased intake of vegetables,
+particularly cruciferous and allium vegetables, may prevent fractures in older women.13 Current research has shown that
+the cognitive function of older adults is influenced by many factors such as lifestyle habits,14 illnesses (depression,15
+Clinical Interventions in Aging 2025:20 587–596
+587
+© 2025 Huang et al. This work is published and licensed by Dove Medical Press Limited. The full terms of this license are available at https://www.dovepress.com/terms.
+php and incorporate the Creative Commons Attribution – Non Commercial (unported, v4.0) License (http://creativecommons.org/licenses/by-nc/4.0/). By accessing the
+work you hereby accept the Terms. Non-commercial uses of the work are permitted without any further permission from Dove Medical Press Limited, provided the work is properly attributed. For
+permission for commercial use of this work, please see paragraphs 4.2 and 5 of our Terms (https://www.dovepress.com/terms.php).
+Clinical Interventions in Aging
+Open Access Full Text Article
+Received: 31 December 2024
+Accepted: 6 May 2025
+Published: 10 May 2025
+Clinical Interventions in Aging downloaded from https://www.dovepress.com/
+For personal use only.
+
+diabetes,16 etc.), religious beliefs,17 and socioeconomic status.18 Moreover, vegetable and fruit consumption has emerged
+as a crucial concern for preventing and delaying cognitive impairment due to the potential impact the minerals, fibre, and
+vitamins in vegetables and fruits may have on brain health.19,20 As reported in a previous study, vegetable and fruit
+consumption has a protective role in slowing cognitive decline.21 Another study also showed that sufficient consumption
+of vegetables and fruits was associated with a reduced risk of dementia.22
+Currently, relevant studies have confirmed that older people with different weight statuses as assessed by body mass
+index (BMI) exhibit different cognitive function statuses.23 Older people with a BMI defined as underweight were
+significantly more likely to experience a risk of cognitive impairment.24 Another study suggested that obesity reduces the
+risk of dementia compared to people with a normal weight.25 However, evidence from Poland showed that overweight
+and obesity in older people were not associated with cognitive decline.26 Individuals categorized according to BMI may
+exhibit different cognitive capabilities,27 and these differences could alter the impact of eating vegetables and fruits on
+cognitive function. For example, obesity was linked to a higher risk of cognitive decline, which may be due to the effects
+of obesity-related inflammation and metabolic syndrome on brain health.28 The link between vegetable and fruit
+consumption and cognitive function appears multifaceted and may be influenced by various factors, including BMI.
+Besides, gender differences further complicate this relationship. Men and women typically exhibit different dietary
+patterns, nutritional needs, and physiological responses to the diet, which may impact cognitive function differently.29,30
+For instance, studies suggested that women have a higher intake of vegetables and fruits than men, potentially correlating
+with enhanced cognitive function.31
+Nevertheless, evidence regarding the impact of vegetable and fruit consumption on cognitive function in older people
+with different BMIs, as well as gender differences, is insufficient. Therefore, this study aims to elucidate the relationship
+among older adults with different BMIs while focusing on gender differences. By elucidating these relationships,
+policymakers identify targeted dietary interventions to support cognitive function and improve older people’s overall
+health and quality of life.
+Materials and Methods
+Study Design and Sample
+This cross-sectional survey is part of the Anhui Health and Longevity Survey (AHLS) conducted in China from July to
+September 2019.7,32 To obtain a well-representative sample, we designed a multi-stage purposive sampling method. The
+sampling process of this study can be described as follows. First, four cities from Anhui Province were selected based on
+geographic location: Chuzhou (East), Xuancheng (South), Lu’an (West), and Fuyang (North). Second, 3 to 5 urban and
+rural communities were randomly selected from these four cities. Third, residents were invited to participate in the
+questionnaire survey in each selected urban and rural community. The following criteria were used to select the research
+participants: Residents aged 60 years and older, with no severe hearing or speech impairments, who were able to
+cooperate with the survey. The investigator conducted face-to-face interviews on-site. Prior to the interview, the
+investigator explained the purpose and procedures of the study to the participants, and informed consent was obtained.
+A total of 6211 questionnaires were collected in this survey. This study excluded participants who were unable to
+complete the assessment of cognitive function (N=32), had missing BMI-related data (N=381), and a final 5798
+participants were eligible for data analysis (details are shown in Supplementary Figure S1). Ethical approval for this
+study was obtained from the Biomedical Ethics Committee of Anhui Medical University (No. 2020H011).
+Cognitive Function
+This study assessed the participants’ cognitive function through the Chinese version of the Mini-Mental State
+Examination (MMSE), a validated and commonly used method for detecting cognitive impairment in clinical and
+research settings.33,34 The Chinese version of MMSE consists of orientation, memory, attention and calculation, recall,
+and language abilities, scoring 30 points. Several questions in this scale are influenced by the participant’s educational
+background,35 so the criteria for assessing MCI in participants of this study are as follows: illiterate individuals scoring
+https://doi.org/10.2147/CIA.S515094
+Clinical Interventions in Aging 2025:20
+588
+Huang et al
+Powered by TCPDF (www.tcpdf.org)
+Powered by TCPDF (www.tcpdf.org)
+
+below 18 points; those with primary education but scoring below 21 points; those with more than six years of education
+but scoring below 25 points, in line with other studies.7
+Vegetable and Fruit Consumption Patterns
+To obtain the frequency of vegetable and fruit consumption of the respondents, the question “How many days a week do
+you usually consume vegetables/fruits?” was set in the questionnaire. The available answer choices include “every day”,
+“4–6 days”, “2–3 days”, and “less than 1 day”. Consistent with other studies,32,36 respondents’ vegetable and fruit
+consumption was categorized into the following four patterns: V+/F+: daily or often intake of both vegetables and fruits;
+V+/F-: daily or often intake of vegetables, but sometimes or never intake of fruits; V-/F+: daily or often intake fruits, but
+sometimes or never intake vegetables; V-/F-: Sometimes or never intake of either vegetables or fruits.
+BMI
+The investigator determined BMI (kg/m2) by taking on-site measurements of height and weight for each participant and
+dividing the measured weight by the square of the height. According to the BMI standards in China,37,38 respondents
+were classified as follows: underweight: BMI <18.5, normal weight: 18.5 ≤ BMI < 24, overweight: 24 ≤ BMI < 28, obese:
+BMI ≥ 28.
+Other Variables
+The following information about the respondents was collected for this study: age (years), gender, place of residence
+(urban, rural), living status (living alone, living with others), marital status (married, other), education level (illiterate,
+primary school, above primary school), annual income (<6500 CNY, ≥6500 CNY), smoking status (smoker, non-smoker),
+and drinking status (drinker, non-drinker). Depressive symptoms in participants were evaluated with the Patient Health
+Questionnaire (PHQ-9), covering nine questions out of 27 points, classifying participants with scores of five and above as
+depressed, otherwise not depressed.32 The question “Do you suffer from one of the following chronic diseases (hyperten­
+sion, hyperlipidemia, diabetes, chronic hepatitis, cancer, heart disease, stroke, lung disease, psychiatric disease, etc.)” was
+used to determine if the respondent suffered from a chronic disease. In the current study, we used the activities of daily
+living (ADL) scale, which includes ten dimensions, to measure disability in ADL. Respondents were classed as “No” if they
+scored 100, ie, indicated “self-care” on any of the items. Otherwise, they were categorized as “Yes”, consistent with another
+study.39
+Statistical Analysis
+Data for categorical variables were described in the form of frequencies and percentages. First, we used simple descriptive
+analysis to describe the characteristics of the sample. Second, a binary logistic regression model was performed to explore
+gender differences in the correlation between vegetable and fruit consumption patterns and cognitive function. Univariate
+logistic regression analyses were conducted to produce Model 1, which was then adjusted for the covariates of age, place of
+residence, living status, marital status, education, annual income, smoking status, drinking status, chronic disease, depression
+status, disability in ADL, and vegetable and fruit consumption patterns to produce Model 2. The regression models yielded
+odds ratios (OR) and adjusted odds ratios (AOR) and the corresponding 95% confidence intervals (95% CI). This study used
+SPSS 23.0 software for data analysis, with statistical significance set at P<0.05.
+Results
+Basic Characteristics of the Sample
+Participants were categorized by gender, resulting in Table 1. A total of 5798 participants, of whom more were women
+(3147, 54.3%), most of the participants were between 60–69 years old (2740, 47.3%), had a BMI in the normal weight
+range (2463, 42.5%), lived in urban areas (2864, 49.4%). Most were married (4159, 71.7%), lived with others (4733,
+81.6%), and almost half were illiterate (2849, 49.2%). The majority had an annual income of less than 6,500 CNY (3469,
+59.8%). Notably, 79.0% and 61.3% were non-smokers and non-drinkers, respectively. Regarding health status, the vast
+Clinical Interventions in Aging 2025:20
+https://doi.org/10.2147/CIA.S515094
+589
+Huang et al
+Powered by TCPDF (www.tcpdf.org)
+Powered by TCPDF (www.tcpdf.org)
+
+majority of participants suffered from chronic diseases (4139, 71.4%), a few were depressed (1887, 32.5%), and more
+than half of the participants had disability in ADL (3384, 58.4%). In addition, the majority of participants’ vegetable and
+fruit consumption patterns were classified as V+/F- (3910, 67.4%).
+Table 1 Characteristics of Participants by Gender (N=5798)
+Variables
+Total (N=5798)
+Male (N=2651)
+Female (N=3147)
+Age (years)
+60–69
+2740 (47.3)
+1242 (46.8)
+1498 (47.6)
+70–79
+2283 (39.3)
+1060 (40.0)
+1223 (38.9)
+≥80
+775 (13.4)
+349 (13.2)
+426 (13.5)
+BMI (kg/m2)
+Underweight
+274 (4.7)
+134 (5.1)
+140 (4.4)
+Normal weight
+2463 (42.5)
+1177 (44.3)
+1286 (40.9)
+Overweight
+2072 (35.7)
+943 (35.6)
+1129 (35.9)
+Obese
+989 (17.1)
+397 (15.0)
+592 (18.8)
+Residence
+Urban
+2864 (49.4)
+1263 (47.6)
+1601 (50.9)
+Rural
+2934 (50.6)
+1388 (52.4)
+1546 (49.1)
+Living status
+Living alone
+1065 (18.4)
+429 (16.2)
+636 (20.2)
+Living with others
+4733 (81.6)
+2222 (83.8)
+2511 (79.8)
+Marital status
+Married
+4159 (71.7)
+2082 (78.5)
+2077 (66.0)
+Other
+1639 (28.3)
+569 (21.5)
+1070 (34.0)
+Education
+Illiterate
+2849 (49.2)
+837 (31.6)
+2012 (63.9)
+Primary school
+1619 (27.9)
+949 (35.8)
+670 (21.3)
+Above primary school
+1330 (22.9)
+865 (32.6)
+465 (14.8)
+Annual income
+<6500 CNY
+3469 (59.8)
+1398 (52.7)
+2071 (65.8)
+≥6500 CNY
+2329 (40.2)
+1253 (47.3)
+1076 (34.2)
+Smoking status
+Smoker
+1215 (21.0)
+1065 (40.2)
+150 (4.8)
+Non-smoker
+4583 (79.0)
+1586 (59.8)
+2997 (95.2)
+Drinking status
+Drinker
+2245 (38.7)
+1594 (60.1)
+651 (20.7)
+Non-drinker
+3553 (61.3)
+1057 (39.9)
+2496 (79.3)
+Chronic disease
+Yes
+4139 (71.4)
+1847 (69.7)
+2292 (72.8)
+No
+1659 (28.6)
+804 (30.3)
+855 (27.2)
+Depressive status
+Depression
+1887 (32.5)
+688 (26.0)
+1199 (38.1)
+No depression
+3911 (67.5)
+1963 (74.0)
+1948 (61.9)
+Disability in ADL
+No
+2414 (41.6)
+1180 (44.5)
+1234 (39.2)
+Yes
+3384 (58.4)
+1471 (55.5)
+1913 (60.8)
+Cognitive function
+Non-MCI
+3976 (68.6)
+1963 (74.0)
+2013 (64.0)
+MCI
+1822 (31.4)
+688 (26.0)
+1134 (36.0)
+Vegetable and Fruit Consumption Patterns
+V+/F+
+1704 (29.4)
+765 (28.9)
+939 (29.8)
+V+/F-
+3910 (67.4)
+1790 (67.5)
+2120 (67.4)
+V-/F+
+31 (0.5)
+15 (0.6)
+16 (0.5)
+V-/F-
+153 (2.7)
+81 (3.0)
+72 (2.3)
+https://doi.org/10.2147/CIA.S515094
+Clinical Interventions in Aging 2025:20
+590
+Huang et al
+Powered by TCPDF (www.tcpdf.org)
+Powered by TCPDF (www.tcpdf.org)
+
+Binary Logistic Regression Analysis of Vegetable and Fruit Consumption Patterns and
+Cognitive Function in Underweight Participants
+Using binary logistic regression analysis (Table 2), we found no statistically significant relationship between vegetable
+and fruit consumption patterns and cognitive function among underweight men, either before or after adjustment
+(P>0.05). In contrast, unadjusted results among underweight women showed that the V-/F- pattern correlated with
+lower cognitive function (OR=11.31; 95% CI: 1.25–102.72), but no significant correlation was found after adjustment.
+Binary Logistic Regression Analysis of Vegetable and Fruit Consumption Patterns and
+Cognitive Function in Normal Weight Participants
+Table 3 illustrates the findings of the binary logistic regression model following variable adjustments. In normal weight
+men, cognitive impairment is more likely to be found in the V+/F- (AOR=1.65; 95% CI: 1.16–2.35) and V-/F-
+(AOR=3.95; 95% CI: 1.86–8.42) groups, respectively, compared to the V+/F+ group. However, in women of normal
+weight, vegetable and fruit consumption patterns were not statistically correlated with cognitive function after
+adjustment.
+Binary Logistic Regression Analysis of Vegetable and Fruit Consumption Patterns and
+Cognitive Function in Overweight Participants
+As presented in Table 4, after adjusting for confounders, only V+/F- (AOR=1.54; 95% CI: 1.12–2.11) was related to an
+increased probability of cognitive impairment among overweight women (Model 2). Furthermore, statistical significance
+did not show other vegetable and fruit consumption patterns in the overweight participants (P>0.05).
+Table 2 Binary Logistic Analysis Examining Relationships Between Vegetable and Fruit Consumption Patterns and Cognitive Function
+in Underweight Participants (N=274)
+Vegetable and Fruit
+Consumption Patterns
+Male
+Female
+Model 1
+Model 2
+Model 1
+Model 2
+OR, 95% CI
+P-value
+AOR, 95% CI
+P-value
+OR, 95% CI
+P-value
+AOR, 95% CI
+P-value
+V+/F+ (REF.)
+V+/F-
+1.77, (0.68–4.58)
+0.241
+1.70, (0.54–5.37)
+0.368
+1.15, (0.52–2.57)
+0.727
+0.92, (0.33–2.55)
+0.865
+V-/F+
+/
+/
+/
+/
+/
+/
+/
+/
+V-/F-
+0.91, (0.08–10.21)
+0.935
+0.35, (0.02–5.93)
+0.469
+11.31, (1.25–102.72)
+0.031
+11.75, (0.91–151.37)
+0.059
+Note: Model 1: unadjusted; Model 2 adjusted age, residence, living status, marital status, education, annual income, smoking status, drinking status, chronic diseases,
+depressive status, disability in ADL, vegetable and fruit consumption patterns.
+Abbreviations: REF, reference group; /, Results could not be obtained as the actual number of participants was too small; OR, odds ratio; AOR, adjusted odds ratio; 95%
+CI, 95% confidence interval.
+Table 3 Binary Logistic Analysis Examining Relationships Between Vegetable and Fruit Consumption Patterns and Cognitive Function
+in Normal Weight Participants (N=2463)
+Vegetable and Fruit
+Consumption Patterns
+Male
+Female
+Model 1
+Model 2
+Model 1
+Model 2
+OR, 95% CI
+P-value
+AOR, 95% CI
+P-value
+OR, 95% CI
+P-value
+AOR, 95% CI
+P-value
+V+/F+ (REF.)
+V+/F-
+1.69, (1.23–2.34)
+0.001
+1.65, (1.16–2.35)
+0.006
+1.53, (1.18–2.00)
+0.002
+1.18, (0.88–1.58)
+0.271
+V-/F+
+3.42, (0.89–13.14)
+0.073
+2.47, (0.54–11.35)
+0.246
+0.61, (0.13–2.94)
+0.542
+0.45, (0.08–2.32)
+0.339
+V-/F-
+4.05, (2.00–8.20)
+<0.001
+3.95, (1.86–8.42)
+<0.001
+3.07, (1.40–6.78)
+0.006
+1.50, (0.63–3.53)
+0.364
+Note: Model 1: unadjusted; Model 2 adjusted age, residence, living status, marital status, education, annual income, smoking status, drinking status, chronic diseases,
+depressive status, disability in ADL, vegetable and fruit consumption patterns.
+Abbreviations: REF, reference group; OR, odds ratio; AOR, adjusted odds ratio; 95% CI, 95% confidence interval.
+Clinical Interventions in Aging 2025:20
+https://doi.org/10.2147/CIA.S515094
+591
+Huang et al
+Powered by TCPDF (www.tcpdf.org)
+Powered by TCPDF (www.tcpdf.org)
+
+Binary Logistic Regression Analysis of Vegetable and Fruit Consumption Patterns and
+Cognitive Function in Obese Participants
+Table 5 shows the results of the analyses of the obese participants. The adjusted results (Model 2) reveal that vegetable
+and fruit consumption patterns were not significantly correlated with cognitive function in either males or females
+(P>0.05).
+Discussion
+As far as we know, this study is the first to explore the link between vegetable and fruit consumption patterns and
+cognitive function in older adults with varying BMIs and to examine gender differences in this association. According to
+the data analysis, the association between the two varied among older people with different BMIs.
+This study found that 31.4% of older individuals had MCI, surpassing the typical prevalence range of 15.2–15.9% for
+MCI among older people in China.40 The present study showed no correlation between vegetable and fruit consumption
+patterns and cognitive function in underweight older people. One possible explanation is that older people suffering from
+being underweight may face overall malnutrition.41 They may be deficient in multiple nutrients, not just those found in
+vegetables and fruits.42 This deeper nutritional deficiency may have a greater impact on the brain and weaken this
+relationship.43
+Conversely, among normal weight men, older people with a higher frequency of vegetable and fruit consumption
+reported better cognitive function, consistent with other studies.21,36,44 In other words, individuals in the V+/F- and V-/F-
+groups were 1.65 and 3.95 times more likely to have poorer cognitive function than those in the V+/F+ group,
+respectively. Previous studies also supported this conclusion.21,45,46 A similar association between vegetable and fruit
+intake and cognitive function was observed in a Brazilian cohort of older adults,47 where higher vegetable and fruit
+Table 4 Binary Logistic Analysis Examining Relationships Between Vegetable and Fruit Consumption Patterns and Cognitive Function
+in Overweight Participants (N=2072)
+Vegetable and Fruit
+Consumption Patterns
+Male
+Female
+Model 1
+Model 2
+Model 1
+Model 2
+OR, 95% CI
+P-value
+AOR, 95% CI
+P-value
+OR, 95% CI
+P-value
+AOR, 95% CI
+P-value
+V+/F+ (REF.)
+V+/F-
+1.39, (1.00–1.94)
+0.050
+1.17, (0.82–1.69)
+0.389
+2.23, (1.67–2.99)
+<0.001
+1.54, (1.12–2.11)
+0.007
+V-/F+
+7.68, (0.69–86.09)
+0.098
+6.14, (0.48–79.16)
+0.164
+/
+/
+/
+/
+V-/F-
+1.44, (0.54–3.83)
+0.465
+0.92, (0.30–2.80)
+0.885
+3.03, (1.35–6.82)
+0.007
+2.10, (0.89–4.98)
+0.091
+Note: Model 1: unadjusted; Model 2 adjusted age, residence, living status, marital status, education, annual income, smoking status, drinking status, chronic diseases,
+depressive status, disability in ADL, vegetable and fruit consumption patterns.
+Abbreviations: REF, reference group; /, Results could not be obtained as the actual number of participants was too small; OR, odds ratio; AOR, adjusted odds ratio; 95%
+CI, 95% confidence interval.
+Table 5 Binary Logistic Analysis Examining Relationships Between Vegetable and Fruit Consumption Patterns and Cognitive Function
+in Obese Participants (N=989)
+Vegetable and Fruit
+Consumption Patterns
+Male
+Female
+Model 1
+Model 2
+Model 1
+Model 2
+OR, 95% CI
+P-value
+AOR, 95% CI
+P-value
+OR, 95% CI
+P-value
+AOR, 95% CI
+P-value
+V+/F+ (REF.)
+V+/F-
+1.09, (0.65–1.83)
+0.742
+0.89, (0.51–1.57)
+0.686
+1.81, (1.25–2.63)
+0.002
+1.26, (0.84–1.90)
+0.259
+V-/F+
+1.87, (0.16–21.41)
+0.615
+1.10, (0.08–15.47)
+0.945
+2.36, (0.15–38.35)
+0.547
+1.53, (0.09–26.81)
+0.770
+V/-F-
+2.38, (0.84–6.72)
+0.102
+1.35, (0.42–4.31)
+0.613
+1.35, (0.38–4.79)
+0.645
+0.67, (0.17–2.63)
+0.563
+Note: Model 1: unadjusted; Model 2 adjusted age, residence, living status, marital status, education, annual income, smoking status, drinking status, chronic diseases,
+depressive status, disability in ADL, vegetable and fruit consumption patterns.
+Abbreviations: REF, reference group; OR, odds ratio; AOR, adjusted odds ratio; 95% CI, 95% confidence interval.
+https://doi.org/10.2147/CIA.S515094
+Clinical Interventions in Aging 2025:20
+592
+Huang et al
+Powered by TCPDF (www.tcpdf.org)
+Powered by TCPDF (www.tcpdf.org)
+
+intake was associated with better cognitive function. Still, the effect size was not the same in Western populations.48,49
+This geographic heterogeneity may reflect differences in diet composition, food preparation methods, or lifestyle
+confounders across cultures. Another prospective cohort study also showed that higher vegetable and fruit consumption
+was positively associated with cognitive function in older people.50 The reasons why vegetable and fruit intake can
+prevent cognitive decline may include the following. Vegetables and fruits are rich in various vitamins and minerals,51,52
+which are essential for brain health. For instance, folic acid can prevent hyperhomocysteinemia, reducing the risk of
+cognitive impairment.53 In addition, many vegetables and fruits contain plentiful antioxidants (flavonoids, anthocyanins,
+carotenoids, etc.) that help reduce oxidative stress and protect brain cells from damage.54,55 Moreover, vegetables and
+fruits often have anti-inflammatory properties that reduce chronic inflammation in the body, considered to be associated
+with AD and other cognitive impairments.56
+Interestingly, this association was not observed in older women. There are physiological and hormonal differences
+between older men and women. Especially after menopause, older women’s estrogen levels drop sharply, which may
+affect their eating habits and the utilization of nutrients from vegetables and fruits, thereby impacting their cognitive
+function in later life.57,58 For overweight older people, our study found gender differences in the association between
+vegetable and fruit consumption patterns and cognitive function. Specifically, among overweight women, older adults
+with low vegetable and fruit consumption (V+/F-) have a higher likelihood of developing MCI, but not in men. This
+discrepancy may be attributed to differences in overweight men’s and women’s diets. For example, overweight women
+may be more inclined to improve the overall quality of their diet by increasing their vegetable and fruit intake, especially
+if they need to control their weight.59 This self-regulation of diet may help them improve their overall health and
+cognitive function.60 Overweight men, on the other hand, may rely more on high-protein, high-fat foods, and increased
+vegetable and fruit intake may not significantly improve cognitive function.61
+Our study found no association between vegetable and fruit consumption patterns and cognitive function in obese
+older people. This may be attributed to the poor cognitive function of obese older people. Current research suggests
+that obesity negatively correlates with cognitive function.62 Besides, obese older people commonly have chronic
+diseases such as diabetes, hypertension, and hyperlipidemia,63 which may harm their cognitive function,64 so
+vegetable and fruit intake, while it may improve diet quality and nutrient intake, may not counteract these adverse
+effects.
+This study has several advantages. First, this study differs from previous research by focusing on different BMIs of
+older people and examining the gender differences in the association between vegetable and fruit consumption patterns
+and cognitive function. Second, this study employed effective and reliable tools to measure participants’ cognitive
+function and obtained a large representative sample, reducing the impact of random factors on the results.
+However, it is crucial to be aware of some research limitations. The present study was cross-sectional and could not
+determine the exact causal relationship, suggesting the need to explore this more fully in future cohort or intervention
+studies. Besides, a self-reported questionnaire on the frequency of vegetable and fruit consumption was used in this
+study, leading to possible misclassification of vegetables and fruits. Furthermore, China-specific evidence dominated our
+analysis. For example, the traditional consumption attitudes of older Chinese adults (who may be reluctant to spend
+money on fruits) resulted in a small sample size of vegetable and fruit consumption patterns defined as the V-/F+ group,
+which may limit the generalizability of the findings. The complex interplay between regional dietary habits, genetic
+susceptibility, and environmental factors needs to be validated by comparative studies of different ethnic populations.
+Finally, the variables considered in this study were limited, and some factors, such as physical activity patterns, mental
+health status, and medication taken by participants, were not adequately emphasized. Therefore, a longitudinal design
+with multidimensional assessments will be utilized in subsequent investigations to help elucidate nutritional factors’
+independent and synergistic effects on cognitive function.
+Conclusion
+This study shows how consuming vegetables and fruits is linked to cognitive function in older Chinese people with
+different BMIs. No correlation was found between vegetable and fruit consumption patterns and cognitive function in
+underweight and obese older adults. However, among normal weight and overweight older adults, those with a higher
+Clinical Interventions in Aging 2025:20
+https://doi.org/10.2147/CIA.S515094
+593
+Huang et al
+Powered by TCPDF (www.tcpdf.org)
+Powered by TCPDF (www.tcpdf.org)
+
+frequency of vegetable and fruit consumption reported better cognitive function, with gender differences. This study
+emphasizes the significance of vegetable and fruit consumption and contributes to formulating more effective policy
+approaches to protect cognitive function in older adults with different BMIs, aiming for healthy aging.
+Abbreviations
+AD, Alzheimer’s Disease; MCI, Mild Cognitive Impairment; BMI, Body Mass Index; AHLS, Anhui Health and
+Longevity Survey; MMSE, Mini-Mental State Examination; PHQ-9, Patient Health Questionnaire; ADL, Activities of
+Daily Living; OR, Odds Ratios; AOR, Adjusted Odds Ratios; CI, Confidence Intervals.
+Data Sharing Statement
+The data that support the findings of this study are available on request from the corresponding author (Zhongliang Bai).
+Ethical Approval and Informed Consent
+This study adhered to the principles outlined in the Declaration of Helsinki. Ethical approval for this study was obtained
+from the Biomedical Ethics Committee of Anhui Medical University (No.2020H011) and informed consent was obtained
+from all participants. An unauthorized version of the Chinese MMSE was used by the study team without permission,
+however this has now been rectified with PAR. The MMSE is a copyrighted instrument and may not be used or
+reproduced in whole or in part, in any form or language, or by any means without written permission of PAR (www.
+parinc.com).
+Acknowledgments
+The authors wish to express sincere appreciation to all who assisted and engaged in our study.
+Author Contributions
+All authors made a significant contribution to the work reported, whether that is in the conception, study design,
+execution, acquisition of data, analysis and interpretation, or in all these areas; took part in drafting, revising or critically
+reviewing the article; gave final approval of the version to be published; have agreed on the journal to which the article
+has been submitted; and agree to be accountable for all aspects of the work.
+Funding
+This work was supported by the National Natural Science Foundation of China (No. 72304003), the Outstanding
+Research and Innovation Team Program of Education Department of Anhui Province (No. 2023AH010036), and the
+Postgraduate Innovation Research and Practice Program of Anhui Medical University (No. YJS20240081).
+Disclosure
+The authors declare no conflicts of interest in this work.
+References
+1. Qi X, Li Y, Hu J, et al. Prevalence of social frailty and its associated factors in the older Chinese population: a national cross-sectional study. BMC
+Geriatr. 2023;23(1):532. doi:10.1186/s12877-023-04241-1
+2. Twarowski B, Herbet M. Inflammatory processes in Alzheimer’s disease-pathomechanism, diagnosis and treatment: a review. Int J Mol Sci. 2023;24
+(7):6518. doi:10.3390/ijms24076518
+3. Hu X, Gu S, Zhen X, Sun X, Gu Y, Dong H. Trends in cognitive function among Chinese elderly from 1998 to 2018: an age-period-cohort analysis.
+Front Public Health. 2021;9:753671. doi:10.3389/fpubh.2021.753671
+4. Nichols E, Steinmetz JD, Vollset SE. Estimation of the global prevalence of dementia in 2019 and forecasted prevalence in 2050: an analysis for the
+Global Burden of Disease Study 2019. Lancet Public Health. 2022;7(2):e105–e125. doi:10.1016/s2468-2667(21)00249-8
+5. Breijyeh Z, Karaman R. Comprehensive review on Alzheimer’s disease: causes and treatment. Molecules. 2020;25(24):5789. doi:10.3390/
+molecules25245789
+6. Anderson ND. State of the science on mild cognitive impairment (MCI). CNS Spectrums. 2019;24(1):78–87. doi:10.1017/s1092852918001347
+7. Fangfang H, Xiao H, Shuai Z, et al. Living environment, built environment and cognitive function among older Chinese adults: results from a
+cross-sectional study. J Prev Alzheimer’s Dis. 2022;9(1):126–135. doi:10.14283/jpad.2021.59
+https://doi.org/10.2147/CIA.S515094
+Clinical Interventions in Aging 2025:20
+594
+Huang et al
+Powered by TCPDF (www.tcpdf.org)
+Powered by TCPDF (www.tcpdf.org)
+
+8. Zhang XX, Tian Y, Wang ZT, Ma YH, Tan L, Yu JT. The epidemiology of Alzheimer’s disease modifiable risk factors and prevention. J Prev
+Alzheimer’s Dis. 2021;8(3):313–321. doi:10.14283/jpad.2021.15
+9. Tardy AL, Pouteau E, Marquez D, Yilmaz C, Scholey A. Vitamins and minerals for energy, fatigue and cognition: a narrative review of the
+biochemical and clinical evidence. Nutrients. 2020;12(1):228. doi:10.3390/nu12010228
+10. Nguyen HD, Oh H, Kim MS. An increased intake of nutrients, fruits, and green vegetables was negatively related to the risk of arthritis and
+osteoarthritis development in the aging population. Nutr Res. 2022;99:51–65. doi:10.1016/j.nutres.2021.11.005
+11. Fung TT, Struijk EA, Rodriguez-Artalejo F, Willett WC, Lopez-Garcia E. Fruit and vegetable intake and risk of frailty in women 60 years old or
+older. Am J Clin Nutr. 2020;112(6):1540–1546. doi:10.1093/ajcn/nqaa256
+12. Aune D, Giovannucci E, Boffetta P, et al. Fruit and vegetable intake and the risk of cardiovascular disease, total cancer and all-cause
+mortality-a systematic review and dose-response meta-analysis of prospective studies. Int J Epidemiol. 2017;46(3):1029–1056. doi:10.1093/ije/
+dyw319
+13. Blekkenhorst LC, Hodgson JM, Lewis JR, et al. Vegetable and fruit intake and fracture-related hospitalisations: a prospective study of older
+women. Nutrients. 2017;9(5):511. doi:10.3390/nu9050511
+14. Dong L, Xiao R, Cai C, et al. Diet, lifestyle and cognitive function in old Chinese adults. Arch Gerontol Geriatrics. 2016;63:36–42. doi:10.1016/j.
+archger.2015.12.003
+15. Wang J, Zhu A, Chen J, et al. Association between cognitive frailty and depression: a prospective cohort study of adults aged 45 years and older in
+China. Clin Interventions Aging. 2024;19:2167–2178. doi:10.2147/cia.S484352
+16. Casagrande SS, Lee C, Stoeckel LE, Menke A, Cowie CC. Cognitive function among older adults with diabetes and prediabetes, NHANES
+2011–2014. Diabetes Res Clin Pract. 2021;178:108939. doi:10.1016/j.diabres.2021.108939
+17. Hosseini S, Chaurasia A, Oremus M. The effect of religion and spirituality on cognitive function: a systematic review. Gerontologist. 2019;59(2):
+e76–e85. doi:10.1093/geront/gnx024
+18. Hsu HC, Bai CH. Individual and environmental factors associated with cognitive function in older people: a longitudinal multilevel analysis. BMC
+Geriatr. 2022;22(1):243. doi:10.1186/s12877-022-02940-9
+19. Johnson EJ. A possible role for lutein and zeaxanthin in cognitive function in the elderly12345. Am J Clin Nutr. 2012;96(5):1161S–1165S.
+doi:10.3945/ajcn.112.034611
+20. Haskell-Ramsay CF, Docherty S. Role of fruit and vegetables in sustaining healthy cognitive function: evidence and issues. Proc Nutr Soc. 2023;82
+(3):305–314. doi:10.1017/s0029665123002999
+21. Huang L, Zhao C, Gao M, et al. Associations of vegetable and fruit intake with cognitive function and its decline: two longitudinal studies. J Nutr
+Health Aging. 2024;28(6):100223. doi:10.1016/j.jnha.2024.100223
+22. Lee ATC, Richards M, Chan WC, Chiu HFK, Lee RSY, Lam LCW. Lower risk of incident dementia among Chinese older adults having three
+servings of vegetables and two servings of fruits a day. Age Ageing. 2017;46(5):773–779. doi:10.1093/ageing/afx018
+23. Chen L, Hou Y, Sun Y, Peng D. Association of obesity indicators with cognitive function among US adults aged 60 years and older: results from
+NHANES. Brain Behav. 2024;14(9):e70006. doi:10.1002/brb3.70006
+24. Ren Z, Li Y, Li X, et al. Associations of body mass index, waist circumference and waist-to-height ratio with cognitive impairment among Chinese
+older adults: based on the CLHLS. J Affective Disorders. 2021;295:463–470. doi:10.1016/j.jad.2021.08.093
+25. Shinohara M, Gheni G, Hitomi J, Bu G, Sato N. APOE genotypes modify the obesity paradox in dementia. J Neurol Neurosurg. 2023;94
+(9):670–680. doi:10.1136/jnnp-2022-331034
+26. Puzianowska-Kuznicka M, Kuryłowicz A, Walkiewicz D, et al. Obesity paradox in Caucasian Seniors: results of the PolSenior study. J Nutr Health
+Aging. 2019;23(9):796–804. doi:10.1007/s12603-019-1257-z
+27. Grapsa I, Mamalaki E, Ntanasi E, et al. Longitudinal examination of body mass index and cognitive function in older adults: the HELIAD study.
+Nutrients. 2023;15(7):1795. doi:10.3390/nu15071795
+28. Bae EM, Park SM. Association between variations in body mass index and cognitive function in older Korean adults. J Obesity Metabolic
+Syndrome. 2021;30(3):271–278. doi:10.7570/jomes21044
+29. Mazza E, Troiano E, Ferro Y, et al. Obesity, dietary patterns, and hormonal balance modulation: gender-specific impacts. Nutrients. 2024;16
+(11):1629. doi:10.3390/nu16111629
+30. Jacob JS, Panwar N. Effect of age and gender on dietary patterns, mindful eating, body image and confidence. BMC Psychol. 2023;11(1):264.
+doi:10.1186/s40359-023-01290-4
+31. Stea TH, Nordheim O, Bere E, Stornes P, Eikemo TA. Fruit and vegetable consumption in Europe according to gender, educational attainment and
+regional affiliation-A cross-sectional study in 21 European countries. PLoS One. 2020;15(5):e0232521. doi:10.1371/journal.pone.0232521
+32. Fangfang H, Qiong W, Shuai Z, et al. Vegetable and fruit intake, its patterns, and cognitive function: cross-sectional findings among older adults in
+Anhui, China. J Nutr Health Aging. 2022;26(5):529–536. doi:10.1007/s12603-022-1791-y
+33. Wang Z, Zhang M. Application of the Chinese version of the Mini-Mental State Examination (MMSE). Shanghai Arch Psychiatry. 1989;7(3). [In
+Chinese].
+34. Folstein MF, Folstein SE, McHugh PR. “Mini-mental state”. A practical method for grading the cognitive state of patients for the clinician.
+J Psychiatr Res. 1975;12(3):189–198. doi:10.1016/0022-3956(75)90026-6
+35. Bravo G, Hébert R. Age- and education-specific reference values for the Mini-Mental and modified Mini-Mental State Examinations derived from a
+non-demented elderly population. Int J Geriatric Psychiatry. 1997;12(10):1008–1018. doi:10.1002/(sici)1099-1166(199710)12:10<1008::aid-
+gps676>3.0.co;2-a
+36. Qin A, Wang M, Xu L. Increased intake of vegetables and fruits improves cognitive function among Chinese oldest old: 10-year follow-up study.
+Nutrients. 2023;15(9):2147. doi:10.3390/nu15092147
+37. Chen A, Zhou W, Hou J, et al. Impact of older age adiposity on incident diabetes: a community-based cohort study in China. Diabet Metabol J.
+2022;46(5):733–746. doi:10.4093/dmj.2021.0215
+38. Pan XF, Wang L, Pan A. Epidemiology and determinants of obesity in China. Lancet Diabetes Endocrinol. 2021;9(6):373–392. doi:10.1016/s2213-
+8587(21)00045-0
+39. Shah S, Vanclay F, Cooper B. Improving the sensitivity of the Barthel index for stroke rehabilitation. J Clin Epidemiol. 1989;42(8):703–709.
+doi:10.1016/0895-4356(89)90065-6
+Clinical Interventions in Aging 2025:20
+https://doi.org/10.2147/CIA.S515094
+595
+Huang et al
+Powered by TCPDF (www.tcpdf.org)
+Powered by TCPDF (www.tcpdf.org)
+
+40. Jia L, Du Y, Chu L, et al. Prevalence, risk factors, and management of dementia and mild cognitive impairment in adults aged 60 years or older in
+China: a cross-sectional study. Lancet Public Health. 2020;5(12):e661–e671. doi:10.1016/S2468-2667(20)30185-7
+41. Ashworth A. Sarcopenia and malnutrition: commonly occurring conditions in the older population. Br J Nurs. 2021;30(21):S4–s10. doi:10.12968/
+bjon.2021.30.21.S4
+42. Fielding RA, Landi F, Smoyer KE, Tarasenko L, Groarke J. Association of anorexia/appetite loss with malnutrition and mortality in older
+populations: a systematic literature review. J Cachexia Sarcopenia Muscle. 2023;14(2):706–729. doi:10.1002/jcsm.13186
+43. Fekete M, Lehoczki A, Tarantini S, et al. Improving cognitive function with nutritional supplements in aging: a comprehensive narrative review of
+clinical studies investigating the effects of vitamins, minerals, antioxidants, and other dietary supplements. Nutrients. 2023;15(24). doi:10.3390/
+nu15245116
+44. Sheng LT, Jiang YW, Alperet DJ, Feng L, Pan A, Koh WP. Quantity and variety of fruit and vegetable intake in midlife and cognitive impairment in
+late life: a prospective cohort study. Br J Nutr. 2023;129(12):2084–2093. doi:10.1017/s0007114522000848
+45. Mottaghi T, Amirabdollahian F, Haghighatdoost F. Fruit and vegetable intake and cognitive impairment: a systematic review and meta-analysis of
+observational studies. Eur J Clin Nutr. 2018;72(10):1336–1344. doi:10.1038/s41430-017-0005-x
+46. Nooyens AC, Bueno-de-mesquita HB, van Boxtel MP, van Gelder BM, Verhagen H, Verschuren WM. Fruit and vegetable intake and cognitive
+decline in middle-aged men and women: the Doetinchem cohort study. Br J Nutr. 2011;106(5):752–761. doi:10.1017/s0007114511001024
+47. Gonçalves NG, Bertola L, Ferri CP, Suemoto CK. Rural-urban disparities in fruit and vegetable consumption and cognitive performance in Brazil.
+Rev Bras Psiquiatr. 2023;45(6):498–505. doi:10.47626/1516-4446-2023-3316
+48. Caffò AO, Spano G, Tinella L, et al. The prevalence of amnestic and non-amnestic mild cognitive impairment and its association with different
+lifestyle factors in a South Italian elderly population. Int J Environ Res Public Health. 2022;19(5):3097. doi:10.3390/ijerph19053097
+49. Hughes TF, Andel R, Small BJ, et al. Midlife fruit and vegetable consumption and risk of dementia in later life in Swedish twins. Am J Geriatric
+Psychiatry. 2010;18(5):413–420. doi:10.1097/JGP.0b013e3181c65250
+50. Huang Z, Guo Y, Ruan Y, et al. Associations of lifestyle factors with cognition in community-dwelling adults aged 50 and older: a longitudinal
+cohort study. Front Aging Neurosci. 2020;12:601487. doi:10.3389/fnagi.2020.601487
+51. Pontifex MG, Malik M, Connell E, Müller M, Vauzour D. Citrus polyphenols in brain health and disease: current perspectives. Front Neurosci.
+2021;15:640648. doi:10.3389/fnins.2021.640648
+52. Gehlich KH, Beller J, Lange-Asschenfeldt B, Köcher W, Meinke MC, Lademann J. Fruit and vegetable consumption is associated with improved
+mental and cognitive health in older adults from non-Western developing countries. Public Health Nutr. 2019;22(4):689–696. doi:10.1017/
+s1368980018002525
+53. Zhou H, Zhong X, Chen B, et al. Interactive effects of elevated homocysteine and late-life depression on cognitive impairment. J Affect Disord.
+2020;277:212–217. doi:10.1016/j.jad.2020.08.022
+54. Christensen K, Gleason CE, Mares JA. Dietary carotenoids and cognitive function among US adults, NHANES 2011–2014. Nutr Neurosci. 2020;23
+(7):554–562. doi:10.1080/1028415x.2018.1533199
+55. Calis Z, Mogulkoc R, Baltaci AK. The roles of flavonols/flavonoids in neurodegeneration and neuroinflammation. Mini Rev Med Chem. 2020;20
+(15):1475–1488. doi:10.2174/1389557519666190617150051
+56. Zhuo B, Zheng D, Cai M, et al. Mediation effect of brain volume on the relationship between peripheral inflammation and cognitive decline.
+J Alzheimers Dis. 2023;95(2):523–533. doi:10.3233/jad-230253
+57. Hogervorst E, Craig J, O’Donnell E. Cognition and mental health in menopause: a review. Best Pract Res Clin Obstet Gynaecol. 2022;81:69–84.
+doi:10.1016/j.bpobgyn.2021.10.009
+58. Morgan KN, Derby CA, Gleason CE. Cognitive changes with reproductive aging, perimenopause, and menopause. Obstetr Gynecol Clin North Am.
+2018;45(4):751–763. doi:10.1016/j.ogc.2018.07.011
+59. Hooshiar SH, Yazdani A, Jafarnejad S. Effect of modified alternate day fasting diet on the severity of premenstrual syndrome and health-related
+quality of life in women with overweight or obesity: a trial study protocol. BMJ open. 2023;13(5):e066740. doi:10.1136/bmjopen-2022-066740
+60. Milte CM, Ball K, Crawford D, McNaughton SA. Diet quality and cognitive function in mid-aged and older men and women. BMC Geriatr.
+2019;19(1):361. doi:10.1186/s12877-019-1326-5
+61. Ruegsegger GN, Rappaport CI, Hill JJ, Jochum KA, Challeen ES, Roth MC. A meal enriched in saturated fat acutely impairs cognitive
+performance in obese men. Physiol Behav. 2022;244:113664. doi:10.1016/j.physbeh.2021.113664
+62. Prickett C, Brennan L, Stolwyk R. Examining the relationship between obesity and cognitive function: a systematic literature review. Obesity Res
+Clin Pract. 2015;9(2):93–113. doi:10.1016/j.orcp.2014.05.001
+63. Sattar N, McMurray JJV, McInnes IB, Aroda VR, Lean MEJ. Treating chronic diseases without tackling excess adiposity promotes multimorbidity.
+Lancet Diabet Endocrinol. 2023;11(1):58–62. doi:10.1016/s2213-8587(22)00317-5
+64. Zhou H, Zhu Z, Liu C, et al. Effect of hypertension duration and blood pressure control during early adulthood on cognitive function in middle age.
+J Alzheimers Dis. 2022;85(2):779–789. doi:10.3233/jad-215070
+Clinical Interventions in Aging
+Publish your work in this journal
+Clinical Interventions in Aging is an international, peer-reviewed journal focusing on evidence-based reports on the value or lack thereof of
+treatments intended to prevent or delay the onset of maladaptive correlates of aging in human beings. This journal is indexed on PubMed Central,
+MedLine, CAS, Scopus and the Elsevier Bibliographic databases. The manuscript management system is completely online and includes a very
+quick and fair peer-review system, which is all easy to use. Visit http://www.dovepress.com/testimonials.php to read real quotes from published
+authors.
+Submit your manuscript here: https://www.dovepress.com/clinical-interventions-in-aging-journal
+Clinical Interventions in Aging 2025:20
+596
+Huang et al
+Powered by TCPDF (www.tcpdf.org)
+Powered by TCPDF (www.tcpdf.org)

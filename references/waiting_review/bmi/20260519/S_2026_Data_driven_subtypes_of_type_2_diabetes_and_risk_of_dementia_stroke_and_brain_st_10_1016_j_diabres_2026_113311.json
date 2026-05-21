@@ -1,0 +1,24 @@
+{
+  "title": "Data-driven subtypes of type 2 diabetes and risk of dementia, stroke, and brain structural changes in the UK Biobank.",
+  "authors": [
+    "Han S",
+    "Zhou Y",
+    "Sturkenboom M",
+    "Biessels GJ",
+    "Ahmadizar F"
+  ],
+  "year": 2026,
+  "abstract": "AIMS: Type 2 diabetes (T2D) is associated with increased risks of dementia and stroke with heterogeneity. We aimed to identify data-driven T2D subtypes and examine associations with dementia, stroke, mortality, and brain structure. METHODS: In 14,353 UK Biobank participants with T2D (mean age 59.8 years), k-means clustering was applied using age at diagnosis, body mass index, glycated hemoglobin, insulin resistance, systolic blood pressure, and C-reactive protein. Cox models estimated hazard ratios (HRs) and 95% confidence intervals (CIs). Brain structural measures were analyzed in a subset. RESULTS: Three subtypes emerged: severe obesity-related inflammatory diabetes (SOID), mild metabolic diabetes (MMD, reference), and mild age-related hypertension-predominant diabetes (MARD-H). Versus MMD, SOID showed higher risks of all-cause dementia (HR 1.24, 95% CI 1.01-1.52), vascular dementia (HR 1.42, 95% CI 1.01-1.99), stroke (HR 1.38, 95% CI 1.14-1.68), ischemic stroke (HR 1.48, 95% CI 1.21-1.82), all-cause mortality (HR 1.59, 95% CI 1.45-1.74), and cardiovascular death (HR 1.88, 95% CI 1.59-2.23). MARD-H showed modest relative but highest absolute risks. SOID showed lower gray matter and greater white matter hyperintensity. CONCLUSIONS: T2D subtypes show distinct vascular and neurological risks. The obesity-inflammation subtype carries elevated risks of dementia, stroke, mortality, and adverse brain changes.",
+  "doi": "10.1016/j.diabres.2026.113311",
+  "arxiv_id": null,
+  "venue": "Diabetes research and clinical practice",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "42107717"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.1016/j.diabres.2026.113311"
+}

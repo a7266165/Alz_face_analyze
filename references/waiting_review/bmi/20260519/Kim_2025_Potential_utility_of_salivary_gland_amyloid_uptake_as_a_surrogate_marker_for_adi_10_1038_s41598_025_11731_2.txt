@@ -1,0 +1,664 @@
+Potential utility of salivary gland
+amyloid uptake as a surrogate
+marker for adipose tissue and
+amyloid-beta dynamics based
+on its association with BMI and
+cerebral amyloid burden
+Kyu Ri Kim1,3, Kyungmin Kim1,3, Ji-Young Kim2 & Hai-jeon Yoon2
+Recent studies have noted an unexpected inverse correlation between body mass index (BMI) and
+cerebral amyloid-beta (Aβ) deposition, suggesting a potential involvement of adipose tissue in AD
+pathology. Given the adipose-rich nature of salivary glands, we investigated whether Aβ uptake
+in the salivary glands is associated with the link between BMI and cerebral Aβ deposition using
+18F-Florbetaben PET/CT. We analyzed data from 187 participants, classified into Aβ−cognitively
+normal (Aβ−CN), Aβ+ mild cognitive impairment (Aβ+MCI), and Aβ+ AD dementia (Aβ+D) groups. BMI,
+standardized uptake value ratio of salivary glands (SUVRSG), and brain (SUVRB) were quantified,
+and their associations were examined using Pearson correlation and multiple regression analyses.
+Higher BMI was correlated with increased SUVRSG (r = 0.231, p = 0.0019) and decreased SUVRB (r =
+-0.247, p = 0.0009). SUVRSG and SUVRB were negatively correlated (r = -0.188, p = 0.0102). Multiple
+regression analysis identified BMI as an independent predictor of composite brain SUVR (β = -0.0168,
+p = 0.0046), while SUVRSG was marginally significant (β = -0.0714, p = 0.0701). Regionally, both BMI
+and SUVRSG were significantly associated with lower SUVRB in the striatum, precuneus, and cingulate
+cortex. Consistent with previous studies, BMI exhibited an inverse correlation with SUVRB. Notably,
+SUVRSG was negatively associated with SUVRB while demonstrating a positive correlation with BMI.
+Interpreting SUVRSG as a fat-related marker, these findings suggest that Aβ sequestration in adipose
+tissue may contribute to lower cerebral Aβ accumulation. Additional research is necessary to elucidate
+the underlying mechanism.
+Keywords  Alzheimer’s disease, Amyloid PET, Standardized uptake value ratio of salivary glands (SUVRSG),
+Body mass index, Adipose tissue
+Alzheimer’s disease (AD) is a progressive neurodegenerative disorder marked by cognitive deterioration and the
+pathological accumulation of amyloid-beta (Aβ) plaques in the brain1. The aggregation of Aβ is a key pathological
+hallmark of AD, contributing to synaptic dysfunction, neuroinflammation, and neuronal degeneration, thus
+making it a crucial focus in understanding AD pathogenesis2.
+The relationship between body mass index (BMI) and AD has been extensively investigated, revealing
+intriguing temporal variations across the lifespan. While midlife obesity correlates with elevated AD risk3,4 and
+has been associated with enhanced Aβ deposition and neurodegeneration, the late-life BMI profile presents
+a contrasting pattern. Specifically, reduced BMI in older adults demonstrates a significant correlation with
+increased cerebral Aβ burden, particularly within the 1–2 years preceding positron emission tomography
+assessment5. This pattern is further complicated by the fact that increased visceral adiposity in the elderly
+1Ewha Womans University College of Medicine, 25, Magokdong-ro 2-gil, Gangseo-gu, Seoul 07804, Republic of
+Korea. 2Department of Nuclear Medicine, Ewha Womans University College of Medicine, Seoul 07804, Republic
+of Korea. 3These authors contributed equally: Kyu Ri Kim and Kyungmin Kim. email: haijeon.yoon@gmail.com
+OPEN
+Scientific Reports |        (2025) 15:25513
+1
+| https://doi.org/10.1038/s41598-025-11731-2
+www.nature.com/scientificreports
+
+corresponds with cortical thinning—a negative marker of AD progression—most prominently in the temporal,
+parietal, and cingulate regions6.
+These findings collectively suggest that adipose tissue and related metabolic factors may substantially
+influence Aβ accumulation dynamics and neurodegenerative processes, though the precise mechanistic pathways
+underlying these relationships remain undefined. Studies on the association of adipose tissue metabolism
+with AD pathology indicate that glucose metabolism measured from visceral adipose tissue was significantly
+associated with cerebral Aβ burden, suggesting that metabolic dysfunction of adipose tissue could contribute
+to AD development7. Similarly, confirming Aβ accumulation within adipose tissue is expected to be crucial in
+elucidating mechanistic pathways, although not yet directly established.
+Salivary glands (SGs) are a distinct type of adipose-enriched tissue that may provide valuable insights into
+the undefined adipose tissue-Aβ accumulation mechanism. SGs have demonstrated a potential metabolic link
+with BMI8 and MRI-based fat quantification studies reveal that fat content in the parotid and submandibular
+glands increases in proportion to BMI9. Furthermore, obesity has been linked to decreased salivary flow rates,
+emphasizing the broader metabolic implications of SG function10. Given their adipose-rich nature and metabolic
+activity, SGs may serve as a surrogate indicator of adipose tissue involvement in systemic amyloid dynamics.
+The degree of brain amyloid accumulation can be assessed via molecular imaging techniques using positron
+emission tomography (PET) with various amyloid-specific radiotracers, including 11C-Pittsburgh compound
+B (PiB)11, 18F-florbetapir12, 18F-florbetaben13,  and 18F-flutemetamol14. Notably, salivary glands, particularly
+the parotid glands, are within the field of view in amyloid PET scans, allowing for their assessment without
+additional imaging protocols or modifications. This accessibility makes them a convenient target for evaluating
+amyloid uptake in adipose tissue.
+This study not only quantifies brain uptake but also evaluates amyloid uptake in the salivary glands using
+amyloid PET imaging. Our primary objective is to determine whether BMI is associated with amyloid retention
+in SGs and whether this uptake is linked to brain Aβ burden. Through this examination, we aim to verify the
+potential of salivary gland amyloid uptake as a surrogate for adipose tissue-Aβ accumulation mechanism, thereby
+enhancing our understanding of how adipose tissue influences brain amyloid deposition and AD pathology.
+Materials and methods
+Subjects
+This study included participants who underwent 18F-Florbetaben PET/CT imaging at Ewha Womans University
+Mokdong Hospital between November 2018 and February 2023. Three diagnostic groups encompassing
+cognitively unimpaired individuals without amyloid deposition (Aβ−CN; NC group), individuals with mild
+cognitive impairment and amyloid deposition (Aβ+MCI; MCI group), and individuals with AD dementia
+(Aβ+D; AD group) were included in the analysis. The diagnostic criteria for MCI and AD were based on those
+proposed by the National Institute on Aging and Alzheimer’s Association (NIA-AA)15. Aβ status was determined
+based upon 18F- Florbetaben PET scan results16.
+Demographic and clinical data were collected for all participants, including sex, age, years of education,
+weight, height, BMI, and APOE4 carrier status. BMI was calculated as weight (kg) divided by height squared
+(m²). Cognitive function was assessed using the Mini-Mental State Examination (MMSE) and the Clinical
+Dementia Rating (CDR) scale.
+This study was conducted in accordance with the Declaration of Helsinki (2013 version) and approved by
+the Institutional Review Board (IRB) of Ewha Womans University Mokdong Hospital (EUMC IRB 2025-01-
+003), and the requirement for informed consent was waived by the IRB of Ewha Womans University Mokdong
+Hospital.
+18F-Florbetaben PET/CT image acquisition
+The radiotracer 18F-FBB (Neuraceq™) was produced by DuChemBio Co., Ltd. (Seoul, Korea) in compliance with
+the Korean Ministry of Food and Drug Safety (MFDS). After being delivered to our institutional PET center,
+all 18F-FBB PET/CT images were processed following our institution’s standardized protocol. PET images were
+acquired in three-dimensional (3D) list-mode using a specialized PET/CT scanner (Biograph mCT, Siemens)
+with 20-minute static scans obtained from 90 to 110 min after a bolus injection of 306.16 ± 17.85 MBq 18F-FBB.
+Additionally, a spiral CT scan of the brain was conducted with parameters of 120  kV, 30mAs, and a slice
+thickness of 1.0 mm. The resulting CT data were used for attenuation correction to the PET emission scans. The
+participant’s head was immobilized by head-holder and vacuum-based fixation equipment to reduce motion
+artifacts. The PET images were reconstructed into a 400 × 400 × 109 matrix (voxel 1.02 × 1.02 × 2.03mm3) using
+the integrated 3D ordered subset expectation maximization algorithm, configured with 4 iterations, 12 subsets,
+and a 5-mm Gaussian smoothing filter. The reconstructed data were then combined into single-frame images.
+Analysis of 18F- Florbetaben PET/CT images
+Brain standardized uptake value ratio (SUVRB) values were extracted using Neurophet SCALE PET 2.0 software
+(Neurophet Inc., South Korea), an artificial intelligence (AI)-based software, provides automated quantification
+by directly processing reconstructed DICOM (Digital Imaging and Communications in Medicine) PET images
+co-registered on T1w images17,18. Automatic quantitative analyses were performed using volumes of interest
+(VOIs) defined in each individual’s native T1w space, based on the Desikan-Killiany atlas19. For the SUVR
+quantification, we selected target regions, including cortical (frontal, precuneus, cingulate, lateral parietal, lateral
+temporal, and occipital cortices) and subcortical (striatum) regions, as well as a composite region encompassing
+all these target regions. The whole cerebellum was used as the reference region.
+Salivary glands standardized uptake value ratio (SUVRSG) values were extracted according to the methodology
+described in a previous study20 with minor modifications. For each parotid gland, a sphere volume of interest
+Scientific Reports |        (2025) 15:25513
+2
+| https://doi.org/10.1038/s41598-025-11731-2
+www.nature.com/scientificreports/
+
+(VOI) was manually delineated by the investigator, and the final VOI was determined using a 40% threshold of
+the maximum pixel value, which was automatically applied by MIM software (MIM Software Inc., Cleveland,
+OH). The mean SUV values from both glands were averaged for analysis. The relative uptake ratio (SUVRSG)
+was defined as the mean SUV of the salivary glands divided by the SUV of the cerebellum. The volume of each
+parotid gland (VolSG) was estimated using the target volume within the VOI, applying the 40% threshold.
+Neuropsychological assessment
+The Mini-Mental State Examination (MMSE) was performed for neuropsychological assessment. MMSE
+includes a set of questions that evaluate five areas of cognitive function: orientation, registration, attention and
+calculation, recall and language. The test has a maximum score of 30 points. A score of 24 or higher suggests
+normal cognitive function, while scores ranging from 19 to 23 indicate mild cognitive impairment. Scores
+between 10 and 18 are classified as moderate cognitive impairment, and scores below 9 reflect severe cognitive
+impairment.
+The Clinical Dementia Rating (CDR) was also administered to assess the severity of Alzheimer’s disease.
+The CDR consists of semistructured interviews conducted with both the patient and an informant. During the
+interview, the informant rates the patient’s cognitive performance across six domains: Memory, Orientation,
+Judgment and Problem Solving, Community Affairs, Home and Hobbies and Personal Care. The CDR is scored
+on a five-point scale: 0 (none), 0.5(questionable), 1(mild), 2(moderate) and 3(severe), with higher scores
+indicating greater severity of cognitive impairment. CDR 0 means no dementia, while higher scores correspond
+to varying degrees of dementia, ranging from questionable to severe.
+Statistical analysis
+All statistical analyses were performed using Rex software (version 3.7.0.1, RexSoft, Seoul, Korea), with statistical
+significance set at p < 0.05 (two-tailed). Group differences in demographic characteristics and PET imaging
+features were assessed using one-way ANOVA for normally distributed variables and the Kruskal-Wallis
+test for non-normally distributed variables. Categorical variables were compared using chi-square tests. The
+relationships between BMI, SUVRB, SUVRSG, and salivary gland volume (VolSG) were analyzed using Pearson
+correlation coefficient. Multiple regression analysis was performed to evaluate the independent effects of BMI
+and SUVRSG with age as a covariate using the enter method. A Bonferroni-corrected threshold of p < 0.0071
+(0.05/7) was applied for the regional SUVR analyses across seven target regions.
+Results
+Subjects
+This study included 187 participants who underwent 18F-Florbetaben PET/CT imaging. Participants were
+categorized into three diagnostic groups: amyloid-negative cognitively unimpaired individuals (Aβ−CN,
+n = 114), amyloid-positive individuals with mild cognitive impairment (Aβ+MCI, n = 45), and amyloidpositive individuals with dementia (Aβ+D, n = 28). Demographic and clinical characteristics of each group
+are summarized in Table 1. The median age of participants was 72 years (interquartile range: 68–77), with
+no statistically significant difference among the groups (p = 0.1559). BMI was significantly different among
+the groups (p = 0.0292), with the Aβ−CN group having the highest median BMI (24.21, interquartile range:
+22.43–27.08), whereas the Aβ+MCI (22.9, interquartile range: 21.33–24.84) and Aβ+D (23.27, interquartile
+range: 21.43–24.77) groups exhibited lower values. The prevalence of APOE4 carriers was notably higher in the
+Aβ+MCI (66.67%) and Aβ + D (71.43%) groups compared to the Aβ−CN group (11.4%) (p < 0.001). Cognitive
+function, assessed via MMSE and CDR scores, demonstrated significant group differences (p < 0.001), with the
+Aβ+D group exhibiting the lowest MMSE score (18.5, interquartile range: 15–20) and the highest CDR score
+(1.0, interquartile range: 1–1).
+Clinical diagnosis
+Total
+Aβ-CN
+Aβ+MCI
+Aβ+D
+p-value
+Demographic characteristics
+ Subject (n)
+187
+114
+45
+28
+ Age (years)
+72 (68, 77)
+72 (67, 76)
+73 (70, 79)
+73.5 (69.75, 78.25)
+0.1559
+ Sex (female: male)
+128:59
+83:31
+22:23
+23:5
+0.0033*
+ BMI
+23.71 (22, 26.26)
+24.21 (22.43, 27.08)
+22.9 (21.33, 24.84)
+23.27 (21.43, 24.77)
+0.0292*
+Clinical characteristics
+ APOE4 carrier (%)
+33.69
+11.4
+66.67
+71.43
+p < 0.001*
+ MMSE score
+28 (25, 29)
+29 (28, 30)
+25 (22, 27.25)
+18.5 (15, 20)
+p < 0.001*
+ CDR score
+0.5 (0, 0.5)
+0.5 (0, 0.5)
+0.5 (0.5, 0.5)
+1 (1, 1)
+p < 0.001*
+Table 1.  Demographic data and clinical characteristics. Continuous variables are presented as mean ± standard
+deviation for normally distributed data and as median (interquartile range) for non-normally distributed data.
+Categorical variables are expressed as counts and percentages. BMI body mass index, MMSE mini-mental
+state examination, CDR clinical dementia rating, Aβ−CN amyloid-negative cognitively unimpaired, Aβ+MCI
+amyloid-positive mild cognitive impairment, Aβ+D amyloid-positive dementia.
+
+Scientific Reports |        (2025) 15:25513
+3
+| https://doi.org/10.1038/s41598-025-11731-2
+www.nature.com/scientificreports/
+
+PET indices across diagnostic groups are presented in Table 2. SUVRB significantly increased across groups
+(p < 0.001, Fig. 1A), with the highest value observed in the Aβ+D group (1.67 ± 0.17). Regional SUVR values,
+including those for the frontal cortex (SUVRF), precuneus (SUVRPCu), cingulate cortex (SUVRCg), lateral
+parietal cortex (SUVRLP), lateral temporal cortex (SUVRLT), occipital cortex (SUVROC), and striatum (SUVRStr)
+also exhibited significant group differences (all p < 0.001), with higher uptake values observed in the Aβ+MCI
+Fig. 1.  Group-wise comparison between brain and salivary gland amyloid uptake. (A) The Standardized
+Uptake Value Ratio of the Brain (SUVRB) significantly differed among groups (p < 0.001), with the highest
+values observed in the Aβ+MCI and Aβ+D groups, indicating increased cerebral amyloid deposition in
+individuals with cognitive impairment. (B) The Standardized Uptake Value Ratio of the Salivary Glands
+(SUVRSG) also showed significant group differences (p = 0.0049), with the highest uptake in the Aβ−CN group.
+Data are presented as mean ± standard deviation, and statistical significance was determined using one-way
+ANOVA.
+
+Clinical diagnosis
+Total
+Aβ−CN
+Aβ+MCI
+Aβ+D
+p-value
+PET indices
+ SUVRSG
+2.16 (1.91, 2.47)
+2.23 (1.97, 2.58)
+2.04 (1.88, 2.25)
+2.09 (1.78, 2.3)
+0.0049*
+ VolSG
+23.91 (17.11, 31.13)
+23.27 (16.86, 30.19)
+24.86 (17.45, 32.23)
+23.26 (14.83, 30.28)
+0.6023
+ SUVRB
+1.37 ± 0.25
+1.19 ± 0.05
+1.62 ± 0.19
+1.67 ± 0.17
+p < 0.001*
+ SUVRF
+1.36 ± 0.27
+1.18 ± 0.06
+1.63 ± 0.21
+1.67 ± 0.19
+p < 0.001*
+ SUVRPCu
+1.3 (1.24, 1.77)
+1.26 (1.21, 1.29)
+1.86 (1.61, 2.01)
+1.9 (1.7, 2.06)
+p < 0.001*
+ SUVRCg
+1.46 ± 0.29
+1.26 ± 0.07
+1.76 ± 0.22
+1.79 ± 0.23
+p < 0.001*
+ SUVRLP
+1.38 ± 0.27
+1.20 ± 0.07
+1.65 ± 0.19
+1.72 ± 0.18
+p < 0.001*
+ SUVRLT
+1.27 ± 0.23
+1.11 ± 0.05
+1.49 ± 0.19
+1.56 ± 0.16
+p < 0.001*
+ SUVROC
+1.28 (1.21, 1.42)
+1.23 (1.19, 1.28)
+1.43 (1.32, 1.56)
+1.5 (1.37, 1.62)
+p < 0.001*
+ SUVRStr
+1.47 ± 0.2
+1.36 ± 0.09
+1.66 ± 0.18
+1.64 ± 0.18
+p < 0.001*
+Table 2.  PET indices by clinical diagnosis. Continuous variables are presented as mean ± standard deviation
+for normally distributed data and as median (interquartile range) for non-normally distributed data.
+Categorical variables are expressed as counts and percentages. SUVRSG standardized uptake value ratio of
+salivary gland, VolSG volume of salivary gland, SUVRB global standardized uptake value ratio of brain, SUVRF
+standardized uptake value ratio of frontal cortex, SUVRPCu standardized uptake value ratio of precuneus,
+SUVRCg standardized uptake value ratio of cingulate cortex, SUVRLP standardized uptake value ratio of lateral
+parietal cortex, SUVRLT standardized uptake value ratio of lateral temporal cortex, SUVROC standardized
+uptake value ratio of occipital cortex, SUVRStr standardized uptake value ratio of striatum, Aβ−CN amyloidnegative cognitively unimpaired, Aβ+MCI amyloid-positive mild cognitive impairment, Aβ+D amyloid-positive
+dementia.
+
+Scientific Reports |        (2025) 15:25513
+4
+| https://doi.org/10.1038/s41598-025-11731-2
+www.nature.com/scientificreports/
+
+and Aβ+D groups compared to the Aβ−CN group. In contrast, SUVRSG displayed a significantly different pattern
+across groups, with median values of 2.23 (1.97–2.58) in the Aβ−CN group, 2.04 (1.88–2.25) in the Aβ+MCI
+group, and 2.09 (1.78–2.3) in the Aβ+D group (p = 0.0049, Fig.  1B). VolSG did not show significant group
+differences (p = 0.6023).
+Correlation analysis
+Pearson correlation analysis demonstrated significant associations between BMI, SUVRSG, and SUVRB. BMI
+showed a significant negative correlation with SUVRB (r = -0.247, p = 0.0009, Fig. 2A), indicating lower brain
+amyloid deposition in individuals with higher BMI. A significant positive correlation was found between BMI
+and SUVRSG (r = 0.231, p = 0.0019, Fig. 2B). SUVRSG was negatively correlated with SUVRB (r = -0.188, p = 0.0102,
+Fig. 2C). Additionally, BMI exhibited a strong positive correlation with VolSG (r = 0.469, p < 0.001, Fig. 2D).
+Sex-stratified Pearson correlation analyses were performed. In both males and females, BMI was significantly
+negatively correlated with SUVRB (male: r = -0.372, p = 0.0061; female: r = -0.196, p = 0.0287) and positively
+correlated with VolSG (male: r = 0.533, p < 0.001; female: r = 0.458, p < 0.001). A significant positive correlation
+between BMI and SUVRSG was observed in females only (r = 0.285, p = 0.0013), while the correlation was not
+significant in males (r = 0.151, p = 0.2802). Likewise, SUVRSG was significantly negatively correlated with SUVRB
+Fig. 2.  Correlations between BMI, SUVRB, SUVRSG, and VolSG. (A) Body mass index (BMI) was significantly
+negatively correlated with SUVRB (r = − 0.247, p = 0.0009), suggesting that individuals with higher BMI tend
+to have lower cerebral amyloid deposition. (B) BMI showed a significant positive correlation with SUVRSG
+(r = 0.231, p = 0.0019), indicating that increased peripheral adipose metabolism may be linked to higher
+amyloid uptake in the salivary glands. (C) SUVRSG was negatively correlated with SUVRB (r = − 0.188,
+p = 0.0102), supporting the hypothesis that amyloid sequestration in peripheral tissues may be associated with
+lower cerebral amyloid burden. (D) BMI exhibited a strong positive correlation with salivary gland volume
+(VolSG) (r = 0.469, p < 0.001), consistent with previous findings that salivary gland fat content increases with
+BMI. Pearson correlation analysis was used for statistical comparisons.
+
+Scientific Reports |        (2025) 15:25513
+5
+| https://doi.org/10.1038/s41598-025-11731-2
+www.nature.com/scientificreports/
+
+in females (r = -0.249, p = 0.0046), but not in males (r = -0.066, p = 0.6192). Full statistical results are summarized
+in Supplementary Table S1, and scatter plots for each sex are shown in Supplementary Figure S1.
+Multiple regression analysis
+To assess the independent contributions of BMI and SUVRSG to brain amyloid burden with age as a covariate,
+multiple regression analyses were conducted for composite and regional brain SUVR values. The results are
+summarized in Table 3.
+For composite brain SUVR, higher BMI was significantly associated with lower SUVRB (p = 0.0046), while
+SUVRSG showed a trend toward reduced SUVRB, though it did not reach statistical significance (p = 0.0701).
+For regional SUVRs, after Bonferroni correction for multiple comparisons (adjusted threshold p < 0.0071),
+BMI remained significantly associated with lower SUVR in the frontal cortex (β = − 0.0181, p = 0.0037),
+precuneus (β = − 0.0212, p = 0.0061), cingulate cortex (β = − 0.0192, p = 0.0050), lateral temporal cortex (β =
+− 0.0151, p = 0.0051), and occipital cortex (β = − 0.0109, p = 0.0058). Associations in the lateral parietal cortex (β
+= − 0.0166, p = 0.0080) and striatum (β = − 0.0105, p = 0.0200) did not survive correction.
+None of the associations between SUVRSG and regional SUVR values survived Bonferroni correction.
+However, nominal negative associations (p < 0.05) were observed in the frontal cortex (β = − 0.0812, p = 0.0498),
+precuneus (β = − 0.1300, p = 0.0120), cingulate cortex (β = − 0.1134, p = 0.0132), and striatum (β = − 0.0800,
+p = 0.0082). This inverse pattern did not reach the adjusted significance threshold and should be interpreted with
+caution.
+Discussion
+Higher BMI showed a significant association with reduced cerebral amyloid burden (SUVRB) while elevating
+salivary gland amyloid uptake (SUVRSG), revealing an inverse relationship between these two compartments.
+These findings align with earlier reports demonstrating that individuals with elevated BMI exhibit lower cerebral
+Aβ deposition across PET and CSF biomarkers21,22. Longitudinal evidence further corroborates this inverse
+relationship, with baseline Aβ levels predicting subsequent BMI decline23.
+A striking paradox emerges from our data: while higher BMI correlates with reduced cerebral amyloid
+burden, obesity and visceral adiposity simultaneously increase Alzheimer’s disease risk, promote cortical
+Region
+Predictor
+Estimate (β)
+95% CI
+p-value
+SUVRB
+BMI
+− 0.0168
+− 0.0283, − 0.0052
+0.0046*
+SUVRSG
+− 0.0714
+− 0.1487, 0.0059
+0.0701
+Age
+0.0024
+− 0.0030, 0.0078
+0.3838
+SUVRF
+BMI
+− 0.0181
+− 0.0302, − 0.006
+0.0037*
+SUVRSG
+− 0.0812
+− 0.1624, − 0.0001
+0.0498
+Age
+0.0024
+− 0.0033, 0.0081
+0.4153
+SUVRPCu
+BMI
+− 0.0212
+− 0.0363, − 0.0061
+0.0061*
+SUVRSG
+− 0.1300
+− 0.2311, − 0.0289
+0.012
+Age
+0.0038
+− 0.0034, 0.0109
+0.2989
+SUVRCg
+BMI
+− 0.0192
+− 0.0325, − 0.0059
+0.005*
+SUVRSG
+− 0.1134
+− 0.2028, − 0.0240
+0.0132
+Age
+0.0033
+− 0.0030, 0.0096
+0.3059
+SUVRLP
+BMI
+− 0.0166
+− 0.0288, − 0.0044
+0.008
+SUVRSG
+− 0.0612
+− 0.1429, 0.0204
+0.1407
+Age
+0.0029
+− 0.0029, 0.0086
+0.3224
+SUVRLT
+BMI
+− 0.0151
+− 0.0256, − 0.0046
+0.0051*
+SUVRSG
+− 0.0457
+− 0.1161, 0.0247
+0.202
+Age
+0.0025
+− 0.0024, 0.0075
+0.3201
+SUVROC
+BMI
+− 0.0109
+− 0.0186, − 0.0032
+0.0058*
+SUVRSG
+0.0026
+− 0.0490, 0.0541
+0.9223
+Age
+0.0021
+− 0.0015, 0.0057
+0.2511
+SUVRStr
+BMI
+− 0.0105
+− 0.0193, − 0.0017
+0.0200
+SUVRSG
+− 0.0800
+− 0.1391, − 0.0209
+0.0082
+Age
+− 0.0008
+− 0.0050, 0.0033
+0.6982
+Table 3.  Multiple regression analysis of total and regional amyloid SUVR. BMI body mass index, SUVRSG
+standardized uptake value ratio of salivary gland, VolSG volume of salivary gland, SUVRB global standardized
+uptake value ratio of brain, SUVRF standardized uptake value ratio of frontal cortex, SUVRPCu standardized
+uptake value ratio of precuneus, SUVRCg standardized uptake value ratio of cingulate cortex, SUVRLP
+standardized uptake value ratio of lateral parietal cortex, SUVRLT standardized uptake value ratio of lateral
+temporal cortex, SUVROC standardized uptake value ratio of occipital cortex, SUVRStr standardized uptake
+value ratio of striatum.
+
+Scientific Reports |        (2025) 15:25513
+6
+| https://doi.org/10.1038/s41598-025-11731-2
+www.nature.com/scientificreports/
+
+thinning24 and drive neuroinflammation alongside insulin resistance25. This apparent contradiction suggests
+that adiposity influences AD pathogenesis through distinct, potentially competing pathways.
+The peripheral sink hypothesis offers a compelling mechanistic framework for these observations26,27.
+Increased peripheral amyloid retention, as evidenced by elevated SUVRSG in our cohort, may actively sequester
+Aβ away from the brain, thereby reducing cerebral burden. Supporting this model, salivary gland fat content
+increases proportionally with BMI, while transgenic APP mouse models demonstrate Aβ accumulation in
+salivary and lacrimal glands28 establishing these peripheral tissues as functionally relevant amyloid reservoirs
+distinct from cerebral pathology.
+Simultaneously, adipose-derived inflammatory mediators and metabolic dysfunction may accelerate
+neurodegeneration through amyloid-independent mechanisms29. This dual pathway model reconciles the
+seemingly contradictory protective effect of BMI on amyloid burden with its established role in AD risk.
+Region-specific analyses revealed that BMI’s inverse association with SUVRB remained robust across frontal,
+precuneus, cingulate, lateral temporal, and occipital cortices after Bonferroni correction. While the SUVRB-
+SUVRSG association reached only nominal significance (p < 0.05) and failed to survive multiple comparison
+correction, this pattern nonetheless supports the peripheral retention hypothesis.
+Particularly intriguing were the nominal inverse associations between SUVRSG and SUVRB within the frontal
+cortex, precuneus, cingulate cortex, and striatum—regions consistently implicated in both metabolic regulation
+and AD pathology. The precuneus serves as a critical site for early amyloid accumulation30 with visceral adiposity
+specifically linked to enhanced pathology in this region among middle-aged men31. The cingulate cortex
+mediates both cognitive function and metabolic control32,33 while the striatum bears significant impact from
+obesity and insulin resistance34 and demonstrates amyloid pathology in advanced AD stages35. Although these
+exploratory associations require cautious interpretation, they may reflect region-specific patterns in peripheral
+amyloid redistribution.
+Sex-stratified analyses revealed that SUVRSG associations with both BMI and SUVRB achieved statistical
+significance exclusively in women. This pattern mirrors previous observations that women exhibit stronger
+microglial activation, a key component of neuroinflammation, independent of Aβ burden, particularly
+during early AD stages36. Additionally, visceral adiposity-related biomarkers including VAT, CRP, and PAI-1
+demonstrate more pronounced associations with AD pathology in women37. However, the female-predominant
+sample composition (more than twice the male participants) may have influenced these sex-specific findings.
+These results carry important implications for AD risk stratification and therapeutic development.
+The peripheral sink mechanism suggests that interventions targeting peripheral amyloid clearance might
+complement traditional brain-focused approaches. Furthermore, the sex-specific patterns indicate that metabolic
+interventions for AD prevention may require gender-tailored strategies.
+The novel application of SUVRSG as a PET-based peripheral amyloid marker represents a key methodological
+advance. To our knowledge, this constitutes the first in vivo investigation examining salivary gland amyloid
+uptake in relation to cerebral Aβ burden. Integrating central and peripheral amyloid PET measures enabled
+a more comprehensive assessment of systemic Aβ dynamics, while region-specific SUVRB analyses provided
+spatially nuanced insights into adiposity’s influence on distinct cortical regions.
+Nevertheless, several limitations warrant acknowledgment. The cross-sectional design precludes causal
+inference, necessitating longitudinal validation to establish temporal relationships. Although SUVRSG
+served as a proxy for peripheral amyloid retention, its specificity for adipose-related Aβ accumulation awaits
+histopathological confirmation. The female-predominant sample may have skewed interpretations beyond sexstratified analyses. Finally, incomplete control for potential confounders including comorbidities, medications,
+and lifestyle factors may have introduced residual bias, which is inherent to our retrospective study design.
+This investigation underscores the critical role of peripheral compartments in amyloid distribution and
+highlights metabolic factors’ complex influence on AD pathology. By incorporating SUVRSG into our analytical
+framework, we provide mechanistic insights into how adiposity may modulate brain Aβ burden through
+peripheral sequestration. Key questions remain for advancing our understanding of adiposity’s role in dementia.
+It is unclear whether this peripheral redistribution mechanism applies to other Aβ-associated conditions such
+as cerebral amyloid angiopathy or Down syndrome–related dementia, but doing so could uncover generalizable
+protective mechanisms across the Aβ spectrum. Integrating adiposity indices with accessible fluid biomarkers,
+including emerging plasma Aβ42/40 ratios and salivary amyloid measures, may help validate PET findings in
+more routine clinical contexts. Longitudinal studies that monitor peripheral and cerebral amyloid dynamics in
+parallel will be essential to confirm the peripheral sink hypothesis and explore its therapeutic potential.
+Data availability
+The datasets generated during and/or analyzed during the current study are available from the corresponding
+author on reasonable request.
+Received: 11 April 2025; Accepted: 11 July 2025
+References
+	 1.	 Dubois, B. et al. Alzheimer disease as a clinical-biological construct—an international working group recommendation. JAMA
+Neurol. 81, 1304–1311 (2024).
+	 2.	 Jack, C. R. Jr et al. Revised criteria for diagnosis and staging of alzheimer’s disease: alzheimer’s association workgroup. Alzheimer’s
+Dement. 20, 5143–5169 (2024).
+	 3.	 Chuang, Y. F. et al. Correction: Midlife adiposity predicts earlier onset of alzheimer’s dementia, neuropathology and presymptomatic
+cerebral amyloid accumulation. Mol. Psychiatry. 28, 4486–4486. https://doi.org/10.1038/s41380-023-02210-z (2023).
+Scientific Reports |        (2025) 15:25513
+7
+| https://doi.org/10.1038/s41598-025-11731-2
+www.nature.com/scientificreports/
+
+	 4.	 Gottesman, R. F. et al. Association between midlife vascular risk factors and estimated brain amyloid deposition. JAMA 317,
+1443–1450. https://doi.org/10.1001/jama.2017.3090 (2017).
+	 5.	 Lane, C. A. et al. Investigating the relationship between BMI across adulthood and late life brain pathologies. Alzheimers Res. Ther.
+13, 91. https://doi.org/10.1186/s13195-021-00830-7 (2021).
+	 6.	 Cho, J., Seo, S., Kim, W. R., Kim, C. & Noh, Y. Association between visceral fat and brain cortical thickness in the elderly: a
+neuroimaging study. Front. Aging Neurosci. 13, 694629 (2021).
+	 7.	 Kim, S., Yi, H. A., Won, K. S., Lee, J. S. & Kim, H. W. Association between visceral adipose tissue metabolism and alzheimer’s
+disease pathology. Metabolites 12, 258 (2022).
+	 8.	 Matczuk, J. et al. Insulin resistance and obesity affect lipid profile in the salivary glands. J. Diabetes Res. 2016 (8163474). ​h​t​t​p​s​:​/​/​d​o​
+i​.​o​r​g​/​1​0​.​1​1​5​5​/​2​0​1​6​/​8​1​6​3​4​7​4​ (2016).
+	 9.	 Su, G. Y. et al. Effect of laterality, gender, age and body mass index on the fat fraction of salivary glands in healthy volunteers: assessed
+using iterative decomposition of water and fat with echo asymmetry and least-squares Estimation method. Dentomaxillofacial
+Radiol. 48 https://doi.org/10.1259/dmfr.20180263 (2018).
+	10.	 Hatipoglu, O., Maras, E., Hatipoglu, F. P. & Saygin, A. G. Salivary flow rate, pH, and buffer capacity in the individuals with obesity
+and overweight; A meta-analysis. Niger J. Clin. Pract. 25, 1126–1142. https://doi.org/10.4103/njcp.njcp_1760_21 (2022).
+	11.	 Yamin, G. & Teplow, D. B. Pittsburgh Compound-B (PiB) binds amyloid β‐protein protofibrils. J. Neurochem. 140, 210–215 (2017).
+	12.	 Johnson, K. A. et al. Florbetapir (F18-AV-45) PET to assess amyloid burden in alzheimer’s disease dementia, mild cognitive
+impairment, and normal aging. Alzheimer’s Dement. 9, S72–S83 (2013).
+	13.	 Rowe, C. C. et al. Imaging of amyloid β in alzheimer’s disease with 18F-BAY94-9172, a novel PET tracer: proof of mechanism.
+Lancet Neurol. 7, 129–135 (2008).
+	14.	 Thal, D. R. et al. [18F] flutemetamol amyloid positron emission tomography in preclinical and symptomatic alzheimer’s disease:
+specific detection of advanced phases of amyloid-β pathology. Alzheimer’s Dement. 11, 975–985 (2015).
+	15.	 Jack, C. R. Jr et al. NIA-AA research framework: toward a biological definition of alzheimer’s disease. Alzheimer’s Dement. 14,
+535–562 (2018).
+	16.	 Yoon, H. J. et al. Dual-phase 18F-florbetaben PET provides cerebral perfusion proxy along with beta-amyloid burden in alzheimer’s
+disease. NeuroImage: Clin. 31, 102773 (2021).
+	17.	 Lee, J. et al. Development of amyloid PET analysis pipeline using deep learning-based brain MRI segmentation—a comparative
+validation study. Diagnostics 12, 623 (2022).
+	18.	 Kim, S. et al. Development of a prediction model for cognitive impairment of sarcopenia using multimodal neuroimaging in nondemented older adults. Alzheimer’s Dement. 20, 4868–4878 (2024).
+	19.	 Lee, M. et al. Split-attention U-Net: a fully convolutional network for robust multi-label segmentation from brain MRI. Brain Sci.
+10, 974 (2020).
+	20.	 Kang, S. Y. et al. Salivary gland uptake on 18F-FP-CIT PET as a new biomarker in patients with parkinsonism. Korean J. Radiol. 24,
+690 (2023).
+	21.	 Vidoni, E., Townley, R., Honea, R., Burns, J. & Initiative, A. s. D. N. Alzheimer disease biomarkers are associated with body mass
+index. Neurology 77, 1913–1920 (2011).
+	22.	 Thirunavu, V. et al. Higher body mass index is associated with lower cortical amyloid-β burden in cognitively normal individuals
+in late-life. J. Alzheimers Dis. 69, 817–827 (2019).
+	23.	 Rabin, J. S. et al. Amyloid-beta burden predicts prospective decline in body mass index in clinically normal adults. Neurobiol.
+Aging. 93, 124–130 (2020).
+	24.	 Huang, X., Wang, Y. J. & Xiang, Y. Bidirectional communication between brain and visceral white adipose tissue: its potential
+impact on Alzheimer’s disease. EBioMedicine 84 (2022).
+	25.	 Herrero-Labrador, R. et al. Circulating insulin-like growth factor I is involved in the effect of high fat diet on peripheral amyloid β
+clearance. Int. J. Mol. Sci. 21, 9675 (2020).
+	26.	 Deane, R. et al. LRP/amyloid β-peptide interaction mediates differential brain efflux of Aβ isoforms. Neuron 43, 333–344 (2004).
+	27.	 Deane, R., Sagare, A. & Zlokovic, B. The role of the cell surface LRP and soluble LRP in blood-brain barrier Aβ clearance in
+alzheimer’s disease. Curr. Pharm. Design. 14, 1601–1605 (2008).
+	28.	 Fukuchi, K. I., Li, L., Hart, M. & Lindsey, J. R. Accumulation of amyloid-β protein in exocrine glands of Transgenic mice
+overexpressing a carboxyl terminal portion of amyloid protein precursor. Int. J. Exp. Pathol. 81, 231–239 (2000).
+	29.	 Kern, P. A., Ranganathan, S., Li, C., Wood, L. & Ranganathan, G. Adipose tissue tumor necrosis factor and interleukin-6 expression
+in human obesity and insulin resistance. Am. J. physiology-endocrinology Metabolism. 280, E745–E751 (2001).
+	30.	 Cui, L. et al. Association of precuneus Aβ burden with default mode network function. Alzheimer’s & Dementia (2025).
+	31.	 Dolatshahi, M. et al. Alzheimer disease pathology and neurodegeneration in midlife obesity: a pilot study. Aging Disease. 15, 1843
+(2024).
+	32.	 Bailly, M. et al. Precuneus and Cingulate Cortex Atrophy and Hypometabolism in Patients with Alzheimer’s Disease and Mild
+Cognitive Impairment: MRI and (18)F-FDG PET Quantitative Analysis Using FreeSurfer. Biomed Res Int 583931, (2015). ​h​t​t​p​s​:​/​/​
+d​o​i​.​o​r​g​/​1​0​.​1​1​5​5​/​2​0​1​5​/​5​8​3​9​3​1​ (2015).
+	33.	 Yang, Y. et al. Perigenual anterior cingulate cortex and its structural covariance as predictors for future body fat gain in young
+adults. Obesity 31, 446–453 (2023).
+	34.	 Ter Horst, K. W. et al. Striatal dopamine regulates systemic glucose metabolism in humans and mice. Sci. Transl. Med. 10, eaar3752
+(2018).
+	35.	 Beach, T. G. et al. Striatal amyloid plaque density predicts Braak neurofibrillary stage and clinicopathological alzheimer’s disease:
+implications for amyloid imaging. J. Alzheimers Dis. 28, 869–876. https://doi.org/10.3233/JAD-2011-111340 (2012).
+	36.	 Biechele, G. et al. Associations between sex, body mass index and the individual microglial response in alzheimer’s disease. J.
+Neuroinflamm. 21, 30 (2024).
+	37.	 Ramirez, M. F. et al. Sex differences in protein biomarkers and measures of fat distribution. J. Am. Heart Association. 13, e000223
+(2024).
+Acknowledgements
+This research was supported by the National Research Foundation of Korea(NRF) grant funded by the Ko­
+rea government(MSIT) (RS-2024-00453521 and NRF-2020R1A5A2019210) and by a grant of the Korea Health
+Technology (RS-2025-02214254).
+Author contributions
+K.R.K, K.M.K: Conception and design of study, acquisition of data, data curation, formal analysis. H.J.Y, J.Y.K:
+Conception and design of study, data curation, formal analysis. All authors reviewed the manuscript.
+Scientific Reports |        (2025) 15:25513
+8
+| https://doi.org/10.1038/s41598-025-11731-2
+www.nature.com/scientificreports/
+
+Declarations
+Competing interests
+The authors declare no competing interests.
+Additional information
+Supplementary Information The online version contains supplementary material available at ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​
+0​.​1​0​3​8​/​s​4​1​5​9​8​-​0​2​5​-​1​1​7​3​1​-​2​.​
+Correspondence and requests for materials should be addressed to H.-j.Y.
+Reprints and permissions information is available at www.nature.com/reprints.
+Publisher’s note  Springer Nature remains neutral with regard to jurisdictional claims in published maps and
+institutional affiliations.
+Open Access   This article is licensed under a Creative Commons Attribution-NonCommercial-NoDerivatives
+4.0 International License, which permits any non-commercial use, sharing, distribution and reproduction in
+any medium or format, as long as you give appropriate credit to the original author(s) and the source, provide
+a link to the Creative Commons licence, and indicate if you modified the licensed material. You do not have
+permission under this licence to share adapted material derived from this article or parts of it. The images or
+other third party material in this article are included in the article’s Creative Commons licence, unless indicated
+otherwise in a credit line to the material. If material is not included in the article’s Creative Commons licence
+and your intended use is not permitted by statutory regulation or exceeds the permitted use, you will need to
+obtain permission directly from the copyright holder. To view a copy of this licence, visit ​h​t​t​p​:​/​/​c​r​e​a​t​i​v​e​c​o​m​m​o​
+n​s​.​o​r​g​/​l​i​c​e​n​s​e​s​/​b​y​-​n​c​-​n​d​/​4​.​0​/​.​
+© The Author(s) 2025, corrected publication 2025
+Scientific Reports |        (2025) 15:25513
+9
+| https://doi.org/10.1038/s41598-025-11731-2
+www.nature.com/scientificreports/

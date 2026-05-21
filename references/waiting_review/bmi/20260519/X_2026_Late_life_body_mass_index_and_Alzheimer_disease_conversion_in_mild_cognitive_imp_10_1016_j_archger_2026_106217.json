@@ -1,0 +1,30 @@
+{
+  "title": "Late-life body mass index and Alzheimer disease conversion in mild cognitive impairment: Nonlinear risk and structural MRI correlates.",
+  "authors": [
+    "Xu X",
+    "Yu J",
+    "Zhao R",
+    "Chu H",
+    "Hou Y",
+    "Li Z",
+    "Li S",
+    "Hou Q",
+    "Ma L",
+    "Xu Q",
+    "Zheng H"
+  ],
+  "year": 2026,
+  "abstract": "BACKGROUND AND OBJECTIVES: In late life, body mass index (BMI) associations with Alzheimer disease (AD) risk in mild cognitive impairment (MCI) and related brain changes remain unclear. We aimed to characterize the association between baseline BMI and the risk of conversion from MCI to AD, and to identify its structural MRI correlates. METHODS: We included 762 ADNI participants with baseline MCI. Cox models with restricted cubic splines assessed nonlinearity and identified a spline-derived transition point to define low- and high-BMI groups. Whole-brain voxel- and surface-based morphometry compared baseline gray matter volume and cortical thickness across BMI strata and conversion outcomes. Sensitivity analyses included exclusion of early converters, 12-month landmark models of BMI/weight change, amyloid PET-derived amyloid status analyses, and internal validation of the transition point. RESULTS: Over a median follow-up of 3.26 years, 321 participants converted to AD. Baseline BMI showed a nonlinear association with conversion risk with a transition at 26.42 kg/m²; high BMI was associated with lower risk (adjusted HR 0.70, 95% CI 0.56-0.88). Landmark BMI/weight change was not associated with subsequent conversion, and excluding early converters yielded similar estimates. Converters in both BMI strata showed distributed atrophy within the AD-vulnerable network; low-BMI converters exhibited more extensive baseline atrophy. Amyloid status strongly predicted conversion, with no evidence of effect modification of the BMI-group association. CONCLUSION: Baseline BMI captures prognostic heterogeneity in MCI and is accompanied by differential baseline neurodegeneration. Short-term weight change and amyloid status did not materially refine the BMI-group association. The transition point warrants external validation.",
+  "doi": "10.1016/j.archger.2026.106217",
+  "arxiv_id": null,
+  "venue": "Archives of gerontology and geriatrics",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "41856052"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.1016/j.archger.2026.106217"
+}

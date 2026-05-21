@@ -1,0 +1,961 @@
+RESEARCH
+Open Access
+© The Author(s) 2025. Open Access  This article is licensed under a Creative Commons Attribution-NonCommercial-NoDerivatives 4.0
+International License, which permits any non-commercial use, sharing, distribution and reproduction in any medium or format, as long as you
+give appropriate credit to the original author(s) and the source, provide a link to the Creative Commons licence, and indicate if you modified the
+licensed material. You do not have permission under this licence to share adapted material derived from this article or parts of it. The images or
+other third party material in this article are included in the article’s Creative Commons licence, unless indicated otherwise in a credit line to the
+material. If material is not included in the article’s Creative Commons licence and your intended use is not permitted by statutory regulation or
+exceeds the permitted use, you will need to obtain permission directly from the copyright holder. To view a copy of this licence, visit ​h​t​t​p​:​/​/​c​r​e​a​t​i​
+v​e​c​o​m​m​o​n​s​.​o​r​g​/​l​i​c​e​n​s​e​s​/​b​y​-​n​c​-​n​d​/​4​.​0​/.
+Zhou et al. BMC Geriatrics          (2025) 25:107
+https://doi.org/10.1186/s12877-024-05580-3
+BMC Geriatrics
+†Chaomin Zhou and Jing Peng contributed equally to this work.
+*Correspondence:
+Yan Zha
+zhayan72@126.com
+Full list of author information is available at the end of the article
+Abstract
+Objective  Cognitive impairment (CI) is a prevalent and significant health concern among patients undergoing
+maintenance hemodialysis (MHD). Recent studies have highlighted the growing interest in dynapenic abdominal
+obesity (DAO), which combines both low muscle strength and excess abdominal fat. Despite the increasing
+recognition of DAO, its association with CI in MHD patients remains uncertain. The objective of this study was to
+investigate the relationship between DAO and CI in MHD patients.
+Methods  We conducted a multicenter, cross-sectional study in twenty dialysis centers, encompassing 3767 adult
+MHD patients. Participants were categorized into four distinct groups based on the criteria for abdominal obesity
+(AO), defined as waist circumference (WC) ≥ 90 cm for men and ≥ 85 cm for women, and dynapenia, characterized
+by handgrip strength (HGS) < 28 kg in men and < 18 kg in women. The groups were: non-dynapenic/non-abdominal
+obesity (NDNAO), non-dynapenic/abdominal obesity (NDAO), dynapenic/non-abdominal obesity (DNAO), and
+dynapenic/abdominal obesity (DAO). Cognitive function was assessed using the Mini-Mental State Examination
+(MMSE), with a score below 27 indicating cognitive impairment (CI). Multivariate logistic models were used to
+investigate the correlations between DAO and its components with the risk of CI. Smooth curve fittings were used to
+identify the potential nonlinear relationship between WC and the MMSE scores. The piecewise regression model was
+used for fitting while the log-likelihood ratio test was used to determine whether a significant inflection point existed.
+Additionally, we conducted a series of subgroup analyses to test the robustness of our results.
+Results  The multi-variable adjusted odds ratios (ORs) of CI for DNAO and DAO were 2.10 (1.68–2.62, P < 0.001)
+and 1.81 (1.40–2.33, P < 0.001), respectively. These findings were consistently observed across subgroup analyses,
+indicating robustness in our results. AO was associated with increased risk of CI in the crude model (OR 1.22, 95%CI
+1.05–1.41; P = 0.008), however, it became a protective factor after adjusting for potential confounders (OR 0.84, 95%CI
+0.71–0.98; P = 0.03). We identified a significant nonlinear relationship between WC, HGS, and MMSE scores (P for nonlinearity < 0.05). Notably, an inflection point at 23.29 kg for HGS was determined through threshold effect analysis.
+Associations of dynapenic abdominal
+obesity and its components with cognitive
+impairment among hemodialysis patients
+Chaomin Zhou1,2†, Jing Peng2†, Zuping Qian3, Lin Zhan4, Jing Yuan1 and Yan Zha1,2*
+
+Page 2 of 11
+Zhou et al. BMC Geriatrics          (2025) 25:107
+Introduction
+Cognitive impairment (CI), including dementia, has
+become a common and critical health issue in patients
+with end-stage kidney disease (ESKD), especially in those
+requiring maintenance hemodialysis (MHD) treatments.
+The reported prevalence of CI in MHD patients varied
+between 40 and 70%, which is more than three times
+higher than that of the age-matched general population
+[1–3]. Furthermore, as society ages, the prevalence of
+CI is increasing rapidly. CI not only imposes a signifi­
+cant physical, psychological, and economic burden on
+patients, families, and society but also results in a height­
+ened risk of premature death among MHD patients [4].
+Early diagnosis and effective treatment of CI is relatively
+limited currently and CI is regarded as a preventable
+condition with numerous modifiable risk factors. Thus,
+screening modifiable risk factors of CI and taking tar­
+geted interventions early is of great importance to delay
+its onset and progression.
+MHD patients are particularly susceptible to dyna­
+penia, characterized by reduced muscle strength, due to
+factors such as Protein-Energy Wasting (PEW) and the
+accelerated breakdown of muscle proteins induced by
+uremic toxins [5]. Our previous research indicated that
+individuals in the lowest quartile of handgrip strength
+(HGS) were 2.82 times more likely to have CI compared
+to those in the highest quartile [6].
+With the improvement of living standards, the inci­
+dence of obesity and overweight has been increas­
+ing annually in both the general population and among
+hemodialysis patients [7]. According to a recent study,
+56.4% of MHD patients exhibit abdominal obesity (AO)
+[8]. Dynapenic abdominal obesity (DAO), which is
+defined as the co-occurrence of AO and dynapenia, has
+obtained increasing attention in recent years. DAO has
+been associated with several adverse health outcomes,
+including an increased risk of falls, worsening disability,
+and cardiovascular mortality [9, 10]. Despite numerous
+prior studies suggesting a correlation between a greater
+waist circumference (WC) and an increased suscepti­
+bility to CI, the findings are inconsistent, particularly
+among the elderly and individuals with chronic diseases
+who are more likely to be influenced by the “the obesity
+paradox” [11–14].
+The association between the concurrent presence of
+AO and dynapenia, namely DAO, and the risk of CI in
+MHD patients remains uncertain. Therefore, the aim of
+this study was to investigate the associations between
+DAO and its components with the risk of CI among
+MHD patients.
+Methods
+Study design and participants
+We conducted a multicenter, cross-sectional study in
+twenty dialysis centers in Guizhou Province, China
+between June 2019 and September 2020. Patients who
+have been on regular hemodialysis trice per week for a
+minimum of three months, 18 years or older were eli­
+gible. Participants were excluded from the study if they
+fulfilled the following criteria: (1) visual or hearing dif­
+ficulties; (2) language barriers; (3) mental disability; (4)
+any physical deformity; (5) receiving nutritional support
+therapy; (6) having an excessive volume load, such as
+those with ongoing heart failure. Ethical approval for this
+study was obtained from the Medical Ethics Committee
+of Guizhou Provincial People’s Hospital (approval num­
+ber: [2020] 208). All study subjects had provided written
+consent.
+Covariates
+A standardized questionnaire was administered by welltrained interviewers to collect participants’ information.
+Demographic variables, such as age, sex, education level
+(low: < 12th grade; high: ≥ 12th grade) and histories of
+hypertension, diabetes, stroke, duration of hemodialy­
+sis, details of the participant’s lifestyle such as history of
+smoking, alcohol use were collected through the ques­
+tionnaire. Anthropometric measurements, including
+body weight, height, HGS, WC, and laboratory mea­
+surements, including hemoglobin (Hb) (g/L), serum cre­
+atinine (Scr)(µmol/L), serum albumin (ALB), uric acid
+(SUA)(mmol/L), C-reactive protein (CRP) (mmol/L)
+were collected. For laboratory measurements, blood sam­
+ples were collected after fasting for 8–10 h before the ini­
+tiation of hemodialysis at least once every 3 months for
+routine blood tests. The nearest laboratory parameters
+were collected from the medical records. Participants
+without blood tests performed within the last 3 months
+were excluded from the final analysis.
+Below a WC threshold of 101 cm, MMSE scores demonstrated a positive correlation with WC (β = 0.03, 95% CI 0.01–
+0.04, P < 0.001). However, this relationship did not achieve statistical significance for WC values above 101 cm.
+Conclusions  Both DAO and DNAO are associated with increased odds of CI in MHD patients, with dynapenia being
+the major factor contributing to the increased odds of CI, while AO appears to play a protective role against CI.
+Keywords  Dynapenic / abdominal obesity, Maintenance hemodialysis, Cognitive impairment, Abdominal obesity,
+Obesity paradox, Grip strength
+
+Page 3 of 11
+Zhou et al. BMC Geriatrics          (2025) 25:107
+Anthropometric and body composition measurement
+Anthropometric measurements were performed before
+the initiation of the usual dialysis schedule by welltrained dialysis nurses. An electronic weighing scale was
+used to evaluate body weight with participants bare­
+footed and wearing light clothing. A stadiometer was
+used to assess the standing height of the participants.
+The body mass index (BMI) was determined by dividing
+the weight (in kilograms) by the square of the height (in
+meters). The HGS on non-fistula hands was measured
+twice with a handheld dynamometer (CAMRY EH101,
+Zhongshan, China) before a dialysis session and the max­
+imum measurements were recorded. For participants
+with an indwelling dialysis catheter, a single trial for each
+hand was tested and the maximal score was used in the
+final analysis. WC was measured at the umbilical level
+with an unstretched tape meter with the participants
+wearing light clothing and measurements were recorded
+to the nearest 0.1 cm. A portable whole-body bioimped­
+ance spectroscopy device, the body composition monitor
+(BCM, Fresenius Medical Care, Bad Homburg, Germany)
+was used to evaluate lean tissue index(LTI), and fat tis­
+sue index (FTI) before the HD session according to the
+manufacturer’s instructions.
+Assessment of cognitive impairment
+The Chinese version of the Mini-Mental State Examina­
+tion (MMSE) questionnaire was used to assess cognitive
+function by professional physicians and trained nurses.
+The MMSE test is a widely used screening test for the
+assessment of cognitive function. The total MMSE score
+varies from 0 to 30, with lower scores indicating poorer
+cognitive ability. Individuals with an MMSE score of less
+than 27 were considered to have CI [15].
+Definition of dynapenic abdominal obesity
+The simultaneous presence of AO and dynapenia was
+defined as DAO, as elucidated earlier. AO was defined
+as WC > = 90  cm in men and WC > = 85  cm in women,
+according to the criteria proposed for Chinese by the
+Chinese Diabetes Society [16]. Low muscle strength
+was defined as handgrip strength (HGS) < 28 kg for men
+and < 18  kg for women, according to the Asian Work­
+ing Group for Sarcopenia (AWGS) [17]. The participants
+were divided into four groups based on the presence or
+absence of AO and dynapenia: NDNAO, NDAO, DNAO,
+and DAO.
+Statistical analyses
+The participants’ characteristics were displayed as the
+average with standard deviations and the median (inter­
+quartile range, IQR), correspondingly, for continuous
+variables that were normally or non-normally distributed.
+For categorical variables, data were presented as numbers
+and proportions and analyzed with chi-square with Bon­
+ferroni correction for multiple testing. Significances
+between multiple groups were determined by one-way
+ANOVA followed by LSD or nonparametric test followed
+by the Kruskal-Wallis H test. Univariate and multivari­
+ate binary logistic regression analyses were conducted
+to evaluate the association between DAO and CI by cal­
+culating odds ratios (ORs) with 95% confidence intervals
+(CIs). The NDNAO group was regarded as the reference
+group. Variables with a P-value below 0.05 in the univari­
+ate analyses were identified as covariates for adjustment
+in the multivariate logistic regression analysis. Despite
+not meeting the statistical significance criteria in the uni­
+variate analysis, history of diabetes, smoking status, and
+BMI are recognized risk factors for CI in MHD patients
+and were consequently incorporated into the adjusted
+models [18]. To further examine the independent associ­
+ation between each DAO component (low HGS and AO)
+and CI, a mutually adjusted model was created by includ­
+ing the other DAO components as continuous variables
+as well as the covariates in Model 3, respectively. The
+smooth curve fittings were employed to ascertain the
+possible nonlinear correlation between WC and MMSE
+scores. If a non-linear relationship was observed, the
+piecewise regression model was used for fitting, and the
+log-likelihood ratio test was used to determine whether
+a significant inflection point existed. To test the robust­
+ness of the association between the DAO and CI, sub­
+group analyses based on different genders, age groups
+(< 45, >=45 and < 65, >=65 years), educational attainment
+(junior high school (low), high school or above (high),
+BMI levels (< 18.5, >=18.5 and < 24, and > = 24) and a
+history of diabetes (Yes vs. NO) and stroke (Yes vs. NO)
+were performed. The likelihood ratio test was conducted
+to evaluate the interaction among subgroups. All analyses
+were performed using SPSS version 23.0 and R software
+version 4.2.0. A two-tailed P value < 0.05 was considered
+to have statistical significance.
+Results
+Baseline characteristics
+A total of 3767 HD patients were included in the final
+analysis. The detailed process of patient selection is
+shown in Fig. 1. Of the 3767 eligible participants, 60.7%
+(2287) were male and the mean age was 54.4 ± 15.2 years
+old. A comparison of the clinical characteristics between
+the four groups is shown in Table 1. Participants in the
+DAO group were older, more likely to have a history of
+diabetes and stroke, and had higher levels of FTI, com­
+pared to those in other groups.
+Associations between the DAO category and CI
+The ORs and 95% CIs of CI in different DAO category
+groups are shown in Table 2. As shown in crude model
+
+Page 4 of 11
+Zhou et al. BMC Geriatrics          (2025) 25:107
+1, the DNAO and DAO groups were significantly associ­
+ated with CI (OR = 3.07, 95% CI 2.50–3.75 and OR = 3.47,
+95% CI 2.77–4.33, respectively). Multi-adjusted models
+revealed a greater correlation between DNAO and CI, in
+contrast to the DAO group. The adjusted odds ratio (95%
+CI) for DNAO and DAO were 2.10 (1.68–2.62, P < 0.001)
+and 1.81 (1.40–2.33, P < 0.001), respectively, after adjust­
+ing for age, sex, education level, current smoking status,
+current alcohol consumption, dialysis vintage, history of
+hypertension, history of stroke, and history of diabetes.
+The association persisted even after adjusting for BMI,
+Hb, and CRP (Model 4). The NDAO group did not show
+any significant correlation with CI in either crude or
+multi-variable adjusted models.
+Associations between dynapenia, abdominal obesity, and
+CI
+As shown in Table 3, dynapenia was independently asso­
+ciated with CI even after adjusting for age, sex, educa­
+tional status, dialysis vintage, smoking status, drinking
+status, and history of hypertension, diabetes, and stroke,
+the OR of CI was 2.12 (95% CI 1.76–2.54, P < 0.001). The
+association persisted even after further adjustment for
+WC in the mutually model. AO was associated with CI in
+the crude model (OR 1.22, 95%CI 1.05–1.41; P = 0.008),
+however, it became a protective factor after adjusting for
+age, sex, educational status (OR 0.84, 95%CI 0.71–0.98;
+P = 0.03) and other confounders (model 3). The protective
+effect of AO against CI disappeared after further adjust­
+ment for HGS in the mutually model.
+Relationship between WC, HGS, and MMSE scores
+Figures 2 and 3 depicted a nonlinear relationship between
+WC, HGS, and MMSE scores (P for non-linearity < 0.05),
+after adjusting for age, sex, educational levels, and dialy­
+sis vintage. Notably, a threshold effect analysis identi­
+fied an inflection point at 23.29 Kg for HGS. Prior to this
+inflection point, a significant positive correlation was
+observed between HGS and MMSE scores, with a regres­
+sion coefficient (β) of 0.115 (95% confidence interval [CI]
+0.079–0.151). Beyond the inflection point, the associa­
+tion was not statistically significant, with a β (95% CI) of
+0.67 (0.12, 3.85). The MMSE scores appeared to increase
+with WC up to a threshold of approximately 100 cm. Fur­
+ther analysis using threshold effect analysis confirmed the
+presence of a significant inflection point in the smoothed
+curve between WC and MMSE scores. Specifically,
+MMSE scores increased with WC below 101 cm, with a
+β of 0.025 (95% CI 0.011, 0.039, P < 0.001) as detailed in
+Table  4. In contrast, the relationship between WC and
+MMSE scores was not statistically significant for WC val­
+ues exceeding 101 cm.
+Subgroup analyses of the association between the DAO
+category and CI
+To further assess the robustness of the relationship
+between the DAO category and CI across various
+Fig. 1  Flow chart of the recruitment of subjects
+
+
+Page 5 of 11
+Zhou et al. BMC Geriatrics          (2025) 25:107
+demographic and clinical subgroups, we conducted
+stratified analyses based on educational level, body mass
+index (BMI), age, sex, history of diabetes, and stroke. As
+shown in Fig. 4, the association between the DAO cat­
+egory and CI remained consistent across all examined
+subgroups (P for interaction > 0.05 for all), after adjusting
+for the same covariates as in Model 2 of Table 2. Nota­
+bly, individuals in the dynapenic non-abdominal obesity
+(DNAO) group exhibited higher odds of CI compared
+to those in the DAO group in the majority of subgroup
+analyses, with the exception of participants without a his­
+tory of diabetes.
+Discussion
+The primary discovery of this present study indicates
+that both DAO and DNAO are independently associ­
+ated with an increased risk of CI among MHD patients.
+Dynapenia is the predominant factor contributing to the
+heightened risk of CI, while AO paradoxically exhibits a
+Table 1  Clinical characteristics of the participants
+Variables
+Total
+(n = 3767)
+NDNAO
+(n = 943)
+NDAO
+(n = 385)
+DNAO
+(n = 1599)
+DAO
+(n = 840)
+P value
+Male sex (n, %)
+2287(60.7)
+581(61.6)b, d
+225(58.4)
+1027(64.2)d
+454(54)a, c,
+< 0.001
+Age (year)
+53.7 ± 15.3
+43.0 ± 12.6b, c,d
+53.5 ± 12.2a, d
+55.5 ± 15.1a, d
+62.6 ± 12.3a, b,c
+< 0.001
+Educational status (≥ high school) (%)
+1008 (26.8)
+287 (30.4)c, d
+132 (34.3)c, d
+381 (23.8)a, b
+208 (24.8)a, b
+< 0.001
+Currently smoking (n, %)
+828 (22.0)
+241 (25.6)d
+96 (24.9)d
+346 (21.6)
+145 (17.3)a
+< 0.001
+Currently drinking (n, %)
+190 ( 5.0)
+53 (5.6)
+26 (6.8)
+78 (4.9)
+33 (3.9)
+< 0.001
+History Of hypertension (n, %)
+2789 (74.0)
+703 (74.5)
+283 (73.5)
+1178 (73.7)
+625 (74.4)
+0.95
+History of diabetes (nn,%)
+1005 (26.7)
+98 (10.4)b, c,d
+126 (32.7)a, c,d
+410 (25.6)a, b,d
+371 (44.2)a, b,c
+< 0.001
+History of stroke (n,%)
+287(7.6)
+33(3.5)c, d
+25(6.5)d
+130(8.1)a, d
+99(11.8)a, b,c
+< 0.001
+Hand grip strength (kg)
+21.0 ± 8.9
+29.4 ± 7.3c, d
+29.4 ± 7.3c, d
+16.6 ± 5.9a, b
+16.1 ± 5.9a, b
+< 0.001
+Waist circumference (cm)
+83.1 ± 11.1
+76.3 ± 6.7b, c,d
+95.8 ± 6.7a, c
+77.5 ± 6.8a, b,d
+95.5 ± 7.2a, c
+< 0.001
+Dialysis vintage (months)
+47.0 ± 39.0
+47.8 ± 37.5
+48.8 ± 43.3
+46.3 ± 39.5
+46.5 ± 37.5
+0.613
+Cognitive impairment (n,%)
+1138 (30.2)
+149 (15.8)c, d
+74 (19.2)c, d
+584 (36.5)a, b
+331 (39.4)a, b
+< 0.001
+Serum creatinine (µmol/L)
+954.2 ± 1869.6
+1105.6 ± 2435.4c, d
+992.3 ± 320.4
+910.8 ± 2153.7a
+847.7 ± 307.2a
+0.031
+Serum uric acid (µmol/L)
+432.0 ± 191.6
+442.9 ± 125.4b, c
+472.5 ± 343.6a, c,d
+413.9 ± 133.2a, b,d
+434.7 ± 237.5b, c
+< 0.001
+BMI
+22.7 ± 3.6
+21.3 ± 2.3a, b,c
+26.4 ± 3.1a, c,d
+20.9 ± 2.5a, b,d
+25.8 ± 3.2a, b,c
+< 0.001
+Hemoglobin, g/L
+108.4 ± 20.6
+109.6 ± 20.7
+109.4 ± 17.8
+107.7 ± 22.0
+107.8 ± 18.8
+0.075
+Serum albumin, g/L
+40.4 ± 8.8
+41.7 ± 15.4c, d
+40.7 ± 4.2c
+39.7 ± 5.2a, b
+40.0 ± 4.1a
+< 0.001
+LTI, kg/m2
+15.2 ± 4.4
+16.3 ± 4.4c, d
+16.2 ± 3.2c
+14.7 ± 4.1a, b
+14.6 ± 4.8a, b
+< 0.001
+FTI, kg/m2
+8.0 ± 6.0
+6.1 ± 6.1b, d
+10.6 ± 5.4a, c,d
+6.5 ± 5.3b, d
+11.5 ± 5.6a, b,c
+< 0.001
+MMSE score
+29.0 (26.0, 30.0)
+30.0 (28.0, 30.0) c, d
+29.0 (27.0, 30.0) c, d
+28.0 (25.0, 30.0)a, b
+28.0 (24.0, 30.0)a, b
+< 0.001
+CRP(mmol/L)
+2.4(1.1,6.4)
+1.8(0.7,3.4)b, c,d
+3.4(1.6,7.3)a, c
+2.4(1.0,6.9)a, d
+4.1(1.8,10.1)a, c
+< 0.001
+Note: P values refer to comparisons among all four groups. The alphabetic footnotes a, b, c, and d represent the NDNAO, NDAO, DNAO, and DAO group, respectively,
+and the group with a letter represents that there was statistically significant difference between the groups
+Abbreviations: NDNAO, non-abdominal obesity; NDAO, non-dynapenic abdominal obesity (NDAO); DNAO, dynapenic non-abdominal obesity; DAO, dynapenic
+abdominal obesity; BMI, body mass index; LTI, lean tissue index; FTI, fat tissue index;
+a There is statistical difference compared with NDNAO group
+b There is statistical difference compared with NDAO group
+c There is statistical difference compared with DNAO group
+d There is statistical difference compared with DAO group
+Table 2  ORs for cognitive impairment according to the presence of Sarcopenia and obesity
+Groups
+Model 1
+P
+Model 2
+P
+Model 3
+P
+Model 4
+P
+Non-dynapenic
+non-abdominal obesity (NDNAO)
+Reference
+Reference
+Reference
+Reference
+Non-dynapenic/abdominal obesity (NDAO)
+1.27 (0.93,1.73)
+0.131
+0.89 (0.64,1.23)
+0.484
+0.89 (0.65,1.24)
+0.503
+0.85 (0.50,1.43)
+0.534
+Dynapenic/non-abdominal obesity (DNAO)
+3.07 (2.50,3.75)
+< 0.001
+2.02 (1.62,2.51)
+< 0.001
+2.10 (1.68,2.62)
+< 0.001
+2.27 (1.66,3.10)
+< 0.001
+Dynapenic/abdominal obesity (DAO)
+3.47 (2.77,4.33)
+< 0.001
+1.72 (1.34,2.21)
+< 0.001
+1.81 (1.40,2.33)
+< 0.001
+2.05 (1.35,3.10)
+0.001
+Trend test
+1.57 (1.46,1.68)
+< 0.001
+1.26 (1.17,1.37)
+< 0.001
+1.29 (1.19,1.40)
+< 0.001
+1.41 (1.25,1.59)
+< 0.001
+Model 1, crude model
+Model 2, adjusted for age, sex, education, dialysis vintage
+Model 3, adjusted for above + currently smoking + currently drinking + history of hypertension, diabetes and stroke
+Model 4, adjusted for above + Hb + BMI + CRP
+
+Page 6 of 11
+Zhou et al. BMC Geriatrics          (2025) 25:107
+protective effect against CI after adjusting for potential
+confounders.
+In concordance with previous research [19], our results
+suggest that lower HGS, a condition known as dynapenia,
+is associated with a higher risk of CI in MHD patients.
+The curve fitting and threshold analyses revealed that
+MMSE scores increased significantly with increasing
+HGS up to a threshold of 23.29 kg. Beyond this thresh­
+old, the relationship was no longer significant, implying
+a possible threshold effect. Although the exact mecha­
+nisms underlying the link between dynapenia and CI are
+not fully understood, several speculative mechanisms
+may have explanatory value. Firstly, individuals with
+dynapenia are more likely to suffer from poor nutritional
+status [20], as evidenced by our findings of significantly
+lower levels of Scr, SUA, LTI, ALB, and Hb levels in these
+patients compared to those without dynapenia. This
+inadequate nutrition can lead to deficiencies in vitamins
+and minerals, adversely impacting cognitive function
+[21–23]. Additionally, inflammation, a known contribu­
+tor to both CI [24] and dynapenia [20], may play a role.
+CRP levels are markedly elevated in patients with dyna­
+penia than in those with normal HGS in our study. This
+elevated inflammation could precipitate subsequent dis­
+ruptions in cognitive function, potentially through neu­
+roinflammatory pathways that impair neuronal integrity
+and synaptic plasticit.
+An important and novel finding of this study is the par­
+adoxical association between AO and lower odds of CI
+after adjusting for potential confounders. To our knowl­
+edge, this is the first report to suggest a protective effect
+of AO on CI in MHD patients. While several studies have
+demonstrated an association between central obesity
+and increased risk of CI [25, 26], our findings, along with
+others [13, 27, 28], suggest a more complex relationship.
+For instance, a study in community-dwelling older Japa­
+nese women showed that greater abdominal visceral fat
+accumulation was associated with a lower risk of CI [27].
+Similarly, a retrospective cohort study in China found
+that older adults with higher BMI and WC experienced
+slower cognitive decline [13]. An autopsy study revealed
+that older adults with greater direct measurements of
+abdominal visceral fat exhibited reduced odds of CI [29].
+Though many studies have linked visceral obesity to an
+increased risk of CI [30], their utilization of indirect mea­
+surements to quantify abdominal visceral fat lacks the
+same level of credibility as directly measuring the vis­
+ceral fat surrounding different abdominal organs through
+autopsy.
+The conflicting results regarding the relationship
+between obesity and CI could also be attributed to a non­
+linear association between central obesity and cognitive
+function. Our study detected a nonlinear correlation
+between WC and MMSE scores (P for nonlinearity < 0.05)
+after controlling for age, sex, education, dialysis vintage,
+and medical histories of diabetes, hypertension, and
+stroke. However, we did not identify a statistically sig­
+nificant inflection point through threshold effect analy­
+sis, possibly due to the limited number of participants
+with larger WC measurements. A previous cohort study
+among older Australian men also described a “J” shaped
+relationship between obesity measures and dementia
+risk, with overweight men and those with a waist-to-hip
+ratio (WHR) ≥ 0.9 exhibiting a lower risk compared to
+their normal-weight and WHR < 0.9 counterparts [31]. It
+is well known that WHR is also a good indicator of AO.
+Future studies with larger cohorts and a broader range of
+WC measurements are warranted to confirm the nonlin­
+ear relationship between WC and CI in MHD patients.
+Furthermore, the “obesity paradox” is a phenomenon
+that must be considered, particularly in the elderly and
+those undergoing MHD therapy [32, 33]. While obesity
+is generally associated with numerous adverse outcomes,
+MHD patients may derive benefits from a higher BMI
+and increased body fat. Kakiya et al. [34] reported that
+increased fat mass index was associated with decreased
+all-cause and non-cardiovascular mortality in MHD
+patients. We hypothesize that the “obesity paradox”
+may extend to CI in MHD patients as well. In our study,
+despite similar levels of lean tissue index (LTI), partici­
+pants in the DNAO group had the lowest BMI, and their
+fat tissue index (FTI) was significantly lower than that of
+the DNO group. A previous study on MHD patients sug­
+gested that normal-weight patients with abdominal obe­
+sity exhibited a more proatherogenic profile and lower
+physical ability than overweight and obese patients with
+abdominal obesity [35], which is strongly correlated with
+CI. Additionally, low fat mass, a characteristic of PEW, is
+a valuable indicator of malnutrition in MHD individuals
+and is associated with an increased risk of CI [36, 37].
+Obesity may also provide better short-term hemody­
+namic stability by preventing intra-dialytic hypotension,
+which is linked to decreased white matter, hippocam­
+pus volume, and cognitive function [38, 39]. Moreover,
+Table 3  Association between low handgrip strength
+(dynapenia) or high waist circumference (abdominal obesity) and
+cognitive impairment
+Models
+Dynapenia
+Abdominal obesity
+OR (95% CI)
+P
+OR (95% CI)
+P
+Model 1
+2.98(2.52–3.51)
+< 0.001
+1.22(1.05–1.41)
+0.008
+Model 2
+2.01(1.68–2.40)
+< 0.001
+0.84(0.71–0.98)
+0.030
+Model 3
+2.12(1.76–2.54)
+< 0.001
+0.84(0.71–0.99)
+0.035
+Mutual model
+2.07(1.72–2.47)
+< 0.001
+0.79(0.61–1.03)
+0.09
+Model 1, crude model
+Model 2, adjusted for age, sex, education
+Model 3, further adjusted for dialysis vintage, currently smoking, currently
+drinking, history of hypertension, diabetes and stroke
+Mutual model, adjusted for above + waist circumference / hand grip strength
+
+Page 7 of 11
+Zhou et al. BMC Geriatrics          (2025) 25:107
+adipose tissue can secrete leptin, a hormone that protects
+against CI [40]. These mechanisms may partially explain
+the paradoxical relationship between WC and CI, as well
+as the higher risk of CI in the DNAO group compared to
+the DAO group.
+Given the evidence presented, it becomes clear that
+although both DAO and DNAO are linked to an elevated
+risk of CI in MHD patients, the risk is comparatively
+lower in the DAO group. In mutually adjusted mod­
+els, dynapenia remained significantly associated with a
+higher risk of CI even after adjusting for WC, while the
+protective effect of AO disappeared upon further adjust­
+ment for HGS, suggesting that dynapenia is the primary
+factor driving the increased risk of CI.
+Several limitations in our study should be consid­
+ered. Firstly, the cross-sectional nature of our study
+prevented us from making causal inferences. Secondly,
+though many potential confounding variables have been
+assessed in our study, potential unmeasured confounding
+variables such as depression status and physical activity
+may have existed and biased our study findings. Thirdly,
+though we found a non-linear association between WC
+Fig. 2  Relationships between HGS and the MMSE scores
+
+
+Page 8 of 11
+Zhou et al. BMC Geriatrics          (2025) 25:107
+Table 4  Analysis of the threshold effects of waist circumference, hand grip strength, and MMSE scores
+Outcome variable
+MUS (waist circumference, cm)
+MUS (handgrip strength, kg)
+β (95%CI)
+p-value
+β(95%CI)
+p-value
+Model 1: Linear regression
+0.055(0.008–0.030)
+0.001
+0.115(0.079–0.151)
+< 0.001
+Model 2: Piecewise linear regression
+Inflection point K
+101
+23.29
+< K
+0.025(0.011–0.039)
+< 0.001
+0.115 (0.079–0.151)
+< 0.001
+≥K
+0.006(-0.099–0.111)
+0.912
+0.016 (-0.009–0.04)
+0.205
+Log likelihood ratio tests
+0.896
+< 0.001
+Fig. 3  Relationships between WC and the MMSE scores
+
+
+Page 9 of 11
+Zhou et al. BMC Geriatrics          (2025) 25:107
+and MMSE score, we failed to find an inflection point in
+the threshold effect analyses. Further studies that include
+larger samples with a larger WC in MHD patients are
+needed. Fourthly, this research was focused on Chinese
+MHD patients, so our findings cannot be generalized
+to individuals from other racial or ethnic backgrounds.
+Fifthly, anthropometric and body composition measure­
+ments were taken before the HD session and this might
+have influenced data related to anthropometry and bio­
+electrical impedance analysis (BIA).
+In conclusion, both DAO and DNAO are associ­
+ated with increased odds of CI in MHD patients, with
+dynapenia being the major factor contributing to the
+increased odds of CI, while AO appears to play a protec­
+tive role against CI. Interventions aimed at increasing
+HGS and maintaining a moderately larger WC may help
+reduce cognitive dysfunction in MHD patients. Further
+research is needed to provide recommendations for the
+appropriate range of WC management for CI prevention
+in MHD patients.
+Acknowledgements
+We thank all HD centers and all the patients included in the study.
+Author contributions
+Y Z is responsible for the general idea design and guidance of the article.
+CMZ, JP wrote the main manuscript text . QZP, LZ and JY are responsible for
+the screening and enrollment of subjects and the acquisition of the data.All
+authors reviewed the manuscript.
+Funding
+The work was supported by the National Natural Science Foundation
+of China (82360148), Guizhou Science & Technology Department
+(QKHPTRC2018-5636-2; QKHCG2023-ZD010).
+Data availability
+The data that support the findings of this study are not openly available due
+to reasons of sensitivity and are available from the corresponding author
+upon reasonable request. Data are located in controlled access data storage at
+GuiZhou provincial people’s hospital, China.
+Declarations
+Ethics approval and consent to participate
+This study was approved by the Ethics Review Committee of Guizhou
+Provincial People’s Hospital and performed in compliance with the Declaration
+of Helsinki. The approval number of the Institutional Review Board was
+“(Scientific Research) (2019) No.29”. All patients signed informed consent forms
+before participation.
+Consent for publication
+Not applicable.
+Competing interests
+The authors declare no competing interests.
+Conflict of interest
+The authors have no conflicts of interest to declare.
+Author details
+1NHC Key Laboratory of Pulmonary Immune-related Diseases, Renal
+Division, Department of Nephrology, Guizhou Provincial People’s Hospital,
+Guiyang 550002, China
+2Medical College, GuiZhou University, Guiyang, China
+Fig. 4  Subgroup analysis
+
+
+Page 10 of 11
+Zhou et al. BMC Geriatrics          (2025) 25:107
+3Research Laboratory Center, Guizhou Provincial People’s Hospital,
+Guiyang, China
+4Zun Yi Medical University, Zun Yi, China
+Received: 22 February 2024 / Accepted: 22 November 2024
+References
+1.
+Olczyk P, Kusztal M, Gołębiowski T, Letachowicz K, Krajewska M. Cognitive
+impairment in End Stage Renal Disease patients undergoing hemodialysis:
+markers and risk factors. Int J Environ Res Public Health. 2022; 19(4).
+2.
+van Zwieten A, Wong G, Ruospo M, Palmer SC, Teixeira-Pinto A, Barulli MR,
+Iurillo A, Saglimbene V, Natale P, Gargano L, et al. Associations of cogni­
+tive function and education level with all-cause mortality in adults on
+Hemodialysis: findings from the COGNITIVE-HD study. Am J Kidney Dis.
+2019;74(4):452–62.
+3.
+Joseph SJ, Bhandari SS, Dutta S. Cognitive impairment and its correlates in
+chronic kidney disease patients undergoing Haemodialysis. J Evol Med Dent
+Sci. 2019;8(36):2818–22.
+4.
+Guo Y, Tian R, Ye P, Li X, Li G, Lu F, Ma Y, Sun Y, Wang Y, Xiao Y, et al. Cognitive
+domain impairment and all-cause mortality in older patients undergoing
+hemodialysis. Front Endocrinol (Lausanne). 2022;13:828162.
+5.
+Bi X, Liu Y, Yao L, Ling L, Lu J, Hu C, Ding W. Gut microbiota dysbiosis and
+protein energy wasting in patients on hemodialysis: an observational longi­
+tudinal study. Front Nutr. 2024;10:1270690.
+6.
+Zha Y, Zhou C, Liao S, Zhan L, He P, Yuan J. Muscle strength performed better
+than muscle mass in identifying cognitive impairment risk in maintenance
+hemodialysis patients. Eat Weight Disord. 2022;27(7):2533–40.
+7.
+Than WH, Ng JK-C, Chan GC-K, Fung WW-S, Chow K-M, Szeto C-C. The change
+in the prevalence of obesity and new-onset diabetes in Chinese peritoneal
+dialysis patients over 25 years. Clin Kidney J. 2022;15(1):70–8.
+8.
+Shi Z, Guo Y, Ye P, Luo Y. Abdominal obesity in Chinese patients undergoing
+hemodialysis and its association with all-cause mortality. Front Endocrinol
+(Lausanne). 2023;14:1287834.
+9.
+Dowling L, McCloskey E, Cuthbertson DJ, Walsh JS. Dynapenic Abdominal
+Obesity as a risk factor for Falls. J Frailty Aging. 2023;12(1):37–42.
+10.	 Ramírez PC, de Oliveira DC, de Oliveira Máximo R, de Souza AF, Luiz MM,
+Delinocente MLB, Steptoe A, de Oliveira C, da Silva Alexandre T. Is dynapenic
+abdominal obesity a risk factor for cardiovascular mortality? A competing risk
+analysis. Age Ageing. 2023; 52(1).
+11.	 Ren Z, Li Y, Li X, Shi H, Zhao H, He M, Zha S, Qiao S, Pu Y, Liu H, et al. Associa­
+tions of body mass index, waist circumference and waist-to-height ratio with
+cognitive impairment among Chinese older adults: based on the CLHLS. J
+Affect Disord. 2021;295:463–70.
+12.	 Shirahama Y, Tabata N, Sakamoto K, Sato R, Yamanaga K, Fujisue K, Sueta D,
+Araki S, Takashio S, Arima Y, et al. Validation of the obesity paradox by body
+mass index and waist circumference in patients undergoing percutaneous
+coronary intervention. Int J Obes (Lond). 2022;46(10):1840–48.
+13.	 Liang F, Fu J, Moore JB, Zhang X, Xu Y, Qiu N, Wang Y, Li R. Body Mass
+Index, Waist circumference, and Cognitive decline among Chinese older
+adults: a Nationwide Retrospective Cohort Study. Front Aging Neurosci.
+2022;14:737532.
+14.	 Liu M, He P, Zhou C, Zhang Z, Zhang Y, Li H, Ye Z, Wu Q, Yang S, Zhang Y, et al.
+Association of waist-calf circumference ratio with incident cognitive impair­
+ment in older adults. Am J Clin Nutr. 2022;115(4):1005–12.
+15.	 Drew DA, Tighiouart H, Rollins J, Duncan S, Babroudi S, Scott T, Weiner DE,
+Sarnak MJ. Evaluation of screening tests for cognitive impairment in patients
+receiving maintenance hemodialysis. J Am Soc Nephrol. 2020;31(4):855–64.
+16.	 Bao Y, Lu J, Wang C, Yang M, Li H, Zhang X, Zhu J, Lu H, Jia W, Xiang K. Optimal
+waist circumference cutoffs for abdominal obesity in Chinese. Atherosclero­
+sis. 2008;201(2):378–84.
+17.	 Chen LK, Woo J, Assantachai P, Auyeung TW, Chou MY, Iijima K, Jang HC, Kang
+L, Kim M, Kim S, et al. Asian Working Group for Sarcopenia: 2019 Consen­
+sus Update on Sarcopenia diagnosis and treatment. J Am Med Dir Assoc.
+2020;21(3):300–e072.
+18.	 Luo Y, Murray AM, Guo YD, Tian R, Ye PP, Li X, Li GG, Lu FP, Ma YC, Sun Y, et al.
+Cognitive impairment and associated risk factors in older adult hemodialysis
+patients: a cross-sectional survey. Sci Rep. 2020;10(1):12542.
+19.	 Jin Y-L, Xu L, Jiang C-Q, Zhang W-S, Pan J, Zhu F, Zhu T, Thomas GN, Lam
+T-H. Association of hand grip strength with mild cognitive impairment in
+middle-aged and older people in Guangzhou biobank cohort study. Int J
+Environ Res Public Health. 2022;19(11):6464.
+20.	 Lopes LCC, Gonzalez MC, Avesani CM, Prado CM, Peixoto M, Mota JF. Low
+hand grip strength is associated with worse functional capacity and higher
+inflammation in people receiving maintenance hemodialysis. Nutrition.
+2022;93:111469.
+21.	 Estrada JA, Contreras I, Pliego-Rivero FB, Otero GA. Molecular mechanisms
+of cognitive impairment in iron deficiency: alterations in brain-derived neuro­
+trophic factor and insulin-like growth factor expression and function in the
+central nervous system. Nutr Neurosci. 2014;17(5):193–206.
+22.	 Spiezia AL, Falco F, Manganelli A, Carotenuto A, Petracca M, Novarella F, Iaco­
+vazzo C, Servillo G, Lanzillo R, Brescia Morra V, et al. Low serum 25–hydroxyvitamin D levels are associated with cognitive impairment in multiple
+sclerosis. Mult Scler Relat Disord. 2023;79:105044.
+23.	 Garrido-Dzib AG, Chávez-Loría G, Magallón-Zertuche V, Avila-Nava A,
+Palacios-González B, Gutiérrez-Solis AL. Micro- and Macronutrient Intake
+and Food Group Frequency Consumed by subjects with Cognitive Impair­
+ment and Dementia in Latin America: a systematic review. J Alzheimers Dis.
+2023;94(2):425–39.
+24.	 Dandan Z, Shen C, Liu X, Liu T, Ou Y, Ouyang R. IL-33/ST2 mediating systemic
+inflammation and neuroinflammation through NF-kB participated in the
+neurocognitive impairment in obstructive sleep apnea. Int Immunopharma­
+col. 2023;115:109604.
+25.	 Tang X, Zhao W, Lu M, Zhang X, Zhang P, Xin Z, Sun R, Tian W, Cardoso MA,
+Yang J, et al. Relationship between Central Obesity and the incidence of
+cognitive impairment and dementia from Cohort studies Involving 5,060,687
+participants. Neurosci Biobehav Rev. 2021;130:301–13.
+26.	 West RK, Ravona-Springer R, Heymann A, Schmeidler J, Leroith D, Koifman
+K, D’Arcy RC, Song X, Guerrero-Berroa E, Preiss R, et al. Waist circumference is
+correlated with poorer cognition in elderly type 2 diabetes women. Alzheim­
+ers Dement. 2016;12(8):925–9.
+27.	 Chiba I, Lee S, Bae S, Makino K, Shinkai Y, Shimada H. Visceral Fat Accumula­
+tion is Associated with mild cognitive impairment in Community-Dwelling
+Older Japanese Women. J Nutr Health Aging. 2020;24(3):352–57.
+28.	 Zhang J, Tang G, Xie H, Wang B, He M, Fu J, Shi X, Zhang C, Huo Y, Xu X et al.
+Higher adiposity is Associated with slower Cognitive decline in hypertensive
+patients: secondary analysis of the China Stroke Primary Prevention Trial. J
+Am Heart Assoc. 2017; 6(10).
+29.	 Nishizawa A, Cuelho A, de Farias-Itao DS, Campos FM, Leite REP, Ferretti-
+Rebustini REL, Grinberg LT, Nitrini R, Jacob-Filho W, Pasqualucci CA, et al.
+Direct measurements of Abdominal Visceral Fat and Cognitive Impairment in
+Late Life: findings from an autopsy study. Front Aging Neurosci. 2019;11:109.
+30.	 Papachristou E, Ramsay SE, Lennon LT, Papacosta O, Iliffe S, Whincup PH, Wan­
+namethee SG. The relationships between body composition characteristics
+and cognitive functioning in a population-based sample of older British men.
+BMC Geriatr. 2015;15:172.
+31.	 Power BD, Alfonso H, Flicker L, Hankey GJ, Yeap BB, Almeida OP. Body adipos­
+ity in later life and the incidence of dementia: the health in men study. PLoS
+ONE. 2011;6(3):e17902.
+32.	 Kittiskulnam P, Johansen KL. The obesity paradox: a further consideration in
+dialysis patients. Semin Dial. 2019;32(6):485–89.
+33.	 Okuno S. Significance of adipose tissue maintenance in patients undergoing
+hemodialysis. Nutrients. 2021; 13(6).
+34.	 Kakiya R, Shoji T, Tsujimoto Y, Tatsumi N, Hatsuda S, Shinohara K, Kimoto E,
+Tahara H, Koyama H, Emoto M, et al. Body fat mass and lean mass as predic­
+tors of survival in hemodialysis patients. Kidney Int. 2006;70(3):549–56.
+35.	 Beberashvili I, Azar A, Abu Hamad R, Sinuani I, Feldman L, Maliar A, Stav K,
+Efrati S. Abdominal obesity in normal weight versus overweight and obese
+hemodialysis patients: associations with nutrition, inflammation, muscle
+strength, and quality of life. Nutrition. 2019;59:7–13.
+36.	 Fouque D, Kalantar-Zadeh K, Kopple J, Cano N, Chauveau P, Cuppari L, Franch
+H, Guarnieri G, Ikizler TA, Kaysen G, et al. A proposed nomenclature and
+diagnostic criteria for protein-energy wasting in acute and chronic kidney
+disease. Kidney Int. 2008;73(4):391–8.
+37.	 Yang Y, Da J, Li Q, Long Y, Yuan J, Zha Y. The impact of Malnutrition, inflamma­
+tion on cognitive impairment in Hemodialysis patients: a Multicenter Study.
+Kidney Blood Press Res. 2022;47(12):711–21.
+38.	 Park J, Ahmadi SF, Streja E, Molnar MZ, Flegal KM, Gillen D, Kovesdy CP,
+Kalantar-Zadeh K. Obesity paradox in end-stage kidney disease patients. Prog
+Cardiovasc Dis. 2014;56(4):415–25.
+
+Page 11 of 11
+Zhou et al. BMC Geriatrics          (2025) 25:107
+39.	 Cedeño S, Desco M, Aleman Y, Macías N, Fernández-Pena A, Vega A, Abad S,
+López-Gómez JM. Intradialytic hypotension and relationship with cognitive
+function and brain morphometry. Clin Kidney J. 2021;14(4):1156–64.
+40.	 Holden KF, Lindquist K, Tylavsky FA, Rosano C, Harris TB, Yaffe K. Serum leptin
+level and cognition in the elderly: findings from the Health ABC Study. Neu­
+robiol Aging. 2009;30(9):1483–9.
+Publisher’s note
+Springer Nature remains neutral with regard to jurisdictional claims in
+published maps and institutional affiliations.

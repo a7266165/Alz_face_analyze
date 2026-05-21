@@ -1,0 +1,23 @@
+{
+  "title": "Body mass index, waist circumference, hip circumference, abdominal volume index, and cognitive function in older Chinese people: a nationwide study.",
+  "authors": [
+    "Liang Z",
+    "Jin W",
+    "Huang L",
+    "Chen H"
+  ],
+  "year": 2024,
+  "abstract": "BACKGROUND: Numerous studies have indicated an obesity paradox in observational research on aging health, where being normal weight or underweight adversely affects cognitive function, while moderate obesity may offer protective benefits. This study aims to investigate the association between body mass index (BMI), waist circumference (WC), hip circumference (HC), waist-to-height ratio (WHtR), waist-to-hip ratio (WHR), abdominal volume index (AVI), and the joint effect of BMI and HC on cognitive impairment in older Chinese people. METHODS: A total of 10,579 participants aged 65 years and older from the 2018 Chinese Longitudinal Healthy Longevity Survey (CLHLS) were included in this cross-sectional study. BMI, WC, HC, WHtR, WHR, and AVI were calculated from height, weight, WC, and HC measurements, where weight, WC, and HC were obtained by direct measurement. Mini-Mental State Examination was used to assess cognitive impairment. Odds ratios (ORs) and 95% confidence intervals (95% CIs) were estimated using binary logistic regression. Non-linear correlations were investigated using restricted cubic spline curves. RESULTS: In multivariate logistic regression models fully adjusted for confounding variables, our analyses showed significant negative associations of WC [OR 0.93 (95%CI 0.88-0.98), P = .012], HC [OR 0.92 (95%CI 0.87-0.97), P = .004], lower WHR (Q2) [OR 0.85 (95%CI 0.72-1.00), P = .044], and AVI [OR 0.93 (95%CI 0.88-0.98), P = .011] with cognitive impairment. Nonlinear curve analysis showed that the risk of cognitive impairment was lowest when the BMI was about 25.5 kg/m², suggesting that the optimal BMI for older Chinese people to maintain good cognitive ability may be in the overweight range. In addition, there was a non-linear \"N\" shaped relationship between HC and cognitive impairment, with HC having the highest risk of cognitive impairment at about 82 cm and the lowest risk at about 101 cm. The joint effects analysis indicated that the lowest risk was observed among those with normal or higher BMI but higher HC compared with participants with normal BMI levels and lower HC levels. CONCLUSION: In older Chinese people, a low-waisted and high-hip circumference body figure is favorable for cognitive function in older people. It also found a significant association between AVI and cognitive impairment. The joint analysis of BMI and HC suggests that maintaining a normal or higher BMI with a higher HC may be more conducive to maintaining good cognitive function.",
+  "doi": "10.1186/s12877-024-05521-0",
+  "arxiv_id": null,
+  "venue": "BMC geriatrics",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "39516791"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.1186/s12877-024-05521-0"
+}

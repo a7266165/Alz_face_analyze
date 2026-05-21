@@ -1,0 +1,27 @@
+{
+  "title": "Predictors of 1-year mortality in a clinical cohort of hip fracture patients.",
+  "authors": [
+    "Sundet M",
+    "Martinsen M",
+    "Paus M",
+    "Valland H",
+    "Halvorsen HH",
+    "Sexton J",
+    "Sundin U",
+    "Lillegraven S"
+  ],
+  "year": 2025,
+  "abstract": "PURPOSE: Knowledge about factors associated with mortality after hip fracture is important both for analytical and clinical purposes. This study aimed to assess patient risk factors and commonly used composite scores for prediction of 1-year mortality in a large clinical cohort. METHODS: Hip fracture patient data were prospectively recorded in a local hospital database. Consecutive fractures from 2006 to 2020 were included, 6040 fractures in 5496 patients. Associations between 1-year mortality and different exposures were estimated using univariate and two multivariate logistic regression models. ROC analysis was used to compare the ability of the Nottingham Hip Fracture Score (NHFS), Age-adjusted Charlson Comorbidity Index (ACCI) the American Society of Anesthesiologists score (ASA) and the Orthopedic Frailty Score (OFS) to predict 1-year mortality. RESULTS: Females sustained 73.9% of the fractures. Total 1-year mortality was 24.8%. Patients with overweight and class 1 obesity had lower 1-year mortality rates than normal weight patients [overweight: adjusted OR 0.58 (0.45-0.77), class 1 obesity: adjusted OR 0.40 (0.21-0.75)]. Mortality was elevated in males (adjusted OR 2.04, 95% CI 1.76-2.36), and nursing home residents (adjusted OR 2.99, 95% CI 2.60-3.44). We found no significant association between waiting time before surgery and mortality. Models including ACCI (AUC 0.74), NHFS (AUC 0.75) and OFS (AUC 0.73) had a similar ability to predict 1-year mortality, while a model including ASA (AUC 0.71) had a significantly lower prediction ability than ACCI and NHFS. CONCLUSIONS: Sex, age, cognitive impairment, and residential status predicted 1-year mortality. The study found an apparent \"obesity paradox\", where overweight patients had a lower mortality rate than normal weight patients, but unmeasured confounding may have biased this analysis. ACCI and NHFS predicted mortality better than the combination of age, sex, and ASA.",
+  "doi": "10.1007/s00068-025-02812-y",
+  "arxiv_id": null,
+  "venue": "European journal of trauma and emergency surgery : official publication of the European Trauma Society",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "40111487"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.1007/s00068-025-02812-y"
+}

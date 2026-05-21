@@ -1,0 +1,1260 @@
+RESEARCH
+Open Access
+© The Author(s) 2025, corrected publication 2025. Open Access  This article is licensed under a Creative Commons Attribution-NonCommercial-
+NoDerivatives 4.0 International License, which permits any non-commercial use, sharing, distribution and reproduction in any medium or format,
+as long as you give appropriate credit to the original author(s) and the source, provide a link to the Creative Commons licence, and indicate if you
+modified the licensed material. You do not have permission under this licence to share adapted material derived from this article or parts of it. The
+images or other third party material in this article are included in the article’s Creative Commons licence, unless indicated otherwise in a credit line
+to the material. If material is not included in the article’s Creative Commons licence and your intended use is not permitted by statutory regulation
+or exceeds the permitted use, you will need to obtain permission directly from the copyright holder. To view a copy of this licence, visit ​h​t​t​p​:​/​/​c​r​e​
+a​t​i​v​e​c​o​m​m​o​n​s​.​o​r​g​/​l​i​c​e​n​s​e​s​/​b​y​-​n​c​-​n​d​/​4​.​0​/.
+Yang et al. Alzheimer's Research & Therapy           (2025) 17:86
+https://doi.org/10.1186/s13195-025-01738-2
+Alzheimer's Research &
+Therapy
+†Ye Seul Yang and Kyungdo Han contributed equally to this work.
+*Correspondence:
+Minwoo Lee
+minwoo.lee.md@gmail.com
+1Department of Medicine, Seoul National University College of Medicine,
+Seoul, Korea
+2Department of Internal Medicine, Seoul National University Bundang
+Hospital, Seongnam, Korea
+3Department of Statistics and Actuarial Science, Soongsil University,
+Seoul, Korea
+4Division of Cardiology, Department of Internal Medicine, Dongtan
+Sacred Heart Hospital, Hwaseong, Korea
+5Department of Neurology, Hallym University Sacred Heart Hospital,
+Hallym University College of Medicine, Anyang, Korea
+Abstract
+Background and objectives  The association between obesity and young-onset dementia (YOD, defined as
+dementia diagnosed before age 65) is established, but the specific impact of abdominal obesity in women remains
+unclear. Abdominal obesity, driven by excess visceral fat, may increase dementia risk through metabolic and vascular
+pathways. We investigated the association between abdominal obesity and YOD risk in women using a large
+nationwide cohort.
+Methods  We analyzed 964,536 Korean women aged 40–60 years who underwent national health checkups in
+2009. General obesity was defined by body mass index (BMI), and abdominal obesity was categorized by waist
+circumference (WC) into < 75 cm, 76–84 cm, 85–94 cm, and ≥ 95 cm. YOD was identified using ICD-10 codes and
+dementia medication prescriptions. Hazard ratios (HRs) for YOD were estimated using multivariable Cox proportional
+hazard models adjusted for lifestyle and clinical factors.
+Results  Over a median follow-up of 8.2 years, YOD incidence increased progressively with higher WC. Women with
+WC ≥ 95 cm had a 55% increased risk of YOD (HR 1.55; 95% CI 1.34–1.79) compared to those with WC < 75 cm. The
+association was particularly strong for vascular dementia (VD), with HR 1.83 (95% CI 1.30–2.57). By contrast, BMI
+showed a U-shaped relationship, with the lowest YOD risk observed in women with normal BMI (18.5–22.9 kg/m²),
+and significantly elevated risks in both underweight (BMI < 18.5 kg/m²; HR 1.39, 95% CI 1.13–1.71) and morbidly obese
+women (BMI ≥ 30 kg/m²; HR 1.26, 95% CI 1.10–1.45).
+Discussion  Abdominal obesity is a significant, independent risk factor for YOD in women, particularly for VD. These
+findings underscore the importance of addressing abdominal obesity in middle-aged women to reduce dementia
+risk.
+Abdominal obesity and the risk of youngonset dementia in women: a nationwide
+cohort study
+Ye Seul Yang1,2†, Kyungdo Han3†, Dae Young Cheon4 and Minwoo Lee5*
+
+Page 2 of 9
+Yang et al. Alzheimer's Research & Therapy           (2025) 17:86
+Introduction
+Obesity is a critical global health issue, with its preva­
+lence more than doubling since 1990, according to the
+World Health Organization (WHO) [1]. In South Korea,
+the prevalence of obesity (body mass index ≥ 25  kg/m²
+based on Asia-Pacific WHO criteria) and abdominal
+obesity has risen steadily over the past decade, reach­
+ing 49.2% and 27.8% in 2021, respectively [2, 3]. Notably,
+among Korean women aged 40 to 59 years—the target
+demographic of our study—the prevalence of abdomi­
+nal obesity rose from 19.9% in 2009 to 27.2% in 2019,
+emphasizing a significant upward trend in this highrisk group [4]. These trends are particularly concerning
+because abdominal obesity, characterized by visceral fat
+accumulation, is strongly associated with metabolic dys­
+function and neurodegenerative risks, which are central
+to this study’s focus on dementia. Beyond its well-known
+metabolic consequences, obesity contributes significantly
+to the global burden of disease and healthcare costs. In
+2019, high body mass index (BMI) ranked among the
+leading risk factors globally, with an increasing burden
+over the past decade. Specifically, high BMI was associ­
+ated with approximately 2.54 million deaths (9.8% of all
+female deaths) worldwide, making it one of the top five
+contributors to female mortality [5]. In a large-scale
+Korean cohort study involving over 400,000 adults, indi­
+viduals with severe obesity (BMI ≥ 30 kg/m²) had a 27%
+higher risk of death compared to those with overweight,
+with the risk rising to 58% among participants younger
+than 60 years [6]. Additionally, high BMI was a major
+contributor to disability-adjusted life years (DALYs),
+underscoring its profound impact on both mortality and
+long-term health [5].
+While obesity is traditionally associated with meta­
+bolic conditions such as type 2 diabetes and cardio­
+vascular disease, it is increasingly recognized as a risk
+factor for non-metabolic diseases, including neuro­
+degenerative disorders, respiratory diseases, and can­
+cer [7–9]. Chronic inflammation, oxidative stress, and
+insulin resistance—key pathophysiological mechanisms
+associated with obesity—are believed to accelerate path­
+ological processes in various organs, including the brain
+[10–12]. Emerging evidence suggests a strong association
+between obesity and cognitive decline, with higher BMI
+in midlife correlating with an increased risk of dementia
+in later life [13, 14]. This connection is particularly signif­
+icant for young-onset dementia (YOD, typically defined
+as dementia diagnosed before age 65), as midlife obesity
+may accelerate neurodegenerative processes that mani­
+fest earlier in life. Interestingly, this relationship often fol­
+lows a U-shaped pattern, where both low and high BMI
+are associated with elevated dementia risk, indicating a
+complex interplay between weight, metabolic health, and
+brain function [15]. Moreover, abdominal obesity has
+shown a stronger and more linear correlation with cog­
+nitive impairment than general obesity, emphasizing the
+critical role of fat distribution in neurodegenerative dis­
+eases [16].
+YOD presents unique challenges due to its early impact
+on patients’ working lives, families, and broader socio­
+economic systems [17–19]. For example, individuals
+diagnosed with YOD often face premature job loss, with
+studies indicating that up to 60% of patients are forced
+to leave employment within two years of diagnosis, lead­
+ing to significant financial strain on households. Unlike
+late-onset dementia, which is primarily age-related, YOD
+is thought to be influenced by a range of risk factors,
+including genetic predisposition, head trauma, and modi­
+fiable factors such as obesity [20]. Identifying modifiable
+risk factors for YOD is crucial to mitigating its profound
+socioeconomic impact on individuals in the prime of
+their careers and family lives [17].
+On the other hand, gender differences play a significant
+role in the prevalence and impact of both obesity and
+dementia. Women generally have higher body fat per­
+centages than men, with fat distribution patterns chang­
+ing notably during menopause [21]. Additionally, women
+are at a higher risk for certain types of dementia, such as
+Alzheimer’s disease (AD), compared to men [22]. These
+gender-specific factors underscore the importance of
+investigating the relationship between obesity and YOD
+specifically in women. By focusing on this demographic,
+we aim to better understand the unique risk factors and
+develop targeted preventive strategies, including lifestyle
+modifications, tailored weight management programs,
+and early screening initiatives, to mitigate the burden of
+YOD among women.
+This study investigated the relationship between obe­
+sity and YOD in women, emphasizing the differential
+impacts of general and abdominal obesity on dementia
+risk. By elucidating these associations, we aim to provide
+actionable insights that can inform public health inter­
+ventions, ultimately reducing the burden of dementia and
+improving quality of life for middle-aged women.
+Methods
+Data resource and study participants
+The Korean National Health Insurance Service (K-NHIS)
+is a government-operated, mandatory social health insur­
+ance program that provides coverage for nearly the entire
+Korean population (approximately 97%). In South Korea,
+the NHIS offers standardized biennial health check-ups
+to all insured adults aged ≥ 40 years. Participation is vol­
+untary but strongly encouraged, and the participation
+rate for the 2009 screening program among individuals
+aged 40–60 years was approximately 74%. The K-NHIS
+database, which includes comprehensive claims and mor­
+tality data, is accessible to researchers following approval
+
+Page 3 of 9
+Yang et al. Alzheimer's Research & Therapy           (2025) 17:86
+by both the K-NHIS Review Committee and an Insti­
+tutional Review Board (IRB). This study received ethi­
+cal approval from the IRB of Hallym University Sacred
+Heart Hospital (IRB: 2024-03-009). All participants in
+the national health check-ups provided written informed
+consent for their data to be used in this study.
+From the K-NHIS database, 4,234,415 adults who
+participated in health checkups in 2009 were identi­
+fied. Of these, 2,100,861 individuals aged 40–60 years
+were selected as the initial cohort. We selected the 2009
+baseline because this was the first year in which national
+health screening data were fully standardized and made
+available for research use in the NHIS database. This
+allowed for comprehensive linkage with long-term fol­
+low-up outcomes, including dementia diagnoses and
+prescription records. A longer follow-up period was par­
+ticularly important given the low incidence and latency
+of young-onset dementia. Exclusion criteria included
+prior diagnoses of dementia (n = 847) and missing data
+(n = 117,176). To mitigate reverse causation, a 1-year
+lag period was applied, excluding participants diag­
+nosed with dementia within the first year of follow-up
+(n = 3,329). After these exclusions, a total of 1,979,509
+participants remained for analysis (Supplemental Fig. 1).
+Among this final cohort, 1,014,973 were men and 964,536
+were women. For the current study, only female partici­
+pants were included in the final analysis.
+Definitions of obesity and abdominal obesity
+Participant body weight (kg), height (cm), and waist cir­
+cumference (WC; cm) were measured by trained exam­
+iners during health check-ups. Body mass index (BMI)
+was calculated as weight (kg) divided by height squared
+(m²). Obesity was classified according to the Asia-Pacific
+criteria of the World Health Organization guidelines,
+with BMI ≥ 25 kg/m² defining obesity. For further analy­
+sis, BMI was categorized as follows [23]: underweight
+(BMI < 18.5  kg/m²), normal weight (BMI 18.5–22.9  kg/
+m²), overweight (BMI 23.0–24.9  kg/m²), obese (BMI
+25.0–29.9  kg/m²), and morbidly obese (BMI ≥ 30.0  kg/
+m²). Abdominal obesity in women was defined as
+WC ≥ 85  cm according to the Korean Society for the
+Study of Obesity [23]. For stratified analysis, WC was cat­
+egorized into four groups: WC < 75 cm, WC 76–84 cm,
+WC 85–94 cm, and WC ≥ 95 cm.
+Study outcome and follow-up
+The primary endpoint of this study was newly diagnosed
+all-cause YOD, defined as dementia diagnosed before
+the age of 65 years. YOD was identified only when both
+relevant ICD-10 codes for dementia and at least two
+prescriptions for anti-dementia medications (rivastig­
+mine, galantamine, memantine, or donepezil) were pres­
+ent. The following ICD-10 codes were used to define
+dementia subtypes: F00, F01, F02, F03, G30, and G31 for
+all-cause dementia; F00 and/or G30 for Alzheimer’s dis­
+ease (AD); and F01 for vascular dementia (VD). In cases
+where both AD and VD codes were assigned to an indi­
+vidual, the primary diagnosis code was used to determine
+the final classification. Study participants were followed
+until December 31 of the year they turned 64 or until
+December 31, 2018, for those who had not yet reached
+64 years of age, to assess YOD incidence. The median
+follow-up duration was 8.2 years (interquartile range:
+8.0–8.5 years).
+Definitions of anthropometric, laboratory measurements,
+and covariates
+Anthropometric and laboratory assessments were con­
+ducted after overnight fasting, and health-related behav­
+iors were collected through self-reported questionnaires.
+Smoking status was categorized as current smokers,
+ex-smokers, or never-smokers. Alcohol consumption
+was classified into three groups: heavy drinkers (≥ 20 g/
+day for women), mild drinkers (less than these thresh­
+olds), and nondrinkers (0 g/day). Regular exercisers were
+defined as those engaging in more than 30 min of moder­
+ate physical activity at least five times per week or more
+than 20 min of strenuous physical activity at least three
+times per week. The household income level was catego­
+rized as being within the lowest 20% or higher.
+Diabetes mellitus was defined as a fasting plasma glu­
+cose level of ≥ 126 mg/dL or having at least one prescrip­
+tion claim per year for antidiabetic medications under
+ICD-10 codes E11–E14. Hypertension was identified
+by either systolic blood pressure ≥ 140 mmHg, diastolic
+blood pressure ≥ 90 mmHg, or the prescription of anti­
+hypertensive medications under ICD-10 codes I10–I13
+or I15. Dyslipidemia was defined by total cholesterol
+levels ≥ 240 mg/dL or using lipid-lowering agents under
+ICD-10 code E78. Chronic kidney disease (CKD) was
+determined based on an estimated glomerular filtra­
+tion rate (eGFR) of < 60 mL/min/1.73  m² or evidence
+of dialysis prior to the health check-up, recorded under
+special exemption codes (V001 for hemodialysis, V003
+for peritoneal dialysis, and V005 for kidney transplant).
+Depression was defined as having at least one claim fea­
+turing ICD-10 codes F22–F33. Stroke was identified
+using ICD-10 codes I63 and I64, supported by claims for
+brain imaging (magnetic resonance imaging or computed
+tomography) during hospitalization. Atrial fibrillation
+was diagnosed using ICD-10 code I48 and its subcodes.
+Statistical analysis
+Baseline
+characteristics
+were
+summarized
+as
+means ± standard deviations (SD) for continuous vari­
+ables and as numbers (percentages) for categorical vari­
+ables. Group comparisons were conducted using analysis
+
+Page 4 of 9
+Yang et al. Alzheimer's Research & Therapy           (2025) 17:86
+of variance (ANOVA) for continuous variables and the
+chi-square test for categorical variables.
+A multivariable Cox proportional hazard regression
+analysis was used to assess the association between obe­
+sity, defined by BMI and abdominal obesity, and the risk
+of YOD (all-cause dementia, AD, and VD). Hazard ratios
+(HRs) and 95% confidence intervals (CIs) were calculated
+for these outcomes. Three models were constructed:
+Model 1 was adjusted for age; Model 2 was adjusted
+for age, smoking status, alcohol consumption, physical
+activity, and low-income status; and Model 3 included
+additional adjustments for diabetes, hypertension, dys­
+lipidemia, depression, atrial fibrillation, and stroke, in
+addition to the confounders in Model 2. HRs (95% CIs)
+for incident YOD were analyzed according to BMI cat­
+egories, with BMI < 23 as the reference, and abdominal
+obesity categories, with WC < 75 cm as the reference. To
+evaluate the presence of linear trends, p-for-trend analy­
+ses were conducted across WC categories. We also per­
+formed an additional analysis using WC as a continuous
+variable to estimate the hazard ratio per 1 cm increase.
+Subgroup analyses were conducted to explore the associ­
+ations within strata defined by age (< 50 and 50–60 years),
+household income, smoking status, alcohol consump­
+tion, regular exercise status, and the presence of diabetes,
+hypertension, dyslipidemia, depression, atrial fibrillation,
+or stroke. Statistical analyses were performed using SAS
+version 9.4 (SAS Institute, Cary, NC, USA). Two-sided
+P-values < 0.05 were considered statistically significant.
+Results
+In a cohort of 964,536 women, baseline characteris­
+tics were analyzed according to four categories of WC:
+<75  cm, < 85  cm, < 95  cm, and ≥ 95  cm (Table  1). The
+results demonstrated clear trends across several meta­
+bolic and lifestyle factors as WC increased. Women
+with larger WC were generally older, with higher BMI,
+blood pressure, and fasting glucose levels. For instance,
+the mean BMI increased from 21.4 kg/m² in the < 75 cm
+group to 31.1  kg/m² in the ≥ 95  cm group, while mean
+fasting glucose rose from 92.1  mg/dL to 107.8  mg/dL.
+The prevalence of comorbid conditions, such as diabe­
+tes, hypertension, and dyslipidemia, also escalated with
+greater WC. Specifically, the prevalence of diabetes was
+significantly higher among those with a WC ≥ 95  cm
+(20.5%) compared to those in the < 75 cm category (2.6%).
+Additionally, lifestyle factors were influenced by abdomi­
+nal obesity; the proportion of current smokers and heavy
+drinkers increased with higher WC, while the proportion
+engaging in regular exercise decreased.
+The incidence of YOD was assessed across the WC
+categories over the study period, revealing a clear doseresponse relationship (Table  2; Fig.  1). The incidence
+rates of all-cause dementia per 1,000 person-years were
+found to increase with higher WC: 0.40 for women with
+a WC < 75 cm, 0.67 for < 85 cm, 0.95 for < 95 cm, and 1.31
+for ≥ 95 cm. In fully adjusted models, the adjusted haz­
+ard ratios (HRs) for all-cause dementia were 1.13 (95%
+CI 1.05‒1.21) for < 85  cm, 1.24 (95% CI 1.14‒1.36) for
+< 95 cm, and 1.55 (95% CI 1.34‒1.79) for ≥ 95 cm, using
+the < 75 cm group as the reference. These results indicate
+a clear linear increase in the risk of dementia with greater
+abdominal obesity, independent of age, smoking status,
+alcohol consumption, physical activity, and other comor­
+bidities. Secondary outcome analyses regarding dementia
+types showed that for AD, the HR in the ≥ 95 cm group
+was 1.49 (95% CI 1.25‒1.78) compared to the < 75  cm
+group. For VD, the HR in the ≥ 95  cm group was 1.83
+(95% CI 1.30‒2.57) compared to the < 75 cm group.
+Subgroup analyses demonstrated that the association
+between abdominal obesity and YOD risk was consistent
+across most subgroups, with no significant interactions
+observed for age strata, socioeconomic status, or comor­
+bidities (Table 3, Supplemental Tables 1–2). However, the
+presence of depression revealed a more pronounced risk
+of YOD in the WC 85–95 cm group compared to those
+without depression, with a significant interaction (p for
+interaction < 0.005) (Table 3). No other significant inter­
+actions were identified (Supplemental Tables 1 and 2).
+When analyzed by BMI categories, baseline character­
+istics in Supplemental Table 3 reveal significant metabolic
+differences, with higher rates of diabetes, hypertension,
+and dyslipidemia observed as BMI increases, particu­
+larly among participants categorized as morbidly obese
+(BMI ≥ 30.0  kg/m²). A U-shaped association between
+BMI and YOD risk was observed (Table  4 and Supple­
+mental Fig.  2), with both underweight and morbidly
+obese participants demonstrating elevated risks. Using
+a BMI of 18.5–23 kg/m² as the reference group, the fully
+adjusted HRs for all-cause dementia were 1.39 (95% CI
+1.13–1.71) for underweight (BMI < 18.5 kg/m²) and 1.26
+(95% CI 1.10–1.45) for morbid obesity (BMI ≥ 30.0  kg/
+m²). For VD, the risk consistently increased with higher
+BMI, with a pronounced association observed in morbid
+obesity (HR 1.65, 95% CI 1.23–2.22), while the relation­
+ship with AD was comparatively weaker. Subgroup anal­
+yses, as presented in Supplemental Tables 4–6, indicate
+that the association between BMI and YOD risk persisted
+across most subgroups, with no significant interactions
+detected.
+Discussion
+This study highlights the significant association between
+abdominal obesity and the risk of YOD in women, par­
+ticularly its stronger impact on VD. Among women
+with abdominal obesity, the risk of all-cause demen­
+tia and VD increased linearly with WC, independent of
+confounding factors such as age, socioeconomic status,
+
+Page 5 of 9
+Yang et al. Alzheimer's Research & Therapy           (2025) 17:86
+and comorbidities. Women with a WC ≥ 95  cm exhib­
+ited a 55% higher risk of all-cause dementia compared
+to those with a WC < 75 cm, with the strongest associa­
+tion observed for VD (HR 1.83). These findings empha­
+size the critical role of abdominal obesity, likely mediated
+through distinct metabolic and vascular mechanisms, in
+driving YOD risk.
+Unlike BMI, which showed a U-shaped association
+with dementia risk, WC exhibited a more linear and
+positive association. This distinction highlights the
+importance of fat distribution over general adiposity in
+predicting dementia risk. The pronounced association
+between WC and VD compared to AD aligns with the
+hypothesis that abdominal obesity disproportionately
+impacts vascular pathways, leading to cerebrovascular
+damage and subsequent dementia. Visceral fat is strongly
+linked to systemic inflammation, endothelial dysfunc­
+tion, and insulin resistance, which collectively contrib­
+ute to vascular injury and neurodegenerative processes.
+Emerging research also suggests that alterations in the
+gut-brain axis, driven by visceral fat, may further exac­
+erbate cerebrovascular and cognitive decline [12, 24].
+Further, subgroup analyses revealed that the relation­
+ship between abdominal obesity and dementia risk was
+more pronounced in women without pre-existing meta­
+bolic or vascular conditions such as diabetes or stroke.
+While these findings were not statistically significant,
+they suggest that abdominal obesity may exert direct
+neurodegenerative effects, particularly in the absence of
+competing risk factors. This hypothesis warrants further
+Table 1  Baseline characteristics stratified by abdominal obesity categories defined by waist circumference
+Total
+Waist circumference
+< 75
+< 85
+< 95
+≥ 95
+N
+964,536
+413,249
+398,540
+129,472
+23,275
+Age, years
+49.3 ± 6.0
+47.7 ± 5.6
+50.1 ± 5.9
+51.4 ± 6.0
+51.5 ± 6.1
+Height, cm
+156.5 ± 5.3
+156.5 ± 5.2
+156.5 ± 5.3
+156.6 ± 5.4
+157.0 ± 5.5
+Weight, kg
+57.8 ± 8.1
+52.5 ± 5.2
+59.3 ± 5.7
+66.5 ± 6.7
+76.7 ± 9.0
+BMI, kg/m2
+23.6 ± 3.1
+21.4 ± 1.9
+24.2 ± 2.1
+27.1 ± 2.5
+31.1 ± 3.4
+Waist circumference, cm
+76.6 ± 8.0
+69.5 ± 3.6
+79.0 ± 2.8
+88.2 ± 2.7
+99.1 ± 4.6
+Smoking
+  Never
+921,469 (95.5)
+394,270 (95.4)
+382,016 (95.9)
+123,353 (95.3)
+21,830 (93.8)
+  Ex
+13,528 (1.4)
+6,040 (1.5)
+5,251 (1.3)
+1,811 (1.4)
+426 (1.8)
+  Current
+29,539 (3.1)
+12,939 (3.1)
+11,273 (2.8)
+4,308 (3.3)
+1,019 (4.4)
+Alcohol consumption
+  Non
+740,543 (76.8)
+312,607 (75.7)
+308,092 (77.3)
+101,492 (78.4)
+18,352 (78.9)
+  Mild
+204,217 (21.2)
+93,303 (22.6)
+82,109 (20.6)
+24,634 (19.0)
+4,171 (17.9)
+  Heavy
+19,776 (2.1)
+7,339 (1.8)
+8,339 (2.1)
+3,346 (2.6)
+752 (3.2)
+Regular exercise
+174,826 (18.1)
+74,801 (18.1)
+74,258 (18.6)
+22,203 (17.2)
+3,564 (15.3)
+Household income, low
+253,082 (26.2)
+108,999 (26.4)
+104,664 (26.3)
+33,374 (25.8)
+6,045 (26.0)
+Systolic BP, mmHg
+119.7 ± 15.0
+116.0 ± 13.9
+121.0 ± 14.8
+125.5 ± 15.3
+130.0 ± 15.9
+Diastolic BP, mmHg
+74.6 ± 10.1
+72.5 ± 9.6
+75.4 ± 10.0
+78.1 ± 10.2
+80.9 ± 10.5
+Fasting glucose, mg/dL
+95.4 ± 20.4
+92.1 ± 15.9
+96.2 ± 20.6
+101.4 ± 26.4
+107.8 ± 32.8
+Total cholesterol, mg/dL
+199.8 ± 36.9
+194.0 ± 34.9
+202.6 ± 37.2
+207.8 ± 38.7
+209.9 ± 39.7
+Triglyceride, mg/dL*
+97.7 (97.6‒97.8)
+83.5 (83.4‒83.7)
+104.6 (104.4‒104.7)
+123.0 (122.7‒123.4)
+135.7 (134.8‒136.5)
+HDL-C, mg/dL
+59.4 ± 30.4
+61.9 ± 30.1
+58.2 ± 30.6
+56.1 ± 29.6
+55.1 ± 30.6
+LDL-C, mg/dL
+119.3 ± 37.9
+114.6 ± 36.7
+121.9 ± 37.9
+125.0 ± 39.7
+125.3 ± 39.0
+Estimated GFR, mL/min/1.73m2
+86.6 ± 28.6
+87.1 ± 29.2
+86.3 ± 27.8
+86.0 ± 28.7
+86.3 ± 31.0
+Comorbidity
+  Diabetes mellitus
+56,947 (5.9)
+10,924 (2.6)
+25,356 (6.4)
+15,897 (12.3)
+4,770 (20.5)
+  Hypertension
+203,346 (21.1)
+49,505 (12.0)
+93,554 (23.5)
+48,087 (37.1)
+12,200 (52.4)
+  Dyslipidemia
+185,691 (19.3)
+52,403 (12.7)
+86,550 (21.7)
+38,396 (29.7)
+8,342 (35.8)
+  CKD
+48,610 (5.0)
+19,828 (4.8)
+20,284 (5.1)
+7,082 (5.5)
+1,416 (6.1)
+  Depression
+39,600 (4.1)
+14,907 (3.6)
+16,993 (4.3)
+6,441 (5.0)
+1,259 (5.4)
+  AF
+2,657 (0.3)
+912 (0.2)
+1,177 (0.3)
+453 (0.4)
+115 (0.5)
+  Stroke
+8,067 (0.8)
+2,006 (0.5)
+3,715 (0.9)
+1,898 (1.5)
+448 (1.9)
+*Geometric Mean (95% CI)
+#All p-values for the variables were < 0.0001
+Abbreviation: BMI, body mass index; BP, blood pressure; HDL-C, high density lipoprotein-cholesterol; LDL-C, low density lipoprotein-cholesterol; GFR, glomerular
+filtration rate; CKD, chronic kidney disease; AF, atrial fibrillation
+
+Page 6 of 9
+Yang et al. Alzheimer's Research & Therapy           (2025) 17:86
+investigation in studies with larger sample sizes and com­
+prehensive stratified analyses.
+Our findings align with previous research demonstrat­
+ing the impact of obesity on dementia risk, particularly
+through mechanisms involving chronic inflammation,
+oxidative stress, and insulin resistance [7, 10, 12, 13, 16].
+However, this study advances the field by emphasizing
+the stronger association between abdominal obesity and
+VD. The U-shaped association with BMI further corrobo­
+rates prior evidence, suggesting that extremes of weight,
+both underweight and morbid obesity, may impair cogni­
+tive health through nutritional deficiencies and metabolic
+dysregulation [15]. Although both BMI and WC were
+analyzed in the same population, we did not perform a
+direct comparative analysis to determine which bet­
+ter predicts YOD risk, due to potential multicollinearity
+Table 2  Hazard ratios (HRs) and 95% confidence intervals (CIs) for incident young-onset dementia across abdominal obesity
+categories defined by waist circumference
+Total (n)
+Events (n)
+Person-years
+IRa
+HR (95% CI)
+Model 1b
+Model 2c
+Model 3d
+All-cause dementia
+< 75
+413,249
+1,320
+3,306,210
+0.40
+1 (Ref.)
+1 (Ref.)
+1 (Ref.)
+< 85
+398,540
+2,048
+3,053,504
+0.67
+1.19 (1.11‒1.27)
+1.19 (1.11‒1.28)
+1.13 (1.05‒1.21)
+< 95
+129,472
+905
+955,556
+0.95
+1.41 (1.30‒1.54)
+1.41 (1.29‒1.53)
+1.24 (1.14‒1.36)
+≥ 95
+23,275
+222
+169,816
+1.31
+1.92 (1.67‒2.22)
+1.90 (1.65‒2.19)
+1.55 (1.34‒1.79)
+P for trend < 0.0001
+P for trend < 0.0001
+P for trend < 0.0001
+Per 1 cm increase in waist circumference
+1.043 (1.040–1.046)
+1.019 (1.015–1.022)
+1.012 (1.008–1.016)
+Alzheimer’s disease
+< 75
+413,249
+922
+3,306,210
+0.28
+1 (Ref.)
+1 (Ref.)
+1 (Ref.)
+< 85
+398,540
+1,353
+3,053,504
+0.44
+1.10 (1.01‒1.20)
+1.11 (1.02‒1.20)
+1.06 (0.98‒1.16)
+< 95
+129,472
+616
+955,556
+0.64
+1.34 (1.21‒1.49)
+1.34 (1.21‒1.48)
+1.21 (1.09‒1.35)
+≥ 95
+23,275
+147
+169,816
+0.87
+1.78 (1.49‒2.12)
+1.76 (1.47‒2.09)
+1.49 (1.25‒1.78)
+P for trend < 0.0001
+P for trend < 0.0001
+P for trend < 0.0001
+Per 1 cm increase in waist circumference
+1.042 (1.037–1.046)
+1.016 (1.011–1.020)
+1.010 (1.006–1.015)
+Vascular dementia
+< 75
+413,249
+202
+3,306,210
+0.06
+1 (Ref.)
+1 (Ref.)
+1 (Ref.)
+< 85
+398,540
+405
+3,053,504
+0.13
+1.66 (1.40‒1.97)
+1.66 (1.40‒1.97)
+1.50 (1.26‒1.78)
+< 95
+129,472
+174
+955,556
+0.18
+1.99 (1.62‒2.44)
+1.99 (1.62‒2.45)
+1.58 (1.28‒1.95)
+≥ 95
+23,275
+42
+169,816
+0.25
+2.68 (1.92‒3.75)
+2.66 (1.90‒3.72)
+1.83 (1.30‒2.57)
+P for trend < 0.0001
+P for trend < 0.0001
+P for trend < 0.0001
+Per 1 cm increase in waist circumference
+1.054 (1.046–1.061)
+1.036 (1.028–1.044)
+1.024 (1.015–1.032)
+HRs (95% CIs) were calculated using multivariable Cox proportional hazard regression analysis. CI, confidence interval; HR, hazard ratio; IR, incidence rate
+aIncidence per 1000 person-years
+bModel 1 was adjusted for age; cModel 2 was adjusted for age, smoking status, alcohol consumption, regular exercise, low household income; dModel 3 was adjusted
+for age, smoking status, alcohol consumption, regular exercise, low household income, diabetes mellitus, hypertension, dyslipidemia, depression, atrial fibrillation,
+stroke
+Fig. 1  Cumulative incidence of young-onset dementia by waist circumference categories. (a) All-cause dementia, (b) Alzheimer's disease, and (c) Vascular
+dementia
+
+
+Page 7 of 9
+Yang et al. Alzheimer's Research & Therapy           (2025) 17:86
+between the two. Nonetheless, the more linear and
+consistent association observed with WC may indicate
+that abdominal obesity is a more informative marker in
+this context. Future studies using predictive modeling
+approaches may help clarify the comparative utility of
+these anthropometric measures.
+Gender-specific factors may further explain these find­
+ings. Women generally have higher fat percentages than
+men, with visceral fat accumulation accelerating during
+menopause due to hormonal shifts [25]. These changes,
+coupled with the increased prevalence of dementia in
+women, may amplify the impact of abdominal obesity
+on cognitive health. Notably, while AD is more prevalent
+in women [26], our results suggest that obesity-related
+risks are more pronounced for VD. This emphasizes the
+need for gender-specific and subtype-specific preven­
+tion strategies targeting abdominal obesity. Our decision
+to focus solely on women was based on these biological
+and epidemiological rationale. Hormonal shifts during
+menopause promote the redistribution of fat from sub­
+cutaneous to visceral depots [25], potentially increasing
+cognitive vulnerability in midlife and thereby contribut­
+ing to the association observed in this study. This targeted
+approach allowed us to investigate these mechanisms
+within a more homogeneous population.
+From a public health perspective, the association
+between abdominal obesity and YOD highlights the
+urgency of addressing modifiable risk factors during
+midlife. Given that YOD disproportionately affects indi­
+viduals during their working years, the social and eco­
+nomic burden of this condition is substantial. Abdominal
+obesity, being reversible, offers a critical intervention
+point. Prior studies indicate that weight reduction,
+dietary improvements, and physical activity can reduce
+visceral fat and improve metabolic profiles, potentially
+mitigating dementia risk [27]. Public health initiatives
+focusing on lifestyle interventions tailored to midlife
+women could thus have potential benefits.
+Despite its strengths, including a large, nationally rep­
+resentative cohort and robust follow-up, this study has
+several limitations. First, the observational design pre­
+cludes establishing causality. Second, WC was measured
+only at baseline, and changes in abdominal obesity over
+time were not accounted for, which could affect the accu­
+racy of the associations. Third, residual confounding
+from genetic predispositions or unmeasured factors may
+influence the results. Future longitudinal studies with
+repeated measurements and comprehensive adjustments
+for potential confounders are needed to confirm and
+extend these findings. Fourth, although the participation
+Table 3  Hazard ratios (HRs) and 95% confidence intervals (CIs) for incident young-onset all-cause dementia across subgroups by waist
+circumference categories
+Subgroup
+All-cause dementia
+< 75
+< 85
+< 95
+≥ 95
+p for interaction
+Age
+40–49
+1 (Ref.)
+1.21 (1.04‒1.42)
+1.56 (1.26‒1.94)
+1.77 (1.17‒2.68)
+0.142
+50–60
+1 (Ref.)
+1.10 (1.02‒1.19)
+1.19 (1.08‒1.31)
+1.50 (1.28‒1.75)
+Household income, low
+No
+1 (Ref.)
+1.13 (1.04‒1.22)
+1.24 (1.13‒1.37)
+1.53 (1.30‒1.81)
+0.995
+Yes
+1 (Ref.)
+1.14 (0.98‒1.32)
+1.24 (1.03‒1.50)
+1.60 (1.18‒2.18)
+Smoking
+No
+1 (Ref.)
+1.14 (1.06‒1.23)
+1.24 (1.14‒1.36)
+1.57 (1.35‒1.83)
+0.454
+Yes
+1 (Ref.)
+0.91 (0.65‒1.27)
+1.23 (0.84‒1.81)
+1.15 (0.61‒2.18)
+Alcohol consumption
+No
+1 (Ref.)
+1.12 (1.04‒1.22)
+1.24 (1.13‒1.37)
+1.57 (1.34‒1.84)
+0.935
+Yes
+1 (Ref.)
+1.15 (0.97‒1.35)
+1.24 (1.01‒1.52)
+1.41 (0.98‒2.04)
+Regular exercise
+No
+1 (Ref.)
+1.14 (1.05‒1.23)
+1.26 (1.15‒1.39)
+1.54 (1.31‒1.80)
+0.805
+Yes
+1 (Ref.)
+1.08 (0.92‒1.28)
+1.15 (0.93‒1.42)
+1.63 (1.14‒2.34)
+Diabetes mellitus
+No
+1 (Ref.)
+1.14 (1.05‒1.22)
+1.27 (1.15‒1.39)
+1.63 (1.37‒1.92)
+0.462
+Yes
+1 (Ref.)
+1.02 (0.80‒1.30)
+1.06 (0.82‒1.37)
+1.25 (0.90‒1.73)
+Hypertension
+No
+1 (Ref.)
+1.15 (1.06‒1.25)
+1.30 (1.17‒1.46)
+1.47 (1.16‒1.87)
+0.424
+Yes
+1 (Ref.)
+1.06 (0.92‒1.21)
+1.14 (0.98‒1.32)
+1.51 (1.24‒1.85)
+Dyslipidemia
+No
+1 (Ref.)
+1.14 (1.05‒1.23)
+1.27 (1.14‒1.41)
+1.54 (1.26‒1.87)
+0.922
+Yes
+1 (Ref.)
+1.11 (0.96‒1.27)
+1.19 (1.02‒1.39)
+1.54 (1.23‒1.93)
+Depression
+No
+1 (Ref.)
+1.12 (1.04‒1.21)
+1.17 (1.07‒1.29)
+1.55 (1.33‒1.82)
+0.005
+Yes
+1 (Ref.)
+1.20 (0.97‒1.48)
+1.75 (1.39‒2.20)
+1.56 (1.05‒2.32)
+Atrial fibrillation
+No
+1 (Ref.)
+1.13 (1.06‒1.22)
+1.25 (1.14‒1.36)
+1.55 (1.34‒1.79)
+0.616
+Yes
+1 (Ref.)
+0.66 (0.30‒1.48)
+1.03 (0.42‒2.48)
+1.31 (0.37‒4.70)
+Stroke
+No
+1 (Ref.)
+1.14 (1.06‒1.22)
+1.25 (1.15‒1.37)
+1.61 (1.38‒1.87)
+0.225
+Yes
+1 (Ref.)
+0.94 (0.66‒1.36)
+1.01 (0.68‒1.51)
+0.77 (0.39‒1.53)
+aHRs (95% CIs) were calculated using a multivariable Cox proportional hazard regression analysis after adjusting for age, smoking status, alcohol consumption,
+regular exercise, low household income, diabetes mellitus, hypertension, dyslipidemia, depression, atrial fibrillation, stroke. HRs should be interpreted with caution
+due to potential instability of estimates
+
+Page 8 of 9
+Yang et al. Alzheimer's Research & Therapy           (2025) 17:86
+rate was relatively high, some degree of selection bias
+remains possible, as individuals who undergo regular
+health check-ups are typically ambulatory and may differ
+from non-participants in terms of health consciousness
+or socioeconomic status. Fifth, we were unable to directly
+assess menopausal status due to the lack of relevant
+clinical data such as menstrual history or age at meno­
+pause. Although we used age stratification (40–49 vs.
+50–60 years) as a proxy, and most Korean women enter
+menopause around age 50, this indirect method cannot
+fully capture individual menopausal transitions. Future
+studies with detailed reproductive and hormonal pro­
+files are warranted to better delineate the role of meno­
+pause in the association between abdominal obesity and
+dementia.
+In conclusion, this study provides robust evidence that
+abdominal obesity is a significant and independent risk
+factor for YOD in women, with a particularly strong asso­
+ciation observed for VD. These findings emphasize the
+importance of early interventions targeting abdominal
+obesity to mitigate the growing burden of YOD. Given
+the increasing prevalence of obesity worldwide, imple­
+menting public health initiatives to promote healthy body
+composition in midlife women could have far-reaching
+benefits for reducing dementia risk.
+Supplementary Information
+The online version contains supplementary material available at ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​
+g​/​1​0​.​1​1​8​6​/​s​1​3​1​9​5​-​0​2​5​-​0​1​7​3​8​-​2.
+Supplementary Material 1
+Supplementary Material 2
+Author contributions
+YSY wrote the main manuscript, KDH planned and perfromed statistical
+analysis. CDY reviwed and revised the manuscript. ML planned the entire
+study and wrote and revised the main manuscript.
+Funding
+This research was supported by the Bio&Medical Technology Development
+Program of the National Research Foundation (NRF) funded by the Korean
+government (MSIT) (No. RS-2023-00223501) and by the National Research
+Foundation of Korea(NRF) grant funded by the Korea government(MSIT) (No.
+RS-2025-00558841). The funders had no involvement in the manuscript’s
+preparation or in the decision to submit it for publication.
+Data availability
+The authors are unable to share the data analysed in this study because the
+Korean National Health Insurance Service (NHIS) owns the data. Researchers
+can request access on the NHIS website (https://nhiss.nhis.or.kr). Details of this
+process and a provision guide are now available at ​h​t​t​p​:​/​/​n​h​i​s​s​.​n​h​i​s​.​o​r​.​k​r​/​b​d​/​a​
+b​/​b​d​a​b​a​0​0​0​e​n​g​.​d​o.
+Declarations
+Ethics approval and consent to participate
+This study received ethical approval from the IRB of Hallym University Sacred
+Heart Hospital (IRB: 2024-03-009). All participants in the national health checkups provided written informed consent for their data to be used in this study.
+Table 4  Hazard ratios (HRs) and 95% confidence intervals (CIs) for incident young-onset dementia across obesity categories defined
+by body mass index
+Total (n)
+Events (n)
+Person-years
+IRa
+HR (95% CI)
+Model 1b
+Model 2c
+Model 3d
+All-cause dementia
+< 18.5
+22,568
+96
+179,912
+0.53
+1.40 (1.14‒1.73)
+1.37 (1.12‒1.69)
+1.39 (1.13‒1.71)
+< 23
+422,942
+1,541
+3,349,847
+0.46
+1 (Ref.)
+1 (Ref.)
+1 (Ref.)
+< 25
+240,476
+1,196
+1,851,544
+0.65
+1.11 (1.03‒1.20)
+1.12 (1.04‒1.21)
+1.08 (1.00‒1.17)
+< 30
+244,865
+1,418
+1,849,266
+0.77
+1.19 (1.11‒1.28)
+1.20 (1.11‒1.28)
+1.09 (1.01‒1.17)
+≥ 30
+33,685
+244
+254,514
+0.96
+1.54 (1.35‒1.77)
+1.53 (1.34‒1.76)
+1.26 (1.10‒1.45)
+Alzheimer’s dementia
+< 18.5
+22,568
+63
+179,912
+0.35
+1.35 (1.05‒1.74)
+1.31 (1.02‒1.69)
+1.32 (1.02‒1.71)
+< 23
+422,942
+1,063
+3,349,847
+0.32
+1 (Ref.)
+1 (Ref.)
+1 (Ref.)
+< 25
+240,476
+804
+1,851,544
+0.43
+1.07 (0.98‒1.18)
+1.08 (0.98‒1.18)
+1.05 (0.96‒1.15)
+< 30
+244,865
+954
+1,849,266
+0.52
+1.15 (1.05‒1.25)
+1.15 (1.05‒1.25)
+1.07 (0.98‒1.17)
+≥ 30
+33,685
+154
+254,514
+0.61
+1.39 (1.18‒1.65)
+1.38 (1.17‒1.64)
+1.19 (1.00‒1.41)
+Vascular dementia
+< 18.5
+22,568
+12
+179,912
+0.07
+1.05 (0.59‒1.88)
+1.03 (0.58‒1.84)
+1.07 (0.60‒1.92)
+< 23
+422,942
+249
+3,349,847
+0.07
+1 (Ref.)
+1 (Ref.)
+1 (Ref.)
+< 25
+240,476
+232
+1,851,544
+0.13
+1.40 (1.17‒1.67)
+1.41 (1.17‒1.68)
+1.30 (1.09‒1.56)
+< 30
+244,865
+273
+1,849,266
+0.15
+1.52 (1.28‒1.81)
+1.52 (1.28‒1.81)
+1.27 (1.06‒1.52)
+≥ 30
+33,685
+57
+254,514
+0.22
+2.38 (1.78‒3.17)
+2.37 (1.77‒3.16)
+1.65 (1.23‒2.22)
+HRs (95% CIs) were calculated using multivariable Cox proportional hazard regression analysis. CI, confidence interval; HR, hazard ratio; IR, incidence rate
+aIncidence per 1000 person-years
+bModel 1 was adjusted for age; cModel 2 was adjusted for age, smoking status, alcohol consumption, regular exercise, low household income; dModel 3 was adjusted
+for age, smoking status, alcohol consumption, regular exercise, low household income, diabetes mellitus, hypertension, dyslipidemia, depression, atrial fibrillation,
+stroke
+
+Page 9 of 9
+Yang et al. Alzheimer's Research & Therapy           (2025) 17:86
+Competing interests
+The authors declare no competing interests.
+Received: 7 January 2025 / Accepted: 10 April 2025
+References
+1.
+World Health Organization. Obesity and overweight. ​h​t​t​p​s​:​/​/​w​w​w​.​w​h​o​.​i​n​t​/​n​e​
+w​s​-​r​o​o​m​/​f​a​c​t​-​s​h​e​e​t​s​/​d​e​t​a​i​l​/​o​b​e​s​i​t​y​-​a​n​d​-​o​v​e​r​w​e​i​g​h​t. 2024.
+2.
+Jeong SM, Jung JH, Yang YS, Kim W, Cho IY, Lee YB, Park KY, Nam GE, Han K.
+2023 obesity fact sheet: prevalence of obesity and abdominal obesity in
+adults, adolescents, and children in Korea from 2012 to 2021. J Obes Metab
+Syndr. 2024;33:27–35. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​7​5​7​0​/​j​o​m​e​s​2​4​0​1​2
+3.
+Kim SY. The definition of obesity. Korean J Fam Med. 2016;37:309. ​h​t​t​p​s​:​/​/​d​o​i​.​
+o​r​g​/​1​0​.​4​0​8​2​/​k​j​f​m​.​2​0​1​6​.​3​7​.​6​.​3​0​9
+4.
+Yang YS, Han BD, Han K, Jung JH, Son JW. Taskforce team of the obesity fact
+sheet of the Korean society for the study of O. obesity fact sheet in Korea,
+2021: trends in obesity prevalence and obesity-Related comorbidity inci­
+dence stratified by age from 2009 to 2019. J Obes Metab Syndr. 2022;31:169–
+77. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​7​5​7​0​/​j​o​m​e​s​2​2​0​2​4
+5.
+GBD 2019 Risk Factors Collaborators. Global burden of 87 risk factors in 204
+countries and territories, 1990–2019: a systematic analysis for the global
+burden of disease study 2019. Lancet. 2020;396:1223–49. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​
+0​1​6​/​s​0​1​4​0​-​6​7​3​6​(​2​0​)​3​0​7​5​2​-​2
+6.
+Park JH, Park DJ, Kim H, Park H, Lee B, Nam H, Kim S, Kim SH, Kong SH, Lee HJ,
+et al. Twelve-Year trajectory of disease burden and mortality by obesity level
+in Korea: analysis of the National health insurance service database. Obes
+Surg. 2023;33:105–16. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​0​0​7​/​s​1​1​6​9​5​-​0​2​2​-​0​6​3​2​7​-​y
+7.
+Neto A, Fernandes A, Barateiro A. The complex relationship between obesity
+and neurodegenerative diseases: an updated review. Front Cell Neurosci.
+2023;17:1294420. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​3​3​8​9​/​f​n​c​e​l​.​2​0​2​3​.​1​2​9​4​4​2​0
+8.
+Barbi J, Patnaik SK, Pabla S, Zollo R, Smith RJ Jr., Sass SN, Srinivasan A, Petrucci
+C, Seager R, Conroy J, et al. Visceral obesity promotes lung Cancer Progres­
+sion-Toward resolution of the obesity paradox in lung Cancer. J Thorac Oncol.
+2021;16:1333–48. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​0​1​6​/​j​.​j​t​h​o​.​2​0​2​1​.​0​4​.​0​2​0
+9.
+Zammit C, Liddicoat H, Moonsie I, Makker H. Obesity and respiratory diseases.
+Int J Gen Med. 2010;3:335–43. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​2​1​4​7​/​i​j​g​m​.​S​1​1​9​2​6
+10.	 Esser N, Legrand-Poels S, Piette J, Scheen AJ, Paquot N. Inflammation as a link
+between obesity, metabolic syndrome and type 2 diabetes. Diabetes Res Clin
+Pract. 2014;105:141–50. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​0​1​6​/​j​.​d​i​a​b​r​e​s​.​2​0​1​4​.​0​4​.​0​0​6
+11.	 Verdile G, Keane KN, Cruzat VF, Medic S, Sabale M, Rowles J, Wijesekara N,
+Martins RN, Fraser PE, Newsholme P. Inflammation and oxidative stress: the
+molecular connectivity between insulin resistance, obesity, and Alzheimer’s
+disease. Mediators Inflamm. 2015;2015:105828. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​1​5​5​/​2​0​1​5​/​
+1​0​5​8​2​8
+12.	 Miller AA, Spencer SJ. Obesity and neuroinflammation: a pathway to cogni­
+tive impairment. Brain Behav Immun. 2014;42:10–21. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​0​1​6​/​
+j​.​b​b​i​.​2​0​1​4​.​0​4​.​0​0​1
+13.	 Whitmer RA, Gunderson EP, Barrett-Connor E, Quesenberry CP Jr., Yaffe K.
+Obesity in middle age and future risk of dementia: a 27 year longitudinal
+population based study. BMJ. 2005;330:1360. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​1​3​6​/​b​m​j​.​3​8​
+4​4​6​.​4​6​6​2​3​8​.​E​0
+14.	 Anstey KJ, Cherbuin N, Budge M, Young J. Body mass index in midlife and
+late-life as a risk factor for dementia: a meta-analysis of prospective studies.
+Obes Rev. 2011;12:e426–437. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​1​1​1​/​j​.​1​4​6​7​-​7​8​9​X​.​2​0​1​0​.​0​0​8​2​5​
+.​x
+15.	 Singh-Manoux A, Dugravot A, Shipley M, Brunner EJ, Elbaz A, Sabia S, Kivimaki
+M. Obesity trajectories and risk of dementia: 28 years of follow-up in the
+Whitehall II study. Alzheimers Dement. 2018;14:178–86. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​0​
+1​6​/​j​.​j​a​l​z​.​2​0​1​7​.​0​6​.​2​6​3​7
+16.	 Beydoun MA, Beydoun HA, Wang Y. Obesity and central obesity as risk factors
+for incident dementia and its subtypes: a systematic review and meta-analy­
+sis. Obes Rev. 2008;9:204–18. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​1​1​1​/​j​.​1​4​6​7​-​7​8​9​X​.​2​0​0​8​.​0​0​4​7​3​.​
+x
+17.	 Werner P, Stein-Shvachman I, Korczyn AD. Early onset dementia: clinical and
+social aspects. Int Psychogeriatr. 2009;21:631–6. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​0​1​7​/​s​1​0​4​
+1​6​1​0​2​0​9​0​0​9​2​2​3
+18.	 Harvey RJ, Skelton-Robinson M, Rossor MN. The prevalence and causes of
+dementia in people under the age of 65 years. J Neurol Neurosurg Psychiatry.
+2003;74:1206–9. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​1​3​6​/​j​n​n​p​.​7​4​.​9​.​1​2​0​6
+19.	 Flynn R, Mulcahy H. Early-onset dementia: the impact on family care-givers.
+Br J Community Nurs. 2013;18:598–606. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​2​9​6​8​/​b​j​c​n​.​2​0​1​3​.​1​
+8​.​1​2​.​5​9​8
+20.	 Seath P, Macedo-Orrego LE, Velayudhan L. Clinical characteristics of earlyonset versus late-onset Alzheimer’s disease: a systematic review and metaanalysis. Int Psychogeriatr. 2023;1–17. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​0​1​7​/​s​1​0​4​1​6​1​0​2​2​3​0​
+0​0​5​0​9
+21.	 Yang YS, Han BD, Han K, Jung JH, Son JW. Obesity fact sheet in Korea, 2021:
+trends in obesity prevalence and obesity-Related comorbidity incidence
+stratified by age from 2009 to 2019. J Obes Metab Syndr. 2022;31:169–77. ​h​t​t​
+p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​7​5​7​0​/​j​o​m​e​s​2​2​0​2​4
+22.	 Kolahchi Z, Henkel N, Eladawi MA, Villarreal EC, Kandimalla P, Lundh A, McCul­
+lumsmith RE, Cuevas E. Sex and Gender Differences in Alzheimer’s Disease:
+Genetic, Hormonal, and Inflammation Impacts. Int J Mol Sci. 2024;25. ​h​t​t​p​s​:​/​/​
+d​o​i​.​o​r​g​/​1​0​.​3​3​9​0​/​i​j​m​s​2​5​1​5​8​4​8​5
+23.	 Haam JH, Kim BT, Kim EM, Kwon H, Kang JH, Park JH, Kim KK, Rhee SY, Kim YH,
+Lee KY. Diagnosis of obesity: 2022 update of clinical practice guidelines for
+obesity by the Korean society for the study of obesity. J Obes Metab Syndr.
+2023;32:121–9. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​7​5​7​0​/​j​o​m​e​s​2​3​0​3​1
+24.	 Cryan JF, O’Riordan KJ, Cowan CSM, Sandhu KV, Bastiaanssen TFS, Boehme
+M, Codagnone MG, Cussotto S, Fulling C, Golubeva AV, et al. The Microbiota-
+Gut-Brain Axis. Physiol Rev. 2019;99:1877–2013. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​1​1​5​2​/​p​h​y​s​r​
+e​v​.​0​0​0​1​8​.​2​0​1​8
+25.	 Karastergiou K, Smith SR, Greenberg AS, Fried SK. Sex differences in human
+adipose tissues - the biology of Pear shape. Biol Sex Differ. 2012;3:13. ​h​t​t​p​s​:​/​/​d​
+o​i​.​o​r​g​/​1​0​.​1​1​8​6​/​2​0​4​2​-​6​4​1​0​-​3​-​1​3
+26.	 O’Neal MA. Women and the risk of Alzheimer’s disease. Front Glob Womens
+Health. 2023;4:1324522. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​3​3​8​9​/​f​g​w​h​.​2​0​2​3​.​1​3​2​4​5​2​2
+27.	 Costache AD, Ignat BE, Grosu C, Mastaleru A, Abdulan I, Oancea A, Roca M,
+Leon MM, Badescu MC, Luca S, et al. Inflammatory Pathways in Overweight
+and Obese Persons as a Potential Mechanism for Cognitive Impairment and
+Earlier Onset Alzeihmer’s Dementia in the General Population: A Narrative
+Review. Biomedicines. 2023;11. ​h​t​t​p​s​:​/​/​d​o​i​.​o​r​g​/​1​0​.​3​3​9​0​/​b​i​o​m​e​d​i​c​i​n​e​s​1​1​1​2​3​2​
+3​3
+Publisher’s note
+Springer Nature remains neutral with regard to jurisdictional claims in
+published maps and institutional affiliations.

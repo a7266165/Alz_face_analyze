@@ -1,0 +1,741 @@
+Twelve-year nationwide cohort
+study identifying risk factors for
+conversion from mild cognitive
+impairment to Alzheimer’s disease
+Kyoungwon Baik1,2,6, Minwoong Kang3,6, Yu Jeong Park4, Su Jin Chung5, Kyungmi Oh4,
+Seong-Beom Koh4 & Sung Hoon Kang4
+Mild cognitive impairment (MCI) is a pre-dementia phase preceding dementia of the Alzheimer’s type
+(DAT). Despite numerous studies exploring the risk factors for the conversion from MCI to DAT, the
+results have been heterogeneous. This study aimed to investigate the incidence of the conversion from
+MCI to DAT and the risk factors contributing to DAT conversion in Korean patients with MCI. A 12-year
+nationwide retrospective study was conducted. We enrolled patients with MCI aged ≥ 40 years between
+2009 and 2015 and followed them up until 2020. The incidence of DAT conversion based on age at MCI
+diagnosis and its risk factors were analyzed using Cox proportional hazards regression. The conversion
+rate of DAT in patients with MCI increased during the age range of 70 to 90 years, and approached a
+plateau near the age of 100 years. Being underweight (hazard ratio [HR] 1.279, 95% confidence interval
+[CI] 1.223–1.338) was associated with a higher risk of DAT conversion. Cardiometabolic diseases
+(diabetes, HR 1.373, 95% CI 1.342–1.406; coronary heart disease, HR 1.047, 95% CI 1.015–1.079; and
+hemorrhagic stroke, HR 1.342, 95% CI 1.296–1.390;) increased the risk of DAT conversion, whereas
+hypertension, ischemic stroke, and dyslipidemia did not. Depression (HR 1.736, 95% CI 1.700–1.773)
+and physical inactivity (HR 1.193, 95% CI 1.161–1.227) were related to the increased risk. Mild (HR
+0.860, 95% CI 0.830–0.891) to moderate (HR 0.880, 95% CI 0.837–0.926) alcohol consumption, high
+income (HR 0.947, 95% CI 0.925–0.970), and urban residence (HR 0.889, 95% CI 0.872–0.907) were
+associated with the decreased risk of DAT conversion. Multiple modifiable risk factors were closely
+associated with an increased risk of DAT conversion. Our results may help in designing preventive
+strategies to mitigate the risk of DAT conversion in patients with MCI.
+Keywords  Mild cognitive impairment, Dementia of the Alzheimer’s type (DAT), Risk factors, DAT
+conversion
+Abbreviations
+AD
+Alzheimer’s disease
+Aβ
+β-Amyloid
+BMI
+Body mass index
+CAA
+Cerebral amyloid angiopathy
+CI
+Confidence interval
+DAT
+Dementia of the Alzheimer’s type
+HR
+Hazard ratio
+ICD-10
+International Classification of Diseases, 10th Revision
+KNHIS
+Korea National Health Insurance System
+MCI
+Mild cognitive impairment
+1Department of Neurology, Korea University Anam Hospital, Korea University College of Medicine, Seoul, Korea.
+2Geriatric Health Clinic and Research Institute, Korea University College of Medicine, Seoul, Korea. 3Department of
+Biomedical Research Center, Korea University Guro Hospital, Korea University College of Medicine, Seoul, Korea.
+4Department of Neurology, Korea University Guro Hospital, Korea University College of Medicine, 148 Gurodongro, Guro-gu, Seoul 08308, Korea. 5Department of Neurology, Inje University Ilsan Paik Hospital, Inje University
+College of Medicine, Goyang, Korea. 6Kyoungwon Baik and Minwoong Kang have contributed equally to this work.
+email: okyungmi@korea.ac.kr; shkang85@naver.com
+OPEN
+Scientific Reports |        (2025) 15:35418
+1
+| https://doi.org/10.1038/s41598-025-16620-2
+www.nature.com/scientificreports
+
+SD
+Standard deviation
+SES
+Socioeconomic status
+Mild cognitive impairment (MCI) is an intermediate state between normal aging and dementia, with cognitive
+decline greater than expected for an individual’s age and education level; however, it does not affect independence
+in daily life1. Therefore, identifying the incidence rate of dementia conversion and effective strategies to delay
+dementia conversion are important for planning public health care policies. According to the population-based
+studies, 5–30% of patients with MCI progress to dementia annually2. However, the considerable variations in
+conversion rates may be influenced by factors, such as study design, population characteristics (including race/
+ethnicity), and various risk factors3–7.
+Numerous studies have explored and evaluated the risk factors predictive of the conversion from MCI to
+dementia of the Alzheimer’s type (DAT), which accounts for the largest proportion of dementia cases. Among
+immutable risk factors, old age was strongly related to DAT conversion and female sex and low education levels
+showed heterogenous result8,9. Among modifiable risk factors, diabetes, low body weight, and depression are
+usually associated with an increased risk of DAT conversion9,10. However, hypertension, stroke, and cardiac
+disease were not always associated with the increased risk9–13. Moreover, dyslipidemia showed wide variation,
+from protective to worse outcome14,15. Smoking and alcohol consumption were not always associated with an
+increased risk. Alcohol consumption showed protective effect in some studies14,16,17.
+Race/ethnicity affects DAT conversion18,19 and modulates the effects of cardiometabolic syndromes on
+brain health20. Specifically, Asians are more likely to develop cardiometabolic syndrome-related complications,
+including coronary artery disease21, stroke22, dementia23,24, or mortality25. Therefore, it is important to identify
+modifiable risk factors in European as well as Asian populations. However, only few longitudinal large-cohort
+studies have evaluated the risk factors for the conversion from MCI to DAT in Asian populations.
+In the present study, we investigated the incidence of MCI to DAT conversion in Korean population based on
+the Korea National Health Insurance System (KNHIS) data and explored the risk factors contributing to DAT
+conversion.
+Methods
+Data source
+We used a customized dataset from the KNHIS, which encompasses more than 99% of Koreans population
+(approximately 50 million individuals) (http://nhiss.nhis.or.kr). The KNHIS database includes personal
+information, health insurance claim codes (procedures and prescriptions), diagnostic codes from the Korean
+Standard Classification of Diseases, 7th Revision based on the International Classification of Diseases, 10th
+Revision (ICD-10), death records from the Korean National Statistical Office, and general health screening
+examination data for each participant from 2002 to 2019.
+Study participants
+Patients aged ≥ 40 years with MCI first diagnosed between 2009 and 2015 were enrolled using ICD-10 codes
+(F06.8 or R41.3). In total, 642,954 eligible candidates were identified. We excluded patients who had following
+conditions: 27,477 patients with a prior history of dementia, 15,239 patients with a dementia diagnosis within
+6 months after MCI diagnosis, 11 patients who died at baseline, and 263,914 patients without information on risk
+factors at baseline (body mass index [BMI], 253,124; smoking status, 253,749; alcohol consumption, 254,356;
+physical activity, 253,816; income, 14,332; residential area, 169). The study was reviewed and approved by the
+Institutional Review Board of Korea University Guro Hospital. Due to the retrospective nature of the study,
+Institutional Review Board of Korea University Guro Hospital waived the need of obtaining informed consent.
+All procedures performed in human studies were in accordance with the ethical standards of the institutional
+and/or national research committee and with the 1964 Helsinki Declaration and its later amendments or
+comparable ethical standards.
+Assessment of risk factors
+Hypertension, diabetes, dyslipidemia, coronary heart disease, ischemic stroke, hemorrhagic stroke, depression,
+and osteoporosis were considered as risk factors. The presence of hypertension was defined according to the
+ICD-10 code (I10-13, I15) and prescription of antihypertensive medication. The presence of diabetes was
+defined according to the ICD-10 code (E10-14) and prescription of antidiabetic medication. The presence of
+dyslipidemia was defined according to the ICD-10 code (E78) and prescription of lipid-lowering medication.
+The presence of coronary heart disease was defined according to the ICD-10 code (I20-25) and prescription of
+antiplatelet or anticoagulation agents. The presence of ischemic stroke was defined according to the ICD-10 code
+(I63-66) and prescription of antiplatelet or anticoagulation agents. Hemorrhagic stroke (I60-62), depression
+(F32-34), and osteoporosis (M80-82) were defined using at least one ICD-10 code.
+The BMI, smoking status, alcohol consumption, and physical activity data were obtained from a health
+screening examination database. Obesity, overweight, and underweight were defined as BMI ≥ 25  kg/m2,
+23 ≤ BMI < 25, and BMI < 18.5 kg/m2, respectively. For male and female patients, heavy alcohol consumption
+was defined as drinking > 60 g and > 40 g alcohol per day, respectively, moderate consumption was defined as
+drinking between 20–60 g and 10–40 g alcohol per day, respectively, and mild consumption was defined as
+drinking < 20 g and < 10 g alcohol per day, respectively26. Smoking status was defined as none, ex-smoker, and
+current smoker. Physical activity was defined as none and active. Specifically, active exercise was defined as
+high-intensity exercise ≥ 3 times a week or moderate-intensity exercise ≥ 5 times a week during the past week.
+Income level and residential area were obtained from personal information. Income level was categorized by
+Scientific Reports |        (2025) 15:35418
+2
+| https://doi.org/10.1038/s41598-025-16620-2
+www.nature.com/scientificreports/
+
+percentile: ≤ 30th and > 30th. The residential areas were classified as urban or rural. Urban areas were defined as
+Seoul, six other large cities, and cities with a population > 300,000.
+Definition of outcome and follow-up
+The outcome of the study was DAT conversion (participants with newly diagnosed dementia who received
+dementia medication among patients with MCI), which was defined according to ICD-10 codes (F00, F02, F03,
+G30, and G31), and simultaneous prescription of dementia medications, including donepezil, rivastigmine,
+galantamine, and memantine. The patients were followed-up from the date of MCI diagnosis (baseline) to the
+date of DAT diagnosis, date of death, or until the end of the study period (December 31, 2020).
+Statistical analysis
+Baseline characteristics are presented as mean ± standard deviation (SD) and frequency (%). The incidence
+of DAT conversion was calculated per 1,000 person-years, and trends by age group of MCI diagnosis were
+analyzed using the Cochrane–Armitage and linearity tests. The cumulative incidence of DAT conversion was
+calculated using Kaplan–Meier curves. Univariable and multivariable Cox proportional hazard regression
+analyses were performed to identify the factors associated with DAT conversion. Hazard ratios (HRs) and 95%
+confidence intervals (CIs) were estimated using the models. The multivariable analysis included factors such as
+age, sex, BMI, baseline comorbidities (hypertension, diabetes, dyslipidemia, coronary heart disease, ischemic
+stroke, hemorrhagic stroke, depression, and osteoporosis), alcohol consumption, physical activity, income, and
+residential area, which were statistically significant in the univariable analysis.
+All reported p-values were two-sided and the significance level was set at 0.05. All analyses were performed
+using SAS Enterprise Guide 7.1 (SAS Institute Inc., Cary, NC, USA).
+Results
+Demographic and clinical characteristics
+The demographics and clinical characteristics of the patients are presented in Table 1. In total, 336,313 patients
+with MCI were enrolled in this study. The mean age of patients was 67.5 ± 9.3 years and 67.7% were female. Of all
+patients, 10,062 (3.0%), 117,061 (34.8%), 88,752 (26.4%), and 120,438 (35.8%) were underweight (BMI < 18.5 kg/
+m2), normal weight (18.5 ≤ BMI < 23), overweight was (23 ≤ BMI < 25), and obese (≥ 25 kg/m2), respectively. The
+prevalence of hypertension, diabetes, dyslipidemia, coronary heart disease, ischemic stroke, and hemorrhagic
+stroke was 51.2%, 17.0%, 29.8%, 8.9%, 8.5%, and 11.6%, respectively. The proportion of patients with depression,
+osteoporosis, current smoking, heavy drinking, and physical inactivity was 20.7%, 28.5%, 8.0%, 1.4%, and 80.6%,
+respectively. The median follow-up duration was 6.7 years.
+Conversion and conversion rate of DAT
+The total number of DAT cases were 102 in the 40 s, 1453 in the 50 s, 7,863 in the 60 s, 23,290 in the 70 s, and
+8,967 in those over 80. The DAT conversion rate per 1000 person-year increased with age (p for trend = 0.025)
+(Table 2). The conversion of DAT was lower in individuals aged 40–60 years, but increased in those aged 70–
+90 years and reached a plateau near the age of 100 years (Fig. 1).
+DAT conversion according to age and sex
+Older age was independently related to DAT conversion (HR, 1.107; 95% CI 1.106–1.109). Female sex was
+associated with the decreased risk of DAT conversion (HR 0.932; 95% CI 0.910–0.954). After stratification of age
+group, females in the young age group (< 65 years) (HR, 0.587; 95% CI 0.537–0.642) were less likely to undergo
+DAT conversion, whereas those in the old age group (≥ 65 years) (HR, 1.007; 95% CI 0.980–1.035) were not
+associated with a decreased risk of DAT conversion (Fig. 2, Table 3).
+Risk factors for DAT conversion
+Compared with normal weight, underweight was associated with an increased risk (HR, 1.279; 95% CI 1.223–
+1.338), and overweight (HR, 0.856; 95% CI 0.835–0.877) or obese (HR, 0.802; 95% CI 0.783–0.821) were associated
+with a decreased risk of DAT conversion. Among cardiometabolic syndromes and related complications, the
+presence of diabetes (HR, 1.373; 95% CI 1.342–1.406), coronary heart disease (HR, 1.047; 95% CI 1.015–1.079),
+and hemorrhagic stroke (HR, 1.342; 95% CI 1.296–1.390) independently increased the risk of DAT conversion.
+However, the presence of hypertension (HR, 0.994; 95% CI 0.974–1.015) and ischemic stroke (HR 1.024; 95% CI
+0.983–1.066) were not associated with the risk of DAT conversion. Dyslipidemia was related to a decreased risk
+of DAT conversion (HR, 0.887; 95% CI 0.867–0.907). Depression was independently related to an increased risk
+of DAT (HR, 1.736; 95% CI 1.700–1.773), whereas osteoporosis was not related. In addition, smoking status was
+not associated with the risk of DAT conversion. Mild (HR, 0.860; 95% CI 0.830–0.891) and moderate (HR, 0.880;
+95% CI 0.837–0.926) alcohol consumption was related to a decreased risk of DAT conversion compared with
+no alcohol consumption. Heavy alcohol consumption was not associated with an increased or decreased risk of
+DAT conversion. Physically inactivity was associated with an increased risk of DAT conversion (HR, 1.193; 95%
+CI 1.161–1.227). High income (HR, 0.947; 95% CI 0.925–0.970) and residence in urban areas (HR, 0.889; 95%
+CI 0.872–0.907) were related to a decreased risk of DAT conversion (Table 3).
+Discussion
+In this study, we evaluated the incidence of conversion from MCI to DAT and the associated risk factors using
+large cohort data from the KNHIS. Our major findings are as follows. First, the conversion rate of DAT in
+patients with MCI increased at the age of 70 years and approached a plateau near the age of 100 years. Second,
+Scientific Reports |        (2025) 15:35418
+3
+| https://doi.org/10.1038/s41598-025-16620-2
+www.nature.com/scientificreports/
+
+underweight status was associated with an increased rate of DAT conversion. Third, cardiometabolic syndromes,
+except for hypertension, ischemic stroke, and dyslipidemia, increased the risk of DAT conversion. Fourth,
+depression and physical inactivity were associated with an increased risk of DAT conversion. Finally, mild-tomoderate alcohol consumption, high income, and residence in an urban area were associated with a decreased
+risk of DAT conversion. Our findings suggest that multiple modifiable risk factors are closely associated with
+an increased risk of DAT conversion. Furthermore, our results may help in designing preventive strategies to
+mitigate the risk of DAT conversion in patients with MCI.
+Age (years)
+No. of participants
+No. of DAT cases
+Person-year
+Incidence rate per 1000 PY
+40–49
+10,663
+102
+82,278.09172
+1.239698173
+50–59
+61,487
+1453
+454,907.6167
+3.194055115
+60–69
+111,555
+7863
+797,375.5209
+9.861100315
+70–79
+123,292
+23,290
+789,994.8145
+29.48120617
+ ≥ 80
+29,316
+8967
+150,791.8029
+59.46609716
+Table 2.  Incidence and incidence rate of Alzheimer’s dementia in patients with MCI. p-value for trend in DAT
+conversion proportion (Cochran-Armitage trend test): < 0.001. p-value for trend in DAT incidence rate: 0.025.
+DAT, dementia of the Alzheimer’s type; MCI, mild cognitive impairment; No., number; PY, person-year.
+
+Characteristics
+Value
+Age
+67.5 ± 9.3
+Gender, Female
+227,556 (67.7)
+BMI
+ Underweight (< 18.5)
+10,062 (3.0)
+ Normal (18.5– < 23)
+117,061 (34.8)
+ Overweight (23– < 25)
+88,752 (26.4)
+ Obese (≥ 25)
+120,438 (35.8)
+Condition at baseline
+ Hypertension
+172,191 (51.2)
+ Diabetes
+57,149 (17.0)
+ Dyslipidemia
+100,295 (29.8)
+ Coronary heart disease
+29,878 (8.9)
+ Ischemic stroke
+28,672 (8.5)
+ Hemorrhagic stroke
+39,075 (11.6)
+ Depression
+69,663 (20.7)
+ Osteoporosis
+95,825 (28.5)
+Smoking status
+ None
+266,211 (79.1)
+ Ex-smoker
+43,297 (12.9)
+ Current
+26,805 (8.0)
+Alcohol consumption (g/day)
+ None
+269,026 (80.0)
+ Mild (Men: < 20, Women: < 10)
+41,373 (12.3)
+ Moderate (Men: 20–60, Women: 10–40)
+21,327 (6.3)
+ Heavy (Men: > 60, Women: > 40)
+4,587 (1.4)
+Physical activity
+ None
+271,113 (80.6)
+ Active
+65,200 (19.4)
+Income
+ ≤ 30
+79,313 (23.6)
+ > 30
+257,000 (76.4)
+Residential area
+ Rural
+120,616 (35.9)
+ Urban
+215,697 (64.1)
+Table 1.  Baseline characteristics. Values are presented as mean ± standard deviation values or n (%). BMI,
+body mass index.
+
+Scientific Reports |        (2025) 15:35418
+4
+| https://doi.org/10.1038/s41598-025-16620-2
+www.nature.com/scientificreports/
+
+Fig. 2.  Forest plot of multivariable cox regression model results. BMI, body mass index; CI, confidence
+interval; DAT, dementia of the Alzheimer’s type; HRs, hazard ratio.
+
+Fig. 1.  Conversion rate from MCI to DAT according to the age at diagnosis. The conversion rate from MCI to
+DAT varies according to the age at diagnosis. The conversion of DAT is lower in individuals aged 40–60 years,
+but rises in individuals aged 70–90 years and reaches a plateau near the age of 100 years. DAT, dementia of the
+Alzheimer’s type; MCI, mild cognitive impairment.
+
+Scientific Reports |        (2025) 15:35418
+5
+| https://doi.org/10.1038/s41598-025-16620-2
+www.nature.com/scientificreports/
+
+Age is the most significant risk factor of dementia27,28. We replicated the finding that age is related to an
+increased risk of DAT conversion in patients with MCI. However, there have been conflicting results regarding
+the incidence of dementia, which continuously increases with age or plateaus at some point29. In the present study,
+DAT conversion was increased as age at diagnosis increased before the age of 100 years. It was approximately 1%
+(1.2 per person-year) in patients in their 40’s and more than 30% (59.5 per person-year) in > 80’s. However, this
+rate plateaued at approximately 100 years of age. The number of patients aged > 100 years was insufficient, and
+further studies, especially longitudinal studies of the oldest-old, are needed to verify the relationship between
+extreme aging and DAT conversion.
+Male sex was associated with a higher risk of DAT conversion, although there was a relatively high proportion
+of female patients with MCI. The finding that females accounted for a large proportion of patients with MCI
+were consistent with the findings of many epidemiologic studies. However, the vulnerability of males to DAT
+conversion is conflicting. After stratification by age, the association was evident only in the younger age group
+(< 65 years old). Several studies have shown similar trends: a higher incidence of DAT in women than in men
+after the 80’s and vice versa before the 80’s30,31. In addition, the rate of progression from MCI to DAT was
+higher in males in their 70’s but higher in female aged > 80 years32. Previous studies, that aimed to identify the
+exact mechanism of gender-based difference in the prevalence of DAT have reported that tau pathology, a core
+feature of Alzheimer’s disease (AD), accumulated at a faster rate in females compared to males33. However,
+despite comparable levels of pathology and neurodegeneration in the early stages of DAT, males tended to
+exhibit lower cognitive performance than females, suggesting that males may possess a lower cognitive reserve
+than females34,35. In other words, these findings may be related to lower cognitive function and faster cognitive
+Overall
+Univariable
+Multivariable
+HR (95 CI)
+p-value
+HR (95 CI)
+p-value
+Age
+1.113 (1.112–1.115)
+ < 0.001
+1.107 (1.106–1.109)
+ < 0.001
+Gender, Female
+0.854 (0.837–0.871)
+ < 0.001
+0.932 (0.910–0.954)
+ < 0.001
+BMI
+ < 0.001
+ < 0.001
+ Underweight (< 18.5)
+1.781 (1.703–1.863)
+ < 0.001
+1.279 (1.223–1.338)
+ < 0.001
+ Normal (18.5– < 23)
+Reference
+Reference
+ Overweight (23– < 25)
+0.782 (0.763–0.802)
+ < 0.001
+0.856 (0.835–0.877)
+ < 0.001
+ Obesity (≥ 25)
+0.710 (0.694–0.727)
+ < 0.001
+0.802 (0.783–0.821)
+ < 0.001
+Condition at baseline
+ Hypertension
+1.496 (1.467–1.525)
+ < 0.001
+0.994 (0.974–1.015)
+0.580
+ Diabetes
+1.544 (1.509–1.580)
+ < 0.001
+1.373 (1.342–1.406)
+ < 0.001
+ Dyslipidemia
+0.844 (0.825–0.862)
+ < 0.001
+0.887 (0.867–0.907)
+ < 0.001
+ Coronary heart disease
+1.371 (1.330–1.414)
+ < 0.001
+1.047 (1.015–1.079)
+0.004
+ Ischemic stroke
+1.683 (1.635–1.732)
+ < 0.001
+1.024 (0.983–1.066)
+0.258
+ Hemorrhagic stroke
+1.785 (1.741–1.830)
+ < 0.001
+1.342 (1.296–1.390)
+ < 0.001
+ Depression
+1.709 (1.674–1.745)
+ < 0.001
+1.736 (1.700–1.773)
+ < 0.001
+ Osteoporosis
+1.266 (1.240–1.291)
+ < 0.001
+1.017 (0.995–1.040)
+0.122
+Smoking status
+0.534
+ None
+Reference
+–
+–
+ Ex-smoker
+0.984 (0.955–1.013)
+0.280
+–
+–
+ Current
+1.003 (0.968–1.040)
+0.862
+–
+–
+Alcohol consumption (g/day)
+ < 0.001
+ < 0.001
+ None
+Reference
+Reference
+ Mild
+0.671 (0.649–0.694)
+ < 0.001
+0.860 (0.830–0.891)
+ < 0.001
+ Moderate
+0.579 (0.551–0.608)
+ < 0.001
+0.880 (0.837–0.926)
+ < 0.001
+ Heavy
+0.798 (0.730–0.872)
+ < 0.001
+1.083 (0.989–1.186)
+0.085
+Physical activity, Inactive
+1.452 (1.414–1.492)
+ < 0.001
+1.193 (1.161–1.227)
+ < 0.001
+Income, > 30%
+1.175 (1.148–1.204)
+ < 0.001
+0.947 (0.925–0.970)
+ < 0.001
+Residential area, Urban
+0.699 (0.685–0.712)
+ < 0.001
+0.889 (0.872–0.907)
+ < 0.001
+Table 3.  Hazard ratio of risk factors for conversion to dementia of the Alzheimer’s type. Univariable
+Cox proportional hazard regression analyses were performed using each factor as a separate predictor.
+Multivariable Cox proportional hazard regression analyses were performed using the factors such as age, sex,
+BMI, baseline comorbidities (hypertension, diabetes, dyslipidemia, coronary heart disease, ischemic stroke,
+hemorrhagic stroke, depression, and osteoporosis), alcohol consumption, physical activity, income, and
+residential area that were statistically significant in univariable analyses. BMI, body mass index; CI, confidence
+interval; HR, hazard ratio.
+
+Scientific Reports |        (2025) 15:35418
+6
+| https://doi.org/10.1038/s41598-025-16620-2
+www.nature.com/scientificreports/
+
+decline in males than females in the presence of comparable AD pathological burden36,37, which may have
+contributed to our findings.
+Being underweight was associated with the risk of DAT conversion. This finding is consistent with previous
+studies. Specifically, being underweight in late life is associated with accelerated neurodegeneration38 and an
+increased risk of DAT39,40. Additionally, individuals who are underweight in late life are associated with an
+increased risk of β-amyloid (Aβ) deposition41.
+Among cardiometabolic syndromes, diabetes, coronary heart disease, and hemorrhagic stroke increased the
+risk of dementia conversion. Several epidemiological studies have found that the incidence of DAT is higher
+in patients with diabetes that in patients without diabetes32–34. Additionally, high blood glucose variability or
+insulin resistance was associated with Aβ deposition42,43. Coronary heart disease is associated with an increased
+risk of dementia44 and contribute to neuropathology associated with DAT45. In terms of hemorrhagic stroke,
+lobar hemorrhage, part of hemorrhagic stroke, is known to be a clinical manifestation of cerebral amyloid
+angiopathy (CAA) which involves cerebrovascular deposition of Aβ. Given that CAA and DAT often overlap
+due to the shared role of Aβ, patients with MCI with hemorrhagic stroke were more likely to have Aβ deposition,
+which in turn increased the risk of DAT conversion. In fact, patients with DAT are likely to have a higher risk of
+hemorrhagic stroke, but not of ischemic stroke, compared to controls46.
+Hypertension and ischemic stroke were not related to the risk of DAT conversion. Hypertension is related
+to vascular dementia; however, its relationship with DAT seems controversial47. In addition, since the patients
+with hypertension in our study were prescribed anti-hypertensive medication, well-controlled hypertension
+might not be related to cognitive decline in patients with MCI48. Ischemic stroke is a risk factor for vascular
+dementia49–52; however, its relationship with DAT is not consistent. Thus, after controlling for other risk factors,
+the independent effect of ischemic stroke on progression from MCI to DAT may not be significant.
+We also found that dyslipidemia was associated with a decreased risk of DAT in patients with MCI. This
+may be related to the definition of dyslipidemia in our study. Dyslipidemia was defined according to the ICD-
+10 code (E78) and the prescription of lipid-lowering medications. Higher LDL was related to an increased Aβ
+burden53,54; however, DAT risk may be lower in patients treated with statin54,55. Thus, dyslipidemia itself may be
+related to an increased risk of DAT; however, treatment with statins could modify the consequences.
+Physical inactivity 56–58 and depression59,60 are related to the risk of DAT conversion in patients with MCI,
+which is consistent with the findings of previous studies. In particular, the effect size of depression on conversion
+to DAT was higher than that of the other evaluated risk factors. Mild to moderate alcohol consumption was
+associated with a decreased risk of dementia compared with abstinence. However, studies on the relationship
+between alcohol consumption and cognitive impairment have yielded conflicting results. Several studies have
+shown that there may be a J-shaped relationship between alcohol consumption and developing DAT17,61,62.
+Urbanization was associated with a decreased risk of AD after adjusting for age, sex, education, comorbidities,
+and lifestyle factors. These findings are consistent with previous studies63–65. In addition, the prevalence of MCI
+was higher in urban areas, and urbanization was associated with a decreased risk of developing DAT. This
+may be attributed to the lower likelihood of MCI diagnosis in rural areas than that in urban areas. Reduced
+opportunities to encounter healthcare providers and a more monotonous lifestyle in rural areas may lead to
+individuals being diagnosed with MCI less frequently and at later stages of the condition. Low socioeconomic
+status (SES) is a risk factor for the development of DAT66–68. However, most studies that have assessed SES in
+patients with dementia were predominantly based on educational and occupational categories. Only few studies
+have measured SES based on household income, as in our study68. Household income may be a more appropriate
+marker for assessing SES in retired older adults. Education is typically attained early in life. Based on findings
+regarding urbanization and high income, policies aimed at caring for patients with cognitive impairment should
+prioritize low-income individuals residing in rural areas.
+The present study had some limitations. First, because only modifiable risk factors that patients with MCI
+had at baseline were included, we did not consider changes in the status of modifiable risk factors after MCI
+diagnosis. Second, due to the limitation of data that were not originally aimed at studying cognitive impairment
+and AD, we could not assess patients’ exact cognitive performance, years of education, apolipoprotein E
+genotype, and biomarkers including Aβ. Although the operational definition of DAT conversion was based
+on both ICD-10 codes and concurrent dementia medications, the lack of neuropsychological test scores or
+biomarker data may have led to diagnostic heterogeneity and potential misclassification. This may especially be
+relevant for distinguishing DAT from other types of dementia such as vascular dementia, dementia with Lewy
+bodies, and frontotemporal dementia. These limitations should be considered when interpreting our findings.
+Third, the presence of cardiometabolic syndromes was determined based on the patient’s history of diagnosis or
+medications, rather than clinical examinations. Nevertheless, the strengths of this study are the large number of
+patients with MCI and the long follow-up duration based on a nationwide cohort. Additionally, our study was
+based on Korean patients with MCI, who may be influenced by cultural and genetic factors that are different
+from those in Western countries.
+Conclusions
+In conclusion, we verified that older age, male sex, low body weight, diabetes, coronary heart disease, hemorrhagic
+stroke, depression, abstaining from alcohol, and physical inactivity were risk factors for the progression from
+MCI to DAT in a large-scale cohort study. It is important to understand the trend of the DAT conversion rate
+and modifiable risk factors in patients with MCI to establish optimal strategies for mitigating the risk of DAT
+conversion. Considering that the restricted treatment alternatives are available for AD, there is a pressing need to
+prioritize prevention strategies, particularly through strict blood glucose control, encouraging physical activity,
+and caring for depression among patients with MCI who are at a heightened risk of DAT.
+Scientific Reports |        (2025) 15:35418
+7
+| https://doi.org/10.1038/s41598-025-16620-2
+www.nature.com/scientificreports/
+
+Data availability
+The datasets used and/or analyses during the current study available from the corresponding author on reason­
+able request.
+Received: 24 November 2024; Accepted: 18 August 2025
+References
+	 1.	 Gauthier, S. et al. Mild cognitive impairment. Lancet 367, 1262–1270 (2006).
+	 2.	 Ward, A., Tardiff, S., Dye, C. & Arrighi, H. M. Rate of conversion from prodromal Alzheimer’s disease to Alzheimer’s dementia: A
+systematic review of the literature. Dement. .Geriatr Cognit. Disord. Extra 3, 320–332 (2013).
+	 3.	 Thaipisuttikul, P., Jaikla, K., Satthong, S. & Wisajun, P. Rate of conversion from mild cognitive impairment to dementia in a Thai
+hospital-based population: A retrospective cohort. Alzheimer’s Dement. Transl. Res. Clin. Interv. 8, e12272 (2022).
+	 4.	 Farias, S. T., Mungas, D., Reed, B. R., Harvey, D. & DeCarli, C. Progression of mild cognitive impairment to dementia in clinic-vs
+community-based cohorts. Arch. Neurol. 66, 1151–1157 (2009).
+	 5.	 Mitchell, A. J. & Shiri-Feshki, M. Rate of progression of mild cognitive impairment to dementia–meta-analysis of 41 robust
+inception cohort studies. Acta Psychiatr. Scand. 119, 252–265 (2009).
+	 6.	 Manly, J. J. et al. Frequency and course of mild cognitive impairment in a multiethnic community. Ann. Neurol. Off. J. Am. Neurol.
+Assoc. Child Neurol. Soc. 63, 494–506 (2008).
+	 7.	 Mitchell, A. & Shiri-Feshki, M. Temporal trends in the long term risk of progression of mild cognitive impairment: A pooled
+analysis. J. Neurol. Neurosurg. Psychiatr. 79, 1386–1391 (2008).
+	 8.	 Visser, P. J., Kester, A., Jolles, J. & Verhey, F. Ten-year risk of dementia in subjects with mild cognitive impairment. Neurology 67,
+1201–1207 (2006).
+	 9.	 Li, J.-Q. et al. Risk factors for predicting progression from mild cognitive impairment to Alzheimer’s disease: A systematic review
+and meta-analysis of cohort studies. J. Neurol. Neurosurg. Psychiatry 87, 476–484 (2016).
+	10.	 Cooper, C., Sommerlad, A., Lyketsos, C. G. & Livingston, G. Modifiable predictors of dementia in mild cognitive impairment: A
+systematic review and meta-analysis. Am. J. Psychiatry 172, 323–334 (2015).
+	11.	 Mauri, M., Sinforiani, E., Zucchella, C., Cuzzoni, M. G. & Bono, G. Progression to dementia in a population with amnestic mild
+cognitive impairment: Clinical variables associated with conversion. Funct. Neurol. 27, 49 (2012).
+	12.	 Artero, S. et al. Risk profiles for mild cognitive impairment and progression to dementia are gender specific. J. Neurol. Neurosurg.
+Psychiatry 79, 979–984 (2008).
+	13.	 Viticchi, G. et al. Framingham risk score and the risk of progression from mild cognitive impairment to dementia. J. Alzheimers
+Dis. 59, 67–75 (2017).
+	14.	 Xue, H. et al. Risk factors of transition from mild cognitive impairment to Alzheimer’s disease and death: a cohort study. Compr.
+Psychiatry 78, 91–97 (2017).
+	15.	 Ng, T. P. et al. Metabolic syndrome and the risk of mild cognitive impairment and progression to dementia: follow-up of the
+Singapore longitudinal ageing study cohort. JAMA Neurol. 73, 456–463 (2016).
+	16.	 Koch, M. et al. Alcohol consumption and risk of dementia and cognitive decline among older adults with or without mild cognitive
+impairment. JAMA Netw. Open 2, e1910319–e1910319 (2019).
+	17.	 Solfrizzi, V. et al. Alcohol consumption, mild cognitive impairment, and progression to dementia. Neurology 68, 1790–1799
+(2007).
+	18.	 Mehta, K. M. & Yeo, G. W. Systematic review of dementia prevalence and incidence in United States race/ethnic populations.
+Alzheimers Dement. 13, 72–83 (2017).
+	19.	 Nianogo, R. A. et al. Risk factors associated with Alzheimer disease and related dementias by sex and race and ethnicity in the US.
+JAMA Neurol. 79, 584–591 (2022).
+	20.	 Kang, S. H. et al. Different effects of cardiometabolic syndrome on brain age in relation to gender and ethnicity. Alzheimer’s Res.
+Ther. 15, 68. https://doi.org/10.1186/s13195-023-01215-8 (2023).
+	21.	 McKeigue, P. M., Miller, G. J. & Marmot, M. G. Coronary heart disease in south Asians overseas: A review. J. Clin. Epidemiol. 42,
+597–609. https://doi.org/10.1016/0895-4356(89)90002-4 (1989).
+	22.	 Eastwood, S. V., Tillin, T., Chaturvedi, N. & Hughes, A. D. Ethnic differences in associations between blood pressure and stroke in
+South Asian and European men. Hypertension (Dallas, Tex: 1979) 66, 481–488. https://doi.org/10.1161/hypertensionaha.115.05672
+(2015).
+	23.	 Park, J. E. et al. Decline in the incidence of all-cause and Alzheimer’s disease dementia: A 12-year-later rural cohort study in Korea.
+J. Korean Med. Sci. 34, e293. https://doi.org/10.3346/jkms.2019.34.e293 (2019).
+	24.	 Niu, H., Álvarez-Álvarez, I., Guillén-Grima, F. & Aguinaga-Ontoso, I. Prevalence and incidence of Alzheimer’s disease in Europe:
+A meta-analysis. Neurologia (Barcelona, Spain) 32, 523–532. https://doi.org/10.1016/j.nrl.2016.02.016 (2017).
+	25.	 Wild, S. H., Fischbacher, C., Brock, A., Griffiths, C. & Bhopal, R. Mortality from all causes and circulatory disease by country of
+birth in England and Wales 2001–2003. J. Public Health (Oxf.) 29, 191–198. https://doi.org/10.1093/pubmed/fdm010 (2007).
+	26.	 Fernandez-Sola, J. Cardiovascular risks and benefits of moderate and heavy alcohol consumption. Nat. Rev. Cardiol. 12, 576–587
+(2015).
+	27.	 Nichols, E. et al. Global, regional, and national burden of Alzheimer’s disease and other dementias, 1990–2016: A systematic
+analysis for the Global Burden of Disease Study 2016. Lancet Neurol. 18, 88–106 (2019).
+	28.	 Wahl, D. et al. Aging, lifestyle and dementia. Neurobiol. Dis. 130, 104481 (2019).
+	29.	 van der Flier, W. M. & Scheltens, P. Epidemiology and risk factors of dementia. J. Neurol. Neurosurg. Psychiatry 76, v2–v7 (2005).
+	30.	 Miech, R. et al. Incidence of AD may decline in the early 90s for men, later for women: The Cache county study. Neurology 58,
+209–218 (2002).
+	31.	 Ott, A., Breteler, M. M., Harskamp, F. V., Stijnen, T. & Hofman, A. Incidence and risk of dementia: The Rotterdam study. Am. J.
+Epidemiol. 147, 574–580 (1998).
+	32.	 Roberts, R. et al. The incidence of MCI differs by subtype and is higher in men: The Mayo clinic study of aging. Neurology 78,
+342–351 (2012).
+	33.	 Buckley, R. F. et al. Sex differences in the association of global amyloid and regional tau deposition measured by positron emission
+tomography in clinically normal older adults. JAMA Neurol. 76, 542–551 (2019).
+	34.	 Sundermann, E. E. et al. Better verbal memory in women than men in MCI despite similar levels of hippocampal atrophy.
+Neurology 86, 1368–1376. https://doi.org/10.1212/wnl.0000000000002570 (2016).
+	35.	 Digma, L. A. et al. Women can bear a bigger burden: ante- and post-mortem evidence for reserve in the face of tau. Brain
+communications 2, fcaa025. https://doi.org/10.1093/braincomms/fcaa025 (2020).
+	36.	 Koran, M. E. I., Wagener, M. & Hohman, T. J. Sex differences in the association between AD biomarkers and cognitive decline.
+Brain Imaging Behav. 11, 205–213. https://doi.org/10.1007/s11682-016-9523-8 (2017).
+	37.	 Altmann, A., Tian, L., Henderson, V. W. & Greicius, M. D. Sex modifies the APOE-related risk of developing Alzheimer disease.
+Ann. Neurol. 75, 563–573. https://doi.org/10.1002/ana.24135 (2014).
+Scientific Reports |        (2025) 15:35418
+8
+| https://doi.org/10.1038/s41598-025-16620-2
+www.nature.com/scientificreports/
+
+	38.	 Kim, H. et al. Association between body mass index and cortical thickness: among elderly cognitively normal men and women.
+Int. Psychogeriatr. 27, 121–130. https://doi.org/10.1017/s1041610214001744 (2015).
+	39.	 Tolppanen, A. M. et al. Midlife and late-life body mass index and late-life dementia: Results from a prospective population-based
+cohort. J. Alzheimer’s Dis. JAD 38, 201–209. https://doi.org/10.3233/jad-130698 (2014).
+	40.	 Bell, S. P. et al. Late-Life body mass index, rapid weight loss, apolipoprotein E ε4 and the risk of cognitive decline and incident
+dementia. J. Nutr. Health Aging 21, 1259–1267. https://doi.org/10.1007/s12603-017-0906-3 (2017).
+	41.	 Kang, S. H. et al. Independent effect of body mass index variation on amyloid-β positivity. Front. Aging Neurosci. 14, 924550.
+https://doi.org/10.3389/fnagi.2022.924550 (2022).
+	42.	 Jang, H. et al. Association of glycemic variability with imaging markers of vascular burden, β-amyloid, brain atrophy, and cognitive
+impairment. Neurology 102, e207806. https://doi.org/10.1212/wnl.0000000000207806 (2024).
+	43.	 Ekblad, L. L. et al. Midlife insulin resistance, APOE genotype, and late-life brain amyloid accumulation. Neurology 90, e1150–
+e1157. https://doi.org/10.1212/wnl.0000000000005214 (2018).
+	44.	 Wolters, F. J. et al. Coronary heart disease, heart failure, and the risk of dementia: A systematic review and meta-analysis. Alzheimers
+Dement. 14, 1493–1504 (2018).
+	45.	 Beeri, M. S. et al. Coronary artery disease is associated with Alzheimer disease neuropathology in APOE4 carriers. Neurology 66,
+1399–1404 (2006).
+	46.	 Waziry, R., Chibnik, L. B., Bos, D., Ikram, M. K. & Hofman, A. Risk of hemorrhagic and ischemic stroke in patients with Alzheimer
+disease: A synthesis of the literature. Neurology 94, 265–272 (2020).
+	47.	 Walker, K. A., Power, M. C. & Gottesman, R. F. Defining the relationship between hypertension, cognitive decline, and dementia:
+A review. Curr. Hypertens. Rep. 19, 1–16 (2017).
+	48.	 Hoffman, L. et al. Less Alzheimer disease neuropathology in medicated hypertensive than nonhypertensive persons. Neurology 72,
+1720–1726 (2009).
+	49.	 Corraini, P. et al. Long-term risk of dementia among survivors of ischemic or hemorrhagic stroke. Stroke 48, 180–186 (2017).
+	50.	 Koton, S. et al. Association of ischemic stroke incidence, severity, and recurrence with dementia in the atherosclerosis risk in
+communities cohort study. JAMA Neurol. 79, 271–280 (2022).
+	51.	 Honig, L. S. et al. Stroke and the risk of Alzheimer disease. Arch. Neurol. 60, 1707–1712 (2003).
+	52.	 Waziry, R., Claus, J. J. & Hofman, A. Dementia risk following ischemic stroke: a systematic review and meta-analysis of factors
+collected at time of stroke diagnosis. J. Alzheimers Dis. 90, 1535–1546 (2022).
+	53.	 Williams, D. M., Finan, C., Schmidt, A. F., Burgess, S. & Hingorani, A. D. Lipid lowering and Alzheimer disease risk: A Mendelian
+randomization study. Ann. Neurol. 87, 30–39 (2020).
+	54.	 Cheng, Y.-W. et al. The contribution of vascular risk factors in neurodegenerative disorders: From mild cognitive impairment to
+Alzheimer’s disease. Alzheimer’s Res. Ther. 12, 1–10 (2020).
+	55.	 Larsson, S. C. & Markus, H. S. Does treating vascular risk factors prevent dementia and Alzheimer’s disease? A systematic review
+and meta-analysis. J. Alzheimers Dis. 64, 657–668 (2018).
+	56.	 Santos-Lozano, A. et al. in Mayo Clinic Proceedings. 999–1020 (Elsevier).
+	57.	 Scarmeas, N. et al. Physical activity, diet, and risk of Alzheimer disease. JAMA 302, 627–637 (2009).
+	58.	 Beckett, M. W., Ardern, C. I. & Rotondi, M. A. A meta-analysis of prospective studies on the role of physical activity and the
+prevention of Alzheimer’s disease in older adults. BMC Geriatr. 15, 1–7 (2015).
+	59.	 Ownby, R. L., Crocco, E., Acevedo, A., John, V. & Loewenstein, D. Depression and risk for Alzheimer disease: Systematic review,
+meta-analysis, and metaregression analysis. Arch. Gen. Psychiatry 63, 530–538 (2006).
+	60.	 Green, R. C. et al. Depression as a risk factor for Alzheimer disease: The MIRAGE study. Arch. Neurol. 60, 753–759 (2003).
+	61.	 Jeon, K. H. et al. Changes in alcohol consumption and risk of dementia in a nationwide cohort in South Korea. JAMA Netw. Open
+6, e2254771–e2254771 (2023).
+	62.	 Xu, G. et al. Alcohol consumption and transition of mild cognitive impairment to dementia. Psychiatry Clin. Neurosci. 63, 43–49
+(2009).
+	63.	 Zhao, Y.-L. et al. Environmental factors and risks of cognitive impairment and dementia: A systematic review and meta-analysis.
+Ageing Res. Rev. 72, 101504 (2021).
+	64.	 Rahman, M., White, E. M., Mills, C., Thomas, K. S. & Jutkowitz, E. Rural-urban differences in diagnostic incidence and prevalence
+of Alzheimer’s disease and related dementias. Alzheimers Dement. 17, 1213–1230 (2021).
+	65.	 Liu, C.-C. et al. Rural-urban disparities in the prevalence of mild cognitive impairment and dementia in Taiwan: A door-to-door
+nationwide study. J. Epidemiol. 32, 502–509 (2022).
+	66.	 Rusmaully, J. et al. Contribution of cognitive performance and cognitive decline to associations between socioeconomic factors
+and dementia: A cohort study. PLoS Med. 14, e1002334 (2017).
+	67.	 Wang, A.-Y. et al. Socioeconomic status and risks of cognitive impairment and dementia: a systematic review and meta-analysis of
+39 prospective studies. J. Prev. Alzheimer’s Dis. 10, 83–94 (2023).
+	68.	 Petersen, J. D. et al. Association of socioeconomic status with dementia diagnosis among older adults in Denmark. JAMA Netw.
+Open 4, e2110432–e2110432 (2021).
+Author contributions
+KB, MK, and SHK conceptualized the project and drafted the manuscript. MK and SHK developed the method­
+ology. KB and MK analyzed the data. YJP, SJC, and KO reviewed and edited the manuscript. KO, SBK, and SHK
+supervised the project. All authors discussed the results, contributed to the final version, and read and approved
+the final manuscript.
+Funding
+This research was supported by the Korea University Guro Hospital (KOREA RESEARCH-DRIVEN HOS­
+PITAL) and grant funded by Korea University Medicine (K2512601), the National Research Foundation
+of Korea(NRF) grant funded by the Korea government(MSIT) (RS-2025-16066879), and Basic Science Re­
+search Program through the National Research Foundation of Korea(NRF) funded by the Ministry of Educa­
+tion(RS-2023-00245506).
+Declarations
+Competing interests
+The authors declare no competing interests.
+Scientific Reports |        (2025) 15:35418
+9
+| https://doi.org/10.1038/s41598-025-16620-2
+www.nature.com/scientificreports/
+
+Ethical approval
+The study was reviewed and approved by the Institutional Review Board of Korea University Guro Hospital,
+and the need for informed consent was waived due to the retrospective design of the study. All procedures
+performed in human studies were in accordance with the ethical standards of the institutional and/or national
+research committee and with the 1964 Helsinki Declaration and its later amendments or comparable ethical
+standards.
+Additional information
+Correspondence and requests for materials should be addressed to K.O. or S.H.K.
+Reprints and permissions information is available at www.nature.com/reprints.
+Publisher’s note  Springer Nature remains neutral with regard to jurisdictional claims in published maps and
+institutional affiliations.
+Open Access   This article is licensed under a Creative Commons Attribution-NonCommercial-NoDerivatives
+4.0 International License, which permits any non-commercial use, sharing, distribution and reproduction in
+any medium or format, as long as you give appropriate credit to the original author(s) and the source, provide
+a link to the Creative Commons licence, and indicate if you modified the licensed material. You do not have
+permission under this licence to share adapted material derived from this article or parts of it. The images or
+other third party material in this article are included in the article’s Creative Commons licence, unless indicated
+otherwise in a credit line to the material. If material is not included in the article’s Creative Commons licence
+and your intended use is not permitted by statutory regulation or exceeds the permitted use, you will need to
+obtain permission directly from the copyright holder. To view a copy of this licence, visit ​h​t​t​p​:​/​/​c​r​e​a​t​i​v​e​c​o​m​m​o​
+n​s​.​o​r​g​/​l​i​c​e​n​s​e​s​/​b​y​-​n​c​-​n​d​/​4​.​0​/​.​
+© The Author(s) 2025
+Scientific Reports |        (2025) 15:35418
+10
+| https://doi.org/10.1038/s41598-025-16620-2
+www.nature.com/scientificreports/

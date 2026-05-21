@@ -1,0 +1,25 @@
+{
+  "title": "Exploring Body Roundness Index’s Mediating Role in the Depression-Cognitive Performance Relationship Among US Adults (≥60 Years): Evidence From National Health and Nutrition Examination Survey",
+  "authors": [
+    "Hongwei Liu",
+    "Wenzhi Niu",
+    "Peng Wei",
+    "Minheng Zhang",
+    "Zhinan Ye",
+    "Caidi He"
+  ],
+  "year": 2026,
+  "abstract": "Objective Late-life depression is a known risk factor for cognitive decline, yet the role of central adiposity, measured by the body roundness index (BRI), remains unclear. This study examined whether BRI mediates the relationship between depressive symptoms and cognitive performance in older adults.Methods Our analysis included 2,580 adults aged 60 and over, using data from NHANES. Depressive symptoms were assessed via the Patient Health Questionnaire-9 (PHQ-9), cognitive function was evaluated using the Consortium to Establish a Registry for Alzheimer’s Disease (CERAD) Word Learning and Delayed Recall (CERAD-WL/DR), Animal Fluency test (AFT), and Digit Symbol Substitution Test (DSST), and BRI was calculated from waist circumference and height. Analyses included weighted multivariable logistic regression, restricted cubic spline analyses, subgroup and sensitivity analyses, and mediation analyses.Results Across all assessment modalities, there was a significant link between high PHQ-9 scores and cognitive performance. For continuous PHQ-9 scores, each 1-point increase corresponded to: CERAD (odds ratio [OR]=1.034, 95% confidence interval [CI]: 1.000–1.070, p=0.049), AFT (OR=1.046, 95% CI: 1.014–1.079, p=0.007), and DSST (OR=1.080, 95% CI: 1.040–1.123, p&lt;0.001). Categorical analysis revealed particularly strong effects for moderate-to-severe depression (PHQ-9 ≥10) versus minimal symptoms (PHQ-9, 0–4): DSST (OR=2.562, 95% CI: 1.432–4.584, p=0.004), AFT (OR=1.834, 95% CI: 1.239–2.714, p=0.005), with CERAD showing marginal significance (OR=1.454, 95% CI: 0.936–2.259, p=0.090). Sensitivity analyses confirmed the stability of these associations in multiply imputed datasets. BRI exhibited a statistical mediation effect, accounting for 7.23% (β=-0.021, p=0.006) of the depression-DSST association, though mediation effects were nonsignificant for CERAD (6.21%, p=0.184) or AFT (4.41%, p=0.448).Conclusion Depression severity was independently linked to lower cognitive performance, with BRI partially mediating this relationship.",
+  "doi": "10.30773/pi.2025.0375",
+  "arxiv_id": null,
+  "venue": "Psychiatry Investigation",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://www.psychiatryinvestigation.org/upload/pdf/pi-2025-0375.pdf",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W7160866446"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.30773/pi.2025.0375"
+}

@@ -1,0 +1,24 @@
+{
+  "title": "Comparative Effectiveness of GLP-1 Receptor Agonists Versus Metformin in Reducing Dementia Risk Among Adults ≥ 65 Years with Type 2 Diabetes Mellitus and Delirium: A 20-Year Real-World Data Analysis (2005–2025)",
+  "authors": [
+    "Francisco Mercado",
+    "Sumi Akter",
+    "Aoi Ogawa",
+    "Subrahmanyan Valadi Ramakrishnan",
+    "Reannon Suzuki"
+  ],
+  "year": 2026,
+  "abstract": "Introduction: Delirium in older adults is strongly associated with and can predate dementia. While GLP-1 receptor agonists (GLP-1 RAs) may provide neuroprotective benefits, their role in reducing dementia risk among older patients with type 2 diabetes mellitus (T2DM) and prior delirium is unclear. This study compares the effectiveness of GLP-1 RAs and metformin in preventing dementia among patients with a history of delirium using an extensive healthcare database. Methods: A retrospective cohort study was conducted from 2005 to 2025 using data from the TriNetX Global Federated Research Network. We identified adults aged 65 and older with T2DM and delirium, who received either GLP-1 RAs (exposure) or metformin (control). Propensity score matching (PSM) was performed. We determined dementia outcomes and all-cause mortality using Kaplan–Meier survival curves, Cox proportional hazards models, and estimated odds ratio (OR). Subgroup analyses were conducted by age, sex, race, body mass index (BMI), and dementia types. Results: In a study involving 23,980 patients treated with GLP-1RAs and 23,980 matched patients treated with metformin, the mean age was 74 years, with 53% being female. The use of GLP-1RAs therapy was associated with a significantly lower risk of dementia compared to metformin among adults aged 65 years and older with T2DM with delirium with the adjusted hazard ratio (AHR) for dementia was 0.778 [95% confidence interval (CI): 0.736–0.822 p &lt; 0.0001], and OR was 0.617 (95% CI: 0.582–0.655 p &lt; 0.0001). The reduction in dementia risk varied by age, race, BMI, and dementia type. We observed a time-dependent decrease in mortality risk with GLP-1 RA users. Conclusions: In older adults with T2DM and delirium, GLP-1 RA therapy was associated with a reduced risk of dementia compared with metformin. Variations in subgroups suggest individualized treatment. Prospective randomized controlled trials are needed to confirm these findings and clarify differential effects across various subgroups.",
+  "doi": "10.3390/jdad3020024",
+  "arxiv_id": null,
+  "venue": "Journal of dementia and Alzheimer's disease",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://www.mdpi.com/3042-4518/3/2/24/pdf?version=1778327800",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W7160857915"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.3390/jdad3020024"
+}

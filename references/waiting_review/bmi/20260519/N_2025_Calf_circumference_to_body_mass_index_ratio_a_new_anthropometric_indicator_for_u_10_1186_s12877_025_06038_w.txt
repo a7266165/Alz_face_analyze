@@ -1,0 +1,841 @@
+RESEARCH
+Open Access
+© The Author(s) 2025. Open Access  This article is licensed under a Creative Commons Attribution-NonCommercial-NoDerivatives 4.0
+International License, which permits any non-commercial use, sharing, distribution and reproduction in any medium or format, as long as you
+give appropriate credit to the original author(s) and the source, provide a link to the Creative Commons licence, and indicate if you modified the
+licensed material. You do not have permission under this licence to share adapted material derived from this article or parts of it. The images or
+other third party material in this article are included in the article’s Creative Commons licence, unless indicated otherwise in a credit line to the
+material. If material is not included in the article’s Creative Commons licence and your intended use is not permitted by statutory regulation or
+exceeds the permitted use, you will need to obtain permission directly from the copyright holder. To view a copy of this licence, visit ​h​t​t​p​:​/​/​c​r​e​a​t​i​
+v​e​c​o​m​m​o​n​s​.​o​r​g​/​l​i​c​e​n​s​e​s​/​b​y​-​n​c​-​n​d​/​4​.​0​/.
+Karakurt et al. BMC Geriatrics          (2025) 25:534
+https://doi.org/10.1186/s12877-025-06038-w
+BMC Geriatrics
+*Correspondence:
+Nermin Karakurt
+nerminkarakurt@gazi.edu.tr
+Full list of author information is available at the end of the article
+Abstract
+Objectives  Traditional anthropometric measurements, such as calf and arm circumference, may not accurately
+reflect muscle mass in obese individuals. These limitations highlight the need for more sensitive and practical
+measures for the early detection of sarcopenic obesity. This study aimed to evaluate the predictive value of the calf
+circumference to body mass index ratio (CC/BMI) as an anthropometric indicator for ultrasound based sarcopenic
+obesity, and to compare its effectiveness with calf circumference adjusted for BMI (subtracting 3, 7, or 12 cm from calf
+circumference measurements corresponding to BMI categories of 25–29.9, 30–39.9, and ≥ 40 kg/m², respectively).
+Methods  A retrospective analysis was conducted on 573 patients aged 65 years and older from a geriatrics
+outpatient clinic. Exclusion criteria included having advanced dementia, knee or hip replacement, neurodegenerative
+diseases, decompensated heart failure or the use of muscle-impacting medications. Participants underwent geriatric
+assessments which included ultrasound measurements of anterior thigh muscle thickness and anthropometric
+evaluations. Sarcopenia was defined using the STAR index (anterior thigh muscle thickness/BMI ratio) and low
+handgrip strength. Patients who had both sarcopenia and a BMI ≥ 30 kg/m2 were categorized as having sarcopenic
+obesity. CC/BMI, and calf circumference adjusted for BMI were calculated, and their predictive power for sarcopenic
+obesity was assessed.
+Results  Of the participants, 37.3% (n = 214) were sarcopenic, and 17.3% (n = 99) had sarcopenic obesity. Significant
+positive correlations were observed between the CC/BMI and age, as well as with handgrip strength, STAR index, and
+walking speed. The CC/BMI demonstrated a significantly higher predictive capability for sarcopenic obesity (AUC:
+0.850, cutoff ≤ 1.20, sensitivity: 81.63%, specificity: 75.91%) compared to calf circumference adjusted for BMI (AUC:
+0.672, cutoff ≤ 31 cm, sensitivity: 60.20%, specificity: 67.24%).
+Conclusion  The CC/BMI shows higher sensitivity and predictive value for diagnosing sarcopenic obesity compared
+to calf circumference adjusted for BMI. It could serve as a practical screening tool for sarcopenic obesity in older
+adults.
+Clinical trial number  Not applicable.
+Calf circumference to body mass index
+ratio: a new anthropometric indicator
+for ultrasound based sarcopenic obesity
+Nermin Karakurt1*, Ayşe Fadıloğlu1, Fatih Güngör1, Eda Çeker1, Esra Çataltepe1, Zekeriya Ulger1 and
+Hacer Dogan Varan1
+
+Page 2 of 11
+Karakurt et al. BMC Geriatrics          (2025) 25:534
+Introduction
+Sarcopenic obesity is a clinical condition characterized
+by the coexistence of sarcopenia and obesity marked by
+an excess fat mass [1]. This condition presents a signifi­
+cant clinical challenge, particularly among older adults
+who face an elevated risk of comorbidities, disability,
+and mortality [2–4]. Early detection of sarcopenic obe­
+sity is essential for implementing timely preventive
+interventions.
+The diagnosis of sarcopenic obesity involves the simul­
+taneous identification of both sarcopenia and obesity.
+Sarcopenia refers to the loss of muscle mass and strength,
+while obesity is characterized by excessive fat accumula­
+tion. To diagnose sarcopenic obesity, a combination of
+clinical evaluation, anthropometric measurements, and
+assessments of muscle strength and muscle mass are uti­
+lized. Common tools for measuring body composition
+and muscle mass include dual-energy X-ray absorptiom­
+etry (DEXA) and bioelectrical impedance analysis (BIA).
+However, alternative methods, such as ultrasound, have
+also gained recognition due to their portability, ease of
+use, and ability to assess muscle quality. The anterior
+thigh, a region particularly vulnerable to sarcopenia, is
+often targeted in ultrasound measurements as its muscles
+are among the first to be affected by sarcopenia [5]. By
+utilizing ultrasound to assess anterior thigh muscle thick­
+ness, clinicians can potentially identify sarcopenia at ear­
+lier stages, enabling timely intervention and improving
+patient outcomes.
+Recently, the anterior thigh muscle thickness which is
+calculated as the sum of the rectus femoris and vastus
+intermedius muscle thickness, has been integrated into
+the STAR Index. This index, derived by dividing the ante­
+rior thigh muscle thickness by body mass index (BMI),
+defines low muscle mass based on cut-off values of < 1.0
+for women and < 1.4 for men, as proposed by Kara et al.
+[6].
+Sarcopenic obesity is an important clinical entity, yet
+its diagnostic process can be challenging. There is a need
+for practical, easily measurable clinical tools to predict
+sarcopenic obesity. In predicting sarcopenia, traditional
+anthropometric measurements, such as calf circumfer­
+ence (CC), have been widely used, as it is one of the key
+indicators of muscle mass. However, CC may not accu­
+rately reflect muscle mass in the context of sarcopenic
+obesity, where muscle loss is accompanied by excessive
+fat accumulation. While these anthropometric indicators
+are useful in low muscle prediction, their ability to accu­
+rately represent muscle mass in sarcopenic obesity is sig­
+nificantly reduced.
+Previous research has defined calf circumference values
+in a diverse population sample along with a BMI-adjust­
+ment approach that helps to remove the confounding
+effects of adiposity and thereby improves CC as a useful
+clinical estimate of skeletal muscle mass. This calf cir­
+cumference adjusted for BMI method involved subtract­
+ing 3, 7, or 12 cm from calf circumference measurements,
+corresponding to BMI categories of 25–29.9, 30–39.9,
+and ≥ 40  kg/m², respectively [7]. While this study has
+offered valuable insights into the relationship between
+calf circumference and BMI in predicting sarcopenia, its
+generalizability to diverse populations remains uncertain,
+and there are currently no established cut-off values for
+sarcopenic obesity.
+Furthermore, we hypothesize that adjusting calf cir­
+cumference for BMI, yielding the the calf circumference
+to body mass index ratio (CC/BMI), may effectively miti­
+gate the confounding effects of excess adiposity, which
+can distort muscle mass estimates in obese individuals.
+However, its validity and predictive accuracy in detecting
+sarcopenic obesity in older adults require further inves­
+tigation. Given the rising prevalence of both obesity and
+sarcopenia in aging populations, there is an urgent need
+for reliable and effective tools to predict sarcopenic obe­
+sity. Adjusting calf circumference for BMI offers a prom­
+ising approach to address this critical clinical challenge.
+Given these gaps, there is a pressing need for practi­
+cal screening methods that can be applied to large older
+populations. This study aims to evaluate the predictive
+utility of the CC/BMI as a screening tool for ultrasound
+based sarcopenic obesity in older adults. Additionally, it
+seeks to compare the predictive efficacy of CC/BMI with
+that of calf circumference adjusted for BMI in identifying
+individuals with sarcopenic obesity.
+Methods
+A total of 919 patients aged 65 years and older, who
+attended the geriatrics outpatient clinic between Feb­
+ruary 2022 and February 2024 and provided informed
+consent, were evaluated in this study. Exclusion criteria
+included knee or hip replacement, advanced demen­
+tia, cerebrovascular disease, neurodegenerative disease,
+decompensated heart failure, and use of medications that
+affect muscle function, such as steroids. Based on these
+criteria, 84 patients were excluded due to knee or hip
+replacement, 61 patients due to advanced dementia, and
+199 patients due to cerebrovascular disease, neurodegen­
+erative disease, decompensated heart failure, and use of
+muscle-affecting drugs such as steroids. Consequently,
+573 patients were included in the final analysis.
+Keywords  Sarcopenia, Sarcopenic obesity, Calf circumference, Anthropometric
+
+Page 3 of 11
+Karakurt et al. BMC Geriatrics          (2025) 25:534
+All participants underwent a comprehensive geriat­
+ric assessment which included the application of sev­
+eral assessment tools: the Katz Activities of Daily Living
+(ADL) [8], the Lawton Brody Instrumental Activity of
+Daily Living (IADL) [9], the Yesavage Geriatric Depres­
+sion Scale short form (GDS) [10, 11], the Mini Nutri­
+tional Assessment Short Form (MNA-SF) [12, 13] and
+the Clinical Frailty Scale (CFS) [14]. The ADL scale
+ranges from 0 to 6 points, and the IADL scale from 0 to
+8 points, with higher scores indicating greater indepen­
+dence. The GDS ranges from 0 to 15 points with scores of
+≥ 5 suggesting the presence of depressive symptoms. The
+MNA-SF ranges from 0 to 14 points with scores below 12
+indicating a risk of malnutrition. The CFS ranges from 1
+to 9 points, with 1 indicating robustness and 9 denoting
+terminal frailty.
+The presence of comorbidities was confirmed through
+review of hospital medical records and current phar­
+macological treatments. Hypertension was defined as
+a previously established diagnosis or current use of
+antihypertensive medications. Diabetes mellitus was
+identified based on a known diagnosis, fasting plasma
+glucose ≥ 126 mg/dL, HbA1c ≥ 6.5%, or the use of antidia­
+betic medications. Coronary artery disease was defined
+by a history of myocardial infarction, prior coronary
+revascularization, or a diagnosis confirmed by a cardiolo­
+gist. Chronic obstructive pulmonary disease was identi­
+fied based on clinical history of respiratory disease and/
+or prior pulmonary function tests demonstrating an
+obstructive pattern (FEV1/FVC < 0.7), along with the use
+of inhaled bronchodilators.
+Anthropometric measurements and ultrasound evalu­
+ations of anterior thigh muscle thickness were per­
+formed on all participants. A portable height meter
+was employed for the purpose of measuring height. The
+patient was asked to remove any accessories, such as
+hats and shoes, and to stand upright during the measure­
+ment. The measurement was taken from the vertex. For
+the purpose of measuring weight, the Tanita device was
+adjusted to subtract 1 kg for clothing weight. The patient
+was asked to remove their shoes before the measurement
+was taken. The same Tanita device was used for all par­
+ticipants who were weighed in a fasting state. Waist cir­
+cumference was measured at the level of the umbilicus
+while the patient was standing and without clothing. Hip
+circumference was measured with a non-elastic tape at
+the widest part of the buttocks, also in a standing posi­
+tion. Arm circumference was measured at the midpoint
+between the acromion and olecranon processes, with the
+arm relaxed and hanging freely at the side.
+Muscle strength was assessed using a handgrip dyna­
+mometer (Takei), with three measurements taken from
+the dominant hand, and the highest value recorded. Par­
+ticipants were classified as having low muscle strength if
+their measurements fell below the threshold (< 32 kg for
+men and < 22 kg for women) defined for the Turkish pop­
+ulation [15].
+The diagnosis of sarcopenia was determined by a low
+handgrip strength in addition to a low STAR (Sono­
+graphic Thigh Adjustment Ratio) index. The term sar­
+copenic obesity was defined as patients presenting with
+a BMI above 30 kg/m² and concomitant sarcopenia. The
+STAR index is calculated by dividing the anterior thigh
+muscle thickness (measured using ultrasonography by a
+geriatrician certified in musculoskeletal ultrasonogra­
+phy) by BMI, with cutoff values of < 1.4 for men and < 1.0
+for women [6]. For the measurement of the thickness of
+the anterior thigh muscle, the participant lay supine in
+a relaxed position with the hip in neutral and the knee
+in extension. The measurements were taken from the
+right leg. The midpoint of the distance measured from
+the antero-superior iliac spine to the superior pole of the
+patella was marked. The measurement was taken from
+this marked area. The probe was placed on the skin with
+minimal pressure applied to ensure a clear image of the
+rectus femoris, vastus intermedius, and the femur. The
+anterior thigh muscle thickness was measured as the
+total thickness of the rectus femoris and vastus interme­
+dius muscles in millimeters (mm) (Fig. 1). Physical per­
+formance was assessed by measuring walking speed over
+a six meter distance. Walking speeds < 0.8 m/second were
+classified as slow [16].
+All
+anthropometric
+and
+ultrasound-based
+mea­
+surements were independently performed by four
+geriatricians with prior training and experience in
+musculoskeletal ultrasound. These clinicians regularly
+conduct comprehensive geriatric assessments, includ­
+ing body composition evaluations, in daily practice. To
+assess the consistency among raters, we calculated interrater reliability using intraclass correlation coefficients
+(ICCs) based on a random subsample of 30 participants.
+The ICC values for key measurements — including calf
+circumference and anterior thigh muscle thickness —
+ranged from 0.93 to 0.97, indicating excellent agreement
+among raters.
+CC/BMI, calculated as calf circumference in centi­
+meters divided by BMI (kg/m²). “Calf circumference
+adjusted for BMI was calculated by subtracting 3, 7, or
+12 cm for BMI categories of 25–29.9, 30–39.9, and ≥ 40
+kg/m², respectively [7]. The predictive capacity of the
+CC/BMI for sarcopenic obesity was analyzed and com­
+pared with that of calf circumference adjusted for BMI.
+Statistical analysis
+The research data was analyzed using the SPSS 22.0 sta­
+tistical software package. Categorical variables were pre­
+sented as numbers and percentages, while continuous
+variables were displayed as means ± standard deviations
+
+Page 4 of 11
+Karakurt et al. BMC Geriatrics          (2025) 25:534
+for normally distributed data and as medians (min, max)
+for non-normally distributed data. Chi-square tests were
+used to compare the frequency of categorical variables
+between groups.
+The normality of continuous variables was assessed
+using visual and analytical methods. Visual assessments
+included histograms and probability plots, while analyti­
+cal methods comprised the Kolmogorov-Smirnov and
+Shapiro-Wilk tests. For normally distributed continu­
+ous variables, independent-samples T-test were used to
+compare groups, while the Mann-Whitney U test was
+used for non-normally distributed variables. The pre­
+dictive ability of the CC/BMI and calf circumference
+adjusted for BMI for sarcopenic obesity was evaluated
+using Receiver Operating Characteristic (ROC) curve
+analysis, with MedCalc Statistical Software v15.2 (Med­
+Calc Software, Ostend, Belgium). The optimal thresholds
+were selected based on the Youden Index to maximize
+both sensitivity and specificity for identifying sarcopenic
+Fig. 1  Ultrasonographic Measurement of Anterior Thigh Muscle Thickness
+
+
+Page 5 of 11
+Karakurt et al. BMC Geriatrics          (2025) 25:534
+obesity. In this study, the statistical significance level was
+accepted as p < 0.05.
+Results
+The mean age of the patients was 74.08 ± 5.94 years. Out
+of the total, 62.3% (n = 357) were female. 39.6% of the
+patients were high school and university graduates. Sar­
+copenia was identified in 37.4% (n = 214) of the patients,
+and 17.3% (n = 99) met the criteria for sarcopenic obe­
+sity. Individuals with sarcopenic obesity had significantly
+higher waist, hip, weight, arm, and calf circumferences
+compared to those without (p < 0.001). They also exhib­
+ited lower levels of calf circumference adjusted for
+BMI, CC/BMI, height, handgrip strength, STAR index
+(p < 0.001), and walking speed (p: 0.002). Hypertension
+and coronary artery disease were significantly more prev­
+alent in those with sarcopenic obesity (p < 0.001, p: 0.003
+respectively) (Table 1).
+Significant positive correlations were observed between
+the CC/BMI and age, as well as with handgrip strength
+and walking speed (Table 2).
+The CC/BMI demonstrated predictive capability in
+identifying sarcopenic obesity with an AUC of 0.850,
+a cutoff value of ≤ 1.20, a positive predictive value of
+41.70%, a negative predictive value of 95.1%, a sensitivity
+of 81.63%, and a specificity of 75.91% (p: <0.0001). How­
+ever, calf circumference adjusted for BMI had an AUC of
+0.672, a cutoff value of ≤ 31 cm, a positive predictive value
+of 28%, a negative predictive value of 88.9%, a sensitivity
+of 60.2%, and a specificity of 67.24% for predicting sar­
+copenic obesity (p: <0.0001) (Table 3). When comparing
+the areas under the curves, the CC/BMI showed signifi­
+cantly higher sensitivity than calf circumference adjusted
+for BMI in diagnosing sarcopenic obesity (p: <0.0001)
+(Figs. 2, 3 and 4).
+Table 1  General characteristics of the participants according to sarcopenic obesity
+Total
+(n:573)
+With
+Sarcopenic obesity
+(n:99)
+Without
+Sarcopenic obesity
+(n:474)
+p
+Sex, n (%)
+Female
+Male
+357 (62.3)
+216 (37.7)
+80 (22.40)
+19 (8.80)
+277 (77.60)
+197 (91.20)
+< 0.001
+Age, mean (SD)
+74.08 (5,94)
+73.58 (6.12)
+74.18 (5.91)
+0.475
+Height, cm, mean (SD)
+157.39 (9.25)
+152.02 (6.90)
+158.49 (9.29)
+< 0.001
+Weight, kg, mean (SD)
+70.83 (13.35)
+78.67 (10.62)
+69.22 (13.29)
+< 0.001
+BMI, kg/m2,
+median (min-max)
+28 (13.90–46.30)
+33.45 (30-44.30)
+27.10 (13.90–46.30)
+< 0.001
+Waist circumference, cm, mean (SD)
+99.01 (12.46)
+107.96 (10.17)
+97.17 (12.09)
+< 0.001
+Hip circumference,
+cm, mean (SD)
+106.96 (10.18)
+115.50 (9.87)
+105.21 (9.33)
+< 0.001
+Arm circumference,
+cm, mean (SD)
+28.96 (3.72)
+31.80 (3.46)
+28.37 (3.50)
+< 0.001
+Calf circumference,
+cm, mean (SD)
+36.07 (3.88)
+38.16 (2.98)
+35.64 (3.91)
+< 0.001
+Calf circumference adjusted for BMI, cm, mean (SD)
+32.48 (3.29)
+30.93 (2.82)
+32.80 (3.30)
+< 0.001
+CC/BMI, median (min-max)
+1.27 (0.73–2.27)
+1.12 (0.84–1.37)
+1.31 (0.73–2.27)
+< 0.001
+Handgrip strength, kg,
+median (min-max)
+20.35 (7.10–48)
+17.30 (8.10–31)
+21.50 (7.10–48)
+< 0.001
+Anterior Thigh Muscle Thickness, mm, mean (SD)
+32.87 (7.22)
+30.31 (5.51)
+33.40 (7.42)
+< 0.001
+Usg star index, mean (SD)
+1.16 (0.26)
+0.88 (0.15)
+1.21 (0,25)
+< 0.001
+Gait Speed, m/s, mean (SD)
+1.02 (0,29)
+0.94 (0.31)
+1.03 (0.29)
+0.002
+ADL, median (min-max)
+6 (4–6)
+6 (4–6)
+6 (4–6)
+0.471
+IADL, median (min-max)
+8 (1–8)
+8 (2–8)
+8 (1–8)
+0.066
+MNA, median (min-max)
+13 (3–14)
+13 (7–14)
+13 (3–14)
+0.925
+GDS, median (min-max)
+1 (0–14)
+1 (0–10)
+1 (0–14)
+0.856
+Number of drugs, median (min-max)
+3 (0–11)
+3.5 (0–10)
+3 (0–11)
+0.017
+Diabetes Mellitus, n (%)
+186 (32.5)
+41 (22)
+145 (78)
+0.036
+Hypertension, n (%)
+400 (69.8)
+85 (21.30)
+315 (78.80)
+< 0.001
+COPD, n (%)
+20 (3.7)
+2 (10)
+18 (90)
+0.551
+CAD, n (%)
+121 (21.1)
+32 (26.40)
+89 (73.60)
+0.003
+BMI: Body Mass Index, CC: Calf Circumference ADL: Activities of Daily Living, IADL: Instrumental Activities of Daily Living, MNA: The Mini Nutritional Assessment, GDS:
+Geriatric Depression Scale, COPD: Chronic Obstructive Pulmonary Disease, CAD: Coronary Artery Disease
+
+Page 6 of 11
+Karakurt et al. BMC Geriatrics          (2025) 25:534
+An additional analysis was performed using the hand­
+grip strength cut-off values recommended by the Euro­
+pean Working Group on Sarcopenia in Older People
+(EWGSOP2). In this analysis, the CC/BMI ratio retained
+its strong predictive performance for identifying sarco­
+penic obesity. At a cut-off value of ≤ 1.21, the CC/BMI
+yielded an area under the curve (AUC) of 0.824, with a
+high sensitivity of 86.27% and a negative predictive value
+of 98%, indicating excellent ability to rule out sarcope­
+nic obesity. The specificity was 67.25%, and the positive
+predictive value was 20.8% (p < 0.0001). These findings
+confirm the clinical utility of the CC/BMI ratio as a reli­
+able and sensitive screening tool for sarcopenic obesity,
+even when international criteria for muscle strength are
+applied.
+Discussion
+The findings of this study demonstrate that the CC/
+BMI exhibits superior sensitivity and positive predictive
+value compared to calf circumference adjusted for BMI,
+confirming its efficacy in identifying sarcopenic obesity.
+Specifically, the study yielded an AUC of 0.850, with a
+sensitivity of 81.63% and a negative predictive value of
+95.1% for a CC/BMI ≤ 1.20. Early detection of sarcopenic
+obesity is essential, as it enables timely interventions to
+reduce the associated risks of disability and mortality.
+Furthermore, the significant correlations between the
+CC/BMI and key clinical parameters such as handgrip
+strength and gait speed underscore its broader clinical
+relevance. These findings suggest that the CC/BMI is
+not only a robust marker of sarcopenic obesity but also
+a valuable indicator of musculoskeletal health and func­
+tional capacity, both of which are crucial determinants of
+quality of life in older adults.
+By contrast, the method of adjusting calf circumfer­
+ence for BMI demonstrated weaker predictive perfor­
+mance, with an AUC of 0.672 and a sensitivity of 60.2%.
+This suggests that BMI-based adjustments may inad­
+equately account for variations in muscle mass, adiposity,
+and body composition, particularly in the elderly. The
+superior discriminative ability of the CC/BMI is likely
+attributable to its incorporation of both fat and muscle
+parameters.
+Recent studies have shown that sarcopenic obesity is
+associated with hyperglycaemia, hypertension, dyslipid­
+emia, insulin resistance and an elevated cardiovascular
+risk profile [3, 17]. In our study, the prevalence of hyper­
+tension and cardiovascular disease was notably higher in
+the sarcopenic obese group, consisting with the existing
+literature [2].
+There are several recommended screening methods for
+sarcopenic obesity. According to the Consensus State­
+ment by the European Society for Clinical Nutrition
+and Metabolism (ESPEN) and the European Associa­
+tion for the Study of Obesity (EASO), screening should
+include surrogate parameters for sarcopenia (such as
+clinical symptoms, clinical suspicion, or questionnaires
+like SARC-F in older adults), alongside increased BMI
+or waist circumference. These measurements should
+be determined using ethnicity-specific thresholds, and
+patients meeting both criteria should proceed to the
+diagnostic stage [1].
+Despite the availability of multiple screening meth­
+ods for sarcopenic obesity, each has notable limitations.
+Varying cut-off points for BMI and waist circumference
+have been proposed, with differences influenced by eth­
+nicity, the presence of comorbid conditions such as
+hypertension and dyslipidemia, and mortality risk assess­
+ments. Establishing standardized reference ranges for
+different racial or ethnic groups remains a challenge. For
+instance, the World Health Organization (WHO) defines
+obesity as a BMI ≥ 30  kg/m² due to its association with
+increased mortality risk [18]. However, BMI alone may
+not accurately reflect obesity prevalence, as studies have
+shown it often underestimates body fat when compared
+to direct measurement methods, such as dual-energy
+X-ray absorptiometry (DEXA). Furthermore, its diagnos­
+tic accuracy decreases with advancing age in both men
+Table 2  Correlations of calf circumference BMI ratio and calf circumference adjusted for BMI
+Calf/bmi
+CC adjusted for BMI
+Rho
+p
+Rho
+p
+Age
+0.077
+0.067
+-0.118
+0.005
+Handgrip strength
+0.241
+< 0.001
+0.359
+< 0.001
+Anterior Thigh Muscle Thickness
+-0.137
+0.001
+0.160
+< 0.001
+Gait speed test
+0.117
+0.005
+0.206
+< 0.001
+Rho: Pearson’s Correlations Coefficient
+Table 3  Comparison of ROC curves
+Cut-off
+AUC
+SE
+p
+95% CI
+Sensitivity
+Specificity
++PV
+-PV
+CC/BMI
+≤ 1.20
+0.850
+0.0180
+< 0,0001
+0,818-0,879
+81.63
+75.91
+41.70
+95.1
+Calf circumference adjusted for BMI
+≤ 31
+0.672
+0.0294
+< 0,0001
+0,631-0,710
+60.2
+67.24
+28
+88.9
+ROC: Receiver Operating Characteristic, AUC: Area Under The Curve, SE: Standart Error, PV: Positive Predictive
+
+Page 7 of 11
+Karakurt et al. BMC Geriatrics          (2025) 25:534
+and women, evidenced by declining concordance indices
+[19, 20]. It is important to note that body composition
+can change significantly even when BMI remains within a
+certain range. For example, an individual may have a BMI
+and/or waist circumference within the normal range,
+but have increased adipose tissue and decreased muscle
+mass, resulting in sarcopenic obesity [20, 21].
+Screening for sarcopenic obesity requires clini­
+cal suspicion based on factors such as advanced age,
+chronic inflammatory or endocrine diseases, recent
+hospitalization, surgery, immobility, and rapid weight
+changes [1]. Clinical signs and symptoms can be mislead­
+ing in sarcopenia screening because they are often nonspecific. Although questionnaires like the SARC-F are
+commonly used to screening sarcopenia, their sensitivity
+is often inadequate, as demonstrated by a sensitivity of
+only 29.5% [22]. The modified SARC-Calf questionnaire
+improves sensitivity by incorporating calf circumfer­
+ence, yet its role in detecting sarcopenic obesity remains
+unclear [1, 23].
+Fig. 2  CC/BMI Roc Curve
+
+
+Page 8 of 11
+Karakurt et al. BMC Geriatrics          (2025) 25:534
+Calf circumference is another anthropometric mea­
+surement for sarcopenia screening, with populationspecific cut-offs has already been established also in our
+country. However, the cut-off value for predicting sarco­
+penia in obese individuals remains unknown. Recently,
+the utility of calf circumference in patients with obesity
+has garnered significant attention. A recent study pro­
+posed using adjusted calf circumference, which is cal­
+culated by adding 4  cm for individuals with a BMI of
+less than 18.5 or subtracting 3  cm, 7  cm, or 12  cm for
+those with a BMI of 25–29, 30–39, and 40 or above,
+respectively, from the initial calf circumference measure­
+ment [7]. This adjustment suggests that calf circumfer­
+ence, when modified for BMI, may correlate better with
+low muscle mass as determined by DEXA. However, the
+sensitivity of BMI-adjusted calf circumference in predict­
+ing sarcopenic obesity has not yet been tested.
+Recognizing the limitations of current screening meth­
+ods is crucial, as these approaches impact clinical deci­
+sion-making [23].
+The findings of our study suggest that the CC/BMI is
+an effective method for screening sarcopenic obesity,
+Fig. 3  Calf circumference adjusted for BMI Roc Curve
+
+
+Page 9 of 11
+Karakurt et al. BMC Geriatrics          (2025) 25:534
+demonstrating notable efficacy compared to calf circum­
+ference adjusted for BMI. This method can be imple­
+mented without the need for specialized equipment or
+extensive training, making it easily integrable into the
+standard geriatric assessment process. Utilizing the CC/
+BMI in clinical practice may facilitate early intervention
+and ultimately enhance the health and functional status
+of older adults at risk of sarcopenic obesity.
+There are several notable strengths of this study. To
+the best of our knowledge, this is the first study to intro­
+duce the CC/BMI as a practical and innovative anthropo­
+metric tool for detecting sarcopenic obesity and offers a
+simple, non-invasive, and cost-effective screening option.
+The use of ultrasound-derived anterior thigh muscle
+thickness and the STAR index add objective and reliable
+measures of muscle mass, enhancing the accuracy of sar­
+copenia diagnosis. The inclusion of multiple parameters,
+such as handgrip strength and walking speed, and the
+scales of daily living activities allows for a more holistic
+evaluation of sarcopenic obesity, further strengthening
+the study’s methodology and relevance to clinical prac­
+tice. Additionally, by comparing the CC/BMI to calf cir­
+cumference adjusted for BMI, the study provides valuable
+insight into the relative effectiveness of different methods
+Fig. 4  Comparison Roc Curve
+
+
+Page 10 of 11
+Karakurt et al. BMC Geriatrics          (2025) 25:534
+for detecting sarcopenic obesity, showing that CC/BMI
+has superior predictive capability.
+However, the study also has limitations. The study was
+conducted in a geriatrics outpatient clinic, which may
+limit the generalizability of the findings to other popu­
+lations or settings, such as community-dwelling older
+adults or those in institutionalized care. Exclusion of
+individuals with advanced dementia, neurodegenerative
+diseases, and other conditions may result in a healthier
+study cohort, limiting the applicability of findings to
+more frail or diverse populations. To gain a more com­
+prehensive understanding, future research should include
+diverse populations from multiple centres and regions. In
+addition, an increase in BMI does not always mean an
+increase in fat tissue. The inability to assess body fat is
+one of the limitations of our study.
+Another limitation of our study is the use of grip
+strength cut-off values specific to the Turkish population.
+While these values were developed and validated based
+on a large cohort from Türkiye and are relevant for inter­
+nal consistency and clinical applicability within this con­
+text, they may limit the external validity of our findings.
+The use of population-specific thresholds may reduce the
+generalizability of our results to other ethnic or regional
+groups. To address this, we performed an additional anal­
+ysis using the European Working Group on Sarcopenia in
+Older People (EWGSOP2) cut-off values, which yielded
+similar predictive accuracy for sarcopenic obesity, further
+supporting the robustness of our findings. Nevertheless,
+further studies using internationally accepted cut-off val­
+ues across diverse populations are necessary to validate
+the applicability of our results in broader contexts.
+One important limitation of our study is the lack of
+direct measurements of fat mass and fat-free mass (FFM),
+which are considered more accurate indicators for assess­
+ing body composition and diagnosing obesity. Although
+we observed the coexistence of low muscle mass and
+obesity—potentially suggesting an increased fat mass rel­
+ative to FFM—this could not be confirmed in the absence
+of objective body composition analyses. Therefore, the
+lack of fat mass and FFM data may have limited the accu­
+racy of our findings related to sarcopenic obesity. Future
+studies incorporating direct measurements of body com­
+position are warranted to validate and expand upon our
+results.
+Conclusion
+Sarcopenic obesity, which is associated with an increased
+risk of morbidity and mortality, should be regarded as a
+significant public health concern [2]. It is of significant
+importance to diagnose this condition at an early stage.
+A review of the literature reveals no studies investigat­
+ing the CC/BMI as an anthropometric marker. This
+study introduces the CC/BMI as a practical method in
+sarcopenic obesity into the literature, marking a first in
+this field of research.
+Acknowledgements
+None.
+Author contributions
+N. Karakurt, H. D. Varan equally contributed to the conception and design of
+the research; F. Gungor, A. Fadıloglu, E. Çataltepe, E. Çeker, Z. Ulger contributed
+to the acquisition and analysis of the data; N. Karakurt, H. D. Varan contributed
+to the interpretation of the data; and: N. Karakurt, and H. D. Varan drafted the
+manuscript. All authors critically revised the manuscript, agree to be fully
+accountable for ensuring the integrity and accuracy of the work, and read and
+approved the final manuscript.
+Funding
+None.
+Data availability
+The datasets used and/or analysed during the current study are available from
+the corresponding author on reasonable request.
+Declarations
+Ethics approval and consent to participate
+The Human Ethics and Consent to Participate statements are available for
+consultation. Approval for the ethical conduct of the research project was
+granted by the Gazi University Clinical Research Ethics Committee on 27
+May 2024. The document application number is ca1a3223-e0b9-42f7-820bb53e6b9f1a43. The research was conducted in accordance with the principles
+of the Declaration of Helsinki, and informed consent was obtained from all
+participants.
+Consent for publication
+Not applicable.
+Competing interests
+The authors declare no competing interests.
+Author details
+1Faculty of Medicine, Department of Geriatric Medicine, Gazi University,
+Ankara, Türkiye, Turkey
+Received: 21 February 2025 / Accepted: 12 May 2025
+References
+1.
+Donini LM, et al. Definition and diagnostic criteria for sarcopenic obesity:
+ESPEN and EASO consensus statement. Obes Facts. 2022;15(3):321–35.
+2.
+Tian S, Xu Y. Association of sarcopenic obesity with the risk of all-cause
+mortality: A meta-analysis of prospective cohort studies. Geriatr Gerontol Int.
+2016;16(2):155–66.
+3.
+Wei S, et al. Sarcopenic obesity: epidemiology, pathophysiology, cardiovas­
+cular disease, mortality, and management. Front Endocrinol (Lausanne).
+2023;14:1185221.
+4.
+Gortan Cappellari G, et al. Sarcopenic obesity: what about in the cancer set­
+ting? Nutrition. 2022;98:111624.
+5.
+Perkisas S, et al. Application of ultrasound for muscle assessment in sarcope­
+nia: 2020 SARCUS update. Eur Geriatr Med. 2021;12(1):45–59.
+6.
+Kara M, et al. STAR-Sonographic thigh adjustment ratio: A golden formula for
+the diagnosis of sarcopenia. Am J Phys Med Rehabil. 2020;99(10):902–8.
+7.
+Gonzalez MC, et al. Calf circumference: cutoff values from the NHANES
+1999–2006. Am J Clin Nutr. 2021;113(6):1679–87.
+8.
+Arik G, et al. Validation of Katz index of independence in activities of daily
+living in Turkish older adults. Arch Gerontol Geriatr. 2015;61(3):344–50.
+9.
+Graf C. The Lawton instrumental activities of daily living scale. Am J Nurs.
+2008;108(4):52–62. quiz 62– 3.
+
+Page 11 of 11
+Karakurt et al. BMC Geriatrics          (2025) 25:534
+10.	 Durmaz B, et al. Validity and reliability of geriatric depression scale-15 (short
+form) in Turkish older adults. North Clin Istanb. 2018;5(3):216–20.
+11.	 Marc LG, Raue PJ, Bruce ML. Screening performance of the 15-item geriatric
+depression scale in a diverse elderly home care population. Am J Geriatr
+Psychiatry. 2008;16(11):914–21.
+12.	 Rubenstein LZ, et al. Screening for undernutrition in geriatric practice: devel­
+oping the short-form mini-nutritional assessment (MNA-SF). J Gerontol Biol
+Sci Med Sci. 2001;56(6):M366–72.
+13.	 Sarikaya D, et al. Mini nutritional assessment test long and short form
+are valid screening tools in Turkish older adults. Arch Gerontol Geriatr.
+2015;61(1):56–60.
+14.	 Aşık Z, et al. Validation of the clinical frailty scale version 2.0 in Turkish older
+patients. Geriatr Gerontol Int. 2022;22(9):730–5.
+15.	 Kucukdagli P, Bahat G. Handgrip strength cut-off thresholds to define sarco­
+penia. Geriatr Gerontol Int. 2019;19(3):271.
+16.	 Giné-Garriga M, et al. Physical exercise interventions for improving perfor­
+mance-based measures of physical function in community-dwelling, frail
+older adults: a systematic review and meta-analysis. Arch Phys Med Rehabil.
+2014;95(4):753–e7693.
+17.	 Choi KM. Sarcopenia and sarcopenic obesity. Korean J Intern Med.
+2016;31(6):1054–60.
+18.	 Obesity. Preventing and managing the global epidemic. Report of a WHO
+consultation. World Health Organ Tech Rep Ser. 2000;894:i–xii.
+19.	 Shah NR, Braverman ER. Measuring adiposity in patients: the utility of body
+mass index (BMI), percent body fat, and leptin. PLoS ONE. 2012;7(4):e33308.
+20.	 Batsis JA, et al. Diagnostic accuracy of body mass index to identify obesity in
+older adults: NHANES 1999–2004. Int J Obes (Lond). 2016;40(5):761–7.
+21.	 Prado CM, Gonzalez MC, Heymsfield SB. Body composition phenotypes and
+obesity paradox. Curr Opin Clin Nutr Metab Care. 2015;18(6):535–51.
+22.	 Yang M et al. SARC-F for sarcopenia screening in community-dwelling older
+adults: are 3 items enough? Medicine (Baltimore), 2018;97(30):e11726.
+23.	 Prado CM, et al. Sarcopenic obesity in older adults: a clinical overview. Nat
+Rev Endocrinol. 2024;20(5):261–77.
+Publisher’s note
+Springer Nature remains neutral with regard to jurisdictional claims in
+published maps and institutional affiliations.

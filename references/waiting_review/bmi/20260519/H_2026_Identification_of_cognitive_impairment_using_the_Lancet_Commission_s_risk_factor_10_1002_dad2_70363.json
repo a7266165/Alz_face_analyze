@@ -1,0 +1,25 @@
+{
+  "title": "Identification of cognitive impairment using the Lancet Commission's risk factors and Medicare administrative data.",
+  "authors": [
+    "Jun H",
+    "Ye W",
+    "Liu Y",
+    "Becker A",
+    "Yin H",
+    "Mattke S"
+  ],
+  "year": 2026,
+  "abstract": "INTRODUCTION: Prediction models based on administrative data may present a scalable opportunity to identify risk of cognitive impairment, but their accuracy relative to models using richer information is uncertain. METHODS: We developed and validated models to identify the likelihood of mild cognitive impairment (MCI) and dementia using the Health and Retirement Study linked to Medicare data from 2000 to 2016 (N = 63,740). Predictors covered most risk factors identified by the 2024 Lancet Commission. Model performance was assessed using multiple metrics, including the area under the receiver operating characteristic curve (AUC). RESULTS: Probit models with demographics and chronic conditions yielded high AUCs of 71.3% (MCI) and 82.1% (dementia). Adding individual level education provided the largest improvement in AUCs, whereas dual eligibility status offered smaller gains (p  <  0.001). Air pollution exposure, obesity, and interaction terms did not enhance prediction. DISCUSSION: Predictors in administrative data can be used to generate reasonably accurate, well calibrated models predicting likelihood of cognitive impairment.",
+  "doi": "10.1002/dad2.70363",
+  "arxiv_id": null,
+  "venue": "Alzheimer's & dementia (Amsterdam, Netherlands)",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "42137886"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.1002/dad2.70363"
+}

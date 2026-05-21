@@ -1,0 +1,33 @@
+{
+  "title": "Alzheimer Disease Pathology and Neurodegeneration in Midlife Obesity: A Pilot Study.",
+  "authors": [
+    "Dolatshahi M",
+    "Commean PK",
+    "Rahmani F",
+    "Liu J",
+    "Lloyd L",
+    "Nguyen C",
+    "Hantler N",
+    "Ly M",
+    "Yu G",
+    "Ippolito JE",
+    "Sirlin C",
+    "Morris JC",
+    "Benzinger TLS",
+    "Raji CA"
+  ],
+  "year": 2024,
+  "abstract": "Obesity and excess adiposity at midlife are risk factors for Alzheimer disease (AD). Visceral fat is known to be associated with insulin resistance and a pro-inflammatory state, the two mechanisms involved in AD pathology. We assessed the association of obesity, MRI-determined abdominal adipose tissue volumes, and insulin resistance with PET-determined amyloid and tau uptake in default mode network areas, and MRI-determined brain volume and cortical thickness in AD cortical signature in the cognitively normal midlife population. Thirty-two middle-aged (age: 51.27±6.12 years, 15 males, body mass index (BMI): 32.28±6.39 kg/m2) cognitively normal participants, underwent bloodwork, brain and abdominal MRI, and amyloid and tau PET scan. Visceral and subcutaneous adipose tissue (VAT, SAT) were semi-automatically segmented using VOXel Analysis Suite (Voxa). FreeSurfer was used to automatically segment brain regions using a probabilistic atlas. PET scans were acquired using [11C]PiB and AV-1451 tracers and were analyzed using PET unified pipeline. The association of brain volumes, cortical thicknesses, and PiB and AV-1451 standardized uptake value ratios (SUVRs) with BMI, VAT/SAT ratio, and insulin resistance were assessed using Spearman's partial correlation. VAT/SAT ratio was associated significantly with PiB SUVRs in the right precuneus cortex (p=0.034) overall, controlling for sex. This association was significant only in males (p=0.044), not females (p=0.166). Higher VAT/SAT ratio and PiB SUVRs in the right precuneus cortex were associated with lower cortical thickness in AD-signature areas predominantly including bilateral temporal cortices, parahippocampal, medial orbitofrontal, and cingulate cortices, with age and sex as covariates. Also, higher BMI and insulin resistance were associated with lower cortical thickness in bilateral temporal poles. In midlife cognitively normal adults, we demonstrated higher amyloid pathology in the right precuneus cortex in individuals with a higher VAT/SAT ratio, a marker of visceral obesity, along with a lower cortical thickness in AD-signature areas associated with higher visceral obesity, insulin resistance, and amyloid pathology.",
+  "doi": "10.14336/AD.2023.0707",
+  "arxiv_id": null,
+  "venue": "Aging and disease",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "37548931"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.14336/ad.2023.0707"
+}
