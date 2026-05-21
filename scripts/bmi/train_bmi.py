@@ -108,12 +108,15 @@ def main():
         joblib.dump(scaler, scaler_path)
         logger.info(f"Model → {model_path}")
 
-        # ── Save train-set residual stats ───────────────
-        y_pred_all = model.predict(scaler.transform(X))
-        train_metrics = regression_metrics(y, y_pred_all)
-        train_metrics["model"] = model_name
-        train_metrics["type"] = "resubstitution"
-        logger.info(f"  Resub: MAE={train_metrics['mae']:.2f}  R²={train_metrics['r2']:.3f}")
+        # ── Save resubstitution predictions (for scatter) ─
+        y_resub = model.predict(scaler.transform(X))
+        resub_df = pd.DataFrame({
+            "ID": ids,
+            "y_true": y,
+            "y_pred": y_resub,
+        })
+        resub_csv = BMI_ANALYSIS_DIR / f"resub_{model_name}.csv"
+        resub_df.to_csv(resub_csv, index=False)
 
     # ── Combined summary CSV ────────────────────────────
     summary_df = pd.DataFrame(all_summaries)

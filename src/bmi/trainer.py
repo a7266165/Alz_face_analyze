@@ -211,10 +211,7 @@ def cross_validate(
         X_test_s = scaler.transform(X_test)
 
         model = make_model(model_name)
-        if model_name == "ridge":
-            model.fit(X_train_s, y_train)
-        else:
-            model.fit(X_train_s, y_train)
+        model.fit(X_train_s, y_train)
 
         y_pred_test = model.predict(X_test_s)
         metrics = regression_metrics(y_test, y_pred_test)

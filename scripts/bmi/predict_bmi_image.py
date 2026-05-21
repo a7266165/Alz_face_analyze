@@ -82,6 +82,7 @@ def main():
     import pandas as pd
     df = pd.DataFrame({"sid": all_sids, "pred": all_preds})
     subj = df.groupby("sid")["pred"].mean()
+
     predictions = {sid: round(float(v), 2) for sid, v in subj.items()}
 
     BMI_PREDICTIONS_DIR.mkdir(parents=True, exist_ok=True)
