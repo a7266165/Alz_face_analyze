@@ -339,38 +339,34 @@ def _select_hc_visits(demo, hc_source, spec: CohortSpec,
 
 def match_1to1(cohort, caliper=2.0, seed=42, metric="MMSE", group_col=None,
                match_mode="visit", priority_groups=None, id_col="ID"):
-    """1:1 age NN match; cohort must have *group_col* set to 'high'/'low'.
+    """1:1 age-optimal match; cohort must have *group_col* 'high'/'low'.
 
-    match_mode:
-      'visit'         each visit can match once.
-      'subject_first' two-pass: pass 1 subject-level 1:1; pass 2 visit
-                      fallback.  Requires ``base_id`` column.
+    Uses ``scipy.optimize.linear_sum_assignment`` to maximise the number
+    of matched pairs within *caliper* while minimising total age difference.
 
-    priority_groups: optional list of ``group`` column values to sort first
-      in the minor pool (e.g. ``["ACS", "NAD"]`` gives ACS subjects first
-      pick of partners).  Within each priority tier the random shuffle
-      (controlled by *seed*) is preserved via stable sort.
+    When *priority_groups* is set (e.g. ``["ACS"]``), subjects in those
+    groups are matched first in a dedicated optimal-assignment round;
+    remaining subjects are matched in a second round against the leftover
+    major pool.
 
-    id_col: column name used as the matching ID (default "ID").
+    When ``base_id`` is present the assignment operates at subject level
+    (one pair per base_id).  Otherwise it operates at visit level.
 
-    metric: if None, metric columns are omitted from pairs_df and matched.
+    match_mode: kept for API compatibility but ignored (always optimal).
+    id_col: column used as matching ID (default ``"ID"``).
+    metric: if None, metric columns are omitted from pairs_df / matched.
 
     Returns (matched_df, pairs_df, (minor_label, major_label)).
     """
+    from scipy.optimize import linear_sum_assignment
+
     if group_col is None:
         group_col = f"{metric.lower()}_group"
-    if match_mode not in ("visit", "subject_first"):
-        raise ValueError(
-            f"match_mode must be 'visit' or 'subject_first', "
-            f"got {match_mode!r}")
-    if match_mode == "subject_first" and "base_id" not in cohort.columns:
-        raise ValueError(
-            "match_mode='subject_first' requires base_id column in cohort")
     metric_low = metric.lower() if metric else None
     rng = np.random.RandomState(seed)
+
     high = cohort[cohort[group_col] == "high"].copy()
     low = cohort[cohort[group_col] == "low"].copy()
-
     if len(low) <= len(high):
         minor, major = low, high
         minor_label, major_label = "low", "high"
@@ -378,86 +374,74 @@ def match_1to1(cohort, caliper=2.0, seed=42, metric="MMSE", group_col=None,
         minor, major = high, low
         minor_label, major_label = "high", "low"
 
-    minor_order = minor.sample(frac=1.0, random_state=rng).reset_index(
-        drop=True)
-    if priority_groups is not None and "group" in minor_order.columns:
-        _pg_rank = {g: i for i, g in enumerate(priority_groups)}
-        _max_rank = len(priority_groups)
-        minor_order = (
-            minor_order
-            .assign(_priority=minor_order["group"].map(
-                lambda g: _pg_rank.get(g, _max_rank)))
-            .sort_values("_priority", kind="mergesort")
-            .drop(columns="_priority")
-            .reset_index(drop=True)
-        )
-    available = major.copy().reset_index(drop=True)
+    subject_level = "base_id" in cohort.columns
+    bid_col = "base_id" if subject_level else id_col
 
-    def _make_pair(minor_row, picked_row, pass_label):
-        rec = {
-            "pair_id": None,
-            "minor_id": minor_row[id_col], "minor_age": minor_row["Age"],
-            "major_id": picked_row[id_col], "major_age": picked_row["Age"],
-            "age_diff": picked_row["Age"] - minor_row["Age"],
-        }
-        if metric_low:
-            rec[f"minor_{metric_low}"] = minor_row[metric]
-            rec[f"major_{metric_low}"] = picked_row[metric]
-        if match_mode == "subject_first":
-            rec["match_pass"] = pass_label
-        return rec
+    def _to_subject_df(df):
+        return (df.sort_values([bid_col, "Age"])
+                .drop_duplicates(bid_col, keep="first")
+                .reset_index(drop=True))
 
-    def _pick_nearest(cand_pool, age):
-        diffs = (cand_pool["Age"] - age).abs()
-        md = diffs.min()
-        if pd.isna(md) or md > caliper:
-            return None, None
-        cands = cand_pool[diffs == md].sort_values(id_col)
-        return cands.iloc[0], md
+    minor_subj = _to_subject_df(minor)
+    major_subj = _to_subject_df(major)
+
+    def _optimal_assign(mi, ma):
+        if len(mi) == 0 or len(ma) == 0:
+            return []
+        age_mi = mi["Age"].to_numpy(float)
+        age_ma = ma["Age"].to_numpy(float)
+        cost = np.abs(age_mi[:, None] - age_ma[None, :])
+        cost[cost > caliper] = 1e9
+        ri, ci = linear_sum_assignment(cost)
+        valid = cost[ri, ci] <= caliper
+        return list(zip(ri[valid], ci[valid]))
 
     pairs_records = []
-    used_idx = set()
 
-    if match_mode == "visit":
-        for _, row in minor_order.iterrows():
-            cand = available[~available.index.isin(used_idx)]
-            if len(cand) == 0:
-                break
-            picked, _ = _pick_nearest(cand, row["Age"])
-            if picked is None:
-                continue
-            pairs_records.append(_make_pair(row, picked, "visit"))
-            used_idx.add(picked.name)
+    def _record_pairs(mi_df, ma_df, assignments):
+        for ri, ci in assignments:
+            mi_row = mi_df.iloc[ri]
+            ma_row = ma_df.iloc[ci]
+            rec = {
+                "pair_id": None,
+                "minor_id": mi_row[id_col], "minor_age": mi_row["Age"],
+                "major_id": ma_row[id_col], "major_age": ma_row["Age"],
+                "age_diff": ma_row["Age"] - mi_row["Age"],
+            }
+            if metric_low:
+                rec[f"minor_{metric_low}"] = mi_row[metric]
+                rec[f"major_{metric_low}"] = ma_row[metric]
+            pairs_records.append(rec)
+
+    if priority_groups and "group" in minor_subj.columns:
+        used_minor_bids = set()
+        used_major_bids = set()
+        for grp in priority_groups:
+            mi_grp = minor_subj[
+                (minor_subj["group"] == grp)
+                & ~minor_subj[bid_col].isin(used_minor_bids)
+            ].reset_index(drop=True)
+            ma_pool = major_subj[
+                ~major_subj[bid_col].isin(used_major_bids)
+            ].reset_index(drop=True)
+            assignments = _optimal_assign(mi_grp, ma_pool)
+            _record_pairs(mi_grp, ma_pool, assignments)
+            used_minor_bids.update(
+                mi_grp.iloc[ri][bid_col] for ri, _ in assignments)
+            used_major_bids.update(
+                ma_pool.iloc[ci][bid_col] for _, ci in assignments)
+
+        mi_rest = minor_subj[
+            ~minor_subj[bid_col].isin(used_minor_bids)
+        ].reset_index(drop=True)
+        ma_rest = major_subj[
+            ~major_subj[bid_col].isin(used_major_bids)
+        ].reset_index(drop=True)
+        assignments = _optimal_assign(mi_rest, ma_rest)
+        _record_pairs(mi_rest, ma_rest, assignments)
     else:
-        used_major_subjects = set()
-        used_minor_subjects = set()
-        matched_minor_ids = set()
-        for _, row in minor_order.iterrows():
-            if row["base_id"] in used_minor_subjects:
-                continue
-            cand = available[~available.index.isin(used_idx)
-                             & ~available["base_id"].isin(used_major_subjects)]
-            if len(cand) == 0:
-                break
-            picked, _ = _pick_nearest(cand, row["Age"])
-            if picked is None:
-                continue
-            pairs_records.append(_make_pair(row, picked, "subject"))
-            used_major_subjects.add(picked["base_id"])
-            used_minor_subjects.add(row["base_id"])
-            matched_minor_ids.add(row[id_col])
-            used_idx.add(picked.name)
-        unmatched_minor = minor_order[
-            ~minor_order[id_col].isin(matched_minor_ids)]
-        for _, row in unmatched_minor.iterrows():
-            cand = available[~available.index.isin(used_idx)]
-            if len(cand) == 0:
-                break
-            picked, _ = _pick_nearest(cand, row["Age"])
-            if picked is None:
-                continue
-            pairs_records.append(_make_pair(row, picked, "visit_fallback"))
-            used_idx.add(picked.name)
+        assignments = _optimal_assign(minor_subj, major_subj)
+        _record_pairs(minor_subj, major_subj, assignments)
 
     matched_records = []
     for i, rec in enumerate(pairs_records):
@@ -479,6 +463,133 @@ def match_1to1(cohort, caliper=2.0, seed=42, metric="MMSE", group_col=None,
     matched = pd.DataFrame(matched_records)
     return matched, pairs_df, (minor_label, major_label)
 
+
+
+def build_caliper_group(full_cohort, matched_cohort, matched_pairs,
+                        keep_groups=None, caliper=1.0,
+                        ttest_threshold=0.05):
+    """1:N balanced matching built on top of a 1:1 matched cohort.
+
+    Starting from the 1:1 pairs, round-robin adds P subjects to each HC
+    subject (one per HC per round, within *caliper*).  After each round a
+    Welch t-test checks age balance; the process stops (and rolls back the
+    last round) when the t-test drops below *ttest_threshold*.
+
+    Parameters
+    ----------
+    full_cohort : DataFrame  — full (unmatched) cohort with base_id, Age,
+        label, group.
+    matched_cohort : DataFrame — 1:1 matched cohort with pair_id, base_id,
+        Age, label, group.
+    matched_pairs : DataFrame — pairs table from ``match_1to1`` (minor_id,
+        major_id columns).
+    keep_groups : optional set  — e.g. ``{"P", "ACS"}``.
+    caliper : float — max |age_diff| for added P subjects.
+    ttest_threshold : float — stop adding when p drops below this.
+
+    Returns
+    -------
+    expanded_cohort : DataFrame (base_id, Age, label, group)
+    age_balance : dict
+    """
+    from scipy import stats as _st
+
+    cols = ["base_id", "Age", "label", "group"]
+    mc = matched_cohort.drop_duplicates("base_id")
+
+    # --- HC side (fixed) ---
+    if keep_groups is not None:
+        hc_groups = set(keep_groups) - {"P"}
+        hc_subj = mc[mc["group"].isin(hc_groups)][cols].copy()
+    else:
+        hc_subj = mc[mc["label"] == 0][cols].copy()
+
+    # --- P already in 1:1 ---
+    matched_p_bids = set(mc[mc["label"] == 1]["base_id"])
+    if keep_groups is not None:
+        hc_pair_ids = set(
+            matched_cohort[matched_cohort["group"].isin(hc_groups)]["pair_id"])
+        matched_p_in_scope = set(
+            matched_cohort[
+                (matched_cohort["pair_id"].isin(hc_pair_ids))
+                & (matched_cohort["label"] == 1)
+            ]["base_id"])
+    else:
+        matched_p_in_scope = matched_p_bids
+    p_matched = (full_cohort[full_cohort["base_id"].isin(matched_p_in_scope)]
+                 .drop_duplicates("base_id")[cols].copy())
+
+    # --- candidate P pool (not yet matched) ---
+    all_p = (full_cohort[full_cohort["label"] == 1]
+             .drop_duplicates("base_id"))
+    p_candidates = all_p[~all_p["base_id"].isin(matched_p_bids)].copy()
+
+    # --- build global (HC, P_candidate) pairs sorted by |age_diff| ---
+    hc_records = hc_subj[["base_id", "Age"]].to_dict("records")
+    cand_records = p_candidates[["base_id", "Age"]].to_dict("records")
+    cand_age_map = {r["base_id"]: r["Age"] for r in cand_records}
+
+    all_pairs = []
+    for hc in hc_records:
+        for c in cand_records:
+            d = abs(c["Age"] - hc["Age"])
+            if d <= caliper:
+                all_pairs.append((d, c["base_id"], c["Age"]))
+    all_pairs.sort()
+
+    # --- greedy addition: add one P at a time, check t-test ---
+    added_p_bids = []
+    added_p_ages = []
+    used_p = set()
+
+    hc_ages = hc_subj["Age"].to_numpy(float)
+    p_ages_base = p_matched["Age"].to_numpy(float)
+    n_base = len(p_ages_base)
+
+    for _, p_bid, p_age in all_pairs:
+        if p_bid in used_p:
+            continue
+
+        trial_ages = np.concatenate([
+            p_ages_base,
+            np.array(added_p_ages + [p_age], dtype=float),
+        ])
+        _, pval = _st.ttest_ind(trial_ages, hc_ages, equal_var=False)
+
+        if pval < ttest_threshold:
+            continue
+
+        used_p.add(p_bid)
+        added_p_bids.append(p_bid)
+        added_p_ages.append(p_age)
+
+    # --- assemble final cohort ---
+    added_p_df = (all_p[all_p["base_id"].isin(set(added_p_bids))]
+                  [cols].copy())
+    expanded = pd.concat([hc_subj, p_matched, added_p_df],
+                         ignore_index=True)
+
+    all_p_in = expanded[expanded["label"] == 1]
+    p_arr_final = all_p_in["Age"].to_numpy(float)
+    if len(p_arr_final) >= 2 and len(hc_ages) >= 2:
+        t_stat, t_pval = _st.ttest_ind(p_arr_final, hc_ages, equal_var=False)
+    else:
+        t_stat, t_pval = float("nan"), float("nan")
+
+    age_balance = {
+        "caliper": caliper,
+        "ttest_threshold": ttest_threshold,
+        "n_hc": len(hc_subj),
+        "n_p_matched_1to1": len(p_matched),
+        "n_p_added": len(added_p_bids),
+        "n_p_total": len(all_p_in),
+        "n_p_pool": len(all_p),
+        "hc_age_mean": float(hc_ages.mean()),
+        "p_age_mean": float(p_arr_final.mean()) if len(p_arr_final) else None,
+        "ttest_t": float(t_stat),
+        "ttest_p": float(t_pval),
+    }
+    return expanded, age_balance
 
 
 # ====================================================================
@@ -536,7 +647,7 @@ def build_cohort_ad_vs_HCgroup(
     design,
     cohort_mode=DEFAULT_COHORT_MODE,
     hc_source_mode="ACS",
-    caliper=2.0,
+    caliper=1.0,
     seed=42,
     priority_groups=None,
 ):
@@ -577,10 +688,9 @@ def build_cohort_ad_vs_HCgroup(
         prep = pd.concat([ad, hc], ignore_index=True)
         prep["mmse_group"] = np.where(prep["label"] == 1, "high", "low")
         prep["MMSE"] = prep["MMSE"].fillna(999)
-        match_mode = "subject_first" if spec.hc_visit == "all" else "visit"
         matched, pairs, _ = match_1to1(
             prep, caliper=caliper, seed=seed, metric="MMSE",
-            group_col="mmse_group", match_mode=match_mode,
+            group_col="mmse_group",
             priority_groups=priority_groups,
         )
         cohort = matched.merge(

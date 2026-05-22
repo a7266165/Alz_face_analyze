@@ -489,11 +489,9 @@ def _run_hilo(args, metric):
     cohort.to_csv(comparison_dir / "cohort.csv", index=False)
 
     # 4. 1:1 age matching
-    match_mode = ("subject_first" if spec.p_visit == "all"
-                  else "visit")
     matched, pairs_df, (minor_label, major_label) = match_1to1(
         cohort, caliper=args.caliper, seed=args.seed,
-        metric=metric, group_col=group_col, match_mode=match_mode,
+        metric=metric, group_col=group_col,
     )
     pairs_df.to_csv(comparison_dir / "matched_pairs.csv", index=False)
     n_pairs = len(pairs_df)
