@@ -99,6 +99,7 @@ _MATCH_PRIORITY = None  # e.g. ["ACS", "NAD"] — HC sub-group priority for matc
 _RFE_DROP = None   # iterative RFE: drop N weakest features per iter (None/0 = off)
 _RFE_ITERS = 5     # number of RFE iterations
 _SAVE_OOF_PROB = False  # write pred_probability/<config>.csv for meta_analysis stacking
+_CALIPER_GROUP = 3.0    # caliper-group evaluation: age inclusion window
 
 # Default grid-search ranges. Hand-edited starting points; sweeping logspace for
 # regularization (LR C) and a 3×3×3 grid for XGB tree shape + boosting steps.
@@ -126,31 +127,16 @@ def _reducer_label():
 
 def output_dir_for(feature_type, drop_corr=None,
                     photo_mode="mean", pca_components=None,
-                    cohort_mode="p_first_cdr05_hc_first_cdrall_or_mmseall"):
-    """Build per-cell output dir for the chosen feature_type / reducer /
-    cohort / photo mode combination.
+                    cohort_mode="p_first_cdr05_hc_first_cdrall_or_mmseall",
+                    eval_method=None):
+    """Build per-cell output dir.
 
     Tree layout:
-      embedding/analysis/classification/<variant>/<cohort>/<reducer>/
+      classification/<match_subdir>/[<eval_method>/]<variant>/<cohort>/<reducer>/
 
-    Variants: original / difference / absolute_difference / average /
-              relative_differences / absolute_relative_differences
-
-    Visit selection is fully encoded in the canonical cohort_mode name
-    (e.g. p_first_cdr05_hc_first_cdrall_or_mmseall).
-
-    Reducer naming:
-      drop_corr=X.X    → drop_feats/pearson_r_X.X
-      pca_components=N → pca/n_components_N            (int N)
-      pca_components=R → pca/var_ratio_R               (float R<1)
-      neither          → no_drop
-
-    Photo subdir `photo_<mode>` is appended only when photo_mode differs from
-    the default 'mean'.
-
-    Cell-leaf path: <output_dir>/<partition>/<fwd|rev>/<emb>/<clf>/[C_<value>/]
-    LR `C` value is encoded at the cell-level leaf (logistic/C_<lr_C:g>/) by
-    cell_dir(), not in this path.
+    *eval_method*: ``"matched"`` or ``"caliper_group"``.  Inserted between
+    the match-strategy dir and the feature-type dir so the two evaluation
+    modes sit side-by-side under ``match_acs_first/``.
     """
     if pca_components is not None and drop_corr is not None:
         raise ValueError("drop_corr and pca_components are mutually exclusive")
@@ -166,12 +152,18 @@ def output_dir_for(feature_type, drop_corr=None,
     if photo_mode != "mean":
         reducer = reducer / f"photo_{photo_mode}"
     cohort_dir = cohort_name(cohort_mode)
-    return EMBEDDING_CLASSIFICATION_DIR / feature_type / cohort_dir / reducer
+    base = EMBEDDING_CLASSIFICATION_DIR
+    if eval_method:
+        base = base / eval_method
+    return base / feature_type / cohort_dir / reducer
 
 
 OUTPUT_DIR = output_dir_for(_FEATURE_TYPE, _DROP_CORR_THRESHOLD,
                               _PHOTO_MODE, _PCA_COMPONENTS,
-                              _COHORT_MODE)
+                              _COHORT_MODE, eval_method="matched")
+CALIPER_OUTPUT_DIR = output_dir_for(_FEATURE_TYPE, _DROP_CORR_THRESHOLD,
+                                      _PHOTO_MODE, _PCA_COMPONENTS,
+                                      _COHORT_MODE, eval_method="caliper_group")
 
 
 class _TorchGPUPCA:
@@ -376,16 +368,12 @@ def _train_cache_key(partition, embedding, classifier, n_folds, seed):
             tuple(_MATCH_PRIORITY) if _MATCH_PRIORITY else None)
 
 
-from src.cohort import filter_pairs_by_predicted_age as _filter_pairs_by_pred_age
-
-
 def _build_ad_vs_hcgroup(hc_source):
     """ad_vs_hc / ad_vs_nad / ad_vs_acs.
 
     Returns (full_cohort, matched_cohort, pairs_df).
     full from design='cross_naive' (no matching), matched from design=
-    'cross_matched' (1:1 age) with the predicted_age post-hoc filter applied
-    so n_pairs matches the cross_matched reference.
+    'cross_matched' (1:1 age).
 
     Visit selection is fully encoded in cohort_mode:
       'p_first_cdr05_hc_first_cdrall_or_mmseall' (p_first_cdr05_hc_first_cdrall_or_mmseall): P first + HC first
@@ -401,15 +389,13 @@ def _build_ad_vs_hcgroup(hc_source):
         cohort_mode=_COHORT_MODE, hc_source_mode=_HC_SOURCE_MODE,
         priority_groups=_MATCH_PRIORITY,
     )
-    matched, pairs = _filter_pairs_by_pred_age(matched, pairs)
     return full, matched, pairs
 
 
 def _build_metric_hilo(metric):
     """mmse_hilo / casi_hilo (AD-only, P group; CDR filter per CohortSpec.p_cdr).
 
-    Splits by median, matches 1:1 by age (caliper 2y), then drops pairs
-    where either side lacks predicted_age.
+    Splits by median, matches 1:1 by age (caliper 2y).
     Labels: high=1, low=0.
     """
     metric_low = metric.lower()
@@ -425,14 +411,13 @@ def _build_metric_hilo(metric):
     cohort["label"] = (cohort[group_col] == "high").astype(int)
 
     matched, pairs, _labels = match_1to1(
-        cohort, caliper=2.0, seed=42, metric=metric, group_col=group_col,
+        cohort, caliper=1.0, seed=42, metric=metric, group_col=group_col,
     )
     existing = set(matched.columns) - {"ID"}
     extra_cols = ["ID"] + [c for c in ["base_id", "label", group_col]
                            if c not in existing]
     extra = cohort[extra_cols].drop_duplicates("ID")
     matched = matched.merge(extra, on="ID", how="left")
-    matched, pairs = _filter_pairs_by_pred_age(matched, pairs)
     return cohort, matched, pairs
 
 
@@ -724,6 +709,23 @@ def _forward_train(full_cohort, embedding, classifier, n_folds, seed):
     }
 
 
+def _pair_aware_dedup(pool):
+    """Deduplicate to at most one row per base_id while maximizing
+    complete pairs.  Iterates in pair_id order (subject-level pass-1
+    pairs first), keeping a pair only when neither side's base_id has
+    been claimed yet."""
+    used = set()
+    keep_pids = []
+    for pid in sorted(pool["pair_id"].unique()):
+        bids = pool.loc[pool["pair_id"] == pid, "base_id"].unique()
+        if any(b in used for b in bids):
+            continue
+        used.update(bids)
+        keep_pids.append(pid)
+    return pool[pool["pair_id"].isin(keep_pids)].drop_duplicates(
+        "base_id", keep="first")
+
+
 def _forward_eval(train, matched_cohort, keep_groups, seed):
     """Eval-time (keep_groups) part: matched-subset metrics + per-cell oof_df
     with in_matched column. Always runs (cheap)."""
@@ -735,8 +737,7 @@ def _forward_eval(train, matched_cohort, keep_groups, seed):
         pool = matched_cohort[matched_cohort["pair_id"].isin(target_pair_ids)]
     else:
         pool = matched_cohort
-    sort_cols = ["base_id"] + (["visit"] if "visit" in pool.columns else [])
-    matched_eval = pool.sort_values(sort_cols).drop_duplicates("base_id", keep="first")
+    matched_eval = _pair_aware_dedup(pool)
 
     oof_matched = matched_eval[["base_id", "pair_id", "label"]].merge(
         train["oof_subj"][["base_id", "y_score"]],
@@ -756,6 +757,55 @@ def _forward_eval(train, matched_cohort, keep_groups, seed):
     ).astype(int)
 
     return oof_df, metrics_matched, paired, matched_eval
+
+
+def _forward_eval_caliper_group(oof_subj, full_cohort, matched_cohort,
+                                matched_pairs, keep_groups, seed,
+                                caliper=1.0):
+    """1:N balanced evaluation: expand 1:1 pairs by round-robin adding P.
+    Returns None for P-only partitions (mmse_hilo / casi_hilo)."""
+    if "group" not in full_cohort.columns:
+        return None
+
+    from src.cohort import build_caliper_group
+    cal_cohort, age_balance = build_caliper_group(
+        full_cohort, matched_cohort, matched_pairs,
+        keep_groups=keep_groups, caliper=caliper,
+    )
+    if len(cal_cohort) < 5:
+        return None
+
+    cal_scores = cal_cohort[["base_id", "label"]].merge(
+        oof_subj[["base_id", "y_score"]],
+        on="base_id", how="inner",
+    )
+    if len(cal_scores) < 5 or cal_scores["label"].nunique() < 2:
+        return None
+
+    metrics = compute_clf_metrics(
+        cal_scores["label"].to_numpy(int),
+        cal_scores["y_score"].to_numpy(float),
+        seed=seed,
+    )
+
+    pos_scores = cal_scores.loc[cal_scores["label"] == 1, "y_score"].to_numpy()
+    neg_scores = cal_scores.loc[cal_scores["label"] == 0, "y_score"].to_numpy()
+    if len(pos_scores) >= 2 and len(neg_scores) >= 2:
+        u_stat, u_pval = stats.mannwhitneyu(
+            pos_scores, neg_scores, alternative="two-sided")
+        mann_whitney = {"U": float(u_stat), "p": float(u_pval),
+                        "n_pos": len(pos_scores), "n_neg": len(neg_scores)}
+    else:
+        mann_whitney = {"U": float("nan"), "p": float("nan"),
+                        "n_pos": len(pos_scores), "n_neg": len(neg_scores)}
+
+    return {
+        "metrics": metrics,
+        "mann_whitney": mann_whitney,
+        "age_balance": age_balance,
+        "cohort_df": cal_cohort,
+        "scores_df": cal_scores,
+    }
 
 
 def run_forward(full_cohort, matched_cohort, embedding, classifier,
@@ -963,15 +1013,23 @@ def _reverse_eval(train, matched_cohort, keep_groups, seed):
     full_df_visits = train["full_df_visits"]
     matched_base_ids = train["matched_base_ids"]
 
-    # ---- build group lookup once ----
+    # ---- pair-aware group filtering (same logic as forward) ----
     if keep_groups is not None:
         bid_to_group = matched_cohort.set_index("base_id")["group"].to_dict()
+        target_groups = set(keep_groups) - {"P"}
+        target_pair_ids = matched_cohort[
+            matched_cohort["group"].isin(target_groups)
+        ]["pair_id"].unique()
+        scope_pool = matched_cohort[
+            matched_cohort["pair_id"].isin(target_pair_ids)]
+        scope_bids = set(_pair_aware_dedup(scope_pool)["base_id"])
+    else:
+        scope_bids = None
 
-    # ---- matched_oof: subject-level, filtered by group ----
-    if keep_groups is not None:
+    # ---- matched_oof: subject-level, filtered by pair-aware scope ----
+    if scope_bids is not None:
         keep_m_subj = np.array([
-            bid_to_group.get(b) in keep_groups
-            for b in matched_oof_subj["base_id"]
+            b in scope_bids for b in matched_oof_subj["base_id"]
         ])
     else:
         keep_m_subj = np.ones(len(matched_oof_subj), dtype=bool)
@@ -982,11 +1040,13 @@ def _reverse_eval(train, matched_cohort, keep_groups, seed):
         if len(eval_y_m_subj) >= 5 and len(np.unique(eval_y_m_subj)) > 1 else None
     )
 
-    # ---- unmatched: visit-level, filtered by group ----
-    in_matched_v = full_df_visits["in_matched"].to_numpy(bool)
-    if keep_groups is not None:
+    # ---- unmatched: visit-level, filtered by scope ----
+    if scope_bids is not None:
+        in_scope_v = full_df_visits["base_id"].isin(scope_bids).to_numpy()
+        in_matched_v = full_df_visits["in_matched"].to_numpy(bool) & in_scope_v
         in_keep_v = full_df_visits["group"].isin(keep_groups).to_numpy()
     else:
+        in_matched_v = full_df_visits["in_matched"].to_numpy(bool)
         in_keep_v = np.ones(len(full_df_visits), dtype=bool)
     unmatched_mask = (~in_matched_v) & in_keep_v
     n_unmatched_visits = int(unmatched_mask.sum())
@@ -999,19 +1059,14 @@ def _reverse_eval(train, matched_cohort, keep_groups, seed):
             yf_v[unmatched_mask], score_v[unmatched_mask], seed=seed,
         )
 
-    # ---- scores_df (subject-level) keep_groups-aware ----
-    if keep_groups is not None:
-        matched_keep_base = {b for b in matched_base_ids
-                              if bid_to_group.get(b) in keep_groups}
-    else:
-        matched_keep_base = matched_base_ids
+    # ---- scores_df (subject-level) scope-aware ----
+    matched_keep_base = scope_bids if scope_bids is not None else matched_base_ids
     full_df = full_subj.copy()
-    if keep_groups is not None:
-        full_df["in_matched"] = full_df["base_id"].isin(matched_keep_base).astype(int)
+    full_df["in_matched"] = full_df["base_id"].isin(matched_keep_base).astype(int)
     full_df = full_df[["ID", "y_true", "y_score", "in_matched"]]
 
-    # ---- scores_df_visits keep_groups-filtered (drop subjects outside keep_groups) ----
-    if keep_groups is not None:
+    # ---- scores_df_visits filtered by scope ----
+    if scope_bids is not None:
         scores_df_visits = full_df_visits[in_keep_v].copy()
     else:
         scores_df_visits = full_df_visits.copy()
@@ -1092,16 +1147,15 @@ def _xgb_param_tag():
             f"_lr_{_XGB_PARAMS['learning_rate']:g}")
 
 
-def cell_dir(partition, embedding, classifier, strategy):
+def cell_dir(partition, embedding, classifier, strategy,
+             output_base=None):
     """Layout:
-        <reducer>/<partition>/{fwd,rev}/<embedding>/<classifier>/<param_tag>/
-
-    Both LR and XGB nest a hyperparam-tagged leaf so different combos sit
-    side by side (e.g. `logistic/C_1/`, `xgb/ne_300_md_6_lr_0.1/`).
-    TabPFN has no exposed hyperparams → stays flat at `<classifier>/`.
+        <output_base>/<partition>/{fwd,rev}/<embedding>/<classifier>/<param_tag>/
     """
+    if output_base is None:
+        output_base = OUTPUT_DIR
     bucket = "fwd" if strategy == "forward" else "rev"
-    base = OUTPUT_DIR / partition / bucket / embedding / classifier
+    base = output_base / partition / bucket / embedding / classifier
     if classifier == "logistic":
         return base / f"C_{_LR_C:g}"
     if classifier == "xgb":
@@ -1224,6 +1278,61 @@ def run_cell(partition, embedding, classifier, strategy, n_folds=10, seed=42):
             "scope": "full",
             **{k: v for k, v in m_full.items() if k != "confusion_matrix"},
         })
+
+        # ---- caliper-group evaluation (separate output dir) ----
+        if _CALIPER_GROUP > 0:
+            cal = _forward_eval_caliper_group(
+                oof_subj, full, matched, pairs, keep_groups, seed,
+                caliper=_CALIPER_GROUP,
+            )
+            if cal is not None:
+                cal_out = cell_dir(partition, embedding, classifier,
+                                   "forward", output_base=CALIPER_OUTPUT_DIR)
+                cal_out.mkdir(parents=True, exist_ok=True)
+                # OOF scores (same as matched — full-cohort OOF)
+                oof_df.to_csv(cal_out / "forward_oof_scores.csv", index=False)
+                oof_subj.to_csv(
+                    cal_out / "forward_oof_scores_subject.csv", index=False)
+                # Caliper-group cohort & scores
+                cal["cohort_df"].to_csv(
+                    cal_out / "matched_cohort.csv", index=False)
+                cal["scores_df"].to_csv(
+                    cal_out / "forward_matched_scores.csv", index=False)
+                m_cal = cal["metrics"]
+                write_json(cal_out / "forward_matched_metrics.json", {
+                    "partition": partition, "embedding": embedding,
+                    "classifier": classifier, "strategy": "forward",
+                    "eval_mode": "caliper_group",
+                    **_classifier_params_for_json(classifier),
+                    "age_balance": cal["age_balance"],
+                    "metrics_caliper_group": m_cal,
+                    "metrics_full_cohort": m_full,
+                    "mann_whitney": cal["mann_whitney"],
+                })
+                neg_l, pos_l = CM_LABELS.get(partition, ("0", "1"))
+                title_cg = (f"{partition} — caliper_group\n"
+                            f"n={m_cal['n']}  AUC={m_cal['auc']:.3f}")
+                plot_cm(m_cal["confusion_matrix"], title_cg,
+                        cal_out / "forward_cm_matched.png",
+                        neg_label=neg_l, pos_label=pos_l)
+                title_full = (f"{partition} — full\n"
+                              f"n={m_full['n']}  AUC={m_full['auc']:.3f}")
+                plot_cm(m_full["confusion_matrix"], title_full,
+                        cal_out / "forward_cm_full.png",
+                        neg_label=neg_l, pos_label=pos_l)
+                ab = cal["age_balance"]
+                logger.info(
+                    f"  caliper_group: n_hc={ab['n_hc']} n_p={ab['n_p_total']} "
+                    f"AUC={m_cal['auc']:.3f} ttest_p={ab['ttest_p']:.4g} "
+                    f"MannWhitney_p={cal['mann_whitney']['p']:.4g}"
+                )
+                summary_rows.append({
+                    "partition": partition, "embedding": embedding,
+                    "classifier": classifier, "strategy": "forward",
+                    "scope": "caliper_group",
+                    **{k: v for k, v in m_cal.items()
+                       if k != "confusion_matrix"},
+                })
 
     if strategy in ("reverse", "both"):
         out = cell_dir(partition, embedding, classifier, "reverse")
@@ -1453,6 +1562,11 @@ def main():
                              "skipped for it.")
     parser.add_argument("--rfe-iters", type=int, default=5,
                         help="Number of RFE iterations (used with --rfe-drop).")
+    parser.add_argument("--caliper-group", type=float, default=3.0,
+                        help="Caliper-group evaluation: include all P "
+                             "subjects whose age falls within "
+                             "[HC_min - caliper, HC_max + caliper]. "
+                             "Set to 0 to disable.")
     parser.add_argument("--grid-search", action="store_true",
                         help="Hyperparameter grid search over LR C "
                              "(default: 6 logspace points 1e-3..1e2) and XGB "
@@ -1475,8 +1589,9 @@ def main():
     args = parser.parse_args()
 
     global _FEATURE_TYPE, _DROP_CORR_THRESHOLD, _DROP_CORR_METHOD
-    global _PCA_COMPONENTS, _PHOTO_MODE, _COHORT_MODE, _LR_C, OUTPUT_DIR
-    global _RFE_DROP, _RFE_ITERS, _SAVE_OOF_PROB, _MATCH_PRIORITY
+    global _PCA_COMPONENTS, _PHOTO_MODE, _COHORT_MODE, _LR_C
+    global OUTPUT_DIR, CALIPER_OUTPUT_DIR
+    global _RFE_DROP, _RFE_ITERS, _SAVE_OOF_PROB, _MATCH_PRIORITY, _CALIPER_GROUP
     global EMBEDDING_CLASSIFICATION_DIR, EMBEDDING_FEAT_DIR
     if args.drop_correlated_threshold is not None and args.pca_components is not None:
         parser.error("--drop-correlated-threshold and --pca-components are "
@@ -1502,6 +1617,7 @@ def main():
     _RFE_DROP = args.rfe_drop
     _RFE_ITERS = args.rfe_iters
     _SAVE_OOF_PROB = args.save_oof_probabilities
+    _CALIPER_GROUP = args.caliper_group
     _MATCH_PRIORITY = args.match_priority
     if _MATCH_PRIORITY:
         match_subdir = f"match_{_MATCH_PRIORITY[0].lower()}_first"
@@ -1510,7 +1626,12 @@ def main():
         EMBEDDING_CLASSIFICATION_DIR = _EMBEDDING_CLASSIFICATION_BASE / match_subdir
     OUTPUT_DIR = output_dir_for(_FEATURE_TYPE, _DROP_CORR_THRESHOLD,
                                   _PHOTO_MODE,
-                                  _PCA_COMPONENTS, _COHORT_MODE)
+                                  _PCA_COMPONENTS, _COHORT_MODE,
+                                  eval_method="matched")
+    CALIPER_OUTPUT_DIR = output_dir_for(_FEATURE_TYPE, _DROP_CORR_THRESHOLD,
+                                          _PHOTO_MODE,
+                                          _PCA_COMPONENTS, _COHORT_MODE,
+                                          eval_method="caliper_group")
 
     partitions = expand_axis(args.partition, PARTITIONS)
     embeddings = expand_axis(args.embedding, EMBEDDINGS)
