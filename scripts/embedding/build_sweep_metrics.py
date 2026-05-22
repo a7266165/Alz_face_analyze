@@ -239,16 +239,30 @@ def main():
     classification_root = EMBEDDING_CLASSIFICATION_DIR
 
     total_files, total_rows = 0, 0
-    # 7 variants flat: original + original_background + 5 asymmetry transforms
+    # Walk eval-method dirs (matched / caliper_group) if present,
+    # otherwise fall back to flat variant layout.
     if classification_root.is_dir():
-        for variant_dir in sorted(classification_root.iterdir()):
-            if not variant_dir.is_dir() or variant_dir.name.startswith("_"):
+        eval_dirs = []
+        for child in sorted(classification_root.iterdir()):
+            if not child.is_dir() or child.name.startswith("_"):
                 continue
-            cohort_root = variant_dir / cohort_dir
-            if cohort_root.is_dir():
-                f, r = walk_root(cohort_root, variant_dir.name)
-                total_files += f
-                total_rows += r
+            if child.name in ("matched", "caliper_group"):
+                eval_dirs.append(child)
+        if not eval_dirs:
+            eval_dirs = [classification_root]
+
+        for eval_dir in eval_dirs:
+            for variant_dir in sorted(eval_dir.iterdir()):
+                if not variant_dir.is_dir() or variant_dir.name.startswith("_"):
+                    continue
+                cohort_root = variant_dir / cohort_dir
+                if cohort_root.is_dir():
+                    label = (f"{eval_dir.name}/{variant_dir.name}"
+                             if eval_dir != classification_root
+                             else variant_dir.name)
+                    f, r = walk_root(cohort_root, label)
+                    total_files += f
+                    total_rows += r
     print(f"\nTOTAL: {total_files} files, {total_rows} rows")
 
 

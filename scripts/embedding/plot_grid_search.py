@@ -85,7 +85,7 @@ def _x_for_classifier(df, classifier):
     if classifier == "xgb":
         x = np.arange(len(df))
         labels = [
-            f"ne{int(r['xgb_n_estimators'])}_md{int(r['xgb_max_depth'])}"
+            f"n_tree{int(r['xgb_n_estimators'])}_max_depth{int(r['xgb_max_depth'])}"
             f"_lr{r['xgb_learning_rate']:g}"
             for _, r in df.iterrows()
         ]
