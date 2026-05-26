@@ -25,8 +25,19 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
 from _paths import PROJECT_ROOT
 project_root = PROJECT_ROOT
 
-from src.config import RAW_IMAGES_DIR, FEATURES_DIR, MIRRORS_DIR, AnalyzeConfig, MirrorConfig
-from src.preprocess import PreprocessPipeline, ProcessedFace, MirrorGenerator
+from src.config import (
+    RAW_IMAGES_DIR, FEATURES_DIR,
+    ALIGNED_DIR as _ALIGNED_DIR,
+    ALIGNED_BACKGROUND_DIR as _ALIGNED_BACKGROUND_DIR,
+    MIRRORS_DIR as _MIRRORS_DIR,
+    MIRRORS_BACKGROUND_DIR as _MIRRORS_BACKGROUND_DIR,
+    AnalyzeConfig, MirrorConfig,
+)
+try:
+    from src.preprocess import PreprocessPipeline, ProcessedFace, MirrorGenerator
+    _HAS_PREPROCESS = True
+except ImportError:
+    _HAS_PREPROCESS = False
 from src.embedding import FeatureExtractor
 from src.asymmetry import calculate_differences
 
@@ -52,24 +63,39 @@ class FeaturePipeline:
         max_cpu_cores: Optional[int] = None,
         input_groups: Optional[List[str]] = None,
         save_aligned_background: bool = True,
+        bg_variant: str = "no_background",
+        from_aligned: bool = False,
+        mirrors_only: bool = False,
     ):
         """
         初始化 Pipeline
 
         Args:
-            raw_images_dir: 原始影像目錄
+            raw_images_dir: 原始影像目錄（from_aligned=False 時使用）
             output_dir: 輸出目錄
             embedding_models: 嵌入模型列表
             feature_types: 特徵類型列表
             n_select: 選擇多少張最正面的相片
             save_intermediate: 是否儲存中間結果
             input_groups: 子目錄名稱列表，每個子目錄直接包含 subject folder
-                (e.g., ["asian_elderly_60plus", "IMDB_60_plus"]).
-                留空 (None) 用內建預設 (health/ACS、health/NAD、patient/good)。
+            bg_variant: "no_background" | "background"
+            from_aligned: True = 從已對齊影像開始（跳過偵測/選照/對齊）
+            mirrors_only: True = 只生成 mirror 影像，不做 embedding 提取
         """
         self.raw_images_dir = Path(raw_images_dir)
         self.output_dir = Path(output_dir)
         self.input_groups = input_groups
+        self.bg_variant = bg_variant
+        self.from_aligned = from_aligned
+        self.mirrors_only = mirrors_only
+
+        # 根據 bg_variant 決定 aligned 與 mirrors 路徑
+        if bg_variant == "background":
+            self.aligned_dir = _ALIGNED_BACKGROUND_DIR
+            self.mirrors_dir = _MIRRORS_BACKGROUND_DIR
+        else:
+            self.aligned_dir = _ALIGNED_DIR
+            self.mirrors_dir = _MIRRORS_DIR
 
         # 預設模型和特徵類型
         self.embedding_models = embedding_models or ["arcface", "dlib", "topofr"]
@@ -78,10 +104,17 @@ class FeaturePipeline:
         # CPU 核心數限制（避免過度使用）
         self._setup_cpu_limit(max_cpu_cores)
 
-        # 確認原始影像目錄存在
-        if not self.raw_images_dir.exists():
-            raise FileNotFoundError(f"原始影像目錄不存在: {self.raw_images_dir}")
-        
+        # 確認來源目錄存在
+        if from_aligned == "mirrors":
+            if not self.mirrors_dir.exists():
+                raise FileNotFoundError(f"鏡射影像目錄不存在: {self.mirrors_dir}")
+        elif from_aligned:
+            if not self.aligned_dir.exists():
+                raise FileNotFoundError(f"對齊影像目錄不存在: {self.aligned_dir}")
+        else:
+            if not self.raw_images_dir.exists():
+                raise FileNotFoundError(f"原始影像目錄不存在: {self.raw_images_dir}")
+
         # 預處理配置
         self.preprocess_config = AnalyzeConfig(
             n_select=n_select,
@@ -89,15 +122,20 @@ class FeaturePipeline:
             also_save_aligned_background=save_aligned_background,
         )
 
-        # 鏡射配置
-        self.mirror_config = self.preprocess_config.mirror
-        self.mirror_gen = MirrorGenerator(
-            method=self.mirror_config.mirror_method,
-            mirror_size=self.mirror_config.mirror_size,
-            feather_px=self.mirror_config.feather_px,
-            margin=self.mirror_config.margin,
-            midline_points=self.mirror_config.midline_points,
-        )
+        # 鏡射配置（from_mirrors 模式不需要）
+        if from_aligned != "mirrors":
+            if not _HAS_PREPROCESS:
+                raise ImportError("此模式需要 mediapipe，請安裝或使用 --from-mirrors")
+            self.mirror_config = self.preprocess_config.mirror
+            self.mirror_gen = MirrorGenerator(
+                method=self.mirror_config.mirror_method,
+                mirror_size=self.mirror_config.mirror_size,
+                feather_px=self.mirror_config.feather_px,
+                margin=self.mirror_config.margin,
+                midline_points=self.mirror_config.midline_points,
+            )
+        else:
+            self.mirror_gen = None
         
 
         # 建立輸出目錄結構
@@ -152,11 +190,11 @@ class FeaturePipeline:
     def _setup_output_dirs(self):
         """建立輸出目錄結構"""
         self.output_dir.mkdir(parents=True, exist_ok=True)
-        
+
         # 為每個模型和特徵類型建立子目錄
         for model in self.embedding_models:
             for ftype in self.feature_types:
-                feature_dir = self.output_dir / model / ftype
+                feature_dir = self.output_dir / model / self.bg_variant / ftype
                 feature_dir.mkdir(parents=True, exist_ok=True)
     
     def _get_processed_subjects(self) -> Set[str]:
@@ -172,12 +210,11 @@ class FeaturePipeline:
         
         for model in self.embedding_models:
             for ftype in self.feature_types:
-                feature_dir = self.output_dir / model / ftype
+                feature_dir = self.output_dir / model / self.bg_variant / ftype
                 if feature_dir.exists():
                     subjects = {f.stem for f in feature_dir.glob("*.npy")}
                     subject_sets.append(subjects)
                 else:
-                    # 目錄不存在，沒有任何人完成
                     subject_sets.append(set())
         
         if not subject_sets:
@@ -193,19 +230,38 @@ class FeaturePipeline:
     def run(self):
         """執行完整 Pipeline"""
         logger.info("=" * 70)
-        logger.info("開始特徵準備 Pipeline")
+        if self.from_aligned == "mirrors":
+            logger.info(f"從已存在的 mirror 影像計算不對稱性特徵（{self.bg_variant}）")
+        elif self.from_aligned:
+            logger.info(f"從已對齊影像計算不對稱性特徵（{self.bg_variant}）")
+        else:
+            logger.info("開始特徵準備 Pipeline")
         logger.info("=" * 70)
-        logger.info(f"原始影像目錄: {self.raw_images_dir}")
+        if self.from_aligned == "mirrors":
+            logger.info(f"影像來源: {self.mirrors_dir}")
+        elif self.from_aligned:
+            logger.info(f"影像來源: {self.aligned_dir}")
+        else:
+            logger.info(f"影像來源: {self.raw_images_dir}")
         logger.info(f"輸出目錄: {self.output_dir}")
         logger.info(f"嵌入模型: {self.embedding_models}")
         logger.info(f"特徵類型: {self.feature_types}")
-        logger.info(f"選擇相片數: {self.preprocess_config.n_select}")
-        
+        logger.info(f"bg_variant: {self.bg_variant}")
+
         self.stats['start_time'] = datetime.now()
-        
+
         # Step 1: 掃描受試者目錄
         logger.info("\n[Step 1] 掃描受試者目錄...")
-        subject_dirs = self._scan_subjects()
+        if self.from_aligned == "mirrors":
+            subject_dirs = sorted([
+                d for d in self.mirrors_dir.iterdir() if d.is_dir()
+            ])
+        elif self.from_aligned:
+            subject_dirs = sorted([
+                d for d in self.aligned_dir.iterdir() if d.is_dir()
+            ])
+        else:
+            subject_dirs = self._scan_subjects()
         self.stats['total_subjects'] = len(subject_dirs)
         logger.info(f"找到 {len(subject_dirs)} 個受試者")
         
@@ -216,7 +272,12 @@ class FeaturePipeline:
 
         # Step 2: 檢查斷點
         logger.info("\n[Step 2] 檢查處理進度...")
-        processed_subjects = self._get_processed_subjects()
+        if self.mirrors_only:
+            processed_subjects = {
+                d.name for d in self.mirrors_dir.iterdir() if d.is_dir()
+            } if self.mirrors_dir.exists() else set()
+        else:
+            processed_subjects = self._get_processed_subjects()
         
         if len(processed_subjects) > 0:
             logger.info(f"發現 {len(processed_subjects)} 個已處理的受試者")
@@ -239,23 +300,38 @@ class FeaturePipeline:
             return
         
         # Step 3: 初始化特徵提取器
-        logger.info("\n[Step 3] 初始化特徵提取器...")
-        extractor = FeatureExtractor()
-        
+        extractor = None
+        if not self.mirrors_only:
+            logger.info("\n[Step 3] 初始化特徵提取器...")
+            extractor = FeatureExtractor()
+        else:
+            logger.info("\n[Step 3] mirrors_only 模式，跳過特徵提取器初始化")
+
         # Step 4: 處理每個受試者
         logger.info(f"\n[Step 4] 處理受試者影像（共 {len(remaining_subjects)} 個）...")
-        
+
         with tqdm(remaining_subjects, desc="處理受試者") as pbar:
             for subject_dir in pbar:
                 subject_id = subject_dir.name
                 pbar.set_description(f"處理 {subject_id}")
-                
+
                 try:
-                    # 處理單個受試者
-                    features = self._process_subject(subject_dir, extractor)
+                    if self.mirrors_only:
+                        features = self._generate_mirrors_only(subject_dir)
+                    elif self.from_aligned == "mirrors":
+                        features = self._process_subject_from_mirrors(subject_dir.name, extractor)
+                    elif self.from_aligned:
+                        features = self._process_subject_from_aligned(subject_dir, extractor)
+                    else:
+                        features = self._process_subject(subject_dir, extractor)
                     
-                    if features:
-                        # 立即儲存特徵
+                    if self.mirrors_only:
+                        if features is not None:
+                            logger.info(f"✓ {subject_id}: mirrors 已儲存")
+                        else:
+                            self.stats['failed_subjects'] += 1
+                            logger.warning(f"✗ {subject_id}: 處理失敗")
+                    elif features:
                         self._save_subject_features(subject_id, features)
                         self.stats['successful_subjects'] += 1
                         logger.info(f"✓ {subject_id}: 特徵已儲存")
@@ -345,7 +421,6 @@ class FeaturePipeline:
             subject_id=subject_id,
         )
         
-        # 預處理
         with PreprocessPipeline(subject_config) as preprocessor:
             try:
                 processed_faces: List[ProcessedFace] = preprocessor.process(images, paths)
@@ -367,7 +442,7 @@ class FeaturePipeline:
 
             # 儲存鏡射結果
             if self.preprocess_config.save_intermediate and subject_id:
-                save_dir = MIRRORS_DIR / subject_id
+                save_dir = self.mirrors_dir / subject_id
                 save_dir.mkdir(parents=True, exist_ok=True)
                 base_name = face.metadata.get("path")
                 if base_name:
@@ -377,16 +452,167 @@ class FeaturePipeline:
                 cv2.imwrite(str(save_dir / f"{base_name}_left.png"), left)
                 cv2.imwrite(str(save_dir / f"{base_name}_right.png"), right)
 
-        # feature_type 到 methods 參數的對應
-        FTYPE_TO_METHOD = {
-            "difference": "differences",
-            "absolute_difference": "absolute_differences",
-            "average": "averages",
-            "relative_differences": "relative_differences",
-            "absolute_relative_differences": "absolute_relative_differences",
-        }
+        return self._extract_and_compute_asymmetry(
+            subject_id, left_images, right_images, extractor
+        )
 
-        # 提取特徵
+    def _process_subject_from_aligned(
+        self,
+        subject_dir: Path,
+        extractor: FeatureExtractor,
+    ) -> Optional[Dict]:
+        """從已對齊影像處理：偵測 landmark → 鏡射 → 提取 → 不對稱性"""
+        import mediapipe as mp
+
+        subject_id = subject_dir.name
+        images, paths = self._load_images_from_subject(subject_dir)
+        if not images:
+            logger.warning(f"{subject_id}: 沒有找到影像")
+            return None
+
+        self.stats['total_images'] += len(images)
+
+        left_images = []
+        right_images = []
+
+        with mp.solutions.face_mesh.FaceMesh(
+            static_image_mode=True,
+            max_num_faces=1,
+            refine_landmarks=True,
+            min_detection_confidence=0.5,
+        ) as face_mesh:
+            for i, img in enumerate(images):
+                rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+                result = face_mesh.process(rgb)
+                if not result.multi_face_landmarks:
+                    logger.debug(f"{subject_id}: 影像 {i} 未偵測到臉部")
+                    continue
+                fl = result.multi_face_landmarks[0]
+                h, w = img.shape[:2]
+                landmarks = np.array(
+                    [[lm.x * w, lm.y * h] for lm in fl.landmark],
+                    dtype=np.float32,
+                )
+
+                left, right = self.mirror_gen.generate(img, landmarks)
+                left_images.append(left)
+                right_images.append(right)
+
+                if self.preprocess_config.save_intermediate:
+                    save_dir = self.mirrors_dir / subject_id
+                    save_dir.mkdir(parents=True, exist_ok=True)
+                    base_name = paths[i].stem if i < len(paths) else f"face_{i:03d}"
+                    cv2.imwrite(str(save_dir / f"{base_name}_left.png"), left)
+                    cv2.imwrite(str(save_dir / f"{base_name}_right.png"), right)
+
+        if not left_images:
+            logger.warning(f"{subject_id}: 沒有可用的鏡射影像")
+            return None
+
+        return self._extract_and_compute_asymmetry(
+            subject_id, left_images, right_images, extractor
+        )
+
+    def _process_subject_from_mirrors(
+        self,
+        subject_id: str,
+        extractor: FeatureExtractor,
+    ) -> Optional[Dict]:
+        """從已存在的 mirror 影像直接提取 embedding 並計算不對稱性"""
+        mirror_dir = self.mirrors_dir / subject_id
+        if not mirror_dir.exists():
+            logger.warning(f"{subject_id}: mirrors 目錄不存在")
+            return None
+
+        left_files = sorted(mirror_dir.glob("*_left.png"))
+        right_files = sorted(mirror_dir.glob("*_right.png"))
+
+        if not left_files or len(left_files) != len(right_files):
+            logger.warning(f"{subject_id}: mirror 檔案不完整 (left={len(left_files)}, right={len(right_files)})")
+            return None
+
+        left_images = [cv2.imread(str(f)) for f in left_files]
+        right_images = [cv2.imread(str(f)) for f in right_files]
+
+        left_images = [img for img in left_images if img is not None]
+        right_images = [img for img in right_images if img is not None]
+
+        if not left_images:
+            logger.warning(f"{subject_id}: 無法讀取 mirror 影像")
+            return None
+
+        self.stats['total_images'] += len(left_images) + len(right_images)
+
+        return self._extract_and_compute_asymmetry(
+            subject_id, left_images, right_images, extractor
+        )
+
+    def _generate_mirrors_only(self, subject_dir: Path) -> Optional[Dict]:
+        """只生成 mirror 影像（不做 embedding 提取），用於準備 background mirrors"""
+        import mediapipe as mp
+
+        subject_id = subject_dir.name
+        images, paths = self._load_images_from_subject(subject_dir)
+        if not images:
+            logger.warning(f"{subject_id}: 沒有找到影像")
+            return None
+
+        self.stats['total_images'] += len(images)
+        count = 0
+
+        with mp.solutions.face_mesh.FaceMesh(
+            static_image_mode=True,
+            max_num_faces=1,
+            refine_landmarks=True,
+            min_detection_confidence=0.5,
+        ) as face_mesh:
+            for i, img in enumerate(images):
+                rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+                result = face_mesh.process(rgb)
+                if not result.multi_face_landmarks:
+                    logger.debug(f"{subject_id}: 影像 {i} 未偵測到臉部")
+                    continue
+                fl = result.multi_face_landmarks[0]
+                h, w = img.shape[:2]
+                landmarks = np.array(
+                    [[lm.x * w, lm.y * h] for lm in fl.landmark],
+                    dtype=np.float32,
+                )
+
+                left, right = self.mirror_gen.generate(img, landmarks)
+
+                save_dir = self.mirrors_dir / subject_id
+                save_dir.mkdir(parents=True, exist_ok=True)
+                base_name = paths[i].stem if i < len(paths) else f"face_{i:03d}"
+                cv2.imwrite(str(save_dir / f"{base_name}_left.png"), left)
+                cv2.imwrite(str(save_dir / f"{base_name}_right.png"), right)
+                count += 1
+
+        if count == 0:
+            logger.warning(f"{subject_id}: 沒有可用的鏡射影像")
+            return None
+
+        self.stats['successful_subjects'] += 1
+        return {}
+
+    # ------------------------------------------------------------------
+
+    FTYPE_TO_METHOD = {
+        "difference": "differences",
+        "absolute_difference": "absolute_differences",
+        "average": "averages",
+        "relative_differences": "relative_differences",
+        "absolute_relative_differences": "absolute_relative_differences",
+    }
+
+    def _extract_and_compute_asymmetry(
+        self,
+        subject_id: str,
+        left_images: List[np.ndarray],
+        right_images: List[np.ndarray],
+        extractor: FeatureExtractor,
+    ) -> Optional[Dict]:
+        """從 left/right mirror 影像提取 embedding 並計算不對稱性特徵"""
         subject_features = {}
 
         for model in self.embedding_models:
@@ -396,52 +622,46 @@ class FeaturePipeline:
             model_features = {}
 
             try:
-                
-                # 批次提取特徵
                 left_dict = extractor.extract_features(left_images, model)
                 right_dict = extractor.extract_features(right_images, model)
-                
+
                 if model not in left_dict or model not in right_dict:
                     logger.warning(f"{subject_id}: {model} 特徵提取失敗")
                     continue
-                
-                # 過濾掉 None（成對過濾）
+
                 valid_pairs = [
                     (l, r) for l, r in zip(left_dict[model], right_dict[model])
                     if l is not None and r is not None
                 ]
-                
+
                 if not valid_pairs:
                     logger.warning(f"{subject_id}: {model} 沒有有效特徵")
                     continue
-                
+
                 left_array = np.array([p[0] for p in valid_pairs])
                 right_array = np.array([p[1] for p in valid_pairs])
-                    
-                # 計算不同類型的特徵
+
                 for ftype in self.feature_types:
-                    if ftype not in FTYPE_TO_METHOD:
+                    if ftype not in self.FTYPE_TO_METHOD:
                         logger.warning(f"未知的特徵類型: {ftype}")
                         continue
-                    
-                    method = FTYPE_TO_METHOD[ftype]
+
+                    method = self.FTYPE_TO_METHOD[ftype]
                     result = calculate_differences(
-                        left_array,
-                        right_array,
-                        methods=[method]
+                        left_array, right_array, methods=[method]
                     )
                     model_features[ftype] = result
-                
+
                 if model_features:
                     subject_features[model] = model_features
                     if model not in self.stats['models_extracted']:
                         self.stats['models_extracted'][model] = 0
                     self.stats['models_extracted'][model] += 1
-            
+
             except Exception as e:
                 logger.warning(f"{subject_id}: {model} 特徵提取失敗 - {e}")
                 continue
-        
+
         return subject_features if subject_features else None
     
     def _load_images_from_subject(self, subject_dir: Path) -> tuple:
@@ -481,7 +701,7 @@ class FeaturePipeline:
                 feature_vector = features[model][ftype]
                 
                 # 儲存路徑
-                feature_dir = self.output_dir / model / ftype
+                feature_dir = self.output_dir / model / self.bg_variant / ftype
                 npy_path = feature_dir / f"{subject_id}.npy"
                 
                 # 儲存 .npy
@@ -538,22 +758,45 @@ def main():
     ap.add_argument("--max-cpu-cores", type=int, default=2)
     ap.add_argument("--no-aligned-background", action="store_true",
                     help="不產出 aligned_background/（debug 用；預設會產）")
+    ap.add_argument("--from-aligned", action="store_true",
+                    help="從已對齊影像開始（跳過偵測/選照/對齊，只做 mirror + asymmetry）")
+    ap.add_argument("--from-mirrors", action="store_true",
+                    help="從已存在的 mirror 影像直接計算（跳過 mirror 生成，只做 extract + asymmetry）")
+    ap.add_argument("--mirrors-only", action="store_true",
+                    help="只從 aligned 影像生成 mirror（不做 embedding 提取）")
+    ap.add_argument("--bg-variant", choices=["no_background", "background"],
+                    default="no_background",
+                    help="背景變體（控制讀寫路徑）")
+    ap.add_argument("--embedding-models", nargs="+", default=None,
+                    help="覆寫預設嵌入模型列表")
     args = ap.parse_args()
 
     raw_dir = args.input_root if args.input_root is not None else RAW_IMAGES_DIR
     out_dir = args.output_dir if args.output_dir is not None else FEATURES_DIR
+    emb_models = args.embedding_models or ["arcface", "dlib", "topofr"]
+
+    from_aligned_mode = False
+    if args.mirrors_only:
+        from_aligned_mode = True
+    elif args.from_mirrors:
+        from_aligned_mode = "mirrors"
+    elif args.from_aligned:
+        from_aligned_mode = True
 
     try:
         pipeline = FeaturePipeline(
             raw_images_dir=raw_dir,
             output_dir=out_dir,
-            embedding_models=["arcface", "dlib", "topofr"],
+            embedding_models=emb_models,
             feature_types=["difference", "absolute_difference", "average", "relative_differences", "absolute_relative_differences"],
             n_select=args.n_select,
             save_intermediate=True,
             max_cpu_cores=args.max_cpu_cores,
             input_groups=args.input_groups,
             save_aligned_background=not args.no_aligned_background,
+            bg_variant=args.bg_variant,
+            from_aligned=from_aligned_mode,
+            mirrors_only=args.mirrors_only,
         )
         pipeline.run()
 
