@@ -37,6 +37,7 @@ import pandas as pd
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 METRICS = [("auc", "AUC"), ("balacc", "BalAcc"), ("mcc", "MCC")]
+METRIC_YLIM = {"auc": (0.3, 0.85), "balacc": (0.5, 0.8), "mcc": (0.1, 0.6)}
 
 HC_FAMILY = ["ad_vs_hc", "ad_vs_nad", "ad_vs_acs"]
 HC_GROUP_COLORS = {
@@ -160,6 +161,10 @@ def _draw_3x2(rows_full, rows_matched_by_part, classifier, out_path,
             lab = HC_GROUP_LABELS.get(partition, partition)
             _plot_line(ax_m, x, df_part, metric, lab, color, with_ci=True)
         ax_m.grid(True, alpha=0.3)
+
+        if metric in METRIC_YLIM:
+            ax_full.set_ylim(*METRIC_YLIM[metric])
+            ax_m.set_ylim(*METRIC_YLIM[metric])
 
         # X-axis only on bottom row
         if row == len(METRICS) - 1:

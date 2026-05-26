@@ -202,11 +202,14 @@ def build_one(variant_dir):
     return len(df)
 
 
+_REDUCER_PREFIXES = {"pca", "drop_feats"}
+
+
 def _iter_reducer_dirs(class_root):
     """Yield reducer-leaf dirs under a classification root.
 
-    NEW layout: class_root/<reducer>/<partition>/{fwd,rev}/<emb>/<clf>/
-    rglob('fwd' or 'rev') → marker.parent.parent = reducer-leaf.
+    Layout: class_root/<reducer>/<clf>/<param>/fwd|rev/...
+    Reducer is depth-1 (no_drop) or depth-2 (pca/*, drop_feats/*).
 
     Skips paths containing any underscore-prefixed segment (_summary, etc.).
     """
@@ -215,8 +218,18 @@ def _iter_reducer_dirs(class_root):
     seen = set()
     for marker_name in ("fwd", "rev"):
         for marker in class_root.rglob(marker_name):
-            if marker.is_dir():
-                seen.add(marker.parent.parent)
+            if not marker.is_dir():
+                continue
+            parts = marker.relative_to(class_root).parts
+            if not parts:
+                continue
+            if parts[0] in _REDUCER_PREFIXES:
+                if len(parts) < 2:
+                    continue
+                reducer = class_root / parts[0] / parts[1]
+            else:
+                reducer = class_root / parts[0]
+            seen.add(reducer)
     for reducer in sorted(seen):
         rel_parts = reducer.relative_to(class_root).parts
         if any(p.startswith("_") for p in rel_parts):
