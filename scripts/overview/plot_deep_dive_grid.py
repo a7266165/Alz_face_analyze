@@ -35,12 +35,12 @@ from matplotlib.patches import Rectangle
 ROOT = Path(__file__).resolve().parents[2]
 import sys as _sys
 _sys.path.insert(0, str(ROOT))
-from src.config import OVERVIEW_DIR, cohort_name  # noqa: E402
+from src.config import OVERVIEW_DIR, cohort_path  # noqa: E402
 
 _variant = os.environ.get("GRID_VARIANT", "acs")
 _cohort_mode = os.environ.get("COHORT_MODE",
                               "p_first_cdr05_hc_first_cdrall_or_mmseall")
-DEEP = OVERVIEW_DIR / cohort_name(_cohort_mode) / "stat_grid" / _variant
+DEEP = OVERVIEW_DIR / cohort_path(_cohort_mode) / "stat_grid" / _variant
 LONG_CSV = DEEP / "stat_grid_long.csv"
 HEADER_STATS_CSV = DEEP / "cell_header_stats.csv"
 

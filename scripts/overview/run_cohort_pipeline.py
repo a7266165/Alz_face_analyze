@@ -36,7 +36,7 @@ import pandas as pd
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))
-from src.config import OVERVIEW_DIR, cohort_name
+from src.config import OVERVIEW_DIR, cohort_path
 
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s [%(levelname)s] %(message)s")
@@ -325,7 +325,7 @@ def main():
                              "cohort_summary.csv + README.md from existing outputs")
     args = parser.parse_args()
 
-    cohort_dir = cohort_name(args.cohort_mode)
+    cohort_dir = cohort_path(args.cohort_mode)
     summary_root = OVERVIEW_DIR / cohort_dir
     summary_root.mkdir(parents=True, exist_ok=True)
     logger.info(f"Cohort summary root: {summary_root}")

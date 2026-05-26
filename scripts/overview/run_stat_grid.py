@@ -30,7 +30,7 @@ from scipy import stats
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))
 from src.config import (
-    LONGITUDINAL_FEATURES_DIR, OVERVIEW_DIR, VALID_COHORT_CHOICES, cohort_name,
+    LONGITUDINAL_FEATURES_DIR, OVERVIEW_DIR, VALID_COHORT_CHOICES, cohort_path,
 )
 from scripts.utilities.cohort import (
     build_cohort_ad_hi_lo, build_cohort_ad_vs_HCgroup, VALID_DESIGNS,
@@ -684,7 +684,7 @@ def _hilo_matched_csv(cohort_mode, metric_low):
     """Path to the matched_features.csv produced by run_cross_matched.py for a
     given cohort_mode + metric (mmse/casi). Used as the input for design=
     'cross_matched' in build_cohort_ad_hi_lo."""
-    return (OVERVIEW_DIR / cohort_name(cohort_mode) / "cross_matched" /
+    return (OVERVIEW_DIR / cohort_path(cohort_mode) / "cross_matched" /
             f"{metric_low}_high_vs_low" / "matched_features.csv")
 
 
@@ -718,7 +718,7 @@ def main():
     if args.eacs_sources:
         os.environ["EACS_SOURCES"] = ",".join(args.eacs_sources)
 
-    grid_root = OVERVIEW_DIR / cohort_name(args.cohort_mode) / "stat_grid"
+    grid_root = OVERVIEW_DIR / cohort_path(args.cohort_mode) / "stat_grid"
     if args.output_dir is not None:
         output_dir = args.output_dir
     else:
