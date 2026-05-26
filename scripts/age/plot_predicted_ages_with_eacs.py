@@ -28,7 +28,7 @@ from _paths import PROJECT_ROOT  # type: ignore
 
 from src.config import (
     DEMOGRAPHICS_DIR,
-    AGE_PREDICTION_DIR,
+    AGE_ERROR_SCATTER_DIR,
     PREDICTED_AGES_FILE,
 )
 
@@ -146,7 +146,7 @@ def main():
         colors={"P": P_COLOR}, labels={"P": "Patient"},
     )
 
-    out = AGE_PREDICTION_DIR / "predicted_ages_scatter_with_utkface.png"
+    out = AGE_ERROR_SCATTER_DIR / "predicted_ages_scatter_with_utkface.png"
     out.parent.mkdir(parents=True, exist_ok=True)
     plt.tight_layout()
     plt.savefig(str(out), dpi=150, bbox_inches="tight")

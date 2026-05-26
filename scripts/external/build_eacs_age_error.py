@@ -23,12 +23,12 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from src.config import (
     DEMOGRAPHICS_DIR,
-    AGE_PREDICTION_DIR,
+    AGE_ERROR_STAT_DIR,
     PREDICTED_AGES_FILE,
     PREDICTED_AGES_CALIBRATED_FILE,
 )
 
-OUTPUT_CSV = AGE_PREDICTION_DIR / "eacs_age_error.csv"
+OUTPUT_CSV = AGE_ERROR_STAT_DIR / "eacs_age_error.csv"
 
 
 def load_eacs_ages():

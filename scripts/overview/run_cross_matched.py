@@ -41,7 +41,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))
 from src.config import (
     AGE_PRED_ERROR_STAT_DIR, EMO_AU_FEATURE_STAT_DIR,
-    OVERVIEW_DIR, VALID_COHORT_CHOICES, cohort_name, cohort_spec_from_name,
+    OVERVIEW_DIR, VALID_COHORT_CHOICES, cohort_path, cohort_spec_from_name,
 )
 from scripts.utilities.cohort import (
     _keep_visits_with_features, _pick_first_visit_with_features,
@@ -280,7 +280,7 @@ def run_hc_groups_comparison(comparison, cohort_dir, cohort_mode,
     partition = f"ad_vs_{comparison.lower()}"
     artifacts_dir = OVERVIEW_DIR / cohort_dir / "cross_matched" / partition
     artifacts_dir.mkdir(parents=True, exist_ok=True)
-    age_stat_dir = AGE_PRED_ERROR_STAT_DIR / cohort_dir / partition
+    age_stat_dir = AGE_PRED_ERROR_STAT_DIR / cohort_dir / "1by1match" / partition
     age_stat_dir.mkdir(parents=True, exist_ok=True)
 
     cohort.to_csv(artifacts_dir / "matched_features.csv", index=False)
@@ -453,10 +453,10 @@ def _run_hilo(args, metric):
     group_col = f"{metric_low}_group"
     comparison_name = f"{metric_low}_high_vs_low"
 
-    cohort_dir = cohort_name(args.cohort_mode)
+    cohort_dir = cohort_path(args.cohort_mode)
     comparison_dir = OVERVIEW_DIR / cohort_dir / "cross_matched" / comparison_name
     comparison_dir.mkdir(parents=True, exist_ok=True)
-    age_stat_dir = AGE_PRED_ERROR_STAT_DIR / cohort_dir / comparison_name
+    age_stat_dir = AGE_PRED_ERROR_STAT_DIR / cohort_dir / "1by1match" / comparison_name
     age_stat_dir.mkdir(parents=True, exist_ok=True)
     emo_stat_dir = EMO_AU_FEATURE_STAT_DIR / cohort_dir / comparison_name
     emo_stat_dir.mkdir(parents=True, exist_ok=True)
@@ -656,7 +656,7 @@ def main():
     parser.add_argument("--stat", choices=["ttest", "mannwhitney", "auto"], default="auto")
     args = parser.parse_args()
 
-    cohort_dir = cohort_name(args.cohort_mode)
+    cohort_dir = cohort_path(args.cohort_mode)
     if args.comparison.startswith("ad_vs_"):
         comparison_label = args.comparison.replace("ad_vs_", "").upper()
         run_hc_groups_comparison(comparison_label, cohort_dir,

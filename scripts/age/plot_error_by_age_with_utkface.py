@@ -258,14 +258,14 @@ def main():
                              "+ data/corrected_ages.csv (output of "
                              "age_error_bootstrap_correction.py).")
     parser.add_argument("--output-dir", type=Path, default=AGE_PREDICTION_DIR,
-                        help="Root dir under which error_by_age/ and "
-                             "residual_by_age/ are written.")
+                        help="Root dir under which error/ and "
+                             "correction/ are written.")
     args = parser.parse_args()
 
-    DIR_ERR = args.output_dir / "error_by_age"
-    DIR_ERR_SW = DIR_ERR / "sw10"
-    DIR_RES = args.output_dir / "residual_by_age"
-    DIR_RES_SW = DIR_RES / "sw10"
+    DIR_ERR = args.output_dir / "correction" / "lines" / "no_sliding_window"
+    DIR_ERR_SW = args.output_dir / "correction" / "lines" / "sliding_window_10"
+    DIR_RES = args.output_dir / "error" / "lines" / "no_sliding_window"
+    DIR_RES_SW = args.output_dir / "error" / "lines" / "sliding_window_10"
 
     logger.info(f"bootstrap-dir = {args.bootstrap_dir}")
     logger.info(f"output-dir    = {args.output_dir}")

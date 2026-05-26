@@ -23,7 +23,10 @@ project_root = PROJECT_ROOT
 from src.config import (
     DEMOGRAPHICS_DIR,
     AGE_PREDICTION_DIR,
-    CALIBRATION_DIR,
+    AGE_ERROR_SCATTER_DIR,
+    AGE_ERROR_STAT_DIR,
+    BOOTSTRAP_DIR,
+    CORRECTION_DIR,
     PREDICTED_AGES_FILE,
 )
 
@@ -84,6 +87,8 @@ def filter_cohort(df_matched: pd.DataFrame, cohort_mode: str) -> pd.DataFrame:
     'all'           : no-op (every visit per subject; current default).
     'p_first_cdr05_hc_all_cdrall_or_mmseall' : P → first eligible visit
                       (CDR>=0.5) with .npy fallback; NAD/ACS → all visits.
+    'p_first_cdrall_hc_all_cdrall_or_mmseall' : P → first visit (no CDR
+                      filter); NAD/ACS → all visits.
     """
     if cohort_mode == "all":
         return df_matched
@@ -92,9 +97,10 @@ def filter_cohort(df_matched: pd.DataFrame, cohort_mode: str) -> pd.DataFrame:
     df_hc = df_matched[df_matched["group"].isin(["NAD", "ACS"])].copy()
 
     df_p["subject"] = df_p["ID"].apply(lambda x: x.rsplit("-", 1)[0])
-    df_p_eligible = df_p[pd.to_numeric(df_p["Global_CDR"], errors="coerce") >= 0.5]
-    # First-visit pick per subject; .npy fallback baked in (rows here already
-    # have a predicted_age, so being in df_matched ⇔ has .npy + age).
+    if "cdr05" in cohort_mode:
+        df_p_eligible = df_p[pd.to_numeric(df_p["Global_CDR"], errors="coerce") >= 0.5]
+    else:
+        df_p_eligible = df_p
     pick = (df_p_eligible.sort_values("ID")
                           .drop_duplicates("subject", keep="first"))
     return pd.concat([pick.drop(columns=["subject"]), df_hc], ignore_index=True)
@@ -535,7 +541,6 @@ COLORS = {"ACS": "#4CAF50", "NAD": "#2196F3", "P": "#F44336"}
 
 def plot_error_by_age_combined(output_dir: Path):
     """讀取 bootstrap 校正後資料，畫三組疊合的 per-integer-age error 折線圖。"""
-    from src.config import BOOTSTRAP_DIR
 
     csv_path = BOOTSTRAP_DIR / "data" / "corrected_ages.csv"
     df = pd.read_csv(csv_path, encoding="utf-8-sig")
@@ -582,34 +587,39 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--cohort-mode", default="all",
                         choices=["all",
-                                 "p_first_cdr05_hc_all_cdrall_or_mmseall"])
+                                 "p_first_cdr05_hc_all_cdrall_or_mmseall",
+                                 "p_first_cdrall_hc_all_cdrall_or_mmseall"])
     parser.add_argument("--output-dir", type=Path, default=AGE_PREDICTION_DIR)
-    parser.add_argument("--stat-dir", type=Path, default=CALIBRATION_DIR,
+    parser.add_argument("--stat-dir", type=Path, default=AGE_ERROR_STAT_DIR,
                         help="Where the patient-stratified per-score analyses "
                              "(MMSE/CASI/CDR) are written. Default = "
-                             "CALIBRATION_DIR.")
+                             "AGE_ERROR_STAT_DIR.")
+    parser.add_argument("--scatter-dir", type=Path, default=AGE_ERROR_SCATTER_DIR)
+    parser.add_argument("--correction-dir", type=Path, default=CORRECTION_DIR)
     args = parser.parse_args()
 
     predicted_ages_file = PREDICTED_AGES_FILE
     demo_dir = DEMOGRAPHICS_DIR
-    output_dir = args.output_dir
-    output_dir.mkdir(parents=True, exist_ok=True)
-    output_path = output_dir / "predicted_ages_scatter.png"
-    logger.info(f"cohort_mode = {args.cohort_mode},  output_dir = {output_dir}")
+    stat_dir = args.stat_dir
+    scatter_dir = args.scatter_dir
+    correction_dir = args.correction_dir
+    stat_dir.mkdir(parents=True, exist_ok=True)
+    scatter_dir.mkdir(parents=True, exist_ok=True)
+    correction_dir.mkdir(parents=True, exist_ok=True)
+    output_path = scatter_dir / "predicted_ages_scatter.png"
+    logger.info(f"cohort_mode = {args.cohort_mode},  output_dir = {args.output_dir}")
 
     predicted_ages = load_predicted_ages(predicted_ages_file)
     demo = load_demographics(demo_dir)
     df_matched = match_ages(predicted_ages, demo)
     df_matched = filter_cohort(df_matched, args.cohort_mode)
 
-    print_statistics(predicted_ages, df_matched, output_dir)
-    sliding_window_age_error(df_matched, output_dir)
-    plot_error_by_age_combined(output_dir)
+    print_statistics(predicted_ages, df_matched, stat_dir)
+    sliding_window_age_error(df_matched, stat_dir)
+    plot_error_by_age_combined(correction_dir)
     plot_scatter(df_matched, output_path)
 
     # Patient 專屬分析
-    stat_dir = args.stat_dir
-    stat_dir.mkdir(parents=True, exist_ok=True)
     patient_score_stratified_error(df_matched, "MMSE", MMSE_BINS, stat_dir)
     patient_score_stratified_error(df_matched, "CASI", CASI_BINS, stat_dir)
     patient_score_error_correlation(df_matched, "MMSE", stat_dir)

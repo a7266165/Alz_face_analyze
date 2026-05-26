@@ -25,7 +25,7 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
 from _paths import PROJECT_ROOT  # type: ignore
 
-from src.config import DEMOGRAPHICS_DIR, AGE_PREDICTION_DIR, PREDICTED_AGES_FILE
+from src.config import DEMOGRAPHICS_DIR, AGE_ERROR_SCATTER_DIR, PREDICTED_AGES_FILE
 
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s - %(levelname)s - %(message)s")
@@ -205,7 +205,7 @@ def main():
         default_name = f"{stem}_minpred{int(args.min_pred)}.png"
 
     out = args.output if args.output is not None else (
-        AGE_PREDICTION_DIR / default_name)
+        AGE_ERROR_SCATTER_DIR / default_name)
     out.parent.mkdir(parents=True, exist_ok=True)
     plt.tight_layout()
     plt.savefig(str(out), dpi=150, bbox_inches="tight")

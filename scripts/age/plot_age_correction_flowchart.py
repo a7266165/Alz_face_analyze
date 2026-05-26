@@ -18,9 +18,9 @@ from _paths import PROJECT_ROOT  # noqa: F401
 
 from graphviz import Digraph
 
-from src.config import AGE_PREDICTION_DIR
+from src.config import CORRECTION_DIR
 
-OUTPUT_DIR = AGE_PREDICTION_DIR
+OUTPUT_DIR = CORRECTION_DIR
 
 NODE_W = "2.6"
 

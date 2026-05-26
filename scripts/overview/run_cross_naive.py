@@ -43,7 +43,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from src.config import (
     AGE_PRED_ERROR_STAT_DIR, ASYMMETRY_FEATURE_STAT_DIR,
     EMBEDDING_FEATURE_STAT_DIR, EMO_AU_FEATURE_STAT_DIR,
-    OVERVIEW_DIR, VALID_COHORT_CHOICES, cohort_name,
+    OVERVIEW_DIR, VALID_COHORT_CHOICES, cohort_path,
 )
 from scripts.utilities.cohort import build_cohort_ad_vs_HCgroup
 from scripts.utilities.feature_loaders import (
@@ -174,7 +174,7 @@ def main():
                         choices=["ACS", "ACS_ext", "EACS"], default="ACS")
     args = parser.parse_args()
 
-    cohort_dir = cohort_name(args.cohort_mode)
+    cohort_dir = cohort_path(args.cohort_mode)
     partition = "ad_vs_hc"
     design_dir = OVERVIEW_DIR / cohort_dir / "cross_naive"
     partition_dir = design_dir / partition
@@ -183,7 +183,7 @@ def main():
     def dir_for(modality):
         direction = MODALITY_DIRECTION[modality]
         if direction == "age":
-            d = AGE_PRED_ERROR_STAT_DIR / cohort_dir / partition
+            d = AGE_PRED_ERROR_STAT_DIR / cohort_dir / "all" / partition
         elif direction == "emotion":
             d = EMO_AU_FEATURE_STAT_DIR / cohort_dir / partition
         elif direction == "landmark_asymmetry":

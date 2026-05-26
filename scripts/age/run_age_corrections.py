@@ -1,7 +1,7 @@
 """
 執行三條年齡校正 pipeline：CalibrationModel / BootstrapCorrector / MeanCorrector
 
-輸出目錄結構（在 CORRECTIONS_DIR 下）：
+輸出目錄結構（在 CORRECTION_DIR 下）：
   calibration/train90_val10/  — K-fold (Train 90% / Val 10%)
   calibration/train10_val90/  — K-fold (Train 10% / Val 90%)
   calibration/comparison.csv  — 兩種 calibration 的 MAE 比較
@@ -22,7 +22,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 from src.config import (
     CALIBRATION_DIR,
     BOOTSTRAP_DIR,
-    CORRECTIONS_DIR,
+    CORRECTION_DIR,
     DEMOGRAPHICS_DIR,
     MEAN_CORRECTION_DIR,
     PREDICTED_AGES_FILE,
@@ -167,7 +167,7 @@ def run_mean_correction(
 def main() -> None:
     logger.info(f"Demographics: {DEMOGRAPHICS_DIR}")
     logger.info(f"Predicted ages: {PREDICTED_AGES_FILE}")
-    logger.info(f"Output root: {CORRECTIONS_DIR}")
+    logger.info(f"Output root: {CORRECTION_DIR}")
 
     df_acs, df_nad, df_p = load_demographics_for_calibration(
         DEMOGRAPHICS_DIR, PREDICTED_AGES_FILE, cohort_mode="all",
