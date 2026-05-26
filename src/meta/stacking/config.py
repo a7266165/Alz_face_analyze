@@ -4,7 +4,7 @@ Meta Analysis 設定
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 
 @dataclass
@@ -13,65 +13,83 @@ class MetaConfig:
     Meta 分析設定
 
     Attributes:
-        cdr_threshold: CDR 閾值篩選
-        n_folds: 交叉驗證折數
+        cohort_mode: cohort 模式（用於建構 OOF 路徑）
+        bg_mode: 背景模式
+        photo_mode: 照片聚合模式
+        reducer: 降維方式（固定 no_drop）
+        base_classifier: base model 分類器名稱
+        base_classifier_param: base model 分類器參數子目錄
+        direction: forward / reverse
+        eval_method: 評估匹配方法
+        match_level: 匹配層級
+        eval_unit: 評估單位
+        match_strategy: 匹配策略（統一指定）
+        partition: 資料分割
+        emotion_method: emotion 來源 ("emonet" 或 schema 裡的 tool 名)
+        emotion_features_dir: .npy 特徵目錄
+        emotion_schema_file: _schema.json 路徑
+        emonet_csv: EmoNet CSV 路徑
+        meta_classifiers: meta-level classifier 清單
         random_seed: 隨機種子
-        save_models: 是否儲存模型
-        save_predictions: 是否儲存預測結果
-        save_reports: 是否儲存報告
-        models: 要分析的嵌入模型列表 (預設: ["arcface", "topofr"])
-        asymmetry_method: 不對稱性特徵方法名稱
-        n_features_list: 要分析的 n_features 列表 (None 表示自動發現全部)
+        models: 要分析的 embedding 模型列表
         demographics_dir: 人口學資料目錄
-        predicted_ages_file: 預測年齡 JSON 檔案路徑
+        predicted_ages_file: 預測年齡 JSON 路徑
     """
 
-    # 資料設定
-    cdr_threshold: float = 0
+    # --- embedding pipeline 路徑參數 ---
+    cohort_mode: str = "p_first_cdr05_hc_first_cdrall_or_mmseall"
+    bg_mode: str = "no_background"
+    photo_mode: str = "mean"
+    reducer: str = "no_drop"
+    base_classifier: str = "logistic"
+    base_classifier_param: str = "C_1"
+    direction: str = "fwd"
+    eval_method: str = "1by1matched"
+    match_level: str = "subject_match"
+    eval_unit: str = "eval_by_subject"
+    match_strategy: str = "match_randomly"
+    partition: str = "ad_vs_hc"
 
-    # 訓練設定（折數由 base model 預測檔的 fold 欄位決定）
+    # --- emotion 設定 ---
+    emotion_method: str = "emonet"
+    emotion_features_dir: Optional[Path] = None
+    emotion_schema_file: Optional[Path] = None
+    emonet_csv: Optional[Path] = None
+
+    # --- meta classifier ---
+    meta_classifiers: List[str] = field(
+        default_factory=lambda: ["tabpfn"],
+    )
+
+    # --- 前處理 ---
+    normalize: Optional[str] = None  # None, "minmax", "standard"
+
+    # --- 訓練 ---
     random_seed: int = 42
 
-    # 輸出設定
+    # --- 輸出 ---
     save_models: bool = True
     save_predictions: bool = True
     save_reports: bool = True
 
-    # 分析範圍設定
-    models: List[str] = field(default_factory=lambda: ["arcface", "topofr"])
-    asymmetry_method: str = "absolute_relative_differences"
-    n_features_list: Optional[List[int]] = None  # None = 自動發現全部
-    module_combinations: Optional[List[Tuple[int, ...]]] = None  # None = 只跑 (1,2,3,4)
+    # --- 分析範圍 ---
+    models: List[str] = field(
+        default_factory=lambda: ["arcface", "topofr"],
+    )
 
-    # 資料路徑
+    # --- 資料路徑 ---
     demographics_dir: Optional[Path] = None
     predicted_ages_file: Optional[Path] = None
 
     def __post_init__(self):
-        """驗證設定"""
-        valid_models = {"arcface", "topofr", "dlib"}
+        valid_models = {"arcface", "topofr", "dlib", "vggface"}
         for m in self.models:
             if m not in valid_models:
                 raise ValueError(f"無效的模型: {m}，必須是 {valid_models}")
 
-        valid_methods = {
-            "average", "difference", "absolute_difference",
-            "relative_differences", "absolute_relative_differences",
-        }
-        if self.asymmetry_method not in valid_methods:
-            raise ValueError(
-                f"無效的不對稱方法: {self.asymmetry_method}，"
-                f"必須是 {valid_methods}"
-            )
-
-        if self.module_combinations is not None:
-            valid_modules = {1, 2, 3, 4}
-            for combo in self.module_combinations:
-                if not combo:
-                    raise ValueError("模組組合不可為空")
-                invalid = set(combo) - valid_modules
-                if invalid:
-                    raise ValueError(
-                        f"模組組合 {combo} 中含無效 ID: {invalid}，"
-                        f"有效值: {valid_modules}"
-                    )
+        valid_clf = {"tabpfn", "logistic", "xgboost"}
+        for c in self.meta_classifiers:
+            if c not in valid_clf:
+                raise ValueError(
+                    f"無效的 meta classifier: {c}，必須是 {valid_clf}"
+                )

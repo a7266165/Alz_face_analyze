@@ -1,227 +1,237 @@
 """
-Meta Analysis 資料載入器（折疊對齊版）
+Meta Analysis 資料載入器（折疊對齊版 v2）
 
-載入 14 個特徵：
-  - lr_score_original (原始臉 LR 分數, M1)
-  - lr_score_asymmetry (不對稱性 LR 分數, M2)
-  - real_age, age_error (M3)
-  - 8 個表情 + Valence + Arousal (M4)
+載入 14 個特徵（最大，依 emotion_method 動態調整）：
+  - lr_score_original, lr_score_asymmetry (OOF scores)
+  - real_age, age_error (demographics + age prediction)
+  - 7~10 emotion features (依 method: emonet=10, openface=8, 其他=7)
 
-從 run_analyze 的 train/test CSV 建構 per-fold 資料，
-使 meta-learner 的折疊與 base model 的 K-fold CV 對齊。
+從 embedding classification pipeline 的 forward_oof_scores_subject.csv 讀取
+OOF scores，搭配 EmoNet CSV 或 per-visit .npy 讀取 emotion features。
 """
 
 import json
 import logging
 import re
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 
 import numpy as np
 import pandas as pd
 
+from src.config import (
+    EMBEDDING_CLASSIFICATION_DIR,
+    cohort_name,
+    cohort_spec_from_name,
+)
 from src.meta.loader.dataset import FoldData, MetaDataset
 
 logger = logging.getLogger(__name__)
 
+FIXED_COLUMNS = ["lr_score_original", "lr_score_asymmetry", "real_age", "age_error"]
+
+EMOTION_NAMES = frozenset({
+    "anger", "contempt", "disgust", "fear", "happiness",
+    "sadness", "surprise", "neutral",
+})
+
+EMONET_COLUMNS = [
+    "anger", "contempt", "disgust", "fear", "happiness",
+    "neutral", "sadness", "surprise", "valence", "arousal",
+]
+
 
 class MetaDataLoader:
     """
-    Meta 分析資料載入器（折疊對齊版）
+    Meta 分析資料載入器（折疊對齊版 v2）
 
-    載入 base model 的 train/test 預測分數（含 fold 欄位），
-    結合 emotion + age 特徵，建構 per-fold 資料集。
+    讀取 OOF scores + emotion + age，建構 per-fold 資料集。
     """
-
-    # Emotion 特徵欄位
-    EMOTION_COLUMNS = [
-        "Anger", "Contempt", "Disgust", "Fear", "Happiness",
-        "Neutral", "Sadness", "Surprise", "Valence", "Arousal",
-    ]
-
-    # 完整 14 特徵欄位順序（M1~M4 對齊論文）
-    FEATURE_COLUMNS = [
-        "lr_score_original", "lr_score_asymmetry",
-        "real_age", "age_error",
-        "Anger", "Contempt", "Disgust", "Fear", "Happiness",
-        "Neutral", "Sadness", "Surprise", "Valence", "Arousal",
-    ]
-
-    # 模組定義（與論文 M1~M4 對齊）
-    # M1: 生物認證 (original embeddings → lr_score_original)
-    # M2: 不對稱性 (abs_rel_diff embeddings → lr_score_asymmetry)
-    # M3: 年齡估測 (real_age, age_error)
-    # M4: 表情 (10 emotion scores)
-    MODULE_GROUPS: Dict[int, List[str]] = {
-        1: ["lr_score_original"],
-        2: ["lr_score_asymmetry"],
-        3: ["real_age", "age_error"],
-        4: ["Anger", "Contempt", "Disgust", "Fear", "Happiness",
-            "Neutral", "Sadness", "Surprise", "Valence", "Arousal"],
-    }
-
-    MODULE_NAMES: Dict[int, str] = {
-        1: "BioAuth",
-        2: "Asymmetry",
-        3: "Age",
-        4: "Expression",
-    }
 
     def __init__(
         self,
-        predictions_dir: Path,
-        emotion_scores_file: Path,
-        demographics_dir: Path,
-        predicted_ages_file: Path,
-        n_features: int,
-        model: str,
-        modules: Tuple[int, ...] = (1, 2, 3, 4),
-        asymmetry_method: str = "absolute_relative_differences",
-        cdr_threshold: float = 0,
+        emb_model: str,
+        # embedding pipeline path params
+        cohort_mode: str,
+        bg_mode: str,
+        photo_mode: str,
+        reducer: str,
+        base_classifier: str,
+        base_classifier_param: str,
+        direction: str,
+        eval_method: str,
+        match_level: str,
+        eval_unit: str,
+        match_strategy: str,
+        partition: str,
+        # emotion
+        emotion_method: str,
+        asymmetry_variant: str = "absolute_relative_differences",
+        emotion_features_dir: Optional[Path] = None,
+        emotion_schema_file: Optional[Path] = None,
+        emonet_csv: Optional[Path] = None,
+        # age
+        demographics_dir: Optional[Path] = None,
+        predicted_ages_file: Optional[Path] = None,
     ):
-        self.predictions_dir = Path(predictions_dir)
-        self.emotion_scores_file = Path(emotion_scores_file)
-        self.demographics_dir = Path(demographics_dir)
-        self.predicted_ages_file = Path(predicted_ages_file)
-        self.n_features = n_features
-        self.model = model
-        self.modules = tuple(sorted(modules))
-        self.active_feature_columns = self._resolve_feature_columns(self.modules)
-        self.asymmetry_method = asymmetry_method
-        self.cdr_threshold = cdr_threshold
+        self.emb_model = emb_model
+        self.cohort_mode = cohort_mode
+        self.bg_mode = bg_mode
+        self.photo_mode = photo_mode
+        self.reducer = reducer
+        self.base_classifier = base_classifier
+        self.base_classifier_param = base_classifier_param
+        self.direction = direction
+        self.eval_method = eval_method
+        self.match_level = match_level
+        self.eval_unit = eval_unit
+        self.match_strategy = match_strategy
+        self.partition = partition
+        self.emotion_method = emotion_method
+        self.asymmetry_variant = asymmetry_variant
+        self.emotion_features_dir = Path(emotion_features_dir) if emotion_features_dir else None
+        self.emotion_schema_file = Path(emotion_schema_file) if emotion_schema_file else None
+        self.emonet_csv = Path(emonet_csv) if emonet_csv else None
+        self.demographics_dir = Path(demographics_dir) if demographics_dir else None
+        self.predicted_ages_file = Path(predicted_ages_file) if predicted_ages_file else None
 
-    def _resolve_feature_columns(self, modules: Tuple[int, ...]) -> List[str]:
-        """根據選定模組計算對應的特徵欄位列表"""
-        cols = []
-        for mod_id in sorted(modules):
-            if mod_id not in self.MODULE_GROUPS:
-                raise ValueError(
-                    f"無效的模組 ID: {mod_id}，有效值: {list(self.MODULE_GROUPS.keys())}"
-                )
-            cols.extend(self.MODULE_GROUPS[mod_id])
-        return cols
+        self.emotion_columns = self._resolve_emotion_columns()
+        self.feature_columns = list(FIXED_COLUMNS) + self.emotion_columns
 
-    @staticmethod
-    def modules_to_tag(modules: Tuple[int, ...]) -> str:
-        """模組元組 → 路徑標籤，如 (1, 2) → 'modules_1_2'"""
-        return "modules_" + "_".join(str(m) for m in sorted(modules))
+    def _resolve_emotion_columns(self) -> List[str]:
+        if self.emotion_method is None:
+            return []
 
-    @staticmethod
-    def modules_to_label(modules: Tuple[int, ...]) -> str:
-        """模組元組 → 可讀標籤，如 (1, 2) → 'BioAuth+Asymmetry'"""
-        names = [MetaDataLoader.MODULE_NAMES[m] for m in sorted(modules)]
-        return "+".join(names)
+        if self.emotion_method == "emonet":
+            return list(EMONET_COLUMNS)
+
+        if self.emotion_schema_file is None:
+            raise ValueError("emotion_schema_file 必須指定（非 emonet 模式）")
+        schema = json.load(open(self.emotion_schema_file, encoding="utf-8"))
+        all_cols = schema["methods"][self.emotion_method]["columns"]
+        return [c for c in all_cols if c in EMOTION_NAMES]
 
     def load(self) -> MetaDataset:
-        """
-        載入並建構折疊對齊的 MetaDataset
+        lr_original_df = self._load_oof_scores("original")
+        logger.info(f"載入 OOF original: {len(lr_original_df)} 筆")
+        merged = lr_original_df
 
-        Returns:
-            MetaDataset (per-fold 結構)
-        """
-        # 1. 載入兩組 LR 預測分數（train + test，含 fold 和 split）
-        lr_original_df = self._load_lr_predictions("original")
-        logger.info(f"載入 LR 原始: {len(lr_original_df)} 筆")
-
-        lr_asymmetry_df = self._load_lr_predictions(self.asymmetry_method)
-        logger.info(f"載入 LR 不對稱: {len(lr_asymmetry_df)} 筆")
-
-        # 2. 載入 fold-independent 資料
-        emotion_df = self._load_emotion_scores()
-        logger.info(f"載入 emotion scores: {len(emotion_df)} 筆")
+        try:
+            lr_asymmetry_df = self._load_oof_scores(self.asymmetry_variant)
+            logger.info(f"載入 OOF asymmetry: {len(lr_asymmetry_df)} 筆")
+            merged = pd.merge(
+                merged, lr_asymmetry_df,
+                on=["subject_id", "base_id", "fold", "y_true"], how="inner",
+            )
+            logger.info(f"合併 OOF 後: {len(merged)} 筆")
+        except FileNotFoundError as e:
+            logger.warning(f"跳過 asymmetry OOF: {e}")
+            if "lr_score_asymmetry" in self.feature_columns:
+                self.feature_columns = [c for c in self.feature_columns if c != "lr_score_asymmetry"]
 
         age_df = self._load_age_data()
-        logger.info(f"載入年齡資料: {len(age_df)} 筆")
+        logger.info(f"載入 age: {len(age_df)} 筆")
+        merged = pd.merge(merged, age_df, on="subject_id", how="inner")
 
-        # 3. 合併 LR 分數（original + asymmetry）
-        lr_merged = pd.merge(
-            lr_original_df, lr_asymmetry_df,
-            on=["subject_id", "fold", "split"], how="inner",
-        )
-        logger.info(f"合併 LR 分數後: {len(lr_merged)} 筆")
+        if self.emotion_columns:
+            emotion_df = self._load_emotion_scores(merged["subject_id"].tolist())
+            logger.info(f"載入 emotion: {len(emotion_df)} 筆 ({len(self.emotion_columns)} 欄)")
+            merged = pd.merge(merged, emotion_df, on="subject_id", how="inner")
+        else:
+            logger.info("跳過 emotion（未指定 emotion_method）")
 
-        # 4. 建構 per-fold 資料
-        fold_data = self._build_fold_data(lr_merged, emotion_df, age_df)
+        merged = self._infer_labels(merged)
+        logger.info(f"全部合併後: {len(merged)} 筆, {len(self.feature_columns)} 特徵")
+
+        fold_data = self._build_fold_data(merged)
 
         metadata = {
-            "n_features": self.n_features,
-            "model": self.model,
-            "modules": self.modules,
-            "modules_tag": self.modules_to_tag(self.modules),
-            "modules_label": self.modules_to_label(self.modules),
-            "asymmetry_method": self.asymmetry_method,
-            "cdr_threshold": self.cdr_threshold,
-            "predictions_dir": str(self.predictions_dir),
-            "emotion_file": str(self.emotion_scores_file),
+            "emb_model": self.emb_model,
+            "reducer": self.reducer,
+            "emotion_method": self.emotion_method,
+            "cohort_mode": self.cohort_mode,
+            "bg_mode": self.bg_mode,
+            "partition": self.partition,
+            "base_classifier": self.base_classifier,
         }
 
         dataset = MetaDataset(
             fold_data=fold_data,
-            feature_names=self.active_feature_columns,
+            feature_names=self.feature_columns,
             metadata=metadata,
         )
-
         logger.info(f"建構完成: {dataset}")
         return dataset
 
-    def _load_lr_predictions(self, method: str) -> pd.DataFrame:
-        """
-        載入指定方法的 LR 預測分數（train + test）
+    def _load_oof_scores(self, feature_type: str) -> pd.DataFrame:
+        spec = cohort_spec_from_name(cohort_name(self.cohort_mode))
+        base = (
+            EMBEDDING_CLASSIFICATION_DIR
+            / spec.visit_dir / spec.cdr_mmse_dir
+            / self.bg_mode / self.emb_model / feature_type
+            / self.photo_mode / self.reducer
+        )
+        oof_dir = (
+            base
+            / self.base_classifier / self.base_classifier_param
+            / self.direction / self.eval_method / self.match_level
+            / self.eval_unit / self.match_strategy / self.partition
+        )
+        oof_file = oof_dir / "forward_oof_scores_subject.csv"
+        if not oof_file.exists():
+            raise FileNotFoundError(f"找不到 OOF 檔案: {oof_file}")
 
-        Returns:
-            DataFrame with columns: [subject_id, lr_score_xxx, fold, split]
-        """
-        n_features_dir = self.predictions_dir / f"n_features_{self.n_features}"
-        cdr_str = f"cdr{int(self.cdr_threshold)}"
+        df = pd.read_csv(oof_file)
+        score_col = (
+            "lr_score_original" if feature_type == "original"
+            else "lr_score_asymmetry"
+        )
+        df = df.rename(columns={"y_score": score_col, "ID": "subject_id"})
+        return df[["subject_id", "base_id", score_col, "y_true", "fold"]]
 
-        # 載入 test CSV
-        test_filename = f"{self.model}_{method}_{cdr_str}_test.csv"
-        test_path = n_features_dir / test_filename
-        if not test_path.exists():
-            raise FileNotFoundError(f"找不到測試預測檔案: {test_path}")
+    def _load_emotion_scores(self, subject_ids: List[str]) -> pd.DataFrame:
+        if self.emotion_method == "emonet":
+            return self._load_emonet_csv(subject_ids)
+        return self._load_emotion_npy(subject_ids)
 
-        test_df = pd.read_csv(test_path, encoding="utf-8-sig")
-        test_df["split"] = "test"
+    def _load_emonet_csv(self, subject_ids: List[str]) -> pd.DataFrame:
+        if self.emonet_csv is None or not self.emonet_csv.exists():
+            raise FileNotFoundError(f"找不到 EmoNet CSV: {self.emonet_csv}")
 
-        # 載入 train CSV
-        train_filename = f"{self.model}_{method}_{cdr_str}_train.csv"
-        train_path = n_features_dir / train_filename
-        if not train_path.exists():
-            raise FileNotFoundError(f"找不到訓練預測檔案: {train_path}")
+        df = pd.read_csv(self.emonet_csv, encoding="utf-8-sig")
+        col_map = {
+            "Anger": "anger", "Contempt": "contempt", "Disgust": "disgust",
+            "Fear": "fear", "Happiness": "happiness", "Neutral": "neutral",
+            "Sadness": "sadness", "Surprise": "surprise",
+            "Valence": "valence", "Arousal": "arousal",
+        }
+        df = df.rename(columns=col_map)
+        df = df[df["subject_id"].isin(subject_ids)]
+        return df[["subject_id"] + self.emotion_columns]
 
-        train_df = pd.read_csv(train_path, encoding="utf-8-sig")
-        train_df["split"] = "train"
+    def _load_emotion_npy(self, subject_ids: List[str]) -> pd.DataFrame:
+        if self.emotion_schema_file is None:
+            raise ValueError("emotion_schema_file 必須指定")
+        if self.emotion_features_dir is None:
+            raise ValueError("emotion_features_dir 必須指定")
 
-        # 合併 train + test
-        combined = pd.concat([train_df, test_df], ignore_index=True)
+        schema = json.load(open(self.emotion_schema_file, encoding="utf-8"))
+        all_columns = schema["methods"][self.emotion_method]["columns"]
+        col_indices = [all_columns.index(c) for c in self.emotion_columns]
 
-        # 標準化欄位名稱
-        combined = combined.rename(columns={
-            "個案編號": "subject_id",
-            "預測分數": "lr_pred_score",
-        })
+        method_dir = self.emotion_features_dir / self.emotion_method
+        rows = []
+        for sid in subject_ids:
+            npy_path = method_dir / f"{sid}.npy"
+            if not npy_path.exists():
+                continue
+            arr = np.load(npy_path)[:, col_indices]
+            mean_vec = arr.mean(axis=0)
+            rows.append({"subject_id": sid, **dict(zip(self.emotion_columns, mean_vec))})
 
-        score_col = f"lr_score_{method}" if method == "original" else "lr_score_asymmetry"
-        combined = combined.rename(columns={"lr_pred_score": score_col})
-
-        return combined[["subject_id", score_col, "fold", "split"]]
-
-    def _load_emotion_scores(self) -> pd.DataFrame:
-        """載入 emotion scores"""
-        if not self.emotion_scores_file.exists():
-            raise FileNotFoundError(f"找不到 emotion 檔案: {self.emotion_scores_file}")
-
-        df = pd.read_csv(self.emotion_scores_file, encoding="utf-8-sig")
-
-        required_cols = ["subject_id"] + self.EMOTION_COLUMNS
-        missing_cols = [c for c in required_cols if c not in df.columns]
-        if missing_cols:
-            raise ValueError(f"emotion 檔案缺少欄位: {missing_cols}")
-
-        return df[required_cols]
+        return pd.DataFrame(rows)
 
     def _load_age_data(self) -> pd.DataFrame:
-        """載入人口學資料 + 預測年齡，計算 age_error"""
         dfs = []
         for csv_name in ["ACS.csv", "NAD.csv", "P.csv"]:
             csv_path = self.demographics_dir / csv_name
@@ -248,50 +258,23 @@ class MetaDataLoader:
 
         return demo_df[["subject_id", "real_age", "age_error"]]
 
-    def _build_fold_data(
-        self,
-        lr_merged: pd.DataFrame,
-        emotion_df: pd.DataFrame,
-        age_df: pd.DataFrame,
-    ) -> Dict[int, FoldData]:
-        """
-        從合併的 LR 資料建構 per-fold FoldData
-
-        Args:
-            lr_merged: 合併的 LR 分數（含 fold, split）
-            emotion_df: emotion scores
-            age_df: 年齡資料
-
-        Returns:
-            Dict[fold_idx, FoldData]
-        """
-        unique_folds = sorted(lr_merged["fold"].unique())
+    def _build_fold_data(self, merged_df: pd.DataFrame) -> Dict[int, FoldData]:
+        unique_folds = sorted(merged_df["fold"].unique())
         logger.info(f"偵測到 {len(unique_folds)} 個折疊: {unique_folds}")
 
         fold_data = {}
-
         for fold_idx in unique_folds:
-            fold_lr = lr_merged[lr_merged["fold"] == fold_idx]
-
-            # 合併 emotion + age（fold-independent）
-            fold_merged = pd.merge(fold_lr, emotion_df, on="subject_id", how="inner")
-            fold_merged = pd.merge(fold_merged, age_df, on="subject_id", how="inner")
-
-            # 推斷 labels
-            fold_merged = self._infer_labels(fold_merged)
-
-            # 分離 train/test
-            train_df = fold_merged[fold_merged["split"] == "train"]
-            test_df = fold_merged[fold_merged["split"] == "test"]
+            test_mask = merged_df["fold"] == fold_idx
+            train_df = merged_df[~test_mask]
+            test_df = merged_df[test_mask]
 
             if train_df.empty or test_df.empty:
                 logger.warning(f"Fold {fold_idx}: train={len(train_df)}, test={len(test_df)}，跳過")
                 continue
 
-            # 建構 FoldData
-            X_train = train_df[self.active_feature_columns].values.astype(np.float32)
+            X_train = train_df[self.feature_columns].values.astype(np.float32)
             y_train = train_df["label"].values.astype(np.int32)
-            X_test = test_df[self.active_feature_columns].values.astype(np.float32)
+            X_test = test_df[self.feature_columns].values.astype(np.float32)
             y_test = test_df["label"].values.astype(np.int32)
 
             train_sids = train_df["subject_id"].tolist()
@@ -300,14 +283,10 @@ class MetaDataLoader:
             test_bids = [self._extract_base_id(s) for s in test_sids]
 
             fold_data[fold_idx] = FoldData(
-                X_train=X_train,
-                y_train=y_train,
-                X_test=X_test,
-                y_test=y_test,
-                train_subject_ids=train_sids,
-                test_subject_ids=test_sids,
-                train_base_ids=train_bids,
-                test_base_ids=test_bids,
+                X_train=X_train, y_train=y_train,
+                X_test=X_test, y_test=y_test,
+                train_subject_ids=train_sids, test_subject_ids=test_sids,
+                train_base_ids=train_bids, test_base_ids=test_bids,
             )
 
             logger.info(
@@ -319,46 +298,24 @@ class MetaDataLoader:
         return fold_data
 
     def _infer_labels(self, df: pd.DataFrame) -> pd.DataFrame:
-        """從 subject_id 推斷 labels"""
-        def get_label(subject_id: str) -> int:
-            if subject_id.startswith("P"):
+        def get_label(base_id: str) -> int:
+            if base_id.startswith("P"):
                 return 1
-            elif subject_id.startswith("ACS") or subject_id.startswith("NAD"):
+            elif base_id.startswith("ACS") or base_id.startswith("NAD"):
                 return 0
-            else:
-                logger.warning(f"無法識別 subject_id 類型: {subject_id}")
-                return -1
+            return -1
 
         df = df.copy()
-        df["label"] = df["subject_id"].apply(get_label)
-
+        df["label"] = df["base_id"].apply(get_label)
         invalid = df[df["label"] == -1]
         if len(invalid) > 0:
             logger.warning(f"移除 {len(invalid)} 筆無法識別的樣本")
             df = df[df["label"] != -1]
-
         return df
 
     @staticmethod
     def _extract_base_id(subject_id: str) -> str:
-        """從 subject_id 提取 base_id (如 P1-2 -> P1)"""
         match = re.match(r"^([A-Za-z]+\d+)", subject_id)
         if match:
             return match.group(1)
         return subject_id
-
-    @staticmethod
-    def discover_n_features(predictions_dir: Path) -> List[int]:
-        """自動發現所有可用的 n_features 層級"""
-        predictions_dir = Path(predictions_dir)
-        n_features_list = []
-
-        for d in predictions_dir.iterdir():
-            if d.is_dir() and d.name.startswith("n_features_"):
-                try:
-                    n = int(d.name.split("_")[-1])
-                    n_features_list.append(n)
-                except ValueError:
-                    continue
-
-        return sorted(n_features_list)

@@ -1,8 +1,8 @@
 """
-Meta Analysis Pipeline
+Meta Analysis Pipeline (v2)
 
-整合執行流程：遍歷所有 model × n_features 組合，
-訓練 TabPFN 並儲存結果。
+遍歷 emb_model × meta_classifier 組合，
+訓練 meta-model 並儲存結果。
 """
 
 import json
@@ -16,57 +16,35 @@ import pandas as pd
 from src.meta.stacking.config import MetaConfig
 from src.meta.loader.meta import MetaDataLoader
 from src.meta.stacking.evaluator import MetaEvaluator
-from src.meta.stacking.trainer import TabPFNMetaTrainer, TrainResult
+from src.meta.stacking.trainer import create_trainer, TrainResult
+from src.meta.evaluation.matched_eval import run_matched_eval_chain
 
 logger = logging.getLogger(__name__)
 
 
 class MetaPipeline:
     """
-    Meta 分析 Pipeline
+    Meta 分析 Pipeline (v2)
 
-    遍歷所有 model × n_features 組合，
-    訓練 TabPFN meta-model 並儲存結果。
+    遍歷 emb_model × meta_classifier 組合，
+    訓練 meta-model 並儲存結果。
     """
 
     def __init__(
         self,
-        predictions_dir: Path,
-        emotion_scores_file: Path,
         output_dir: Path,
         config: Optional[MetaConfig] = None,
+        asymmetry_variant: str = "absolute_relative_differences",
     ):
-        """
-        初始化 Pipeline
-
-        Args:
-            predictions_dir: LR 預測分數目錄 (pred_probability)
-            emotion_scores_file: emotion_score.csv 檔案路徑
-            output_dir: 輸出目錄
-            config: MetaConfig 設定 (預設使用預設值)
-        """
-        self.predictions_dir = Path(predictions_dir)
-        self.emotion_scores_file = Path(emotion_scores_file)
         self.output_dir = Path(output_dir)
         self.config = config or MetaConfig()
+        self.asymmetry_variant = asymmetry_variant
 
-        # 建立輸出目錄結構
         self.reports_dir = self.output_dir / "reports"
         self.pred_prob_dir = self.output_dir / "pred_probability"
-
         self._ensure_output_dirs()
 
-        # 發現可用的 n_features
-        if self.config.n_features_list is None:
-            self.n_features_list = MetaDataLoader.discover_n_features(
-                self.predictions_dir
-            )
-            logger.info(f"自動發現 {len(self.n_features_list)} 個 n_features 層級")
-        else:
-            self.n_features_list = self.config.n_features_list
-
     def _ensure_output_dirs(self):
-        """建立輸出目錄"""
         self.output_dir.mkdir(parents=True, exist_ok=True)
         if self.config.save_reports:
             self.reports_dir.mkdir(parents=True, exist_ok=True)
@@ -74,116 +52,116 @@ class MetaPipeline:
             self.pred_prob_dir.mkdir(parents=True, exist_ok=True)
 
     def run(self) -> pd.DataFrame:
-        """
-        執行完整分析
-
-        遍歷所有 model × n_features 組合。
-
-        Returns:
-            彙整結果的 DataFrame
-        """
         combinations = self._get_combinations()
         total = len(combinations)
 
-        module_combos = self.config.module_combinations or [(1, 2, 3, 4)]
-        logger.info(f"開始 Meta Analysis (TabPFN): {total} 個組合")
-        logger.info(f"n_features 層級: {len(self.n_features_list)} 個")
+        logger.info(f"開始 Meta Analysis: {total} 個組合")
         logger.info(f"模型: {self.config.models}")
-        logger.info(f"模組組合: {len(module_combos)} 種")
-        logger.info(f"不對稱方法: {self.config.asymmetry_method}")
-        logger.info(f"CV 折數: 由 base model 預測檔決定（折疊對齊）")
+        logger.info(f"Classifiers: {self.config.meta_classifiers}")
+        logger.info(f"Emotion method: {self.config.emotion_method}")
 
         all_results = []
         success_count = 0
         fail_count = 0
 
-        for i, (model, n_features, modules) in enumerate(combinations, 1):
-            modules_label = MetaDataLoader.modules_to_label(modules)
+        for i, (emb_model, meta_clf) in enumerate(combinations, 1):
             try:
-                result = self.run_single(model, n_features, modules)
+                result = self.run_single(emb_model, meta_clf)
                 all_results.append(result)
                 success_count += 1
 
                 logger.info(
-                    f"[{i}/{total}] {model}, n_features={n_features}, "
-                    f"modules={modules_label}: "
+                    f"[{i}/{total}] {emb_model} + {meta_clf}: "
                     f"MCC={result['mcc']:.4f}, Acc={result['accuracy']:.4f}"
                 )
 
             except FileNotFoundError as e:
-                logger.warning(
-                    f"[{i}/{total}] 跳過 {model}, n_features={n_features}, "
-                    f"modules={modules_label}: {e}"
-                )
+                logger.warning(f"[{i}/{total}] 跳過 {emb_model} + {meta_clf}: {e}")
                 fail_count += 1
             except Exception as e:
-                logger.error(
-                    f"[{i}/{total}] 失敗 {model}, n_features={n_features}, "
-                    f"modules={modules_label}: {e}"
-                )
+                logger.error(f"[{i}/{total}] 失敗 {emb_model} + {meta_clf}: {e}")
                 fail_count += 1
 
         logger.info(f"分析完成: 成功 {success_count}, 失敗 {fail_count}")
 
-        # 建立彙整 DataFrame
         summary_df = pd.DataFrame(all_results)
         if not summary_df.empty:
             summary_df = summary_df.sort_values("mcc", ascending=False)
-
             summary_path = self.output_dir / "summary.csv"
             summary_df.to_csv(summary_path, index=False, encoding="utf-8-sig")
             logger.info(f"彙整結果已儲存: {summary_path}")
 
         return summary_df
 
-    def run_single(
-        self,
-        model: str,
-        n_features: int,
-        modules: Tuple[int, ...] = (1, 2, 3),
-    ) -> Dict[str, Any]:
-        """
-        執行單一組合的分析
-
-        Args:
-            model: 模型名稱
-            n_features: n_features 層級
-            modules: 使用的特徵模組 (預設全部)
-
-        Returns:
-            結果字典
-        """
+    def run_single(self, emb_model: str, meta_clf_name: str) -> Dict[str, Any]:
         loader = MetaDataLoader(
-            predictions_dir=self.predictions_dir,
-            emotion_scores_file=self.emotion_scores_file,
+            emb_model=emb_model,
+            cohort_mode=self.config.cohort_mode,
+            bg_mode=self.config.bg_mode,
+            photo_mode=self.config.photo_mode,
+            reducer=self.config.reducer,
+            base_classifier=self.config.base_classifier,
+            base_classifier_param=self.config.base_classifier_param,
+            direction=self.config.direction,
+            eval_method=self.config.eval_method,
+            match_level=self.config.match_level,
+            eval_unit=self.config.eval_unit,
+            match_strategy=self.config.match_strategy,
+            partition=self.config.partition,
+            emotion_method=self.config.emotion_method,
+            asymmetry_variant=self.asymmetry_variant,
+            emotion_features_dir=self.config.emotion_features_dir,
+            emotion_schema_file=self.config.emotion_schema_file,
+            emonet_csv=self.config.emonet_csv,
             demographics_dir=self.config.demographics_dir,
             predicted_ages_file=self.config.predicted_ages_file,
-            n_features=n_features,
-            model=model,
-            modules=modules,
-            asymmetry_method=self.config.asymmetry_method,
-            cdr_threshold=self.config.cdr_threshold,
         )
         dataset = loader.load()
 
-        # 訓練 TabPFN（折疊對齊，折數由 dataset 決定）
-        trainer = TabPFNMetaTrainer(
-            random_seed=self.config.random_seed,
-        )
+        trainer = create_trainer(meta_clf_name, self.config.random_seed,
+                                normalize=self.config.normalize)
         train_result = trainer.train(dataset)
 
-        # 儲存結果
-        dataset_key = f"{model}_cdr{int(self.config.cdr_threshold)}"
-        self._save_results(n_features, dataset_key, modules, train_result, dataset)
+        self._save_results(emb_model, meta_clf_name, train_result, dataset)
+
+        # Run matched eval chain
+        if self.config.demographics_dir:
+            oof_for_eval = train_result.predictions[
+                train_result.predictions["split"] == "test"
+            ].copy()
+            oof_for_eval = oof_for_eval.rename(columns={"pred_score": "y_score"})
+            import re
+            oof_for_eval["base_id"] = oof_for_eval["subject_id"].apply(
+                lambda s: re.match(r"^([A-Za-z]+\d+)", s).group(1)
+                if re.match(r"^([A-Za-z]+\d+)", s) else s
+            )
+            oof_for_eval["y_true"] = oof_for_eval["base_id"].apply(
+                lambda b: 1 if b.startswith("P") else 0
+            )
+
+            eval_dir = self.output_dir
+            try:
+                run_matched_eval_chain(
+                    oof_scores=oof_for_eval,
+                    demographics_dir=self.config.demographics_dir,
+                    cohort_mode=self.config.cohort_mode,
+                    output_dir=eval_dir,
+                    seed=self.config.random_seed,
+                    meta_info={
+                        "emb_model": emb_model,
+                        "meta_classifier": meta_clf_name,
+                    },
+                )
+                logger.info(f"  Eval chain 完成: {eval_dir}")
+            except Exception as e:
+                logger.warning(f"  Eval chain 失敗: {e}")
 
         return {
-            "model": model,
-            "n_features": n_features,
-            "modules": str(modules),
-            "modules_tag": MetaDataLoader.modules_to_tag(modules),
-            "modules_label": MetaDataLoader.modules_to_label(modules),
+            "emb_model": emb_model,
+            "meta_classifier": meta_clf_name,
+            "reducer": self.config.reducer,
+            "emotion_method": self.config.emotion_method,
             "n_meta_features": dataset.n_features,
-            "cdr_threshold": self.config.cdr_threshold,
             "n_samples": dataset.n_samples,
             "accuracy": train_result.test_metrics["accuracy"],
             "accuracy_std": train_result.test_metrics.get("accuracy_std", 0),
@@ -198,43 +176,35 @@ class MetaPipeline:
             "auc_std": train_result.test_metrics.get("auc_std", 0),
         }
 
-    def _get_combinations(self) -> List[Tuple[str, int, Tuple[int, ...]]]:
-        """取得所有 (model, n_features, modules) 組合"""
-        module_combos = self.config.module_combinations or [(1, 2, 3, 4)]
-        combinations = []
+    def _get_combinations(self) -> List[Tuple[str, str]]:
+        combos = []
         for model in self.config.models:
-            for n_features in self.n_features_list:
-                for modules in module_combos:
-                    combinations.append((model, n_features, tuple(sorted(modules))))
-        return combinations
+            for clf in self.config.meta_classifiers:
+                combos.append((model, clf))
+        return combos
 
     def _save_results(
         self,
-        n_features: int,
-        dataset_key: str,
-        modules: Tuple[int, ...],
+        emb_model: str,
+        meta_clf_name: str,
         train_result: TrainResult,
         dataset: "MetaDataset",
     ):
-        """儲存訓練結果"""
-        n_features_suffix = f"n_features_{n_features}"
-        modules_tag = MetaDataLoader.modules_to_tag(modules)
+        sub_key = f"{emb_model}_{meta_clf_name}"
 
-        # 儲存特徵重要性
         if self.config.save_reports:
-            report_subdir = self.reports_dir / n_features_suffix / modules_tag
+            report_subdir = self.reports_dir / sub_key
             report_subdir.mkdir(parents=True, exist_ok=True)
 
-            importance_path = report_subdir / f"{dataset_key}_importance.json"
+            importance_path = report_subdir / "importance.json"
             with open(importance_path, "w", encoding="utf-8") as f:
-                json.dump(
-                    train_result.feature_importance, f,
-                    indent=2, ensure_ascii=False,
-                )
+                json.dump(train_result.feature_importance, f, indent=2, ensure_ascii=False)
 
-        # 儲存預測結果
+            report_path = report_subdir / "report.txt"
+            self._write_report(report_path, train_result, dataset, meta_clf_name)
+
         if self.config.save_predictions:
-            pred_subdir = self.pred_prob_dir / n_features_suffix / modules_tag
+            pred_subdir = self.pred_prob_dir / sub_key
             pred_subdir.mkdir(parents=True, exist_ok=True)
 
             pred_df = train_result.predictions
@@ -242,62 +212,41 @@ class MetaPipeline:
             train_df = pred_df[pred_df["split"] == "train"].copy()
 
             if not test_df.empty:
-                test_output = test_df[["subject_id", "pred_score", "fold"]]
-                test_output = test_output.rename(columns={
-                    "subject_id": "個案編號",
-                    "pred_score": "預測分數",
-                })
-                test_path = pred_subdir / f"{dataset_key}_test.csv"
-                test_output.to_csv(test_path, index=False, encoding="utf-8-sig")
+                out = test_df[["subject_id", "pred_score", "fold"]]
+                out.to_csv(pred_subdir / "test.csv", index=False, encoding="utf-8-sig")
 
             if not train_df.empty:
-                train_output = train_df[["subject_id", "pred_score", "fold"]]
-                train_output = train_output.rename(columns={
-                    "subject_id": "個案編號",
-                    "pred_score": "預測分數",
-                })
-                train_output = train_output.sort_values(["fold", "個案編號"])
-                train_path = pred_subdir / f"{dataset_key}_train.csv"
-                train_output.to_csv(train_path, index=False, encoding="utf-8-sig")
-
-        # 儲存報告
-        if self.config.save_reports:
-            report_subdir = self.reports_dir / n_features_suffix / modules_tag
-            report_subdir.mkdir(parents=True, exist_ok=True)
-
-            report_path = report_subdir / f"{dataset_key}_report.txt"
-            self._write_report(report_path, train_result, dataset)
+                out = train_df[["subject_id", "pred_score", "fold"]]
+                out = out.sort_values(["fold", "subject_id"])
+                out.to_csv(pred_subdir / "train.csv", index=False, encoding="utf-8-sig")
 
     def _write_report(
         self,
         report_path: Path,
         train_result: TrainResult,
         dataset: "MetaDataset",
+        meta_clf_name: str,
     ):
-        """撰寫文字報告"""
         n_folds = train_result.metadata["n_folds"]
 
         with open(report_path, "w", encoding="utf-8") as f:
-            modules_label = dataset.metadata.get('modules_label', 'All')
-            f.write(f"TabPFN Meta Analysis 報告 ({n_folds}-Fold CV)\n")
+            f.write(f"Meta Analysis 報告 ({n_folds}-Fold CV)\n")
             f.write("=" * 60 + "\n")
             f.write(f"分析時間: {train_result.metadata['timestamp']}\n")
-            f.write(f"n_features (LR): {dataset.metadata['n_features']}\n")
-            f.write(f"模型: {dataset.metadata['model']}\n")
-            f.write(f"模組: {modules_label}\n")
-            f.write(f"不對稱方法: {dataset.metadata['asymmetry_method']}\n")
-            f.write(f"CDR 閾值: {dataset.metadata['cdr_threshold']}\n")
+            f.write(f"Embedding 模型: {dataset.metadata['emb_model']}\n")
+            f.write(f"Meta Classifier: {meta_clf_name}\n")
+            f.write(f"Reducer: {dataset.metadata['reducer']}\n")
+            f.write(f"Emotion method: {dataset.metadata['emotion_method']}\n")
+            f.write(f"Partition: {dataset.metadata['partition']}\n")
             f.write(f"樣本數: {dataset.n_samples}\n")
             f.write(f"Meta 特徵數: {dataset.n_features} ({', '.join(dataset.feature_names)})\n")
             f.write(f"類別分布: {dataset.class_distribution}\n")
 
-            # 測試集指標
             f.write(f"\n測試集效能 ({n_folds}-Fold 平均):\n")
             f.write("-" * 40 + "\n")
             f.write(MetaEvaluator.format_metrics_report(train_result.test_metrics))
             f.write("\n")
 
-            # 混淆矩陣
             cm = train_result.test_metrics["confusion_matrix"]
             f.write(f"\n測試集混淆矩陣 (累計):\n")
             f.write("-" * 40 + "\n")
@@ -305,18 +254,15 @@ class MetaPipeline:
             f.write(f"預測0   {cm[0][0]:5d}  {cm[1][0]:5d}\n")
             f.write(f"預測1   {cm[0][1]:5d}  {cm[1][1]:5d}\n")
 
-            # 特徵重要性 (permutation importance)
             f.write(f"\n特徵重要性 (Permutation Importance):\n")
             f.write("-" * 40 + "\n")
-            sorted_importance = sorted(
+            sorted_imp = sorted(
                 train_result.feature_importance.items(),
-                key=lambda x: x[1],
-                reverse=True,
+                key=lambda x: x[1], reverse=True,
             )
-            for name, importance in sorted_importance:
-                f.write(f"  {name}: {importance:.4f}\n")
+            for name, imp in sorted_imp:
+                f.write(f"  {name}: {imp:.4f}\n")
 
-            # 訓練集指標
             f.write(f"\n訓練集效能 ({n_folds}-Fold 平均):\n")
             f.write("-" * 40 + "\n")
             f.write(MetaEvaluator.format_metrics_report(train_result.train_metrics))

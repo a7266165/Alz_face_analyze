@@ -6,8 +6,10 @@
 
 from .shap_explainer import AUSHAPExplainer
 from .plotter import ResultPlotter
+from .matched_eval import run_matched_eval_chain
 
 __all__ = [
     "AUSHAPExplainer",
     "ResultPlotter",
+    "run_matched_eval_chain",
 ]

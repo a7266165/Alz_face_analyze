@@ -1,170 +1,185 @@
 """
-Meta Analysis 執行腳本
+Meta Analysis 執行腳本 (v2)
 
-整合 14 個特徵，訓練 TabPFN meta-model。
+依 embedding pipeline 分層格式輸出：
+  meta/analysis/{visit}/{cdr}/{bg}/{emb_model}/{asymmetry_variant}/{photo}/{reducer}/
+    meta_{meta_clf}/fwd/{eval_chain}/
 
-特徵：
-  1. age_error (real - predicted)
-  2. real_age
-  3. lr_score_original (原始臉 LR 分數)
-  4. lr_score_asymmetry (不對稱性 LR 分數)
-  5-12. 8 種表情
-  13. Valence
-  14. Arousal
+對每個 asymmetry variant 各跑一次 (original 固定 + asymmetry 可選)。
 
 使用方式:
-    poetry run python scripts/meta/run_meta_analysis.py
+    conda run -n Alz_face_main_analysis python scripts/meta/run_meta_analysis.py
 """
 
 import logging
 import sys
-from datetime import datetime
 from pathlib import Path
 
-# 加入專案根目錄到 path
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
+import pandas as pd
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from _paths import PROJECT_ROOT
 
-from src.config import PREDICTED_AGES_CALIBRATED_FILE
+from src.config import (
+    cohort_name,
+    cohort_spec_from_name,
+)
 from src.meta import MetaConfig, MetaPipeline
 
-# ========== 設定 ==========
+# ========== 路徑設定 ==========
 
-# 路徑設定
 WORKSPACE_DIR = PROJECT_ROOT / "workspace"
 DEMOGRAPHICS_DIR = PROJECT_ROOT / "data" / "demographics"
-PREDICTED_AGES_FILE = PREDICTED_AGES_CALIBRATED_FILE
 
-# Base-level 預測分數目錄 — 由 scripts/embedding/run_fwd_rev.py 加
-# `--save-oof-probabilities` flag 產生。預設讀 original × default cohort (V2.2:
-# p_first_cdr05_hc_first_cdrall_or_mmseall) × no_drop 的 forward 結果；
-# user 想換 (feature_type, cohort, reducer) 組合直接改 PREDICTIONS_DIR 的值。
-from src.config import cohort_name  # noqa: E402
-EMBEDDING_CLF_DIR = WORKSPACE_DIR / "embedding" / "analysis" / "classification"
-PREDICTIONS_DIR = (EMBEDDING_CLF_DIR / "original" / cohort_name("p_first_cdr05_hc_first_cdrall_or_mmseall")
-                   / "no_drop" / "pred_probability")
+# ========== 分析設定 ==========
 
-# Emotion 分數檔案
-EMOTION_SCORES_FILE = WORKSPACE_DIR / "emo_au" / "emotion_score_EmoNet.csv"
+COHORT_MODE = "p_first_cdrall_hc_all_cdrall_or_mmseall"
+BG_MODE = "background"
+PHOTO_MODE = "mean"
+REDUCER = "no_drop"
+MATCH_STRATEGY = "match_acs_first"
+BASE_CLASSIFIER = "logistic"
+BASE_CLASSIFIER_PARAM = "C_1"
 
-# 輸出目錄（modality-flat：放在 workspace/meta/ 下，不再寫到 workspace 根）
-OUTPUT_DIR = WORKSPACE_DIR / "meta" / f"tabpfn_meta_analysis_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-
-# 模組組合定義（與論文 M1~M4 對齊）
-# Module 1 (M1): BioAuth (lr_score_original)
-# Module 2 (M2): Asymmetry (lr_score_asymmetry)
-# Module 3 (M3): Age (real_age, age_error)
-# Module 4 (M4): Expression (8 emotions + Valence + Arousal)
-ALL_MODULE_COMBINATIONS = [
-    (1,),           # M1: 只用生物認證
-    (2,),           # M2: 只用不對稱性
-    (1, 2),         # M1+M2: LR 分數
-    (3,),           # M3: 只用年齡
-    (4,),           # M4: 只用表情
-    (1, 2, 3),      # M1+M2+M3
-    (1, 2, 4),      # M1+M2+M4
-    (3, 4),         # M3+M4
-    (1, 2, 3, 4),   # 全部模組
+EMB_MODELS = ["arcface"]
+META_CLASSIFIERS = ["tabpfn", "logistic", "xgboost"]
+NORMALIZE_OPTIONS = [None, "minmax"]
+ASYMMETRY_VARIANTS = [
+    "difference",
+    "absolute_difference",
+    "relative_differences",
+    "absolute_relative_differences",
 ]
 
-# 分析設定
-CONFIG = MetaConfig(
-    # 資料設定
-    cdr_threshold=0,
-
-    # 訓練設定（折數由 base model 預測檔自動決定）
-    random_seed=42,
-
-    # 輸出設定
-    save_models=True,
-    save_predictions=True,
-    save_reports=True,
-
-    # 分析範圍
-    # models=["arcface", "topofr", "dlib"],
-    models=["arcface", "topofr"],
-    asymmetry_method="absolute_relative_differences",
-    n_features_list=None,  # None = 自動發現全部 n_features
-    module_combinations=ALL_MODULE_COMBINATIONS,
-
-    # 資料路徑
-    demographics_dir=DEMOGRAPHICS_DIR,
-    predicted_ages_file=PREDICTED_AGES_FILE,
+# Age predictions (cohort-specific)
+spec = cohort_spec_from_name(cohort_name(COHORT_MODE))
+PREDICTED_AGES = (
+    WORKSPACE_DIR / "age" / "predictions"
+    / spec.visit_dir / spec.cdr_mmse_dir
+    / "correction" / "calibration" / "predicted_ages_calibrated.json"
 )
+
+# Emotion (None for now)
+EMOTION_METHOD = None
+
+# Meta output root (mirrors embedding structure)
+META_ROOT = WORKSPACE_DIR / "meta" / "analysis"
 
 
 def setup_logging():
-    """設定日誌"""
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-        handlers=[
-            logging.StreamHandler(),
-        ],
+        handlers=[logging.StreamHandler()],
+    )
+
+
+def build_output_dir(emb_model, asymmetry_variant, meta_clf, normalize=None):
+    """Build embedding-style output directory for meta analysis."""
+    norm_tag = normalize if normalize else "raw"
+    return (
+        META_ROOT / spec.visit_dir / spec.cdr_mmse_dir
+        / BG_MODE / emb_model / asymmetry_variant
+        / PHOTO_MODE / REDUCER / norm_tag / meta_clf / "fwd"
     )
 
 
 def main():
-    """主程式"""
     setup_logging()
     logger = logging.getLogger(__name__)
 
     logger.info("=" * 60)
-    logger.info("TabPFN Meta Analysis (模組組合)")
+    logger.info("Meta Analysis (v2) — multi-variant")
     logger.info("=" * 60)
-
-    # 檢查路徑
-    if not PREDICTIONS_DIR.exists():
-        logger.error(f"找不到預測目錄: {PREDICTIONS_DIR}")
-        sys.exit(1)
-
-    if not EMOTION_SCORES_FILE.exists():
-        logger.error(f"找不到 emotion 檔案: {EMOTION_SCORES_FILE}")
-        sys.exit(1)
+    logger.info(f"Cohort: {COHORT_MODE}")
+    logger.info(f"Embedding models: {EMB_MODELS}")
+    logger.info(f"Asymmetry variants: {ASYMMETRY_VARIANTS}")
+    logger.info(f"Meta classifiers: {META_CLASSIFIERS}")
+    logger.info(f"Normalize options: {NORMALIZE_OPTIONS}")
 
     if not DEMOGRAPHICS_DIR.exists():
         logger.error(f"找不到人口學資料目錄: {DEMOGRAPHICS_DIR}")
         sys.exit(1)
-
-    if not PREDICTED_AGES_FILE.exists():
-        logger.error(f"找不到預測年齡檔案: {PREDICTED_AGES_FILE}")
+    if not PREDICTED_AGES.exists():
+        logger.error(f"找不到預測年齡檔案: {PREDICTED_AGES}")
         sys.exit(1)
 
-    logger.info(f"預測目錄: {PREDICTIONS_DIR}")
-    logger.info(f"Emotion 檔案: {EMOTION_SCORES_FILE}")
-    logger.info(f"人口學目錄: {DEMOGRAPHICS_DIR}")
-    logger.info(f"預測年齡檔案: {PREDICTED_AGES_FILE}")
-    logger.info(f"輸出目錄: {OUTPUT_DIR}")
+    all_summaries = []
 
-    # 執行分析
-    pipeline = MetaPipeline(
-        predictions_dir=PREDICTIONS_DIR,
-        emotion_scores_file=EMOTION_SCORES_FILE,
-        output_dir=OUTPUT_DIR,
-        config=CONFIG,
-    )
+    for norm_opt in NORMALIZE_OPTIONS:
+        norm_tag = norm_opt if norm_opt else "raw"
+        for asym_variant in ASYMMETRY_VARIANTS:
+            for emb_model in EMB_MODELS:
+                for meta_clf in META_CLASSIFIERS:
+                    output_dir = build_output_dir(
+                        emb_model, asym_variant, meta_clf, norm_opt,
+                    )
 
-    summary_df = pipeline.run()
+                    if (output_dir / "summary.csv").exists():
+                        logger.info(f"  SKIP (已存在): {output_dir}")
+                        summary_df = pd.read_csv(output_dir / "summary.csv")
+                        if not summary_df.empty:
+                            summary_df["asymmetry_variant"] = asym_variant
+                            summary_df["normalize"] = norm_tag
+                            all_summaries.append(summary_df)
+                        continue
 
-    # 顯示最佳結果
-    if not summary_df.empty:
+                    logger.info(f"\n{'='*60}")
+                    logger.info(f"  {emb_model} / {asym_variant} / {meta_clf} / {norm_tag}")
+                    logger.info(f"  → {output_dir}")
+                    logger.info(f"{'='*60}")
+
+                    config = MetaConfig(
+                        cohort_mode=COHORT_MODE,
+                        bg_mode=BG_MODE,
+                        photo_mode=PHOTO_MODE,
+                        reducer=REDUCER,
+                        base_classifier=BASE_CLASSIFIER,
+                        base_classifier_param=BASE_CLASSIFIER_PARAM,
+                        match_strategy=MATCH_STRATEGY,
+                        models=[emb_model],
+                        meta_classifiers=[meta_clf],
+                        emotion_method=EMOTION_METHOD,
+                        demographics_dir=DEMOGRAPHICS_DIR,
+                        predicted_ages_file=PREDICTED_AGES,
+                        normalize=norm_opt,
+                    )
+
+                    pipeline = MetaPipeline(
+                        output_dir=output_dir,
+                        config=config,
+                        asymmetry_variant=asym_variant,
+                    )
+
+                    try:
+                        summary_df = pipeline.run()
+                        if not summary_df.empty:
+                            summary_df["asymmetry_variant"] = asym_variant
+                            summary_df["normalize"] = norm_tag
+                            all_summaries.append(summary_df)
+                    except Exception as e:
+                        logger.error(f"失敗: {e}")
+
+    # Combined summary
+    if all_summaries:
+        combined = pd.concat(all_summaries, ignore_index=True)
+        combined = combined.sort_values("mcc", ascending=False)
+        summary_path = META_ROOT / spec.visit_dir / spec.cdr_mmse_dir / "summary_all.csv"
+        summary_path.parent.mkdir(parents=True, exist_ok=True)
+        combined.to_csv(summary_path, index=False, encoding="utf-8-sig")
+        logger.info(f"\n合併結果已儲存: {summary_path}")
+
         logger.info("\n" + "=" * 60)
-        logger.info("最佳結果 (依 MCC 排序前 10):")
+        logger.info("最佳結果 (依 MCC 排序):")
         logger.info("=" * 60)
-
-        top_10 = summary_df.head(10)
-        for _, row in top_10.iterrows():
+        for _, row in combined.head(10).iterrows():
             auc_str = f"{row['auc']:.4f}" if row['auc'] is not None else "N/A"
-            modules_label = row.get('modules_label', 'All')
             logger.info(
-                f"  {row['model']}, n_features={row['n_features']:3d}, "
-                f"modules={modules_label}: "
-                f"MCC={row['mcc']:.4f}, Acc={row['accuracy']:.4f}, "
-                f"AUC={auc_str}"
+                f"  {row['emb_model']} / {row['asymmetry_variant']} + {row['meta_classifier']}: "
+                f"MCC={row['mcc']:.4f}, Acc={row['accuracy']:.4f}, AUC={auc_str}"
             )
 
     logger.info("\n分析完成！")
-    logger.info(f"結果已儲存至: {OUTPUT_DIR}")
 
 
 if __name__ == "__main__":

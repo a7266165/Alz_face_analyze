@@ -8,7 +8,12 @@
 from src.meta.loader import DataLoader, Dataset
 from src.meta.classifier import XGBoostAnalyzer, create_analyzer
 from src.meta.evaluation.plotter import ResultPlotter
-from src.meta.stacking import MetaConfig, MetaPipeline, TabPFNMetaTrainer, MetaEvaluator
+from src.meta.stacking import MetaConfig, MetaPipeline, MetaEvaluator
+from src.meta.stacking.trainer import (
+    BaseMetaTrainer, TabPFNMetaTrainer,
+    LogisticMetaTrainer, XGBoostMetaTrainer,
+    TrainResult, create_trainer,
+)
 from src.meta.loader import FoldData, MetaDataset, MetaDataLoader
 
 __all__ = [
@@ -18,13 +23,18 @@ __all__ = [
     "FoldData",
     "MetaDataset",
     "MetaDataLoader",
-    # Classifier
+    # Classifier (legacy)
     "XGBoostAnalyzer",
     "create_analyzer",
     # Stacking
     "MetaConfig",
     "MetaPipeline",
+    "BaseMetaTrainer",
     "TabPFNMetaTrainer",
+    "LogisticMetaTrainer",
+    "XGBoostMetaTrainer",
+    "TrainResult",
+    "create_trainer",
     "MetaEvaluator",
     # Evaluation
     "ResultPlotter",
