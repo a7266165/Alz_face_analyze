@@ -338,7 +338,8 @@ def _select_hc_visits(demo, hc_source, spec: CohortSpec,
 # ====================================================================
 
 def match_1to1(cohort, caliper=2.0, seed=42, metric="MMSE", group_col=None,
-               match_mode="visit", priority_groups=None, id_col="ID"):
+               match_mode="visit", priority_groups=None, id_col="ID",
+               match_level="subject"):
     """1:1 age-optimal match; cohort must have *group_col* 'high'/'low'.
 
     Uses ``scipy.optimize.linear_sum_assignment`` to maximise the number
@@ -349,12 +350,9 @@ def match_1to1(cohort, caliper=2.0, seed=42, metric="MMSE", group_col=None,
     remaining subjects are matched in a second round against the leftover
     major pool.
 
-    When ``base_id`` is present the assignment operates at subject level
-    (one pair per base_id).  Otherwise it operates at visit level.
-
-    match_mode: kept for API compatibility but ignored (always optimal).
-    id_col: column used as matching ID (default ``"ID"``).
-    metric: if None, metric columns are omitted from pairs_df / matched.
+    match_level="subject": dedup to one row per base_id before matching.
+    match_level="visit": each visit is an independent candidate; same
+        subject can appear in multiple pairs (different visits).
 
     Returns (matched_df, pairs_df, (minor_label, major_label)).
     """
@@ -374,7 +372,7 @@ def match_1to1(cohort, caliper=2.0, seed=42, metric="MMSE", group_col=None,
         minor, major = high, low
         minor_label, major_label = "high", "low"
 
-    subject_level = "base_id" in cohort.columns
+    subject_level = (match_level == "subject") and ("base_id" in cohort.columns)
     bid_col = "base_id" if subject_level else id_col
 
     def _to_subject_df(df):
@@ -382,8 +380,12 @@ def match_1to1(cohort, caliper=2.0, seed=42, metric="MMSE", group_col=None,
                 .drop_duplicates(bid_col, keep="first")
                 .reset_index(drop=True))
 
-    minor_subj = _to_subject_df(minor)
-    major_subj = _to_subject_df(major)
+    if subject_level:
+        minor_subj = _to_subject_df(minor)
+        major_subj = _to_subject_df(major)
+    else:
+        minor_subj = minor.reset_index(drop=True)
+        major_subj = major.reset_index(drop=True)
 
     def _optimal_assign(mi, ma):
         if len(mi) == 0 or len(ma) == 0:
@@ -413,23 +415,35 @@ def match_1to1(cohort, caliper=2.0, seed=42, metric="MMSE", group_col=None,
                 rec[f"major_{metric_low}"] = ma_row[metric]
             pairs_records.append(rec)
 
-    if priority_groups and "group" in minor_subj.columns:
+    _pg_set = set(priority_groups) if priority_groups else set()
+    _has_pg = bool(_pg_set) and "group" in cohort.columns
+    if _has_pg:
+        grp_on_minor = bool(_pg_set & set(minor_subj["group"].unique()))
         used_minor_bids = set()
         used_major_bids = set()
         for grp in priority_groups:
-            mi_grp = minor_subj[
-                (minor_subj["group"] == grp)
-                & ~minor_subj[bid_col].isin(used_minor_bids)
-            ].reset_index(drop=True)
-            ma_pool = major_subj[
-                ~major_subj[bid_col].isin(used_major_bids)
-            ].reset_index(drop=True)
-            assignments = _optimal_assign(mi_grp, ma_pool)
-            _record_pairs(mi_grp, ma_pool, assignments)
+            if grp_on_minor:
+                mi_arg = minor_subj[
+                    (minor_subj["group"] == grp)
+                    & ~minor_subj[bid_col].isin(used_minor_bids)
+                ].reset_index(drop=True)
+                ma_arg = major_subj[
+                    ~major_subj[bid_col].isin(used_major_bids)
+                ].reset_index(drop=True)
+            else:
+                mi_arg = minor_subj[
+                    ~minor_subj[bid_col].isin(used_minor_bids)
+                ].reset_index(drop=True)
+                ma_arg = major_subj[
+                    (major_subj["group"] == grp)
+                    & ~major_subj[bid_col].isin(used_major_bids)
+                ].reset_index(drop=True)
+            assignments = _optimal_assign(mi_arg, ma_arg)
+            _record_pairs(mi_arg, ma_arg, assignments)
             used_minor_bids.update(
-                mi_grp.iloc[ri][bid_col] for ri, _ in assignments)
+                mi_arg.iloc[ri][bid_col] for ri, _ in assignments)
             used_major_bids.update(
-                ma_pool.iloc[ci][bid_col] for _, ci in assignments)
+                ma_arg.iloc[ci][bid_col] for _, ci in assignments)
 
         mi_rest = minor_subj[
             ~minor_subj[bid_col].isin(used_minor_bids)
@@ -650,6 +664,7 @@ def build_cohort_ad_vs_HCgroup(
     caliper=1.0,
     seed=42,
     priority_groups=None,
+    match_level="subject",
 ):
     """Build cohort for AD vs {HC, NAD, ACS}.  Returns (cohort_df,
     pairs_df)."""
@@ -692,6 +707,7 @@ def build_cohort_ad_vs_HCgroup(
             prep, caliper=caliper, seed=seed, metric="MMSE",
             group_col="mmse_group",
             priority_groups=priority_groups,
+            match_level=match_level,
         )
         cohort = matched.merge(
             prep[["ID", "base_id", "group", "Age", "MMSE", "Global_CDR",

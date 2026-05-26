@@ -66,54 +66,51 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 logger = logging.getLogger(__name__)
 
 
-def resolve_paths(variant, cohort_mode="p_first_cdr05_hc_first_cdrall_or_mmseall"):
+def resolve_paths(variant, embedding, bg_mode="no_background",
+                   cohort_mode="p_first_cdr05_hc_first_cdrall_or_mmseall",
+                   photo_mode="mean", match_strategy="match_randomly"):
     """Return (class_root, out, reducer_dirs, cell_json_for, feature_subdir, feat_root).
 
-    class_root             → <classification_root>/<variant>/<cohort>
-    feat_root              → workspace/embedding/features
-    reducer_dirs           → list of reducer dirs to walk
-                              (no_drop + pca/n_components_X + pca/var_ratio_X)
-    cell_json_for(reducer, part, emb, clf) → cell metrics json
-    feature_subdir         → which sub-dir of <feat_root>/<emb>/ to use for
-                              cumulative eigenvalue ('original' for default,
-                              variant name for asymmetry / original_background).
+    class_root             → .../<visit>/<cdr_mmse>/<bg_mode>/<emb>/<variant>/<photo>
+    cell_json_for(reducer, part, clf) → cell metrics json
     """
     from src.config import (
         EMBEDDING_CLASSIFICATION_DIR,
-        cohort_name,
+        cohort_name, cohort_spec_from_name,
     )
     cohort_dir = cohort_name(cohort_mode)
+    spec = cohort_spec_from_name(cohort_dir)
     feature_subdir = variant if variant is not None else "original"
-    class_root = EMBEDDING_CLASSIFICATION_DIR / feature_subdir / cohort_dir
+    class_root = (EMBEDDING_CLASSIFICATION_DIR / spec.visit_dir / spec.cdr_mmse_dir
+                  / bg_mode / embedding / feature_subdir / photo_mode)
     out = class_root / "pca" / "_summary"
     feat_root = EMBEDDING_FEAT_DIR
 
     def _reducer_dirs():
         if not class_root.is_dir():
             return []
-        # NEW layout: class_root/<reducer>/<partition>/{fwd,rev}/<emb>/<clf>/
         seen = set()
         for marker_name in ("fwd", "rev"):
             for marker in class_root.rglob(marker_name):
                 if marker.is_dir():
                     seen.add(marker.parent.parent)
-        out = []
+        result = []
         for reducer in sorted(seen):
             rel_parts = reducer.relative_to(class_root).parts
             if any(p.startswith("_") for p in rel_parts):
                 continue
-            # PCA components plot only cares about no_drop + pca/ subtree.
             if rel_parts[0] not in ("no_drop", "pca"):
                 continue
-            out.append(reducer)
-        return out
+            result.append(reducer)
+        return result
 
-    def cell_json_for(reducer, part, emb, clf):
-        # NEW layout: reducer/<partition>/<fwd|rev>/<emb>/<clf>/
-        base = reducer / part / "fwd" / emb / clf
+    def cell_json_for(reducer, part, clf):
+        clf_sub = clf
         if clf == "logistic":
-            base = base / "C_1"
-        return base / "forward_matched_metrics.json"
+            clf_sub = clf + "/C_1"
+        return (reducer / clf_sub / "fwd" / "1by1matched"
+                / "subject_match" / "eval_by_subject"
+                / match_strategy / part / "forward_matched_metrics.json")
 
     return class_root, out, _reducer_dirs(), cell_json_for, feature_subdir, feat_root
 
@@ -267,36 +264,40 @@ def collect_feature_counts(reducer_dirs, cell_json_for):
         if not sub.name.startswith("n_components_") \
                 and not sub.name.startswith("var_ratio_"):
             continue
-        for embedding in ["arcface", "topofr", "dlib"]:
-            for partition in ["ad_vs_hc", "ad_vs_nad", "ad_vs_acs",
-                               "mmse_hilo", "casi_hilo"]:
-                p = cell_json_for(sub, partition, embedding, "logistic")
-                if not p.exists():
-                    continue
-                d = json.loads(p.read_text())
-                info = d.get("drop_corr_info", {})
-                kept = info.get("n_features_kept_per_fold")
-                n_in = info.get("n_features_input")
-                if kept is None or n_in is None:
-                    continue
-                for fold, n in enumerate(kept):
-                    rows.append({
-                        "pca_root": sub.name,
-                        "pca_x": _parse_pca_label(sub.name),
-                        "embedding": embedding,
-                        "partition": partition,
-                        "fold": fold,
-                        "n_kept": int(n),
-                        "n_input": int(n_in),
-                    })
+        for partition in ["ad_vs_hc", "ad_vs_nad", "ad_vs_acs",
+                           "mmse_hilo", "casi_hilo"]:
+            p = cell_json_for(sub, partition, "logistic")
+            if not p.exists():
+                continue
+            d = json.loads(p.read_text())
+            emb = d.get("embedding", "unknown")
+            info = d.get("drop_corr_info", {})
+            kept = info.get("n_features_kept_per_fold")
+            n_in = info.get("n_features_input")
+            if kept is None or n_in is None:
+                continue
+            for fold, n in enumerate(kept):
+                rows.append({
+                    "pca_root": sub.name,
+                    "pca_x": _parse_pca_label(sub.name),
+                    "embedding": emb,
+                    "partition": partition,
+                    "fold": fold,
+                    "n_kept": int(n),
+                    "n_input": int(n_in),
+                })
     return pd.DataFrame(rows)
 
 
 def main():
     parser = argparse.ArgumentParser(__doc__)
     parser.add_argument("--variant", default=None,
-                        choices=ASYM_VARIANTS + ["original", "original_background"],
+                        choices=ASYM_VARIANTS + ["original"],
                         help="Variant under classification/.  Default None == 'original'.")
+    parser.add_argument("--embedding", default="arcface",
+                        choices=["arcface", "topofr", "dlib", "vggface"])
+    parser.add_argument("--bg-mode", default="no_background",
+                        choices=["background", "no_background"])
     parser.add_argument("--cohort-mode", default="p_first_cdr05_hc_first_cdrall_or_mmseall",
                         choices=VALID_COHORT_CHOICES,
                         help="Output cohort routing. 'p_first_cdr05_hc_first_cdrall_or_mmseall'=p_first_cdr05_hc_first_cdrall_or_mmseall; "
@@ -312,7 +313,7 @@ def main():
     args = parser.parse_args()
 
     class_root, out, reducer_dirs, cell_json_for, feature_subdir, feat_root = resolve_paths(
-        args.variant, args.cohort_mode
+        args.variant, args.embedding, args.bg_mode, args.cohort_mode
     )
     out.mkdir(parents=True, exist_ok=True)
     logger.info(f"ROOT: {class_root}")

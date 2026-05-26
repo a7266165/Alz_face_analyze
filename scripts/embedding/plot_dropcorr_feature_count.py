@@ -41,16 +41,18 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 logger = logging.getLogger(__name__)
 
 
-def resolve_paths(variant, cohort_mode="p_first_cdr05_hc_first_cdrall_or_mmseall"):
-    from src.config import EMBEDDING_CLASSIFICATION_DIR, cohort_name
+def resolve_paths(variant, embedding, bg_mode="no_background",
+                   cohort_mode="p_first_cdr05_hc_first_cdrall_or_mmseall",
+                   photo_mode="mean", match_strategy="match_randomly"):
+    from src.config import EMBEDDING_CLASSIFICATION_DIR, cohort_name, cohort_spec_from_name
     cohort_dir = cohort_name(cohort_mode)
+    spec = cohort_spec_from_name(cohort_dir)
     v = variant if variant is not None else "original"
-    class_root = EMBEDDING_CLASSIFICATION_DIR / v / cohort_dir
+    class_root = (EMBEDDING_CLASSIFICATION_DIR / spec.visit_dir / spec.cdr_mmse_dir
+                  / bg_mode / embedding / v / photo_mode)
     out = class_root / "drop_feats" / "_summary"
     reducer_dirs = []
     if class_root.is_dir():
-        # NEW layout: class_root/<reducer>/<partition>/{fwd,rev}/<emb>/<clf>/
-        # rglob('fwd') / 'rev' → marker.parent = partition, marker.parent.parent = reducer-leaf
         seen = set()
         for marker_name in ("fwd", "rev"):
             for marker in class_root.rglob(marker_name):
@@ -64,12 +66,13 @@ def resolve_paths(variant, cohort_mode="p_first_cdr05_hc_first_cdrall_or_mmseall
                 continue
             reducer_dirs.append(reducer)
 
-    def cell_json_for(reducer, part, emb, clf):
-        # NEW layout: reducer/<partition>/<fwd|rev>/<emb>/<clf>/
-        base = reducer / part / "fwd" / emb / clf
+    def cell_json_for(reducer, part, clf):
+        clf_sub = clf
         if clf == "logistic":
-            base = base / "C_1"
-        return base / "forward_matched_metrics.json"
+            clf_sub = clf + "/C_1"
+        return (reducer / clf_sub / "fwd" / "1by1matched"
+                / "subject_match" / "eval_by_subject"
+                / match_strategy / part / "forward_matched_metrics.json")
 
     return class_root, out, reducer_dirs, cell_json_for
 
@@ -86,41 +89,45 @@ def collect(reducer_dirs, cell_json_for):
     for sub in reducer_dirs:
         thr = threshold_value(sub.name)
         for part in PARTITIONS:
-            for emb in EMBEDDINGS:
-                p = cell_json_for(sub, part, emb, "logistic")
-                if not p.exists():
-                    continue
-                payload = json.loads(p.read_text(encoding="utf-8"))
-                info = payload.get("drop_corr_info", {})
-                kept = info.get("n_features_kept_per_fold")
-                n_input = info.get("n_features_input")
-                if kept is None or n_input is None:
-                    # no_drop: no drop_corr_info → use input dim default
-                    n_input = {"arcface": 512, "topofr": 512, "dlib": 128}[emb]
-                    kept = [n_input] * 10
-                for fold, n in enumerate(kept):
-                    rows.append({
-                        "drop_root": sub.name,
-                        "drop_threshold": thr,
-                        "partition": part,
-                        "embedding": emb,
-                        "fold": fold,
-                        "n_kept": n,
-                        "n_input": n_input,
-                    })
+            p = cell_json_for(sub, part, "logistic")
+            if not p.exists():
+                continue
+            payload = json.loads(p.read_text(encoding="utf-8"))
+            emb = payload.get("embedding", "unknown")
+            info = payload.get("drop_corr_info", {})
+            kept = info.get("n_features_kept_per_fold")
+            n_input = info.get("n_features_input")
+            if kept is None or n_input is None:
+                n_input = {"arcface": 512, "topofr": 512, "dlib": 128,
+                           "vggface": 4096}.get(emb, 512)
+                kept = [n_input] * 10
+            for fold, n in enumerate(kept):
+                rows.append({
+                    "drop_root": sub.name,
+                    "drop_threshold": thr,
+                    "partition": part,
+                    "embedding": emb,
+                    "fold": fold,
+                    "n_kept": n,
+                    "n_input": n_input,
+                })
     return pd.DataFrame(rows)
 
 
 def main():
     parser = argparse.ArgumentParser(__doc__)
     parser.add_argument("--variant", default=None, choices=ASYM_VARIANTS)
+    parser.add_argument("--embedding", default="arcface",
+                        choices=["arcface", "topofr", "dlib", "vggface"])
+    parser.add_argument("--bg-mode", default="no_background",
+                        choices=["background", "no_background"])
     from src.config import VALID_COHORT_CHOICES
     parser.add_argument("--cohort-mode", default="p_first_cdr05_hc_first_cdrall_or_mmseall",
                         choices=VALID_COHORT_CHOICES)
     args = parser.parse_args()
 
     class_root, out, reducer_dirs, cell_json_for = resolve_paths(
-        args.variant, args.cohort_mode
+        args.variant, args.embedding, args.bg_mode, args.cohort_mode
     )
     out.mkdir(parents=True, exist_ok=True)
     logger.info(f"ROOT: {class_root}")

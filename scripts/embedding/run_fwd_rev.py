@@ -74,12 +74,11 @@ from src.config import (
 EMBEDDING_FEAT_DIR = EMBEDDING_FEATURES_DIR
 
 PARTITIONS = ["ad_vs_hc", "ad_vs_nad", "ad_vs_acs", "mmse_hilo", "casi_hilo"]
-EMBEDDINGS = ["arcface", "topofr", "dlib"]
+EMBEDDINGS = ["arcface", "topofr", "dlib", "vggface"]
 CLASSIFIERS = ["logistic", "xgb", "tabpfn"]
 STRATEGIES = ["forward", "reverse"]
 FEATURE_TYPES = [
     "original",
-    "original_background",
     "difference", "absolute_difference", "average",
     "relative_differences", "absolute_relative_differences",
 ]
@@ -88,6 +87,7 @@ PHOTO_MODES = ["mean", "all"]
 
 # Module-level state (set by main); avoids threading params through every callsite.
 _FEATURE_TYPE = "original"
+_BG_MODE = "no_background"  # "background" | "no_background"
 _DROP_CORR_THRESHOLD = None  # None = disabled; float = enabled at this Pearson threshold
 _DROP_CORR_METHOD = "pearson"
 _PCA_COMPONENTS = None       # None = disabled; int = n_components; float<1 = variance ratio
@@ -128,16 +128,17 @@ def _reducer_label():
 def output_dir_for(feature_type, drop_corr=None,
                     photo_mode="mean", pca_components=None,
                     cohort_mode="p_first_cdr05_hc_first_cdrall_or_mmseall",
-                    eval_method=None):
-    """Build per-cell output dir.
+                    embedding=None, bg_mode="no_background"):
+    """Build output dir up to the reducer level.
 
-    Tree layout:
-      classification/<match_subdir>/[<eval_method>/]<variant>/<cohort>/<reducer>/
+    Tree layout (10-variable pipeline order):
+      classification/<visit>/<cdr_mmse>/<bg_mode>/<embedding>/<variant>/<photo>/<reducer>/
 
-    *eval_method*: ``"matched"`` or ``"caliper_group"``.  Inserted between
-    the match-strategy dir and the feature-type dir so the two evaluation
-    modes sit side-by-side under ``match_acs_first/``.
+    Below this, cell_dir() appends:
+      <classifier>/<param>/<fwd|rev>/<eval_method>/<match_level>/<eval_unit>/<match_strategy>/<partition>/
     """
+    if embedding is None:
+        raise ValueError("embedding is required for output_dir_for()")
     if pca_components is not None and drop_corr is not None:
         raise ValueError("drop_corr and pca_components are mutually exclusive")
     if pca_components is not None:
@@ -149,21 +150,12 @@ def output_dir_for(feature_type, drop_corr=None,
         reducer = Path("no_drop")
     else:
         reducer = Path("drop_feats") / f"pearson_r_{drop_corr:g}"
-    if photo_mode != "mean":
-        reducer = reducer / f"photo_{photo_mode}"
-    cohort_dir = cohort_name(cohort_mode)
-    base = EMBEDDING_CLASSIFICATION_DIR
-    if eval_method:
-        base = base / eval_method
-    return base / feature_type / cohort_dir / reducer
+    spec = cohort_spec_from_name(cohort_name(cohort_mode))
+    return (EMBEDDING_CLASSIFICATION_DIR / spec.visit_dir / spec.cdr_mmse_dir
+            / bg_mode / embedding / feature_type / photo_mode / reducer)
 
 
-OUTPUT_DIR = output_dir_for(_FEATURE_TYPE, _DROP_CORR_THRESHOLD,
-                              _PHOTO_MODE, _PCA_COMPONENTS,
-                              _COHORT_MODE, eval_method="matched")
-CALIPER_OUTPUT_DIR = output_dir_for(_FEATURE_TYPE, _DROP_CORR_THRESHOLD,
-                                      _PHOTO_MODE, _PCA_COMPONENTS,
-                                      _COHORT_MODE, eval_method="caliper_group")
+OUTPUT_DIR = None
 
 
 class _TorchGPUPCA:
@@ -296,7 +288,7 @@ _HC_SOURCE_MODE = os.environ.get("HC_SOURCE_MODE", "ACS")
 
 def load_embedding(ids, model, feature_type="original", photo_mode=None):
     """Load per-subject embedding feature vectors from
-    workspace/embedding/features/<model>/<feature_type>/<sid>.npy.
+    workspace/embedding/features/<model>/<bg_mode>/<feature_type>/<sid>.npy.
 
     photo_mode='mean' (default): mean-pool over the 10 photos → 1 row per ID.
     photo_mode='all'           : keep all 10 photos → 10 rows per ID, with
@@ -308,7 +300,7 @@ def load_embedding(ids, model, feature_type="original", photo_mode=None):
     """
     if photo_mode is None:
         photo_mode = _PHOTO_MODE
-    emb_dir = EMBEDDING_FEAT_DIR / model / feature_type
+    emb_dir = EMBEDDING_FEAT_DIR / model / _BG_MODE / feature_type
     rows = []
     for sid in ids:
         npy = emb_dir / f"{sid}.npy"
@@ -388,8 +380,15 @@ def _build_ad_vs_hcgroup(hc_source):
         hc_source, design="cross_matched",
         cohort_mode=_COHORT_MODE, hc_source_mode=_HC_SOURCE_MODE,
         priority_groups=_MATCH_PRIORITY,
+        match_level="subject",
     )
-    return full, matched, pairs
+    matched_visit, pairs_visit = build_cohort_ad_vs_HCgroup(
+        hc_source, design="cross_matched",
+        cohort_mode=_COHORT_MODE, hc_source_mode=_HC_SOURCE_MODE,
+        priority_groups=_MATCH_PRIORITY,
+        match_level="visit",
+    )
+    return full, matched, pairs, matched_visit, pairs_visit
 
 
 def _build_metric_hilo(metric):
@@ -422,7 +421,7 @@ def _build_metric_hilo(metric):
 
 
 def build_partition_cohort(partition):
-    """Returns (full, matched, pairs, keep_groups).
+    """Returns (full, matched, pairs, matched_visit, pairs_visit, keep_groups).
 
     full / matched DataFrames must have at least: ID, base_id, label, group.
     matched must additionally have pair_id (from match_1to1).
@@ -435,18 +434,20 @@ def build_partition_cohort(partition):
     so the same model's predictions are evaluated on different sub-populations.
     """
     if partition == "ad_vs_hc":
-        full, matched, pairs = _build_ad_vs_hcgroup("HC")
-        return full, matched, pairs, None
+        full, matched, pairs, mv, pv = _build_ad_vs_hcgroup("HC")
+        return full, matched, pairs, mv, pv, None
     if partition == "ad_vs_nad":
-        full, matched, pairs = _build_ad_vs_hcgroup("HC")
-        return full, matched, pairs, {"P", "NAD"}
+        full, matched, pairs, mv, pv = _build_ad_vs_hcgroup("HC")
+        return full, matched, pairs, mv, pv, {"P", "NAD"}
     if partition == "ad_vs_acs":
-        full, matched, pairs = _build_ad_vs_hcgroup("HC")
-        return full, matched, pairs, {"P", "ACS"}
+        full, matched, pairs, mv, pv = _build_ad_vs_hcgroup("HC")
+        return full, matched, pairs, mv, pv, {"P", "ACS"}
     if partition == "mmse_hilo":
-        return (*_build_metric_hilo("MMSE"), None)
+        f, m, p = _build_metric_hilo("MMSE")
+        return f, m, p, None, None, None
     if partition == "casi_hilo":
-        return (*_build_metric_hilo("CASI"), None)
+        f, m, p = _build_metric_hilo("CASI")
+        return f, m, p, None, None, None
     raise ValueError(f"unknown partition: {partition}")
 
 
@@ -739,6 +740,7 @@ def _forward_eval(train, matched_cohort, keep_groups, seed):
         pool = matched_cohort
     matched_eval = _pair_aware_dedup(pool)
 
+    # Subject-level metrics (existing)
     oof_matched = matched_eval[["base_id", "pair_id", "label"]].merge(
         train["oof_subj"][["base_id", "y_score"]],
         on="base_id", how="inner",
@@ -750,13 +752,23 @@ def _forward_eval(train, matched_cohort, keep_groups, seed):
     )
     paired = paired_wilcoxon_by_pair(oof_matched)
 
+    # Visit-level metrics (new): use oof_df_base without subject aggregation
+    matched_bids = set(matched_eval["base_id"])
+    oof_visit = train["oof_df_base"][
+        train["oof_df_base"]["base_id"].isin(matched_bids)
+    ]
+    metrics_matched_visit = compute_clf_metrics(
+        oof_visit["y_true"].to_numpy(int),
+        oof_visit["y_score"].to_numpy(float),
+        seed=seed,
+    )
+
     # Per-cell oof_df with partition-specific in_matched column.
     oof_df = train["oof_df_base"].copy()
-    oof_df["in_matched"] = oof_df["base_id"].isin(
-        matched_eval["base_id"]
-    ).astype(int)
+    oof_df["in_matched"] = oof_df["base_id"].isin(matched_bids).astype(int)
 
-    return oof_df, metrics_matched, paired, matched_eval
+    return (oof_df, metrics_matched, paired, matched_eval,
+            metrics_matched_visit)
 
 
 def _forward_eval_caliper_group(oof_subj, full_cohort, matched_cohort,
@@ -826,13 +838,14 @@ def run_forward(full_cohort, matched_cohort, embedding, classifier,
     else:
         logger.info(f"  forward: reused cached training (cache hit)")
 
-    oof_df, metrics_matched, paired, matched_eval = _forward_eval(
+    (oof_df, metrics_matched, paired, matched_eval,
+     metrics_matched_visit) = _forward_eval(
         train, matched_cohort, keep_groups, seed,
     )
 
     return (oof_df, train["oof_subj"], train["metrics_full"], metrics_matched,
             paired, n_folds, train["n_dropped"], train["k"], matched_eval,
-            train["drop_corr_info"])
+            train["drop_corr_info"], metrics_matched_visit, train)
 
 
 def plot_cm(cm, title, out_path, neg_label="0", pos_label="1"):
@@ -951,6 +964,7 @@ def _reverse_train(full_cohort, matched_cohort, embedding, classifier,
     matched_oof_df = pd.DataFrame({
         "ID": idsm, "base_id": gm, "y_true": ym, "y_score": oof_m,
     })
+    matched_oof_visits = matched_oof_df.copy()
     matched_oof_subj = _aggregate_to_subject(matched_oof_df, score_cols=["y_score"])
 
     # `group` column is only present for ad_vs_hcgroup family cohorts (used to
@@ -994,6 +1008,7 @@ def _reverse_train(full_cohort, matched_cohort, embedding, classifier,
 
     return {
         "matched_oof_subj": matched_oof_subj,
+        "matched_oof_visits": matched_oof_visits,
         "full_subj": full_subj,
         "full_df_visits": full_df_visits,
         "matched_base_ids": matched_base_ids,
@@ -1040,6 +1055,19 @@ def _reverse_eval(train, matched_cohort, keep_groups, seed):
         if len(eval_y_m_subj) >= 5 and len(np.unique(eval_y_m_subj)) > 1 else None
     )
 
+    # ---- matched_oof: visit-level (no subject aggregation) ----
+    matched_oof_visits = train.get("matched_oof_visits")
+    metrics_matched_oof_visit = None
+    if matched_oof_visits is not None:
+        if scope_bids is not None:
+            keep_mv = matched_oof_visits["base_id"].isin(scope_bids)
+        else:
+            keep_mv = np.ones(len(matched_oof_visits), dtype=bool)
+        yv = matched_oof_visits["y_true"].to_numpy(int)[keep_mv]
+        sv = matched_oof_visits["y_score"].to_numpy(float)[keep_mv]
+        if len(yv) >= 5 and len(np.unique(yv)) > 1:
+            metrics_matched_oof_visit = compute_clf_metrics(yv, sv, seed=seed)
+
     # ---- unmatched: visit-level, filtered by scope ----
     if scope_bids is not None:
         in_scope_v = full_df_visits["base_id"].isin(scope_bids).to_numpy()
@@ -1078,6 +1106,7 @@ def _reverse_eval(train, matched_cohort, keep_groups, seed):
         "scores_df": full_df,
         "scores_df_visits": scores_df_visits,
         "metrics_matched_oof": metrics_matched_oof,
+        "metrics_matched_oof_visit": metrics_matched_oof_visit,
         "metrics_unmatched": metrics_unmatched,
         "n_unmatched_visits": n_unmatched_visits,
     }
@@ -1118,6 +1147,7 @@ def run_reverse(full_cohort, matched_cohort, embedding, classifier,
         "n_dropped_no_emb_full": train["n_dropped_f"],
         "n_unmatched": ev["n_unmatched_visits"],
         "metrics_matched_oof": ev["metrics_matched_oof"],
+        "metrics_matched_oof_visit": ev["metrics_matched_oof_visit"],
         "metrics_unmatched": ev["metrics_unmatched"],
         "drop_corr_info": train["drop_corr_info"],
     }
@@ -1147,20 +1177,34 @@ def _xgb_param_tag():
             f"_lr_{_XGB_PARAMS['learning_rate']:g}")
 
 
-def cell_dir(partition, embedding, classifier, strategy,
-             output_base=None):
-    """Layout:
-        <output_base>/<partition>/{fwd,rev}/<embedding>/<classifier>/<param_tag>/
+def _clf_subdir(classifier):
+    """Return classifier + hyperparameter subdirectory."""
+    if classifier == "logistic":
+        return Path(classifier) / f"C_{_LR_C:g}"
+    if classifier == "xgb":
+        return Path(classifier) / _xgb_param_tag()
+    return Path(classifier)
+
+
+def _match_subdir():
+    """Return match strategy directory name from _MATCH_PRIORITY."""
+    if _MATCH_PRIORITY:
+        return f"match_{_MATCH_PRIORITY[0].lower()}_first"
+    return "match_randomly"
+
+
+def cell_dir(partition, classifier, strategy,
+             eval_method="1by1matched", match_level="subject_match",
+             eval_unit="eval_by_subject", output_base=None):
+    """Layout (10-variable pipeline order):
+        <output_base>/<clf>/<param>/<fwd|rev>/<eval_method>/<match_level>/<eval_unit>/<match_strategy>/<partition>/
     """
     if output_base is None:
         output_base = OUTPUT_DIR
     bucket = "fwd" if strategy == "forward" else "rev"
-    base = output_base / partition / bucket / embedding / classifier
-    if classifier == "logistic":
-        return base / f"C_{_LR_C:g}"
-    if classifier == "xgb":
-        return base / _xgb_param_tag()
-    return base
+    return (output_base / _clf_subdir(classifier) / bucket
+            / eval_method / match_level / eval_unit
+            / _match_subdir() / partition)
 
 
 def write_json(path, obj):
@@ -1194,7 +1238,7 @@ def _write_cohort_files(out, matched, pairs):
 def run_cell(partition, embedding, classifier, strategy, n_folds=10, seed=42):
     logger.info(f"=== {partition} / {embedding} / {classifier} / {strategy} ===")
 
-    full, matched, pairs, keep_groups = build_partition_cohort(partition)
+    full, matched, pairs, matched_visit, pairs_visit, keep_groups = build_partition_cohort(partition)
     n_pairs = assert_matched_size(partition, matched,
                                     is_derived=keep_groups is not None)
     n_subj_full = full["base_id"].nunique() if "base_id" in full.columns \
@@ -1209,17 +1253,15 @@ def run_cell(partition, embedding, classifier, strategy, n_folds=10, seed=42):
     summary_rows = []
 
     if strategy in ("forward", "both"):
-        out = cell_dir(partition, embedding, classifier, "forward")
+        out = cell_dir(partition, classifier, "forward")
         _write_cohort_files(out, matched, pairs)
         (oof_df, oof_subj, m_full, m_matched, paired, n_folds_used, n_dropped, k,
-         matched_eval, drop_corr_info) = run_forward(
+         matched_eval, drop_corr_info, m_matched_visit, train) = run_forward(
             full, matched, embedding, classifier,
             n_folds=n_folds, seed=seed, keep_groups=keep_groups,
             partition=partition,
         )
         oof_df.to_csv(out / "forward_oof_scores.csv", index=False)
-        # Subject-level aggregated scores (mean across visit/photo rows of the
-        # same base_id). Same as oof_df in the default first/mean mode.
         oof_subj.to_csv(out / "forward_oof_scores_subject.csv", index=False)
         if _SAVE_OOF_PROB:
             # Meta-stacking input: subject-level (one row per base_id) with
@@ -1235,7 +1277,7 @@ def run_cell(partition, embedding, classifier, strategy, n_folds=10, seed=42):
                 prob_dir / f"{partition}_{embedding}_{classifier}_forward.csv",
                 index=False,
             )
-        write_json(out / "forward_matched_metrics.json", {
+        fwd_common = {
             "partition": partition, "embedding": embedding,
             "classifier": classifier, "strategy": "forward",
             **_classifier_params_for_json(classifier),
@@ -1245,9 +1287,32 @@ def run_cell(partition, embedding, classifier, strategy, n_folds=10, seed=42):
                              if keep_groups is not None else None),
             "drop_corr_info": drop_corr_info,
             "metrics_full_cohort": m_full,
+        }
+        write_json(out / "forward_matched_metrics.json", {
+            **fwd_common,
             "metrics_matched_subset": m_matched,
             "paired_wilcoxon": paired,
         })
+        # by_visit: same cell but under by_visit eval_unit
+        out_visit = cell_dir(partition, classifier, "forward",
+                             eval_unit="eval_by_visit")
+        out_visit.mkdir(parents=True, exist_ok=True)
+        write_json(out_visit / "forward_matched_metrics.json", {
+            **fwd_common,
+            "metrics_matched_subset": m_matched_visit,
+        })
+        # visit_match: evaluate using visit-level matched cohort
+        if matched_visit is not None:
+            (_, m_vm_subj, _, _, m_vm_visit) = _forward_eval(
+                train, matched_visit, keep_groups, seed)
+            for eu, m_vm in [("eval_by_subject", m_vm_subj), ("eval_by_visit", m_vm_visit)]:
+                out_vm = cell_dir(partition, classifier, "forward",
+                                  match_level="visit_match", eval_unit=eu)
+                out_vm.mkdir(parents=True, exist_ok=True)
+                write_json(out_vm / "forward_matched_metrics.json", {
+                    **fwd_common,
+                    "metrics_matched_subset": m_vm,
+                })
         # Plot uses subject-level scores (one point per matched subject).
         matched_score = matched_eval[["base_id", "pair_id", "label"]].merge(
             oof_subj[["base_id", "y_score"]], on="base_id", how="inner",
@@ -1286,8 +1351,8 @@ def run_cell(partition, embedding, classifier, strategy, n_folds=10, seed=42):
                 caliper=_CALIPER_GROUP,
             )
             if cal is not None:
-                cal_out = cell_dir(partition, embedding, classifier,
-                                   "forward", output_base=CALIPER_OUTPUT_DIR)
+                cal_out = cell_dir(partition, classifier,
+                                   "forward", eval_method="caliper_group")
                 cal_out.mkdir(parents=True, exist_ok=True)
                 # OOF scores (same as matched — full-cohort OOF)
                 oof_df.to_csv(cal_out / "forward_oof_scores.csv", index=False)
@@ -1335,7 +1400,7 @@ def run_cell(partition, embedding, classifier, strategy, n_folds=10, seed=42):
                 })
 
     if strategy in ("reverse", "both"):
-        out = cell_dir(partition, embedding, classifier, "reverse")
+        out = cell_dir(partition, classifier, "reverse")
         _write_cohort_files(out, matched, pairs)
         rev = run_reverse(full, matched, embedding, classifier,
                           n_folds=n_folds, seed=seed,
@@ -1363,6 +1428,30 @@ def run_cell(partition, embedding, classifier, strategy, n_folds=10, seed=42):
             "metrics_matched_oof": rev["metrics_matched_oof"],
             "metrics_unmatched": rev["metrics_unmatched"],
         })
+        # by_visit: same cell but under by_visit eval_unit
+        out_visit = cell_dir(partition, classifier, "reverse",
+                             eval_unit="eval_by_visit")
+        out_visit.mkdir(parents=True, exist_ok=True)
+        write_json(out_visit / "metrics.json", {
+            **common,
+            "metrics_matched_oof": rev["metrics_matched_oof_visit"],
+            "metrics_unmatched": rev["metrics_unmatched"],
+        })
+        # visit_match for reverse: train on visit-level matched cohort
+        if matched_visit is not None:
+            rev_vm = run_reverse(full, matched_visit, embedding, classifier,
+                                 n_folds=n_folds, seed=seed,
+                                 keep_groups=keep_groups, partition=partition)
+            for eu, mk in [("eval_by_subject", "metrics_matched_oof"),
+                           ("eval_by_visit", "metrics_matched_oof_visit")]:
+                out_vm = cell_dir(partition, classifier, "reverse",
+                                  match_level="visit_match", eval_unit=eu)
+                out_vm.mkdir(parents=True, exist_ok=True)
+                write_json(out_vm / "metrics.json", {
+                    **common,
+                    "metrics_matched_oof": rev_vm[mk],
+                    "metrics_unmatched": rev_vm["metrics_unmatched"],
+                })
 
         m_oof = rev["metrics_matched_oof"]
         m_un = rev["metrics_unmatched"]
@@ -1414,8 +1503,8 @@ def run_grid_search(partitions, embeddings, classifiers, strategies,
     over partitions and calls `run_cell()` — the same writer that non-grid
     runs use. Each combo lands in its own cell_dir:
 
-      <OUTPUT_DIR>/<partition>/<fwd|rev>/<embedding>/logistic/C_<value>/...
-      <OUTPUT_DIR>/<partition>/<fwd|rev>/<embedding>/xgb/ne_X_md_Y_lr_Z/...
+      <OUTPUT_DIR>/<partition>/<fwd|rev>/logistic/C_<value>/...
+      <OUTPUT_DIR>/<partition>/<fwd|rev>/xgb/ne_X_md_Y_lr_Z/...
 
     so per-combo `forward_matched_metrics.json` + `metrics.json` + scores
     CSVs + CM PNGs are all written exactly as in a normal run. After the
@@ -1445,15 +1534,21 @@ def run_grid_search(partitions, embeddings, classifiers, strategies,
             logger.info(f"  grid: skipping {classifier} (no exposed params)")
             continue
 
+        total_cells = len(grid) * len(partitions)
         logger.info(
             f"=== grid: {embedding}/{classifier}/{strategy} "
             f"× {len(partitions)} partitions × {len(grid)} combos "
-            f"= {len(partitions) * len(grid)} cells ==="
+            f"= {total_cells} cells ==="
         )
 
+        cell_idx = 0
         for combo in grid:
             _apply_classifier_params(classifier, combo)
             for partition in partitions:
+                cell_idx += 1
+                out = cell_dir(partition, classifier, strategy)
+                rel = out.relative_to(EMBEDDING_CLASSIFICATION_DIR)
+                logger.info(f"  [{cell_idx}/{total_cells}] {rel}")
                 try:
                     run_cell(partition, embedding, classifier, strategy,
                              n_folds=n_folds, seed=seed)
@@ -1509,8 +1604,11 @@ def main():
                         choices=STRATEGIES + ["both"])
     parser.add_argument("--feature-type", default="original",
                         choices=FEATURE_TYPES,
-                        help="Embedding feature variant. Output goes to "
-                             "embedding/analysis/classification/<variant>/.")
+                        help="Embedding feature variant.")
+    parser.add_argument("--bg-mode", default="no_background",
+                        choices=["background", "no_background"],
+                        help="Background mode: 'background' (with background) or "
+                             "'no_background' (background removed).")
     parser.add_argument("--drop-correlated-threshold", type=float, default=None,
                         help="Optional Pearson correlation threshold above "
                              "which one feature of each correlated pair is "
@@ -1588,15 +1686,15 @@ def main():
                              "without this flag output goes to match_randomly/.")
     args = parser.parse_args()
 
-    global _FEATURE_TYPE, _DROP_CORR_THRESHOLD, _DROP_CORR_METHOD
+    global _FEATURE_TYPE, _BG_MODE, _DROP_CORR_THRESHOLD, _DROP_CORR_METHOD
     global _PCA_COMPONENTS, _PHOTO_MODE, _COHORT_MODE, _LR_C
-    global OUTPUT_DIR, CALIPER_OUTPUT_DIR
+    global OUTPUT_DIR
     global _RFE_DROP, _RFE_ITERS, _SAVE_OOF_PROB, _MATCH_PRIORITY, _CALIPER_GROUP
-    global EMBEDDING_CLASSIFICATION_DIR, EMBEDDING_FEAT_DIR
     if args.drop_correlated_threshold is not None and args.pca_components is not None:
         parser.error("--drop-correlated-threshold and --pca-components are "
                      "mutually exclusive")
     _FEATURE_TYPE = args.feature_type
+    _BG_MODE = args.bg_mode
     _DROP_CORR_THRESHOLD = args.drop_correlated_threshold
     _DROP_CORR_METHOD = args.corr_method
     if args.pca_components is None:
@@ -1619,20 +1717,6 @@ def main():
     _SAVE_OOF_PROB = args.save_oof_probabilities
     _CALIPER_GROUP = args.caliper_group
     _MATCH_PRIORITY = args.match_priority
-    if _MATCH_PRIORITY:
-        match_subdir = f"match_{_MATCH_PRIORITY[0].lower()}_first"
-        os.environ["ALZ_MATCH_SUBDIR"] = match_subdir
-        from src.config import _EMBEDDING_CLASSIFICATION_BASE
-        EMBEDDING_CLASSIFICATION_DIR = _EMBEDDING_CLASSIFICATION_BASE / match_subdir
-    OUTPUT_DIR = output_dir_for(_FEATURE_TYPE, _DROP_CORR_THRESHOLD,
-                                  _PHOTO_MODE,
-                                  _PCA_COMPONENTS, _COHORT_MODE,
-                                  eval_method="matched")
-    CALIPER_OUTPUT_DIR = output_dir_for(_FEATURE_TYPE, _DROP_CORR_THRESHOLD,
-                                          _PHOTO_MODE,
-                                          _PCA_COMPONENTS, _COHORT_MODE,
-                                          eval_method="caliper_group")
-
     partitions = expand_axis(args.partition, PARTITIONS)
     embeddings = expand_axis(args.embedding, EMBEDDINGS)
     classifiers = expand_axis(args.classifier, CLASSIFIERS)
@@ -1646,50 +1730,54 @@ def main():
         reducer_label = f"pca_{_PCA_COMPONENTS}"
     else:
         reducer_label = "no_drop"
-    logger.info(f"Feature type: {_FEATURE_TYPE}  ·  {reducer_label}  ·  "
-                f"photo={_PHOTO_MODE}  ·  cohort={_COHORT_MODE}  ·  "
-                f"lr_C={_LR_C}  ·  match_priority={_MATCH_PRIORITY}  "
-                f"→  {OUTPUT_DIR}")
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    summary_dir = OUTPUT_DIR / "_summary"
-    summary_dir.mkdir(parents=True, exist_ok=True)
-
-    if args.grid_search:
-        run_grid_search(
-            partitions, embeddings, classifiers, strategies,
-            n_folds=args.n_folds, seed=args.seed,
-            lr_grid=_DEFAULT_LR_GRID, xgb_grid=_DEFAULT_XGB_GRID,
-        )
-        return
 
     all_rows = []
     n_cells = 0
     n_failed = 0
-    for partition, embedding, classifier in itertools.product(
-        partitions, embeddings, classifiers
-    ):
-        for strategy in strategies:
-            n_cells += 1
-            try:
-                rows = run_cell(partition, embedding, classifier, strategy,
-                                 n_folds=args.n_folds, seed=args.seed)
-                all_rows.extend(rows)
-            except Exception as e:
-                n_failed += 1
-                logger.exception(
-                    f"FAILED {partition}/{embedding}/{classifier}/{strategy}: {e}"
-                )
+    for embedding in embeddings:
+        OUTPUT_DIR = output_dir_for(
+            _FEATURE_TYPE, _DROP_CORR_THRESHOLD, _PHOTO_MODE,
+            _PCA_COMPONENTS, _COHORT_MODE,
+            embedding=embedding, bg_mode=_BG_MODE,
+        )
+        logger.info(f"Feature type: {_FEATURE_TYPE}  ·  bg={_BG_MODE}  ·  "
+                    f"emb={embedding}  ·  {reducer_label}  ·  "
+                    f"photo={_PHOTO_MODE}  ·  cohort={_COHORT_MODE}  ·  "
+                    f"lr_C={_LR_C}  ·  match={_match_subdir()}  "
+                    f"→  {OUTPUT_DIR}")
+        OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+        summary_dir = OUTPUT_DIR / "_summary"
+        summary_dir.mkdir(parents=True, exist_ok=True)
 
-    if all_rows:
-        summary_df = pd.DataFrame(all_rows)
-        # C-tagged filename so different LR C values don't clobber each other.
-        # XGB-only runs still get a C tag (uses --lr-C default 1.0); harmless.
-        summary_path = summary_dir / f"combined_summary_C{_LR_C:g}.csv"
-        summary_df.to_csv(summary_path, index=False)
-        logger.info(f"Wrote {summary_path} ({len(summary_df)} rows)")
+        if args.grid_search:
+            run_grid_search(
+                partitions, [embedding], classifiers, strategies,
+                n_folds=args.n_folds, seed=args.seed,
+                lr_grid=_DEFAULT_LR_GRID, xgb_grid=_DEFAULT_XGB_GRID,
+            )
+            continue
+
+        for partition, classifier in itertools.product(partitions, classifiers):
+            for strategy in strategies:
+                n_cells += 1
+                try:
+                    rows = run_cell(partition, embedding, classifier, strategy,
+                                     n_folds=args.n_folds, seed=args.seed)
+                    all_rows.extend(rows)
+                except Exception as e:
+                    n_failed += 1
+                    logger.exception(
+                        f"FAILED {partition}/{embedding}/{classifier}/{strategy}: {e}"
+                    )
+
+        emb_rows = [r for r in all_rows if r.get("embedding") == embedding]
+        if emb_rows:
+            summary_path = summary_dir / f"combined_summary_C{_LR_C:g}.csv"
+            pd.DataFrame(emb_rows).to_csv(summary_path, index=False)
+            logger.info(f"Wrote {summary_path} ({len(emb_rows)} rows)")
 
     logger.info(
-        f"Done: {n_cells} cells, {n_failed} failed. Outputs at {OUTPUT_DIR}"
+        f"Done: {n_cells} cells, {n_failed} failed."
     )
 
 

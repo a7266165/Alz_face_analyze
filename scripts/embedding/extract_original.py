@@ -70,11 +70,11 @@ def setup_cpu_limit(max_cores: int):
         pass
 
 
-def get_processed_subjects(output_dir: Path, models: List[str], subdir: str) -> Set[str]:
+def get_processed_subjects(output_dir: Path, models: List[str], bg_variant: str) -> Set[str]:
     """取得所有模型都已處理完成的受試者集合"""
     subject_sets = []
     for model in models:
-        feature_dir = output_dir / model / subdir
+        feature_dir = output_dir / model / bg_variant / "original"
         if feature_dir.exists():
             subjects = {f.stem for f in feature_dir.glob("*.npy")}
             subject_sets.append(subjects)
@@ -111,14 +111,16 @@ def main():
     ap.add_argument("--background", action="store_true",
                     help="讀 ALIGNED_BACKGROUND_DIR (含背景) 並寫到 {model}/original_background/；"
                          "預設讀去背版 ALIGNED_DIR 寫 {model}/original/")
+    ap.add_argument("--models", nargs="+", default=EMBEDDING_MODELS,
+                    help=f"指定要提取的嵌入模型 (預設: {EMBEDDING_MODELS})")
     args = ap.parse_args()
 
     if args.background:
         aligned_dir = _ALIGNED_BACKGROUND_DIR
-        subdir = "original_background"
+        bg_variant = "background"
     else:
         aligned_dir = _ALIGNED_DIR
-        subdir = "original"
+        bg_variant = "no_background"
 
     setup_cpu_limit(MAX_CPU_CORES)
 
@@ -126,16 +128,17 @@ def main():
     logger.info(f"原始臉部特徵提取（{'含背景' if args.background else '去背'}）")
     logger.info("=" * 60)
     logger.info(f"影像來源: {aligned_dir}")
-    logger.info(f"輸出目錄: {OUTPUT_DIR} / {{model}} / {subdir}/")
-    logger.info(f"嵌入模型: {EMBEDDING_MODELS}")
+    logger.info(f"輸出目錄: {OUTPUT_DIR} / {{model}} / {bg_variant} / original/")
+    models = args.models
+    logger.info(f"嵌入模型: {models}")
 
     if not aligned_dir.exists():
         logger.error(f"找不到對齊影像目錄: {aligned_dir}")
         sys.exit(1)
 
     # 建立輸出目錄
-    for model in EMBEDDING_MODELS:
-        (OUTPUT_DIR / model / subdir).mkdir(parents=True, exist_ok=True)
+    for model in models:
+        (OUTPUT_DIR / model / bg_variant / "original").mkdir(parents=True, exist_ok=True)
 
     # 掃描受試者
     subject_dirs = sorted([
@@ -145,7 +148,7 @@ def main():
     logger.info(f"找到 {len(subject_dirs)} 個受試者")
 
     # 檢查斷點
-    processed = get_processed_subjects(OUTPUT_DIR, EMBEDDING_MODELS, subdir)
+    processed = get_processed_subjects(OUTPUT_DIR, models, bg_variant)
     if processed:
         logger.info(f"跳過 {len(processed)} 個已處理的受試者")
 
@@ -176,10 +179,10 @@ def main():
 
                 # 提取各模型的特徵
                 results = extractor.extract_features(
-                    images, models=EMBEDDING_MODELS
+                    images, models=models
                 )
 
-                for model in EMBEDDING_MODELS:
+                for model in models:
                     if model not in results:
                         continue
 
@@ -191,7 +194,7 @@ def main():
                         continue
 
                     feature_array = np.array(valid)  # (n_images, feature_dim)
-                    out_path = OUTPUT_DIR / model / subdir / f"{subject_id}.npy"
+                    out_path = OUTPUT_DIR / model / bg_variant / "original" / f"{subject_id}.npy"
                     np.save(out_path, feature_array)
 
                 success += 1

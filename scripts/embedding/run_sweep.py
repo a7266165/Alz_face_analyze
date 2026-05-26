@@ -101,7 +101,7 @@ def label_for(kind, value):
     return f"drop_{value}"
 
 
-def run_one(feat, kind, value, args):
+def run_one(feat, kind, value, args, progress=""):
     cmd = [PYTHON, str(PROJECT_ROOT / "scripts" / "embedding" /
                         "run_fwd_rev.py"),
            "--cohort-mode", args.cohort_mode,
@@ -113,8 +113,17 @@ def run_one(feat, kind, value, args):
         cmd += ["--drop-correlated-threshold", str(value)]
     if args.exclude_classifiers:
         cmd += ["--exclude-classifiers", *args.exclude_classifiers]
+    if args.caliper_group != 3.0:
+        cmd += ["--caliper-group", str(args.caliper_group)]
+    cmd += ["--bg-mode", args.bg_mode]
+    if args.match_priority:
+        cmd += ["--match-priority", *args.match_priority]
+    if args.embedding:
+        cmd += ["--embedding", args.embedding]
+    if args.grid_search:
+        cmd += ["--grid-search"]
     label = label_for(kind, value)
-    print(f"\n{'='*70}\n[{time.strftime('%H:%M:%S')}] {feat} / "
+    print(f"\n{'='*70}\n[{time.strftime('%H:%M:%S')}] {progress}{feat} / "
           f"{label}\n{'='*70}", flush=True)
     print(" ".join(cmd), flush=True)
     t0 = time.time()
@@ -144,21 +153,36 @@ def main():
                     help="Forward to run_fwd_rev.py: skip these classifiers "
                          "(e.g. --exclude-classifiers tabpfn to avoid Windows "
                          "subprocess console popups).")
+    p.add_argument("--caliper-group", type=float, default=3.0,
+                    help="Forward to run_fwd_rev.py: caliper-group window "
+                         "(set 0 to skip caliper-group evaluation).")
+    p.add_argument("--bg-mode", default="no_background",
+                    choices=["background", "no_background"],
+                    help="Forward to run_fwd_rev.py: background mode.")
+    p.add_argument("--match-priority", nargs="*", default=None,
+                    help="Forward to run_fwd_rev.py: HC sub-group matching priority.")
+    p.add_argument("--embedding", default=None,
+                    help="Forward to run_fwd_rev.py: limit to one embedding model.")
+    p.add_argument("--grid-search", action="store_true",
+                    help="Forward to run_fwd_rev.py: hyperparameter grid search.")
     args = p.parse_args()
 
     specs = args.reducers if args.reducers else DEFAULT_REDUCERS
     parsed = [parse_reducer(s) for s in specs]
 
-    print(f"Cohort mode:    {args.cohort_mode}")
-    print(f"Photo mode:     {args.photo_mode}")
-    print(f"Feature types:  {args.feature_types}")
-    print(f"Reducers ({len(parsed)}): "
+    print(f"\n{'#'*70}")
+    print(f"# SWEEP: {args.embedding or 'ALL'} | {args.bg_mode} | "
+          f"{args.cohort_mode}")
+    print(f"# Features ({len(args.feature_types)}): {args.feature_types}")
+    print(f"# Reducers ({len(parsed)}): "
           f"{[label_for(k, v) for k, v in parsed]}")
-    print(f"Total invocations: {len(args.feature_types) * len(parsed)}")
+    print(f"# Total invocations: {len(args.feature_types) * len(parsed)}")
+    print(f"{'#'*70}\n", flush=True)
 
     t_start = time.time()
     ok, fail, skip = 0, [], 0
-    for feat in args.feature_types:
+    n_feats = len(args.feature_types)
+    for feat_i, feat in enumerate(args.feature_types, 1):
         for kind, value in parsed:
             if args.skip_existing:
                 # Recreate the expected output dir to test existence.
@@ -173,12 +197,15 @@ def main():
                 pca = value if kind == "pca" else None
                 drop = value if kind == "drop" else None
                 out = imp.output_dir_for(feat, drop,
-                                          args.photo_mode, pca, args.cohort_mode)
+                                          args.photo_mode, pca, args.cohort_mode,
+                                          embedding="arcface",
+                                          bg_mode=args.bg_mode)
                 if (out / "_summary" / "combined_summary.csv").exists():
                     skip += 1
                     print(f"SKIP {feat}/{label_for(kind,value)} (exists)")
                     continue
-            if run_one(feat, kind, value, args):
+            progress = f"[feat {feat_i}/{n_feats}] "
+            if run_one(feat, kind, value, args, progress=progress):
                 ok += 1
             else:
                 fail.append(f"{feat}/{label_for(kind, value)}")

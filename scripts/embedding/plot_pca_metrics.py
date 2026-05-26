@@ -37,14 +37,18 @@ ASYM_VARIANTS = ["difference", "absolute_difference", "average",
                  "relative_differences", "absolute_relative_differences"]
 
 
-def resolve_paths(variant, cohort_mode="p_first_cdr05_hc_first_cdrall_or_mmseall"):
-    from src.config import EMBEDDING_CLASSIFICATION_DIR, cohort_name
+def resolve_paths(variant, embedding, bg_mode="no_background",
+                   cohort_mode="p_first_cdr05_hc_first_cdrall_or_mmseall",
+                   photo_mode="mean"):
+    from src.config import EMBEDDING_CLASSIFICATION_DIR, cohort_name, cohort_spec_from_name
     cohort_dir = cohort_name(cohort_mode)
+    spec = cohort_spec_from_name(cohort_dir)
     v = variant if variant is not None else "original"
-    return EMBEDDING_CLASSIFICATION_DIR / v / cohort_dir / "pca" / "_summary"
+    return (EMBEDDING_CLASSIFICATION_DIR / spec.visit_dir / spec.cdr_mmse_dir
+            / bg_mode / embedding / v / photo_mode / "pca" / "_summary")
 
 
-INPUT_DIM = {"arcface": 512, "topofr": 512, "dlib": 128}
+INPUT_DIM = {"arcface": 512, "topofr": 512, "dlib": 128, "vggface": 4096}
 EMB_CLF_COLOR = {
     ("arcface", "logistic"): "#5da3d9",
     ("arcface", "xgb"):      "#08306b",
@@ -182,14 +186,18 @@ def main():
                         help="fwd: forward_{full,matched}; "
                              "rev: reverse_{matched_oof,unmatched}.")
     parser.add_argument("--variant", default=None,
-                        choices=ASYM_VARIANTS + ["original", "original_background"],
+                        choices=ASYM_VARIANTS + ["original"],
                         help="Variant under classification/.  Default None == 'original'.")
+    parser.add_argument("--embedding", default="arcface",
+                        choices=["arcface", "topofr", "dlib", "vggface"])
+    parser.add_argument("--bg-mode", default="no_background",
+                        choices=["background", "no_background"])
     from src.config import VALID_COHORT_CHOICES
     parser.add_argument("--cohort-mode", default="p_first_cdr05_hc_first_cdrall_or_mmseall",
                         choices=VALID_COHORT_CHOICES)
     args = parser.parse_args()
 
-    out = resolve_paths(args.variant, args.cohort_mode)
+    out = resolve_paths(args.variant, args.embedding, args.bg_mode, args.cohort_mode)
     logger.info(f"OUT: {out}")
     long_csv = out / "all_pca_metrics.csv"
     eig_csv = out / "cumulative_eigenvalue_ratio.csv"

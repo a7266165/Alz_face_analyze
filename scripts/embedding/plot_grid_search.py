@@ -98,16 +98,31 @@ def _plot_line(ax, x, df, metric, label, color, with_ci=True):
     y = df[metric].to_numpy(dtype=float)
     if not np.isfinite(y).any():
         return
+    n = len(y)
+    x = x[:n]
     if with_ci and metric == "auc":
         lo = df["auc_ci_low"].to_numpy(dtype=float)
         hi = df["auc_ci_high"].to_numpy(dtype=float)
-        ax.fill_between(x, lo, hi, alpha=0.15, color=color)
+        if len(lo) == n and len(hi) == n:
+            ax.fill_between(x, lo, hi, alpha=0.15, color=color)
     ax.plot(x, y, marker="o", color=color, linewidth=1.4, markersize=4,
              label=label)
     best_idx = int(np.nanargmax(y))
-    ax.scatter(x[best_idx], y[best_idx], s=160, marker="*",
+    best_val = y[best_idx]
+    ax.scatter(x[best_idx], best_val, s=160, marker="*",
                 color="gold", edgecolors=color, linewidths=1.2,
                 zorder=10)
+    if label == "NAD only":
+        oy, va_ = -6, "top"
+    else:
+        oy, va_ = 6, "bottom"
+    ax.annotate(f"{best_val:.3f}",
+                xy=(x[best_idx], best_val),
+                xytext=(0, oy), textcoords="offset points",
+                ha="center", va=va_, fontsize=13, fontweight="bold",
+                color=color, zorder=11,
+                bbox=dict(boxstyle="round,pad=0.15", fc="white",
+                          ec="none", alpha=0.8))
 
 
 def _draw_3x2(rows_full, rows_matched_by_part, classifier, out_path,
@@ -118,7 +133,7 @@ def _draw_3x2(rows_full, rows_matched_by_part, classifier, out_path,
     rows_matched_by_part: dict[partition] → DataFrame of forward_matched rows,
         sorted by combo. Multiple partitions ⇒ multiple lines per matched panel.
     """
-    fig, axes = plt.subplots(3, 2, figsize=(16, 13), sharex="col")
+    fig, axes = plt.subplots(3, 2, figsize=(16, 13), sharex="col", sharey="row")
     for ax in axes.flat:
         ax.tick_params(axis="both", labelsize=20)
 
@@ -265,20 +280,41 @@ def main():
     if df.empty:
         raise SystemExit(f"{csv} is empty")
 
+    match_levels = (sorted(df["match_level"].dropna().unique())
+                    if "match_level" in df.columns else [None])
+    eval_units = (sorted(df["eval_unit"].dropna().unique())
+                  if "eval_unit" in df.columns else [None])
+
     n_done = 0
-    for embedding in sorted(df["embedding"].dropna().unique()):
-        for classifier in sorted(df["classifier"].dropna().unique()):
-            if classifier not in ("logistic", "xgb"):
+    for ml in match_levels:
+        for eu in eval_units:
+            slice_df = df.copy()
+            if ml is not None:
+                slice_df = slice_df[slice_df["match_level"] == ml]
+            if eu is not None:
+                slice_df = slice_df[slice_df["eval_unit"] == eu]
+            if slice_df.empty:
                 continue
-            sub = df[(df["embedding"] == embedding)
-                      & (df["classifier"] == classifier)]
-            if sub.empty:
-                continue
-            paths = render_for(sub, embedding, classifier, summary_dir)
-            for p in paths:
-                rel = p.relative_to(summary_dir.parent)
-                print(f"  wrote {rel}")
-                n_done += 1
+
+            if ml is not None and eu is not None:
+                out_dir = summary_dir / ml / eu
+            else:
+                out_dir = summary_dir
+            out_dir.mkdir(parents=True, exist_ok=True)
+
+            for embedding in sorted(slice_df["embedding"].dropna().unique()):
+                for classifier in sorted(slice_df["classifier"].dropna().unique()):
+                    if classifier not in ("logistic", "xgb"):
+                        continue
+                    sub = slice_df[(slice_df["embedding"] == embedding)
+                                   & (slice_df["classifier"] == classifier)]
+                    if sub.empty:
+                        continue
+                    paths = render_for(sub, embedding, classifier, out_dir)
+                    for p in paths:
+                        rel = p.relative_to(summary_dir.parent)
+                        print(f"  wrote {rel}")
+                        n_done += 1
 
     print(f"Done: {n_done} plots written.")
 

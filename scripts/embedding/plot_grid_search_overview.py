@@ -216,6 +216,10 @@ def main():
         print(f"ERROR: {csv} not found")
         return
     df = pd.read_csv(csv)
+    if "match_level" in df.columns:
+        df = df[df["match_level"] == "subject_match"]
+    if "eval_unit" in df.columns:
+        df = df[df["eval_unit"] == "eval_by_subject"]
     summary_dir = root / "_summary"
     n = 0
     for clf in ["logistic", "xgb"]:

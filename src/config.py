@@ -44,10 +44,11 @@ WORKSPACE_DIR = PROJECT_ROOT / "workspace"
 # Preprocess
 # -----------------------------------------------------------------------------
 PREPROCESSING_DIR = WORKSPACE_DIR / "preprocess"
-SELECTED_DIR = PREPROCESSING_DIR / "selected"
-ALIGNED_DIR = PREPROCESSING_DIR / "aligned"
-ALIGNED_BACKGROUND_DIR = PREPROCESSING_DIR / "aligned_background"
-MIRRORS_DIR = PREPROCESSING_DIR / "mirrors"
+SELECTED_DIR = PREPROCESSING_DIR / "no_background" / "selected"
+ALIGNED_DIR = PREPROCESSING_DIR / "no_background" / "aligned"
+ALIGNED_BACKGROUND_DIR = PREPROCESSING_DIR / "background" / "aligned"
+MIRRORS_DIR = PREPROCESSING_DIR / "no_background" / "mirrors"
+MIRRORS_BACKGROUND_DIR = PREPROCESSING_DIR / "background" / "mirrors"
 
 # -----------------------------------------------------------------------------
 # Embedding
@@ -59,11 +60,8 @@ STATISTICS_DIR = EMBEDDING_DIR / "statistics"
 EMBEDDING_ANALYSIS_DIR = EMBEDDING_DIR / "analysis"
 EMBEDDING_FEATURE_STAT_DIR = EMBEDDING_ANALYSIS_DIR / "feature_stat"
 _EMBEDDING_CLASSIFICATION_BASE = EMBEDDING_ANALYSIS_DIR / "classification"
-# matching 策略子目錄：match_randomly / match_acs_first / match_nad_first
+EMBEDDING_CLASSIFICATION_DIR = _EMBEDDING_CLASSIFICATION_BASE
 _MATCH_SUBDIR = os.environ.get("ALZ_MATCH_SUBDIR", "match_randomly")
-EMBEDDING_CLASSIFICATION_DIR = _EMBEDDING_CLASSIFICATION_BASE / _MATCH_SUBDIR
-# 6 個 variant 為 EMBEDDING_CLASSIFICATION_DIR 之 L1 sub-dir：
-# original / difference / absolute_difference / average / relative_differences / absolute_relative_differences
 
 # -----------------------------------------------------------------------------
 # Age
@@ -71,21 +69,28 @@ EMBEDDING_CLASSIFICATION_DIR = _EMBEDDING_CLASSIFICATION_BASE / _MATCH_SUBDIR
 AGE_DIR = WORKSPACE_DIR / "age"
 AGE_PREDICTIONS_DIR = AGE_DIR / "predictions"
 # 預設指向 DEFAULT_COHORT_MODE；其他 cohort 用 AGE_PREDICTIONS_DIR / <canonical> 動態組合。
-AGE_PREDICTION_DIR = AGE_PREDICTIONS_DIR / "p_first_cdr05_hc_first_cdrall_or_mmseall"
+AGE_PREDICTION_DIR = AGE_PREDICTIONS_DIR / "P_first_HC_first" / "P_cdr05_HC_cdrall_mmseall"
 AGE_BENCHMARK_DIR = AGE_PREDICTIONS_DIR / "benchmark"
 
-CORRECTIONS_DIR = AGE_PREDICTION_DIR / "corrections"
-CALIBRATION_DIR = CORRECTIONS_DIR / "calibration"
-BOOTSTRAP_DIR = CORRECTIONS_DIR / "bootstrap_correction"
-MEAN_CORRECTION_DIR = CORRECTIONS_DIR / "mean_correction"
 PREDICTED_AGES_FILE = AGE_PREDICTION_DIR / "predicted_ages.json"
-PREDICTED_AGES_CALIBRATED_FILE = AGE_PREDICTION_DIR / "predicted_ages_calibrated.json"
+
+# Error 子樹（校正前分析）
+AGE_ERROR_DIR = AGE_PREDICTION_DIR / "error"
+AGE_ERROR_SCATTER_DIR = AGE_ERROR_DIR / "scatter"
+AGE_ERROR_STAT_DIR = AGE_ERROR_DIR / "stat"
+AGE_ERROR_LINES_DIR = AGE_ERROR_DIR / "lines"
+
+# Correction 子樹
+CORRECTION_DIR = AGE_PREDICTION_DIR / "correction"
+CALIBRATION_DIR = CORRECTION_DIR / "calibration"
+BOOTSTRAP_DIR = CORRECTION_DIR / "bootstrap_correction"
+MEAN_CORRECTION_DIR = CORRECTION_DIR / "mean_correction"
+CORRECTION_LINES_DIR = CORRECTION_DIR / "lines"
+PREDICTED_AGES_CALIBRATED_FILE = CALIBRATION_DIR / "predicted_ages_calibrated.json"
 
 # Age analysis 子樹
 AGE_ANALYSIS_DIR = AGE_DIR / "analysis"
 AGE_PRED_ERROR_STAT_DIR = AGE_ANALYSIS_DIR / "pred_error_stat"
-AGE_CLASSIFICATION_DIR = AGE_ANALYSIS_DIR / "classification"
-AGE_WINDOW_CLASSIFIER_DIR = AGE_CLASSIFICATION_DIR / "window_classifier"
 
 # -----------------------------------------------------------------------------
 # BMI
@@ -179,6 +184,14 @@ class CohortSpec:
                 f"_hc_{self.hc_visit}_{self.hc_cdr}_or_{self.hc_mmse}")
 
     @property
+    def visit_dir(self) -> str:
+        return f"P_{self.p_visit}_HC_{self.hc_visit}"
+
+    @property
+    def cdr_mmse_dir(self) -> str:
+        return f"P_{self.p_cdr}_HC_{self.hc_cdr}_{self.hc_mmse}"
+
+    @property
     def hc_strict(self) -> bool:
         """True when HC cognitive filter is active (CDR==0 OR MMSE>=26)."""
         return (self.hc_cdr, self.hc_mmse) == ("cdr0", "mmse26")
@@ -219,6 +232,12 @@ def cohort_name(cohort_mode: str) -> str:
     return cohort_mode
 
 
+def cohort_path(cohort_mode: str) -> Path:
+    """Return two-level directory path: <visit_dir>/<cdr_mmse_dir>."""
+    spec = cohort_spec_from_name(cohort_name(cohort_mode))
+    return Path(spec.visit_dir) / spec.cdr_mmse_dir
+
+
 def cohort_spec_from_name(name: str) -> CohortSpec:
     """Parse canonical name to CohortSpec; raise on invalid."""
     m = _CANONICAL_RE.match(name)
@@ -235,28 +254,43 @@ def cohort_spec_from_name(name: str) -> CohortSpec:
 
 
 def embedding_classification_path(
-    variant: str,
     cohort: str,
+    bg_mode: str,
+    emb: str,
+    variant: str,
+    photo_mode: str = "mean",
     reducer: str = "no_drop",
-    partition: Optional[str] = None,
-    direction: Optional[str] = None,
-    emb: Optional[str] = None,
     clf: Optional[str] = None,
+    direction: Optional[str] = None,
+    eval_method: Optional[str] = None,
+    match_level: Optional[str] = None,
+    eval_unit: Optional[str] = None,
+    match_strategy: Optional[str] = None,
+    partition: Optional[str] = None,
 ) -> Path:
     """
     Compose embedding classification output path.
 
-    Layout: embedding/analysis/classification/<variant>/<cohort>/<reducer>/<partition>/<direction>/<emb>/<clf>/
+    Layout (follows 10-variable pipeline order):
+      classification/<visit>/<cdr_mmse>/<bg_mode>/<emb>/<variant>/<photo>/<reducer>/
+        <clf>/<direction>/<eval_method>/<match_level>/<eval_unit>/<match_strategy>/<partition>/
 
     Args:
+        cohort: canonical cohort name → split into visit_dir + cdr_mmse_dir
+        bg_mode: background | no_background
+        emb: arcface | topofr | dlib | vggface
         variant: original | difference | absolute_difference | average |
                  relative_differences | absolute_relative_differences
-        cohort: alias or canonical cohort name (will be resolved via cohort_name)
+        photo_mode: mean | all
         reducer: no_drop | pca/n_components_X | drop_feats/pearson_r_X.X
-        partition, direction, emb, clf: 可選、None 時止於前面那層
+        clf, direction, eval_method, match_level, eval_unit,
+        match_strategy, partition: 可選
     """
-    p = EMBEDDING_CLASSIFICATION_DIR / variant / cohort_name(cohort) / reducer
-    for seg in (partition, direction, emb, clf):
+    spec = cohort_spec_from_name(cohort_name(cohort))
+    p = (EMBEDDING_CLASSIFICATION_DIR / spec.visit_dir / spec.cdr_mmse_dir
+         / bg_mode / emb / variant / photo_mode / reducer)
+    for seg in (clf, direction, eval_method, match_level, eval_unit,
+                match_strategy, partition):
         if seg is None:
             break
         p = p / seg

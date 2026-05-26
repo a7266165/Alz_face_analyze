@@ -29,8 +29,8 @@ import pandas as pd
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 import sys as _sys
 _sys.path.insert(0, str(PROJECT_ROOT))
-from src.config import EMBEDDING_CLASSIFICATION_DIR, cohort_name
-DEFAULT_ROOT = EMBEDDING_CLASSIFICATION_DIR / "original" / cohort_name("p_first_cdr05_hc_first_cdrall_or_mmseall") / "no_drop"
+from src.config import EMBEDDING_CLASSIFICATION_DIR, cohort_path
+DEFAULT_ROOT = EMBEDDING_CLASSIFICATION_DIR / cohort_path("p_first_cdr05_hc_first_cdrall_or_mmseall") / "no_background" / "arcface" / "original" / "mean" / "no_drop"
 ROOT = DEFAULT_ROOT  # set by main() when --root is passed
 SUMMARY = ROOT / "_summary"
 
@@ -143,52 +143,46 @@ def _resolve_cell_leaf(clf_dir, classifier):
         yield clf_dir
 
 
-def iter_cells(partition_filter=None, embedding_filter=None,
-               classifier_filter=None):
-    """Yield (partition, embedding, classifier, lr_C, fwd_dir, rev_dir).
+def iter_cells(partition_filter=None, classifier_filter=None):
+    """Yield (partition, classifier, lr_C, fwd_dir, rev_dir).
 
-    Layout: <ROOT>/{fwd,rev}/<partition>/<embedding>/<classifier>[/C_<lr_C>]/.
+    Layout: <ROOT>/<partition>/{fwd,rev}/<classifier>[/C_<lr_C>]/.
+    Embedding is fixed per ROOT (it is in the ancestor path).
     A cell exists if either fwd or rev side has a matching dir.
     """
     if not ROOT.exists():
         return
-    fwd_root, rev_root = ROOT / "fwd", ROOT / "rev"
     seen = set()
 
-    def _scan(bucket_root):
-        if not bucket_root.exists():
-            return
-        for part_dir in sorted(bucket_root.iterdir()):
-            if not part_dir.is_dir():
+    def _scan(bucket):
+        for part_dir in sorted(ROOT.iterdir()):
+            if not part_dir.is_dir() or part_dir.name.startswith("_"):
                 continue
             if partition_filter and part_dir.name != partition_filter:
                 continue
-            for emb_dir in sorted(part_dir.iterdir()):
-                if not emb_dir.is_dir():
+            bucket_d = part_dir / bucket
+            if not bucket_d.is_dir():
+                continue
+            for clf_dir in sorted(bucket_d.iterdir()):
+                if not clf_dir.is_dir():
                     continue
-                if embedding_filter and emb_dir.name != embedding_filter:
+                if classifier_filter and clf_dir.name != classifier_filter:
                     continue
-                for clf_dir in sorted(emb_dir.iterdir()):
-                    if not clf_dir.is_dir():
-                        continue
-                    if classifier_filter and clf_dir.name != classifier_filter:
-                        continue
-                    for leaf in _resolve_cell_leaf(clf_dir, clf_dir.name):
-                        lr_C = leaf.name[2:] if clf_dir.name == "logistic" else ""
-                        yield (part_dir.name, emb_dir.name, clf_dir.name, lr_C)
+                for leaf in _resolve_cell_leaf(clf_dir, clf_dir.name):
+                    lr_C = leaf.name[2:] if clf_dir.name == "logistic" else ""
+                    yield (part_dir.name, clf_dir.name, lr_C)
 
-    for combo in _scan(fwd_root):
+    for combo in _scan("fwd"):
         seen.add(combo)
-    for combo in _scan(rev_root):
+    for combo in _scan("rev"):
         seen.add(combo)
 
-    for partition, embedding, classifier, lr_C in sorted(seen):
-        leaf_suffix = f"/C_{lr_C}" if lr_C else ""
-        fwd_dir = (fwd_root / partition / embedding / classifier
+    for partition, classifier, lr_C in sorted(seen):
+        fwd_dir = (ROOT / partition / "fwd" / classifier
                     / (f"C_{lr_C}" if lr_C else ""))
-        rev_dir = (rev_root / partition / embedding / classifier
+        rev_dir = (ROOT / partition / "rev" / classifier
                     / (f"C_{lr_C}" if lr_C else ""))
-        yield partition, embedding, classifier, lr_C, fwd_dir, rev_dir
+        yield partition, classifier, lr_C, fwd_dir, rev_dir
 
 
 def process_cell(partition, embedding, classifier, lr_C, fwd_dir, rev_dir):
@@ -331,9 +325,10 @@ def main():
 
     all_rows = []
     n_cells = 0
-    for partition, embedding, classifier, lr_C, fwd_dir, rev_dir in iter_cells(
-        args.partition, args.embedding, args.classifier
+    for partition, classifier, lr_C, fwd_dir, rev_dir in iter_cells(
+        args.partition, args.classifier
     ):
+        embedding = args.embedding or "unknown"
         rows = process_cell(partition, embedding, classifier, lr_C,
                             fwd_dir, rev_dir)
         if rows:

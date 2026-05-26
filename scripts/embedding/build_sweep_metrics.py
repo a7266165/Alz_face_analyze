@@ -91,28 +91,26 @@ def _has_metrics_json(d):
             or (d / "metrics.json").exists())
 
 
-def _iter_cell_dirs(emb_d):
-    """Yield (cell_dir, classifier) for each cell under emb_d.
+def _iter_cell_dirs(parent_d):
+    """Yield (cell_dir, classifier) for each cell under parent_d.
 
     Generic walk: a "cell" is any directory that directly contains
     forward_matched_metrics.json or metrics.json. We accept two depths
-    under emb_d:
-      1. emb_d/<classifier>/                → flat (legacy or hyperparam-less)
-      2. emb_d/<classifier>/<param_tag>/    → hyperparam-tagged leaf
+    under parent_d:
+      1. parent_d/<classifier>/                → flat (legacy or hyperparam-less)
+      2. parent_d/<classifier>/<param_tag>/    → hyperparam-tagged leaf
                                               (C_<lr_C>, ne_X_md_Y_lr_Z, ...)
 
     Hyperparam values are read from the JSON itself (lr_C / xgb_params
     fields), not parsed from the path — keeps this walker classifier-agnostic
     and robust to format changes.
     """
-    for clf_d in sorted(emb_d.iterdir()):
+    for clf_d in sorted(parent_d.iterdir()):
         if not clf_d.is_dir():
             continue
         clf = clf_d.name
-        # Flat layout (legacy or hyperparam-less classifiers like tabpfn).
         if _has_metrics_json(clf_d):
             yield clf_d, clf
-        # Hyperparam-tagged subdirs (C_X/, ne_X_md_Y_lr_Z/, etc).
         for sub_d in sorted(clf_d.iterdir()):
             if sub_d.is_dir() and _has_metrics_json(sub_d):
                 yield sub_d, clf
@@ -121,47 +119,64 @@ def _iter_cell_dirs(emb_d):
 def _scan_cells(reducer_dir):
     """Walk the cell tree under a reducer-leaf dir and return rows per scope.
 
-    NEW layout: reducer_dir/<partition>/<fwd|rev>/<emb>/<clf>/<files>
+    Layout: reducer_dir/<clf>/<param>/<fwd|rev>/<eval_method>/<match_level>/<eval_unit>/<match_strategy>/<partition>/<files>
+    Embedding info is read from the JSON payload.
     """
     rows = []
-    for partition_d in sorted(reducer_dir.iterdir()):
-        if not partition_d.is_dir() or partition_d.name.startswith("_"):
+    for json_file in reducer_dir.rglob("*.json"):
+        fname = json_file.name
+        matching_extractors = [e for e in EXTRACTORS if e[1] == fname]
+        if not matching_extractors:
             continue
-        for bucket in ("fwd", "rev"):
-            bucket_d = partition_d / bucket
-            if not bucket_d.is_dir():
+        try:
+            d = json.loads(json_file.read_text())
+        except (ValueError, json.JSONDecodeError):
+            continue
+        rel = json_file.parent.relative_to(reducer_dir)
+        parts = rel.parts
+        bucket = None
+        bucket_idx = None
+        partition_name = parts[-1] if len(parts) > 0 else "unknown"
+        for i, p in enumerate(parts):
+            if p in ("fwd", "rev"):
+                bucket = p
+                bucket_idx = i
+                break
+        if bucket is None:
+            continue
+        # Extract eval_method / match_level / eval_unit / match_strategy
+        # from parts after fwd/rev: [eval_method, match_level, eval_unit,
+        #                             match_strategy, partition]
+        after_bucket = parts[bucket_idx + 1:]
+        eval_method = after_bucket[0] if len(after_bucket) > 0 else "unknown"
+        match_level = after_bucket[1] if len(after_bucket) > 1 else "unknown"
+        eval_unit = after_bucket[2] if len(after_bucket) > 2 else "unknown"
+        match_strategy = after_bucket[3] if len(after_bucket) > 3 else "unknown"
+
+        for (b, fn, key, scope, strategy) in matching_extractors:
+            if b != bucket:
                 continue
-            for emb_d in sorted(bucket_d.iterdir()):
-                if not emb_d.is_dir():
-                    continue
-                for cell_d, clf in _iter_cell_dirs(emb_d):
-                    for (b, fname, key, scope, strategy) in EXTRACTORS:
-                        if b != bucket:
-                            continue
-                        json_path = cell_d / fname
-                        if not json_path.exists():
-                            continue
-                        try:
-                            d = json.loads(json_path.read_text())
-                        except (ValueError, json.JSONDecodeError):
-                            continue
-                        block = d.get(key)
-                        # Hyperparams live in the JSON, not the path — keeps
-                        # this walker decoupled from leaf-name conventions.
-                        lr_C = d.get("lr_C")
-                        xgb_params = d.get("xgb_params")
-                        row = _row_from_block(block, partition_d.name,
-                                               emb_d.name, clf, lr_C,
-                                               xgb_params, strategy, scope)
-                        if row is None:
-                            continue
-                        if scope.startswith("forward"):
-                            wilc = d.get("paired_wilcoxon", {}) or {}
-                            row["wilcoxon_W"] = wilc.get("W")
-                            row["wilcoxon_p"] = wilc.get("p")
-                            row["n_pairs"] = wilc.get("n_pairs")
-                            row["mean_diff"] = wilc.get("mean_diff")
-                        rows.append(row)
+            block = d.get(key)
+            lr_C = d.get("lr_C")
+            xgb_params = d.get("xgb_params")
+            emb = d.get("embedding", "unknown")
+            clf = d.get("classifier", "unknown")
+            row = _row_from_block(block, partition_name,
+                                   emb, clf, lr_C,
+                                   xgb_params, strategy, scope)
+            if row is None:
+                continue
+            row["eval_method"] = eval_method
+            row["match_level"] = match_level
+            row["eval_unit"] = eval_unit
+            row["match_strategy"] = match_strategy
+            if scope.startswith("forward"):
+                wilc = d.get("paired_wilcoxon", {}) or {}
+                row["wilcoxon_W"] = wilc.get("W")
+                row["wilcoxon_p"] = wilc.get("p")
+                row["n_pairs"] = wilc.get("n_pairs")
+                row["mean_diff"] = wilc.get("mean_diff")
+            rows.append(row)
     return rows
 
 
@@ -173,7 +188,8 @@ def build_one(variant_dir):
     col_order = (["partition", "embedding", "classifier",
                   "lr_C",
                   "xgb_n_estimators", "xgb_max_depth", "xgb_learning_rate",
-                  "strategy", "scope"]
+                  "strategy", "scope",
+                  "eval_method", "match_level", "eval_unit", "match_strategy"]
                  + METRIC_FIELDS
                  + ["TN", "FP", "FN", "TP",
                     "wilcoxon_W", "wilcoxon_p", "n_pairs", "mean_diff"])
@@ -239,30 +255,29 @@ def main():
     classification_root = EMBEDDING_CLASSIFICATION_DIR
 
     total_files, total_rows = 0, 0
-    # Walk eval-method dirs (matched / caliper_group) if present,
-    # otherwise fall back to flat variant layout.
-    if classification_root.is_dir():
-        eval_dirs = []
-        for child in sorted(classification_root.iterdir()):
-            if not child.is_dir() or child.name.startswith("_"):
+    # New layout: <visit>/<cdr_mmse>/<bg_mode>/<embedding>/<variant>/<photo>/<reducer>/...
+    # Cohort is split into visit + cdr_mmse directories.
+    from src.config import cohort_spec_from_name
+    spec = cohort_spec_from_name(cohort_dir)
+    visit_dir = classification_root / spec.visit_dir / spec.cdr_mmse_dir
+    if visit_dir.is_dir():
+        for bg_dir in sorted(visit_dir.iterdir()):
+            if not bg_dir.is_dir() or bg_dir.name.startswith("_"):
                 continue
-            if child.name in ("matched", "caliper_group"):
-                eval_dirs.append(child)
-        if not eval_dirs:
-            eval_dirs = [classification_root]
-
-        for eval_dir in eval_dirs:
-            for variant_dir in sorted(eval_dir.iterdir()):
-                if not variant_dir.is_dir() or variant_dir.name.startswith("_"):
+            for emb_dir in sorted(bg_dir.iterdir()):
+                if not emb_dir.is_dir() or emb_dir.name.startswith("_"):
                     continue
-                cohort_root = variant_dir / cohort_dir
-                if cohort_root.is_dir():
-                    label = (f"{eval_dir.name}/{variant_dir.name}"
-                             if eval_dir != classification_root
-                             else variant_dir.name)
-                    f, r = walk_root(cohort_root, label)
-                    total_files += f
-                    total_rows += r
+                for variant_dir in sorted(emb_dir.iterdir()):
+                    if not variant_dir.is_dir() or variant_dir.name.startswith("_"):
+                        continue
+                    for photo_dir in sorted(variant_dir.iterdir()):
+                        if not photo_dir.is_dir() or photo_dir.name.startswith("_"):
+                            continue
+                        label = (f"{bg_dir.name}/{emb_dir.name}/"
+                                 f"{variant_dir.name}/{photo_dir.name}")
+                        f, r = walk_root(photo_dir, label)
+                        total_files += f
+                        total_rows += r
     print(f"\nTOTAL: {total_files} files, {total_rows} rows")
 
 
