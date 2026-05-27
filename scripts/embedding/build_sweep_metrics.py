@@ -46,9 +46,9 @@ METRIC_FIELDS = [
 
 # (bucket, fname, json_key, scope, strategy)
 EXTRACTORS = [
-    ("fwd", "forward_matched_metrics.json", "metrics_matched_subset",
+    ("fwd", "metrics.json", "metrics_matched_subset",
      "forward_matched", "forward"),
-    ("fwd", "forward_matched_metrics.json", "metrics_full_cohort",
+    ("fwd", "metrics.json", "metrics_full_cohort",
      "forward_full", "forward"),
     ("rev", "metrics.json", "metrics_matched_oof",
      "reverse_matched_oof", "reverse"),
