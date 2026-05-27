@@ -29,13 +29,16 @@ import logging
 import sys
 from pathlib import Path
 
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from scipy.spatial.distance import cosine
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.metrics import (
     balanced_accuracy_score, confusion_matrix, f1_score,
-    matthews_corrcoef, roc_auc_score,
+    matthews_corrcoef, roc_auc_score, roc_curve,
 )
 from sklearn.model_selection import GroupKFold
 
@@ -238,7 +241,95 @@ def forward_eval(oof, ids, base_ids, y, matched, keep_groups, seed=42):
     m_subj = compute_metrics(y_subj, sc_subj, seed=seed) \
         if len(y_subj) >= 10 else None
 
-    return m_subj, m_visit
+    return m_subj, m_visit, (y_subj, sc_subj), (y_m, sc_m)
+
+
+# ============================================================
+# ROC plotting
+# ============================================================
+
+PARTITION_COLORS = {
+    "ad_vs_hc": "#4C72B0",
+    "ad_vs_nad": "#DD8452",
+    "ad_vs_acs": "#55A868",
+}
+PARTITION_LABELS = {
+    "ad_vs_hc": "HC (NAD+ACS)",
+    "ad_vs_nad": "NAD only",
+    "ad_vs_acs": "ACS only",
+}
+
+
+def plot_roc(roc_data, title, out_path):
+    """Plot ROC curves for multiple partitions.
+    roc_data: dict[partition] → (y_true, y_score) or None"""
+    fig, ax = plt.subplots(figsize=(7, 6))
+    ax.plot([0, 1], [0, 1], "k--", alpha=0.3, linewidth=1)
+    for part in ["ad_vs_hc", "ad_vs_nad", "ad_vs_acs"]:
+        if part not in roc_data or roc_data[part] is None:
+            continue
+        yt, ys = roc_data[part]
+        if len(yt) < 10 or len(np.unique(yt)) < 2:
+            continue
+        auc = roc_auc_score(yt, ys)
+        fpr, tpr, _ = roc_curve(yt, ys)
+        n_pos, n_neg = int((yt == 1).sum()), int((yt == 0).sum())
+        label = (f"{PARTITION_LABELS[part]}  AUC={auc:.3f}"
+                 f"  (n={n_pos}+{n_neg})")
+        ax.plot(fpr, tpr, color=PARTITION_COLORS[part],
+                linewidth=2, label=label)
+    ax.set_xlabel("False Positive Rate", fontsize=13)
+    ax.set_ylabel("True Positive Rate", fontsize=13)
+    ax.set_title(title, fontsize=14, fontweight="bold")
+    ax.legend(loc="lower right", fontsize=10)
+    ax.set_xlim(-0.02, 1.02)
+    ax.set_ylim(-0.02, 1.02)
+    ax.grid(True, alpha=0.2)
+    fig.tight_layout()
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(out_path, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+
+
+METHOD_TITLES = {
+    "l2_norm": "L2 Norm",
+    "centroid_dist": "Centroid Distance",
+    "lda_projection": "LDA Projection",
+}
+
+
+def plot_roc_combined(all_roc, title, out_path):
+    """3-panel ROC: one subplot per method, 3 partition lines each.
+    all_roc: dict[method] → dict[partition] → (y_true, y_score)"""
+    fig, axes = plt.subplots(1, 3, figsize=(21, 6))
+    for ax, method in zip(axes, METHODS):
+        ax.plot([0, 1], [0, 1], "k--", alpha=0.3, linewidth=1)
+        roc_data = all_roc.get(method, {})
+        for part in ["ad_vs_hc", "ad_vs_nad", "ad_vs_acs"]:
+            if part not in roc_data or roc_data[part] is None:
+                continue
+            yt, ys = roc_data[part]
+            if len(yt) < 10 or len(np.unique(yt)) < 2:
+                continue
+            auc = roc_auc_score(yt, ys)
+            fpr, tpr, _ = roc_curve(yt, ys)
+            n_pos, n_neg = int((yt == 1).sum()), int((yt == 0).sum())
+            label = (f"{PARTITION_LABELS[part]}  AUC={auc:.3f}"
+                     f"  (n={n_pos}+{n_neg})")
+            ax.plot(fpr, tpr, color=PARTITION_COLORS[part],
+                    linewidth=2, label=label)
+        ax.set_xlabel("FPR", fontsize=12)
+        ax.set_ylabel("TPR", fontsize=12)
+        ax.set_title(METHOD_TITLES[method], fontsize=15, fontweight="bold")
+        ax.legend(loc="lower right", fontsize=9)
+        ax.set_xlim(-0.02, 1.02)
+        ax.set_ylim(-0.02, 1.02)
+        ax.grid(True, alpha=0.2)
+    fig.suptitle(title, fontsize=16, fontweight="bold", y=1.02)
+    fig.tight_layout()
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(out_path, dpi=150, bbox_inches="tight")
+    plt.close(fig)
 
 
 # ============================================================
@@ -386,24 +477,65 @@ def main():
                 logger.warning(f"  no features for {model}/{feat}")
                 continue
 
-            for method in METHODS:
-                logger.info(f"  {method}")
+            ftl = feat.replace("absolute_relative_differences",
+                "abs_rel_diff").replace("relative_differences",
+                "rel_diff").replace("absolute_difference",
+                "abs_diff").replace("difference", "diff")
 
+            # Pre-compute OOF scores for all methods + save full scores
+            l2_scores = _score_l2(None, None, X_full)
+            method_oof = {"l2_norm": l2_scores}
+            for method in ["centroid_dist", "lda_projection"]:
+                oof, m_full = run_forward(
+                    X_full, y_full, bids_full, ids_full, method)
+                method_oof[method] = oof
+
+            # Save full-cohort OOF scores per method
+            for method, oof in method_oof.items():
+                oof_df = pd.DataFrame({
+                    "ID": ids_full, "base_id": bids_full,
+                    "y_true": y_full, "y_score": oof,
+                })
                 if method == "l2_norm":
-                    # L2 has no training — score everyone, evaluate
-                    # on matched subsets directly (no fwd/rev layer)
-                    l2_scores = _score_l2(None, None, X_full)
-                    for ml, matched in [("subject_match", matched_subj),
-                                        ("visit_match", matched_visit)]:
-                        for partition in PARTITIONS_HC:
-                            keep = KEEP_GROUPS[partition]
-                            m_subj, m_visit = forward_eval(
-                                l2_scores, ids_full, bids_full, y_full,
-                                matched, keep, seed=42)
-                            for eu, m in [("eval_by_subject", m_subj),
-                                          ("eval_by_visit", m_visit)]:
-                                if m is None:
-                                    continue
+                    score_dir = base / method
+                else:
+                    score_dir = base / method / "fwd"
+                score_dir.mkdir(parents=True, exist_ok=True)
+                oof_df.to_csv(score_dir / "oof_scores_visit.csv",
+                              index=False)
+                subj_df = oof_df.groupby("base_id").agg(
+                    y_true=("y_true", "first"),
+                    y_score=("y_score", "mean")).reset_index()
+                subj_df.to_csv(score_dir / "oof_scores_subject.csv",
+                               index=False)
+
+            for ml, matched in [("subject_match", matched_subj),
+                                ("visit_match", matched_visit)]:
+                # Collect ROC data across methods for combined plot
+                combined_roc_subj = {}  # method → {part → (y, sc)}
+                combined_roc_visit = {}
+
+                for method in METHODS:
+                    logger.info(f"  {method} / {ml}")
+                    oof = method_oof[method]
+
+                    roc_subj = {}
+                    roc_visit = {}
+                    for partition in PARTITIONS_HC:
+                        keep = KEEP_GROUPS[partition]
+                        m_subj, m_visit, raw_subj, raw_visit = \
+                            forward_eval(oof, ids_full, bids_full,
+                                         y_full, matched, keep, seed=42)
+                        roc_subj[partition] = raw_subj
+                        roc_visit[partition] = raw_visit
+
+                        for eu, m, raw in [
+                            ("eval_by_subject", m_subj, raw_subj),
+                            ("eval_by_visit", m_visit, raw_visit),
+                        ]:
+                            if m is None:
+                                continue
+                            if method == "l2_norm":
                                 out = (base / method / "1by1matched"
                                        / ml / eu / match_dir / partition)
                                 write_json(out / "metrics.json", {
@@ -412,22 +544,7 @@ def main():
                                     "method": method,
                                     "metrics": m,
                                 })
-                else:
-                    # Centroid / LDA: fwd/rev with CV
-                    # === FORWARD ===
-                    oof_full, m_full = run_forward(
-                        X_full, y_full, bids_full, ids_full, method)
-                    for ml, matched in [("subject_match", matched_subj),
-                                        ("visit_match", matched_visit)]:
-                        for partition in PARTITIONS_HC:
-                            keep = KEEP_GROUPS[partition]
-                            m_subj, m_visit = forward_eval(
-                                oof_full, ids_full, bids_full, y_full,
-                                matched, keep, seed=42)
-                            for eu, m in [("eval_by_subject", m_subj),
-                                          ("eval_by_visit", m_visit)]:
-                                if m is None:
-                                    continue
+                            else:
                                 out = cell_dir(base, method, "fwd",
                                                ml, eu, match_dir,
                                                partition)
@@ -436,42 +553,75 @@ def main():
                                     "embedding": model,
                                     "method": method,
                                     "strategy": "forward",
-                                    "metrics_full_cohort": m_full,
                                     "metrics_matched_subset": m,
                                 })
+                            yt, ys = raw
+                            pd.DataFrame({
+                                "y_true": yt, "y_score": ys,
+                            }).to_csv(out / "scores.csv", index=False)
 
-                    # === REVERSE ===
-                    for ml, matched_coh in [("subject_match", matched_subj),
-                                            ("visit_match", matched_visit)]:
-                        X_m, ids_m, bids_m, y_m = \
-                            _load_vectors_for_cohort(
-                                matched_coh, model, feat, args.bg_mode)
-                        if X_m is None:
-                            continue
-                        rev = run_reverse(
-                            X_m, y_m, bids_m,
-                            X_full, y_full, bids_full, ids_full,
-                            method)
-                        for partition in PARTITIONS_HC:
-                            for eu, m_key in [
-                                ("eval_by_subject", "metrics_matched_oof"),
-                                ("eval_by_visit",
-                                 "metrics_matched_oof_visit"),
-                            ]:
-                                out = cell_dir(base, method, "rev",
-                                               ml, eu, match_dir,
-                                               partition)
-                                write_json(out / "metrics.json", {
-                                    "partition": partition,
-                                    "embedding": model,
-                                    "method": method,
-                                    "strategy": "reverse",
-                                    "metrics_matched_oof": rev[m_key],
-                                    "metrics_unmatched":
-                                        rev["metrics_unmatched"],
-                                })
+                    combined_roc_subj[method] = roc_subj
+                    combined_roc_visit[method] = roc_visit
 
-                logger.info(f"    done")
+                    # Per-method ROC
+                    for eu, roc in [("eval_by_subject", roc_subj),
+                                    ("eval_by_visit", roc_visit)]:
+                        if method == "l2_norm":
+                            png = (base / method / "1by1matched"
+                                   / ml / eu / match_dir / "roc_curve.png")
+                        else:
+                            png = cell_dir(base, method, "fwd",
+                                           ml, eu, match_dir,
+                                           "roc_curve.png")
+                        plot_roc(roc,
+                                 f"{METHOD_TITLES[method]} — "
+                                 f"{model} / {ftl}\n{ml} / {eu}",
+                                 png)
+
+                # Combined 3-panel ROC → _summary/
+                for eu, combined in [("eval_by_subject", combined_roc_subj),
+                                     ("eval_by_visit", combined_roc_visit)]:
+                    out_png = (base / "_summary" / "asymmetry_roc"
+                               / ml / eu / match_dir
+                               / "roc_combined.png")
+                    plot_roc_combined(
+                        combined,
+                        f"{model} / {ftl} — {ml} / {eu}",
+                        out_png)
+
+            # === REVERSE (centroid / LDA only) ===
+            for method in ["centroid_dist", "lda_projection"]:
+                for ml, matched_coh in [("subject_match", matched_subj),
+                                        ("visit_match", matched_visit)]:
+                    X_m, ids_m, bids_m, y_m = \
+                        _load_vectors_for_cohort(
+                            matched_coh, model, feat, args.bg_mode)
+                    if X_m is None:
+                        continue
+                    rev = run_reverse(
+                        X_m, y_m, bids_m,
+                        X_full, y_full, bids_full, ids_full,
+                        method)
+                    for partition in PARTITIONS_HC:
+                        for eu, m_key in [
+                            ("eval_by_subject", "metrics_matched_oof"),
+                            ("eval_by_visit",
+                             "metrics_matched_oof_visit"),
+                        ]:
+                            out = cell_dir(base, method, "rev",
+                                           ml, eu, match_dir,
+                                           partition)
+                            write_json(out / "metrics.json", {
+                                "partition": partition,
+                                "embedding": model,
+                                "method": method,
+                                "strategy": "reverse",
+                                "metrics_matched_oof": rev[m_key],
+                                "metrics_unmatched":
+                                    rev["metrics_unmatched"],
+                            })
+
+            logger.info(f"  done")
 
     logger.info("All done.")
 
