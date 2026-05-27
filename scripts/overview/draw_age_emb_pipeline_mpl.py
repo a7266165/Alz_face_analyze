@@ -1,7 +1,7 @@
 """Combined Age + Embedding classification pipeline diagram.
 
 Shared cohort section forks into:
-  Left:  Age prediction (MiVOLO → calibration → window classifier)
+  Left:  Age prediction (MiVOLO -> calibration -> window classifier)
   Right: Embedding classification (full v5 pipeline)
 
 Output:
@@ -40,14 +40,25 @@ C_ES = dict(bg='#F8ECE4', nd='#E0C0A8')
 C_ML = dict(bg='#EDF0E8', nd='#C0D0A8')
 C_MS = dict(bg='#F5F0E0', nd='#D8C890')
 C_AGE = dict(bg='#FFF3E0', nd='#FFD180')
+C_PRE = dict(bg='#E0EEF0', nd='#8DC3CB')
 C_EACS = dict(bg='#FFFDE8', nd='#F0D870')
 C_AOUT = dict(bg='#ECEEF8', nd='#C0C8E4')
 G = dict(bg='#E0E0E0', nd='#C0C0C0')
 
-FIG_W = 28.0
+AGE_MODELS = ['MiVOLO', 'InsightFace', 'DeepFace', 'FairFace', 'OpenCV\nDNN']
+NW_AM = 2.2; GAP_AM = 0.5
+TOTAL_AM = 5 * NW_AM + 4 * GAP_AM
+
+FIG_W = 30.5
+X_LIM_LEFT = -4.5
+X_LIM_RIGHT = 28.1
 CX = 16.5
-X_AGE = 5.0
+X_AGE = 3.0
 CX_TOP = 16.5
+
+# Preprocessing: 3 stacked nodes + 2 side-by-side bg nodes
+PRE_LABELS = ['Detect', 'Select', 'Align']
+NW_PRE = 2.2
 
 
 def _box(ax, cx, cy, w, h, fc, lw=1.4, zorder=1):
@@ -105,63 +116,62 @@ CDR_LABELS = [
 ]
 
 
-def build():
+def _common_layout():
+    """Compute all y-positions and layout values shared by build() and build_show()."""
     nw_col = 3.3; gap_col = 0.7; cw = nw_col + 0.8
     age_w = 4.5
     age_h = NODE_H
 
-    # ══════════════════════════════════════
-    # Shared Cohort
-    # ══════════════════════════════════════
     CL = _cohort_layout()
     c1_top = CL['c1_top']; y_vs = CL['y_vs']; y_cf = CL['y_cf']
     y_fc = CL['y_fc']; c1_bot = CL['c1_bot']
 
-    # ══════════════════════════════════════
-    # Age branch (left)
-    # ══════════════════════════════════════
-    a_top = c1_bot + SP
-    y_a1 = a_top + SP + age_h / 2
-    y_a2 = y_a1 + age_h + SP
-    y_a3 = y_a2 + age_h + SP
-    a_bot = y_a3 + age_h / 2 + SP
-
-    # calibration cluster
-    ac_top = a_bot + SP
-    y_ac1 = ac_top + SP + age_h / 2
-    y_ac2 = y_ac1 + age_h + SP
-    y_ac3 = y_ac2 + age_h + SP
-    ac_bot = y_ac3 + age_h / 2 + SP
-
-    # age outputs
-    c_ao_top = ac_bot + SP
-    y_a_out = c_ao_top + SP + NODE_H / 2
-    c_ao_bot = y_a_out + NODE_H / 2 + SP
-
-    # age eval chain
-    y_a_join = y_a_out + NODE_H / 2 + 3 * SP
-
-    # ══════════════════════════════════════
-    # Embedding branch (right)
-    # ══════════════════════════════════════
-    c_bg_top = c1_bot + SP
-    y_bg = c_bg_top + SP + NODE_H / 2
-    c_bg_bot = y_bg + NODE_H / 2 + SP
+    # Preprocessing (shared, 3 stacked + 2 side-by-side bg nodes)
     nw_bg = 2.4; gap_bg = 0.65
-    total_bg = 2 * nw_bg + gap_bg
+    c_pre_top = c1_bot + SP
+    y_pre1 = c_pre_top + SP + NODE_H / 2
+    y_pre2 = y_pre1 + NODE_H + SP
+    y_pre3 = y_pre2 + NODE_H + SP
+    y_pre_list = [y_pre1, y_pre2, y_pre3]  # Detect, Select, Align
+    y_pre_bg = y_pre3 + NODE_H + SP  # new row for bg options (side by side)
+    c_pre_bot = y_pre_bg + NODE_H / 2 + SP
+    pre_cluster_w = max(NW_PRE, 2 * nw_bg + gap_bg) + 0.9
 
-    c_emb_top = c_bg_bot + SP
+    # face/mirrored_face (side by side, after preprocessing)
+    c_mir_top = c_pre_bot + SP
+    y_mir = c_mir_top + SP + NODE_H / 2
+    c_mir_bot = y_mir + NODE_H / 2 + SP
+    nw_mir = 2.4
+
+    # Embedding Models (after face/mirror)
+    c_emb_top = c_mir_bot + SP
     y_emb = c_emb_top + SP + NODE_H / 2
     c_emb_bot = y_emb + NODE_H / 2 + SP
     nw_emb = 2.2; gap_emb = 0.5
     total_emb = 4 * nw_emb + 3 * gap_emb
 
+    # Feature Type: original + asymmetry side by side (after embedding)
     c_ft_top = c_emb_bot + SP
     y_ft = c_ft_top + SP + NODE_H / 2
     c_ft_bot = y_ft + NODE_H / 2 + SP
     nw_ft = 1.7; gap_ft = 0.25
-    total_ft = 6 * nw_ft + 5 * gap_ft
+    total_asym = 4 * nw_ft + 3 * gap_ft  # 7.55
+    ft_orig_cl_w = nw_ft + 0.6
+    ft_asym_cl_w = total_asym + 0.6
 
+    # x-positions: center original+asymmetry around CX
+    gap_between = 1.0
+    total_ft_w = nw_ft + gap_between + total_asym
+    x_orig = CX - total_ft_w / 2 + nw_ft / 2
+    x_asym_center = CX + total_ft_w / 2 - total_asym / 2
+    x_ft_asym = [x_asym_center - total_asym/2 + nw_ft/2 + i*(nw_ft+gap_ft) for i in range(4)]
+
+    # face/mirrored_face: standard centered layout
+    gap_mir = gap_between
+    x_face = CX - (nw_mir + gap_mir) / 2
+    x_mirr = CX + (nw_mir + gap_mir) / 2
+
+    # Photo Aggregation
     c_pa_top = c_ft_bot + SP
     y_pa = c_pa_top + SP + NODE_H / 2
     c_pa_bot = y_pa + NODE_H / 2 + SP
@@ -211,9 +221,109 @@ def build():
     y_p = c6_top + SP + NODE_H / 2
     c6_bot = y_p + NODE_H / 2 + SP
 
+    # Age branch positions (aligned to embedding y)
+    # Age Models at y_emb
+    # Predict Age at y_ft (single feature type row)
+    # Mean Aggregation at y_pa
+    # age_error at y_pd
+    # Calibration: evenly spaced starting from c4_top
+    cal_top = c4_top
+    y_cal1 = cal_top + SP + NODE_H / 2
+    y_cal2 = y_cal1 + NODE_H + SP
+    y_cal3 = y_cal2 + NODE_H + SP
+    cal_bot = y_cal3 + NODE_H / 2 + SP
+
+    # Age outputs at y_r3
+    y_a_out = y_r3
+    c_ao_top = y_a_out - NODE_H / 2 - SP
+    c_ao_bot = y_a_out + NODE_H / 2 + SP
+
+    # Age model x-positions
+    amx = [X_AGE + (i - 2) * (NW_AM + GAP_AM) for i in range(5)]
+
     fig_h = c6_bot + 0.5
+
+    return dict(
+        CL=CL, nw_col=nw_col, gap_col=gap_col, cw=cw,
+        age_w=age_w, age_h=age_h,
+        c1_top=c1_top, y_vs=y_vs, y_cf=y_cf, y_fc=y_fc, c1_bot=c1_bot,
+        c_pre_top=c_pre_top, c_pre_bot=c_pre_bot, y_pre_list=y_pre_list,
+        y_pre_bg=y_pre_bg, nw_bg=nw_bg, gap_bg=gap_bg,
+        pre_cluster_w=pre_cluster_w,
+        y_mir=y_mir, c_mir_top=c_mir_top, c_mir_bot=c_mir_bot,
+        nw_mir=nw_mir,
+        x_face=x_face, x_mirr=x_mirr,
+        c_emb_top=c_emb_top, y_emb=y_emb, c_emb_bot=c_emb_bot,
+        nw_emb=nw_emb, gap_emb=gap_emb, total_emb=total_emb,
+        y_ft=y_ft, c_ft_top=c_ft_top, c_ft_bot=c_ft_bot,
+        nw_ft=nw_ft, gap_ft=gap_ft, total_asym=total_asym,
+        ft_orig_cl_w=ft_orig_cl_w, ft_asym_cl_w=ft_asym_cl_w,
+        x_orig=x_orig, x_asym_center=x_asym_center, x_ft_asym=x_ft_asym,
+        c_pa_top=c_pa_top, y_pa=y_pa, c_pa_bot=c_pa_bot,
+        nw_pa=nw_pa, gap_pa=gap_pa, total_pa=total_pa,
+        c_pd_top=c_pd_top, y_pd=y_pd, c_pd_bot=c_pd_bot,
+        nw_pd=nw_pd, gap_pd=gap_pd, total_pd=total_pd,
+        c4_top=c4_top, y_clf=y_clf, c4_bot=c4_bot,
+        nw4=nw4, gap4=gap4, total4=total4,
+        cl_top=cl_top, y_r1=y_r1, y_r2=y_r2, y_r3=y_r3,
+        cl_bot=cl_bot, cl_h=cl_h,
+        nw_ev=nw_ev, gap_ev=gap_ev,
+        c_em_top=c_em_top, y_em=y_em, c_em_bot=c_em_bot,
+        c_ml_top=c_ml_top, y_ml=y_ml, c_ml_bot=c_ml_bot,
+        c_sa_top=c_sa_top, y_sa=y_sa, c_sa_bot=c_sa_bot,
+        c_ms_top=c_ms_top, y_ms=y_ms, c_ms_bot=c_ms_bot,
+        nw_ms=nw_ms, gap_ms=gap_ms, total_ms=total_ms,
+        c6_top=c6_top, y_p=y_p, c6_bot=c6_bot,
+        cal_top=cal_top, y_cal1=y_cal1, y_cal2=y_cal2, y_cal3=y_cal3,
+        cal_bot=cal_bot,
+        y_a_out=y_a_out, c_ao_top=c_ao_top, c_ao_bot=c_ao_bot,
+        amx=amx, fig_h=fig_h,
+    )
+
+
+def build():
+    L = _common_layout()
+    CL = L['CL']
+    nw_col = L['nw_col']; gap_col = L['gap_col']; cw = L['cw']
+    age_w = L['age_w']; age_h = L['age_h']
+    c1_top = L['c1_top']; y_vs = L['y_vs']; y_cf = L['y_cf']
+    y_fc = L['y_fc']; c1_bot = L['c1_bot']
+    c_pre_top = L['c_pre_top']; c_pre_bot = L['c_pre_bot']
+    y_pre_list = L['y_pre_list']
+    y_pre_bg = L['y_pre_bg']; nw_bg = L['nw_bg']; gap_bg = L['gap_bg']
+    pre_cluster_w = L['pre_cluster_w']
+    y_mir = L['y_mir']; c_mir_top = L['c_mir_top']; c_mir_bot = L['c_mir_bot']
+    nw_mir = L['nw_mir']
+    x_face = L['x_face']; x_mirr = L['x_mirr']
+    c_emb_top = L['c_emb_top']; y_emb = L['y_emb']; c_emb_bot = L['c_emb_bot']
+    nw_emb = L['nw_emb']; gap_emb = L['gap_emb']; total_emb = L['total_emb']
+    y_ft = L['y_ft']; c_ft_top = L['c_ft_top']; c_ft_bot = L['c_ft_bot']
+    nw_ft = L['nw_ft']; gap_ft = L['gap_ft']; total_asym = L['total_asym']
+    ft_orig_cl_w = L['ft_orig_cl_w']; ft_asym_cl_w = L['ft_asym_cl_w']
+    x_orig = L['x_orig']; x_asym_center = L['x_asym_center']
+    x_ft_asym = L['x_ft_asym']
+    c_pa_top = L['c_pa_top']; y_pa = L['y_pa']; c_pa_bot = L['c_pa_bot']
+    nw_pa = L['nw_pa']; gap_pa = L['gap_pa']; total_pa = L['total_pa']
+    c_pd_top = L['c_pd_top']; y_pd = L['y_pd']; c_pd_bot = L['c_pd_bot']
+    nw_pd = L['nw_pd']; gap_pd = L['gap_pd']; total_pd = L['total_pd']
+    c4_top = L['c4_top']; y_clf = L['y_clf']; c4_bot = L['c4_bot']
+    nw4 = L['nw4']; gap4 = L['gap4']; total4 = L['total4']
+    cl_top = L['cl_top']; y_r1 = L['y_r1']; y_r2 = L['y_r2']
+    y_r3 = L['y_r3']; cl_bot = L['cl_bot']; cl_h = L['cl_h']
+    nw_ev = L['nw_ev']; gap_ev = L['gap_ev']
+    c_em_top = L['c_em_top']; y_em = L['y_em']; c_em_bot = L['c_em_bot']
+    c_ml_top = L['c_ml_top']; y_ml = L['y_ml']; c_ml_bot = L['c_ml_bot']
+    c_sa_top = L['c_sa_top']; y_sa = L['y_sa']; c_sa_bot = L['c_sa_bot']
+    c_ms_top = L['c_ms_top']; y_ms = L['y_ms']; c_ms_bot = L['c_ms_bot']
+    nw_ms = L['nw_ms']; gap_ms = L['gap_ms']; total_ms = L['total_ms']
+    c6_top = L['c6_top']; y_p = L['y_p']; c6_bot = L['c6_bot']
+    cal_top = L['cal_top']; y_cal1 = L['y_cal1']; y_cal2 = L['y_cal2']
+    y_cal3 = L['y_cal3']; cal_bot = L['cal_bot']
+    y_a_out = L['y_a_out']; c_ao_top = L['c_ao_top']; c_ao_bot = L['c_ao_bot']
+    amx = L['amx']; fig_h = L['fig_h']
+
     fig, ax = plt.subplots(figsize=(FIG_W, fig_h))
-    ax.set_xlim(-0.1, FIG_W + 0.1)
+    ax.set_xlim(X_LIM_LEFT, X_LIM_RIGHT)
     ax.set_ylim(fig_h + 0.1, -0.1)
     ax.set_aspect('equal')
     ax.axis('off')
@@ -243,46 +353,98 @@ def build():
         line(ax, cx, y_cf + NODE_H / 2, CX_TOP, y_fc - NODE_H / 2)
 
     # ════════════════════════════════════
+    # DRAW: Preprocessing (3 stacked + 2 side-by-side bg nodes)
+    # ════════════════════════════════════
+    cluster(ax, CX_TOP, (c_pre_top + c_pre_bot) / 2,
+            pre_cluster_w, c_pre_bot - c_pre_top, C_PRE['bg'])
+    for y, lab in zip(y_pre_list, PRE_LABELS):
+        node(ax, CX_TOP, y, NW_PRE, NODE_H, lab, C_PRE['nd'])
+    line(ax, CX_TOP, y_fc + NODE_H / 2, CX_TOP, y_pre_list[0] - NODE_H / 2)
+    for i in range(len(y_pre_list) - 1):
+        line(ax, CX_TOP, y_pre_list[i] + NODE_H / 2,
+             CX_TOP, y_pre_list[i + 1] - NODE_H / 2)
+    # Side-by-side bg nodes
+    bgx = [CX_TOP - (nw_bg + gap_bg) / 2, CX_TOP + (nw_bg + gap_bg) / 2]
+    bg_labels = ['no_background', 'background']
+    for x, lab in zip(bgx, bg_labels):
+        node(ax, x, y_pre_bg, nw_bg, NODE_H, lab, C_PRE['nd'])
+    # Align -> both bg nodes
+    for bx in bgx:
+        line(ax, CX_TOP, y_pre_list[-1] + NODE_H / 2, bx, y_pre_bg - NODE_H / 2)
+
+    # ════════════════════════════════════
     # DRAW: External Datasets (same level as Cohort)
     # ════════════════════════════════════
     eacs_w = age_w + 0.6
-    cluster(ax, X_AGE, y_fc, eacs_w + 0.6, NODE_H + 2 * SP, C_EACS['bg'])
-    node(ax, X_AGE, y_fc, eacs_w, NODE_H,
-         "External Datasets\nUTKFace / AgeDB / APPA-REAL / ...",
+    eacs_h = NODE_H * 1.6
+    cluster(ax, X_AGE, y_fc, eacs_w + 0.6, eacs_h + 2 * SP, C_EACS['bg'])
+    node(ax, X_AGE, y_fc, eacs_w, eacs_h,
+         "External Datasets\nUTKFace / AgeDB / APPA-REAL / IMDB\nMegaAge / FairFace / SZU-EmoDage\nAFAD / DiverseAsian",
          C_EACS['nd'])
 
     # ════════════════════════════════════
-    # DRAW: Age branch (left)
+    # DRAW: Age branch (left, aligned to embedding y)
     # ════════════════════════════════════
 
-    # -- prediction --
-    cluster(ax, X_AGE, (a_top + a_bot) / 2,
-            age_w + 0.6, a_bot - a_top, C_AGE['bg'])
-    node(ax, X_AGE, y_a1, age_w, age_h,
-         "MiVOLO v2\nAge Prediction", C_AGE['nd'])
-    node(ax, X_AGE, y_a2, age_w, age_h,
-         "Mean Aggregation\n(10 photos - 1)", C_AGE['nd'])
-    node(ax, X_AGE, y_a3, age_w, age_h,
-         "age_error\n= real_age - predicted_age", C_AGE['nd'])
-    line(ax, CX_TOP, y_fc + NODE_H / 2, X_AGE, y_a1 - age_h / 2)
-    line(ax, X_AGE, y_fc + NODE_H / 2, X_AGE, y_a1 - age_h / 2)
-    line(ax, X_AGE, y_a1 + age_h / 2, X_AGE, y_a2 - age_h / 2)
-    line(ax, X_AGE, y_a2 + age_h / 2, X_AGE, y_a3 - age_h / 2)
+    # -- Age Models at y_emb --
+    pred_cw = TOTAL_AM + 0.9
+    am_cluster_top = y_emb - age_h / 2 - SP
+    am_cluster_bot = y_emb + age_h / 2 + SP
+    cluster(ax, X_AGE, y_emb,
+            pred_cw, am_cluster_bot - am_cluster_top, C_AGE['bg'])
 
-    # -- calibration --
-    cluster(ax, X_AGE, (ac_top + ac_bot) / 2,
-            age_w + 0.6, ac_bot - ac_top, C_AGE['bg'])
-    node(ax, X_AGE, y_ac1, age_w, age_h,
+    for x, lab in zip(amx, AGE_MODELS):
+        node(ax, x, y_emb, NW_AM, age_h, lab, C_AGE['nd'])
+    # Both bg nodes -> each Age Model
+    for bx in bgx:
+        for x in amx:
+            line(ax, bx, y_pre_bg + NODE_H / 2, x, y_emb - NODE_H / 2)
+    # EACS -> each Age Model
+    for x in amx:
+        line(ax, X_AGE, y_fc + NODE_H / 2, x, y_emb - age_h / 2)
+
+    # -- Predict Age at y_ft --
+    pa_cluster_top = y_ft - NODE_H / 2 - SP
+    pa_cluster_bot = y_ft + NODE_H / 2 + SP
+    cluster(ax, X_AGE, y_ft,
+            age_w + 0.6, pa_cluster_bot - pa_cluster_top, C_AGE['bg'])
+    node(ax, X_AGE, y_ft, age_w, age_h, "Predict Age", C_AGE['nd'])
+    for x in amx:
+        line(ax, x, y_emb + age_h / 2, X_AGE, y_ft - age_h / 2)
+
+    # -- Mean Aggregation at y_pa --
+    ma_cluster_top = y_pa - NODE_H / 2 - SP
+    ma_cluster_bot = y_pa + NODE_H / 2 + SP
+    cluster(ax, X_AGE, y_pa,
+            age_w + 0.6, ma_cluster_bot - ma_cluster_top, C_AGE['bg'])
+    node(ax, X_AGE, y_pa, age_w, age_h, "mean", C_AGE['nd'])
+    line(ax, X_AGE, y_ft + age_h / 2, X_AGE, y_pa - age_h / 2)
+
+    # -- age_error at y_pd --
+    ae_node_w = 5.5
+    ae_cluster_top = y_pd - NODE_H / 2 - SP
+    ae_cluster_bot = y_pd + NODE_H / 2 + SP
+    cluster(ax, X_AGE, y_pd,
+            ae_node_w + 0.9, ae_cluster_bot - ae_cluster_top, C_AGE['bg'])
+    node(ax, X_AGE, y_pd, ae_node_w, age_h,
+         "age_error = real_age - predicted_age", C_AGE['nd'])
+    line(ax, X_AGE, y_pa + age_h / 2, X_AGE, y_pd - age_h / 2)
+
+    # -- Calibration cluster (evenly spaced from c4_top) --
+    cal_cluster_h = cal_bot - cal_top
+    cluster(ax, X_AGE, (cal_top + cal_bot) / 2,
+            age_w + 0.6, cal_cluster_h, C_AGE['bg'])
+    node(ax, X_AGE, y_cal1, age_w, age_h,
          "Logistic 10-fold\n(90/10 + 10/90, 30 seeds)", C_AGE['nd'])
-    node(ax, X_AGE, y_ac2, age_w, age_h,
+    node(ax, X_AGE, y_cal2, age_w, age_h,
          "Bootstrap\n(NAD age>=60, x1000)", C_AGE['nd'])
-    node(ax, X_AGE, y_ac3, age_w, age_h,
+    node(ax, X_AGE, y_cal3, age_w, age_h,
          "Mean Correction\n(33 age bins, single fit)", C_AGE['nd'])
-    line(ax, X_AGE, y_a3 + age_h / 2, X_AGE, y_ac1 - age_h / 2)
-    line(ax, X_AGE, y_ac1 + age_h / 2, X_AGE, y_ac2 - age_h / 2)
-    line(ax, X_AGE, y_ac2 + age_h / 2, X_AGE, y_ac3 - age_h / 2)
+    line(ax, X_AGE, y_pd + age_h / 2, X_AGE, y_cal1 - age_h / 2)
+    line(ax, X_AGE, y_cal1 + age_h / 2, X_AGE, y_cal2 - age_h / 2)
+    line(ax, X_AGE, y_cal2 + age_h / 2, X_AGE, y_cal3 - age_h / 2)
 
-    # -- age outputs --
+    # -- Age outputs at y_r3 --
     out_w = 2.4; out_gap = 0.25
     out_labels = ['predicted_age', 'corrected_age', 'age_error']
     n_out = len(out_labels)
@@ -294,11 +456,9 @@ def build():
     for x, lab in zip(ox, out_labels):
         node(ax, x, y_a_out, out_w, NODE_H, lab, C_AOUT['nd'])
     for x in ox:
-        line(ax, X_AGE, y_ac3 + age_h / 2, x, y_a_out - NODE_H / 2)
+        line(ax, X_AGE, y_cal3 + age_h / 2, x, y_a_out - NODE_H / 2)
 
-    # Lines from each output node converging to a point (triangle)
-    for x in ox:
-        line(ax, x, y_a_out + NODE_H / 2, X_AGE, y_a_join)
+    # Each output node directly connects to each eval method node
 
     # ════════════════════════════════════
     # DRAW: Age eval chain (left, aligned to embedding y)
@@ -313,8 +473,10 @@ def build():
     ae_esx = [X_AGE - (nw_ev + gap_ev) / 2, X_AGE + (nw_ev + gap_ev) / 2]
     for x, lab in zip(ae_esx, ['1by1matched', 'caliper_group']):
         node(ax, x, y_em, nw_ev, NODE_H, lab, C_ES['nd'])
-    for ex in ae_esx:
-        line(ax, X_AGE, y_a_join, ex, y_em - NODE_H / 2)
+    # each output -> each eval method (3x2=6 lines)
+    for o in ox:
+        for ex in ae_esx:
+            line(ax, o, y_a_out + NODE_H / 2, ex, y_em - NODE_H / 2)
 
     cluster(ax, X_AGE, (c_ml_top + c_ml_bot) / 2,
             total_em_a + 0.9, c_ml_bot - c_ml_top, C_ML['bg'])
@@ -358,14 +520,20 @@ def build():
     # DRAW: Embedding branch (right)
     # ════════════════════════════════════
 
-    # Background
-    cluster(ax, CX, (c_bg_top + c_bg_bot) / 2,
-            total_bg + 0.9, c_bg_bot - c_bg_top, C3['bg'])
-    bgx = [CX - (nw_bg + gap_bg) / 2, CX + (nw_bg + gap_bg) / 2]
-    for x, lab in zip(bgx, ['no_background', 'background']):
-        node(ax, x, y_bg, nw_bg, NODE_H, lab, C3['nd'])
+    # face (independent cluster at x_face, y_mir)
+    cluster(ax, x_face, (c_mir_top + c_mir_bot) / 2,
+            nw_mir + 0.6, c_mir_bot - c_mir_top, C3['bg'])
+    node(ax, x_face, y_mir, nw_mir, NODE_H, 'face', C3['nd'])
+
+    # mirrored_face (independent cluster at x_mirr, y_mir)
+    cluster(ax, x_mirr, (c_mir_top + c_mir_bot) / 2,
+            nw_mir + 0.6, c_mir_bot - c_mir_top, C3['bg'])
+    node(ax, x_mirr, y_mir, nw_mir, NODE_H, 'mirrored_face', C3['nd'])
+
+    # bg nodes -> face and mirrored_face
     for bx in bgx:
-        line(ax, CX_TOP, y_fc + NODE_H / 2, bx, y_bg - NODE_H / 2)
+        line(ax, bx, y_pre_bg + NODE_H / 2, x_face, y_mir - NODE_H / 2)
+        line(ax, bx, y_pre_bg + NODE_H / 2, x_mirr, y_mir - NODE_H / 2)
 
     # Embedding Models
     cluster(ax, CX, (c_emb_top + c_emb_bot) / 2,
@@ -373,19 +541,26 @@ def build():
     emx = [CX + (i - 1.5) * (nw_emb + gap_emb) for i in range(4)]
     for x, lab in zip(emx, ['dlib', 'TopoFR', 'ArcFace', 'VGGFace']):
         node(ax, x, y_emb, nw_emb, NODE_H, lab, C2['nd'])
-    for bx in bgx:
+    # face -> Embedding Models, mirrored_face -> Embedding Models
+    for src in [x_face, x_mirr]:
         for ex in emx:
-            line(ax, bx, y_bg + NODE_H / 2, ex, y_emb - NODE_H / 2)
+            line(ax, src, y_mir + NODE_H / 2, ex, y_emb - NODE_H / 2)
 
-    # Feature Type
-    cluster(ax, CX, (c_ft_top + c_ft_bot) / 2,
-            total_ft + 0.9, c_ft_bot - c_ft_top, C_FT['bg'])
-    ftx = [CX + (i - 2.5) * (nw_ft + gap_ft) for i in range(6)]
-    for x, lab in zip(ftx, ['original', 'diff', '|diff|', 'average',
-                             'rel_diff', '|rel_diff|']):
+    # original cluster (at x_orig, y_ft)
+    cluster(ax, x_orig, (c_ft_top + c_ft_bot) / 2,
+            ft_orig_cl_w, c_ft_bot - c_ft_top, C_FT['bg'])
+    node(ax, x_orig, y_ft, nw_ft, NODE_H, 'original', C_FT['nd'])
+
+    # asymmetry cluster (centered at x_asym_center, y_ft)
+    cluster(ax, x_asym_center, (c_ft_top + c_ft_bot) / 2,
+            ft_asym_cl_w, c_ft_bot - c_ft_top, C_FT['bg'])
+    for x, lab in zip(x_ft_asym, ['diff', '|diff|', 'rel_diff', '|rel_diff|']):
         node(ax, x, y_ft, nw_ft, NODE_H, lab, C_FT['nd'])
+
+    # Embedding models -> all feature nodes
     for ex in emx:
-        for fx in ftx:
+        line(ax, ex, y_emb + NODE_H / 2, x_orig, y_ft - NODE_H / 2)
+        for fx in x_ft_asym:
             line(ax, ex, y_emb + NODE_H / 2, fx, y_ft - NODE_H / 2)
 
     # Photo Aggregation
@@ -394,8 +569,10 @@ def build():
     pax = [CX - (nw_pa + gap_pa) / 2, CX + (nw_pa + gap_pa) / 2]
     for x, lab in zip(pax, ['mean', 'all']):
         node(ax, x, y_pa, nw_pa, NODE_H, lab, C_PA['nd'])
-    for fx in ftx:
-        for px in pax:
+    # original -> photo agg, asymmetry nodes -> photo agg
+    for px in pax:
+        line(ax, x_orig, y_ft + NODE_H / 2, px, y_pa - NODE_H / 2)
+        for fx in x_ft_asym:
             line(ax, fx, y_ft + NODE_H / 2, px, y_pa - NODE_H / 2)
 
     # PCA / Drop
@@ -511,103 +688,48 @@ def build():
 
 def build_show():
     """Highlighted-path version: only selected nodes keep color."""
-    nw_col = 3.3; gap_col = 0.7; cw = nw_col + 0.8
-    age_w = 4.5
-    age_h = NODE_H
+    L = _common_layout()
+    CL = L['CL']
+    nw_col = L['nw_col']; gap_col = L['gap_col']; cw = L['cw']
+    age_w = L['age_w']; age_h = L['age_h']
+    c1_top = L['c1_top']; y_vs = L['y_vs']; y_cf = L['y_cf']
+    y_fc = L['y_fc']; c1_bot = L['c1_bot']
+    c_pre_top = L['c_pre_top']; c_pre_bot = L['c_pre_bot']
+    y_pre_list = L['y_pre_list']
+    y_pre_bg = L['y_pre_bg']; nw_bg = L['nw_bg']; gap_bg = L['gap_bg']
+    pre_cluster_w = L['pre_cluster_w']
+    y_mir = L['y_mir']; c_mir_top = L['c_mir_top']; c_mir_bot = L['c_mir_bot']
+    nw_mir = L['nw_mir']
+    x_face = L['x_face']; x_mirr = L['x_mirr']
+    c_emb_top = L['c_emb_top']; y_emb = L['y_emb']; c_emb_bot = L['c_emb_bot']
+    nw_emb = L['nw_emb']; gap_emb = L['gap_emb']; total_emb = L['total_emb']
+    y_ft = L['y_ft']; c_ft_top = L['c_ft_top']; c_ft_bot = L['c_ft_bot']
+    nw_ft = L['nw_ft']; gap_ft = L['gap_ft']; total_asym = L['total_asym']
+    ft_orig_cl_w = L['ft_orig_cl_w']; ft_asym_cl_w = L['ft_asym_cl_w']
+    x_orig = L['x_orig']; x_asym_center = L['x_asym_center']
+    x_ft_asym = L['x_ft_asym']
+    c_pa_top = L['c_pa_top']; y_pa = L['y_pa']; c_pa_bot = L['c_pa_bot']
+    nw_pa = L['nw_pa']; gap_pa = L['gap_pa']; total_pa = L['total_pa']
+    c_pd_top = L['c_pd_top']; y_pd = L['y_pd']; c_pd_bot = L['c_pd_bot']
+    nw_pd = L['nw_pd']; gap_pd = L['gap_pd']; total_pd = L['total_pd']
+    c4_top = L['c4_top']; y_clf = L['y_clf']; c4_bot = L['c4_bot']
+    nw4 = L['nw4']; gap4 = L['gap4']; total4 = L['total4']
+    cl_top = L['cl_top']; y_r1 = L['y_r1']; y_r2 = L['y_r2']
+    y_r3 = L['y_r3']; cl_bot = L['cl_bot']; cl_h = L['cl_h']
+    nw_ev = L['nw_ev']; gap_ev = L['gap_ev']
+    c_em_top = L['c_em_top']; y_em = L['y_em']; c_em_bot = L['c_em_bot']
+    c_ml_top = L['c_ml_top']; y_ml = L['y_ml']; c_ml_bot = L['c_ml_bot']
+    c_sa_top = L['c_sa_top']; y_sa = L['y_sa']; c_sa_bot = L['c_sa_bot']
+    c_ms_top = L['c_ms_top']; y_ms = L['y_ms']; c_ms_bot = L['c_ms_bot']
+    nw_ms = L['nw_ms']; gap_ms = L['gap_ms']; total_ms = L['total_ms']
+    c6_top = L['c6_top']; y_p = L['y_p']; c6_bot = L['c6_bot']
+    cal_top = L['cal_top']; y_cal1 = L['y_cal1']; y_cal2 = L['y_cal2']
+    y_cal3 = L['y_cal3']; cal_bot = L['cal_bot']
+    y_a_out = L['y_a_out']; c_ao_top = L['c_ao_top']; c_ao_bot = L['c_ao_bot']
+    amx = L['amx']; fig_h = L['fig_h']
 
-    # ── Layout (identical to build()) ──
-    CL = _cohort_layout()
-    c1_top = CL['c1_top']; y_vs = CL['y_vs']; y_cf = CL['y_cf']
-    y_fc = CL['y_fc']; c1_bot = CL['c1_bot']
-
-    a_top = c1_bot + SP
-    y_a1 = a_top + SP + age_h / 2
-    y_a2 = y_a1 + age_h + SP
-    y_a3 = y_a2 + age_h + SP
-    a_bot = y_a3 + age_h / 2 + SP
-
-    ac_top = a_bot + SP
-    y_ac1 = ac_top + SP + age_h / 2
-    y_ac2 = y_ac1 + age_h + SP
-    y_ac3 = y_ac2 + age_h + SP
-    ac_bot = y_ac3 + age_h / 2 + SP
-
-    c_ao_top = ac_bot + SP
-    y_a_out = c_ao_top + SP + NODE_H / 2
-    c_ao_bot = y_a_out + NODE_H / 2 + SP
-
-    y_a_join = y_a_out + NODE_H / 2 + 3 * SP
-
-    c_bg_top = c1_bot + SP
-    y_bg = c_bg_top + SP + NODE_H / 2
-    c_bg_bot = y_bg + NODE_H / 2 + SP
-    nw_bg = 2.4; gap_bg = 0.65
-    total_bg = 2 * nw_bg + gap_bg
-
-    c_emb_top = c_bg_bot + SP
-    y_emb = c_emb_top + SP + NODE_H / 2
-    c_emb_bot = y_emb + NODE_H / 2 + SP
-    nw_emb = 2.2; gap_emb = 0.5
-    total_emb = 4 * nw_emb + 3 * gap_emb
-
-    c_ft_top = c_emb_bot + SP
-    y_ft = c_ft_top + SP + NODE_H / 2
-    c_ft_bot = y_ft + NODE_H / 2 + SP
-    nw_ft = 1.7; gap_ft = 0.25
-    total_ft = 6 * nw_ft + 5 * gap_ft
-
-    c_pa_top = c_ft_bot + SP
-    y_pa = c_pa_top + SP + NODE_H / 2
-    c_pa_bot = y_pa + NODE_H / 2 + SP
-    nw_pa = 2.4; gap_pa = 0.65
-    total_pa = 2 * nw_pa + gap_pa
-
-    c_pd_top = c_pa_bot + SP
-    y_pd = c_pd_top + SP + NODE_H / 2
-    c_pd_bot = y_pd + NODE_H / 2 + SP
-    nw_pd = 2.0; gap_pd = 0.5
-    total_pd = 3 * nw_pd + 2 * gap_pd
-
-    c4_top = c_pd_bot + SP
-    y_clf = c4_top + SP + NODE_H / 2
-    c4_bot = y_clf + NODE_H / 2 + SP
-    nw4 = 4.2; gap4 = 0.5
-    total4 = 2 * nw4 + gap4
-
-    cl_top = c4_bot + SP
-    y_r1 = cl_top + SP + NODE_H / 2
-    y_r2 = y_r1 + NODE_H + SP
-    y_r3 = y_r2 + NODE_H + SP
-    cl_bot = y_r3 + NODE_H / 2 + SP
-    cl_h = cl_bot - cl_top
-
-    nw_ev = 2.4; gap_ev = 0.65
-
-    c_em_top = cl_bot + SP
-    y_em = c_em_top + SP + NODE_H / 2
-    c_em_bot = y_em + NODE_H / 2 + SP
-
-    c_ml_top = c_em_bot + SP
-    y_ml = c_ml_top + SP + NODE_H / 2
-    c_ml_bot = y_ml + NODE_H / 2 + SP
-
-    c_sa_top = c_ml_bot + SP
-    y_sa = c_sa_top + SP + NODE_H / 2
-    c_sa_bot = y_sa + NODE_H / 2 + SP
-
-    c_ms_top = c_sa_bot + SP
-    y_ms = c_ms_top + SP + NODE_H / 2
-    c_ms_bot = y_ms + NODE_H / 2 + SP
-    nw_ms = 2.4; gap_ms = 0.65
-    total_ms = 3 * nw_ms + 2 * gap_ms
-
-    c6_top = c_ms_bot + SP
-    y_p = c6_top + SP + NODE_H / 2
-    c6_bot = y_p + NODE_H / 2 + SP
-
-    fig_h = c6_bot + 0.5
     fig, ax = plt.subplots(figsize=(FIG_W, fig_h))
-    ax.set_xlim(-0.1, FIG_W + 0.1)
+    ax.set_xlim(X_LIM_LEFT, X_LIM_RIGHT)
     ax.set_ylim(fig_h + 0.1, -0.1)
     ax.set_aspect('equal')
     ax.axis('off')
@@ -642,6 +764,24 @@ def build_show():
     for cx in cdrx:
         line(ax, cx, y_cf + NODE_H / 2, CX_TOP, y_fc - NODE_H / 2)
 
+    # ════ Preprocessing (3 stacked + 2 side-by-side bg, highlighted) ════
+    _cl(ax, CX_TOP, (c_pre_top + c_pre_bot) / 2,
+        pre_cluster_w, c_pre_bot - c_pre_top, C_PRE['bg'])
+    for y, lab in zip(y_pre_list, PRE_LABELS):
+        _n(ax, CX_TOP, y, NW_PRE, NODE_H, lab, C_PRE['nd'])
+    line(ax, CX_TOP, y_fc + NODE_H / 2, CX_TOP, y_pre_list[0] - NODE_H / 2)
+    for i in range(len(y_pre_list) - 1):
+        line(ax, CX_TOP, y_pre_list[i] + NODE_H / 2,
+             CX_TOP, y_pre_list[i + 1] - NODE_H / 2)
+    # Side-by-side bg nodes: no_background=gray, background=highlighted
+    bgx = [CX_TOP - (nw_bg + gap_bg) / 2, CX_TOP + (nw_bg + gap_bg) / 2]
+    bg_labels = ['no_background', 'background']
+    bg_on = [False, True]
+    for x, lab, on in zip(bgx, bg_labels, bg_on):
+        _n(ax, x, y_pre_bg, nw_bg, NODE_H, lab, C_PRE['nd'], on)
+    for bx in bgx:
+        line(ax, CX_TOP, y_pre_list[-1] + NODE_H / 2, bx, y_pre_bg - NODE_H / 2)
+
     # ════ EACS (gray) ════
     eacs_w = age_w + 0.6
     _cl(ax, X_AGE, y_fc, eacs_w + 0.6, NODE_H + 2 * SP, C_EACS['bg'], False)
@@ -649,30 +789,64 @@ def build_show():
        "External Datasets\nUTKFace / AgeDB / APPA-REAL / ...",
        C_EACS['nd'], False)
 
-    # ════ Age prediction (colored) ════
-    _cl(ax, X_AGE, (a_top + a_bot) / 2,
-        age_w + 0.6, a_bot - a_top, C_AGE['bg'])
-    _n(ax, X_AGE, y_a1, age_w, age_h, "MiVOLO v2\nAge Prediction", C_AGE['nd'])
-    _n(ax, X_AGE, y_a2, age_w, age_h, "Mean Aggregation\n(10 photos - 1)", C_AGE['nd'])
-    _n(ax, X_AGE, y_a3, age_w, age_h,
-       "age_error\n= real_age - predicted_age", C_AGE['nd'])
-    line(ax, CX_TOP, y_fc + NODE_H / 2, X_AGE, y_a1 - age_h / 2)
-    line(ax, X_AGE, y_fc + NODE_H / 2, X_AGE, y_a1 - age_h / 2)
-    line(ax, X_AGE, y_a1 + age_h / 2, X_AGE, y_a2 - age_h / 2)
-    line(ax, X_AGE, y_a2 + age_h / 2, X_AGE, y_a3 - age_h / 2)
+    # ════ Age Models (MiVOLO highlighted, others gray) ════
+    pred_cw = TOTAL_AM + 0.9
+    am_cluster_top = y_emb - age_h / 2 - SP
+    am_cluster_bot = y_emb + age_h / 2 + SP
+    _cl(ax, X_AGE, y_emb,
+        pred_cw, am_cluster_bot - am_cluster_top, C_AGE['bg'])
 
-    # ════ Calibration (gray) ════
-    _cl(ax, X_AGE, (ac_top + ac_bot) / 2,
-        age_w + 0.6, ac_bot - ac_top, C_AGE['bg'], False)
-    _n(ax, X_AGE, y_ac1, age_w, age_h,
+    am_on = [True, False, False, False, False]
+    for x, lab, on in zip(amx, AGE_MODELS, am_on):
+        _n(ax, x, y_emb, NW_AM, age_h, lab, C_AGE['nd'], on)
+    # Both bg nodes -> each Age Model
+    for bx in bgx:
+        for x in amx:
+            line(ax, bx, y_pre_bg + NODE_H / 2, x, y_emb - NODE_H / 2)
+    # EACS -> each Age Model
+    for x in amx:
+        line(ax, X_AGE, y_fc + NODE_H / 2, x, y_emb - age_h / 2)
+
+    # ════ Predict Age (highlighted) at y_ft ════
+    pa_cluster_top = y_ft - NODE_H / 2 - SP
+    pa_cluster_bot = y_ft + NODE_H / 2 + SP
+    _cl(ax, X_AGE, y_ft,
+        age_w + 0.6, pa_cluster_bot - pa_cluster_top, C_AGE['bg'])
+    _n(ax, X_AGE, y_ft, age_w, age_h, "Predict Age", C_AGE['nd'])
+    for x in amx:
+        line(ax, x, y_emb + age_h / 2, X_AGE, y_ft - age_h / 2)
+
+    # ════ Mean Aggregation (highlighted) ════
+    ma_cluster_top = y_pa - NODE_H / 2 - SP
+    ma_cluster_bot = y_pa + NODE_H / 2 + SP
+    _cl(ax, X_AGE, y_pa,
+        age_w + 0.6, ma_cluster_bot - ma_cluster_top, C_AGE['bg'])
+    _n(ax, X_AGE, y_pa, age_w, age_h, "mean", C_AGE['nd'])
+    line(ax, X_AGE, y_ft + age_h / 2, X_AGE, y_pa - age_h / 2)
+
+    # ════ age_error (highlighted, wider) ════
+    ae_node_w = 5.5
+    ae_cluster_top = y_pd - NODE_H / 2 - SP
+    ae_cluster_bot = y_pd + NODE_H / 2 + SP
+    _cl(ax, X_AGE, y_pd,
+        ae_node_w + 0.9, ae_cluster_bot - ae_cluster_top, C_AGE['bg'])
+    _n(ax, X_AGE, y_pd, ae_node_w, age_h,
+       "age_error = real_age - predicted_age", C_AGE['nd'])
+    line(ax, X_AGE, y_pa + age_h / 2, X_AGE, y_pd - age_h / 2)
+
+    # ════ Calibration (gray, evenly spaced from c4_top) ════
+    cal_cluster_h = cal_bot - cal_top
+    _cl(ax, X_AGE, (cal_top + cal_bot) / 2,
+        age_w + 0.6, cal_cluster_h, C_AGE['bg'], False)
+    _n(ax, X_AGE, y_cal1, age_w, age_h,
        "Logistic 10-fold\n(90/10 + 10/90, 30 seeds)", C_AGE['nd'], False)
-    _n(ax, X_AGE, y_ac2, age_w, age_h,
+    _n(ax, X_AGE, y_cal2, age_w, age_h,
        "Bootstrap\n(NAD age>=60, x1000)", C_AGE['nd'], False)
-    _n(ax, X_AGE, y_ac3, age_w, age_h,
+    _n(ax, X_AGE, y_cal3, age_w, age_h,
        "Mean Correction\n(33 age bins, single fit)", C_AGE['nd'], False)
-    line(ax, X_AGE, y_a3 + age_h / 2, X_AGE, y_ac1 - age_h / 2)
-    line(ax, X_AGE, y_ac1 + age_h / 2, X_AGE, y_ac2 - age_h / 2)
-    line(ax, X_AGE, y_ac2 + age_h / 2, X_AGE, y_ac3 - age_h / 2)
+    line(ax, X_AGE, y_pd + age_h / 2, X_AGE, y_cal1 - age_h / 2)
+    line(ax, X_AGE, y_cal1 + age_h / 2, X_AGE, y_cal2 - age_h / 2)
+    line(ax, X_AGE, y_cal2 + age_h / 2, X_AGE, y_cal3 - age_h / 2)
 
     # ════ Age outputs (predicted_age + age_error colored, corrected gray) ════
     out_w = 2.4; out_gap = 0.25
@@ -687,11 +861,9 @@ def build_show():
     for x, lab, on in zip(ox, out_labels, out_on):
         _n(ax, x, y_a_out, out_w, NODE_H, lab, C_AOUT['nd'], on)
     for x in ox:
-        line(ax, X_AGE, y_ac3 + age_h / 2, x, y_a_out - NODE_H / 2)
+        line(ax, X_AGE, y_cal3 + age_h / 2, x, y_a_out - NODE_H / 2)
 
-    # Lines from each output node converging to a point (triangle)
-    for x in ox:
-        line(ax, x, y_a_out + NODE_H / 2, X_AGE, y_a_join)
+    # each output -> each eval method (3x2=6 lines)
 
     # ════ Age eval chain (left, aligned to embedding y, selective highlight) ════
     total_em_a = 2 * nw_ev + gap_ev
@@ -705,8 +877,10 @@ def build_show():
     ae_es_on = [True, False]
     for x, lab, on in zip(ae_esx, ['1by1matched', 'caliper_group'], ae_es_on):
         _n(ax, x, y_em, nw_ev, NODE_H, lab, C_ES['nd'], on)
-    for ex in ae_esx:
-        line(ax, X_AGE, y_a_join, ex, y_em - NODE_H / 2)
+    # each output -> each eval method (3x2=6 lines)
+    for o in ox:
+        for ex in ae_esx:
+            line(ax, o, y_a_out + NODE_H / 2, ex, y_em - NODE_H / 2)
 
     _cl(ax, X_AGE, (c_ml_top + c_ml_bot) / 2,
         total_em_a + 0.9, c_ml_bot - c_ml_top, C_ML['bg'])
@@ -750,15 +924,20 @@ def build_show():
         for px in ae_ppx:
             line(ax, mx, y_ms + NODE_H / 2, px, y_p - NODE_H / 2)
 
-    # ════ Background (background=on, no_background=off) ════
-    _cl(ax, CX, (c_bg_top + c_bg_bot) / 2,
-        total_bg + 0.9, c_bg_bot - c_bg_top, C3['bg'])
-    bgx = [CX - (nw_bg + gap_bg) / 2, CX + (nw_bg + gap_bg) / 2]
-    bg_on = [False, True]
-    for x, lab, on in zip(bgx, ['no_background', 'background'], bg_on):
-        _n(ax, x, y_bg, nw_bg, NODE_H, lab, C3['nd'], on)
+    # ════ face (highlighted) ════
+    _cl(ax, x_face, (c_mir_top + c_mir_bot) / 2,
+        nw_mir + 0.6, c_mir_bot - c_mir_top, C3['bg'])
+    _n(ax, x_face, y_mir, nw_mir, NODE_H, 'face', C3['nd'])
+
+    # ════ mirrored_face (highlighted) ════
+    _cl(ax, x_mirr, (c_mir_top + c_mir_bot) / 2,
+        nw_mir + 0.6, c_mir_bot - c_mir_top, C3['bg'])
+    _n(ax, x_mirr, y_mir, nw_mir, NODE_H, 'mirrored_face', C3['nd'])
+
+    # Preprocessing bg nodes -> face and mirrored_face
     for bx in bgx:
-        line(ax, CX_TOP, y_fc + NODE_H / 2, bx, y_bg - NODE_H / 2)
+        line(ax, bx, y_pre_bg + NODE_H / 2, x_face, y_mir - NODE_H / 2)
+        line(ax, bx, y_pre_bg + NODE_H / 2, x_mirr, y_mir - NODE_H / 2)
 
     # ════ Embedding Models (ArcFace=on) ════
     _cl(ax, CX, (c_emb_top + c_emb_bot) / 2,
@@ -767,20 +946,27 @@ def build_show():
     em_on = [False, False, True, False]
     for x, lab, on in zip(emx, ['dlib', 'TopoFR', 'ArcFace', 'VGGFace'], em_on):
         _n(ax, x, y_emb, nw_emb, NODE_H, lab, C2['nd'], on)
-    for bx in bgx:
+    for src in [x_face, x_mirr]:
         for ex in emx:
-            line(ax, bx, y_bg + NODE_H / 2, ex, y_emb - NODE_H / 2)
+            line(ax, src, y_mir + NODE_H / 2, ex, y_emb - NODE_H / 2)
 
-    # ════ Feature Type (original=on) ════
-    _cl(ax, CX, (c_ft_top + c_ft_bot) / 2,
-        total_ft + 0.9, c_ft_bot - c_ft_top, C_FT['bg'])
-    ftx = [CX + (i - 2.5) * (nw_ft + gap_ft) for i in range(6)]
-    ft_labs = ['original', 'diff', '|diff|', 'average', 'rel_diff', '|rel_diff|']
-    ft_on = [True, True, True, False, True, True]
-    for x, lab, on in zip(ftx, ft_labs, ft_on):
+    # ════ original (on) ════
+    _cl(ax, x_orig, (c_ft_top + c_ft_bot) / 2,
+        ft_orig_cl_w, c_ft_bot - c_ft_top, C_FT['bg'])
+    _n(ax, x_orig, y_ft, nw_ft, NODE_H, 'original', C_FT['nd'], True)
+
+    # ════ asymmetry (all on) ════
+    _cl(ax, x_asym_center, (c_ft_top + c_ft_bot) / 2,
+        ft_asym_cl_w, c_ft_bot - c_ft_top, C_FT['bg'])
+    asym_labels = ['diff', '|diff|', 'rel_diff', '|rel_diff|']
+    asym_on = [True, True, True, True]
+    for x, lab, on in zip(x_ft_asym, asym_labels, asym_on):
         _n(ax, x, y_ft, nw_ft, NODE_H, lab, C_FT['nd'], on)
+
+    # Embedding models -> all feature nodes
     for ex in emx:
-        for fx in ftx:
+        line(ax, ex, y_emb + NODE_H / 2, x_orig, y_ft - NODE_H / 2)
+        for fx in x_ft_asym:
             line(ax, ex, y_emb + NODE_H / 2, fx, y_ft - NODE_H / 2)
 
     # ════ Photo Aggregation (mean=on) ════
@@ -790,8 +976,9 @@ def build_show():
     pa_on = [True, False]
     for x, lab, on in zip(pax, ['mean', 'all'], pa_on):
         _n(ax, x, y_pa, nw_pa, NODE_H, lab, C_PA['nd'], on)
-    for fx in ftx:
-        for px in pax:
+    for px in pax:
+        line(ax, x_orig, y_ft + NODE_H / 2, px, y_pa - NODE_H / 2)
+        for fx in x_ft_asym:
             line(ax, fx, y_ft + NODE_H / 2, px, y_pa - NODE_H / 2)
 
     # ════ PCA/Drop (no_drop=on) ════
