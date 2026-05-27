@@ -59,7 +59,7 @@ logging.basicConfig(level=logging.INFO,
 logger = logging.getLogger(__name__)
 
 METHODS = ["l2_norm", "centroid_dist", "lda_projection"]
-MODELS = ["arcface", "dlib", "topofr"]
+MODELS = ["arcface", "dlib", "topofr", "vggface"]
 FEATURE_TYPES = [
     "difference", "absolute_difference",
     "relative_differences", "absolute_relative_differences",
