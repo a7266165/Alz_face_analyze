@@ -47,24 +47,6 @@ def load_predicted_ages(path: Path) -> dict:
         return json.load(f)
 
 
-def _pick_first_visit_with_npy_fallback(
-    df_visits: pd.DataFrame, predicted_ages: dict,
-) -> pd.DataFrame:
-    """Per subject: pick the earliest visit that has a predicted_age (= has
-    .npy + age extraction). Falls back to the earliest visit if none qualify.
-    Mirrors ``src.cohort._pick_first_visit_with_features``.
-    """
-    picked = []
-    for subj, g in df_visits.groupby("subject", as_index=False, sort=False):
-        g = g.sort_values("ID")
-        with_pred = g[g["ID"].astype(str).isin(predicted_ages)]
-        if len(with_pred) > 0:
-            picked.append(with_pred.iloc[0])
-        else:
-            picked.append(g.iloc[0])
-    return pd.DataFrame(picked).reset_index(drop=True)
-
-
 def load_demographics_for_calibration(
     demo_dir: Path,
     predicted_ages_file: Path,
@@ -79,42 +61,44 @@ def load_demographics_for_calibration(
     cohort_mode:
         "all" (default, backward-compat): every visit per subject. Drops only
             visits without predicted_age or real Age.
-        "p_first_cdr05_hc_all_cdrall_or_mmseall": P keeps only first-visit (with Global_CDR>=0.5 and
-            .npy fallback); NAD/ACS keep ALL visits without strict HC filter.
+        Any of the 16 canonical names: delegates to unified cohort builder
+            ``src.cohort.build_cohort_for_age_calibration``.
     """
-    if cohort_mode not in ("all", "p_first_cdr05_hc_all_cdrall_or_mmseall"):
-        raise ValueError(f"unknown cohort_mode: {cohort_mode}")
+    from src.config import VALID_COHORT_CHOICES
 
-    predicted_ages = json.loads(predicted_ages_file.read_text(encoding="utf-8"))
+    if cohort_mode == "all":
+        predicted_ages = json.loads(
+            predicted_ages_file.read_text(encoding="utf-8"))
+        dfs = {}
+        for csv_name in ["ACS.csv", "NAD.csv", "P.csv"]:
+            group = csv_name.replace(".csv", "")
+            df = pd.read_csv(demo_dir / csv_name, encoding="utf-8-sig")
+            df["group"] = group
+            df["subject"] = df["ID"].apply(lambda x: x.rsplit("-", 1)[0])
+            df["predicted_age"] = df["ID"].map(predicted_ages)
+            df = df.dropna(subset=["predicted_age", "Age"])
+            df["real_age"] = df["Age"]
+            df["error"] = df["real_age"] - df["predicted_age"]
+            df["age_int"] = df["real_age"].apply(lambda x: int(np.floor(x)))
+            dfs[group] = df[
+                ["ID", "subject", "group", "real_age", "predicted_age",
+                 "error", "age_int"]
+            ].copy()
+        logger.info(
+            f"載入完成 (cohort_mode=all): "
+            f"ACS={len(dfs['ACS'])}, NAD={len(dfs['NAD'])}, P={len(dfs['P'])}")
+        return dfs["ACS"], dfs["NAD"], dfs["P"]
 
-    dfs = {}
-    for csv_name in ["ACS.csv", "NAD.csv", "P.csv"]:
-        group = csv_name.replace(".csv", "")
-        df = pd.read_csv(demo_dir / csv_name, encoding="utf-8-sig")
-        df["group"] = group
-        df["subject"] = df["ID"].apply(lambda x: x.rsplit("-", 1)[0])
-        df["predicted_age"] = df["ID"].map(predicted_ages)
-        df = df.dropna(subset=["predicted_age", "Age"])
-        df["real_age"] = df["Age"]
-        df["error"] = df["real_age"] - df["predicted_age"]
-        df["age_int"] = df["real_age"].apply(lambda x: int(np.floor(x)))
+    if cohort_mode in VALID_COHORT_CHOICES:
+        from src.cohort import build_cohort_for_age_calibration
+        return build_cohort_for_age_calibration(
+            cohort_mode=cohort_mode,
+            predicted_ages_file=predicted_ages_file,
+        )
 
-        if cohort_mode == "p_first_cdr05_hc_all_cdrall_or_mmseall" and group == "P":
-            # P side: filter to Global_CDR>=0.5 visits, then pick earliest
-            # eligible visit per subject (with .npy fallback).
-            cdr = pd.to_numeric(df.get("Global_CDR"), errors="coerce")
-            df_eligible = df[cdr >= 0.5].copy()
-            df = _pick_first_visit_with_npy_fallback(df_eligible, predicted_ages)
-
-        dfs[group] = df[
-            ["ID", "subject", "group", "real_age", "predicted_age", "error", "age_int"]
-        ].copy()
-
-    logger.info(
-        f"載入完成 (cohort_mode={cohort_mode}): "
-        f"ACS={len(dfs['ACS'])}, NAD={len(dfs['NAD'])}, P={len(dfs['P'])}"
-    )
-    return dfs["ACS"], dfs["NAD"], dfs["P"]
+    raise ValueError(
+        f"unknown cohort_mode: {cohort_mode!r}. "
+        f"Use 'all' or one of the 16 canonical names.")
 
 
 def match_ages(predicted_ages: dict, demo: pd.DataFrame) -> pd.DataFrame:

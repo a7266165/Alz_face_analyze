@@ -43,7 +43,7 @@ logger = logging.getLogger(__name__)
 
 def resolve_paths(variant, embedding, bg_mode="no_background",
                    cohort_mode="p_first_cdr05_hc_first_cdrall_or_mmseall",
-                   photo_mode="mean", match_strategy="match_randomly"):
+                   photo_mode="mean", match_strategy="no_priority"):
     from src.config import EMBEDDING_CLASSIFICATION_DIR, cohort_name, cohort_spec_from_name
     cohort_dir = cohort_name(cohort_mode)
     spec = cohort_spec_from_name(cohort_dir)

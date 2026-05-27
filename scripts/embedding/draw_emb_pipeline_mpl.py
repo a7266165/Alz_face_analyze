@@ -752,7 +752,7 @@ def build_v5():
     cluster(ax, CX, (c_ms_top + c_ms_bot) / 2,
             total_ms + 0.9, c_ms_bot - c_ms_top, C_MS['bg'])
     msx = [CX - (nw_ms + gap_ms), CX, CX + (nw_ms + gap_ms)]
-    ms_labels = ['match_randomly', 'match_acs_first', 'match_nad_first']
+    ms_labels = ['no_priority', 'priority_acs', 'priority_nad']
     for x, lab in zip(msx, ms_labels):
         node(ax, x, y_ms, nw_ms, NODE_H, lab, C_MS['nd'])
     for sx in sax:

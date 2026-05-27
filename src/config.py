@@ -56,33 +56,33 @@ MIRRORS_BACKGROUND_DIR = PREPROCESSING_DIR / "background" / "mirrors"
 EMBEDDING_DIR = WORKSPACE_DIR / "embedding"
 FEATURES_DIR = EMBEDDING_DIR / "features"
 EMBEDDING_FEATURES_DIR = FEATURES_DIR
-STATISTICS_DIR = EMBEDDING_DIR / "statistics"
 EMBEDDING_ANALYSIS_DIR = EMBEDDING_DIR / "analysis"
 EMBEDDING_FEATURE_STAT_DIR = EMBEDDING_ANALYSIS_DIR / "feature_stat"
-EMBEDDING_STAT_GRID_DIR = EMBEDDING_FEATURE_STAT_DIR / "stat_grid"
 _EMBEDDING_CLASSIFICATION_BASE = EMBEDDING_ANALYSIS_DIR / "classification"
 EMBEDDING_CLASSIFICATION_DIR = _EMBEDDING_CLASSIFICATION_BASE
-_MATCH_SUBDIR = os.environ.get("ALZ_MATCH_SUBDIR", "match_randomly")
+_MATCH_SUBDIR = os.environ.get("ALZ_MATCH_SUBDIR", "no_priority")
 
 # -----------------------------------------------------------------------------
 # Age
 # -----------------------------------------------------------------------------
 AGE_DIR = WORKSPACE_DIR / "age"
 AGE_PREDICTIONS_DIR = AGE_DIR / "predictions"
-# 預設指向 DEFAULT_COHORT_MODE；其他 cohort 用 AGE_PREDICTIONS_DIR / <canonical> 動態組合。
-AGE_PREDICTION_DIR = AGE_PREDICTIONS_DIR / "P_first_HC_first" / "P_cdr05_HC_cdrall_mmseall"
 AGE_BENCHMARK_DIR = AGE_PREDICTIONS_DIR / "benchmark"
+AGE_ANALYSIS_DIR = AGE_DIR / "analysis"
 
-PREDICTED_AGES_FILE = AGE_PREDICTION_DIR / "predicted_ages.json"
+# 預設指向 DEFAULT_COHORT_MODE（analysis 下）。
+_AGE_DEFAULT_ANALYSIS = AGE_ANALYSIS_DIR / "P_first_HC_first" / "P_cdr05_HC_cdrall_mmseall"
+
+PREDICTED_AGES_FILE = _AGE_DEFAULT_ANALYSIS / "predicted_ages.json"
 
 # Error 子樹（校正前分析）
-AGE_ERROR_DIR = AGE_PREDICTION_DIR / "error"
+AGE_ERROR_DIR = _AGE_DEFAULT_ANALYSIS / "error"
 AGE_ERROR_SCATTER_DIR = AGE_ERROR_DIR / "scatter"
 AGE_ERROR_STAT_DIR = AGE_ERROR_DIR / "stat"
 AGE_ERROR_LINES_DIR = AGE_ERROR_DIR / "lines"
 
 # Correction 子樹
-CORRECTION_DIR = AGE_PREDICTION_DIR / "correction"
+CORRECTION_DIR = _AGE_DEFAULT_ANALYSIS / "correction"
 CALIBRATION_DIR = CORRECTION_DIR / "calibration"
 BOOTSTRAP_DIR = CORRECTION_DIR / "bootstrap_correction"
 MEAN_CORRECTION_DIR = CORRECTION_DIR / "mean_correction"
@@ -292,6 +292,48 @@ def embedding_classification_path(
          / bg_mode / emb / variant / photo_mode / reducer)
     for seg in (clf, direction, eval_method, match_level, eval_unit,
                 match_strategy, partition):
+        if seg is None:
+            break
+        p = p / seg
+    return p
+
+
+META_DIR = WORKSPACE_DIR / "meta"
+META_ANALYSIS_DIR = META_DIR / "analysis"
+
+
+def meta_analysis_path(
+    cohort: str,
+    bg_mode: str,
+    emb_model: str,
+    asymmetry_variant: str,
+    photo_mode: str = "mean",
+    reducer: str = "no_drop",
+    base_classifier: Optional[str] = None,
+    base_classifier_param: Optional[str] = None,
+    direction: Optional[str] = None,
+    eval_method: Optional[str] = None,
+    match_level: Optional[str] = None,
+    eval_unit: Optional[str] = None,
+    match_strategy: Optional[str] = None,
+    partition: Optional[str] = None,
+    normalize_tag: Optional[str] = None,
+    meta_classifier: Optional[str] = None,
+) -> Path:
+    """
+    Compose meta analysis output path.
+
+    Layout (aligns with embedding up to partition, then meta-specific):
+      meta/analysis/<visit>/<cdr_mmse>/<bg_mode>/<emb>/<asym_variant>/<photo>/<reducer>/
+        <base_clf>/<base_param>/<direction>/<eval_method>/<match_level>/<eval_unit>/
+        <match_strategy>/<partition>/<normalize_tag>/<meta_clf>/
+    """
+    spec = cohort_spec_from_name(cohort_name(cohort))
+    p = (META_ANALYSIS_DIR / spec.visit_dir / spec.cdr_mmse_dir
+         / bg_mode / emb_model / asymmetry_variant / photo_mode / reducer)
+    for seg in (base_classifier, base_classifier_param, direction,
+                eval_method, match_level, eval_unit, match_strategy,
+                partition, normalize_tag, meta_classifier):
         if seg is None:
             break
         p = p / seg

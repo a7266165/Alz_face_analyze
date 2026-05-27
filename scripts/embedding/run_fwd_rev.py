@@ -772,8 +772,7 @@ def _forward_eval(train, matched_cohort, keep_groups, seed):
 
 
 def _forward_eval_caliper_group(oof_subj, full_cohort, matched_cohort,
-                                matched_pairs, keep_groups, seed,
-                                caliper=1.0):
+                                keep_groups, seed, caliper=1.0):
     """1:N balanced evaluation: expand 1:1 pairs by round-robin adding P.
     Returns None for P-only partitions (mmse_hilo / casi_hilo)."""
     if "group" not in full_cohort.columns:
@@ -781,7 +780,7 @@ def _forward_eval_caliper_group(oof_subj, full_cohort, matched_cohort,
 
     from src.cohort import build_caliper_group
     cal_cohort, age_balance = build_caliper_group(
-        full_cohort, matched_cohort, matched_pairs,
+        full_cohort, matched_cohort,
         keep_groups=keep_groups, caliper=caliper,
     )
     if len(cal_cohort) < 5:
@@ -846,57 +845,6 @@ def run_forward(full_cohort, matched_cohort, embedding, classifier,
     return (oof_df, train["oof_subj"], train["metrics_full"], metrics_matched,
             paired, n_folds, train["n_dropped"], train["k"], matched_eval,
             train["drop_corr_info"], metrics_matched_visit, train)
-
-
-def plot_cm(cm, title, out_path, neg_label="0", pos_label="1"):
-    """Render a 2×2 confusion matrix to PNG. cm = [[tn, fp], [fn, tp]]."""
-    cm = np.asarray(cm, dtype=float)
-    cmap = plt.get_cmap("Blues")
-    vmin, vmax = float(cm.min()), float(cm.max())
-    rng = vmax - vmin if vmax > vmin else 1.0
-    fig, ax = plt.subplots(figsize=(4.6, 3.4))
-    im = ax.imshow(cm, cmap=cmap, vmin=vmin, vmax=vmax)
-    ax.set_aspect("equal")
-    ax.set_xticks([0, 1]); ax.set_yticks([0, 1])
-    ax.set_xticklabels([f"Pred {neg_label}", f"Pred {pos_label}"])
-    ax.set_yticklabels([f"True {neg_label}", f"True {pos_label}"])
-    for i in range(2):
-        for j in range(2):
-            v = cm[i, j]
-            r, g, b, _ = cmap((v - vmin) / rng)
-            lum = 0.299 * r + 0.587 * g + 0.114 * b
-            ax.text(j, i, f"{int(v)}", ha="center", va="center",
-                    color="white" if lum < 0.5 else "black",
-                    fontsize=12, fontweight="bold")
-    ax.set_xlabel("Predicted"); ax.set_ylabel("True")
-    ax.set_title(title, fontsize=10)
-    fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
-    fig.subplots_adjust(left=0.18, right=0.82, top=0.85, bottom=0.15)
-    fig.savefig(out_path, dpi=150)
-    plt.close(fig)
-
-
-# Per-partition (neg, pos) labels used as CM tick labels.
-CM_LABELS = {
-    "ad_vs_hc":  ("HC",  "AD"),
-    "ad_vs_nad": ("NAD", "AD"),
-    "ad_vs_acs": ("ACS", "AD"),
-    "mmse_hilo": ("MMSE-low", "MMSE-high"),
-    "casi_hilo": ("CASI-low", "CASI-high"),
-}
-
-
-def _plot_cm_blocks(blocks, partition, out_dir, prefix):
-    """Write one CM PNG per non-None block. blocks: list of (metric_dict,
-    fname, scope) tuples; metric_dict carries `confusion_matrix` and `auc`."""
-    neg, pos = CM_LABELS.get(partition, ("0", "1"))
-    for m, fname, scope in blocks:
-        if not m or not m.get("confusion_matrix"):
-            continue
-        title = (f"{partition} — {scope}\n"
-                 f"n={m.get('n', '?')}  AUC={m.get('auc', float('nan')):.3f}")
-        plot_cm(m["confusion_matrix"], title, out_dir / fname,
-                 neg_label=neg, pos_label=pos)
 
 
 def plot_paired_scatter(matched_with_score, partition, out_path):
@@ -1189,8 +1137,8 @@ def _clf_subdir(classifier):
 def _match_subdir():
     """Return match strategy directory name from _MATCH_PRIORITY."""
     if _MATCH_PRIORITY:
-        return f"match_{_MATCH_PRIORITY[0].lower()}_first"
-    return "match_randomly"
+        return f"priority_{_MATCH_PRIORITY[0].lower()}"
+    return "no_priority"
 
 
 def cell_dir(partition, classifier, strategy,
@@ -1228,9 +1176,8 @@ def assert_matched_size(partition, matched_cohort, is_derived=False):
 
 
 def _write_cohort_files(out, matched, pairs):
-    """Write matched_cohort.csv and matched_pairs.csv in cell dir (idempotent)."""
+    """Write matched_pairs.csv in cell dir (idempotent)."""
     out.mkdir(parents=True, exist_ok=True)
-    matched.to_csv(out / "matched_cohort.csv", index=False)
     if pairs is not None and not (out / "matched_pairs.csv").exists():
         pairs.to_csv(out / "matched_pairs.csv", index=False)
 
@@ -1261,8 +1208,8 @@ def run_cell(partition, embedding, classifier, strategy, n_folds=10, seed=42):
             n_folds=n_folds, seed=seed, keep_groups=keep_groups,
             partition=partition,
         )
-        oof_df.to_csv(out / "forward_oof_scores.csv", index=False)
-        oof_subj.to_csv(out / "forward_oof_scores_subject.csv", index=False)
+        oof_df.to_csv(out / "oof_scores_visit.csv", index=False)
+        oof_subj.to_csv(out / "oof_scores_subject.csv", index=False)
         if _SAVE_OOF_PROB:
             # Meta-stacking input: subject-level (one row per base_id) with
             # canonical column names that run_meta_analysis.py consumes.
@@ -1280,6 +1227,7 @@ def run_cell(partition, embedding, classifier, strategy, n_folds=10, seed=42):
         fwd_common = {
             "partition": partition, "embedding": embedding,
             "classifier": classifier, "strategy": "forward",
+            "training_strategy": "full_cohort_oof",
             **_classifier_params_for_json(classifier),
             "k_folds_used": k, "n_dropped_no_emb": n_dropped,
             "n_pairs_expected": EXPECTED_PAIRS.get(partition),
@@ -1288,7 +1236,7 @@ def run_cell(partition, embedding, classifier, strategy, n_folds=10, seed=42):
             "drop_corr_info": drop_corr_info,
             "metrics_full_cohort": m_full,
         }
-        write_json(out / "forward_matched_metrics.json", {
+        write_json(out / "metrics.json", {
             **fwd_common,
             "metrics_matched_subset": m_matched,
             "paired_wilcoxon": paired,
@@ -1297,7 +1245,7 @@ def run_cell(partition, embedding, classifier, strategy, n_folds=10, seed=42):
         out_visit = cell_dir(partition, classifier, "forward",
                              eval_unit="eval_by_visit")
         out_visit.mkdir(parents=True, exist_ok=True)
-        write_json(out_visit / "forward_matched_metrics.json", {
+        write_json(out_visit / "metrics.json", {
             **fwd_common,
             "metrics_matched_subset": m_matched_visit,
         })
@@ -1309,7 +1257,7 @@ def run_cell(partition, embedding, classifier, strategy, n_folds=10, seed=42):
                 out_vm = cell_dir(partition, classifier, "forward",
                                   match_level="visit_match", eval_unit=eu)
                 out_vm.mkdir(parents=True, exist_ok=True)
-                write_json(out_vm / "forward_matched_metrics.json", {
+                write_json(out_vm / "metrics.json", {
                     **fwd_common,
                     "metrics_matched_subset": m_vm,
                 })
@@ -1318,11 +1266,7 @@ def run_cell(partition, embedding, classifier, strategy, n_folds=10, seed=42):
             oof_subj[["base_id", "y_score"]], on="base_id", how="inner",
         )
         plot_paired_scatter(matched_score, partition,
-                            out / "forward_paired_scatter.png")
-        _plot_cm_blocks([
-            (m_matched, "forward_cm_matched.png", "forward_matched"),
-            (m_full,    "forward_cm_full.png",    "forward_full"),
-        ], partition, out, prefix="forward")
+                            out / "paired_scatter.png")
         logger.info(
             f"  forward: matched AUC={m_matched['auc']:.3f} "
             f"[CI {m_matched['auc_ci_low']:.3f}-{m_matched['auc_ci_high']:.3f}] "
@@ -1347,7 +1291,7 @@ def run_cell(partition, embedding, classifier, strategy, n_folds=10, seed=42):
         # ---- caliper-group evaluation (separate output dir) ----
         if _CALIPER_GROUP > 0:
             cal = _forward_eval_caliper_group(
-                oof_subj, full, matched, pairs, keep_groups, seed,
+                oof_subj, full, matched, keep_groups, seed,
                 caliper=_CALIPER_GROUP,
             )
             if cal is not None:
@@ -1355,18 +1299,19 @@ def run_cell(partition, embedding, classifier, strategy, n_folds=10, seed=42):
                                    "forward", eval_method="caliper_group")
                 cal_out.mkdir(parents=True, exist_ok=True)
                 # OOF scores (same as matched — full-cohort OOF)
-                oof_df.to_csv(cal_out / "forward_oof_scores.csv", index=False)
+                oof_df.to_csv(cal_out / "oof_scores_visit.csv", index=False)
                 oof_subj.to_csv(
-                    cal_out / "forward_oof_scores_subject.csv", index=False)
+                    cal_out / "oof_scores_subject.csv", index=False)
                 # Caliper-group cohort & scores
                 cal["cohort_df"].to_csv(
                     cal_out / "matched_cohort.csv", index=False)
                 cal["scores_df"].to_csv(
                     cal_out / "forward_matched_scores.csv", index=False)
                 m_cal = cal["metrics"]
-                write_json(cal_out / "forward_matched_metrics.json", {
+                write_json(cal_out / "metrics.json", {
                     "partition": partition, "embedding": embedding,
                     "classifier": classifier, "strategy": "forward",
+                    "training_strategy": "full_cohort_oof",
                     "eval_mode": "caliper_group",
                     **_classifier_params_for_json(classifier),
                     "age_balance": cal["age_balance"],
@@ -1374,17 +1319,6 @@ def run_cell(partition, embedding, classifier, strategy, n_folds=10, seed=42):
                     "metrics_full_cohort": m_full,
                     "mann_whitney": cal["mann_whitney"],
                 })
-                neg_l, pos_l = CM_LABELS.get(partition, ("0", "1"))
-                title_cg = (f"{partition} — caliper_group\n"
-                            f"n={m_cal['n']}  AUC={m_cal['auc']:.3f}")
-                plot_cm(m_cal["confusion_matrix"], title_cg,
-                        cal_out / "forward_cm_matched.png",
-                        neg_label=neg_l, pos_label=pos_l)
-                title_full = (f"{partition} — full\n"
-                              f"n={m_full['n']}  AUC={m_full['auc']:.3f}")
-                plot_cm(m_full["confusion_matrix"], title_full,
-                        cal_out / "forward_cm_full.png",
-                        neg_label=neg_l, pos_label=pos_l)
                 ab = cal["age_balance"]
                 logger.info(
                     f"  caliper_group: n_hc={ab['n_hc']} n_p={ab['n_p_total']} "
@@ -1409,6 +1343,7 @@ def run_cell(partition, embedding, classifier, strategy, n_folds=10, seed=42):
         common = {
             "partition": partition, "embedding": embedding,
             "classifier": classifier, "strategy": "reverse",
+            "training_strategy": "matched_ensemble",
             **_classifier_params_for_json(classifier),
             "k_folds_used": rev["k_folds_used"],
             "n_dropped_no_emb_matched": rev["n_dropped_no_emb_matched"],
@@ -1421,8 +1356,8 @@ def run_cell(partition, embedding, classifier, strategy, n_folds=10, seed=42):
 
         scores_visits = rev["scores_df_visits"]
 
-        scores_df.to_csv(out / "scores.csv", index=False)
-        scores_visits.to_csv(out / "scores_visits.csv", index=False)
+        scores_df.to_csv(out / "oof_scores_subject.csv", index=False)
+        scores_visits.to_csv(out / "oof_scores_visit.csv", index=False)
         write_json(out / "metrics.json", {
             **common,
             "metrics_matched_oof": rev["metrics_matched_oof"],
@@ -1455,10 +1390,6 @@ def run_cell(partition, embedding, classifier, strategy, n_folds=10, seed=42):
 
         m_oof = rev["metrics_matched_oof"]
         m_un = rev["metrics_unmatched"]
-        _plot_cm_blocks([
-            (m_oof, "cm_matched_oof.png", "matched_oof"),
-            (m_un,  "cm_unmatched.png",   "unmatched"),
-        ], partition, out, prefix="reverse")
         msg = f"  reverse: matched_oof AUC={m_oof['auc']:.3f}"
         if m_un is not None:
             msg += f"  unmatched AUC={m_un['auc']:.3f}"
@@ -1506,8 +1437,8 @@ def run_grid_search(partitions, embeddings, classifiers, strategies,
       <OUTPUT_DIR>/<partition>/<fwd|rev>/logistic/C_<value>/...
       <OUTPUT_DIR>/<partition>/<fwd|rev>/xgb/ne_X_md_Y_lr_Z/...
 
-    so per-combo `forward_matched_metrics.json` + `metrics.json` + scores
-    CSVs + CM PNGs are all written exactly as in a normal run. After the
+    so per-combo `metrics.json` + scores CSVs are all written exactly
+    as in a normal run. After the
     full sweep completes, calls `build_sweep_metrics.py` as a subprocess to
     refresh `<OUTPUT_DIR>/_summary/all_metrics_with_cm.csv` so the aggregate
     grid table is at the standard location alongside other cross-cell
@@ -1682,8 +1613,8 @@ def main():
                              "Example: --match-priority ACS NAD "
                              "(ACS subjects match before NAD). "
                              "Default: None (random shuffle). "
-                             "Output goes to classification/match_<first>_first/; "
-                             "without this flag output goes to match_randomly/.")
+                             "Output goes to classification/priority_<group>/; "
+                             "without this flag output goes to no_priority/.")
     args = parser.parse_args()
 
     global _FEATURE_TYPE, _BG_MODE, _DROP_CORR_THRESHOLD, _DROP_CORR_METHOD

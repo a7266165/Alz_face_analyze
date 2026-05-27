@@ -68,7 +68,7 @@ logger = logging.getLogger(__name__)
 
 def resolve_paths(variant, embedding, bg_mode="no_background",
                    cohort_mode="p_first_cdr05_hc_first_cdrall_or_mmseall",
-                   photo_mode="mean", match_strategy="match_randomly"):
+                   photo_mode="mean", match_strategy="no_priority"):
     """Return (class_root, out, reducer_dirs, cell_json_for, feature_subdir, feat_root).
 
     class_root             → .../<visit>/<cdr_mmse>/<bg_mode>/<emb>/<variant>/<photo>

@@ -197,13 +197,17 @@ def _ids_for_modality(modality: str) -> set:
             ids = {p.stem for p in emo_dir.glob("*.npy")}
     elif "/" in modality:
         model, variant = modality.split("/", 1)
-        d = EMBEDDING_DIR / model / variant
-        if d.exists():
-            ids = {p.stem for p in d.glob("*.npy")}
+        for bg in ("no_background", "background", ""):
+            d = EMBEDDING_DIR / model / bg / variant if bg else EMBEDDING_DIR / model / variant
+            if d.exists():
+                ids = {p.stem for p in d.glob("*.npy")}
+                break
     else:
-        d = EMBEDDING_DIR / modality / "original"
-        if d.exists():
-            ids = {p.stem for p in d.glob("*.npy")}
+        for bg in ("no_background", "background", ""):
+            d = EMBEDDING_DIR / modality / bg / "original" if bg else EMBEDDING_DIR / modality / "original"
+            if d.exists():
+                ids = {p.stem for p in d.glob("*.npy")}
+                break
 
     _FEATURE_IDS_CACHE[modality] = ids
     return ids
@@ -479,7 +483,7 @@ def match_1to1(cohort, caliper=2.0, seed=42, metric="MMSE", group_col=None,
 
 
 
-def build_caliper_group(full_cohort, matched_cohort, matched_pairs,
+def build_caliper_group(full_cohort, matched_cohort,
                         keep_groups=None, caliper=1.0,
                         ttest_threshold=0.05):
     """1:N balanced matching built on top of a 1:1 matched cohort.
@@ -495,8 +499,6 @@ def build_caliper_group(full_cohort, matched_cohort, matched_pairs,
         label, group.
     matched_cohort : DataFrame — 1:1 matched cohort with pair_id, base_id,
         Age, label, group.
-    matched_pairs : DataFrame — pairs table from ``match_1to1`` (minor_id,
-        major_id columns).
     keep_groups : optional set  — e.g. ``{"P", "ACS"}``.
     caliper : float — max |age_diff| for added P subjects.
     ttest_threshold : float — stop adding when p drops below this.
@@ -609,6 +611,12 @@ def build_caliper_group(full_cohort, matched_cohort, matched_pairs,
 # ====================================================================
 # Demographics loading for AD-vs-HC-group cohorts
 # ====================================================================
+
+def load_combined_demographics(hc_source_mode="ACS"):
+    """Load + concat demographics across P/NAD/ACS/EACS per
+    hc_source_mode.  Public wrapper (used by age + meta modules)."""
+    return _load_combined_demographics(hc_source_mode)
+
 
 def _load_combined_demographics(hc_source_mode):
     """Load + concat demographics across P/NAD/ACS/EACS per
@@ -918,3 +926,79 @@ def build_cohort_ad_hi_lo(
                            suffixes=("", "_p"))
     cohort["label"] = (cohort[group_col] == "high").astype(int)
     return cohort, pairs_df
+
+
+# ====================================================================
+# Age calibration cohort builder
+# ====================================================================
+
+def build_cohort_for_age_calibration(
+    cohort_mode=DEFAULT_COHORT_MODE,
+    hc_source_mode="ACS",
+    predicted_ages_file=None,
+):
+    """Build calibration cohort using unified cohort logic.
+
+    Applies the same CDR/MMSE/visit filters as the embedding pipeline
+    but returns three separate DataFrames for calibration use.
+
+    Returns (df_acs, df_nad, df_p) each with columns:
+        ID, subject, group, real_age, predicted_age, error, age_int
+    """
+    spec = cohort_spec_from_name(cohort_mode)
+
+    if predicted_ages_file is not None:
+        pred_ages = json.loads(Path(predicted_ages_file).read_text(
+            encoding="utf-8"))
+    else:
+        pred_ages = _load_predicted_ages()
+
+    demo = _load_combined_demographics(hc_source_mode)
+
+    # --- P side ---
+    p_all = demo[(demo["group"] == "P") & demo["Age"].notna()].copy()
+    p_all = apply_p_cdr_filter(p_all, spec)
+    p_all = p_all.sort_values(["base_id", "visit"])
+    p_all = apply_predicted_age_filter(p_all, pred_ages=pred_ages)
+    if spec.p_visit == "first":
+        p_df = _pick_first_visit_with_features(p_all)
+    else:
+        p_df = _keep_visits_with_features(p_all)
+
+    # --- HC side (ACS + NAD separately) ---
+    hc_frames = {}
+    for grp in ("ACS", "NAD"):
+        hc = demo[(demo["group"] == grp) & demo["Age"].notna()].copy()
+        hc = apply_hc_strict_filter(hc, spec)
+        hc = hc.sort_values(["base_id", "visit"])
+        hc = apply_predicted_age_filter(hc, pred_ages=pred_ages)
+        if spec.hc_visit == "first":
+            hc = hc.groupby("base_id", as_index=False).first()
+        hc_frames[grp] = hc
+
+    # --- shared post-processing ---
+    out = {}
+    for grp, df in [("P", p_df), ("ACS", hc_frames.get("ACS", pd.DataFrame())),
+                     ("NAD", hc_frames.get("NAD", pd.DataFrame()))]:
+        if df.empty:
+            out[grp] = pd.DataFrame(
+                columns=["ID", "subject", "group", "real_age",
+                         "predicted_age", "error", "age_int"])
+            continue
+        df = df.copy()
+        df["group"] = grp
+        df["subject"] = df["ID"].apply(lambda x: str(x).rsplit("-", 1)[0])
+        df["predicted_age"] = df["ID"].map(pred_ages)
+        df = df.dropna(subset=["predicted_age", "Age"])
+        df["real_age"] = df["Age"]
+        df["error"] = df["real_age"] - df["predicted_age"]
+        df["age_int"] = df["real_age"].apply(lambda x: int(np.floor(x)))
+        out[grp] = df[
+            ["ID", "subject", "group", "real_age", "predicted_age",
+             "error", "age_int"]
+        ].copy()
+
+    logger.info(
+        f"build_cohort_for_age_calibration (cohort_mode={cohort_mode}): "
+        f"ACS={len(out['ACS'])}, NAD={len(out['NAD'])}, P={len(out['P'])}")
+    return out["ACS"], out["NAD"], out["P"]
