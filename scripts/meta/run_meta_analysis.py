@@ -1,11 +1,12 @@
 """
-Meta Analysis 執行腳本 (v2)
+Meta Analysis 執行腳本 (v3)
 
-依 embedding pipeline 分層格式輸出：
-  meta/analysis/{visit}/{cdr}/{bg}/{emb_model}/{asymmetry_variant}/{photo}/{reducer}/
-    meta_{meta_clf}/fwd/{eval_chain}/
+多維度 sweep:
+  bg_mode × extra_feat × emb_model × (asym_variant, scoring_method) × normalize × meta_clf
 
-對每個 asymmetry variant 各跑一次 (original 固定 + asymmetry 可選)。
+輸出路徑:
+  meta/analysis/{visit}/{cdr}/{bg}/{extra_feat}/{emb}/{asym_variant}/{scoring}/
+    {photo}/{reducer}/fwd/{normalize}/{meta_clf}/
 
 使用方式:
     conda run -n Alz_face_main_analysis python scripts/meta/run_meta_analysis.py
@@ -21,6 +22,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from _paths import PROJECT_ROOT
 
 from src.config import (
+    META_ANALYSIS_DIR,
     cohort_name,
     cohort_spec_from_name,
 )
@@ -34,21 +36,32 @@ DEMOGRAPHICS_DIR = PROJECT_ROOT / "data" / "demographics"
 # ========== 分析設定 ==========
 
 COHORT_MODE = "p_first_cdrall_hc_all_cdrall_or_mmseall"
-BG_MODE = "background"
 PHOTO_MODE = "mean"
 REDUCER = "no_drop"
-MATCH_STRATEGY = "priority_acs"
 BASE_CLASSIFIER = "logistic"
 BASE_CLASSIFIER_PARAM = "C_1"
 
-EMB_MODELS = ["arcface"]
+BG_MODES = ["background", "no_background"]
+EMB_MODELS = ["arcface", "dlib", "topofr", "vggface"]
 META_CLASSIFIERS = ["tabpfn", "logistic", "xgboost"]
 NORMALIZE_OPTIONS = [None, "minmax"]
-ASYMMETRY_VARIANTS = [
-    "difference",
-    "absolute_difference",
-    "relative_differences",
-    "absolute_relative_differences",
+EXTRA_FEATURES_OPTIONS = [[], ["bmi"]]
+
+# (asymmetry_variant, scoring_method)
+ASYMMETRY_CONFIGS = [
+    ("none", "none"),
+    ("difference", "l2_norm"),
+    ("difference", "centroid_dist"),
+    ("difference", "lda_projection"),
+    ("absolute_difference", "l2_norm"),
+    ("absolute_difference", "centroid_dist"),
+    ("absolute_difference", "lda_projection"),
+    ("relative_differences", "l2_norm"),
+    ("relative_differences", "centroid_dist"),
+    ("relative_differences", "lda_projection"),
+    ("absolute_relative_differences", "l2_norm"),
+    ("absolute_relative_differences", "centroid_dist"),
+    ("absolute_relative_differences", "lda_projection"),
 ]
 
 # Age predictions (cohort-specific)
@@ -59,11 +72,7 @@ PREDICTED_AGES = (
     / "correction" / "calibration" / "predicted_ages_calibrated.json"
 )
 
-# Emotion (None for now)
 EMOTION_METHOD = None
-
-# Meta output root (mirrors embedding structure)
-META_ROOT = WORKSPACE_DIR / "meta" / "analysis"
 
 
 def setup_logging():
@@ -74,20 +83,15 @@ def setup_logging():
     )
 
 
-def build_output_dir(emb_model, asymmetry_variant, meta_clf, normalize=None):
-    """Build meta analysis output directory.
-
-    Layout:
-      meta/analysis/<visit>/<cdr>/<bg>/<emb>/<asym>/<photo>/<reducer>/
-        <base_clf>/<base_param>/fwd/<normalize>/<meta_clf>/
-    """
-    from src.config import META_ANALYSIS_DIR
+def build_output_dir(bg_mode, extra_feat_tag, emb_model,
+                     asym_variant, scoring_method,
+                     normalize, meta_clf):
     norm_tag = normalize if normalize else "raw"
     return (
         META_ANALYSIS_DIR / spec.visit_dir / spec.cdr_mmse_dir
-        / BG_MODE / emb_model / asymmetry_variant
-        / PHOTO_MODE / REDUCER
-        / BASE_CLASSIFIER / BASE_CLASSIFIER_PARAM / "fwd"
+        / bg_mode / extra_feat_tag / emb_model
+        / asym_variant / scoring_method
+        / PHOTO_MODE / REDUCER / "fwd"
         / norm_tag / meta_clf
     )
 
@@ -97,13 +101,15 @@ def main():
     logger = logging.getLogger(__name__)
 
     logger.info("=" * 60)
-    logger.info("Meta Analysis (v2) — multi-variant")
+    logger.info("Meta Analysis (v3) — multi-dimensional sweep")
     logger.info("=" * 60)
     logger.info(f"Cohort: {COHORT_MODE}")
+    logger.info(f"BG modes: {BG_MODES}")
     logger.info(f"Embedding models: {EMB_MODELS}")
-    logger.info(f"Asymmetry variants: {ASYMMETRY_VARIANTS}")
+    logger.info(f"Asymmetry configs: {len(ASYMMETRY_CONFIGS)}")
     logger.info(f"Meta classifiers: {META_CLASSIFIERS}")
-    logger.info(f"Normalize options: {NORMALIZE_OPTIONS}")
+    logger.info(f"Normalize: {NORMALIZE_OPTIONS}")
+    logger.info(f"Extra features: {EXTRA_FEATURES_OPTIONS}")
 
     if not DEMOGRAPHICS_DIR.exists():
         logger.error(f"找不到人口學資料目錄: {DEMOGRAPHICS_DIR}")
@@ -114,65 +120,80 @@ def main():
 
     all_summaries = []
 
-    for norm_opt in NORMALIZE_OPTIONS:
-        norm_tag = norm_opt if norm_opt else "raw"
-        for asym_variant in ASYMMETRY_VARIANTS:
+    for bg_mode in BG_MODES:
+        for extra_feats in EXTRA_FEATURES_OPTIONS:
+            extra_feat_tag = "with_bmi" if "bmi" in extra_feats else "no_bmi"
             for emb_model in EMB_MODELS:
-                for meta_clf in META_CLASSIFIERS:
-                    output_dir = build_output_dir(
-                        emb_model, asym_variant, meta_clf, norm_opt,
-                    )
+                for asym_variant, scoring_method in ASYMMETRY_CONFIGS:
+                    for norm_opt in NORMALIZE_OPTIONS:
+                        for meta_clf in META_CLASSIFIERS:
+                            output_dir = build_output_dir(
+                                bg_mode, extra_feat_tag, emb_model,
+                                asym_variant, scoring_method,
+                                norm_opt, meta_clf,
+                            )
+                            norm_tag = norm_opt if norm_opt else "raw"
 
-                    if (output_dir / "summary.csv").exists():
-                        logger.info(f"  SKIP (已存在): {output_dir}")
-                        summary_df = pd.read_csv(output_dir / "summary.csv")
-                        if not summary_df.empty:
-                            summary_df["asymmetry_variant"] = asym_variant
-                            summary_df["normalize"] = norm_tag
-                            all_summaries.append(summary_df)
-                        continue
+                            if (output_dir / "summary.csv").exists():
+                                logger.info(f"  SKIP: {output_dir}")
+                                summary_df = pd.read_csv(output_dir / "summary.csv")
+                                if not summary_df.empty:
+                                    summary_df["asymmetry_variant"] = asym_variant
+                                    summary_df["scoring_method"] = scoring_method
+                                    summary_df["normalize"] = norm_tag
+                                    summary_df["bg_mode"] = bg_mode
+                                    summary_df["extra_features"] = extra_feat_tag
+                                    all_summaries.append(summary_df)
+                                continue
 
-                    logger.info(f"\n{'='*60}")
-                    logger.info(f"  {emb_model} / {asym_variant} / {meta_clf} / {norm_tag}")
-                    logger.info(f"  → {output_dir}")
-                    logger.info(f"{'='*60}")
+                            label = (f"{bg_mode}/{extra_feat_tag}/{emb_model}/"
+                                     f"{asym_variant}/{scoring_method}/"
+                                     f"{norm_tag}/{meta_clf}")
+                            logger.info(f"\n{'='*60}")
+                            logger.info(f"  {label}")
+                            logger.info(f"  → {output_dir}")
+                            logger.info(f"{'='*60}")
 
-                    config = MetaConfig(
-                        cohort_mode=COHORT_MODE,
-                        bg_mode=BG_MODE,
-                        photo_mode=PHOTO_MODE,
-                        reducer=REDUCER,
-                        base_classifier=BASE_CLASSIFIER,
-                        base_classifier_param=BASE_CLASSIFIER_PARAM,
-                        match_strategy=MATCH_STRATEGY,
-                        models=[emb_model],
-                        meta_classifiers=[meta_clf],
-                        emotion_method=EMOTION_METHOD,
-                        demographics_dir=DEMOGRAPHICS_DIR,
-                        predicted_ages_file=PREDICTED_AGES,
-                        normalize=norm_opt,
-                    )
+                            config = MetaConfig(
+                                cohort_mode=COHORT_MODE,
+                                bg_mode=bg_mode,
+                                photo_mode=PHOTO_MODE,
+                                reducer=REDUCER,
+                                base_classifier=BASE_CLASSIFIER,
+                                base_classifier_param=BASE_CLASSIFIER_PARAM,
+                                match_strategy="priority_acs",
+                                scoring_method=scoring_method,
+                                extra_features=extra_feats,
+                                models=[emb_model],
+                                meta_classifiers=[meta_clf],
+                                emotion_method=EMOTION_METHOD,
+                                demographics_dir=DEMOGRAPHICS_DIR,
+                                predicted_ages_file=PREDICTED_AGES,
+                                normalize=norm_opt,
+                            )
 
-                    pipeline = MetaPipeline(
-                        output_dir=output_dir,
-                        config=config,
-                        asymmetry_variant=asym_variant,
-                    )
+                            pipeline = MetaPipeline(
+                                output_dir=output_dir,
+                                config=config,
+                                asymmetry_variant=asym_variant,
+                            )
 
-                    try:
-                        summary_df = pipeline.run()
-                        if not summary_df.empty:
-                            summary_df["asymmetry_variant"] = asym_variant
-                            summary_df["normalize"] = norm_tag
-                            all_summaries.append(summary_df)
-                    except Exception as e:
-                        logger.error(f"失敗: {e}")
+                            try:
+                                summary_df = pipeline.run()
+                                if not summary_df.empty:
+                                    summary_df["asymmetry_variant"] = asym_variant
+                                    summary_df["scoring_method"] = scoring_method
+                                    summary_df["normalize"] = norm_tag
+                                    summary_df["bg_mode"] = bg_mode
+                                    summary_df["extra_features"] = extra_feat_tag
+                                    all_summaries.append(summary_df)
+                            except Exception as e:
+                                logger.error(f"失敗: {e}")
 
-    # Combined summary
     if all_summaries:
         combined = pd.concat(all_summaries, ignore_index=True)
         combined = combined.sort_values("mcc", ascending=False)
-        summary_path = META_ROOT / spec.visit_dir / spec.cdr_mmse_dir / "summary_all.csv"
+        summary_path = META_ANALYSIS_DIR / spec.visit_dir / spec.cdr_mmse_dir / "summary_all.csv"
         summary_path.parent.mkdir(parents=True, exist_ok=True)
         combined.to_csv(summary_path, index=False, encoding="utf-8-sig")
         logger.info(f"\n合併結果已儲存: {summary_path}")
@@ -183,7 +204,9 @@ def main():
         for _, row in combined.head(10).iterrows():
             auc_str = f"{row['auc']:.4f}" if row['auc'] is not None else "N/A"
             logger.info(
-                f"  {row['emb_model']} / {row['asymmetry_variant']} + {row['meta_classifier']}: "
+                f"  {row['bg_mode']}/{row.get('extra_features','')}/{row['emb_model']}/"
+                f"{row.get('asymmetry_variant','')}/{row.get('scoring_method','')}"
+                f" + {row['meta_classifier']}: "
                 f"MCC={row['mcc']:.4f}, Acc={row['accuracy']:.4f}, AUC={auc_str}"
             )
 

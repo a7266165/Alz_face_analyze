@@ -9,32 +9,6 @@ from typing import List, Optional
 
 @dataclass
 class MetaConfig:
-    """
-    Meta 分析設定
-
-    Attributes:
-        cohort_mode: cohort 模式（用於建構 OOF 路徑）
-        bg_mode: 背景模式
-        photo_mode: 照片聚合模式
-        reducer: 降維方式（固定 no_drop）
-        base_classifier: base model 分類器名稱
-        base_classifier_param: base model 分類器參數子目錄
-        direction: forward / reverse
-        eval_method: 評估匹配方法
-        match_level: 匹配層級
-        eval_unit: 評估單位
-        match_strategy: 匹配策略（統一指定）
-        partition: 資料分割
-        emotion_method: emotion 來源 ("emonet" 或 schema 裡的 tool 名)
-        emotion_features_dir: .npy 特徵目錄
-        emotion_schema_file: _schema.json 路徑
-        emonet_csv: EmoNet CSV 路徑
-        meta_classifiers: meta-level classifier 清單
-        random_seed: 隨機種子
-        models: 要分析的 embedding 模型列表
-        demographics_dir: 人口學資料目錄
-        predicted_ages_file: 預測年齡 JSON 路徑
-    """
 
     # --- embedding pipeline 路徑參數 ---
     cohort_mode: str = "p_first_cdr05_hc_first_cdrall_or_mmseall"
@@ -51,8 +25,14 @@ class MetaConfig:
     hc_source_mode: str = "ACS"
     partition: str = "ad_vs_hc"
 
+    # --- asymmetry scoring ---
+    scoring_method: str = "none"  # "none", "l2_norm", "centroid_dist", "lda_projection"
+
+    # --- extra features ---
+    extra_features: List[str] = field(default_factory=list)  # e.g. ["bmi"]
+
     # --- emotion 設定 ---
-    emotion_method: str = "emonet"
+    emotion_method: Optional[str] = None
     emotion_features_dir: Optional[Path] = None
     emotion_schema_file: Optional[Path] = None
     emonet_csv: Optional[Path] = None
@@ -67,11 +47,6 @@ class MetaConfig:
 
     # --- 訓練 ---
     random_seed: int = 42
-
-    # --- 輸出 ---
-    save_models: bool = True
-    save_predictions: bool = True
-    save_reports: bool = True
 
     # --- 分析範圍 ---
     models: List[str] = field(
@@ -94,3 +69,9 @@ class MetaConfig:
                 raise ValueError(
                     f"無效的 meta classifier: {c}，必須是 {valid_clf}"
                 )
+
+        valid_scoring = {"none", "l2_norm", "centroid_dist", "lda_projection"}
+        if self.scoring_method not in valid_scoring:
+            raise ValueError(
+                f"無效的 scoring_method: {self.scoring_method}，必須是 {valid_scoring}"
+            )
