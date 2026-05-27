@@ -394,7 +394,7 @@ def build():
     cluster(ax, CX, (c_ms_top + c_ms_bot) / 2,
             total_ms + 0.9, c_ms_bot - c_ms_top, C_MS['bg'])
     msx = [CX - (nw_ms + gap_ms), CX, CX + (nw_ms + gap_ms)]
-    for x, lab in zip(msx, ['match_randomly', 'match_acs_first', 'match_nad_first']):
+    for x, lab in zip(msx, ['no_priority', 'priority_acs', 'priority_nad']):
         node(ax, x, y_ms, nw_ms, NODE_H, lab, C_MS['nd'], fs=FS_XS)
     for eu in eux:
         for ms in msx:
@@ -729,14 +729,14 @@ def build_show():
         for eu in eux:
             line(ax, mx, y_ml + NODE_H / 2, eu, y_eu - NODE_H / 2)
 
-    # Match Strategy: match_acs_first=ON, others=OFF
+    # Match Strategy: priority_acs=ON, others=OFF
     nw_ms = 2.4
     gap_ms = 0.65
     total_ms = 3 * nw_ms + 2 * gap_ms
     _cl(ax, CX, (c_ms_top + c_ms_bot) / 2, total_ms + 0.9, c_ms_bot - c_ms_top, C_MS['bg'])
     msx = [CX - (nw_ms + gap_ms), CX, CX + (nw_ms + gap_ms)]
     ms_on = [False, True, False]
-    for x, lab, on in zip(msx, ['match_randomly', 'match_acs_first', 'match_nad_first'], ms_on):
+    for x, lab, on in zip(msx, ['no_priority', 'priority_acs', 'priority_nad'], ms_on):
         _n(ax, x, y_ms, nw_ms, NODE_H, lab, C_MS['nd'], on=on)
     for eu in eux:
         for ms in msx:

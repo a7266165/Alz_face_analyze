@@ -73,9 +73,11 @@ class MetaDataLoader:
         # age
         demographics_dir: Optional[Path] = None,
         predicted_ages_file: Optional[Path] = None,
+        hc_source_mode: str = "ACS",
     ):
         self.emb_model = emb_model
         self.cohort_mode = cohort_mode
+        self.hc_source_mode = hc_source_mode
         self.bg_mode = bg_mode
         self.photo_mode = photo_mode
         self.reducer = reducer
@@ -177,9 +179,13 @@ class MetaDataLoader:
             / self.direction / self.eval_method / self.match_level
             / self.eval_unit / self.match_strategy / self.partition
         )
-        oof_file = oof_dir / "forward_oof_scores_subject.csv"
+        oof_file = oof_dir / "oof_scores_subject.csv"
         if not oof_file.exists():
-            raise FileNotFoundError(f"找不到 OOF 檔案: {oof_file}")
+            legacy = oof_dir / "forward_oof_scores_subject.csv"
+            if legacy.exists():
+                oof_file = legacy
+            else:
+                raise FileNotFoundError(f"找不到 OOF 檔案: {oof_file}")
 
         df = pd.read_csv(oof_file)
         score_col = (
@@ -232,19 +238,12 @@ class MetaDataLoader:
         return pd.DataFrame(rows)
 
     def _load_age_data(self) -> pd.DataFrame:
-        dfs = []
-        for csv_name in ["ACS.csv", "NAD.csv", "P.csv"]:
-            csv_path = self.demographics_dir / csv_name
-            if csv_path.exists():
-                df = pd.read_csv(csv_path)
-                dfs.append(df[["ID", "Age"]])
+        from src.cohort import load_combined_demographics
 
-        if not dfs:
-            raise FileNotFoundError(f"找不到人口學資料: {self.demographics_dir}")
-
-        demo_df = pd.concat(dfs, ignore_index=True)
-        demo_df = demo_df.rename(columns={"ID": "subject_id", "Age": "real_age"})
-        demo_df["real_age"] = pd.to_numeric(demo_df["real_age"], errors="coerce")
+        hc_source_mode = getattr(self, "hc_source_mode", "ACS")
+        demo = load_combined_demographics(hc_source_mode)
+        demo = demo.rename(columns={"ID": "subject_id", "Age": "real_age"})
+        demo["real_age"] = pd.to_numeric(demo["real_age"], errors="coerce")
 
         if not self.predicted_ages_file.exists():
             raise FileNotFoundError(f"找不到預測年齡檔案: {self.predicted_ages_file}")
@@ -252,11 +251,11 @@ class MetaDataLoader:
         with open(self.predicted_ages_file, "r") as f:
             predicted_ages = json.load(f)
 
-        demo_df["predicted_age"] = demo_df["subject_id"].map(predicted_ages)
-        demo_df = demo_df.dropna(subset=["real_age", "predicted_age"])
-        demo_df["age_error"] = demo_df["real_age"] - demo_df["predicted_age"]
+        demo["predicted_age"] = demo["subject_id"].map(predicted_ages)
+        demo = demo.dropna(subset=["real_age", "predicted_age"])
+        demo["age_error"] = demo["real_age"] - demo["predicted_age"]
 
-        return demo_df[["subject_id", "real_age", "age_error"]]
+        return demo[["subject_id", "real_age", "age_error"]]
 
     def _build_fold_data(self, merged_df: pd.DataFrame) -> Dict[int, FoldData]:
         unique_folds = sorted(merged_df["fold"].unique())
@@ -298,15 +297,8 @@ class MetaDataLoader:
         return fold_data
 
     def _infer_labels(self, df: pd.DataFrame) -> pd.DataFrame:
-        def get_label(base_id: str) -> int:
-            if base_id.startswith("P"):
-                return 1
-            elif base_id.startswith("ACS") or base_id.startswith("NAD"):
-                return 0
-            return -1
-
         df = df.copy()
-        df["label"] = df["base_id"].apply(get_label)
+        df["label"] = df["y_true"].astype(int)
         invalid = df[df["label"] == -1]
         if len(invalid) > 0:
             logger.warning(f"移除 {len(invalid)} 筆無法識別的樣本")

@@ -47,7 +47,8 @@ class MetaConfig:
     eval_method: str = "1by1matched"
     match_level: str = "subject_match"
     eval_unit: str = "eval_by_subject"
-    match_strategy: str = "match_randomly"
+    match_strategy: str = "no_priority"
+    hc_source_mode: str = "ACS"
     partition: str = "ad_vs_hc"
 
     # --- emotion 設定 ---

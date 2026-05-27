@@ -5,7 +5,7 @@ Meta Analysis 匹配評估模組
   eval_strategy (1by1matched / caliper_group)
   × match_level (subject_match / visit_match)
   × eval_unit (eval_by_subject / eval_by_visit)
-  × match_strategy (match_randomly / match_acs_first / match_nad_first)
+  × match_strategy (no_priority / priority_acs / priority_nad)
   × partition (ad_vs_hc / ad_vs_nad / ad_vs_acs / mmse_hilo / casi_hilo)
 
 match_level: subject_match dedup 到 one row per base_id 再 matching;
@@ -40,7 +40,7 @@ PARTITIONS = ["ad_vs_hc", "ad_vs_nad", "ad_vs_acs", "mmse_hilo", "casi_hilo"]
 EVAL_STRATEGIES = ["1by1matched", "caliper_group"]
 MATCH_LEVELS = ["subject_match", "visit_match"]
 EVAL_UNITS = ["eval_by_subject", "eval_by_visit"]
-MATCH_STRATEGIES = ["match_randomly", "match_acs_first", "match_nad_first"]
+MATCH_STRATEGIES = ["no_priority", "priority_acs", "priority_nad"]
 
 PARTITION_KEEP_GROUPS = {
     "ad_vs_hc": None,
@@ -188,9 +188,9 @@ def run_matched_eval_chain(
 
         for match_strat in match_strategies:
             priority = None
-            if match_strat == "match_acs_first":
+            if match_strat == "priority_acs":
                 priority = ["ACS"]
-            elif match_strat == "match_nad_first":
+            elif match_strat == "priority_nad":
                 priority = ["NAD"]
 
             matched_cache = {}
@@ -371,7 +371,7 @@ def _eval_cell(oof_subj, matched_eval, pairs, full_cohort, keep_groups,
     if eval_strat == "caliper_group" and "group" in full_cohort.columns:
         try:
             cal_cohort, age_balance = build_caliper_group(
-                full_cohort, matched_eval, pairs,
+                full_cohort, matched_eval,
                 keep_groups=keep_groups, caliper=caliper,
             )
             if eval_unit == "eval_by_visit":

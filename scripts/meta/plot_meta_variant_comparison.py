@@ -71,16 +71,15 @@ def load_data():
     matched_df = pd.read_csv(matched_path) if matched_path.exists() else pd.DataFrame()
 
     full_rows = []
-    for norm_dir in (cohort_dir / BG_MODE).rglob("fwd"):
-        rel = norm_dir.parent
-        summary = norm_dir / "summary.csv"
-        if not summary.exists():
+    for summary in (cohort_dir / BG_MODE).rglob("summary.csv"):
+        fwd_dir = summary.parent
+        if fwd_dir.name == "_summary":
             continue
-        parts = norm_dir.relative_to(cohort_dir / BG_MODE).parts
-        # emb / asym / photo / reducer / norm / clf / fwd
-        if len(parts) < 7:
+        parts = fwd_dir.relative_to(cohort_dir / BG_MODE).parts
+        # emb / asym / photo / reducer / base_clf / base_param / fwd / norm / clf
+        if len(parts) < 9:
             continue
-        emb, asym, photo, reducer, norm, clf, _ = parts[:7]
+        emb, asym, photo, reducer, base_clf, base_param, _, norm, clf = parts[:9]
         df = pd.read_csv(summary)
         df["asymmetry_variant"] = asym
         df["normalize"] = norm
@@ -255,7 +254,7 @@ def main():
     match_levels = matched_df["match_level"].unique() if not matched_df.empty else []
     eval_units = matched_df["eval_unit"].unique() if not matched_df.empty else []
 
-    match_strategy = "match_acs_first"
+    match_strategy = "priority_acs"
 
     for emb in emb_models:
         for norm in norm_tags:

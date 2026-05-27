@@ -37,7 +37,7 @@ COHORT_MODE = "p_first_cdrall_hc_all_cdrall_or_mmseall"
 BG_MODE = "background"
 PHOTO_MODE = "mean"
 REDUCER = "no_drop"
-MATCH_STRATEGY = "match_acs_first"
+MATCH_STRATEGY = "priority_acs"
 BASE_CLASSIFIER = "logistic"
 BASE_CLASSIFIER_PARAM = "C_1"
 
@@ -54,7 +54,7 @@ ASYMMETRY_VARIANTS = [
 # Age predictions (cohort-specific)
 spec = cohort_spec_from_name(cohort_name(COHORT_MODE))
 PREDICTED_AGES = (
-    WORKSPACE_DIR / "age" / "predictions"
+    WORKSPACE_DIR / "age" / "analysis"
     / spec.visit_dir / spec.cdr_mmse_dir
     / "correction" / "calibration" / "predicted_ages_calibrated.json"
 )
@@ -75,12 +75,20 @@ def setup_logging():
 
 
 def build_output_dir(emb_model, asymmetry_variant, meta_clf, normalize=None):
-    """Build embedding-style output directory for meta analysis."""
+    """Build meta analysis output directory.
+
+    Layout:
+      meta/analysis/<visit>/<cdr>/<bg>/<emb>/<asym>/<photo>/<reducer>/
+        <base_clf>/<base_param>/fwd/<normalize>/<meta_clf>/
+    """
+    from src.config import META_ANALYSIS_DIR
     norm_tag = normalize if normalize else "raw"
     return (
-        META_ROOT / spec.visit_dir / spec.cdr_mmse_dir
+        META_ANALYSIS_DIR / spec.visit_dir / spec.cdr_mmse_dir
         / BG_MODE / emb_model / asymmetry_variant
-        / PHOTO_MODE / REDUCER / norm_tag / meta_clf / "fwd"
+        / PHOTO_MODE / REDUCER
+        / BASE_CLASSIFIER / BASE_CLASSIFIER_PARAM / "fwd"
+        / norm_tag / meta_clf
     )
 
 

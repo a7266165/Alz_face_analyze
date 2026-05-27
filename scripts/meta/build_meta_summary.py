@@ -36,6 +36,8 @@ REDUCER = "no_drop"
 EMB_MODELS = ["arcface"]
 META_CLASSIFIERS = ["tabpfn", "logistic", "xgboost"]
 NORMALIZE_OPTIONS = ["raw", "minmax"]
+BASE_CLASSIFIER = "logistic"
+BASE_CLASSIFIER_PARAM = "C_1"
 ASYMMETRY_VARIANTS = [
     "difference",
     "absolute_difference",
@@ -164,7 +166,9 @@ def main():
                     fwd_dir = (
                         META_ROOT / spec.visit_dir / spec.cdr_mmse_dir
                         / BG_MODE / emb_model / asym_variant
-                        / PHOTO_MODE / REDUCER / norm_tag / meta_clf / "fwd"
+                        / PHOTO_MODE / REDUCER
+                        / BASE_CLASSIFIER / BASE_CLASSIFIER_PARAM / "fwd"
+                        / norm_tag / meta_clf
                     )
                     if not fwd_dir.exists():
                         print(f"SKIP {fwd_dir}")
@@ -179,21 +183,19 @@ def main():
                     save_hierarchical_summaries(fwd_dir, full_df)
 
     combined_root = META_ROOT / spec.visit_dir / spec.cdr_mmse_dir
-    all_fwd_dirs = list(combined_root.rglob("fwd"))
     all_rows = []
-    for fwd_dir in all_fwd_dirs:
+    for summary_file in combined_root.rglob("_summary/all_metrics.csv"):
+        fwd_dir = summary_file.parent.parent
         rel = fwd_dir.relative_to(combined_root)
         parts = rel.parts
-        # bg / emb / asym / photo / reducer / norm / clf / fwd
-        if len(parts) < 8:
+        # bg / emb / asym / photo / reducer / base_clf / base_param / fwd / norm / clf
+        if len(parts) < 10:
             continue
-        bg, emb, asym, photo, reducer, norm, clf, _ = parts[:8]
-        summary_file = fwd_dir / "_summary" / "all_metrics.csv"
-        if summary_file.exists():
-            df = pd.read_csv(summary_file)
-            df["asymmetry_variant"] = asym
-            df["normalize"] = norm
-            all_rows.append(df)
+        bg, emb, asym, photo, reducer, base_clf, base_param, _, norm, clf = parts[:10]
+        df = pd.read_csv(summary_file)
+        df["asymmetry_variant"] = asym
+        df["normalize"] = norm
+        all_rows.append(df)
 
     if all_rows:
         combined = pd.concat(all_rows, ignore_index=True)
