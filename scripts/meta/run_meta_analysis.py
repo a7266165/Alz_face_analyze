@@ -27,6 +27,7 @@ from src.config import (
     cohort_spec_from_name,
 )
 from src.meta import MetaConfig, MetaPipeline
+from src.meta.evaluation.matched_eval import build_matching_cache
 
 # ========== 路徑設定 ==========
 
@@ -118,6 +119,12 @@ def main():
         logger.error(f"找不到預測年齡檔案: {PREDICTED_AGES}")
         sys.exit(1)
 
+    logger.info("建構全局 matching cache...")
+    matching_cache = build_matching_cache(
+        demographics_dir=DEMOGRAPHICS_DIR,
+        cohort_mode=COHORT_MODE,
+    )
+
     all_summaries = []
 
     for bg_mode in BG_MODES:
@@ -176,6 +183,7 @@ def main():
                                 output_dir=output_dir,
                                 config=config,
                                 asymmetry_variant=asym_variant,
+                                matching_cache=matching_cache,
                             )
 
                             try:

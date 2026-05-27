@@ -1,19 +1,15 @@
 """
 Meta Analysis 匹配評估模組
 
-複製 embedding pipeline 的 eval chain：
+eval chain:
   eval_strategy (1by1matched / caliper_group)
   × match_level (subject_match / visit_match)
   × eval_unit (eval_by_subject / eval_by_visit)
   × match_strategy (no_priority / priority_acs / priority_nad)
   × partition (ad_vs_hc / ad_vs_nad / ad_vs_acs / mmse_hilo / casi_hilo)
 
-match_level: subject_match dedup 到 one row per base_id 再 matching;
-             visit_match 每個 visit 獨立配對。
-eval_unit:   eval_by_subject 用 subject-level score;
-             eval_by_visit 將 subject score 擴展到 visit level 再算 metrics。
-
-依賴 src/cohort.py 的 match_1to1 和 build_caliper_group。
+Matching 只依賴 demographics (Age)，與 embedding model / features 無關，
+所以用 build_matching_cache() 在整個 sweep 最外層做一次。
 """
 
 import json
@@ -126,10 +122,93 @@ def _write_json(path, data):
         json.dump(data, f, indent=2, ensure_ascii=False, default=str)
 
 
-def run_matched_eval_chain(
-    oof_scores: pd.DataFrame,
+# ====================================================================
+# Global matching cache — call once, reuse across all runs
+# ====================================================================
+
+def build_matching_cache(
     demographics_dir: Path,
     cohort_mode: str,
+    partitions: List[str] = None,
+    match_levels: List[str] = None,
+    match_strategies: List[str] = None,
+    caliper: float = 1.0,
+    seed: int = 42,
+) -> dict:
+    """Build all matching cohorts upfront. Returns cache dict.
+
+    Only depends on demographics (Age), independent of embedding/features.
+    AD partitions share one matching per (match_strat, match_level).
+    Hilo partitions ignore match_strategy.
+
+    Total calls: AD 3×2=6 + hilo 2×2=4 = 10 linear_sum_assignment.
+    """
+    if partitions is None:
+        partitions = list(PARTITIONS)
+    if match_levels is None:
+        match_levels = list(MATCH_LEVELS)
+    if match_strategies is None:
+        match_strategies = list(MATCH_STRATEGIES)
+
+    demo_dfs = []
+    for csv_name in ["ACS.csv", "NAD.csv", "P.csv"]:
+        p = demographics_dir / csv_name
+        if p.exists():
+            demo_dfs.append(pd.read_csv(p))
+    if not demo_dfs:
+        logger.error(f"找不到人口學資料: {demographics_dir}")
+        return {}
+    demo = pd.concat(demo_dfs, ignore_index=True)
+
+    cache = {"demo": demo}
+
+    has_ad = bool(set(partitions) & AD_VS_PARTITIONS)
+    has_hilo = [p for p in partitions if p in HILO_PARTITIONS]
+
+    for ml_name in match_levels:
+        ml_param = "subject" if ml_name == "subject_match" else "visit"
+
+        if has_ad:
+            for match_strat in match_strategies:
+                priority = None
+                if match_strat == "priority_acs":
+                    priority = ["ACS"]
+                elif match_strat == "priority_nad":
+                    priority = ["NAD"]
+                try:
+                    full, matched, pairs = _build_ad_partition(
+                        demo, cohort_mode, caliper, seed, priority,
+                        match_level=ml_param,
+                    )
+                    cache[("ad", match_strat, ml_name)] = (full, matched, pairs)
+                    logger.info(f"  Matching: AD/{match_strat}/{ml_name} → {len(matched)} rows")
+                except Exception as e:
+                    logger.warning(f"  Matching 失敗: AD/{match_strat}/{ml_name}: {e}")
+
+        for hilo_part in has_hilo:
+            metric = "MMSE" if hilo_part == "mmse_hilo" else "CASI"
+            try:
+                full, matched, pairs = _build_hilo_partition(
+                    demo, cohort_mode, caliper, seed, metric,
+                    match_level=ml_param,
+                )
+                cache[(hilo_part, ml_name)] = (full, matched, pairs)
+                logger.info(f"  Matching: {hilo_part}/{ml_name} → {len(matched)} rows")
+            except Exception as e:
+                logger.warning(f"  Matching 失敗: {hilo_part}/{ml_name}: {e}")
+
+    n_entries = len([k for k in cache if k != "demo"])
+    logger.info(f"Matching cache 建構完成: {n_entries} entries")
+    return cache
+
+
+# ====================================================================
+# Eval chain — uses pre-built matching cache
+# ====================================================================
+
+def run_matched_eval_chain(
+    oof_scores: pd.DataFrame,
+    matching_cache: dict,
     output_dir: Path,
     partitions: List[str] = None,
     eval_strategies: List[str] = None,
@@ -140,14 +219,14 @@ def run_matched_eval_chain(
     seed: int = 42,
     meta_info: Dict[str, Any] = None,
 ):
-    """Run the full eval chain on meta OOF scores.
+    """Run eval chain using pre-built matching cache.
 
     Parameters
     ----------
     oof_scores : DataFrame
         Subject-level meta OOF. Columns: base_id, y_score, y_true, subject_id.
-    demographics_dir : Path
-        Directory with ACS.csv, NAD.csv, P.csv (columns: ID, Age, ...)
+    matching_cache : dict
+        From build_matching_cache(). Contains matched cohorts + demographics.
     """
     if partitions is None:
         partitions = list(PARTITIONS)
@@ -160,15 +239,10 @@ def run_matched_eval_chain(
     if match_strategies is None:
         match_strategies = list(MATCH_STRATEGIES)
 
-    demo_dfs = []
-    for csv_name in ["ACS.csv", "NAD.csv", "P.csv"]:
-        p = demographics_dir / csv_name
-        if p.exists():
-            demo_dfs.append(pd.read_csv(p))
-    if not demo_dfs:
-        logger.error(f"找不到人口學資料: {demographics_dir}")
+    demo = matching_cache.get("demo")
+    if demo is None:
+        logger.error("matching_cache 缺少 demo")
         return
-    demo = pd.concat(demo_dfs, ignore_index=True)
 
     oof = oof_scores.copy()
     if "base_id" not in oof.columns and "subject_id" in oof.columns:
@@ -181,42 +255,6 @@ def run_matched_eval_chain(
     oof_subj = oof[["base_id", "y_score"]].drop_duplicates("base_id")
 
     results_all = []
-
-    # ── Phase 1: build matching (cache per match_strat × match_level) ──
-    # AD partitions share the same matching; only keep_groups filter differs.
-    matching_cache = {}
-    for match_strat in match_strategies:
-        priority = None
-        if match_strat == "priority_acs":
-            priority = ["ACS"]
-        elif match_strat == "priority_nad":
-            priority = ["NAD"]
-
-        for ml_name in match_levels:
-            ml_param = "subject" if ml_name == "subject_match" else "visit"
-            cache_key = (match_strat, ml_name)
-
-            try:
-                ad_full, ad_matched, ad_pairs = _build_ad_partition(
-                    demo, cohort_mode, caliper, seed, priority,
-                    match_level=ml_param,
-                )
-                matching_cache[("ad", cache_key)] = (ad_full, ad_matched, ad_pairs)
-            except Exception as e:
-                logger.warning(f"    AD matching 失敗 {match_strat}/{ml_name}: {e}")
-
-            for hilo_part in [p for p in partitions if p in HILO_PARTITIONS]:
-                metric = "MMSE" if hilo_part == "mmse_hilo" else "CASI"
-                try:
-                    h_full, h_matched, h_pairs = _build_hilo_partition(
-                        demo, cohort_mode, caliper, seed, metric,
-                        match_level=ml_param,
-                    )
-                    matching_cache[(hilo_part, cache_key)] = (h_full, h_matched, h_pairs)
-                except Exception as e:
-                    logger.warning(f"    {hilo_part} matching 失敗 {match_strat}/{ml_name}: {e}")
-
-    # ── Phase 2: evaluate all cells ──
     saved_cohorts = set()
 
     for partition in partitions:
@@ -225,11 +263,12 @@ def run_matched_eval_chain(
 
         for match_strat in match_strategies:
             for ml_name in match_levels:
-                cache_key = (match_strat, ml_name)
                 if partition in AD_VS_PARTITIONS:
-                    entry = matching_cache.get(("ad", cache_key))
+                    entry = matching_cache.get(("ad", match_strat, ml_name))
+                elif partition in HILO_PARTITIONS:
+                    entry = matching_cache.get((partition, ml_name))
                 else:
-                    entry = matching_cache.get((partition, cache_key))
+                    continue
                 if entry is None:
                     continue
 
@@ -294,11 +333,6 @@ def run_matched_eval_chain(
 
 def _build_ad_partition(demo, cohort_mode, caliper, seed, priority_groups,
                         match_level="subject"):
-    """Build AD vs HC cohort with 1:1 matching.
-
-    match_level="subject": dedup to one row per base_id before matching.
-    match_level="visit": each visit is an independent candidate.
-    """
     cols = ["ID", "Age"]
     for extra in ["MMSE", "CASI"]:
         if extra in demo.columns:
@@ -332,7 +366,6 @@ def _build_ad_partition(demo, cohort_mode, caliper, seed, priority_groups,
 
 def _build_hilo_partition(demo, cohort_mode, caliper, seed, metric,
                           match_level="subject"):
-    """Build MMSE/CASI hi-lo cohort."""
     metric_col = metric.upper() if metric.upper() in demo.columns else metric
     if metric_col not in demo.columns:
         raise FileNotFoundError(f"Demographics 缺少 {metric} 欄位")
@@ -365,12 +398,6 @@ def _build_hilo_partition(demo, cohort_mode, caliper, seed, metric,
 
 def _eval_cell(oof_subj, matched_eval, pairs, full_cohort, keep_groups,
                demo, eval_strat, match_level, eval_unit, caliper, seed):
-    """Evaluate one cell of the eval chain.
-
-    oof_subj: subject-level scores (one row per base_id).
-    For eval_by_visit: expand to visit level via demographics.
-    """
-
     if eval_unit == "eval_by_visit":
         matched_bids = set(matched_eval["base_id"].unique())
         demo_subset = demo[["ID", "Age"]].copy()

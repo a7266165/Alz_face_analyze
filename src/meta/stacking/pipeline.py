@@ -27,10 +27,12 @@ class MetaPipeline:
         output_dir: Path,
         config: Optional[MetaConfig] = None,
         asymmetry_variant: str = "none",
+        matching_cache: Optional[dict] = None,
     ):
         self.output_dir = Path(output_dir)
         self.config = config or MetaConfig()
         self.asymmetry_variant = asymmetry_variant
+        self.matching_cache = matching_cache
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
     def run(self) -> pd.DataFrame:
@@ -104,7 +106,7 @@ class MetaPipeline:
                                 normalize=self.config.normalize)
         train_result = trainer.train(dataset)
 
-        if self.config.demographics_dir:
+        if self.matching_cache:
             self._run_eval_chain(emb_model, meta_clf_name, train_result)
 
         return {
@@ -142,8 +144,7 @@ class MetaPipeline:
         try:
             run_matched_eval_chain(
                 oof_scores=oof_for_eval,
-                demographics_dir=self.config.demographics_dir,
-                cohort_mode=self.config.cohort_mode,
+                matching_cache=self.matching_cache,
                 output_dir=self.output_dir,
                 seed=self.config.random_seed,
                 meta_info={
