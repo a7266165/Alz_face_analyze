@@ -165,12 +165,23 @@ def run_mean_correction(
 
 
 def main() -> None:
+    import argparse
+    parser = argparse.ArgumentParser(description="Age correction pipelines")
+    parser.add_argument(
+        "--cohort-mode", default="all",
+        help="Cohort mode: 'all' (default, backward-compat) or any of the "
+             "16 canonical names (e.g. p_first_cdr05_hc_all_cdrall_or_mmseall)",
+    )
+    args = parser.parse_args()
+    cohort_mode = args.cohort_mode
+
     logger.info(f"Demographics: {DEMOGRAPHICS_DIR}")
     logger.info(f"Predicted ages: {PREDICTED_AGES_FILE}")
     logger.info(f"Output root: {CORRECTION_DIR}")
+    logger.info(f"Cohort mode: {cohort_mode}")
 
     df_acs, df_nad, df_p = load_demographics_for_calibration(
-        DEMOGRAPHICS_DIR, PREDICTED_AGES_FILE, cohort_mode="all",
+        DEMOGRAPHICS_DIR, PREDICTED_AGES_FILE, cohort_mode=cohort_mode,
     )
     df_matched = pd.concat([df_acs, df_nad, df_p], ignore_index=True)
 
