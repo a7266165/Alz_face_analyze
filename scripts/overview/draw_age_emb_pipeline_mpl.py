@@ -1540,13 +1540,6 @@ def build_v2():
     for sx in scx:
         line(ax, X_ASYM, y_pa + NODE_H / 2, sx, y_pd - NODE_H / 2)
 
-    roc_w = 3.5
-    cluster(ax, X_ASYM, (c4_top + c4_bot) / 2,
-            roc_w + 0.6, c4_bot - c4_top, C_AOUT['bg'])
-    node(ax, X_ASYM, y_clf, roc_w, NODE_H, 'ROC / AUC', C_AOUT['nd'])
-    for sx in scx:
-        line(ax, sx, y_pd + NODE_H / 2, X_ASYM, y_clf - NODE_H / 2)
-
     # Asymmetry Fwd / Rev
     xl_a = X_ASYM - (cw + gap_col) / 2
     xr_a = X_ASYM + (cw + gap_col) / 2
@@ -1560,8 +1553,9 @@ def build_v2():
     node(ax, xr_a, y_r2, nw_col, NODE_H, "Predict Full Cohort", CR['nd'])
     node(ax, xr_a, y_r3, nw_col, NODE_H,
          "Matched OOF Eval\nUnmatched Eval", CR['nd'])
-    line(ax, X_ASYM, y_clf + NODE_H / 2, xl_a, y_r1 - NODE_H / 2)
-    line(ax, X_ASYM, y_clf + NODE_H / 2, xr_a, y_r1 - NODE_H / 2)
+    for sx in scx:
+        line(ax, sx, y_pd + NODE_H / 2, xl_a, y_r1 - NODE_H / 2)
+        line(ax, sx, y_pd + NODE_H / 2, xr_a, y_r1 - NODE_H / 2)
     for col in [xl_a, xr_a]:
         for ya, yb in [(y_r1, y_r2), (y_r2, y_r3)]:
             line(ax, col, ya + NODE_H / 2, col, yb - NODE_H / 2)
@@ -2064,13 +2058,6 @@ def build_v2_show():
     for sx in scx:
         line(ax, X_ASYM, y_pa + NODE_H / 2, sx, y_pd - NODE_H / 2)
 
-    roc_w = 3.5
-    _cl(ax, X_ASYM, (c4_top + c4_bot) / 2,
-        roc_w + 0.6, c4_bot - c4_top, C_AOUT['bg'])
-    _n(ax, X_ASYM, y_clf, roc_w, NODE_H, 'ROC / AUC', C_AOUT['nd'])
-    for sx in scx:
-        line(ax, sx, y_pd + NODE_H / 2, X_ASYM, y_clf - NODE_H / 2)
-
     # Asymmetry Fwd (on) / Rev (off)
     xl_a = X_ASYM - (cw + gap_col) / 2
     xr_a = X_ASYM + (cw + gap_col) / 2
@@ -2085,8 +2072,9 @@ def build_v2_show():
        "Predict Full Cohort", CR['nd'], False)
     _n(ax, xr_a, y_r3, nw_col, NODE_H,
        "Matched OOF Eval\nUnmatched Eval", CR['nd'], False)
-    line(ax, X_ASYM, y_clf + NODE_H / 2, xl_a, y_r1 - NODE_H / 2)
-    line(ax, X_ASYM, y_clf + NODE_H / 2, xr_a, y_r1 - NODE_H / 2)
+    for sx in scx:
+        line(ax, sx, y_pd + NODE_H / 2, xl_a, y_r1 - NODE_H / 2)
+        line(ax, sx, y_pd + NODE_H / 2, xr_a, y_r1 - NODE_H / 2)
     for col in [xl_a, xr_a]:
         for ya, yb in [(y_r1, y_r2), (y_r2, y_r3)]:
             line(ax, col, ya + NODE_H / 2, col, yb - NODE_H / 2)
