@@ -1525,12 +1525,27 @@ def build_v2():
     for fx in x_ft_asym:
         line(ax, fx, y_ft + NODE_H / 2, X_ASYM, y_pa - NODE_H / 2)
 
-    l2_w = asym_nw + 2.0
+    nw_sc = 3.0; gap_sc = 0.4
+    total_sc = 3 * nw_sc + 2 * gap_sc
     cluster(ax, X_ASYM, (c_pd_top + c_pd_bot) / 2,
-            l2_w + 0.6, c_pd_bot - c_pd_top, C_ASY['bg'])
-    node(ax, X_ASYM, y_pd, l2_w, NODE_H,
-         r'asymmetry = $\sqrt{\Sigma_i\, f_i^2}$', C_ASY['nd'])
-    line(ax, X_ASYM, y_pa + NODE_H / 2, X_ASYM, y_pd - NODE_H / 2)
+            total_sc + 0.6, c_pd_bot - c_pd_top, C_ASY['bg'])
+    scx = [X_ASYM - (nw_sc + gap_sc), X_ASYM, X_ASYM + (nw_sc + gap_sc)]
+    sc_labels = [
+        'L2 Norm\n$\\sqrt{\\Sigma_i f_i^2}$',
+        'Centroid Distance\n$\\Delta\\cos(x, \\mu)$',
+        'LDA Projection\nFisher 1D',
+    ]
+    for x, lab in zip(scx, sc_labels):
+        node(ax, x, y_pd, nw_sc, NODE_H, lab, C_ASY['nd'], fs=FS_SM)
+    for sx in scx:
+        line(ax, X_ASYM, y_pa + NODE_H / 2, sx, y_pd - NODE_H / 2)
+
+    roc_w = 3.5
+    cluster(ax, X_ASYM, (c4_top + c4_bot) / 2,
+            roc_w + 0.6, c4_bot - c4_top, C_AOUT['bg'])
+    node(ax, X_ASYM, y_clf, roc_w, NODE_H, 'ROC / AUC', C_AOUT['nd'])
+    for sx in scx:
+        line(ax, sx, y_pd + NODE_H / 2, X_ASYM, y_clf - NODE_H / 2)
 
     # Asymmetry Fwd / Rev
     xl_a = X_ASYM - (cw + gap_col) / 2
@@ -1545,8 +1560,8 @@ def build_v2():
     node(ax, xr_a, y_r2, nw_col, NODE_H, "Predict Full Cohort", CR['nd'])
     node(ax, xr_a, y_r3, nw_col, NODE_H,
          "Matched OOF Eval\nUnmatched Eval", CR['nd'])
-    line(ax, X_ASYM, y_pd + NODE_H / 2, xl_a, y_r1 - NODE_H / 2)
-    line(ax, X_ASYM, y_pd + NODE_H / 2, xr_a, y_r1 - NODE_H / 2)
+    line(ax, X_ASYM, y_clf + NODE_H / 2, xl_a, y_r1 - NODE_H / 2)
+    line(ax, X_ASYM, y_clf + NODE_H / 2, xr_a, y_r1 - NODE_H / 2)
     for col in [xl_a, xr_a]:
         for ya, yb in [(y_r1, y_r2), (y_r2, y_r3)]:
             line(ax, col, ya + NODE_H / 2, col, yb - NODE_H / 2)
@@ -2034,12 +2049,27 @@ def build_v2_show():
     for fx in x_ft_asym:
         line(ax, fx, y_ft + NODE_H / 2, X_ASYM, y_pa - NODE_H / 2)
 
-    l2_w = asym_nw + 2.0
+    nw_sc = 3.0; gap_sc = 0.4
+    total_sc = 3 * nw_sc + 2 * gap_sc
     _cl(ax, X_ASYM, (c_pd_top + c_pd_bot) / 2,
-        l2_w + 0.6, c_pd_bot - c_pd_top, C_ASY['bg'])
-    _n(ax, X_ASYM, y_pd, l2_w, NODE_H,
-       r'asymmetry = $\sqrt{\Sigma_i\, f_i^2}$', C_ASY['nd'])
-    line(ax, X_ASYM, y_pa + NODE_H / 2, X_ASYM, y_pd - NODE_H / 2)
+        total_sc + 0.6, c_pd_bot - c_pd_top, C_ASY['bg'])
+    scx = [X_ASYM - (nw_sc + gap_sc), X_ASYM, X_ASYM + (nw_sc + gap_sc)]
+    sc_labels = [
+        'L2 Norm\n$\\sqrt{\\Sigma_i f_i^2}$',
+        'Centroid Distance\n$\\Delta\\cos(x, \\mu)$',
+        'LDA Projection\nFisher 1D',
+    ]
+    for x, lab in zip(scx, sc_labels):
+        _n(ax, x, y_pd, nw_sc, NODE_H, lab, C_ASY['nd'])
+    for sx in scx:
+        line(ax, X_ASYM, y_pa + NODE_H / 2, sx, y_pd - NODE_H / 2)
+
+    roc_w = 3.5
+    _cl(ax, X_ASYM, (c4_top + c4_bot) / 2,
+        roc_w + 0.6, c4_bot - c4_top, C_AOUT['bg'])
+    _n(ax, X_ASYM, y_clf, roc_w, NODE_H, 'ROC / AUC', C_AOUT['nd'])
+    for sx in scx:
+        line(ax, sx, y_pd + NODE_H / 2, X_ASYM, y_clf - NODE_H / 2)
 
     # Asymmetry Fwd (on) / Rev (off)
     xl_a = X_ASYM - (cw + gap_col) / 2
@@ -2055,8 +2085,8 @@ def build_v2_show():
        "Predict Full Cohort", CR['nd'], False)
     _n(ax, xr_a, y_r3, nw_col, NODE_H,
        "Matched OOF Eval\nUnmatched Eval", CR['nd'], False)
-    line(ax, X_ASYM, y_pd + NODE_H / 2, xl_a, y_r1 - NODE_H / 2)
-    line(ax, X_ASYM, y_pd + NODE_H / 2, xr_a, y_r1 - NODE_H / 2)
+    line(ax, X_ASYM, y_clf + NODE_H / 2, xl_a, y_r1 - NODE_H / 2)
+    line(ax, X_ASYM, y_clf + NODE_H / 2, xr_a, y_r1 - NODE_H / 2)
     for col in [xl_a, xr_a]:
         for ya, yb in [(y_r1, y_r2), (y_r2, y_r3)]:
             line(ax, col, ya + NODE_H / 2, col, yb - NODE_H / 2)
