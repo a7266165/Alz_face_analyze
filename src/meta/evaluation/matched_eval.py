@@ -54,7 +54,7 @@ AD_VS_PARTITIONS = {"ad_vs_hc", "ad_vs_nad", "ad_vs_acs"}
 HILO_PARTITIONS = {"mmse_hilo", "casi_hilo"}
 
 
-def bootstrap_auc_ci(y_true, y_prob, n=1000, seed=42):
+def bootstrap_auc_ci(y_true, y_prob, n=100, seed=42):
     rng = np.random.RandomState(seed)
     aucs = []
     for _ in range(n):
@@ -68,7 +68,7 @@ def bootstrap_auc_ci(y_true, y_prob, n=1000, seed=42):
     return float(np.percentile(aucs, 2.5)), float(np.percentile(aucs, 97.5))
 
 
-def compute_clf_metrics(y_true, y_score, threshold=0.5, n_bootstrap=1000,
+def compute_clf_metrics(y_true, y_score, threshold=0.5, n_bootstrap=100,
                         seed=42):
     y_pred = (y_score >= threshold).astype(int)
     if len(np.unique(y_true)) > 1:
@@ -182,62 +182,79 @@ def run_matched_eval_chain(
 
     results_all = []
 
+    # ── Phase 1: build matching (cache per match_strat × match_level) ──
+    # AD partitions share the same matching; only keep_groups filter differs.
+    matching_cache = {}
+    for match_strat in match_strategies:
+        priority = None
+        if match_strat == "priority_acs":
+            priority = ["ACS"]
+        elif match_strat == "priority_nad":
+            priority = ["NAD"]
+
+        for ml_name in match_levels:
+            ml_param = "subject" if ml_name == "subject_match" else "visit"
+            cache_key = (match_strat, ml_name)
+
+            try:
+                ad_full, ad_matched, ad_pairs = _build_ad_partition(
+                    demo, cohort_mode, caliper, seed, priority,
+                    match_level=ml_param,
+                )
+                matching_cache[("ad", cache_key)] = (ad_full, ad_matched, ad_pairs)
+            except Exception as e:
+                logger.warning(f"    AD matching 失敗 {match_strat}/{ml_name}: {e}")
+
+            for hilo_part in [p for p in partitions if p in HILO_PARTITIONS]:
+                metric = "MMSE" if hilo_part == "mmse_hilo" else "CASI"
+                try:
+                    h_full, h_matched, h_pairs = _build_hilo_partition(
+                        demo, cohort_mode, caliper, seed, metric,
+                        match_level=ml_param,
+                    )
+                    matching_cache[(hilo_part, cache_key)] = (h_full, h_matched, h_pairs)
+                except Exception as e:
+                    logger.warning(f"    {hilo_part} matching 失敗 {match_strat}/{ml_name}: {e}")
+
+    # ── Phase 2: evaluate all cells ──
+    saved_cohorts = set()
+
     for partition in partitions:
         logger.info(f"  Partition: {partition}")
         keep_groups = PARTITION_KEEP_GROUPS.get(partition)
 
         for match_strat in match_strategies:
-            priority = None
-            if match_strat == "priority_acs":
-                priority = ["ACS"]
-            elif match_strat == "priority_nad":
-                priority = ["NAD"]
-
-            matched_cache = {}
             for ml_name in match_levels:
-                ml_param = "subject" if ml_name == "subject_match" else "visit"
-                try:
-                    if partition in AD_VS_PARTITIONS:
-                        full, matched, pairs = _build_ad_partition(
-                            demo, cohort_mode, caliper, seed, priority,
-                            match_level=ml_param,
-                        )
-                    elif partition in HILO_PARTITIONS:
-                        metric = "MMSE" if partition == "mmse_hilo" else "CASI"
-                        full, matched, pairs = _build_hilo_partition(
-                            demo, cohort_mode, caliper, seed, metric,
-                            match_level=ml_param,
-                        )
-                    else:
-                        continue
-                except Exception as e:
-                    logger.warning(f"    跳過 {partition}/{match_strat}/{ml_name}: {e}")
+                cache_key = (match_strat, ml_name)
+                if partition in AD_VS_PARTITIONS:
+                    entry = matching_cache.get(("ad", cache_key))
+                else:
+                    entry = matching_cache.get((partition, cache_key))
+                if entry is None:
                     continue
+
+                full, matched_raw, pairs = entry
 
                 if keep_groups is not None:
                     target_groups = set(keep_groups) - {"P"}
-                    target_pair_ids = matched[
-                        matched["group"].isin(target_groups)
+                    target_pair_ids = matched_raw[
+                        matched_raw["group"].isin(target_groups)
                     ]["pair_id"].unique()
-                    matched_eval = matched[matched["pair_id"].isin(target_pair_ids)]
+                    matched_eval = matched_raw[matched_raw["pair_id"].isin(target_pair_ids)]
                 else:
-                    matched_eval = matched
+                    matched_eval = matched_raw
 
-                matched_cache[ml_name] = (full, matched_eval, pairs)
+                matched_bids = set(matched_eval["base_id"].unique())
+                if len(matched_bids) < 5:
+                    continue
 
-            for eval_strat in eval_strategies:
-                for match_level in match_levels:
-                    if match_level not in matched_cache:
-                        continue
-                    full, matched_eval, pairs = matched_cache[match_level]
+                cohort_key = (match_strat, ml_name, partition)
+                cohort_saved = cohort_key in saved_cohorts
 
-                    matched_bids = set(matched_eval["base_id"].unique())
-                    if len(matched_bids) < 5:
-                        continue
-
+                for eval_strat in eval_strategies:
                     for eval_unit in eval_units:
                         cell_dir = (
-                            output_dir / eval_strat / match_level
+                            output_dir / eval_strat / ml_name
                             / eval_unit / match_strat / partition
                         )
                         cell_dir.mkdir(parents=True, exist_ok=True)
@@ -246,7 +263,7 @@ def run_matched_eval_chain(
                             cell_result = _eval_cell(
                                 oof_subj, matched_eval, pairs,
                                 full, keep_groups, demo,
-                                eval_strat, match_level, eval_unit,
+                                eval_strat, ml_name, eval_unit,
                                 caliper, seed,
                             )
                         except Exception as e:
@@ -255,17 +272,20 @@ def run_matched_eval_chain(
 
                         cell_result["partition"] = partition
                         cell_result["eval_strategy"] = eval_strat
-                        cell_result["match_level"] = match_level
+                        cell_result["match_level"] = ml_name
                         cell_result["eval_unit"] = eval_unit
                         cell_result["match_strategy"] = match_strat
                         if meta_info:
                             cell_result.update(meta_info)
 
                         _write_json(cell_dir / "metrics.json", cell_result)
-                        matched_eval.to_csv(
-                            cell_dir / "matched_cohort.csv",
-                            index=False, encoding="utf-8-sig",
-                        )
+
+                        if not cohort_saved:
+                            matched_eval.to_csv(
+                                cell_dir / "matched_cohort.csv",
+                                index=False, encoding="utf-8-sig",
+                            )
+                            saved_cohorts.add(cohort_key)
 
                         results_all.append(cell_result)
 
