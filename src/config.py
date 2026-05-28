@@ -71,18 +71,18 @@ _AGE_DEFAULT_ANALYSIS = AGE_ANALYSIS_DIR / "P_first_HC_first" / "P_cdr05_HC_cdra
 
 PREDICTED_AGES_FILE = _AGE_DEFAULT_ANALYSIS / "predicted_ages.json"
 
-# Error 子樹（校正前分析）
-AGE_ERROR_DIR = _AGE_DEFAULT_ANALYSIS / "error"
-AGE_ERROR_SCATTER_DIR = AGE_ERROR_DIR / "scatter"
-AGE_ERROR_STAT_DIR = AGE_ERROR_DIR / "stat"
-AGE_ERROR_LINES_DIR = AGE_ERROR_DIR / "lines"
+# 視覺化子樹（直接在 cohort 下，不再有 error/ 層）
+AGE_SCATTER_DIR = _AGE_DEFAULT_ANALYSIS / "scatter"
+AGE_STAT_DIR = _AGE_DEFAULT_ANALYSIS / "stat"
+AGE_LINES_DIR = _AGE_DEFAULT_ANALYSIS / "lines"
+AGE_HISTOGRAM_DIR = _AGE_DEFAULT_ANALYSIS / "histogram"
+AGE_VIOLIN_DIR = _AGE_DEFAULT_ANALYSIS / "violin"
 
 # Correction 子樹
 CORRECTION_DIR = _AGE_DEFAULT_ANALYSIS / "correction"
 CALIBRATION_DIR = CORRECTION_DIR / "calibration"
 BOOTSTRAP_DIR = CORRECTION_DIR / "bootstrap_correction"
 MEAN_CORRECTION_DIR = CORRECTION_DIR / "mean_correction"
-CORRECTION_LINES_DIR = CORRECTION_DIR / "lines"
 PREDICTED_AGES_CALIBRATED_FILE = CALIBRATION_DIR / "predicted_ages_calibrated.json"
 
 # -----------------------------------------------------------------------------

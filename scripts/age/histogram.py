@@ -92,8 +92,8 @@ def run(cohort_mode, priority_groups=None):
         fontsize=12)
     fig.tight_layout(rect=[0, 0, 1, 0.93])
 
-    out_dir = (WORKSPACE_DIR / "age" / "stat"
-               / spec.visit_dir / spec.cdr_mmse_dir)
+    out_dir = (WORKSPACE_DIR / "age" / "analysis"
+               / spec.visit_dir / spec.cdr_mmse_dir / "histogram")
     out_dir.mkdir(parents=True, exist_ok=True)
 
     fname = f"age_hist_before_after_matching{priority_tag}.png"

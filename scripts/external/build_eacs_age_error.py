@@ -3,9 +3,8 @@
 
 Prerequisites：
   - data/demographics/EACS.csv（含 Age 欄，從檔名回推）
-  - workspace/age/predictions/<default-cohort>/predicted_ages{_calibrated,}.json
-    （以 src.config.AGE_PREDICTION_DIR 為準；
-    優先用 calibrated 版本；無則用 raw）
+  - workspace/age/analysis/<default-cohort>/predicted_ages{_calibrated,}.json
+    （優先用 calibrated 版本；無則用 raw）
 
 Outputs：
   workspace/age/predictions/<default-cohort>/eacs_age_error.csv
@@ -23,12 +22,12 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from src.config import (
     DEMOGRAPHICS_DIR,
-    AGE_ERROR_STAT_DIR,
+    AGE_STAT_DIR,
     PREDICTED_AGES_FILE,
     PREDICTED_AGES_CALIBRATED_FILE,
 )
 
-OUTPUT_CSV = AGE_ERROR_STAT_DIR / "eacs_age_error.csv"
+OUTPUT_CSV = AGE_STAT_DIR / "eacs_age_error.csv"
 
 
 def load_eacs_ages():
