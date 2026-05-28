@@ -1,4 +1,12 @@
-from .predictor import MiVOLOPredictor
+from .predictor import (
+    MiVOLOPredictor,
+    InsightFacePredictor,
+    DeepFacePredictor,
+    FairFacePredictor,
+    OpenCVDNNPredictor,
+    PREDICTOR_MAP,
+    BENCHMARK_DIR_NAMES,
+)
 from .calibration import (
     CalibrationModel,
     BootstrapCorrector,

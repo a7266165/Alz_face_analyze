@@ -63,7 +63,7 @@ EMBEDDING_CLASSIFICATION_DIR = EMBEDDING_ANALYSIS_DIR / "classification"
 # -----------------------------------------------------------------------------
 AGE_DIR = WORKSPACE_DIR / "age"
 AGE_PREDICTIONS_DIR = AGE_DIR / "predictions"
-AGE_BENCHMARK_DIR = AGE_PREDICTIONS_DIR / "benchmark"
+AGE_BENCHMARK_DIR = AGE_PREDICTIONS_DIR
 AGE_ANALYSIS_DIR = AGE_DIR / "analysis"
 
 # 預設指向 DEFAULT_COHORT_MODE（analysis 下）。
