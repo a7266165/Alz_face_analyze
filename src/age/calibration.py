@@ -42,9 +42,24 @@ COLORS = {"ACS": "#4CAF50", "NAD": "#2196F3", "P": "#F44336"}
 
 
 def load_predicted_ages(path: Path) -> dict:
-    """載入預測年齡 JSON 檔案。"""
+    """載入預測年齡 JSON，回傳 {ID: mean_age}。
+
+    相容兩種格式：
+      舊: {id: float}
+      新: {id: {"actual_age": ..., "predicted_ages": [...]}}
+    """
     with open(path, "r", encoding="utf-8") as f:
-        return json.load(f)
+        raw = json.load(f)
+    out = {}
+    for k, v in raw.items():
+        if isinstance(v, dict):
+            ages = v.get("predicted_ages", [])
+            out[k] = sum(ages) / len(ages) if ages else 0.0
+        elif isinstance(v, list):
+            out[k] = sum(v) / len(v) if v else 0.0
+        else:
+            out[k] = float(v)
+    return out
 
 
 def load_demographics_for_calibration(

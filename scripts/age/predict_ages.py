@@ -2,16 +2,25 @@
 scripts/age/predict_ages.py
 遍歷對齊影像目錄，用指定模型預測年齡並儲存
 
+輸出格式 (JSON):
+  {
+    "subject_id": {
+      "actual_age": 40.15,
+      "predicted_ages": [31.39, 32.10, 30.85, ...]
+    },
+    ...
+  }
+每個 subject 保留最多 10 張影像的逐張預測值。
+
 模型選項:
-  mivolo (預設)   → JSON 輸出至 PREDICTED_AGES_FILE（供 pipeline 下游使用）
-  insightface     → CSV 輸出至 AGE_BENCHMARK_DIR/2_InsightFace/
-  deepface        → CSV 輸出至 AGE_BENCHMARK_DIR/3_DeepFace/
-  fairface        → CSV 輸出至 AGE_BENCHMARK_DIR/4_FairFace/
-  opencv_dnn      → CSV 輸出至 AGE_BENCHMARK_DIR/5_OpenCV_DNN/
+  mivolo (預設)   → PREDICTED_AGES_FILE（供 pipeline 下游使用）
+  insightface     → AGE_PREDICTIONS_DIR/2_InsightFace/predicted_ages.json
+  deepface        → AGE_PREDICTIONS_DIR/3_DeepFace/predicted_ages.json
+  fairface        → AGE_PREDICTIONS_DIR/4_FairFace/predicted_ages.json
+  opencv_dnn      → AGE_PREDICTIONS_DIR/5_OpenCV_DNN/predicted_ages.json
 """
 
 import sys
-import csv
 import json
 import logging
 from pathlib import Path
@@ -60,12 +69,12 @@ def load_images(subject_dir: Path, max_images: int = 10) -> list:
 
 def load_actual_ages() -> dict:
     """從 demographics CSV 讀取真實年齡 {ID: age}"""
+    import pandas as pd
     ages = {}
     for csv_name in ["ACS.csv", "NAD.csv", "P.csv"]:
         csv_path = DEMOGRAPHICS_DIR / csv_name
         if not csv_path.exists():
             continue
-        import pandas as pd
         df = pd.read_csv(csv_path, encoding="utf-8-sig")
         id_col = "ID" if "ID" in df.columns else df.columns[0]
         age_col = next((c for c in df.columns if c.lower() == "age"), None)
@@ -85,23 +94,7 @@ def default_output(model_name: str) -> Path:
     if model_name == "mivolo":
         return PREDICTED_AGES_FILE
     dir_name = BENCHMARK_DIR_NAMES[model_name]
-    return AGE_BENCHMARK_DIR / dir_name / "predicted_ages.csv"
-
-
-def save_json(results: dict, output_file: Path):
-    output_file.parent.mkdir(parents=True, exist_ok=True)
-    with open(output_file, 'w', encoding='utf-8') as f:
-        json.dump(results, f, indent=2, ensure_ascii=False)
-
-
-def save_csv(results: dict, actual_ages: dict, output_file: Path):
-    output_file.parent.mkdir(parents=True, exist_ok=True)
-    with open(output_file, 'w', newline='', encoding='utf-8') as f:
-        writer = csv.writer(f)
-        writer.writerow(["ID", "Actual_Age", "Predicted_Age"])
-        for sid in sorted(results):
-            actual = actual_ages.get(sid, "")
-            writer.writerow([sid, actual, results[sid]])
+    return AGE_BENCHMARK_DIR / dir_name / "predicted_ages.json"
 
 
 def main():
@@ -126,7 +119,6 @@ def main():
 
     aligned_dir = args.aligned_dir or ALIGNED_DIR
     output_file = args.output_file or default_output(args.model)
-    is_json = output_file.suffix.lower() == ".json"
 
     logger.info(f"影像目錄: {aligned_dir}")
     logger.info(f"輸出路徑: {output_file}")
@@ -143,11 +135,13 @@ def main():
         subjects = [s for s in subjects if s.name.startswith(args.subject_prefix)]
     logger.info(f"找到 {len(subjects)} 個受試者")
 
+    actual_ages = load_actual_ages()
+    logger.info(f"demographics 載入 {len(actual_ages)} 個真實年齡")
+
     results = {}
     if args.merge and output_file.exists():
-        if is_json:
-            with open(output_file, "r", encoding="utf-8") as f:
-                results = json.load(f)
+        with open(output_file, "r", encoding="utf-8") as f:
+            results = json.load(f)
         logger.info(f"merge 模式：既有 {len(results)} 個 id")
 
     for subject_dir in tqdm(subjects, desc="預測年齡"):
@@ -161,16 +155,16 @@ def main():
         ages = predictor.predict(images)
 
         if ages:
-            avg_age = sum(ages) / len(ages)
-            results[subject_id] = round(avg_age, 2)
+            entry = {"predicted_ages": [round(a, 2) for a in ages]}
+            if subject_id in actual_ages:
+                entry["actual_age"] = actual_ages[subject_id]
+            results[subject_id] = entry
         else:
             logger.warning(f"{subject_id}: 預測失敗")
 
-    if is_json:
-        save_json(results, output_file)
-    else:
-        actual_ages = load_actual_ages()
-        save_csv(results, actual_ages, output_file)
+    output_file.parent.mkdir(parents=True, exist_ok=True)
+    with open(output_file, 'w', encoding='utf-8') as f:
+        json.dump(results, f, indent=2, ensure_ascii=False)
 
     logger.info(f"完成: {len(results)} 個 id（本次 {len(subjects)} 個受試者）")
     logger.info(f"儲存至: {output_file}")
