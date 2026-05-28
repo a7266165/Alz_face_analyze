@@ -213,7 +213,7 @@ def export_calibrated_json(output_path: Path) -> None:
         correction = a * real_age + b
         corrected = [round(p + correction, 2) for p in pred_list]
 
-        cal_entry = {"predicted_ages": corrected}
+        cal_entry = {"calibrated_predicted_ages": corrected}
         if real_age is not None:
             cal_entry["actual_age"] = real_age
         calibrated[sid] = cal_entry

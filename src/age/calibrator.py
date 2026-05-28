@@ -44,16 +44,19 @@ COLORS = {"ACS": "#4CAF50", "NAD": "#2196F3", "P": "#F44336"}
 def load_predicted_ages(path: Path) -> dict:
     """載入預測年齡 JSON，回傳 {ID: mean_age}。
 
-    相容兩種格式：
+    相容格式：
       舊: {id: float}
-      新: {id: {"actual_age": ..., "predicted_ages": [...]}}
+      新: {id: {"predicted_ages": [...]}}
+      calibrated: {id: {"calibrated_predicted_ages": [...]}}
     """
     with open(path, "r", encoding="utf-8") as f:
         raw = json.load(f)
     out = {}
     for k, v in raw.items():
         if isinstance(v, dict):
-            ages = v.get("predicted_ages", [])
+            ages = (v.get("calibrated_predicted_ages")
+                    or v.get("predicted_ages")
+                    or [])
             out[k] = sum(ages) / len(ages) if ages else 0.0
         elif isinstance(v, list):
             out[k] = sum(v) / len(v) if v else 0.0
