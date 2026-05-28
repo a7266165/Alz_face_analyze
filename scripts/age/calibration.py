@@ -24,6 +24,7 @@ from src.config import (
     BOOTSTRAP_DIR,
     DEMOGRAPHICS_DIR,
     PREDICTED_AGES_FILE,
+    PREDICTED_AGES_CALIBRATED_FILE,
 )
 CALIBRATION_DIR = AGE_CALIBRATION_DIR / "calibration"
 MEAN_CORRECTION_DIR = AGE_CALIBRATION_DIR / "mean_correction"
@@ -165,6 +166,64 @@ def run_mean_correction(
     logger.info("regression_fit.png 已儲存")
 
 
+def export_calibrated_json(output_path: Path) -> None:
+    """讀取原始 per-image predictions + bootstrap 係數，產生校正後 JSON。"""
+    import json
+
+    coefs_csv = BOOTSTRAP_DIR / "data" / "bootstrap_coefficients.csv"
+    if not coefs_csv.exists():
+        logger.warning(f"bootstrap coefficients not found: {coefs_csv}, skip calibrated JSON")
+        return
+
+    df_coefs = pd.read_csv(coefs_csv, encoding="utf-8-sig")
+    mean_row = df_coefs[df_coefs["iter"].astype(str) == "mean"].iloc[0]
+    a, b = float(mean_row["a"]), float(mean_row["b"])
+    logger.info(f"bootstrap mean coefs: a={a:.4f}, b={b:.4f}")
+
+    with open(PREDICTED_AGES_FILE, "r", encoding="utf-8") as f:
+        raw = json.load(f)
+
+    demo_dfs = []
+    for csv_name in ["ACS.csv", "NAD.csv", "P.csv"]:
+        p = DEMOGRAPHICS_DIR / csv_name
+        if p.exists():
+            demo_dfs.append(pd.read_csv(p, encoding="utf-8-sig"))
+    demo = pd.concat(demo_dfs, ignore_index=True)
+    age_map = {}
+    for _, row in demo.iterrows():
+        sid = str(row["ID"]).strip()
+        try:
+            age_map[sid] = float(row["Age"])
+        except (ValueError, TypeError):
+            pass
+
+    calibrated = {}
+    for sid, entry in raw.items():
+        real_age = age_map.get(sid)
+        if real_age is None:
+            continue
+
+        if isinstance(entry, dict):
+            pred_list = entry.get("predicted_ages", [])
+        elif isinstance(entry, list):
+            pred_list = entry
+        else:
+            pred_list = [float(entry)]
+
+        correction = a * real_age + b
+        corrected = [round(p + correction, 2) for p in pred_list]
+
+        cal_entry = {"predicted_ages": corrected}
+        if real_age is not None:
+            cal_entry["actual_age"] = real_age
+        calibrated[sid] = cal_entry
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(output_path, "w", encoding="utf-8") as f:
+        json.dump(calibrated, f, indent=2, ensure_ascii=False)
+    logger.info(f"calibrated JSON saved: {output_path} ({len(calibrated)} subjects)")
+
+
 def main() -> None:
     import argparse
     parser = argparse.ArgumentParser(description="Age correction pipelines")
@@ -189,6 +248,8 @@ def main() -> None:
     run_calibration(df_matched)
     run_bootstrap(df_acs, df_nad, df_p)
     run_mean_correction(df_acs, df_nad, df_p)
+
+    export_calibrated_json(PREDICTED_AGES_CALIBRATED_FILE)
 
     logger.info("=== 三條 pipeline 全部完成 ===")
 
