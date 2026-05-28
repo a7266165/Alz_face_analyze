@@ -44,7 +44,7 @@ BASE_CLASSIFIER_PARAM = "C_1"
 
 BG_MODES = ["background", "no_background"]
 EMB_MODELS = ["arcface", "dlib", "topofr", "vggface"]
-META_CLASSIFIERS = ["tabpfn", "logistic", "xgboost"]
+META_CLASSIFIERS = ["logistic", "xgboost"]
 NORMALIZE_OPTIONS = [None, "minmax"]
 EXTRA_FEATURES_OPTIONS = [[], ["bmi"]]
 
@@ -121,7 +121,6 @@ def main():
 
     logger.info("建構全局 matching cache...")
     matching_cache = build_matching_cache(
-        demographics_dir=DEMOGRAPHICS_DIR,
         cohort_mode=COHORT_MODE,
     )
 

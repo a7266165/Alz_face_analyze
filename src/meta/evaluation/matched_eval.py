@@ -28,13 +28,13 @@ from sklearn.metrics import (
     roc_auc_score,
 )
 
-from src.cohort import match_1to1, build_caliper_group
+from src.cohort import match_1to1, build_caliper_group, build_cohort_ad_vs_HCgroup
 
 logger = logging.getLogger(__name__)
 
 PARTITIONS = ["ad_vs_hc", "ad_vs_nad", "ad_vs_acs", "mmse_hilo", "casi_hilo"]
-EVAL_STRATEGIES = ["1by1matched", "caliper_group"]
-MATCH_LEVELS = ["subject_match", "visit_match"]
+EVAL_STRATEGIES = ["1by1matched"]
+MATCH_LEVELS = ["subject_match"]
 EVAL_UNITS = ["eval_by_subject", "eval_by_visit"]
 MATCH_STRATEGIES = ["no_priority", "priority_acs", "priority_nad"]
 
@@ -127,7 +127,6 @@ def _write_json(path, data):
 # ====================================================================
 
 def build_matching_cache(
-    demographics_dir: Path,
     cohort_mode: str,
     partitions: List[str] = None,
     match_levels: List[str] = None,
@@ -137,11 +136,12 @@ def build_matching_cache(
 ) -> dict:
     """Build all matching cohorts upfront. Returns cache dict.
 
+    Uses build_cohort_ad_vs_HCgroup (cross_naive) to get cohort-filtered
+    demographics that respect p_first/hc_all/CDR/feature-existence gate.
+
     Only depends on demographics (Age), independent of embedding/features.
     AD partitions share one matching per (match_strat, match_level).
     Hilo partitions ignore match_strategy.
-
-    Total calls: AD 3×2=6 + hilo 2×2=4 = 10 linear_sum_assignment.
     """
     if partitions is None:
         partitions = list(PARTITIONS)
@@ -150,15 +150,9 @@ def build_matching_cache(
     if match_strategies is None:
         match_strategies = list(MATCH_STRATEGIES)
 
-    demo_dfs = []
-    for csv_name in ["ACS.csv", "NAD.csv", "P.csv"]:
-        p = demographics_dir / csv_name
-        if p.exists():
-            demo_dfs.append(pd.read_csv(p))
-    if not demo_dfs:
-        logger.error(f"找不到人口學資料: {demographics_dir}")
-        return {}
-    demo = pd.concat(demo_dfs, ignore_index=True)
+    demo, _ = build_cohort_ad_vs_HCgroup(
+        hc_source="HC", design="cross_naive", cohort_mode=cohort_mode,
+    )
 
     cache = {"demo": demo}
 
@@ -177,7 +171,7 @@ def build_matching_cache(
                     priority = ["NAD"]
                 try:
                     full, matched, pairs = _build_ad_partition(
-                        demo, cohort_mode, caliper, seed, priority,
+                        demo, caliper, seed, priority,
                         match_level=ml_param,
                     )
                     cache[("ad", match_strat, ml_name)] = (full, matched, pairs)
@@ -189,7 +183,7 @@ def build_matching_cache(
             metric = "MMSE" if hilo_part == "mmse_hilo" else "CASI"
             try:
                 full, matched, pairs = _build_hilo_partition(
-                    demo, cohort_mode, caliper, seed, metric,
+                    demo, caliper, seed, metric,
                     match_level=ml_param,
                 )
                 cache[(hilo_part, ml_name)] = (full, matched, pairs)
@@ -331,21 +325,23 @@ def run_matched_eval_chain(
     return results_all
 
 
-def _build_ad_partition(demo, cohort_mode, caliper, seed, priority_groups,
+def _build_ad_partition(demo, caliper, seed, priority_groups,
                         match_level="subject"):
-    cols = ["ID", "Age"]
+    cols = ["ID", "Age", "base_id", "group", "label"]
     for extra in ["MMSE", "CASI"]:
         if extra in demo.columns:
             cols.append(extra)
-    cohort = demo[cols].copy()
-    cohort["base_id"] = cohort["ID"].str.extract(r"^([A-Za-z]+\d+)")[0]
-    cohort["group"] = cohort["base_id"].apply(
-        lambda b: "P" if b.startswith("P")
-        else ("ACS" if b.startswith("ACS") else "NAD")
-    )
-    cohort["label"] = (cohort["group"] == "P").astype(int)
-    cohort["hc_group"] = "high"
-    cohort.loc[cohort["group"] == "P", "hc_group"] = "low"
+    cohort = demo[[c for c in cols if c in demo.columns]].copy()
+    if "base_id" not in cohort.columns:
+        cohort["base_id"] = cohort["ID"].str.extract(r"^([A-Za-z]+\d+)")[0]
+    if "group" not in cohort.columns:
+        cohort["group"] = cohort["base_id"].apply(
+            lambda b: "P" if b.startswith("P")
+            else ("ACS" if b.startswith("ACS") else "NAD")
+        )
+    if "label" not in cohort.columns:
+        cohort["label"] = (cohort["group"] == "P").astype(int)
+    cohort["hc_group"] = np.where(cohort["group"] == "P", "low", "high")
 
     matched, pairs, _ = match_1to1(
         cohort, caliper=caliper, seed=seed,
@@ -364,14 +360,18 @@ def _build_ad_partition(demo, cohort_mode, caliper, seed, priority_groups,
     return cohort, matched, pairs
 
 
-def _build_hilo_partition(demo, cohort_mode, caliper, seed, metric,
+def _build_hilo_partition(demo, caliper, seed, metric,
                           match_level="subject"):
     metric_col = metric.upper() if metric.upper() in demo.columns else metric
     if metric_col not in demo.columns:
         raise FileNotFoundError(f"Demographics 缺少 {metric} 欄位")
 
-    cohort = demo[["ID", "Age", metric_col]].copy()
-    cohort["base_id"] = cohort["ID"].str.extract(r"^([A-Za-z]+\d+)")[0]
+    cols = ["ID", "Age", metric_col]
+    if "base_id" in demo.columns:
+        cols.append("base_id")
+    cohort = demo[cols].copy()
+    if "base_id" not in cohort.columns:
+        cohort["base_id"] = cohort["ID"].str.extract(r"^([A-Za-z]+\d+)")[0]
 
     p_only = cohort[cohort["base_id"].str.startswith("P")].copy()
     p_only = p_only.dropna(subset=[metric_col])
@@ -400,8 +400,8 @@ def _eval_cell(oof_subj, matched_eval, pairs, full_cohort, keep_groups,
                demo, eval_strat, match_level, eval_unit, caliper, seed):
     if eval_unit == "eval_by_visit":
         matched_bids = set(matched_eval["base_id"].unique())
-        demo_subset = demo[["ID", "Age"]].copy()
-        demo_subset["base_id"] = demo_subset["ID"].str.extract(r"^([A-Za-z]+\d+)")[0]
+        demo_subset = demo[["ID", "Age", "base_id"]].copy() if "base_id" in demo.columns \
+            else demo[["ID", "Age"]].assign(base_id=demo["ID"].str.extract(r"^([A-Za-z]+\d+)")[0])
         demo_subset = demo_subset[demo_subset["base_id"].isin(matched_bids)]
         scores = demo_subset.merge(oof_subj, on="base_id", how="inner")
         scores = scores.merge(
@@ -423,8 +423,8 @@ def _eval_cell(oof_subj, matched_eval, pairs, full_cohort, keep_groups,
             )
             if eval_unit == "eval_by_visit":
                 cal_bids = set(cal_cohort["base_id"].unique())
-                demo_cal = demo[["ID", "Age"]].copy()
-                demo_cal["base_id"] = demo_cal["ID"].str.extract(r"^([A-Za-z]+\d+)")[0]
+                demo_cal = demo[["ID", "Age", "base_id"]].copy() if "base_id" in demo.columns \
+                    else demo[["ID", "Age"]].assign(base_id=demo["ID"].str.extract(r"^([A-Za-z]+\d+)")[0])
                 demo_cal = demo_cal[demo_cal["base_id"].isin(cal_bids)]
                 cal_scores = demo_cal.merge(oof_subj, on="base_id", how="inner")
                 cal_scores = cal_scores.merge(
