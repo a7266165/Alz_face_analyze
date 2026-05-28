@@ -40,8 +40,8 @@ from src.config import (
     ASYMMETRY_ANALYSIS_DIR,
     ASYMMETRY_LANDMARKS_DIR,
     ASYMMETRY_PAIR_FEATURES_FILE,
-    LONGITUDINAL_FEATURES_DIR,
     PREDICTED_AGES_FILE,
+    WORKSPACE_DIR,
 )
 
 # Import directly to avoid __init__.py chain that pulls in unresolvable deps
@@ -68,7 +68,7 @@ logger = logging.getLogger(__name__)
 LANDMARK_FEATURES_CSV = ASYMMETRY_PAIR_FEATURES_FILE
 LANDMARKS_DIR = ASYMMETRY_LANDMARKS_DIR
 DEMOGRAPHICS_CSV = PROJECT_ROOT / "data" / "demographics" / "P.csv"
-PATIENT_DELTAS_CSV = LONGITUDINAL_FEATURES_DIR / "patient_deltas.csv"
+PATIENT_DELTAS_CSV = WORKSPACE_DIR / "longitudinal" / "features" / "patient_deltas.csv"
 OUTPUT_DIR = ASYMMETRY_ANALYSIS_DIR
 
 N_FOLDS = 5

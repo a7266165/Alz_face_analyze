@@ -25,10 +25,10 @@ from src.config import (
     CohortSpec,
     DEFAULT_COHORT_MODE,
     EMO_AU_FEATURES_DIR,
-    LONGITUDINAL_FEATURES_DIR,
     PREDICTED_AGES_FILE,
     PROJECT_ROOT,
     VALID_COHORT_CHOICES,
+    WORKSPACE_DIR,
     cohort_spec_from_name,
 )
 
@@ -41,10 +41,11 @@ LANDMARK_FEATURES_CSV = (
     PROJECT_ROOT / "workspace" / "asymmetry" / "features" / "pair_features.csv"
 )
 
-LONGITUDINAL_CSV = LONGITUDINAL_FEATURES_DIR / "patient_deltas.csv"
-AD_DELTAS_CSV = LONGITUDINAL_FEATURES_DIR / "ad_patient_deltas.csv"
-HC_LONGITUDINAL_CSV = LONGITUDINAL_FEATURES_DIR / "hc_patient_deltas.csv"
-EACS_DELTAS_CSV = LONGITUDINAL_FEATURES_DIR / "eacs_patient_deltas.csv"
+_LONGITUDINAL_FEATURES_DIR = WORKSPACE_DIR / "longitudinal" / "features"
+LONGITUDINAL_CSV = _LONGITUDINAL_FEATURES_DIR / "patient_deltas.csv"
+AD_DELTAS_CSV = _LONGITUDINAL_FEATURES_DIR / "ad_patient_deltas.csv"
+HC_LONGITUDINAL_CSV = _LONGITUDINAL_FEATURES_DIR / "hc_patient_deltas.csv"
+EACS_DELTAS_CSV = _LONGITUDINAL_FEATURES_DIR / "eacs_patient_deltas.csv"
 
 # ----------------------------------------------------------------------
 # Constants & validators

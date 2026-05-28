@@ -26,7 +26,7 @@ from _paths import PROJECT_ROOT
 project_root = PROJECT_ROOT
 
 from src.config import (
-    RAW_IMAGES_DIR, FEATURES_DIR,
+    RAW_IMAGES_DIR, EMBEDDING_FEATURES_DIR,
     ALIGNED_DIR as _ALIGNED_DIR,
     ALIGNED_BACKGROUND_DIR as _ALIGNED_BACKGROUND_DIR,
     MIRRORS_DIR as _MIRRORS_DIR,
@@ -753,7 +753,7 @@ def main():
                     help="自訂 group 子目錄名 (e.g. asian_elderly_60plus IMDB_60_plus)；"
                          "留空沿用內部預設 health/ACS, health/NAD, patient/good")
     ap.add_argument("--output-dir", type=Path, default=None,
-                    help="覆寫 FEATURES_DIR；留空用預設 workspace/embedding/features")
+                    help="覆寫 EMBEDDING_FEATURES_DIR；留空用預設 workspace/embedding/features")
     ap.add_argument("--n-select", type=int, default=10)
     ap.add_argument("--max-cpu-cores", type=int, default=2)
     ap.add_argument("--no-aligned-background", action="store_true",
@@ -772,7 +772,7 @@ def main():
     args = ap.parse_args()
 
     raw_dir = args.input_root if args.input_root is not None else RAW_IMAGES_DIR
-    out_dir = args.output_dir if args.output_dir is not None else FEATURES_DIR
+    out_dir = args.output_dir if args.output_dir is not None else EMBEDDING_FEATURES_DIR
     emb_models = args.embedding_models or ["arcface", "dlib", "topofr"]
 
     from_aligned_mode = False

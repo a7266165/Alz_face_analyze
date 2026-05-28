@@ -101,10 +101,6 @@ class FeatureExtractor:
                 available.append(name)
         return available
 
-    def get_available_models(self) -> List[str]:
-        """取得可用的模型列表"""
-        return self.available_models
-
     def get_feature_dim(self, model_name: str) -> Optional[int]:
         """取得模型輸出維度"""
         extractor = self._get_extractor(model_name)

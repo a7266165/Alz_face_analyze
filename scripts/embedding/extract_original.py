@@ -28,7 +28,7 @@ from _paths import PROJECT_ROOT
 project_root = PROJECT_ROOT
 
 from src.config import (
-    FEATURES_DIR,
+    EMBEDDING_FEATURES_DIR,
     WORKSPACE_DIR,
     ALIGNED_DIR as _ALIGNED_DIR,
     ALIGNED_BACKGROUND_DIR as _ALIGNED_BACKGROUND_DIR,
@@ -43,7 +43,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # ========== 預設常數（會被 CLI 覆寫） ==========
-OUTPUT_DIR = FEATURES_DIR  # workspace/embedding/features
+OUTPUT_DIR = EMBEDDING_FEATURES_DIR  # workspace/embedding/features
 EMBEDDING_MODELS = ["arcface", "topofr", "dlib"]
 MAX_CPU_CORES = 2
 

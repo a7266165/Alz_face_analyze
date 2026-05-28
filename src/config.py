@@ -4,7 +4,6 @@
 路徑常數、專案級設定、處理參數
 """
 
-import os
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -54,13 +53,10 @@ MIRRORS_BACKGROUND_DIR = PREPROCESSING_DIR / "background" / "mirrors"
 # Embedding
 # -----------------------------------------------------------------------------
 EMBEDDING_DIR = WORKSPACE_DIR / "embedding"
-FEATURES_DIR = EMBEDDING_DIR / "features"
-EMBEDDING_FEATURES_DIR = FEATURES_DIR
+EMBEDDING_FEATURES_DIR = EMBEDDING_DIR / "features"
 EMBEDDING_ANALYSIS_DIR = EMBEDDING_DIR / "analysis"
 EMBEDDING_FEATURE_STAT_DIR = EMBEDDING_ANALYSIS_DIR / "feature_stat"
-_EMBEDDING_CLASSIFICATION_BASE = EMBEDDING_ANALYSIS_DIR / "classification"
-EMBEDDING_CLASSIFICATION_DIR = _EMBEDDING_CLASSIFICATION_BASE
-_MATCH_SUBDIR = os.environ.get("ALZ_MATCH_SUBDIR", "no_priority")
+EMBEDDING_CLASSIFICATION_DIR = EMBEDDING_ANALYSIS_DIR / "classification"
 
 # -----------------------------------------------------------------------------
 # Age
@@ -89,10 +85,6 @@ MEAN_CORRECTION_DIR = CORRECTION_DIR / "mean_correction"
 CORRECTION_LINES_DIR = CORRECTION_DIR / "lines"
 PREDICTED_AGES_CALIBRATED_FILE = CALIBRATION_DIR / "predicted_ages_calibrated.json"
 
-# Age analysis 子樹
-AGE_ANALYSIS_DIR = AGE_DIR / "analysis"
-AGE_PRED_ERROR_STAT_DIR = AGE_ANALYSIS_DIR / "pred_error_stat"
-
 # -----------------------------------------------------------------------------
 # BMI
 # -----------------------------------------------------------------------------
@@ -100,16 +92,6 @@ BMI_DIR = WORKSPACE_DIR / "bmi"
 BMI_MODELS_DIR = BMI_DIR / "models"
 BMI_PREDICTIONS_DIR = BMI_DIR / "predictions"
 BMI_ANALYSIS_DIR = BMI_DIR / "analysis"
-
-# -----------------------------------------------------------------------------
-# Longitudinal — features (raw deltas) + analysis (per-modality)
-# -----------------------------------------------------------------------------
-LONGITUDINAL_DIR = WORKSPACE_DIR / "longitudinal"
-LONGITUDINAL_FEATURES_DIR = LONGITUDINAL_DIR / "features"
-LONGITUDINAL_ANALYSIS_DIR = LONGITUDINAL_DIR / "analysis"
-LONGI_AGE_DIR = LONGITUDINAL_ANALYSIS_DIR / "age"
-LONGI_AGE_CLASSIFICATION_DIR = LONGI_AGE_DIR / "classification"
-LONGI_AGE_PRED_ERROR_STAT_DIR = LONGI_AGE_DIR / "pred_error_stat"
 
 # -----------------------------------------------------------------------------
 # Emo_au
