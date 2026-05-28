@@ -35,7 +35,8 @@ _spec.loader.exec_module(_cal)
 load_predicted_ages = _cal.load_predicted_ages
 get_age_stratum = _cal.get_age_stratum
 
-from src.config import DEMOGRAPHICS_DIR, PREDICTED_AGES_FILE, CALIBRATION_DIR
+from src.config import DEMOGRAPHICS_DIR, PREDICTED_AGES_FILE, AGE_CALIBRATION_DIR
+CALIBRATION_DIR = AGE_CALIBRATION_DIR
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)

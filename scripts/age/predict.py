@@ -35,7 +35,6 @@ from src.config import (
     ALIGNED_DIR,
     AGE_BENCHMARK_DIR,
     DEMOGRAPHICS_DIR,
-    PREDICTED_AGES_FILE,
 )
 from src.age import PREDICTOR_MAP, BENCHMARK_DIR_NAMES
 
@@ -91,8 +90,6 @@ def load_actual_ages() -> dict:
 
 def default_output(model_name: str) -> Path:
     """依模型名稱決定預設輸出路徑"""
-    if model_name == "mivolo":
-        return PREDICTED_AGES_FILE
     dir_name = BENCHMARK_DIR_NAMES[model_name]
     return AGE_BENCHMARK_DIR / dir_name / "predicted_ages.json"
 

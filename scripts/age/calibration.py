@@ -1,7 +1,7 @@
 """
 執行三條年齡校正 pipeline：CalibrationModel / BootstrapCorrector / MeanCorrector
 
-輸出目錄結構（在 CORRECTION_DIR 下）：
+輸出目錄結構（在 AGE_CALIBRATION_DIR 下）：
   calibration/train90_val10/  — K-fold (Train 90% / Val 10%)
   calibration/train10_val90/  — K-fold (Train 10% / Val 90%)
   calibration/comparison.csv  — 兩種 calibration 的 MAE 比較
@@ -20,13 +20,14 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
 from src.config import (
-    CALIBRATION_DIR,
+    AGE_CALIBRATION_DIR,
     BOOTSTRAP_DIR,
-    CORRECTION_DIR,
     DEMOGRAPHICS_DIR,
-    MEAN_CORRECTION_DIR,
     PREDICTED_AGES_FILE,
 )
+CALIBRATION_DIR = AGE_CALIBRATION_DIR / "calibration"
+MEAN_CORRECTION_DIR = AGE_CALIBRATION_DIR / "mean_correction"
+CORRECTION_DIR = AGE_CALIBRATION_DIR
 import importlib.util as _ilu
 _spec = _ilu.spec_from_file_location(
     "calibration",

@@ -69,21 +69,19 @@ AGE_ANALYSIS_DIR = AGE_DIR / "analysis"
 # 預設指向 DEFAULT_COHORT_MODE（analysis 下）。
 _AGE_DEFAULT_ANALYSIS = AGE_ANALYSIS_DIR / "P_first_HC_first" / "P_cdr05_HC_cdrall_mmseall"
 
-PREDICTED_AGES_FILE = _AGE_DEFAULT_ANALYSIS / "predicted_ages.json"
+PREDICTED_AGES_FILE = AGE_PREDICTIONS_DIR / "1_MiVOLO" / "predicted_ages.json"
 
-# 視覺化子樹（直接在 cohort 下，不再有 error/ 層）
+# 視覺化子樹（直接在 cohort 下）
 AGE_SCATTER_DIR = _AGE_DEFAULT_ANALYSIS / "scatter"
 AGE_STAT_DIR = _AGE_DEFAULT_ANALYSIS / "stat"
 AGE_LINES_DIR = _AGE_DEFAULT_ANALYSIS / "lines"
 AGE_HISTOGRAM_DIR = _AGE_DEFAULT_ANALYSIS / "histogram"
 AGE_VIOLIN_DIR = _AGE_DEFAULT_ANALYSIS / "violin"
 
-# Correction 子樹
-CORRECTION_DIR = _AGE_DEFAULT_ANALYSIS / "correction"
-CALIBRATION_DIR = CORRECTION_DIR / "calibration"
-BOOTSTRAP_DIR = CORRECTION_DIR / "bootstrap_correction"
-MEAN_CORRECTION_DIR = CORRECTION_DIR / "mean_correction"
-PREDICTED_AGES_CALIBRATED_FILE = CALIBRATION_DIR / "predicted_ages_calibrated.json"
+# Calibration（cohort 依存，多種方法）
+AGE_CALIBRATION_DIR = _AGE_DEFAULT_ANALYSIS / "calibration"
+BOOTSTRAP_DIR = AGE_CALIBRATION_DIR / "bootstrap_correction"
+PREDICTED_AGES_CALIBRATED_FILE = AGE_CALIBRATION_DIR / "predicted_ages_calibrated.json"
 
 # -----------------------------------------------------------------------------
 # BMI
