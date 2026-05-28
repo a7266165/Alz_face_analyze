@@ -5,8 +5,8 @@ Age distribution before vs after 1:1 age-matching.
 Stacked histograms for NAD, ACS, P with mean±std legend.
 
 Usage:
-    conda run -n Alz_face_main_analysis python scripts/age/plot_age_hist_matching.py
-    conda run -n Alz_face_main_analysis python scripts/age/plot_age_hist_matching.py \
+    conda run -n Alz_face_main_analysis python scripts/age/histogram.py
+    conda run -n Alz_face_main_analysis python scripts/age/histogram.py \
         --cohort-mode p_first_cdrall_hc_all_cdrall_or_mmseall
 """
 

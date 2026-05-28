@@ -1,5 +1,5 @@
 """
-scripts/age/predict_ages.py
+scripts/age/predict.py
 遍歷對齊影像目錄，用指定模型預測年齡並儲存
 
 輸出格式 (JSON):
