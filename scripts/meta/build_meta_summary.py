@@ -1,15 +1,15 @@
 """
-Build hierarchical _summary.csv for meta analysis eval chain.
+Build _summary for meta analysis (v3).
 
-Walks all metrics.json under the eval chain tree and:
-  1. Builds a flat all_metrics.csv at fwd/_summary/
-  2. Saves _summary.csv at each intermediate directory level
-     (match_strategy, eval_unit, match_level, eval_strategy)
+Walks all metrics.json under the eval chain tree and produces:
+  1. _summary/all_metrics.csv  — one big flat table (all combos × partitions)
+  2. Hierarchical _summary.csv at each intermediate level
 
-Directory structure:
-  .../tabpfn/fwd/
-    {eval_strategy}/{match_level}/{eval_unit}/{match_strategy}/{partition}/
-      metrics.json
+Path structure (v3):
+  {visit}/{cdr}/{bg_mode}/{extra_feat}/{emb_model}/{asym_variant}/{scoring_method}/
+    {photo}/{reducer}/fwd/{normalize}/{meta_clf}/
+      1by1matched/subject_match/eval_by_subject/{match_strategy}/{partition}/
+        metrics.json
 
 Usage:
     conda run -n Alz_face_main_analysis python scripts/meta/build_meta_summary.py
@@ -26,50 +26,27 @@ from _paths import PROJECT_ROOT
 
 from src.config import cohort_name, cohort_spec_from_name
 
-# ========== 設定 ==========
-
 COHORT_MODE = "p_first_cdrall_hc_all_cdrall_or_mmseall"
-BG_MODE = "background"
-PHOTO_MODE = "mean"
-REDUCER = "no_drop"
-
-EMB_MODELS = ["arcface"]
-META_CLASSIFIERS = ["tabpfn", "logistic", "xgboost"]
-NORMALIZE_OPTIONS = ["raw", "minmax"]
-BASE_CLASSIFIER = "logistic"
-BASE_CLASSIFIER_PARAM = "C_1"
-ASYMMETRY_VARIANTS = [
-    "difference",
-    "absolute_difference",
-    "relative_differences",
-    "absolute_relative_differences",
-]
-
 META_ROOT = PROJECT_ROOT / "workspace" / "meta" / "analysis"
-
-EVAL_CHAIN_LEVELS = [
-    "eval_strategy",
-    "match_level",
-    "eval_unit",
-    "match_strategy",
-    "partition",
-]
 
 METRIC_FIELDS = [
     "n", "n_pos", "n_neg",
     "auc", "auc_ci_low", "auc_ci_high",
     "balacc", "mcc", "f1", "sens", "spec",
 ]
-
 CM_FIELDS = ["TN", "FP", "FN", "TP"]
-
 WILCOXON_FIELDS = ["wilcoxon_W", "wilcoxon_p", "n_pairs", "mean_diff"]
 
-OUTPUT_COLUMNS = (
-    ["partition", "emb_model", "meta_classifier",
-     "eval_strategy", "match_level", "eval_unit", "match_strategy"]
-    + METRIC_FIELDS + CM_FIELDS + WILCOXON_FIELDS
-)
+SWEEP_COLS = [
+    "bg_mode", "extra_features", "emb_model",
+    "asymmetry_variant", "scoring_method",
+    "normalize", "meta_classifier",
+]
+EVAL_COLS = [
+    "eval_strategy", "match_level", "eval_unit",
+    "match_strategy", "partition",
+]
+OUTPUT_COLUMNS = SWEEP_COLS + EVAL_COLS + METRIC_FIELDS + CM_FIELDS + WILCOXON_FIELDS
 
 
 def parse_metrics_json(path: Path) -> dict:
@@ -77,9 +54,10 @@ def parse_metrics_json(path: Path) -> dict:
         data = json.load(f)
 
     row = {}
-    for key in ["partition", "eval_strategy", "match_level",
-                "eval_unit", "match_strategy", "emb_model", "meta_classifier"]:
+    for key in EVAL_COLS:
         row[key] = data.get(key)
+    row["emb_model"] = data.get("emb_model")
+    row["meta_classifier"] = data.get("meta_classifier")
 
     block = data.get("metrics_matched") or {}
     for field in METRIC_FIELDS:
@@ -102,17 +80,39 @@ def parse_metrics_json(path: Path) -> dict:
     return row
 
 
-def collect_all_metrics(fwd_dir: Path) -> pd.DataFrame:
+def extract_sweep_dims(metrics_path: Path, cohort_root: Path) -> dict:
+    """Extract sweep dimensions from the file path."""
+    rel = metrics_path.relative_to(cohort_root)
+    parts = rel.parts
+    # bg_mode/extra_feat/emb_model/asym_variant/scoring_method/
+    #   photo/reducer/fwd/normalize/meta_clf/
+    #     eval_strategy/match_level/eval_unit/match_strategy/partition/metrics.json
+    # indices: 0/1/2/3/4/5/6/7/8/9/10/11/12/13/14/15
+    if len(parts) < 16:
+        return None
+    return {
+        "bg_mode": parts[0],
+        "extra_features": parts[1],
+        "emb_model": parts[2],
+        "asymmetry_variant": parts[3],
+        "scoring_method": parts[4],
+        "normalize": parts[8],
+        "meta_classifier": parts[9],
+    }
+
+
+def collect_all_metrics(cohort_root: Path) -> pd.DataFrame:
     rows = []
-    for mj in fwd_dir.rglob("metrics.json"):
-        rel = mj.relative_to(fwd_dir)
-        parts = rel.parts
-        if len(parts) != 6:
+    for mj in cohort_root.rglob("metrics.json"):
+        sweep = extract_sweep_dims(mj, cohort_root)
+        if sweep is None:
             continue
         try:
             row = parse_metrics_json(mj)
+            row.update(sweep)
             rows.append(row)
-        except Exception:
+        except Exception as e:
+            print(f"  WARN: {mj}: {e}")
             continue
 
     if not rows:
@@ -123,89 +123,48 @@ def collect_all_metrics(fwd_dir: Path) -> pd.DataFrame:
         if col not in df.columns:
             df[col] = None
     return df[OUTPUT_COLUMNS].sort_values(
-        ["partition", "eval_strategy", "match_level",
-         "eval_unit", "match_strategy"]
+        SWEEP_COLS + ["partition"]
     ).reset_index(drop=True)
 
 
-def save_hierarchical_summaries(fwd_dir: Path, full_df: pd.DataFrame):
-    summary_dir = fwd_dir / "_summary"
+def save_summaries(cohort_root: Path, full_df: pd.DataFrame):
+    summary_dir = cohort_root / "_summary"
     summary_dir.mkdir(exist_ok=True)
-    full_df.to_csv(
-        summary_dir / "all_metrics.csv",
-        index=False, encoding="utf-8-sig",
-    )
-    print(f"  [all] {summary_dir / 'all_metrics.csv'} ({len(full_df)} rows)")
 
-    level_cols = list(EVAL_CHAIN_LEVELS)
-    for depth in range(len(level_cols)):
-        group_keys = level_cols[: depth + 1]
-        remaining = level_cols[depth + 1:]
+    out_path = summary_dir / "all_metrics.csv"
+    full_df.to_csv(out_path, index=False, encoding="utf-8-sig")
+    print(f"  [all] {out_path} ({len(full_df)} rows)")
 
-        for vals, sub_df in full_df.groupby(group_keys, dropna=False):
-            if not isinstance(vals, tuple):
-                vals = (vals,)
-
-            rel_path = Path(*vals)
-            target_dir = fwd_dir / rel_path
-            if not target_dir.exists():
-                continue
-
-            out_path = target_dir / "_summary.csv"
-            sub_df.to_csv(out_path, index=False, encoding="utf-8-sig")
-            print(f"  [{'/'.join(group_keys[-1:])}] {out_path} ({len(sub_df)} rows)")
+    for col in SWEEP_COLS:
+        by_dir = summary_dir / f"by_{col}"
+        by_dir.mkdir(parents=True, exist_ok=True)
+        for val, sub_df in full_df.groupby(col, dropna=False):
+            sub_df.to_csv(by_dir / f"{val}.csv", index=False, encoding="utf-8-sig")
+        print(f"  [by_{col}] {len(full_df[col].unique())} files")
 
 
 def main():
     spec = cohort_spec_from_name(cohort_name(COHORT_MODE))
+    cohort_root = META_ROOT / spec.visit_dir / spec.cdr_mmse_dir
 
-    for norm_tag in NORMALIZE_OPTIONS:
-        for asym_variant in ASYMMETRY_VARIANTS:
-            for emb_model in EMB_MODELS:
-                for meta_clf in META_CLASSIFIERS:
-                    fwd_dir = (
-                        META_ROOT / spec.visit_dir / spec.cdr_mmse_dir
-                        / BG_MODE / emb_model / asym_variant
-                        / PHOTO_MODE / REDUCER
-                        / BASE_CLASSIFIER / BASE_CLASSIFIER_PARAM / "fwd"
-                        / norm_tag / meta_clf
-                    )
-                    if not fwd_dir.exists():
-                        print(f"SKIP {fwd_dir}")
-                        continue
+    print(f"Scanning: {cohort_root}")
+    full_df = collect_all_metrics(cohort_root)
 
-                    print(f"\n=== {norm_tag} / {emb_model} / {asym_variant} / {meta_clf} ===")
-                    full_df = collect_all_metrics(fwd_dir)
-                    if full_df.empty:
-                        print("  (no metrics found)")
-                        continue
+    if full_df.empty:
+        print("No metrics found!")
+        return
 
-                    save_hierarchical_summaries(fwd_dir, full_df)
+    print(f"Found {len(full_df)} metric rows")
+    save_summaries(cohort_root, full_df)
 
-    combined_root = META_ROOT / spec.visit_dir / spec.cdr_mmse_dir
-    all_rows = []
-    for summary_file in combined_root.rglob("_summary/all_metrics.csv"):
-        fwd_dir = summary_file.parent.parent
-        rel = fwd_dir.relative_to(combined_root)
-        parts = rel.parts
-        # bg / emb / asym / photo / reducer / base_clf / base_param / fwd / norm / clf
-        if len(parts) < 10:
-            continue
-        bg, emb, asym, photo, reducer, base_clf, base_param, _, norm, clf = parts[:10]
-        df = pd.read_csv(summary_file)
-        df["asymmetry_variant"] = asym
-        df["normalize"] = norm
-        all_rows.append(df)
-
-    if all_rows:
-        combined = pd.concat(all_rows, ignore_index=True)
-        cols_front = ["normalize", "asymmetry_variant"] + OUTPUT_COLUMNS
-        extra = [c for c in combined.columns if c not in cols_front]
-        combined = combined[cols_front + extra]
-        combined = combined.sort_values(["normalize", "asymmetry_variant", "partition", "eval_strategy"])
-        out = combined_root / "summary_all_metrics.csv"
-        combined.to_csv(out, index=False, encoding="utf-8-sig")
-        print(f"\n=== Combined: {out} ({len(combined)} rows) ===")
+    print(f"\nTop 10 by MCC (ad_vs_hc / priority_acs):")
+    mask = (full_df["partition"] == "ad_vs_hc") & (full_df["match_strategy"] == "priority_acs")
+    top = full_df[mask].nlargest(10, "mcc")
+    for _, r in top.iterrows():
+        print(f"  {r['bg_mode']}/{r['extra_features']}/{r['emb_model']}/"
+              f"{r['asymmetry_variant']}/{r['scoring_method']}/"
+              f"{r['normalize']}/{r['meta_classifier']}: "
+              f"MCC={r['mcc']:.4f}, AUC={r['auc']:.4f}")
 
 
 if __name__ == "__main__":
