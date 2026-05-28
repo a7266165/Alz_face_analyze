@@ -41,7 +41,7 @@ from src.config import (
     cohort_path,
     cohort_spec_from_name,
 )
-from scripts.utilities.cohort import build_cohort_ad_vs_HCgroup
+from src.cohort import build_cohort_ad_vs_HCgroup
 
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s - %(levelname)s - %(message)s")

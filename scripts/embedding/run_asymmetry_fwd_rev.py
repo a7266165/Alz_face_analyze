@@ -51,7 +51,7 @@ from src.config import (
     VALID_COHORT_CHOICES,
     cohort_spec_from_name,
 )
-from scripts.utilities.cohort import build_cohort_ad_vs_HCgroup
+from src.cohort import build_cohort_ad_vs_HCgroup
 from scripts.utilities.stats_helpers import bootstrap_auc_ci
 
 logging.basicConfig(level=logging.INFO,

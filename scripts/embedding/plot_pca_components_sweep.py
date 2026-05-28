@@ -39,14 +39,13 @@ from src.config import (  # noqa: E402
     VALID_COHORT_CHOICES,
     cohort_spec_from_name,
 )
-from scripts.utilities.cohort import (  # noqa: E402
+from src.cohort import (  # noqa: E402
     apply_hc_strict_filter,
     apply_p_cdr_filter,
 )
 ASYM_VARIANTS = ["difference", "absolute_difference", "average",
                  "relative_differences", "absolute_relative_differences"]
 
-EMBEDDING_FEAT_DIR = (PROJECT_ROOT / "workspace" / "embedding" / "features")
 EMBEDDING_FEAT_DIR = (PROJECT_ROOT / "workspace" / "embedding" / "features")
 INPUT_DIM = {"arcface": 512, "topofr": 512, "dlib": 128}
 EMB_COLOR = {"arcface": "#1f77b4", "topofr": "#ff7f0e", "dlib": "#2ca02c"}

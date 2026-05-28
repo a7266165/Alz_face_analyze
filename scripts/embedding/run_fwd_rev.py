@@ -269,7 +269,7 @@ logger = logging.getLogger(__name__)
 # Direct imports from utilities (cohort + matching + stats)
 # ============================================================
 
-from scripts.utilities.cohort import (
+from src.cohort import (
     apply_p_cdr_filter,
     build_cohort_ad_vs_HCgroup,
     DEMOGRAPHICS_DIR as _COHORT_DEMOGRAPHICS_DIR,

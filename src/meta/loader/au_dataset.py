@@ -4,7 +4,6 @@ AU 特徵資料集載入器
 載入 aggregated AU 特徵，結合 demographics，組裝成 Dataset
 """
 
-import re
 import logging
 from pathlib import Path
 from typing import List, Optional
@@ -12,21 +11,11 @@ from typing import List, Optional
 import numpy as np
 import pandas as pd
 
-from src.meta.loader.base import Dataset
+from src.meta.loader.base import Dataset, extract_base_id
 from src.config import DEMOGRAPHICS_DIR
 from src.emo_au.extractor.au_config import AU_AGGREGATED_DIR
 
 logger = logging.getLogger(__name__)
-
-
-def _extract_base_id(subject_id: str) -> str:
-    """
-    從 subject_id 提取 base_id（去除 session 後綴）
-
-    例如：P1002-1 → P1002, NAD100-1 → NAD100
-    """
-    match = re.match(r"^(.+?)-\d+$", subject_id)
-    return match.group(1) if match else subject_id
 
 
 def _infer_label(subject_id: str) -> Optional[int]:
@@ -110,7 +99,7 @@ class AUDatasetLoader:
                 continue
 
             subject_ids.append(sid)
-            base_ids.append(_extract_base_id(sid))
+            base_ids.append(extract_base_id(sid))
             labels.append(label)
             feature_rows.append(row[feature_columns].values.astype(float))
 

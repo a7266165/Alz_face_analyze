@@ -39,7 +39,7 @@ from src.config import (
     VALID_COHORT_CHOICES,
     cohort_path,
 )
-from scripts.utilities.cohort import build_cohort_ad_vs_HCgroup
+from src.cohort import build_cohort_ad_vs_HCgroup
 from scripts.utilities.stats_helpers import bh_fdr, permanova, welch_t_test
 
 logging.basicConfig(level=logging.INFO,

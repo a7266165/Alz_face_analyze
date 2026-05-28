@@ -6,14 +6,13 @@
 
 import json
 import logging
-import re
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
 
-from .base import Dataset
+from .base import Dataset, extract_base_id
 
 logger = logging.getLogger(__name__)
 
@@ -568,10 +567,9 @@ class DataLoader:
 
         return X, y, subject_ids, base_ids, sample_groups
 
-    def _extract_base_id(self, subject_id: str) -> str:
-        """從 subject_id 提取 base_id（如 P1-2 → P1）"""
-        match = re.match(r"^([A-Z]+\d+)", subject_id)
-        return match.group(1) if match else subject_id
+    @staticmethod
+    def _extract_base_id(subject_id: str) -> str:
+        return extract_base_id(subject_id)
 
     def _calculate_filter_stats(self) -> Dict:
         """計算年齡篩選統計"""

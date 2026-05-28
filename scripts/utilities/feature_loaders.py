@@ -5,7 +5,6 @@ stat_grid / age_classifiers / fwd_rev_embedding analyses.
 All loaders return pandas DataFrames with `subject_id` as the merge key
 (or sometimes `ID`, see docstrings). NaN-handling is downstream.
 """
-import importlib.util
 import json
 import logging
 import sys
@@ -15,7 +14,10 @@ import numpy as np
 import pandas as pd
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(PROJECT_ROOT))
+SCRIPTS_ROOT = PROJECT_ROOT / "scripts"
+for _p in [str(PROJECT_ROOT), str(SCRIPTS_ROOT)]:
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
 
 # ----------------------------------------------------------------------
 # Paths
@@ -24,6 +26,7 @@ EMBEDDING_DIR = PROJECT_ROOT / "workspace" / "embedding" / "features"
 LANDMARK_FEATURES_CSV = PROJECT_ROOT / "workspace" / "asymmetry" / "features" / "pair_features.csv"
 # Default cohort = V2.2 canonical (p_first_cdr05_hc_first_cdrall_or_mmseall).
 from src.config import PREDICTED_AGES_FILE  # noqa: E402
+from utilities import emotion_loader as _emotion_loader_mod  # noqa: E402
 
 # ----------------------------------------------------------------------
 # Constants
@@ -38,22 +41,10 @@ EMBEDDING_MODELS = ["arcface", "topofr", "dlib"]
 logger = logging.getLogger(__name__)
 
 # ----------------------------------------------------------------------
-# Lazy emotion_loader (file-path importlib — module not on sys.path as package)
+# Emotion loader (direct import via sys.path)
 # ----------------------------------------------------------------------
-_emotion_loader = None
-
-
 def _get_emotion_loader():
-    global _emotion_loader
-    if _emotion_loader is None:
-        spec = importlib.util.spec_from_file_location(
-            "emotion_loader",
-            Path(__file__).parent / "emotion_loader.py",
-        )
-        m = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(m)
-        _emotion_loader = m
-    return _emotion_loader
+    return _emotion_loader_mod
 
 
 # ============================================================
@@ -92,6 +83,18 @@ def load_age_error(subject_ids, demo):
 
 
 # ============================================================
+# Shared npy loader
+# ============================================================
+
+def _load_and_pool_npy(path):
+    """Load .npy, unwrap object-dtype wrapping, return mean-pooled vector."""
+    a = np.load(path, allow_pickle=True)
+    if a.dtype == object:
+        a = list(a.item().values())[0]
+    return a.mean(axis=0) if a.ndim == 2 else a
+
+
+# ============================================================
 # Embedding (mean-pool over photos → 1 vector per subject)
 # ============================================================
 
@@ -104,10 +107,7 @@ def load_embedding_mean(ids, model):
         npy = emb_dir / f"{sid}.npy"
         if not npy.exists():
             continue
-        a = np.load(npy, allow_pickle=True)
-        if a.dtype == object:
-            a = list(a.item().values())[0]
-        vec = a.mean(axis=0) if a.ndim == 2 else a
+        vec = _load_and_pool_npy(npy)
         rows.append({"subject_id": sid,
                      **{f"{model}__dim_{i}": float(vec[i]) for i in range(vec.shape[0])}})
     return pd.DataFrame(rows) if rows else None
@@ -128,11 +128,8 @@ def load_embedding_asymmetry(subject_ids):
             if not npy.exists():
                 out[f"embasym__{model}_l2"] = np.nan
                 continue
-            a = np.load(npy, allow_pickle=True)
-            if a.dtype == object:
-                a = list(a.item().values())[0]
-            md = a.mean(axis=0) if a.ndim == 2 else a
-            out[f"embasym__{model}_l2"] = float(np.linalg.norm(md))
+            vec = _load_and_pool_npy(npy)
+            out[f"embasym__{model}_l2"] = float(np.linalg.norm(vec))
         rows.append(out)
     return pd.DataFrame(rows)
 
@@ -145,10 +142,7 @@ def load_embedding_asymmetry_vec(ids, model):
         npy = EMBEDDING_DIR / model / "difference" / f"{sid}.npy"
         if not npy.exists():
             continue
-        a = np.load(npy, allow_pickle=True)
-        if a.dtype == object:
-            a = list(a.item().values())[0]
-        vec = a.mean(axis=0) if a.ndim == 2 else a
+        vec = _load_and_pool_npy(npy)
         rows.append({"subject_id": sid,
                      **{f"embasym_vec_{model}_{i}": float(vec[i])
                         for i in range(vec.shape[0])}})

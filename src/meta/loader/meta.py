@@ -11,7 +11,6 @@ Meta Analysis 資料載入器（v3）
 
 import json
 import logging
-import re
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -23,6 +22,7 @@ from src.config import (
     cohort_name,
     cohort_spec_from_name,
 )
+from src.meta.loader.base import extract_base_id
 from src.meta.loader.dataset import FoldData, MetaDataset
 
 logger = logging.getLogger(__name__)
@@ -336,7 +336,4 @@ class MetaDataLoader:
 
     @staticmethod
     def _extract_base_id(subject_id: str) -> str:
-        match = re.match(r"^([A-Za-z]+\d+)", subject_id)
-        if match:
-            return match.group(1)
-        return subject_id
+        return extract_base_id(subject_id)

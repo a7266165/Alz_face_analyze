@@ -4,9 +4,16 @@
 定義 Dataset 結構和 BaseLoader Protocol
 """
 
+import re
 from typing import List, Dict, Optional, Protocol, Tuple, Any, runtime_checkable
 from dataclasses import dataclass, field
 import numpy as np
+
+
+def extract_base_id(subject_id: str) -> str:
+    """從 subject_id 提取 base_id（如 P1-2 → P1, NAD100-1 → NAD100）"""
+    match = re.match(r"^([A-Za-z]+\d+)", subject_id)
+    return match.group(1) if match else subject_id
 
 
 @dataclass
