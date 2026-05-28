@@ -349,10 +349,9 @@ def match_1to1(cohort, caliper=2.0, seed=42, metric="MMSE", group_col=None,
     Uses ``scipy.optimize.linear_sum_assignment`` to maximise the number
     of matched pairs within *caliper* while minimising total age difference.
 
-    When *priority_groups* is set (e.g. ``["ACS"]``), subjects in those
-    groups are matched first in a dedicated optimal-assignment round;
-    remaining subjects are matched in a second round against the leftover
-    major pool.
+    When *priority_groups* is set (e.g. ``["ACS"]``), the first group
+    is matched in a dedicated optimal-assignment round; remaining
+    subjects are matched in a second round against the leftover pool.
 
     match_level="subject": dedup to one row per base_id before matching.
     match_level="visit": each visit is an independent candidate; same
@@ -419,35 +418,25 @@ def match_1to1(cohort, caliper=2.0, seed=42, metric="MMSE", group_col=None,
                 rec[f"major_{metric_low}"] = ma_row[metric]
             pairs_records.append(rec)
 
-    _pg_set = set(priority_groups) if priority_groups else set()
-    _has_pg = bool(_pg_set) and "group" in cohort.columns
-    if _has_pg:
-        grp_on_minor = bool(_pg_set & set(minor_subj["group"].unique()))
-        used_minor_bids = set()
-        used_major_bids = set()
-        for grp in priority_groups:
-            if grp_on_minor:
-                mi_arg = minor_subj[
-                    (minor_subj["group"] == grp)
-                    & ~minor_subj[bid_col].isin(used_minor_bids)
-                ].reset_index(drop=True)
-                ma_arg = major_subj[
-                    ~major_subj[bid_col].isin(used_major_bids)
-                ].reset_index(drop=True)
-            else:
-                mi_arg = minor_subj[
-                    ~minor_subj[bid_col].isin(used_minor_bids)
-                ].reset_index(drop=True)
-                ma_arg = major_subj[
-                    (major_subj["group"] == grp)
-                    & ~major_subj[bid_col].isin(used_major_bids)
-                ].reset_index(drop=True)
-            assignments = _optimal_assign(mi_arg, ma_arg)
-            _record_pairs(mi_arg, ma_arg, assignments)
-            used_minor_bids.update(
-                mi_arg.iloc[ri][bid_col] for ri, _ in assignments)
-            used_major_bids.update(
-                ma_arg.iloc[ci][bid_col] for _, ci in assignments)
+    if priority_groups and "group" in cohort.columns:
+        prio = priority_groups[0]
+        grp_on_minor = prio in minor_subj["group"].unique()
+        if grp_on_minor:
+            mi_prio = minor_subj[
+                minor_subj["group"] == prio
+            ].reset_index(drop=True)
+            ma_prio = major_subj.reset_index(drop=True)
+        else:
+            mi_prio = minor_subj.reset_index(drop=True)
+            ma_prio = major_subj[
+                major_subj["group"] == prio
+            ].reset_index(drop=True)
+        assignments = _optimal_assign(mi_prio, ma_prio)
+        _record_pairs(mi_prio, ma_prio, assignments)
+        used_minor_bids = {mi_prio.iloc[ri][bid_col]
+                           for ri, _ in assignments}
+        used_major_bids = {ma_prio.iloc[ci][bid_col]
+                           for _, ci in assignments}
 
         mi_rest = minor_subj[
             ~minor_subj[bid_col].isin(used_minor_bids)
