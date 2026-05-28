@@ -7,7 +7,7 @@ from .predictor import (
     PREDICTOR_MAP,
     BENCHMARK_DIR_NAMES,
 )
-from .calibration import (
+from .calibrator import (
     CalibrationModel,
     BootstrapCorrector,
     MeanCorrector,
