@@ -688,13 +688,11 @@ def _forward_train(full_cohort, embedding, classifier, n_folds, seed):
         seed=seed,
     )
 
+    n_kept_set = sorted(set(int(n) for n in n_kept_per_fold))
     drop_corr_info = {
         "reducer": _reducer_label(),
-        "drop_corr_threshold": _DROP_CORR_THRESHOLD,
-        "drop_corr_method": _DROP_CORR_METHOD if _DROP_CORR_THRESHOLD else None,
-        "pca_components": _PCA_COMPONENTS,
         "n_features_input": int(X.shape[1]),
-        "n_features_kept_per_fold": [int(n) for n in n_kept_per_fold],
+        "n_features_kept": n_kept_set[0] if len(n_kept_set) == 1 else n_kept_set,
         "n_rows_input": int(X.shape[0]),
         "n_unique_subjects": int(pd.unique(base_ids).size),
         "photo_mode": _PHOTO_MODE,
@@ -936,13 +934,11 @@ def _reverse_train(full_cohort, matched_cohort, embedding, classifier,
         matched_base_ids
     ).astype(int)
 
+    n_kept_set = sorted(set(int(n) for n in n_kept_per_fold))
     drop_corr_info = {
         "reducer": _reducer_label(),
-        "drop_corr_threshold": _DROP_CORR_THRESHOLD,
-        "drop_corr_method": _DROP_CORR_METHOD if _DROP_CORR_THRESHOLD else None,
-        "pca_components": _PCA_COMPONENTS,
         "n_features_input": int(Xm.shape[1]),
-        "n_features_kept_per_fold": [int(n) for n in n_kept_per_fold],
+        "n_features_kept": n_kept_set[0] if len(n_kept_set) == 1 else n_kept_set,
         "n_rows_matched": int(Xm.shape[0]),
         "n_rows_full": int(Xf.shape[0]),
         "n_unique_subjects_matched": int(pd.unique(gm).size),
@@ -1230,7 +1226,6 @@ def run_cell(partition, embedding, classifier, strategy, n_folds=10, seed=42):
             "training_strategy": "full_cohort_oof",
             **_classifier_params_for_json(classifier),
             "k_folds_used": k, "n_dropped_no_emb": n_dropped,
-            "n_pairs_expected": EXPECTED_PAIRS.get(partition),
             "derived_view": (sorted(keep_groups)
                              if keep_groups is not None else None),
             "drop_corr_info": drop_corr_info,
