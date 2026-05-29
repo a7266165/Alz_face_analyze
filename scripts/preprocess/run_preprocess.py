@@ -2,7 +2,7 @@
 scripts/preprocess/run_preprocess.py
 預處理 pipeline：raw 影像資料夾 → selected / aligned / mirrors。
 
-遞迴走訪指定子樹，每個「含影像」的資料夾當一個 subject，依序跑五站：
+掃描指定子樹的直接子目錄，每個「含影像」的資料夾當一個 subject，依序跑五站：
     detect（偵測臉 + landmarks）
       → select（選最正面 n 張）
       → 去背（mask，可選）
@@ -165,7 +165,7 @@ def main():
     ap.add_argument("--input-root", type=Path, default=None,
                     help="覆寫 RAW_IMAGES_DIR；留空沿用 data/path.txt 設定")
     ap.add_argument("--subtrees", nargs="+", default=None,
-                    help=f"要遞迴走訪的子樹（相對 input-root）；留空用預設 {DEFAULT_SUBTREES}")
+                    help=f"要掃描的子樹（相對 input-root），取其直接子目錄為 subject；留空用預設 {DEFAULT_SUBTREES}")
     ap.add_argument("--n-select", type=int, default=10)
     ap.add_argument("--max-cpu-cores", type=int, default=2)
     ap.add_argument("--backgrounds", nargs="+",
@@ -182,14 +182,15 @@ def main():
     variants = [(name, name == "background") for name in args.backgrounds]
     mirror = not args.no_mirror
 
-    # 遞迴走訪各子樹，收集所有「含影像」的資料夾
+    # 各子樹只看一層：直接子目錄即一個 subject（含影像者）。
+    # 不往下遞迴——subject_id = 資料夾名，是下游 .npy/demographics 的鍵，必須唯一。
     subjects: List[Path] = []
     for sub in (args.subtrees or DEFAULT_SUBTREES):
         root = raw_root / sub
         if not root.exists():
             logger.warning(f"找不到子樹，略過: {root}")
             continue
-        for d in sorted(root.rglob("*")):
+        for d in sorted(root.iterdir()):
             if d.is_dir() and any(f.suffix.lower() in SUFFIXES
                                   for f in d.iterdir() if f.is_file()):
                 subjects.append(d)
