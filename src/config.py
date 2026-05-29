@@ -78,11 +78,6 @@ AGE_LINES_DIR = _AGE_DEFAULT_ANALYSIS / "lines"
 AGE_HISTOGRAM_DIR = _AGE_DEFAULT_ANALYSIS / "histogram"
 AGE_VIOLIN_DIR = _AGE_DEFAULT_ANALYSIS / "violin"
 
-# Calibration（cohort 依存，多種方法）
-AGE_CALIBRATION_DIR = _AGE_DEFAULT_ANALYSIS / "calibration"
-BOOTSTRAP_DIR = AGE_CALIBRATION_DIR / "bootstrap_correction"
-PREDICTED_AGES_CALIBRATED_FILE = AGE_CALIBRATION_DIR / "predicted_ages_calibrated.json"
-
 # -----------------------------------------------------------------------------
 # BMI
 # -----------------------------------------------------------------------------

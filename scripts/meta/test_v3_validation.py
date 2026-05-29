@@ -9,15 +9,15 @@ from _paths import PROJECT_ROOT
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 
-from src.config import META_ANALYSIS_DIR, cohort_name, cohort_spec_from_name
+from src.config import (
+    META_ANALYSIS_DIR, PREDICTED_AGES_FILE, cohort_name, cohort_spec_from_name,
+)
 from src.meta import MetaConfig, MetaPipeline
 
 COHORT = "p_first_cdrall_hc_all_cdrall_or_mmseall"
 spec = cohort_spec_from_name(cohort_name(COHORT))
 DEMO = PROJECT_ROOT / "data" / "demographics"
-AGES = (PROJECT_ROOT / "workspace" / "age" / "analysis"
-        / spec.visit_dir / spec.cdr_mmse_dir
-        / "correction" / "calibration" / "predicted_ages_calibrated.json")
+AGES = PREDICTED_AGES_FILE
 
 tests = [
     ("background", [], "none", "none", "3-feat baseline"),

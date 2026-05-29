@@ -280,13 +280,13 @@ class DataLoader:
     # ========== 資料篩選與平衡 ==========
 
     def _load_predicted_ages(self) -> dict:
-        """載入預測年齡"""
+        """載入預測年齡（{ID: mean_age}，相容 predict.py 的巢狀格式）"""
         if self._predicted_ages is not None:
             return self._predicted_ages
 
         if self.predicted_ages_file and self.predicted_ages_file.exists():
-            with open(self.predicted_ages_file, "r") as f:
-                self._predicted_ages = json.load(f)
+            from src.age.utils import load_predicted_ages
+            self._predicted_ages = load_predicted_ages(self.predicted_ages_file)
             logger.info(f"載入預測年齡: {len(self._predicted_ages)} 筆")
         else:
             self._predicted_ages = {}

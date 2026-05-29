@@ -9,7 +9,9 @@ from _paths import PROJECT_ROOT
 import logging
 logging.basicConfig(level=logging.WARNING)
 
-from src.config import META_ANALYSIS_DIR, cohort_name, cohort_spec_from_name
+from src.config import (
+    META_ANALYSIS_DIR, PREDICTED_AGES_FILE, cohort_name, cohort_spec_from_name,
+)
 from src.meta.stacking.config import MetaConfig
 from src.meta.loader.meta import MetaDataLoader
 from src.meta.stacking.trainer import create_trainer
@@ -21,9 +23,7 @@ import re
 COHORT = "p_first_cdrall_hc_all_cdrall_or_mmseall"
 spec = cohort_spec_from_name(cohort_name(COHORT))
 DEMO = PROJECT_ROOT / "data" / "demographics"
-AGES = (PROJECT_ROOT / "workspace" / "age" / "analysis"
-        / spec.visit_dir / spec.cdr_mmse_dir
-        / "correction" / "calibration" / "predicted_ages_calibrated.json")
+AGES = PREDICTED_AGES_FILE
 
 def timed(label):
     class Timer:

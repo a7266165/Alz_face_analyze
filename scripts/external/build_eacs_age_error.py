@@ -3,8 +3,7 @@
 
 Prerequisites：
   - data/demographics/EACS.csv（含 Age 欄，從檔名回推）
-  - workspace/age/analysis/<default-cohort>/predicted_ages{_calibrated,}.json
-    （優先用 calibrated 版本；無則用 raw）
+  - workspace/age/predictions/1_MiVOLO/predicted_ages.json（原始預測值）
 
 Outputs：
   workspace/age/predictions/<default-cohort>/eacs_age_error.csv
@@ -15,7 +14,6 @@ Outputs：
 """
 import argparse
 import csv
-import json
 import sys
 from pathlib import Path
 
@@ -24,8 +22,8 @@ from src.config import (
     DEMOGRAPHICS_DIR,
     AGE_STAT_DIR,
     PREDICTED_AGES_FILE,
-    PREDICTED_AGES_CALIBRATED_FILE,
 )
+from src.age.utils import load_predicted_ages
 
 OUTPUT_CSV = AGE_STAT_DIR / "eacs_age_error.csv"
 
@@ -47,27 +45,14 @@ def load_eacs_ages():
     return out
 
 
-def load_predicted(use_calibrated: bool):
-    target = PREDICTED_AGES_CALIBRATED_FILE if use_calibrated else PREDICTED_AGES_FILE
-    if not target.exists():
-        fallback = PREDICTED_AGES_FILE if use_calibrated else None
-        if fallback and fallback.exists():
-            print(f"WARN: {target.name} missing, fallback to {fallback.name}")
-            target = fallback
-        else:
-            raise FileNotFoundError(target)
-    with open(target, "r", encoding="utf-8") as f:
-        return json.load(f), target.name
-
-
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--raw-only", action="store_true",
-                    help="強制用 predicted_ages.json（不用 calibrated 版本）")
-    args = ap.parse_args()
+    ap.parse_args()
 
     eacs = load_eacs_ages()
-    preds, src_file = load_predicted(use_calibrated=not args.raw_only)
+    if not PREDICTED_AGES_FILE.exists():
+        raise FileNotFoundError(PREDICTED_AGES_FILE)
+    preds = load_predicted_ages(PREDICTED_AGES_FILE)
 
     rows = []
     n_missing = 0
@@ -96,7 +81,7 @@ def main():
         writer.writerows(rows)
 
     print(f"Wrote {OUTPUT_CSV}  ({len(rows)} rows; {n_missing} EACS ids missing predictions)")
-    print(f"Source predictions: {src_file}")
+    print(f"Source predictions: {PREDICTED_AGES_FILE.name}")
     if rows:
         import statistics
         errs = [r["age_error"] for r in rows]

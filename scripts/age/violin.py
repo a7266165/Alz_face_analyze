@@ -34,7 +34,7 @@ from src.config import (
     DEMOGRAPHICS_DIR,
     PREDICTED_AGES_FILE,
 )
-from src.age.calibrator import load_predicted_ages
+from src.age.utils import load_predicted_ages
 
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s - %(levelname)s - %(message)s")

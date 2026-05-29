@@ -1,12 +1,14 @@
 """
 scripts/age/lines.py
-Error-by-age line plots with internal + external dataset combinations.
+Prediction-residual (real − predicted) line plots by true age, with internal +
+external dataset combinations. No age-calibration involved — residuals are
+computed directly from the raw MiVOLO predictions.
 
-Outputs:
-  lines/correction/{no_sliding_window,sliding_window_10}/  — post-bootstrap corrected
-  lines/error/{no_sliding_window,sliding_window_10}/       — raw residual (before correction)
+Outputs (under AGE_LINES_DIR):
+  no_sliding_window/   — residual by integer age (mean ± std)
+  sliding_window_10/   — residual by 10-year sliding window
 
-Each directory contains 8 source combinations × {lines,merged} views.
+Each directory contains 8 source combinations × {lines, merged} views.
 
 Usage:
   conda run -n Alz_face_age python scripts/age/lines.py
@@ -14,7 +16,6 @@ Usage:
 """
 
 import argparse
-import json
 import logging
 import sys
 from itertools import combinations
@@ -31,11 +32,10 @@ from _paths import PROJECT_ROOT  # noqa: F401
 
 from src.config import (
     AGE_LINES_DIR,
-    BOOTSTRAP_DIR,
     DEMOGRAPHICS_DIR,
     PREDICTED_AGES_FILE,
 )
-from src.age.calibrator import load_predicted_ages
+from src.age.utils import load_predicted_ages
 
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s - %(levelname)s - %(message)s")
@@ -51,37 +51,50 @@ COLORS = {
 }
 EXTERNAL_SOURCES = ["AgeDB", "APPA-REAL", "UTKFace"]
 
+_COLS = ["group", "real_age", "predicted_age", "error_before", "age_int"]
+
 # ── data loading ─────────────────────────────────────────────────────────────
 
-def load_bootstrap_mean_coefs(coefs_csv: Path):
-    df = pd.read_csv(coefs_csv, encoding="utf-8-sig")
-    row = df[df["iter"].astype(str) == "mean"].iloc[0]
-    a, b = float(row["a"]), float(row["b"])
-    logger.info(f"bootstrap mean coefs: a={a:.4f}, b={b:.4f}")
-    return a, b
+def build_internal(preds: dict) -> pd.DataFrame:
+    """ACS/NAD/P residual = real − predicted, from raw predictions."""
+    dfs = []
+    for csv_name in ["ACS.csv", "NAD.csv", "P.csv"]:
+        demo = pd.read_csv(DEMOGRAPHICS_DIR / csv_name, encoding="utf-8-sig")
+        grp = csv_name.replace(".csv", "")
+        demo["Age"] = pd.to_numeric(demo["Age"], errors="coerce")
+        demo["predicted_age"] = demo["ID"].map(preds)
+        demo = demo.dropna(subset=["Age", "predicted_age"])
+        real = demo["Age"].astype(float)
+        pred = demo["predicted_age"].astype(float)
+        dfs.append(pd.DataFrame({
+            "group": grp,
+            "real_age": real,
+            "predicted_age": pred,
+            "error_before": real - pred,
+            "age_int": real.astype(int),
+        }))
+    return pd.concat(dfs, ignore_index=True)
 
 
-def load_corrected_internal(csv_path: Path) -> pd.DataFrame:
-    df = pd.read_csv(csv_path, encoding="utf-8-sig")
-    logger.info(f"internal corrected: {len(df)} rows")
-    return df
-
-
-def build_external_corrected(source, a, b, preds):
-    demo = pd.read_csv(DEMOGRAPHICS_DIR / "EACS.csv", encoding="utf-8-sig")
+def build_external(source: str, preds: dict) -> pd.DataFrame:
+    """One EACS source's residual = real − predicted, from raw predictions."""
+    path = DEMOGRAPHICS_DIR / "EACS.csv"
+    if not path.exists():
+        return pd.DataFrame(columns=_COLS)
+    demo = pd.read_csv(path, encoding="utf-8-sig")
+    if "Source" not in demo.columns:
+        return pd.DataFrame(columns=_COLS)
     demo = demo[demo["Source"] == source].copy()
     demo["Age"] = pd.to_numeric(demo["Age"], errors="coerce")
     demo["predicted_age"] = demo["ID"].map(preds)
     demo = demo.dropna(subset=["Age", "predicted_age"]).reset_index(drop=True)
     real = demo["Age"].astype(float)
     pred = demo["predicted_age"].astype(float)
-    corrected = pred + (a * real + b)
     return pd.DataFrame({
-        "ID": demo["ID"], "group": source,
-        "real_age": real, "predicted_age": pred,
-        "corrected_age": corrected,
+        "group": source,
+        "real_age": real,
+        "predicted_age": pred,
         "error_before": real - pred,
-        "error_after": real - corrected,
         "age_int": real.astype(int),
     })
 
@@ -188,35 +201,20 @@ def all_combos():
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--bootstrap-dir", type=Path, default=BOOTSTRAP_DIR)
     ap.add_argument("--output-dir", type=Path, default=AGE_LINES_DIR)
     args = ap.parse_args()
 
-    DIR_CORR = args.output_dir / "correction" / "no_sliding_window"
-    DIR_CORR_SW = args.output_dir / "correction" / "sliding_window_10"
-    DIR_ERR = args.output_dir / "error" / "no_sliding_window"
-    DIR_ERR_SW = args.output_dir / "error" / "sliding_window_10"
+    dir_py = args.output_dir / "no_sliding_window"
+    dir_sw = args.output_dir / "sliding_window_10"
 
-    logger.info(f"bootstrap-dir = {args.bootstrap_dir}")
-    logger.info(f"output-dir    = {args.output_dir}")
-
-    a, b = load_bootstrap_mean_coefs(args.bootstrap_dir / "data" / "bootstrap_coefficients.csv")
-    df_internal = load_corrected_internal(args.bootstrap_dir / "data" / "corrected_ages.csv")
+    logger.info(f"output-dir = {args.output_dir}")
 
     preds = load_predicted_ages(PREDICTED_AGES_FILE)
+    df_int = build_internal(preds)
+    df_ext = {src: build_external(src, preds) for src in EXTERNAL_SOURCES}
 
-    keep = ["group", "real_age", "predicted_age", "corrected_age",
-            "error_before", "error_after", "age_int"]
-    df_int = df_internal[keep]
-    df_ext = {src: build_external_corrected(src, a, b, preds)[keep]
-              for src in EXTERNAL_SOURCES}
-
-    settings = [
-        (DIR_CORR, DIR_CORR_SW,
-         "Error (after bootstrap correction)", "error_after", "Corrected Error"),
-        (DIR_ERR, DIR_ERR_SW,
-         "Residual = real - predicted", "error_before", "Prediction Residual (Before Correction)"),
-    ]
+    ylabel = "Prediction Residual (real − predicted)"
+    title_state = "Residual = real − predicted"
 
     for combo in all_combos():
         parts = [df_int] + [df_ext[s] for s in combo]
@@ -230,26 +228,25 @@ def main():
             df_merged.loc[df_merged["group"].isin(combo), "group"] = "ACS"
         merged_label = f"ACS + {label}" if combo else "ACS"
 
-        for dir_py, dir_sw, ylabel, y_col, title_state in settings:
-            title_l = f"{title_state} by True Age — {' / '.join(groups_lines)} (mean ± std)"
-            plot_combined(df_combo, dir_py / f"lines_{suffix}.png",
-                          groups=groups_lines, title=title_l,
-                          ylabel=ylabel, y_col=y_col)
-            plot_sliding_window(df_combo, dir_sw / f"lines_{suffix}_sw10.png",
-                                groups=groups_lines,
-                                title=f"{title_state} by True Age — {' / '.join(groups_lines)} (10-y sliding window)",
-                                ylabel=ylabel, y_col=y_col)
-            if combo:
-                title_m = f"{title_state} by True Age — {merged_label} / NAD / P (mean ± std)"
-                plot_combined(df_merged, dir_py / f"merged_{suffix}.png",
-                              groups=["ACS", "NAD", "P"], title=title_m,
-                              ylabel=ylabel, y_col=y_col,
-                              group_labels={"ACS": merged_label})
-                plot_sliding_window(df_merged, dir_sw / f"merged_{suffix}_sw10.png",
-                                    groups=["ACS", "NAD", "P"],
-                                    title=f"{title_state} by True Age — {merged_label} / NAD / P (10-y sliding window)",
-                                    ylabel=ylabel, y_col=y_col,
-                                    group_labels={"ACS": merged_label})
+        title_l = f"{title_state} by True Age — {' / '.join(groups_lines)} (mean ± std)"
+        plot_combined(df_combo, dir_py / f"lines_{suffix}.png",
+                      groups=groups_lines, title=title_l,
+                      ylabel=ylabel, y_col="error_before")
+        plot_sliding_window(df_combo, dir_sw / f"lines_{suffix}_sw10.png",
+                            groups=groups_lines,
+                            title=f"{title_state} by True Age — {' / '.join(groups_lines)} (10-y sliding window)",
+                            ylabel=ylabel, y_col="error_before")
+        if combo:
+            title_m = f"{title_state} by True Age — {merged_label} / NAD / P (mean ± std)"
+            plot_combined(df_merged, dir_py / f"merged_{suffix}.png",
+                          groups=["ACS", "NAD", "P"], title=title_m,
+                          ylabel=ylabel, y_col="error_before",
+                          group_labels={"ACS": merged_label})
+            plot_sliding_window(df_merged, dir_sw / f"merged_{suffix}_sw10.png",
+                                groups=["ACS", "NAD", "P"],
+                                title=f"{title_state} by True Age — {merged_label} / NAD / P (10-y sliding window)",
+                                ylabel=ylabel, y_col="error_before",
+                                group_labels={"ACS": merged_label})
 
 
 if __name__ == "__main__":

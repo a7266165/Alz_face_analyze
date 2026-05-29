@@ -23,6 +23,7 @@ from _paths import PROJECT_ROOT
 
 from src.config import (
     META_ANALYSIS_DIR,
+    PREDICTED_AGES_FILE,
     cohort_name,
     cohort_spec_from_name,
 )
@@ -44,7 +45,7 @@ BASE_CLASSIFIER_PARAM = "C_1"
 
 BG_MODES = ["background", "no_background"]
 EMB_MODELS = ["arcface", "dlib", "topofr", "vggface"]
-META_CLASSIFIERS = ["logistic", "xgboost"]
+META_CLASSIFIERS = ["logistic", "xgboost", "tabpfn"]
 NORMALIZE_OPTIONS = [None, "minmax"]
 EXTRA_FEATURES_OPTIONS = [[], ["bmi"]]
 
@@ -65,13 +66,9 @@ ASYMMETRY_CONFIGS = [
     ("absolute_relative_differences", "lda_projection"),
 ]
 
-# Age predictions (cohort-specific)
+# Age predictions (raw MiVOLO predictions; cohort-agnostic)
 spec = cohort_spec_from_name(cohort_name(COHORT_MODE))
-PREDICTED_AGES = (
-    WORKSPACE_DIR / "age" / "analysis"
-    / spec.visit_dir / spec.cdr_mmse_dir
-    / "correction" / "calibration" / "predicted_ages_calibrated.json"
-)
+PREDICTED_AGES = PREDICTED_AGES_FILE
 
 EMOTION_METHOD = None
 
