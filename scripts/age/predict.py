@@ -141,10 +141,17 @@ def main():
             results = json.load(f)
         logger.info(f"merge 模式：既有 {len(results)} 個 id")
 
+    skipped_no_demo = 0
     for subject_dir in tqdm(subjects, desc="預測年齡"):
         subject_id = subject_dir.name
-        images = load_images(subject_dir)
 
+        # 只預測清理後 demographics 中存在的受試者（已要求 Age + BMI 皆有效）。
+        # 不在其中者（例如 BMI 缺失而被清理掉）為無效樣本，一律捨棄。
+        if subject_id not in actual_ages:
+            skipped_no_demo += 1
+            continue
+
+        images = load_images(subject_dir)
         if not images:
             logger.warning(f"{subject_id}: 無影像")
             continue
@@ -152,12 +159,15 @@ def main():
         ages = predictor.predict(images)
 
         if ages:
-            entry = {"predicted_ages": [round(a, 2) for a in ages]}
-            if subject_id in actual_ages:
-                entry["actual_age"] = actual_ages[subject_id]
-            results[subject_id] = entry
+            results[subject_id] = {
+                "predicted_ages": [round(a, 2) for a in ages],
+                "actual_age": actual_ages[subject_id],
+            }
         else:
             logger.warning(f"{subject_id}: 預測失敗")
+
+    if skipped_no_demo:
+        logger.info(f"跳過 {skipped_no_demo} 個不在清理後 demographics 的受試者（無效樣本）")
 
     output_file.parent.mkdir(parents=True, exist_ok=True)
     with open(output_file, 'w', encoding='utf-8') as f:
