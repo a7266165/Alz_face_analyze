@@ -20,7 +20,7 @@ Alz_face_analyze/
 ├── scripts/                          # Entry-point scripts (mirror src/ + workspace/)
 │   ├── README.md                     # modality 索引
 │   ├── utilities/                    # cohort / feature_loaders / stats_helpers / emotion_loader
-│   ├── preprocess/                   # prepare_feature.py
+│   ├── preprocess/                   # run_preprocess.py（raw→aligned+mirror）
 │   ├── age/                          # predict_ages, run_classifiers, run_window_classifier, plot_*
 │   ├── asymmetry/                    # extract_landmarks, run_analysis
 │   ├── embedding/                    # extract / run_fwd_rev / run_sweep / plot_*

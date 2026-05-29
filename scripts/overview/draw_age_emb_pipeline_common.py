@@ -90,8 +90,7 @@ def line(ax, x1, y1, x2, y2):
 
 
 def _cohort_layout():
-    """Shared layout constants for the 4-row Cohort section."""
-    nw_dem = 3.0
+    """Shared layout constants for the 3-row Cohort section."""
     nw_vs = 2.6; gap_vs = 0.3
     nw_cdr = 3.6; gap_cdr = 0.3
     nw_co = 4.2
@@ -99,16 +98,14 @@ def _cohort_layout():
     total_cdr = 3 * nw_cdr + 2 * gap_cdr
 
     c1_top = 0.5
-    y_dem = c1_top + SP + NODE_H / 2
-    y_vs = y_dem + NODE_H + SP
+    y_vs = c1_top + SP + NODE_H / 2
     y_cf = y_vs + NODE_H + SP
     y_fc = y_cf + NODE_H + SP
     c1_bot = y_fc + NODE_H / 2 + SP
     c1_w = max(total_vs, total_cdr, nw_co) + 0.9
 
     return dict(
-        c1_top=c1_top, y_dem=y_dem, nw_dem=nw_dem,
-        y_vs=y_vs, y_cf=y_cf, y_fc=y_fc, c1_bot=c1_bot,
+        c1_top=c1_top, y_vs=y_vs, y_cf=y_cf, y_fc=y_fc, c1_bot=c1_bot,
         c1_w=c1_w,
         nw_vs=nw_vs, gap_vs=gap_vs, total_vs=total_vs,
         nw_cdr=nw_cdr, gap_cdr=gap_cdr, total_cdr=total_cdr,
