@@ -136,8 +136,10 @@ class InsightFacePredictor:
 
     def predict_single(self, image: np.ndarray) -> Optional[float]:
         try:
-            image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-            faces = self._app.get(image_rgb)
+            # InsightFace 期待 BGR：其內部 blobFromImage 已設 swapRB=True
+            # （見 model_zoo/attribute.py），會自行轉 RGB。不要在這裡先轉，
+            # 否則會雙重交換導致 R/B 通道顛倒。
+            faces = self._app.get(image)
             if faces:
                 return float(faces[0].age)
         except Exception as e:
