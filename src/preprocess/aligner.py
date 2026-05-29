@@ -1,7 +1,10 @@
 """
-臉部對齊器
+臉部對齊器（pure station，純旋轉）
 
-負責旋轉校正臉部使其垂直，並建立臉部遮罩
+依中軸線傾斜角把臉轉正使其垂直。
+去背（凸包遮罩）已拆到 masker.FaceMasker。
+
+純函式：影像 / landmarks 進 → 角度 / 影像 出，不碰路徑與 I/O。
 """
 
 import cv2
@@ -13,89 +16,14 @@ logger = logging.getLogger(__name__)
 
 
 class FaceStraightener:
-    """
-    臉部對齊器
-
-    套用遮罩並旋轉影像使臉部中線垂直
-    """
+    """旋轉影像使臉部中線垂直。"""
 
     def __init__(self, midline_points: Tuple[int, ...] = (10, 168, 4, 2)):
         """
-        初始化對齊器
-
         Args:
             midline_points: 臉部中軸線特徵點索引
         """
         self.midline_points = midline_points
-
-    def straighten_pics(
-        self,
-        image: np.ndarray,
-        landmarks: np.ndarray,
-        apply_mask: bool = True,
-    ) -> np.ndarray:
-        """
-        對齊臉部
-
-        1. 建立臉部遮罩（可選）
-        2. 計算中線傾斜角度
-        3. 旋轉影像使中線垂直
-
-        Args:
-            image: 輸入影像 (BGR)
-            landmarks: 468 個特徵點座標 (468, 2)
-            apply_mask: 是否套用 convex hull 去背遮罩。False 時保留原始背景。
-
-        Returns:
-            對齊後的影像
-        """
-        h, w = image.shape[:2]
-        center = (w / 2, h / 2)
-
-        # Step 1: 建立並套用遮罩（可選）
-        if apply_mask:
-            mask = self.build_face_mask(image.shape, landmarks)
-            image_for_rotate = cv2.bitwise_and(image, image, mask=mask)
-        else:
-            image_for_rotate = image
-
-        # Step 2: 計算傾斜角度
-        tilt = self.calculate_midline_tilt(landmarks)
-
-        # Step 3: 旋轉影像
-        M = cv2.getRotationMatrix2D(center, -tilt, 1.0)
-        aligned_image = cv2.warpAffine(image_for_rotate, M, (w, h))
-
-        logger.debug(f"對齊完成，傾斜角度: {tilt:.2f}°（apply_mask={apply_mask}）")
-        return aligned_image
-
-    def build_face_mask(
-        self,
-        img_shape: Tuple[int, int, ...],
-        face_points: np.ndarray
-    ) -> np.ndarray:
-        """
-        建立臉部凸包遮罩
-
-        Args:
-            img_shape: 影像尺寸 (H, W, C)
-            face_points: 臉部特徵點 (N, 2)
-
-        Returns:
-            二值遮罩 (H, W)
-        """
-        mask = np.zeros(img_shape[:2], dtype=np.uint8)
-
-        if face_points.shape[0] == 0:
-            return mask
-
-        # 計算凸包
-        hull = cv2.convexHull(face_points.astype(np.int32))
-
-        # 填充凸包區域
-        cv2.fillConvexPoly(mask, hull, 255)
-
-        return mask
 
     def calculate_midline_tilt(self, landmarks: np.ndarray) -> float:
         """
@@ -123,11 +51,26 @@ class FaceStraightener:
 
         return np.mean(angles) if angles else 0.0
 
+    def rotate_to_vertical(self, image: np.ndarray, tilt: float) -> np.ndarray:
+        """
+        依中線傾斜角把影像轉正（繞影像中心旋轉 -tilt）
+
+        Args:
+            image: 輸入影像（已去背或保留背景皆可）
+            tilt: calculate_midline_tilt 算出的傾斜角（度）
+
+        Returns:
+            轉正後的影像
+        """
+        aligned = self.rotate_image(image, -tilt)
+        logger.debug(f"對齊完成，傾斜角度: {tilt:.2f}°")
+        return aligned
+
     def rotate_image(
         self,
         image: np.ndarray,
         angle: float,
-        center: Tuple[float, float] = None
+        center: Tuple[float, float] = None,
     ) -> np.ndarray:
         """
         旋轉影像

@@ -7,7 +7,7 @@
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List, Literal, Optional, Tuple
+from typing import Literal, Optional, Tuple
 
 
 # =============================================================================
@@ -369,48 +369,18 @@ class MirrorConfig:
 
 @dataclass
 class PreprocessConfig:
-    """共用預處理配置"""
+    """預處理各站參數（detect / select / align / mirror 共用）。
 
-    # ========== MediaPipe 特徵點 ==========
-    midline_points: Tuple[int, ...] = (10, 168, 4, 2)  # 同 src.common.mediapipe_utils.MIDLINE_POINTS
+    去背/鏡射「要不要做」由 run_preprocess.py 的 toggle 控制，
+    不再放在 config（昔日的 steps / also_save_aligned_background 已移除）。
+    """
 
-    # ========== 相片選擇參數 ==========
+    # MediaPipe 特徵點（同 src.common.mediapipe_utils.MIDLINE_POINTS）
+    midline_points: Tuple[int, ...] = (10, 168, 4, 2)
+
+    # 相片選擇 / 偵測
     n_select: int = 10  # 選擇多少張最正的臉部相片
     detection_confidence: float = 0.5  # MediaPipe 偵測信心度閾值
 
-    # ========== CLAHE 參數 ==========
-    apply_clahe: bool = False  # 是否應用 CLAHE
-    clahe_clip_limit: float = 2.0  # CLAHE 限制參數
-    clahe_tile_size: int = 8  # CLAHE 區塊大小
-
-    # ========== 儲存控制 ==========
-    save_intermediate: bool = False  # 是否儲存中間結果
-    subject_id: Optional[str] = None  # 受試者 ID（用於建立子目錄）
-
-    # 額外輸出未去背版本到 ALIGNED_BACKGROUND_DIR（不影響既有 aligned/）
-    # 預設 True，產出 aligned/ + aligned_background/ 雙變體
-    also_save_aligned_background: bool = True
-
-    # ========== 處理流程控制 ==========
-    steps: List[str] = field(
-        default_factory=lambda: [
-            "select",  # 選擇最正面的 n 張
-            "align",   # 角度校正
-        ]
-    )
-
-
-@dataclass
-class APIConfig(PreprocessConfig):
-    """API 配置"""
-
-    save_intermediate: bool = False  # API 預設不儲存
-    cleanup_on_complete: bool = True  # 完成後清理暫存檔
-
-
-@dataclass
-class AnalyzeConfig(PreprocessConfig):
-    """Analyze 配置"""
-
-    save_intermediate: bool = True  # Analyze 預設儲存
+    # 鏡射參數
     mirror: MirrorConfig = field(default_factory=MirrorConfig)

@@ -1,24 +1,21 @@
 """
 預處理模組
 
-提供臉部預處理功能，包含偵測、選擇、對齊與鏡射生成
+五個獨立站（pure stations），由 scripts/preprocess/run_preprocess.py 串接：
+  detect → select → 去背(mask) → align(rotate) → mirror
 """
 
 from .detector import FaceDetector, FaceInfo
 from .selector import FaceSelector
+from .masker import FaceMasker
 from .aligner import FaceStraightener
-from .base import PreprocessPipeline, ProcessedFace
 from .mirror_generator import MirrorGenerator
 
 __all__ = [
-    # 主要類別
-    "PreprocessPipeline",
-    "ProcessedFace",
-    # 子模組
     "FaceDetector",
+    "FaceInfo",
     "FaceSelector",
+    "FaceMasker",
     "FaceStraightener",
     "MirrorGenerator",
-    # 資料結構
-    "FaceInfo",
 ]

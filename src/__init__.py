@@ -56,8 +56,7 @@ from .config import (
     get_raw_images_subdir,
     # 處理參數
     PreprocessConfig,
-    APIConfig,
-    AnalyzeConfig,
+    MirrorConfig,
 )
 
 __all__ = [
@@ -112,6 +111,5 @@ __all__ = [
     "get_raw_images_subdir",
     # 處理參數
     "PreprocessConfig",
-    "APIConfig",
-    "AnalyzeConfig",
+    "MirrorConfig",
 ]
