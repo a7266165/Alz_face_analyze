@@ -1310,12 +1310,7 @@ def build_v4_refactor():
     for hx2 in hsx:
         line(ax, hx2, y_hs + NODE_H / 2, CX_S, y_fc - NODE_H / 2)
 
-    # ════════════════════════════════════
-    # From here on: everything grayed out
-    # ════════════════════════════════════
-    lit[0] = False
-
-    # ════ Preprocessing: Detect, Select, bg, Align, face/mirror ════
+    # ════ Preprocessing (LIT): Detect, Select, bg, Align, face/mirror ════
     _cl(ax, CX_S, (c_pre_top + c_pre_bot) / 2,
         pre_cluster_w, c_pre_bot - c_pre_top, C_PRE['bg'])
     _n(ax, CX_S, y_pre1, NW_PRE, NODE_H, 'Detect', C_PRE['nd'])
@@ -1334,6 +1329,11 @@ def build_v4_refactor():
     _n(ax, x_mirr, y_mir, nw_mir, NODE_H, 'mirrored_face', C3['nd'])
     line(ax, CX_S, y_pre_align + NODE_H / 2, x_face, y_mir - NODE_H / 2)
     line(ax, CX_S, y_pre_align + NODE_H / 2, x_mirr, y_mir - NODE_H / 2)
+
+    # ════════════════════════════════════
+    # From here on: everything grayed out
+    # ════════════════════════════════════
+    lit[0] = False
 
     # ════ External Datasets ════
     eacs_w = age_w + 0.6
