@@ -9,6 +9,7 @@ from .utils import load_predicted_ages
 
 __all__ = [
     "load_predicted_ages",
+    "BasePredictor",
     "MiVOLOPredictor",
     "InsightFacePredictor",
     "DeepFacePredictor",
@@ -19,6 +20,7 @@ __all__ = [
 ]
 
 _PREDICTOR_EXPORTS = {
+    "BasePredictor",
     "MiVOLOPredictor",
     "InsightFacePredictor",
     "DeepFacePredictor",
