@@ -13,6 +13,9 @@ bg / mirror 是 toggle，一次出齊：
     --backgrounds no_background background   要產哪些背景變體（預設兩者都產）
     --no-mirror                              不產鏡射（只到 aligned 為止）
 
+mediapipe 的 FaceMesh 由 open_face_mesh() 在 main 開一次、with 區塊結束自動釋放；
+五站皆為 pure function，直接 import 呼叫，不必當物件穿過來穿過去。
+
 下游「影像 → 特徵」見 scripts/embedding/extract_mirror_features.py。
 
 用法：
@@ -34,11 +37,13 @@ from _paths import PROJECT_ROOT  # noqa: F401
 
 from src.config import RAW_IMAGES_DIR, preprocess_dir, PreprocessConfig
 from src.preprocess import (
-    FaceDetector,
-    FaceSelector,
-    FaceMasker,
-    FaceStraightener,
-    MirrorGenerator,
+    open_face_mesh,
+    detect_faces,
+    select_most_frontal,
+    apply_mask,
+    calculate_midline_tilt,
+    rotate_to_vertical,
+    generate_mirrors,
 )
 
 logging.basicConfig(
@@ -80,8 +85,7 @@ def already_done(subject_id: str, variants: List[Tuple[str, bool]],
     return True
 
 
-def process_subject(subject_dir: Path, detector, selector, masker,
-                    straightener, mirror_gen,
+def process_subject(subject_dir: Path, face_mesh, cfg: PreprocessConfig,
                     variants: List[Tuple[str, bool]], mirror: bool) -> bool:
     """raw 資料夾 → detect → select → (每 variant: 去背→align→存；可選鏡射)。"""
     subject_id = subject_dir.name
@@ -97,11 +101,11 @@ def process_subject(subject_dir: Path, detector, selector, masker,
         logger.warning(f"{subject_id}: 沒有可讀的影像")
         return False
 
-    faces = detector.detect_face_batch(images, paths)
+    faces = detect_faces(face_mesh, images, paths, cfg.midline_points)
     if not faces:
         logger.warning(f"{subject_id}: 未偵測到臉部")
         return False
-    selected = selector.select_most_frontal(faces)
+    selected = select_most_frontal(faces, cfg.n_select)
     if not selected:
         logger.warning(f"{subject_id}: select 後沒有臉部")
         return False
@@ -115,11 +119,11 @@ def process_subject(subject_dir: Path, detector, selector, masker,
 
     # 每張臉算一次 tilt；no_bg 與 bg 共用同一旋轉角，差別只在轉正前是否去背
     for i, face in enumerate(selected):
-        tilt = straightener.calculate_midline_tilt(face.landmarks)
+        tilt = calculate_midline_tilt(face.landmarks, cfg.midline_points)
         stem = face.path.stem if face.path else None
         for _, is_bg in variants:
-            src = face.image if is_bg else masker.apply(face.image, face.landmarks)
-            aligned = straightener.rotate_to_vertical(src, tilt)
+            src = face.image if is_bg else apply_mask(face.image, face.landmarks)
+            aligned = rotate_to_vertical(src, tilt)
 
             al_dir = preprocess_dir("aligned", background=is_bg) / subject_id
             al_dir.mkdir(parents=True, exist_ok=True)
@@ -128,9 +132,9 @@ def process_subject(subject_dir: Path, detector, selector, masker,
 
             if mirror:
                 # 對齊後重新偵測 landmark（找不到則沿用對齊前的）
-                redet = detector.detect_face_batch([aligned])
+                redet = detect_faces(face_mesh, [aligned], midline_points=cfg.midline_points)
                 lm = redet[0].landmarks if redet else face.landmarks
-                left, right = mirror_gen.generate(aligned, lm)
+                left, right = generate_mirrors(aligned, lm, cfg.mirror)
                 mr_dir = preprocess_dir("mirrors", background=is_bg) / subject_id
                 mr_dir.mkdir(parents=True, exist_ok=True)
                 base = stem if stem else f"face_{i:03d}"
@@ -187,28 +191,16 @@ def main():
         return
 
     cfg = PreprocessConfig(n_select=args.n_select)
-    detector = FaceDetector(detection_confidence=cfg.detection_confidence,
-                            midline_points=cfg.midline_points)
-    selector = FaceSelector(n_select=cfg.n_select)
-    masker = FaceMasker()
-    straightener = FaceStraightener(midline_points=cfg.midline_points)
-    mc = cfg.mirror
-    mirror_gen = MirrorGenerator(
-        method=mc.mirror_method, mirror_size=mc.mirror_size,
-        feather_px=mc.feather_px, margin=mc.margin, midline_points=mc.midline_points)
-
     start = datetime.now()
     n_ok = n_fail = n_skip = 0
-    try:
+    with open_face_mesh(cfg.detection_confidence) as fm:
         for subject_dir in tqdm(subjects, desc="預處理"):
             subject_id = subject_dir.name
             if already_done(subject_id, variants, mirror):
                 n_skip += 1
                 continue
             try:
-                ok = process_subject(subject_dir, detector, selector, masker,
-                                     straightener, mirror_gen, variants, mirror)
-                if ok:
+                if process_subject(subject_dir, fm, cfg, variants, mirror):
                     n_ok += 1
                 else:
                     n_fail += 1
@@ -217,8 +209,6 @@ def main():
                 logger.error(f"✗ {subject_id}: {e}")
                 import traceback
                 traceback.print_exc()
-    finally:
-        detector.close()
 
     logger.info("=" * 70)
     logger.info(f"完成：成功 {n_ok}、失敗 {n_fail}、跳過(斷點) {n_skip}"

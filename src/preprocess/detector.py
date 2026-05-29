@@ -1,16 +1,22 @@
 """
-臉部偵測器
+臉部偵測（pure functions + 一個資源工廠）
 
-負責使用 MediaPipe 偵測臉部並提取特徵點
+open_face_mesh()  開一個 MediaPipe Face Mesh（建構昂貴、需 close），用 with 管生命週期。
+detect_faces()    純函式：吃 face_mesh handle + 影像 → FaceInfo 清單。
+
+mediapipe 的初始化/釋放收在這支；呼叫端只透過 open_face_mesh 拿不透明 handle，
+不必自己 import mediapipe（就像 `with open(...) as f` 把 file handle 傳給函式）。
 """
+
+import logging
+from contextlib import contextmanager
+from dataclasses import dataclass
+from pathlib import Path
+from typing import List, Optional, Tuple
 
 import cv2
 import mediapipe as mp
 import numpy as np
-from pathlib import Path
-from typing import List, Tuple, Optional
-from dataclasses import dataclass
-import logging
 
 from src.common.mediapipe_utils import MIDLINE_POINTS
 
@@ -23,188 +29,90 @@ class FaceInfo:
     image: np.ndarray
     vertex_angle_sum: float  # 中軸線頂點夾角總和（度），越小越正面
     confidence: float  # 偵測信心度
-    landmarks: np.ndarray  # 468個特徵點座標
+    landmarks: np.ndarray  # 特徵點座標 (N, 2)
     path: Optional[Path] = None  # 原始檔案路徑
     index: int = 0  # 在批次中的索引
 
 
-class FaceDetector:
-    """
-    臉部偵測器
+@contextmanager
+def open_face_mesh(detection_confidence: float = 0.5):
+    """開一個 MediaPipe Face Mesh；with 區塊結束自動 close。"""
+    face_mesh = mp.solutions.face_mesh.FaceMesh(
+        static_image_mode=True,
+        max_num_faces=1,
+        refine_landmarks=True,
+        min_detection_confidence=detection_confidence,
+    )
+    try:
+        yield face_mesh
+    finally:
+        face_mesh.close()
 
-    使用 MediaPipe Face Mesh 偵測臉部並提取 468 個特徵點
-    """
 
-    def __init__(
-        self,
-        detection_confidence: float = 0.5,
-        midline_points: Tuple[int, ...] = MIDLINE_POINTS,
-    ):
-        """
-        初始化偵測器
-
-        Args:
-            detection_confidence: MediaPipe 偵測信心度閾值
-            midline_points: 臉部中軸線特徵點索引
-        """
-        self.detection_confidence = detection_confidence
-        self.midline_points = midline_points
-        self.mp_face_mesh = mp.solutions.face_mesh
-        self.face_mesh = None
-        self._init_face_mesh()
-
-    def _init_face_mesh(self):
-        """初始化 MediaPipe Face Mesh"""
-        self.face_mesh = self.mp_face_mesh.FaceMesh(
-            static_image_mode=True,
-            max_num_faces=1,
-            refine_landmarks=True,
-            min_detection_confidence=self.detection_confidence,
+def detect_faces(
+    face_mesh,
+    images: List[np.ndarray],
+    paths: Optional[List[Path]] = None,
+    midline_points: Tuple[int, ...] = MIDLINE_POINTS,
+) -> List[FaceInfo]:
+    """批次偵測：每張影像跑 FaceMesh，回傳成功偵測到臉的 FaceInfo 清單。"""
+    face_infos = []
+    for i, image in enumerate(images):
+        info = _detect_single(
+            face_mesh, image,
+            path=paths[i] if paths else None,
+            index=i, midline_points=midline_points,
         )
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.close()
-
-    def close(self):
-        """釋放資源"""
-        if self.face_mesh:
-            self.face_mesh.close()
-            self.face_mesh = None
-
-    def detect_face_batch(
-        self,
-        images: List[np.ndarray],
-        paths: Optional[List[Path]] = None
-    ) -> List[FaceInfo]:
-        """
-        批次偵測臉部
-
-        Args:
-            images: 影像列表 (BGR 格式)
-            paths: 對應的檔案路徑列表（可選）
-
-        Returns:
-            偵測到的臉部資訊列表
-        """
-        face_infos = []
-
-        for i, image in enumerate(images):
-            face_info = self._detect_face_single(
-                image,
-                path=paths[i] if paths else None,
-                index=i
-            )
-            if face_info:
-                face_infos.append(face_info)
-
-        return face_infos
-
-    def _detect_face_single(
-        self,
-        image: np.ndarray,
-        path: Optional[Path] = None,
-        index: int = 0
-    ) -> Optional[FaceInfo]:
-        """
-        偵測單張影像的臉部
-
-        Args:
-            image: BGR 格式的影像
-            path: 檔案路徑（可選）
-            index: 索引
-
-        Returns:
-            臉部資訊，若未偵測到則返回 None
-        """
-        # 轉換色彩空間
-        rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        results = self.face_mesh.process(rgb_image)
-
-        if not results.multi_face_landmarks:
-            logger.debug(f"第 {index} 張影像未偵測到臉部")
-            return None
-
-        # 提取特徵點
-        landmarks = results.multi_face_landmarks[0]
-        landmarks_array = self._landmarks_to_array(landmarks, image.shape)
-
-        # 計算中軸角度
-        vertex_angle_sum = self._calculate_vertex_angle_sum(landmarks, image.shape)
-
-        return FaceInfo(
-            image=image,
-            vertex_angle_sum=vertex_angle_sum,
-            confidence=1.0,  # MediaPipe 不直接提供信心度
-            landmarks=landmarks_array,
-            path=path,
-            index=index,
-        )
+        if info:
+            face_infos.append(info)
+    return face_infos
 
 
-    def _landmarks_to_array(
-        self,
-        landmarks,
-        image_shape: Tuple[int, int]
-    ) -> np.ndarray:
-        """
-        將 MediaPipe 特徵點轉換為 numpy 陣列
+def _detect_single(face_mesh, image: np.ndarray, path: Optional[Path] = None,
+                   index: int = 0,
+                   midline_points: Tuple[int, ...] = MIDLINE_POINTS) -> Optional[FaceInfo]:
+    rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    results = face_mesh.process(rgb_image)
+    if not results.multi_face_landmarks:
+        logger.debug(f"第 {index} 張影像未偵測到臉部")
+        return None
 
-        Args:
-            landmarks: MediaPipe 特徵點
-            image_shape: 影像尺寸
+    landmarks = results.multi_face_landmarks[0]
+    return FaceInfo(
+        image=image,
+        vertex_angle_sum=_vertex_angle_sum(landmarks, image.shape, midline_points),
+        confidence=1.0,  # MediaPipe 不直接提供信心度
+        landmarks=_landmarks_to_array(landmarks, image.shape),
+        path=path,
+        index=index,
+    )
 
-        Returns:
-            特徵點陣列 (468, 2)
-        """
-        h, w = image_shape[:2]
-        points = []
 
-        for lm in landmarks.landmark:
-            x = lm.x * w
-            y = lm.y * h
-            points.append([x, y])
+def _landmarks_to_array(landmarks, image_shape: Tuple[int, int]) -> np.ndarray:
+    """MediaPipe 特徵點 → numpy 陣列 (N, 2)。"""
+    h, w = image_shape[:2]
+    points = [[lm.x * w, lm.y * h] for lm in landmarks.landmark]
+    return np.array(points, dtype=np.float64)
 
-        return np.array(points, dtype=np.float64)
 
-    def _calculate_vertex_angle_sum(
-        self,
-        landmarks,
-        image_shape: Tuple[int, int]
-    ) -> float:
-        """
-        計算中軸線頂點夾角總和
+def _vertex_angle_sum(landmarks, image_shape: Tuple[int, int],
+                     midline_points: Tuple[int, ...]) -> float:
+    """中軸線頂點夾角總和（度）：折線各頂點相鄰線段夾角之和，越小越正面。"""
+    h, w = image_shape[:2]
+    dots = []
+    for idx in midline_points:
+        point = landmarks.landmark[idx]
+        dots.append(np.array([point.x * w, point.y * h]))
 
-        將 midline_points 定義的特徵點連成折線，
-        計算各頂點處相鄰線段的夾角總和。
-        數值越小表示中軸線越直，臉部越正面。
+    vector1 = dots[1] - dots[0]
+    vector2 = dots[2] - dots[1]
+    vector3 = dots[3] - dots[2]
 
-        Args:
-            landmarks: MediaPipe 特徵點
-            image_shape: 影像尺寸 (H, W)
+    def vector_angle(v1, v2):
+        dot = np.dot(v1, v2)
+        norm = np.linalg.norm(v1) * np.linalg.norm(v2)
+        return np.arccos(np.clip(dot / (norm + 1e-8), -1.0, 1.0))
 
-        Returns:
-            頂點夾角總和（度）
-        """
-        h, w = image_shape[:2]
-
-        dots = []
-        for idx in self.midline_points:
-            point = landmarks.landmark[idx]
-            dots.append(np.array([point.x * w, point.y * h]))
-
-        vector1 = dots[1] - dots[0]
-        vector2 = dots[2] - dots[1]
-        vector3 = dots[3] - dots[2]
-
-        def vector_angle(v1, v2):
-            dot = np.dot(v1, v2)
-            norm = np.linalg.norm(v1) * np.linalg.norm(v2)
-            return np.arccos(np.clip(dot / (norm + 1e-8), -1.0, 1.0))
-
-        angle1 = vector_angle(vector1, vector2)
-        angle2 = vector_angle(vector2, vector3)
-
-        return np.degrees(angle1) + np.degrees(angle2)
+    angle1 = vector_angle(vector1, vector2)
+    angle2 = vector_angle(vector2, vector3)
+    return np.degrees(angle1) + np.degrees(angle2)
