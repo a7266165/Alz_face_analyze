@@ -72,16 +72,26 @@ def limit_cpu(n_cores):
 
 def already_done(subject_id: str, variants: List[Tuple[str, bool]],
                  mirror: bool) -> bool:
-    """所有要求的背景變體都已有產出 → 跳過（斷點續傳）。
+    """所有要求的變體都「完整」產出才跳過（嚴格斷點續傳）。
 
-    產鏡射時看 mirrors/，否則看 aligned/。
+    以 selected/ 的張數 K（= 選中臉數）為基準：每個變體的 aligned 需有 K 張、
+    （產鏡射時）mirrors 需有 K 對；任一不足即視為半完成 → 重跑。
+    （只看「有無任一檔」會把中途崩潰的半完成 subject 誤判為已完成。）
     """
-    stage = "mirrors" if mirror else "aligned"
-    pattern = "*_left.png" if mirror else "*.png"
+    sel = preprocess_dir("selected") / subject_id
+    if not sel.is_dir():
+        return False
+    k = sum(1 for _ in sel.glob("*.png"))
+    if k == 0:
+        return False
     for _, is_bg in variants:
-        d = preprocess_dir(stage, background=is_bg) / subject_id
-        if not (d.is_dir() and any(d.glob(pattern))):
+        al = preprocess_dir("aligned", background=is_bg) / subject_id
+        if sum(1 for _ in al.glob("*.png")) != k:
             return False
+        if mirror:
+            mr = preprocess_dir("mirrors", background=is_bg) / subject_id
+            if sum(1 for _ in mr.glob("*_left.png")) != k:
+                return False
     return True
 
 
