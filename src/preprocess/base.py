@@ -12,7 +12,7 @@ from dataclasses import dataclass
 import logging
 import shutil
 
-from src.config import PreprocessConfig, SELECTED_DIR, ALIGNED_DIR, ALIGNED_BACKGROUND_DIR
+from src.config import PreprocessConfig, preprocess_dir
 from .detector import FaceDetector, FaceInfo
 from .selector import FaceSelector
 from .aligner import FaceStraightener
@@ -69,7 +69,8 @@ class PreprocessPipeline:
             return
 
         # 只清理該受試者的子目錄，不清理整個全域目錄
-        for base_dir in [SELECTED_DIR, ALIGNED_DIR, ALIGNED_BACKGROUND_DIR]:
+        for base_dir in [preprocess_dir("selected"), preprocess_dir("aligned"),
+                         preprocess_dir("aligned", background=True)]:
             subject_dir = base_dir / self.config.subject_id
             if subject_dir.exists():
                 shutil.rmtree(subject_dir)
@@ -175,7 +176,7 @@ class PreprocessPipeline:
         if not self.config.save_intermediate or not self.config.subject_id:
             return
 
-        save_dir = SELECTED_DIR / self.config.subject_id
+        save_dir = preprocess_dir("selected") / self.config.subject_id
         save_dir.mkdir(parents=True, exist_ok=True)
 
         for i, face in enumerate(faces):
@@ -189,7 +190,7 @@ class PreprocessPipeline:
         if not self.config.save_intermediate or not self.config.subject_id:
             return
 
-        save_dir = ALIGNED_DIR / self.config.subject_id
+        save_dir = preprocess_dir("aligned") / self.config.subject_id
         save_dir.mkdir(parents=True, exist_ok=True)
 
         for i, face in enumerate(faces):
@@ -211,7 +212,7 @@ class PreprocessPipeline:
         if not self.config.subject_id:
             return
 
-        save_dir = ALIGNED_BACKGROUND_DIR / self.config.subject_id
+        save_dir = preprocess_dir("aligned", background=True) / self.config.subject_id
         save_dir.mkdir(parents=True, exist_ok=True)
 
         for i, face in enumerate(faces):

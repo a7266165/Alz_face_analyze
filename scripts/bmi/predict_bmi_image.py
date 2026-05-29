@@ -22,10 +22,12 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.config import (
-    ALIGNED_DIR,
+    preprocess_dir,
     BMI_MODELS_DIR,
     BMI_PREDICTIONS_DIR,
 )
+
+ALIGNED_DIR = preprocess_dir("aligned")
 from src.bmi.image_dataset import BMIFaceEvalDataset, eval_transforms
 from src.bmi.image_trainer import make_model
 

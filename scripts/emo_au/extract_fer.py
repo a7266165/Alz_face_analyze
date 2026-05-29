@@ -21,7 +21,9 @@ from tqdm import tqdm
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
 from _paths import PROJECT_ROOT
 
-from src.config import ALIGNED_DIR
+from src.config import preprocess_dir
+
+ALIGNED_DIR = preprocess_dir("aligned")
 
 # ── 路徑配置 ──
 RAW_OUTPUT_DIR = PROJECT_ROOT / "workspace" / "emo_au" / "features" / "raw" / "fer"

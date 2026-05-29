@@ -30,8 +30,7 @@ project_root = PROJECT_ROOT
 from src.config import (
     EMBEDDING_FEATURES_DIR,
     WORKSPACE_DIR,
-    ALIGNED_DIR as _ALIGNED_DIR,
-    ALIGNED_BACKGROUND_DIR as _ALIGNED_BACKGROUND_DIR,
+    preprocess_dir,
 )
 from src.embedding import FeatureExtractor
 
@@ -48,7 +47,7 @@ EMBEDDING_MODELS = ["arcface", "topofr", "dlib"]
 MAX_CPU_CORES = 2
 
 # 預設讀去背版（與 production 相容）；CLI --background 切到含背景版
-ALIGNED_DIR = _ALIGNED_DIR
+ALIGNED_DIR = preprocess_dir("aligned")
 SUBDIR_NAME = "original"
 
 
@@ -116,10 +115,10 @@ def main():
     args = ap.parse_args()
 
     if args.background:
-        aligned_dir = _ALIGNED_BACKGROUND_DIR
+        aligned_dir = preprocess_dir("aligned", background=True)
         bg_variant = "background"
     else:
-        aligned_dir = _ALIGNED_DIR
+        aligned_dir = preprocess_dir("aligned")
         bg_variant = "no_background"
 
     setup_cpu_limit(MAX_CPU_CORES)

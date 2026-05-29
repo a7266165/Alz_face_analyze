@@ -40,25 +40,23 @@ def build_v4():
     c1_w = max(total_ps, total_hs, nw_co) + 0.9
 
     nw_bg = 2.4; gap_bg = 0.65
-    c_pre_top = c1_bot + SP
-    y_pre1 = c_pre_top + SP + NODE_H / 2
-    y_pre2 = y_pre1 + NODE_H + SP
-    y_pre3 = y_pre2 + NODE_H + SP
-    y_pre_list = [y_pre1, y_pre2, y_pre3]
-    y_pre_bg = y_pre3 + NODE_H + SP
-    c_pre_bot = y_pre_bg + NODE_H / 2 + SP
-    pre_cluster_w = max(NW_PRE, 2 * nw_bg + gap_bg) + 0.9
-
     nw_mir = 2.4; gap_mir = 1.0
-    c_mir_top = c_pre_bot + SP
-    y_mir = c_mir_top + SP + NODE_H / 2
-    c_mir_bot = y_mir + NODE_H / 2 + SP
     x_face = CX_E
     x_mirr = X_A
+    # Preprocessing rows: Detect, Select, bg, Align, face/mirror (all in one cluster)
+    c_pre_top = c1_bot + SP
+    y_pre1 = c_pre_top + SP + NODE_H / 2        # Detect
+    y_pre2 = y_pre1 + NODE_H + SP               # Select
+    y_pre_bg = y_pre2 + NODE_H + SP             # no_background / background
+    y_pre_align = y_pre_bg + NODE_H + SP        # Align
+    y_mir = y_pre_align + NODE_H + SP           # face / mirrored_face
+    c_pre_bot = y_mir + NODE_H / 2 + SP
+    pre_cluster_w = 2 * max(CX_S - (x_face - nw_mir / 2),
+                            (x_mirr + nw_mir / 2) - CX_S) + 0.9
 
     nw_emb = 2.2; gap_emb = 0.5
     total_emb = 4 * nw_emb + 3 * gap_emb
-    c_emb_top = c_mir_bot + SP
+    c_emb_top = c_pre_bot + SP
     y_emb = c_emb_top + SP + NODE_H / 2
     c_emb_bot = y_emb + NODE_H / 2 + SP
     emx = [CX_S + (i - 1.5) * (nw_emb + gap_emb) for i in range(4)]
@@ -193,22 +191,30 @@ def build_v4():
         line(ax, hx2, y_hs + NODE_H / 2, CX_S, y_fc - NODE_H / 2)
 
     # ════════════════════════════════════
-    # Preprocessing (at CX_S)
+    # Preprocessing (at CX_S): Detect, Select, bg, Align, face/mirror
     # ════════════════════════════════════
     cluster(ax, CX_S, (c_pre_top + c_pre_bot) / 2,
             pre_cluster_w, c_pre_bot - c_pre_top, C_PRE['bg'])
-    for y, lab in zip(y_pre_list, PRE_LABELS):
-        node(ax, CX_S, y, NW_PRE, NODE_H, lab, C_PRE['nd'])
-    line(ax, CX_S, y_fc + NODE_H / 2, CX_S, y_pre_list[0] - NODE_H / 2)
-    for i in range(2):
-        line(ax, CX_S, y_pre_list[i] + NODE_H / 2,
-             CX_S, y_pre_list[i + 1] - NODE_H / 2)
+    # Detect, Select (stacked)
+    node(ax, CX_S, y_pre1, NW_PRE, NODE_H, 'Detect', C_PRE['nd'])
+    node(ax, CX_S, y_pre2, NW_PRE, NODE_H, 'Select', C_PRE['nd'])
+    line(ax, CX_S, y_fc + NODE_H / 2, CX_S, y_pre1 - NODE_H / 2)
+    line(ax, CX_S, y_pre1 + NODE_H / 2, CX_S, y_pre2 - NODE_H / 2)
+    # no_background / background
     bgx = [CX_S - (nw_bg + gap_bg) / 2, CX_S + (nw_bg + gap_bg) / 2]
     for x, lab in zip(bgx, ['no_background', 'background']):
         node(ax, x, y_pre_bg, nw_bg, NODE_H, lab, C_PRE['nd'])
     for bx in bgx:
-        line(ax, CX_S, y_pre_list[-1] + NODE_H / 2,
-             bx, y_pre_bg - NODE_H / 2)
+        line(ax, CX_S, y_pre2 + NODE_H / 2, bx, y_pre_bg - NODE_H / 2)
+    # Align
+    node(ax, CX_S, y_pre_align, NW_PRE, NODE_H, 'Align', C_PRE['nd'])
+    for bx in bgx:
+        line(ax, bx, y_pre_bg + NODE_H / 2, CX_S, y_pre_align - NODE_H / 2)
+    # face / mirrored_face (inside the preprocess cluster)
+    node(ax, x_face, y_mir, nw_mir, NODE_H, 'face', C3['nd'])
+    node(ax, x_mirr, y_mir, nw_mir, NODE_H, 'mirrored_face', C3['nd'])
+    line(ax, CX_S, y_pre_align + NODE_H / 2, x_face, y_mir - NODE_H / 2)
+    line(ax, CX_S, y_pre_align + NODE_H / 2, x_mirr, y_mir - NODE_H / 2)
 
     # ════════════════════════════════════
     # External Datasets
@@ -221,18 +227,7 @@ def build_v4():
          "MegaAge / FairFace / SZU-EmoDage\nAFAD / DiverseAsian",
          C_EACS['nd'])
 
-    # ════════════════════════════════════
-    # face / mirrored_face (at CX_S)
-    # ════════════════════════════════════
-    cluster(ax, x_face, (c_mir_top + c_mir_bot) / 2,
-            nw_mir + 0.6, c_mir_bot - c_mir_top, C3['bg'])
-    node(ax, x_face, y_mir, nw_mir, NODE_H, 'face', C3['nd'])
-    cluster(ax, x_mirr, (c_mir_top + c_mir_bot) / 2,
-            nw_mir + 0.6, c_mir_bot - c_mir_top, C3['bg'])
-    node(ax, x_mirr, y_mir, nw_mir, NODE_H, 'mirrored_face', C3['nd'])
-    for bx in bgx:
-        line(ax, bx, y_pre_bg + NODE_H / 2, x_face, y_mir - NODE_H / 2)
-        line(ax, bx, y_pre_bg + NODE_H / 2, x_mirr, y_mir - NODE_H / 2)
+    # (face / mirrored_face are now drawn inside the Preprocessing cluster)
 
     # ════════════════════════════════════
     # Embedding Models (at CX_S)
@@ -626,25 +621,23 @@ def build_v4_show():
     c1_w = max(total_ps, total_hs, nw_co) + 0.9
 
     nw_bg = 2.4; gap_bg = 0.65
-    c_pre_top = c1_bot + SP
-    y_pre1 = c_pre_top + SP + NODE_H / 2
-    y_pre2 = y_pre1 + NODE_H + SP
-    y_pre3 = y_pre2 + NODE_H + SP
-    y_pre_list = [y_pre1, y_pre2, y_pre3]
-    y_pre_bg = y_pre3 + NODE_H + SP
-    c_pre_bot = y_pre_bg + NODE_H / 2 + SP
-    pre_cluster_w = max(NW_PRE, 2 * nw_bg + gap_bg) + 0.9
-
     nw_mir = 2.4; gap_mir = 1.0
-    c_mir_top = c_pre_bot + SP
-    y_mir = c_mir_top + SP + NODE_H / 2
-    c_mir_bot = y_mir + NODE_H / 2 + SP
     x_face = CX_E
     x_mirr = X_A
+    # Preprocessing rows: Detect, Select, bg, Align, face/mirror (all in one cluster)
+    c_pre_top = c1_bot + SP
+    y_pre1 = c_pre_top + SP + NODE_H / 2        # Detect
+    y_pre2 = y_pre1 + NODE_H + SP               # Select
+    y_pre_bg = y_pre2 + NODE_H + SP             # no_background / background
+    y_pre_align = y_pre_bg + NODE_H + SP        # Align
+    y_mir = y_pre_align + NODE_H + SP           # face / mirrored_face
+    c_pre_bot = y_mir + NODE_H / 2 + SP
+    pre_cluster_w = 2 * max(CX_S - (x_face - nw_mir / 2),
+                            (x_mirr + nw_mir / 2) - CX_S) + 0.9
 
     nw_emb = 2.2; gap_emb = 0.5
     total_emb = 4 * nw_emb + 3 * gap_emb
-    c_emb_top = c_mir_bot + SP
+    c_emb_top = c_pre_bot + SP
     y_emb = c_emb_top + SP + NODE_H / 2
     c_emb_bot = y_emb + NODE_H / 2 + SP
     emx = [CX_S + (i - 1.5) * (nw_emb + gap_emb) for i in range(4)]
@@ -770,22 +763,26 @@ def build_v4_show():
     for hx2 in hsx:
         line(ax, hx2, y_hs + NODE_H / 2, CX_S, y_fc - NODE_H / 2)
 
-    # ════ Preprocessing ════
+    # ════ Preprocessing: Detect, Select, bg, Align, face/mirror ════
     _cl(ax, CX_S, (c_pre_top + c_pre_bot) / 2,
         pre_cluster_w, c_pre_bot - c_pre_top, C_PRE['bg'])
-    for y, lab in zip(y_pre_list, PRE_LABELS):
-        _n(ax, CX_S, y, NW_PRE, NODE_H, lab, C_PRE['nd'])
-    line(ax, CX_S, y_fc + NODE_H / 2, CX_S, y_pre_list[0] - NODE_H / 2)
-    for i in range(2):
-        line(ax, CX_S, y_pre_list[i] + NODE_H / 2,
-             CX_S, y_pre_list[i + 1] - NODE_H / 2)
+    _n(ax, CX_S, y_pre1, NW_PRE, NODE_H, 'Detect', C_PRE['nd'])
+    _n(ax, CX_S, y_pre2, NW_PRE, NODE_H, 'Select', C_PRE['nd'])
+    line(ax, CX_S, y_fc + NODE_H / 2, CX_S, y_pre1 - NODE_H / 2)
+    line(ax, CX_S, y_pre1 + NODE_H / 2, CX_S, y_pre2 - NODE_H / 2)
     bgx = [CX_S - (nw_bg + gap_bg) / 2, CX_S + (nw_bg + gap_bg) / 2]
     for x, lab, on in zip(bgx, ['no_background', 'background'],
                           [False, True]):
         _n(ax, x, y_pre_bg, nw_bg, NODE_H, lab, C_PRE['nd'], on)
     for bx in bgx:
-        line(ax, CX_S, y_pre_list[-1] + NODE_H / 2,
-             bx, y_pre_bg - NODE_H / 2)
+        line(ax, CX_S, y_pre2 + NODE_H / 2, bx, y_pre_bg - NODE_H / 2)
+    _n(ax, CX_S, y_pre_align, NW_PRE, NODE_H, 'Align', C_PRE['nd'])
+    for bx in bgx:
+        line(ax, bx, y_pre_bg + NODE_H / 2, CX_S, y_pre_align - NODE_H / 2)
+    _n(ax, x_face, y_mir, nw_mir, NODE_H, 'face', C3['nd'])
+    _n(ax, x_mirr, y_mir, nw_mir, NODE_H, 'mirrored_face', C3['nd'])
+    line(ax, CX_S, y_pre_align + NODE_H / 2, x_face, y_mir - NODE_H / 2)
+    line(ax, CX_S, y_pre_align + NODE_H / 2, x_mirr, y_mir - NODE_H / 2)
 
     # ════ External Datasets (gray) ════
     eacs_w = age_w + 0.6
@@ -796,16 +793,7 @@ def build_v4_show():
        "External Datasets\nUTKFace / AgeDB / APPA-REAL / ...",
        C_EACS['nd'], False)
 
-    # ════ face / mirrored_face ════
-    _cl(ax, x_face, (c_mir_top + c_mir_bot) / 2,
-        nw_mir + 0.6, c_mir_bot - c_mir_top, C3['bg'])
-    _n(ax, x_face, y_mir, nw_mir, NODE_H, 'face', C3['nd'])
-    _cl(ax, x_mirr, (c_mir_top + c_mir_bot) / 2,
-        nw_mir + 0.6, c_mir_bot - c_mir_top, C3['bg'])
-    _n(ax, x_mirr, y_mir, nw_mir, NODE_H, 'mirrored_face', C3['nd'])
-    for bx in bgx:
-        line(ax, bx, y_pre_bg + NODE_H / 2, x_face, y_mir - NODE_H / 2)
-        line(ax, bx, y_pre_bg + NODE_H / 2, x_mirr, y_mir - NODE_H / 2)
+    # (face / mirrored_face are now drawn inside the Preprocessing cluster)
 
     # ════ Embedding Models ════
     _cl(ax, CX_S, (c_emb_top + c_emb_bot) / 2,
@@ -1174,25 +1162,23 @@ def build_v4_refactor():
     c1_w = max(total_ps, total_hs, nw_co) + 0.9
 
     nw_bg = 2.4; gap_bg = 0.65
-    c_pre_top = c1_bot + SP
-    y_pre1 = c_pre_top + SP + NODE_H / 2
-    y_pre2 = y_pre1 + NODE_H + SP
-    y_pre3 = y_pre2 + NODE_H + SP
-    y_pre_list = [y_pre1, y_pre2, y_pre3]
-    y_pre_bg = y_pre3 + NODE_H + SP
-    c_pre_bot = y_pre_bg + NODE_H / 2 + SP
-    pre_cluster_w = max(NW_PRE, 2 * nw_bg + gap_bg) + 0.9
-
     nw_mir = 2.4; gap_mir = 1.0
-    c_mir_top = c_pre_bot + SP
-    y_mir = c_mir_top + SP + NODE_H / 2
-    c_mir_bot = y_mir + NODE_H / 2 + SP
     x_face = CX_E
     x_mirr = X_A
+    # Preprocessing rows: Detect, Select, bg, Align, face/mirror (all in one cluster)
+    c_pre_top = c1_bot + SP
+    y_pre1 = c_pre_top + SP + NODE_H / 2        # Detect
+    y_pre2 = y_pre1 + NODE_H + SP               # Select
+    y_pre_bg = y_pre2 + NODE_H + SP             # no_background / background
+    y_pre_align = y_pre_bg + NODE_H + SP        # Align
+    y_mir = y_pre_align + NODE_H + SP           # face / mirrored_face
+    c_pre_bot = y_mir + NODE_H / 2 + SP
+    pre_cluster_w = 2 * max(CX_S - (x_face - nw_mir / 2),
+                            (x_mirr + nw_mir / 2) - CX_S) + 0.9
 
     nw_emb = 2.2; gap_emb = 0.5
     total_emb = 4 * nw_emb + 3 * gap_emb
-    c_emb_top = c_mir_bot + SP
+    c_emb_top = c_pre_bot + SP
     y_emb = c_emb_top + SP + NODE_H / 2
     c_emb_bot = y_emb + NODE_H / 2 + SP
     emx = [CX_S + (i - 1.5) * (nw_emb + gap_emb) for i in range(4)]
@@ -1329,21 +1315,25 @@ def build_v4_refactor():
     # ════════════════════════════════════
     lit[0] = False
 
-    # ════ Preprocessing ════
+    # ════ Preprocessing: Detect, Select, bg, Align, face/mirror ════
     _cl(ax, CX_S, (c_pre_top + c_pre_bot) / 2,
         pre_cluster_w, c_pre_bot - c_pre_top, C_PRE['bg'])
-    for y, lab in zip(y_pre_list, PRE_LABELS):
-        _n(ax, CX_S, y, NW_PRE, NODE_H, lab, C_PRE['nd'])
-    line(ax, CX_S, y_fc + NODE_H / 2, CX_S, y_pre_list[0] - NODE_H / 2)
-    for i in range(2):
-        line(ax, CX_S, y_pre_list[i] + NODE_H / 2,
-             CX_S, y_pre_list[i + 1] - NODE_H / 2)
+    _n(ax, CX_S, y_pre1, NW_PRE, NODE_H, 'Detect', C_PRE['nd'])
+    _n(ax, CX_S, y_pre2, NW_PRE, NODE_H, 'Select', C_PRE['nd'])
+    line(ax, CX_S, y_fc + NODE_H / 2, CX_S, y_pre1 - NODE_H / 2)
+    line(ax, CX_S, y_pre1 + NODE_H / 2, CX_S, y_pre2 - NODE_H / 2)
     bgx = [CX_S - (nw_bg + gap_bg) / 2, CX_S + (nw_bg + gap_bg) / 2]
     for x, lab in zip(bgx, ['no_background', 'background']):
         _n(ax, x, y_pre_bg, nw_bg, NODE_H, lab, C_PRE['nd'])
     for bx in bgx:
-        line(ax, CX_S, y_pre_list[-1] + NODE_H / 2,
-             bx, y_pre_bg - NODE_H / 2)
+        line(ax, CX_S, y_pre2 + NODE_H / 2, bx, y_pre_bg - NODE_H / 2)
+    _n(ax, CX_S, y_pre_align, NW_PRE, NODE_H, 'Align', C_PRE['nd'])
+    for bx in bgx:
+        line(ax, bx, y_pre_bg + NODE_H / 2, CX_S, y_pre_align - NODE_H / 2)
+    _n(ax, x_face, y_mir, nw_mir, NODE_H, 'face', C3['nd'])
+    _n(ax, x_mirr, y_mir, nw_mir, NODE_H, 'mirrored_face', C3['nd'])
+    line(ax, CX_S, y_pre_align + NODE_H / 2, x_face, y_mir - NODE_H / 2)
+    line(ax, CX_S, y_pre_align + NODE_H / 2, x_mirr, y_mir - NODE_H / 2)
 
     # ════ External Datasets ════
     eacs_w = age_w + 0.6
@@ -1354,16 +1344,7 @@ def build_v4_refactor():
        "MegaAge / FairFace / SZU-EmoDage\nAFAD / DiverseAsian",
        C_EACS['nd'])
 
-    # ════ face / mirrored_face ════
-    _cl(ax, x_face, (c_mir_top + c_mir_bot) / 2,
-        nw_mir + 0.6, c_mir_bot - c_mir_top, C3['bg'])
-    _n(ax, x_face, y_mir, nw_mir, NODE_H, 'face', C3['nd'])
-    _cl(ax, x_mirr, (c_mir_top + c_mir_bot) / 2,
-        nw_mir + 0.6, c_mir_bot - c_mir_top, C3['bg'])
-    _n(ax, x_mirr, y_mir, nw_mir, NODE_H, 'mirrored_face', C3['nd'])
-    for bx in bgx:
-        line(ax, bx, y_pre_bg + NODE_H / 2, x_face, y_mir - NODE_H / 2)
-        line(ax, bx, y_pre_bg + NODE_H / 2, x_mirr, y_mir - NODE_H / 2)
+    # (face / mirrored_face are now drawn inside the Preprocessing cluster)
 
     # ════ Embedding Models ════
     _cl(ax, CX_S, (c_emb_top + c_emb_bot) / 2,

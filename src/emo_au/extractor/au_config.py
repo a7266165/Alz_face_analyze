@@ -8,7 +8,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from src.config import WORKSPACE_DIR, ALIGNED_DIR, EXTERNAL_DIR, EMO_AU_DIR
+from src.config import WORKSPACE_DIR, preprocess_dir, EXTERNAL_DIR, EMO_AU_DIR
 
 # =============================================================================
 # 統一特徵名稱
@@ -343,7 +343,7 @@ class AUExtractionConfig:
     tools: List[str] = field(
         default_factory=lambda: ["openface"]
     )
-    input_dir: Path = ALIGNED_DIR
+    input_dir: Path = preprocess_dir("aligned")
     output_dir: Path = AU_RAW_DIR
     exclude_acs: bool = True
     min_frames: int = 3

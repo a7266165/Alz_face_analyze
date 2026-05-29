@@ -31,14 +31,7 @@ from tqdm import tqdm
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
 from _paths import PROJECT_ROOT  # noqa: F401
 
-from src.config import (
-    RAW_IMAGES_DIR,
-    ALIGNED_DIR as _ALIGNED_DIR,
-    ALIGNED_BACKGROUND_DIR as _ALIGNED_BACKGROUND_DIR,
-    MIRRORS_DIR as _MIRRORS_DIR,
-    MIRRORS_BACKGROUND_DIR as _MIRRORS_BACKGROUND_DIR,
-    AnalyzeConfig,
-)
+from src.config import RAW_IMAGES_DIR, preprocess_dir, AnalyzeConfig
 from src.preprocess import (
     PreprocessPipeline,
     ProcessedFace,
@@ -72,12 +65,9 @@ class PreprocessRunner:
         self.from_aligned = from_aligned
 
         # 依 bg_variant 決定對齊 / 鏡射的讀寫路徑
-        if bg_variant == "background":
-            self.aligned_dir = _ALIGNED_BACKGROUND_DIR
-            self.mirrors_dir = _MIRRORS_BACKGROUND_DIR
-        else:
-            self.aligned_dir = _ALIGNED_DIR
-            self.mirrors_dir = _MIRRORS_DIR
+        bg = (bg_variant == "background")
+        self.aligned_dir = preprocess_dir("aligned", background=bg)
+        self.mirrors_dir = preprocess_dir("mirrors", background=bg)
 
         self._setup_cpu_limit(max_cpu_cores)
 

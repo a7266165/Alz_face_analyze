@@ -21,10 +21,7 @@ from .config import (
     EMBEDDING_CLASSIFICATION_DIR,
     # Preprocess
     PREPROCESSING_DIR,
-    SELECTED_DIR,
-    ALIGNED_DIR,
-    ALIGNED_BACKGROUND_DIR,
-    MIRRORS_DIR,
+    preprocess_dir,
     # Age
     AGE_DIR,
     AGE_PREDICTIONS_DIR,
@@ -80,10 +77,7 @@ __all__ = [
     "EMBEDDING_CLASSIFICATION_DIR",
     # Preprocess
     "PREPROCESSING_DIR",
-    "SELECTED_DIR",
-    "ALIGNED_DIR",
-    "ALIGNED_BACKGROUND_DIR",
-    "MIRRORS_DIR",
+    "preprocess_dir",
     # Age
     "AGE_DIR",
     "AGE_PREDICTIONS_DIR",

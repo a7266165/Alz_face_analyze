@@ -25,11 +25,13 @@ import pandas as pd
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))
 
+from src.config import preprocess_dir
+
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 # === Paths ===
-ALIGNED_DIR = PROJECT_ROOT / "workspace" / "preprocess" / "aligned"
+ALIGNED_DIR = preprocess_dir("aligned")  # workspace/preprocess/no_background/aligned
 OUTPUT_DIR = PROJECT_ROOT / "workspace" / "asymmetry"
 LANDMARKS_DIR = OUTPUT_DIR / "landmarks"
 

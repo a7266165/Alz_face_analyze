@@ -19,8 +19,10 @@ from tqdm import tqdm
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
 from _paths import PROJECT_ROOT
 
-from src.config import ALIGNED_DIR
+from src.config import preprocess_dir
 from src.emo_au.extractor.au_config import AU_RAW_DIR, AUExtractionConfig
+
+ALIGNED_DIR = preprocess_dir("aligned")
 from src.emo_au.postprocess.harmonizer import AUHarmonizer
 from src.emo_au.postprocess.aggregator import TemporalAggregator
 

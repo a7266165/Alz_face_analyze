@@ -29,11 +29,7 @@ from tqdm import tqdm
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
 from _paths import PROJECT_ROOT  # noqa: F401
 
-from src.config import (
-    EMBEDDING_FEATURES_DIR,
-    MIRRORS_DIR as _MIRRORS_DIR,
-    MIRRORS_BACKGROUND_DIR as _MIRRORS_BACKGROUND_DIR,
-)
+from src.config import EMBEDDING_FEATURES_DIR, preprocess_dir
 from src.embedding import FeatureExtractor
 from src.asymmetry import calculate_differences
 
@@ -65,8 +61,8 @@ class MirrorFeaturePipeline:
     ):
         self.output_dir = Path(output_dir)
         self.bg_variant = bg_variant
-        self.mirrors_dir = (_MIRRORS_BACKGROUND_DIR if bg_variant == "background"
-                            else _MIRRORS_DIR)
+        self.mirrors_dir = preprocess_dir(
+            "mirrors", background=(bg_variant == "background"))
         self.embedding_models = embedding_models or ["arcface", "dlib", "topofr"]
         self.feature_types = feature_types or list(FTYPE_TO_METHOD)
 

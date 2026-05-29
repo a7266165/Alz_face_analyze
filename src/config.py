@@ -47,11 +47,23 @@ WORKSPACE_DIR = PROJECT_ROOT / "workspace"
 # Preprocess
 # -----------------------------------------------------------------------------
 PREPROCESSING_DIR = WORKSPACE_DIR / "preprocess"
-SELECTED_DIR = PREPROCESSING_DIR / "no_background" / "selected"
-ALIGNED_DIR = PREPROCESSING_DIR / "no_background" / "aligned"
-ALIGNED_BACKGROUND_DIR = PREPROCESSING_DIR / "background" / "aligned"
-MIRRORS_DIR = PREPROCESSING_DIR / "no_background" / "mirrors"
-MIRRORS_BACKGROUND_DIR = PREPROCESSING_DIR / "background" / "mirrors"
+_PREPROCESS_STAGES = ("selected", "aligned", "mirrors")
+
+
+def preprocess_dir(stage: str, background: bool = False) -> Path:
+    """預處理輸出目錄 = PREPROCESSING_DIR / {no_background|background} / {stage}。
+
+    stage      ∈ {selected, aligned, mirrors}
+    background  False（預設）→ no_background（去背版）；True → background（保留背景版）
+
+    取代舊的扁平常數（ALIGNED_DIR / ALIGNED_BACKGROUND_DIR / MIRRORS_DIR …），
+    bg/no_bg 由參數決定，不再每個葉子各開一個常數。
+    """
+    if stage not in _PREPROCESS_STAGES:
+        raise ValueError(
+            f"stage must be one of {_PREPROCESS_STAGES}, got {stage!r}")
+    variant = "background" if background else "no_background"
+    return PREPROCESSING_DIR / variant / stage
 
 # -----------------------------------------------------------------------------
 # Embedding

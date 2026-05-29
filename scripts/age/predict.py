@@ -33,7 +33,7 @@ from _paths import PROJECT_ROOT
 project_root = PROJECT_ROOT
 
 from src.config import (
-    ALIGNED_BACKGROUND_DIR,
+    preprocess_dir,
     AGE_BENCHMARK_DIR,
     DEMOGRAPHICS_DIR,
 )
@@ -126,7 +126,7 @@ def main():
     ap.add_argument("--model", choices=list(PREDICTOR_MAP),
                     default="mivolo", help="年齡預測模型 (預設: mivolo)")
     ap.add_argument("--aligned-dir", type=Path, default=None,
-                    help="覆寫對齊影像目錄；留空用 ALIGNED_BACKGROUND_DIR")
+                    help="覆寫對齊影像目錄；留空用含背景的對齊影像（aligned, background）")
     ap.add_argument("--output-file", type=Path, default=None,
                     help="覆寫輸出路徑；留空依模型自動決定")
     ap.add_argument("--subject-prefix", default=None,
@@ -146,7 +146,7 @@ def main():
     logger.info(f"年齡預測 — 模型: {args.model}")
     logger.info("=" * 60)
 
-    aligned_dir = args.aligned_dir or ALIGNED_BACKGROUND_DIR
+    aligned_dir = args.aligned_dir or preprocess_dir("aligned", background=True)
     output_file = args.output_file or default_output(args.model)
 
     logger.info(f"影像目錄: {aligned_dir}")
