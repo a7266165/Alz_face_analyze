@@ -28,10 +28,8 @@ class FaceInfo:
     """單張臉部資訊"""
     image: np.ndarray
     vertex_angle_sum: float  # 中軸線頂點夾角總和（度），越小越正面
-    confidence: float  # 偵測信心度
     landmarks: np.ndarray  # 特徵點座標 (N, 2)
     path: Optional[Path] = None  # 原始檔案路徑
-    index: int = 0  # 在批次中的索引
 
 
 @contextmanager
@@ -78,13 +76,12 @@ def _detect_single(face_mesh, image: np.ndarray, path: Optional[Path] = None,
         return None
 
     landmarks = results.multi_face_landmarks[0]
+    points = _landmarks_to_array(landmarks, image.shape)
     return FaceInfo(
         image=image,
-        vertex_angle_sum=_vertex_angle_sum(landmarks, image.shape, midline_points),
-        confidence=1.0,  # MediaPipe 不直接提供信心度
-        landmarks=_landmarks_to_array(landmarks, image.shape),
+        vertex_angle_sum=_vertex_angle_sum(points, midline_points),
+        landmarks=points,
         path=path,
-        index=index,
     )
 
 
@@ -95,15 +92,13 @@ def _landmarks_to_array(landmarks, image_shape: Tuple[int, int]) -> np.ndarray:
     return np.array(points, dtype=np.float64)
 
 
-def _vertex_angle_sum(landmarks, image_shape: Tuple[int, int],
-                     midline_points: Tuple[int, ...]) -> float:
-    """中軸線頂點夾角總和（度）：折線各頂點相鄰線段夾角之和，越小越正面。"""
-    h, w = image_shape[:2]
-    dots = []
-    for idx in midline_points:
-        point = landmarks.landmark[idx]
-        dots.append(np.array([point.x * w, point.y * h]))
+def _vertex_angle_sum(points: np.ndarray,
+                      midline_points: Tuple[int, ...]) -> float:
+    """中軸線頂點夾角總和（度）：折線各頂點相鄰線段夾角之和，越小越正面。
 
+    points 為已縮放的 (N, 2) 特徵點陣列（見 _landmarks_to_array）。
+    """
+    dots = [points[i] for i in midline_points]
     vector1 = dots[1] - dots[0]
     vector2 = dots[2] - dots[1]
     vector3 = dots[3] - dots[2]

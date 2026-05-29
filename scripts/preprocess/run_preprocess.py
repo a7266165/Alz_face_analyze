@@ -121,6 +121,7 @@ def process_subject(subject_dir: Path, face_mesh, cfg: PreprocessConfig,
         return False
 
     # 存 selected（原始、未去背未轉正）→ no_background/selected
+    # 必須先整批寫完再做下方 aligned/mirror：already_done 以 selected/ 張數為目標基準 K，勿合併兩迴圈
     sel_dir = preprocess_dir("selected") / subject_id
     sel_dir.mkdir(parents=True, exist_ok=True)
     for i, f in enumerate(selected):
