@@ -131,9 +131,13 @@ def process_subject(subject_dir: Path, face_mesh, cfg: PreprocessConfig,
             cv2.imwrite(str(al_dir / al_name), aligned)
 
             if mirror:
-                # 對齊後重新偵測 landmark（找不到則沿用對齊前的）
-                redet = detect_faces(face_mesh, [aligned], midline_points=cfg.midline_points)
-                lm = redet[0].landmarks if redet else face.landmarks
+                if cfg.mirror.mirror_method == "flip":
+                    lm = face.landmarks  # flip 忽略 landmarks，免一次 re-detect
+                else:
+                    # midline：對齊後重新偵測，找不到才退回對齊前 landmark
+                    redet = detect_faces(face_mesh, [aligned],
+                                         midline_points=cfg.midline_points)
+                    lm = redet[0].landmarks if redet else face.landmarks
                 left, right = generate_mirrors(aligned, lm, cfg.mirror)
                 mr_dir = preprocess_dir("mirrors", background=is_bg) / subject_id
                 mr_dir.mkdir(parents=True, exist_ok=True)

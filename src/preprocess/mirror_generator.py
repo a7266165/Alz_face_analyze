@@ -8,15 +8,12 @@
 參數由 src.config.MirrorConfig 帶入。
 """
 
-import logging
 from typing import Tuple
 
 import cv2
 import numpy as np
 
 from src.config import MirrorConfig
-
-logger = logging.getLogger(__name__)
 
 
 def generate_mirrors(image: np.ndarray, landmarks: np.ndarray,
