@@ -21,7 +21,11 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
 class MiVOLOPredictor:
     """MiVOLO v2 年齡預測器"""
-    
+
+    # Haar 偵測框面積佔整張圖比例低於此值，視為誤判（常誤抓背景/衣物的小區塊），
+    # 改用整張圖預測。實測：真臉框佔 12~40%、誤判框佔 0.4~5%，8% 可乾淨區隔。
+    MIN_FACE_AREA_FRAC = 0.08
+
     def __init__(self):
         self.model = None
         self.processor = None
@@ -59,24 +63,37 @@ class MiVOLOPredictor:
         except Exception as e:
             raise RuntimeError(f"MiVOLO 初始化失敗: {e}")
     
+    def face_crop(self, image: np.ndarray) -> np.ndarray:
+        """回傳實際餵入模型的人臉裁切。
+
+        用 Haar 偵測最大臉框並外擴 30% margin。但 Haar 常在背景/衣物誤抓
+        ~1% 的小框（裁出來不是臉，會被估成年輕人），故加最小臉框守門：
+        偵測不到臉、或最大框面積佔比 < MIN_FACE_AREA_FRAC 時，一律改用整張圖
+        （影像已對齊、臉在中央，整張圖預測仍正確）。
+        """
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        faces = self.face_detector.detectMultiScale(gray, 1.1, 5, minSize=(30, 30))
+
+        if len(faces) == 0:
+            return image
+
+        x, y, w, h = max(faces, key=lambda f: f[2] * f[3])
+        area_frac = (w * h) / (image.shape[0] * image.shape[1])
+        if area_frac < self.MIN_FACE_AREA_FRAC:
+            return image  # 框過小，視為誤判 → 整張圖
+
+        margin = int(max(w, h) * 0.3)
+        x1, y1 = max(0, x - margin), max(0, y - margin)
+        x2, y2 = min(image.shape[1], x + w + margin), min(image.shape[0], y + h + margin)
+        return image[y1:y2, x1:x2]
+
     def predict_single(self, image: np.ndarray) -> Optional[float]:
         """預測單張影像的年齡"""
         import torch
-        
+
         try:
-            # 偵測人臉
-            gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-            faces = self.face_detector.detectMultiScale(gray, 1.1, 5, minSize=(30, 30))
-            
-            if len(faces) == 0:
-                face_crop = image
-            else:
-                x, y, w, h = max(faces, key=lambda f: f[2] * f[3])
-                margin = int(max(w, h) * 0.3)
-                x1, y1 = max(0, x - margin), max(0, y - margin)
-                x2, y2 = min(image.shape[1], x + w + margin), min(image.shape[0], y + h + margin)
-                face_crop = image[y1:y2, x1:x2]
-            
+            face_crop = self.face_crop(image)
+
             # 預處理
             inputs = self.processor(images=[face_crop])["pixel_values"]
             inputs = inputs.to(dtype=self.model.dtype, device=self.model.device)
@@ -207,7 +224,7 @@ class FairFacePredictor:
         import torch
         from torchvision import transforms, models
 
-        weight_dir = PROJECT_ROOT / "external" / "models" / "fairface"
+        weight_dir = PROJECT_ROOT / "external" / "age" / "fairface"
         weight_path = weight_dir / self.WEIGHT_FILENAME
         # 也接受舊版權重名稱
         if not weight_path.exists():
@@ -279,7 +296,7 @@ class OpenCVDNNPredictor:
         self._face_detector = None
 
     def initialize(self):
-        model_dir = PROJECT_ROOT / "external" / "models" / "opencv_age"
+        model_dir = PROJECT_ROOT / "external" / "age" / "opencv_age"
         proto_path = model_dir / "age_deploy.prototxt"
         model_path = model_dir / "age_net.caffemodel"
 

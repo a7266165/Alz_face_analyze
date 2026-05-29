@@ -21,6 +21,7 @@ scripts/age/predict.py
 
 import sys
 import json
+import os
 import logging
 from pathlib import Path
 from tqdm import tqdm
@@ -66,7 +67,7 @@ def _imread_unicode(path: Path):
 
 
 def load_images(subject_dir: Path, max_images: int = 10) -> list:
-    """載入前 N 張影像"""
+    """載入前 N 張影像，回傳 (檔名, 影像) 配對清單"""
     valid_ext = {'.jpg', '.jpeg', '.png'}
     images = []
 
@@ -74,11 +75,28 @@ def load_images(subject_dir: Path, max_images: int = 10) -> list:
         if f.suffix.lower() in valid_ext:
             img = _imread_unicode(f)
             if img is not None:
-                images.append(img)
+                images.append((f.name, img))
             if len(images) >= max_images:
                 break
 
     return images
+
+
+def _imwrite_unicode(path: Path, img) -> None:
+    """Unicode-safe 影像寫檔（對應 _imread_unicode）。"""
+    ext = path.suffix or ".png"
+    ok, buf = cv2.imencode(ext, img)
+    if ok:
+        buf.tofile(str(path))
+
+
+def save_results(results: dict, output_file: Path) -> None:
+    """原子寫出 JSON：先寫 .tmp 再 os.replace，避免寫到一半當機損毀原檔。"""
+    output_file.parent.mkdir(parents=True, exist_ok=True)
+    tmp = output_file.with_suffix(output_file.suffix + ".tmp")
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(results, f, indent=2, ensure_ascii=False)
+    os.replace(tmp, output_file)
 
 
 def load_actual_ages() -> dict:
@@ -123,6 +141,13 @@ def main():
                     help="只處理 ID 開頭符合 prefix 的受試者")
     ap.add_argument("--merge", action="store_true",
                     help="若輸出檔已存在，將新結果 merge 進去而非覆寫")
+    ap.add_argument("--save-input", action="store_true",
+                    help="把實際餵入模型的人臉裁切存到 <輸出目錄>/input/<ID>/"
+                         "（格式比照 preprocess，便於查驗；僅支援有 face_crop 的模型如 mivolo）")
+    ap.add_argument("--resume", action="store_true",
+                    help="載入既有輸出檔並略過已完成的受試者（搭配 checkpoint，當機後可接續）")
+    ap.add_argument("--checkpoint-every", type=int, default=200,
+                    help="每處理 N 個受試者就寫一次 JSON checkpoint（預設 200；0 表關閉）")
     args = ap.parse_args()
 
     logger.info("=" * 60)
@@ -151,16 +176,18 @@ def main():
     logger.info(f"demographics 載入 {len(actual_ages)} 個真實年齡")
 
     results = {}
-    if args.merge and output_file.exists():
+    if (args.merge or args.resume) and output_file.exists():
         with open(output_file, "r", encoding="utf-8") as f:
             results = json.load(f)
         # predict 不再輸出 actual_age；既有檔若有殘留也順手清掉，保持一致
         for entry in results.values():
             if isinstance(entry, dict):
                 entry.pop("actual_age", None)
-        logger.info(f"merge 模式：既有 {len(results)} 個 id")
+        mode = "resume" if args.resume else "merge"
+        logger.info(f"{mode} 模式：載入既有 {len(results)} 個 id")
 
     skipped_no_demo = 0
+    processed = 0
     for subject_dir in tqdm(subjects, desc="預測年齡"):
         subject_id = subject_dir.name
 
@@ -170,10 +197,23 @@ def main():
             skipped_no_demo += 1
             continue
 
-        images = load_images(subject_dir)
-        if not images:
+        # resume：已完成者直接略過（接續上次 checkpoint）
+        if args.resume and subject_id in results:
+            continue
+
+        pairs = load_images(subject_dir)
+        if not pairs:
             logger.warning(f"{subject_id}: 無影像")
             continue
+
+        images = [img for _, img in pairs]
+
+        # 存下實際餵入模型的人臉裁切（含最小臉框守門後的結果），格式比照 preprocess
+        if args.save_input and hasattr(predictor, "face_crop"):
+            crop_dir = output_file.parent / "input" / subject_id
+            crop_dir.mkdir(parents=True, exist_ok=True)
+            for name, img in pairs:
+                _imwrite_unicode(crop_dir / name, predictor.face_crop(img))
 
         ages = predictor.predict(images)
 
@@ -184,14 +224,17 @@ def main():
         else:
             logger.warning(f"{subject_id}: 預測失敗")
 
+        # 定期 checkpoint：每 N 個受試者寫一次 JSON，當機後最多只損失最後一段
+        processed += 1
+        if args.checkpoint_every and processed % args.checkpoint_every == 0:
+            save_results(results, output_file)
+            logger.info(f"checkpoint: 已寫出 {len(results)} 個 id（本次處理 {processed}）")
+
     if skipped_no_demo:
         logger.info(f"跳過 {skipped_no_demo} 個不在清理後 demographics 的受試者（無效樣本）")
 
-    output_file.parent.mkdir(parents=True, exist_ok=True)
-    with open(output_file, 'w', encoding='utf-8') as f:
-        json.dump(results, f, indent=2, ensure_ascii=False)
-
-    logger.info(f"完成: {len(results)} 個 id（本次 {len(subjects)} 個受試者）")
+    save_results(results, output_file)
+    logger.info(f"完成: {len(results)} 個 id（本次處理 {processed} 個受試者）")
     logger.info(f"儲存至: {output_file}")
 
 
