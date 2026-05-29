@@ -135,26 +135,16 @@ class DataLoader:
 
         logger.info("載入人口學資料...")
 
-        dfs = []
+        # 單一乾淨表 hospital_A.csv（split schema）；組回完整特徵 ID（"P1-2"）。
+        demographics = pd.read_csv(self.demographics_dir / "hospital_A.csv")
         if self.group_filter:
-            csv_names = [f"{self.group_filter}.csv"]
+            demographics = demographics[
+                demographics["Group"] == self.group_filter].copy()
             logger.info(f"群組篩選: 僅載入 {self.group_filter}")
-        else:
-            csv_names = ["ACS.csv", "NAD.csv", "P.csv"]
-        for csv_name in csv_names:
-            csv_path = self.demographics_dir / csv_name
-            if csv_path.exists():
-                df = pd.read_csv(csv_path)
-                df["group"] = csv_name.replace(".csv", "")
-                dfs.append(df)
-                logger.debug(f"載入 {csv_name}: {len(df)} 筆")
-            else:
-                logger.warning(f"找不到 {csv_path}")
-
-        if not dfs:
-            raise FileNotFoundError("找不到任何人口學資料")
-
-        demographics = pd.concat(dfs, ignore_index=True)
+        demographics["group"] = demographics["Group"]
+        demographics["ID"] = (demographics["Group"]
+                              + demographics["ID"].astype(str)
+                              + "-" + demographics["Photo_Session"].astype(str))
 
         if "Sex" in demographics.columns:
             demographics["Sex"] = demographics["Sex"].map({"F": 0, "M": 1})

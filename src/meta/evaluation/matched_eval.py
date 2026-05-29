@@ -28,7 +28,9 @@ from sklearn.metrics import (
     roc_auc_score,
 )
 
-from src.cohort import match_1to1, build_caliper_group, build_cohort_ad_vs_HCgroup
+from src.common.cohort import cohort_list
+from src.common.legacy.matching import match_1to1, build_caliper_group
+from src.config import cohort_spec_from_name
 
 logger = logging.getLogger(__name__)
 
@@ -136,8 +138,8 @@ def build_matching_cache(
 ) -> dict:
     """Build all matching cohorts upfront. Returns cache dict.
 
-    Uses build_cohort_ad_vs_HCgroup (cross_naive) to get cohort-filtered
-    demographics that respect p_first/hc_all/CDR/feature-existence gate.
+    Uses cohort_list to get cohort-filtered demographics that respect
+    the p_visit / hc_visit / CDR / MMSE settings.
 
     Only depends on demographics (Age), independent of embedding/features.
     AD partitions share one matching per (match_strat, match_level).
@@ -150,9 +152,14 @@ def build_matching_cache(
     if match_strategies is None:
         match_strategies = list(MATCH_STRATEGIES)
 
-    demo, _ = build_cohort_ad_vs_HCgroup(
-        hc_source="HC", design="cross_naive", cohort_mode=cohort_mode,
-    )
+    spec = cohort_spec_from_name(cohort_mode)
+    demo = cohort_list(
+        f"p_{spec.p_visit}", f"p_{spec.p_cdr}", f"hc_{spec.hc_visit}",
+        "hc_cdr0_or_mmse26" if spec.hc_strict else "hc_cdrall_or_mmseall")
+    demo["group"] = demo["Group"]
+    demo["base_id"] = demo["Group"] + demo["ID"].astype(str)
+    demo["ID"] = demo["base_id"] + "-" + demo["Photo_Session"].astype(str)
+    demo["label"] = (demo["group"] == "P").astype(int)
 
     cache = {"demo": demo}
 

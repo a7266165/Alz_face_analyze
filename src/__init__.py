@@ -11,6 +11,7 @@ from .config import (
     RAW_IMAGES_DIR,
     DATA_DIR,
     DEMOGRAPHICS_DIR,
+    HOSPITAL_A_CSV,
     WORKSPACE_DIR,
     # Embedding
     EMBEDDING_DIR,
@@ -69,6 +70,7 @@ __all__ = [
     "RAW_IMAGES_DIR",
     "DATA_DIR",
     "DEMOGRAPHICS_DIR",
+    "HOSPITAL_A_CSV",
     "WORKSPACE_DIR",
     # Embedding
     "EMBEDDING_DIR",

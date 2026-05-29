@@ -16,12 +16,11 @@ from src.config import DEMOGRAPHICS_DIR, WORKSPACE_DIR, PREDICTED_AGES_FILE
 
 # --- Load data ---
 # Demographics
-dfs = []
-for csv_file in ["ACS.csv", "NAD.csv", "P.csv"]:
-    df = pd.read_csv(DEMOGRAPHICS_DIR / csv_file, encoding="utf-8-sig")
-    df["group"] = csv_file.replace(".csv", "")
-    dfs.append(df[["ID", "Age", "group"]])
-demo = pd.concat(dfs, ignore_index=True)
+demo = pd.read_csv(DEMOGRAPHICS_DIR / "hospital_A.csv", encoding="utf-8-sig")
+demo["group"] = demo["Group"]
+demo["ID"] = (demo["Group"] + demo["ID"].astype(str)
+              + "-" + demo["Photo_Session"].astype(str))
+demo = demo[["ID", "Age", "group"]]
 
 # Emotion scores
 emo = pd.read_csv(WORKSPACE_DIR / "emotion" / "emotion_score_EmoNet.csv", encoding="utf-8-sig")

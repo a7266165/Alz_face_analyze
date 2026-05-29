@@ -269,15 +269,15 @@ logger = logging.getLogger(__name__)
 # Direct imports from utilities (cohort + matching + stats)
 # ============================================================
 
-from src.cohort import (
-    apply_p_cdr_filter,
-    build_cohort_ad_vs_HCgroup,
-    DEMOGRAPHICS_DIR as _COHORT_DEMOGRAPHICS_DIR,
-    load_p_demographics,
-    match_1to1,
-    select_visit,
-    split_by_metric_median,
+from src.config import DEMOGRAPHICS_DIR as _COHORT_DEMOGRAPHICS_DIR
+from src.common.cohort import (
+    cohort_list,
+    load_demographics,
+    p_filter,
+    visit_selection,
 )
+from src.common.legacy.matching import match_1to1, match_cohort_ad_vs_hc
+from src.common.legacy.splits import split_by_metric_median
 from scripts.utilities.stats_helpers import bootstrap_auc_ci
 
 # Module-level _COHORT_MODE is set in main() after argparse; cohort builders
@@ -326,9 +326,8 @@ def load_embedding(ids, model, feature_type="original", photo_mode=None):
                              **{f"{model}__dim_{i}": float(a[k, i])
                                 for i in range(a.shape[1])}})
     return pd.DataFrame(rows) if rows else None
-# (bootstrap_auc_ci, match_1to1, split_by_metric_median, load_p_demographics,
-# select_visit, build_cohort_ad_vs_HCgroup are imported above from
-# scripts.utilities — no importlib reuse here.)
+# (bootstrap_auc_ci, match_1to1, split_by_metric_median, load_demographics,
+# visit_selection, cohort_list are imported above — no importlib reuse here.)
 
 
 # ============================================================
@@ -372,22 +371,27 @@ def _build_ad_vs_hcgroup(hc_source):
       'p_first_cdr05_hc_all_cdrall_or_mmseall':              P first + HC all visits
       'p_all_cdr05_hc_all_cdrall_or_mmseall':                P all + HC all visits
     """
-    full, _ = build_cohort_ad_vs_HCgroup(
-        hc_source, design="cross_naive",
-        cohort_mode=_COHORT_MODE, hc_source_mode=_HC_SOURCE_MODE,
-    )
-    matched, pairs = build_cohort_ad_vs_HCgroup(
-        hc_source, design="cross_matched",
-        cohort_mode=_COHORT_MODE, hc_source_mode=_HC_SOURCE_MODE,
-        priority_groups=_MATCH_PRIORITY,
-        match_level="subject",
-    )
-    matched_visit, pairs_visit = build_cohort_ad_vs_HCgroup(
-        hc_source, design="cross_matched",
-        cohort_mode=_COHORT_MODE, hc_source_mode=_HC_SOURCE_MODE,
-        priority_groups=_MATCH_PRIORITY,
-        match_level="visit",
-    )
+    # hc_source 固定 "HC"（NAD/ACS partition 由下游 group 過濾）。
+    spec = cohort_spec_from_name(_COHORT_MODE)
+    tokens = (f"p_{spec.p_visit}", f"p_{spec.p_cdr}", f"hc_{spec.hc_visit}",
+              "hc_cdr0_or_mmse26" if spec.hc_strict else "hc_cdrall_or_mmseall")
+    if _HC_SOURCE_MODE == "ACS":
+        full = cohort_list(*tokens)
+        # split schema → 直接由 Group 取 key，組回特徵 ID。
+        full["group"] = full["Group"]
+        full["base_id"] = full["Group"] + full["ID"].astype(str)
+        full["ID"] = full["base_id"] + "-" + full["Photo_Session"].astype(str)
+    else:
+        # EACS-extended HC 走 legacy（cohort 核心只含 P/NAD/ACS）；
+        # EACS roster 為完整 ID + group 欄，base_id 用正則拆。
+        from src.common.legacy.eacs import cohort_list_with_eacs
+        full = cohort_list_with_eacs(_HC_SOURCE_MODE, *tokens)
+        full["base_id"] = full["ID"].str.extract(r"^(.+)-\d+$")[0]
+    full["label"] = (full["group"] == "P").astype(int)
+    matched, pairs = match_cohort_ad_vs_hc(
+        full, priority_groups=_MATCH_PRIORITY, match_level="subject")
+    matched_visit, pairs_visit = match_cohort_ad_vs_hc(
+        full, priority_groups=_MATCH_PRIORITY, match_level="visit")
     return full, matched, pairs, matched_visit, pairs_visit
 
 
@@ -401,9 +405,12 @@ def _build_metric_hilo(metric):
     group_col = f"{metric_low}_group"
 
     spec = cohort_spec_from_name(_COHORT_MODE)
-    df = load_p_demographics()
-    df = apply_p_cdr_filter(df, spec).copy()
-    cohort = select_visit(df, visit_selection="first", metric=metric)
+    df = load_demographics(("P",))
+    df = p_filter(df, f"p_{spec.p_cdr}").copy()
+    df = df.dropna(subset=[metric, "Age"])
+    # base_id 由 load_demographics 提供；組回特徵 ID 供下游對應 .npy。
+    df["ID"] = df["base_id"] + "-" + df["Photo_Session"].astype(str)
+    cohort = visit_selection(df, "p_first")
     cohort, _median = split_by_metric_median(
         cohort, metric=metric, group_col=group_col,
     )
@@ -776,7 +783,7 @@ def _forward_eval_caliper_group(oof_subj, full_cohort, matched_cohort,
     if "group" not in full_cohort.columns:
         return None
 
-    from src.cohort import build_caliper_group
+    from src.common.legacy.matching import build_caliper_group
     cal_cohort, age_balance = build_caliper_group(
         full_cohort, matched_cohort,
         keep_groups=keep_groups, caliper=caliper,

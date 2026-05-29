@@ -88,6 +88,8 @@ def _imwrite_unicode(path: Path, img) -> None:
     ok, buf = cv2.imencode(ext, img)
     if ok:
         buf.tofile(str(path))
+    else:
+        logger.warning(f"影像編碼失敗，未寫出: {path}")
 
 
 def save_results(results: dict, output_file: Path) -> None:
@@ -99,26 +101,24 @@ def save_results(results: dict, output_file: Path) -> None:
     os.replace(tmp, output_file)
 
 
-def load_actual_ages() -> dict:
-    """從 demographics CSV 讀取真實年齡 {ID: age}"""
+def load_demographic_ids() -> set:
+    """從 demographics CSV 讀取「年齡有效」的受試者 ID 集合。
+
+    predict 已不再輸出 actual_age，這裡只用於成員判斷（決定哪些受試者要預測），
+    故回傳 set 而非 {ID: age}；無法轉成 float 的年齡視為無效、不納入。
+    """
     import pandas as pd
-    ages = {}
-    for csv_name in ["ACS.csv", "NAD.csv", "P.csv"]:
-        csv_path = DEMOGRAPHICS_DIR / csv_name
-        if not csv_path.exists():
-            continue
-        df = pd.read_csv(csv_path, encoding="utf-8-sig")
-        id_col = "ID" if "ID" in df.columns else df.columns[0]
-        age_col = next((c for c in df.columns if c.lower() == "age"), None)
-        if age_col is None:
-            continue
-        for _, row in df.iterrows():
-            sid = str(row[id_col]).strip()
-            try:
-                ages[sid] = float(row[age_col])
-            except (ValueError, TypeError):
-                pass
-    return ages
+    ids = set()
+    csv_path = DEMOGRAPHICS_DIR / "hospital_A.csv"
+    if not csv_path.exists():
+        return ids
+    df = pd.read_csv(csv_path, encoding="utf-8-sig")
+    # 組回完整特徵 ID（"P1-2"）；年齡可轉 float 才納入。
+    full_id = (df["Group"] + df["ID"].astype(str)
+               + "-" + df["Photo_Session"].astype(str))
+    age = pd.to_numeric(df["Age"], errors="coerce")
+    ids.update(full_id[age.notna()].tolist())
+    return ids
 
 
 def default_output(model_name: str) -> Path:
@@ -172,8 +172,8 @@ def main():
         subjects = [s for s in subjects if s.name.startswith(args.subject_prefix)]
     logger.info(f"找到 {len(subjects)} 個受試者")
 
-    actual_ages = load_actual_ages()
-    logger.info(f"demographics 載入 {len(actual_ages)} 個真實年齡")
+    valid_ids = load_demographic_ids()
+    logger.info(f"demographics 載入 {len(valid_ids)} 個有效受試者 ID")
 
     results = {}
     if (args.merge or args.resume) and output_file.exists():
@@ -193,7 +193,7 @@ def main():
 
         # 只預測清理後 demographics 中存在的受試者（已要求 Age + BMI 皆有效）。
         # 不在其中者（例如 BMI 缺失而被清理掉）為無效樣本，一律捨棄。
-        if subject_id not in actual_ages:
+        if subject_id not in valid_ids:
             skipped_no_demo += 1
             continue
 
@@ -208,14 +208,23 @@ def main():
 
         images = [img for _, img in pairs]
 
-        # 存下實際餵入模型的人臉裁切（含最小臉框守門後的結果），格式比照 preprocess
+        # 存下實際餵入模型的人臉裁切（含最小臉框守門後的結果），格式比照 preprocess。
+        # 裁切只算一次：存檔後直接餵給模型（predict_cropped），避免對同一張圖
+        # 重跑兩次人臉偵測，也確保「存下來的」與「實際推論的」是同一份裁切。
         if args.save_input and hasattr(predictor, "face_crop"):
             crop_dir = output_file.parent / "input" / subject_id
             crop_dir.mkdir(parents=True, exist_ok=True)
+            crops = []
             for name, img in pairs:
-                _imwrite_unicode(crop_dir / name, predictor.face_crop(img))
-
-        ages = predictor.predict(images)
+                crop = predictor.face_crop(img)
+                _imwrite_unicode(crop_dir / name, crop)
+                crops.append(crop)
+            if hasattr(predictor, "predict_cropped"):
+                ages = predictor.predict_cropped(crops)
+            else:
+                ages = predictor.predict(images)
+        else:
+            ages = predictor.predict(images)
 
         if ages:
             results[subject_id] = {

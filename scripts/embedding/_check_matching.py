@@ -2,9 +2,25 @@
 including priority_groups ordering."""
 import sys
 sys.path.insert(0, ".")
-from src.cohort import build_cohort_ad_vs_HCgroup, filter_pairs_by_predicted_age
+from src.common.cohort import cohort_list
+from src.common.legacy.matching import match_cohort_ad_vs_hc
+from src.common.legacy.predicted_age import filter_pairs_by_predicted_age
+from src.config import cohort_spec_from_name
 
 CM = "p_all_cdrall_hc_all_cdrall_or_mmseall"
+
+
+def _roster(hc_source):
+    spec = cohort_spec_from_name(CM)
+    roster = cohort_list(
+        f"p_{spec.p_visit}", f"p_{spec.p_cdr}", f"hc_{spec.hc_visit}",
+        "hc_cdr0_or_mmse26" if spec.hc_strict else "hc_cdrall_or_mmseall")
+    roster["group"] = roster["Group"]
+    roster["base_id"] = roster["Group"] + roster["ID"].astype(str)
+    roster["ID"] = roster["base_id"] + "-" + roster["Photo_Session"].astype(str)
+    if hc_source in ("ACS", "NAD"):
+        roster = roster[roster["group"].isin(["P", hc_source])].reset_index(drop=True)
+    return roster
 
 def _acs_subjects(pairs):
     ids = set()
@@ -16,10 +32,9 @@ def _acs_subjects(pairs):
     return ids
 
 def _run(label, hc_source, priority_groups=None):
-    matched, pairs = build_cohort_ad_vs_HCgroup(
-        hc_source, design="cross_matched", cohort_mode=CM,
-        hc_source_mode="ACS", priority_groups=priority_groups,
-    )
+    roster = _roster(hc_source)
+    matched, pairs = match_cohort_ad_vs_hc(
+        roster, priority_groups=priority_groups)
     matched, pairs = filter_pairs_by_predicted_age(matched, pairs)
     n_total = pairs["pair_id"].nunique()
     n_acs_subj = len(_acs_subjects(pairs))

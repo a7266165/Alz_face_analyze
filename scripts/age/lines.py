@@ -1,24 +1,26 @@
 """
 scripts/age/lines.py
-Prediction-residual (real − predicted) line plots by true age, with internal +
-external dataset combinations. No age-calibration involved — residuals are
-computed directly from the raw MiVOLO predictions.
+Prediction-residual (real − predicted) line plots by true age, for the
+internal ACS / NAD / P groups.
 
-Outputs (under AGE_LINES_DIR):
-  no_sliding_window/   — residual by integer age (mean ± std)
-  sliding_window_10/   — residual by 10-year sliding window
+Cohort is built with the canonical ``src.common.cohort.cohort_list`` — the same
+gold-standard filtering ``histogram.py`` uses — so the CDR/MMSE/visit filters
+actually applied match the output directory's cohort name. Residuals are computed
+directly from the raw MiVOLO predictions (no age-calibration involved).
 
-Each directory contains 8 source combinations × {lines, merged} views.
+Outputs (under <AGE_ANALYSIS_DIR>/<visit_dir>/<cdr_mmse_dir>/lines/):
+  no_sliding_window/lines_internal.png       — residual by integer age (mean ± std)
+  sliding_window_10/lines_internal_sw10.png  — residual by 10-y sliding window
 
 Usage:
-  conda run -n Alz_face_age python scripts/age/lines.py
-  conda run -n Alz_face_age python scripts/age/lines.py --output-dir <cohort-dir>
+  conda run -n Alz_face_main_analysis python scripts/age/lines.py
+  conda run -n Alz_face_main_analysis python scripts/age/lines.py \
+      --cohort-mode p_all_cdrall_hc_all_cdrall_or_mmseall
 """
 
 import argparse
 import logging
 import sys
-from itertools import combinations
 from pathlib import Path
 
 import matplotlib
@@ -31,79 +33,54 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from _paths import PROJECT_ROOT  # noqa: F401
 
 from src.config import (
-    AGE_LINES_DIR,
-    DEMOGRAPHICS_DIR,
+    AGE_ANALYSIS_DIR,
+    DEFAULT_COHORT_MODE,
     PREDICTED_AGES_FILE,
+    VALID_COHORT_CHOICES,
+    cohort_path,
+    cohort_spec_from_name,
 )
 from src.age.utils import load_predicted_ages
+from src.common.cohort import cohort_list
 
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 COLORS = {
-    "ACS":       "#4CAF50",
-    "NAD":       "#2196F3",
-    "P":         "#F44336",
-    "UTKFace":   "#9C27B0",
-    "AgeDB":     "#17becf",
-    "APPA-REAL": "#bcbd22",
+    "ACS": "#4CAF50",
+    "NAD": "#2196F3",
+    "P":   "#F44336",
 }
-EXTERNAL_SOURCES = ["AgeDB", "APPA-REAL", "UTKFace"]
-
-_COLS = ["group", "real_age", "predicted_age", "error_before", "age_int"]
+GROUPS = ["ACS", "NAD", "P"]
 
 # ── data loading ─────────────────────────────────────────────────────────────
 
-def build_internal(preds: dict) -> pd.DataFrame:
-    """ACS/NAD/P residual = real − predicted, from raw predictions."""
-    dfs = []
-    for csv_name in ["ACS.csv", "NAD.csv", "P.csv"]:
-        demo = pd.read_csv(DEMOGRAPHICS_DIR / csv_name, encoding="utf-8-sig")
-        grp = csv_name.replace(".csv", "")
-        demo["Age"] = pd.to_numeric(demo["Age"], errors="coerce")
-        demo["predicted_age"] = demo["ID"].map(preds)
-        demo = demo.dropna(subset=["Age", "predicted_age"])
-        real = demo["Age"].astype(float)
-        pred = demo["predicted_age"].astype(float)
-        dfs.append(pd.DataFrame({
-            "group": grp,
-            "real_age": real,
-            "predicted_age": pred,
-            "error_before": real - pred,
-            "age_int": real.astype(int),
-        }))
-    return pd.concat(dfs, ignore_index=True)
+def build_internal(preds: dict, cohort_mode: str) -> pd.DataFrame:
+    """ACS/NAD/P residual = real − predicted, on the canonical cohort.
 
-
-def build_external(source: str, preds: dict) -> pd.DataFrame:
-    """One EACS source's residual = real − predicted, from raw predictions."""
-    path = DEMOGRAPHICS_DIR / "EACS.csv"
-    if not path.exists():
-        return pd.DataFrame(columns=_COLS)
-    demo = pd.read_csv(path, encoding="utf-8-sig")
-    if "Source" not in demo.columns:
-        return pd.DataFrame(columns=_COLS)
-    demo = demo[demo["Source"] == source].copy()
-    demo["Age"] = pd.to_numeric(demo["Age"], errors="coerce")
-    demo["predicted_age"] = demo["ID"].map(preds)
-    demo = demo.dropna(subset=["Age", "predicted_age"]).reset_index(drop=True)
-    real = demo["Age"].astype(float)
-    pred = demo["predicted_age"].astype(float)
-    return pd.DataFrame({
-        "group": source,
-        "real_age": real,
-        "predicted_age": pred,
-        "error_before": real - pred,
-        "age_int": real.astype(int),
-    })
+    Cohort filtering (CDR / MMSE / visit selection) is delegated to
+    ``cohort_list`` so it matches ``histogram.py`` exactly.
+    """
+    spec = cohort_spec_from_name(cohort_mode)
+    cohort = cohort_list(
+        f"p_{spec.p_visit}", f"p_{spec.p_cdr}", f"hc_{spec.hc_visit}",
+        "hc_cdr0_or_mmse26" if spec.hc_strict else "hc_cdrall_or_mmseall")
+    cohort["group"] = cohort["Group"]
+    cohort["ID"] = (cohort["Group"] + cohort["ID"].astype(str)
+                    + "-" + cohort["Photo_Session"].astype(str))
+    df = cohort[["ID", "group", "Age"]].copy()
+    df["real_age"] = pd.to_numeric(df["Age"], errors="coerce")
+    df["predicted_age"] = df["ID"].map(preds)
+    df = df.dropna(subset=["real_age", "predicted_age"]).reset_index(drop=True)
+    df["error_before"] = df["real_age"] - df["predicted_age"]
+    df["age_int"] = df["real_age"].astype(int)
+    return df[["group", "real_age", "predicted_age", "error_before", "age_int"]]
 
 # ── plot functions ───────────────────────────────────────────────────────────
 
-def plot_combined(df_all, output_path, groups, title, ylabel, y_col,
-                  group_labels=None):
+def plot_combined(df_all, output_path, groups, title, ylabel, y_col):
     fig, ax = plt.subplots(figsize=(14, 5))
-    labels = group_labels or {}
     for grp in groups:
         color = COLORS.get(grp)
         if color is None:
@@ -116,9 +93,8 @@ def plot_combined(df_all, output_path, groups, title, ylabel, y_col,
         if st.empty:
             continue
         ages, means, stds = st.index.values, st["mean"].values, st["std"].fillna(0).values
-        display = labels.get(grp, grp)
         ax.plot(ages, means, color=color, linewidth=2, marker="o", markersize=4,
-                label=f"{display} (n={len(sub)})")
+                label=f"{grp} (n={len(sub)})")
         ax.fill_between(ages, means - stds, means + stds, color=color, alpha=0.15)
 
     ax.axhline(y=0, color="black", linestyle="--", alpha=0.4)
@@ -136,10 +112,8 @@ def plot_combined(df_all, output_path, groups, title, ylabel, y_col,
 
 
 def plot_sliding_window(df_all, output_path, groups, title, ylabel, y_col,
-                        group_labels=None, window=10, step=1, min_count=5,
-                        xlim=(50, 100)):
+                        window=10, step=1, min_count=5, xlim=(50, 100)):
     fig, ax = plt.subplots(figsize=(14, 5))
-    labels = group_labels or {}
     lo_x, hi_x = xlim
     starts = np.arange(lo_x, hi_x - window + 1 + step, step)
 
@@ -162,9 +136,8 @@ def plot_sliding_window(df_all, output_path, groups, title, ylabel, y_col,
         if not xs:
             continue
         xs, ms, ss = np.array(xs), np.array(ms), np.array(ss)
-        display = labels.get(grp, grp)
         ax.plot(xs, ms, color=color, linewidth=2, marker="o", markersize=4,
-                label=f"{display} (n={len(sub)})")
+                label=f"{grp} (n={len(sub)})")
         ax.fill_between(xs, ms - ss, ms + ss, color=color, alpha=0.15)
 
     ax.axhline(y=0, color="black", linestyle="--", alpha=0.4)
@@ -180,73 +153,42 @@ def plot_sliding_window(df_all, output_path, groups, title, ylabel, y_col,
     plt.close(fig)
     logger.info(f"saved {output_path}")
 
-# ── helpers ──────────────────────────────────────────────────────────────────
-
-def combo_suffix(sources):
-    if not sources:
-        return "internal"
-    return "_".join(s.lower().replace("-", "") for s in sorted(sources, key=str.lower))
-
-
-def combo_label(sources):
-    return " + ".join(sorted(sources, key=str.lower))
-
-
-def all_combos():
-    return [()] + [tuple(c) for k in (1, 2, 3)
-                   for c in combinations(EXTERNAL_SOURCES, k)]
-
 # ── main ─────────────────────────────────────────────────────────────────────
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--output-dir", type=Path, default=AGE_LINES_DIR)
+    ap.add_argument("--cohort-mode", default=DEFAULT_COHORT_MODE,
+                    choices=VALID_COHORT_CHOICES,
+                    help=f"canonical cohort name (預設: {DEFAULT_COHORT_MODE})")
+    ap.add_argument("--output-dir", type=Path, default=None,
+                    help="覆寫輸出目錄；留空依 cohort-mode 自動決定")
     args = ap.parse_args()
 
-    dir_py = args.output_dir / "no_sliding_window"
-    dir_sw = args.output_dir / "sliding_window_10"
+    output_dir = args.output_dir or (
+        AGE_ANALYSIS_DIR / cohort_path(args.cohort_mode) / "lines")
+    dir_py = output_dir / "no_sliding_window"
+    dir_sw = output_dir / "sliding_window_10"
 
-    logger.info(f"output-dir = {args.output_dir}")
+    logger.info(f"cohort-mode = {args.cohort_mode}")
+    logger.info(f"output-dir  = {output_dir}")
 
     preds = load_predicted_ages(PREDICTED_AGES_FILE)
-    df_int = build_internal(preds)
-    df_ext = {src: build_external(src, preds) for src in EXTERNAL_SOURCES}
+    df_int = build_internal(preds, args.cohort_mode)
+    logger.info(f"internal rows: {len(df_int)} "
+                f"({df_int['group'].value_counts().to_dict()})")
 
     ylabel = "Prediction Residual (real − predicted)"
     title_state = "Residual = real − predicted"
 
-    for combo in all_combos():
-        parts = [df_int] + [df_ext[s] for s in combo]
-        df_combo = pd.concat(parts, ignore_index=True)
-        groups_lines = ["ACS", "NAD", "P"] + sorted(combo, key=str.lower)
-        suffix = combo_suffix(combo)
-        label = combo_label(combo)
-
-        df_merged = df_combo.copy()
-        if combo:
-            df_merged.loc[df_merged["group"].isin(combo), "group"] = "ACS"
-        merged_label = f"ACS + {label}" if combo else "ACS"
-
-        title_l = f"{title_state} by True Age — {' / '.join(groups_lines)} (mean ± std)"
-        plot_combined(df_combo, dir_py / f"lines_{suffix}.png",
-                      groups=groups_lines, title=title_l,
-                      ylabel=ylabel, y_col="error_before")
-        plot_sliding_window(df_combo, dir_sw / f"lines_{suffix}_sw10.png",
-                            groups=groups_lines,
-                            title=f"{title_state} by True Age — {' / '.join(groups_lines)} (10-y sliding window)",
-                            ylabel=ylabel, y_col="error_before")
-        if combo:
-            title_m = f"{title_state} by True Age — {merged_label} / NAD / P (mean ± std)"
-            plot_combined(df_merged, dir_py / f"merged_{suffix}.png",
-                          groups=["ACS", "NAD", "P"], title=title_m,
-                          ylabel=ylabel, y_col="error_before",
-                          group_labels={"ACS": merged_label})
-            plot_sliding_window(df_merged, dir_sw / f"merged_{suffix}_sw10.png",
-                                groups=["ACS", "NAD", "P"],
-                                title=f"{title_state} by True Age — {merged_label} / NAD / P (10-y sliding window)",
-                                ylabel=ylabel, y_col="error_before",
-                                group_labels={"ACS": merged_label})
+    plot_combined(
+        df_int, dir_py / "lines_internal.png", groups=GROUPS,
+        title=f"{title_state} by True Age — ACS / NAD / P (mean ± std)",
+        ylabel=ylabel, y_col="error_before")
+    plot_sliding_window(
+        df_int, dir_sw / "lines_internal_sw10.png", groups=GROUPS,
+        title=f"{title_state} by True Age — ACS / NAD / P (10-y sliding window)",
+        ylabel=ylabel, y_col="error_before")
 
 
 if __name__ == "__main__":

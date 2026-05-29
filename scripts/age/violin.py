@@ -47,22 +47,19 @@ HILO_COMPARISONS = ["mmse_high_vs_low", "casi_high_vs_low"]
 
 def load_all_with_error():
     preds = load_predicted_ages(PREDICTED_AGES_FILE)
-    dfs = []
-    for csv_name in ["ACS.csv", "NAD.csv", "P.csv"]:
-        df = pd.read_csv(DEMOGRAPHICS_DIR / csv_name, encoding="utf-8-sig")
-        df["group"] = csv_name.replace(".csv", "")
-        df["Age"] = pd.to_numeric(df["Age"], errors="coerce")
-        for col in ["MMSE", "CASI"]:
-            if col in df.columns:
-                df[col] = pd.to_numeric(df[col], errors="coerce")
-            else:
-                df[col] = np.nan
-        df["predicted_age"] = df["ID"].map(preds)
-        df = df.dropna(subset=["Age", "predicted_age"])
-        df["age_error"] = df["Age"] - df["predicted_age"]
-        df["subject"] = df["ID"].apply(lambda x: x.rsplit("-", 1)[0])
-        dfs.append(df)
-    return pd.concat(dfs, ignore_index=True)
+    # 單一乾淨表 hospital_A.csv（split schema）；組回完整特徵 ID（"P1-2"）。
+    df = pd.read_csv(DEMOGRAPHICS_DIR / "hospital_A.csv", encoding="utf-8-sig")
+    df["group"] = df["Group"]
+    df["ID"] = (df["Group"] + df["ID"].astype(str)
+                + "-" + df["Photo_Session"].astype(str))
+    df["Age"] = pd.to_numeric(df["Age"], errors="coerce")
+    for col in ["MMSE", "CASI"]:
+        df[col] = pd.to_numeric(df.get(col), errors="coerce")
+    df["predicted_age"] = df["ID"].map(preds)
+    df = df.dropna(subset=["Age", "predicted_age"])
+    df["age_error"] = df["Age"] - df["predicted_age"]
+    df["subject"] = df["ID"].apply(lambda x: x.rsplit("-", 1)[0])
+    return df.reset_index(drop=True)
 
 # ── matching ─────────────────────────────────────────────────────────────────
 

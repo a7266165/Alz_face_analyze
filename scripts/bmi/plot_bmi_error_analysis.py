@@ -56,14 +56,11 @@ def load_oof_with_age(model_name: str) -> pd.DataFrame:
     df = pd.read_csv(oof_csv)
     df["group"] = df["ID"].apply(_parse_group)
 
-    age_dfs = []
-    for csv_name in ["P.csv", "NAD.csv", "ACS.csv"]:
-        path = DEMOGRAPHICS_DIR / csv_name
-        if path.exists():
-            demo = pd.read_csv(path)[["ID", "Age"]]
-            demo["Age"] = pd.to_numeric(demo["Age"], errors="coerce")
-            age_dfs.append(demo)
-    ages = pd.concat(age_dfs, ignore_index=True)
+    ages = pd.read_csv(DEMOGRAPHICS_DIR / "hospital_A.csv")
+    ages["ID"] = (ages["Group"] + ages["ID"].astype(str)
+                  + "-" + ages["Photo_Session"].astype(str))
+    ages["Age"] = pd.to_numeric(ages["Age"], errors="coerce")
+    ages = ages[["ID", "Age"]]
 
     df = df.merge(ages, on="ID", how="left")
     df["error"] = df["y_true"] - df["y_pred"]

@@ -88,35 +88,37 @@ class MiVOLOPredictor:
         return image[y1:y2, x1:x2]
 
     def predict_single(self, image: np.ndarray) -> Optional[float]:
-        """預測單張影像的年齡"""
+        """預測單張影像的年齡（先做人臉裁切再推論）"""
+        return self._predict_on_crop(self.face_crop(image))
+
+    def _predict_on_crop(self, face_crop: np.ndarray) -> Optional[float]:
+        """對「已裁切好的人臉」做推論，不再重跑人臉偵測。"""
         import torch
 
         try:
-            face_crop = self.face_crop(image)
-
             # 預處理
             inputs = self.processor(images=[face_crop])["pixel_values"]
             inputs = inputs.to(dtype=self.model.dtype, device=self.model.device)
-            
+
             # 推論
             with torch.no_grad():
                 outputs = self.model(faces_input=inputs, body_input=inputs)
-            
+
             if hasattr(outputs, 'age_output'):
                 return outputs.age_output[0].item()
-                
+
         except Exception as e:
             logger.debug(f"預測失敗: {e}")
-        
+
         return None
 
     def predict(self, images: List[np.ndarray]) -> List[float]:
         """
         預測多張影像的年齡
-        
+
         Args:
             images: BGR 影像列表
-            
+
         Returns:
             預測年齡列表（僅包含成功預測的結果）
         """
@@ -127,6 +129,15 @@ class MiVOLOPredictor:
                 ages.append(age)
 
         return ages
+
+    def predict_cropped(self, crops: List[np.ndarray]) -> List[float]:
+        """對一批「已裁切好的人臉」做推論。
+
+        供 ``--save-input`` 重用先前算好的 face_crop 結果，避免對同一張圖
+        重跑兩次人臉偵測，同時確保「存下來的裁切」與「實際餵入模型的裁切」
+        完全一致。
+        """
+        return [a for c in crops if (a := self._predict_on_crop(c)) is not None]
 
 
 class InsightFacePredictor:

@@ -1,7 +1,8 @@
-"""
-人口學資料載入模組
+"""[LEGACY] 舊版 DemographicsLoader — 已無 consumer。
 
-負責載入和處理人口學資料（年齡、性別、CDR等）
+讀取 healthy.csv / patient.csv（實際資料是 P/NAD/ACS/EACS，這兩個檔不存在）。
+現行人口學載入請用 ``src.common.cohort.demographics.load_demographics``。
+保留於此僅供查考。
 """
 
 import logging

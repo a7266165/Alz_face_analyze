@@ -270,8 +270,8 @@ class MetaDataLoader:
         return pd.DataFrame(rows)
 
     def _load_age_data(self) -> pd.DataFrame:
-        from src.cohort import load_combined_demographics
-        demo = load_combined_demographics(self.hc_source_mode)
+        from src.common.legacy.eacs import load_combined_demographics_with_eacs
+        demo = load_combined_demographics_with_eacs(self.hc_source_mode)
         demo = demo.rename(columns={"ID": "subject_id", "Age": "real_age"})
         demo["real_age"] = pd.to_numeric(demo["real_age"], errors="coerce")
 
@@ -286,8 +286,8 @@ class MetaDataLoader:
         return demo[["subject_id", "real_age", "age_error"]]
 
     def _load_bmi_data(self) -> pd.DataFrame:
-        from src.cohort import load_combined_demographics
-        demo = load_combined_demographics(self.hc_source_mode)
+        from src.common.legacy.eacs import load_combined_demographics_with_eacs
+        demo = load_combined_demographics_with_eacs(self.hc_source_mode)
         demo = demo.rename(columns={"ID": "subject_id", "BMI": "bmi"})
         demo["bmi"] = pd.to_numeric(demo["bmi"], errors="coerce")
         demo = demo.dropna(subset=["bmi"])

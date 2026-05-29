@@ -19,8 +19,7 @@ Public API:
         wide table merging all methods, columns named `<method>__<col>` —
         backward-compatible with the previous loader signatures used in
         scripts/overview/{run_cross_naive,run_cross_matched,run_stat_grid}.py /
-        scripts/age/run_window_classifier.py /
-        scripts/longitudinal/{build_dataset,build_hc_and_vectors}.py.
+        scripts/age/run_window_classifier.py.
 """
 from __future__ import annotations
 

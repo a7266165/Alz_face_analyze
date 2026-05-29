@@ -2,7 +2,12 @@
 scripts/age/stat.py
 Age prediction error statistics — stratified CSVs and correlation analysis.
 
-Outputs (to stat/ directory):
+Cohort is built with the canonical ``src.common.cohort.cohort_list`` — the same
+gold-standard filtering ``histogram.py`` uses — so the CDR/MMSE/visit filters
+actually applied match the output directory's cohort name. Errors are computed
+directly from the raw MiVOLO predictions.
+
+Outputs (to <AGE_ANALYSIS_DIR>/<visit_dir>/<cdr_mmse_dir>/stat/):
   age_error_stat_2.csv          — age-stratified stats per group
   age_error_sliding_window.csv  — 10-year sliding window stats
   patient_cdr_age_error.csv     — Patient CDR-stratified stats
@@ -14,8 +19,9 @@ Outputs (to stat/ directory):
   patient_casi_vs_error.png     — CASI-error scatter
 
 Usage:
-  conda run -n Alz_face_age python scripts/age/stat.py
-  conda run -n Alz_face_age python scripts/age/stat.py --cohort-mode p_first_cdrall_hc_all_cdrall_or_mmseall
+  conda run -n Alz_face_main_analysis python scripts/age/stat.py
+  conda run -n Alz_face_main_analysis python scripts/age/stat.py \
+      --cohort-mode p_all_cdrall_hc_all_cdrall_or_mmseall
 """
 
 import argparse
@@ -34,11 +40,15 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from _paths import PROJECT_ROOT  # noqa: F401
 
 from src.config import (
-    DEMOGRAPHICS_DIR,
-    AGE_STAT_DIR,
+    AGE_ANALYSIS_DIR,
+    DEFAULT_COHORT_MODE,
     PREDICTED_AGES_FILE,
+    VALID_COHORT_CHOICES,
+    cohort_path,
+    cohort_spec_from_name,
 )
 from src.age.utils import load_predicted_ages
+from src.common.cohort import cohort_list
 
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s - %(levelname)s - %(message)s")
@@ -46,51 +56,29 @@ logger = logging.getLogger(__name__)
 
 # ── data loading ─────────────────────────────────────────────────────────────
 
-def load_demographics(demo_dir: Path) -> pd.DataFrame:
-    keep_cols = ["ID", "Age", "group", "MMSE", "CASI", "Global_CDR"]
-    dfs = []
-    for csv_file in ["ACS.csv", "NAD.csv", "P.csv"]:
-        df = pd.read_csv(demo_dir / csv_file, encoding="utf-8-sig")
-        df["group"] = csv_file.replace(".csv", "")
-        for c in keep_cols:
-            if c not in df.columns:
-                df[c] = np.nan
-        dfs.append(df[keep_cols])
-    return pd.concat(dfs, ignore_index=True)
+def build_matched(preds: dict, cohort_mode: str) -> pd.DataFrame:
+    """Canonical cohort × predicted ages → per-row error table.
 
-
-def match_ages(predicted_ages: dict, demo: pd.DataFrame) -> pd.DataFrame:
-    records = []
-    for subject_id, pred_age in predicted_ages.items():
-        row = demo[demo["ID"] == subject_id]
-        if row.empty:
-            continue
-        real_age = row["Age"].values[0]
-        if pd.isna(real_age):
-            continue
-        records.append({
-            "ID": subject_id,
-            "real_age": real_age,
-            "predicted_age": pred_age,
-            "group": row["group"].values[0],
-            "error": real_age - pred_age,
-            "MMSE": row["MMSE"].values[0],
-            "CASI": row["CASI"].values[0],
-            "Global_CDR": row["Global_CDR"].values[0],
-        })
-    return pd.DataFrame(records)
-
-
-def filter_cohort(df: pd.DataFrame, cohort_mode: str) -> pd.DataFrame:
-    if cohort_mode == "all":
-        return df
-    df_p = df[df["group"] == "P"].copy()
-    df_hc = df[df["group"].isin(["NAD", "ACS"])].copy()
-    df_p["subject"] = df_p["ID"].apply(lambda x: x.rsplit("-", 1)[0])
-    if "cdr05" in cohort_mode:
-        df_p = df_p[pd.to_numeric(df_p["Global_CDR"], errors="coerce") >= 0.5]
-    pick = df_p.sort_values("ID").drop_duplicates("subject", keep="first")
-    return pd.concat([pick.drop(columns=["subject"]), df_hc], ignore_index=True)
+    Cohort filtering (CDR / MMSE / visit selection) is delegated to
+    ``cohort_list`` so it matches ``histogram.py`` exactly.
+    """
+    spec = cohort_spec_from_name(cohort_mode)
+    cohort = cohort_list(
+        f"p_{spec.p_visit}", f"p_{spec.p_cdr}", f"hc_{spec.hc_visit}",
+        "hc_cdr0_or_mmse26" if spec.hc_strict else "hc_cdrall_or_mmseall")
+    cohort["group"] = cohort["Group"]
+    cohort["ID"] = (cohort["Group"] + cohort["ID"].astype(str)
+                    + "-" + cohort["Photo_Session"].astype(str))
+    df = cohort.copy()
+    df["real_age"] = pd.to_numeric(df["Age"], errors="coerce")
+    df["predicted_age"] = df["ID"].map(preds)
+    df = df.dropna(subset=["real_age", "predicted_age"]).reset_index(drop=True)
+    df["error"] = df["real_age"] - df["predicted_age"]
+    for c in ["MMSE", "CASI", "Global_CDR"]:
+        if c not in df.columns:
+            df[c] = np.nan
+    return df[["ID", "real_age", "predicted_age", "group", "error",
+               "MMSE", "CASI", "Global_CDR"]]
 
 # ── constants ────────────────────────────────────────────────────────────────
 
@@ -252,28 +240,32 @@ def write_patient_corr(df_matched, score_col, stat_dir):
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--cohort-mode", default="all",
-                    choices=["all",
-                             "p_first_cdr05_hc_all_cdrall_or_mmseall",
-                             "p_first_cdrall_hc_all_cdrall_or_mmseall"])
-    ap.add_argument("--stat-dir", type=Path, default=AGE_STAT_DIR)
+    ap.add_argument("--cohort-mode", default=DEFAULT_COHORT_MODE,
+                    choices=VALID_COHORT_CHOICES,
+                    help=f"canonical cohort name (預設: {DEFAULT_COHORT_MODE})")
+    ap.add_argument("--stat-dir", type=Path, default=None,
+                    help="覆寫輸出目錄；留空依 cohort-mode 自動決定")
     args = ap.parse_args()
 
-    args.stat_dir.mkdir(parents=True, exist_ok=True)
+    stat_dir = args.stat_dir or (
+        AGE_ANALYSIS_DIR / cohort_path(args.cohort_mode) / "stat")
+    stat_dir.mkdir(parents=True, exist_ok=True)
+
+    logger.info(f"cohort-mode = {args.cohort_mode}")
+    logger.info(f"stat-dir    = {stat_dir}")
 
     preds = load_predicted_ages(PREDICTED_AGES_FILE)
-    demo = load_demographics(DEMOGRAPHICS_DIR)
-    df_matched = match_ages(preds, demo)
-    df_matched = filter_cohort(df_matched, args.cohort_mode)
-    logger.info(f"cohort={args.cohort_mode}, matched={len(df_matched)}")
+    df_matched = build_matched(preds, args.cohort_mode)
+    logger.info(f"matched={len(df_matched)} "
+                f"({df_matched['group'].value_counts().to_dict()})")
 
-    write_age_error_stat(df_matched, args.stat_dir)
-    write_sliding_window(df_matched, args.stat_dir)
-    write_patient_cdr(df_matched, args.stat_dir)
-    write_patient_score(df_matched, "MMSE", MMSE_BINS, args.stat_dir)
-    write_patient_score(df_matched, "CASI", CASI_BINS, args.stat_dir)
-    write_patient_corr(df_matched, "MMSE", args.stat_dir)
-    write_patient_corr(df_matched, "CASI", args.stat_dir)
+    write_age_error_stat(df_matched, stat_dir)
+    write_sliding_window(df_matched, stat_dir)
+    write_patient_cdr(df_matched, stat_dir)
+    write_patient_score(df_matched, "MMSE", MMSE_BINS, stat_dir)
+    write_patient_score(df_matched, "CASI", CASI_BINS, stat_dir)
+    write_patient_corr(df_matched, "MMSE", stat_dir)
+    write_patient_corr(df_matched, "CASI", stat_dir)
 
 
 if __name__ == "__main__":

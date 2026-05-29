@@ -20,6 +20,10 @@ PROJECT_ROOT = Path(__file__).parent.parent
 # 專案內資料目錄
 DATA_DIR = PROJECT_ROOT / "data"
 DEMOGRAPHICS_DIR = DATA_DIR / "demographics"
+# 單一乾淨人口學表（P/NAD/ACS 合併；scripts/external/build_hospital_A.py 產出）。
+# 欄位：Group, ID(受試者數字), Photo_Session, Photo_Date, Birth_Date, Sex,
+#       Age, BMI, NPT_Date, NPT_Session, Diff_Days, MMSE, CASI, Global_CDR
+HOSPITAL_A_CSV = DEMOGRAPHICS_DIR / "hospital_A.csv"
 
 # 原始影像目錄（外部資料，從 data/path.txt 讀取）
 _RAW_PATH_FILE = DATA_DIR / "path.txt"

@@ -51,7 +51,8 @@ from src.config import (
     VALID_COHORT_CHOICES,
     cohort_spec_from_name,
 )
-from src.cohort import build_cohort_ad_vs_HCgroup
+from src.common.cohort import cohort_list
+from src.common.legacy.matching import match_cohort_ad_vs_hc
 from scripts.utilities.stats_helpers import bootstrap_auc_ci
 
 logging.basicConfig(level=logging.INFO,
@@ -436,25 +437,24 @@ def main():
     feat_types = [args.feature_type] if args.feature_type else FEATURE_TYPES
 
     # Build cohorts once (shared across ad_vs_hc/nad/acs)
-    full_cohort, _ = build_cohort_ad_vs_HCgroup(
-        "HC", design="cross_naive",
-        cohort_mode=args.cohort_mode, hc_source_mode="ACS")
-    if "base_id" not in full_cohort.columns:
-        full_cohort["base_id"] = (full_cohort["ID"].astype(str)
-                                  .str.extract(r"^(.+)-\d+$")[0])
+    full_cohort = cohort_list(
+        f"p_{spec.p_visit}", f"p_{spec.p_cdr}", f"hc_{spec.hc_visit}",
+        "hc_cdr0_or_mmse26" if spec.hc_strict else "hc_cdrall_or_mmseall")
+    full_cohort["group"] = full_cohort["Group"]
+    full_cohort["base_id"] = full_cohort["Group"] + full_cohort["ID"].astype(str)
+    full_cohort["ID"] = full_cohort["base_id"] + "-" + full_cohort["Photo_Session"].astype(str)
+    full_cohort["label"] = (full_cohort["group"] == "P").astype(int)
 
-    matched_subj, _ = build_cohort_ad_vs_HCgroup(
-        "HC", design="cross_matched",
-        cohort_mode=args.cohort_mode, hc_source_mode="ACS",
-        match_level="subject", priority_groups=args.match_priority)
+    matched_subj, _ = match_cohort_ad_vs_hc(
+        full_cohort, match_level="subject",
+        priority_groups=args.match_priority)
     if "base_id" not in matched_subj.columns:
         matched_subj["base_id"] = (matched_subj["ID"].astype(str)
                                    .str.extract(r"^(.+)-\d+$")[0])
 
-    matched_visit, _ = build_cohort_ad_vs_HCgroup(
-        "HC", design="cross_matched",
-        cohort_mode=args.cohort_mode, hc_source_mode="ACS",
-        match_level="visit", priority_groups=args.match_priority)
+    matched_visit, _ = match_cohort_ad_vs_hc(
+        full_cohort, match_level="visit",
+        priority_groups=args.match_priority)
     if "base_id" not in matched_visit.columns:
         matched_visit["base_id"] = (matched_visit["ID"].astype(str)
                                     .str.extract(r"^(.+)-\d+$")[0])

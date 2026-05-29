@@ -38,8 +38,10 @@ from src.config import (
     EMBEDDING_FEATURE_STAT_DIR,
     VALID_COHORT_CHOICES,
     cohort_path,
+    cohort_spec_from_name,
 )
-from src.cohort import build_cohort_ad_vs_HCgroup
+from src.common.cohort import cohort_list
+from src.common.legacy.matching import match_cohort_ad_vs_hc
 from scripts.utilities.stats_helpers import bh_fdr, permanova, welch_t_test
 
 logging.basicConfig(level=logging.INFO,
@@ -137,7 +139,7 @@ def _compute_cell_header_stats(design, compare, cohort):
     row["n_unique_0"] = int(bid_col[cohort["label"] == 0].nunique())
     row["n_unique"] = row["n_unique_1"] + row["n_unique_0"]
 
-    age_col = "first_age" if "first_age" in cohort.columns else "Age"
+    age_col = "Age"
     if age_col in cohort.columns:
         g1 = cohort.loc[cohort["label"] == 1, age_col].dropna().astype(float)
         g2 = cohort.loc[cohort["label"] == 0, age_col].dropna().astype(float)
@@ -379,10 +381,20 @@ def run_one_combo(output_dir, cohort_mode, hc_source_mode,
                       if priority_groups else "no_priority")
     logger.info(f"--- {match_level} / {eval_unit} / {match_strategy} ---")
 
-    hc_cohort, _ = build_cohort_ad_vs_HCgroup(
-        "HC", design="cross_matched", cohort_mode=cohort_mode,
-        hc_source_mode=hc_source_mode, match_level=ml_arg,
-        priority_groups=priority_groups)
+    # EACS-extended HC 走 legacy（cohort 核心只含 P/NAD/ACS）；ACS 用核心 cohort_list。
+    spec = cohort_spec_from_name(cohort_mode)
+    tokens = (f"p_{spec.p_visit}", f"p_{spec.p_cdr}", f"hc_{spec.hc_visit}",
+              "hc_cdr0_or_mmse26" if spec.hc_strict else "hc_cdrall_or_mmseall")
+    if hc_source_mode == "ACS":
+        roster = cohort_list(*tokens)
+        roster["group"] = roster["Group"]
+        roster["base_id"] = roster["Group"] + roster["ID"].astype(str)
+        roster["ID"] = roster["base_id"] + "-" + roster["Photo_Session"].astype(str)
+    else:
+        from src.common.legacy.eacs import cohort_list_with_eacs
+        roster = cohort_list_with_eacs(hc_source_mode, *tokens)
+    hc_cohort, _ = match_cohort_ad_vs_hc(
+        roster, match_level=ml_arg, priority_groups=priority_groups)
 
     all_long = []
     for partition in PARTITIONS:

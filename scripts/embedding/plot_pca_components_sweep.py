@@ -39,9 +39,9 @@ from src.config import (  # noqa: E402
     VALID_COHORT_CHOICES,
     cohort_spec_from_name,
 )
-from src.cohort import (  # noqa: E402
-    apply_hc_strict_filter,
-    apply_p_cdr_filter,
+from src.common.cohort import (  # noqa: E402
+    hc_filter,
+    p_filter,
 )
 ASYM_VARIANTS = ["difference", "absolute_difference", "average",
                  "relative_differences", "absolute_relative_differences"]
@@ -135,26 +135,26 @@ def _load_visit_all_cohort_ids(spec: CohortSpec = DEFAULT_COHORT_SPEC):
     (ad_vs_hc / ad_vs_nad / ad_vs_acs / mmse_hilo / casi_hilo).
 
     Each partition's visit-all cohort = subjects passing per-visit eligibility:
-      - AD-side: P group + ``apply_p_cdr_filter(spec)``
-      - HC-side: NAD/ACS group + ``apply_hc_strict_filter(spec)``
+      - AD-side: P group + ``p_filter(p_score)``
+      - HC-side: NAD/ACS group + ``hc_filter(hc_score)``
       - hi-lo: AD-side + metric+age present
 
     Returns: set of visit-level IDs (e.g. {"P1-2", "P1-3", "ACS5-1", ...}).
     """
     DEMOGRAPHICS_DIR = PROJECT_ROOT / "data" / "demographics"
     frames = []
-    for grp in ["P", "NAD", "ACS", "EACS"]:
-        path = DEMOGRAPHICS_DIR / f"{grp}.csv"
-        if not path.exists():
-            continue
-        df = pd.read_csv(path)
-        if "ID" not in df.columns:
-            for col in df.columns:
-                if col in ("ACS", "NAD"):
-                    df = df.rename(columns={col: "ID"})
-                    break
-        df["group"] = grp if grp != "EACS" else "ACS"
-        frames.append(df)
+    # 內部 P/NAD/ACS 來自單一乾淨表 hospital_A（split schema → 組回完整 ID "P1-2"）。
+    hospital_A = pd.read_csv(DEMOGRAPHICS_DIR / "hospital_A.csv")
+    hospital_A["ID"] = (hospital_A["Group"] + hospital_A["ID"].astype(str)
+                    + "-" + hospital_A["Photo_Session"].astype(str))
+    hospital_A["group"] = hospital_A["Group"]
+    frames.append(hospital_A)
+    # 外部 EACS（完整 ID）仍標為 ACS。
+    eacs_path = DEMOGRAPHICS_DIR / "EACS.csv"
+    if eacs_path.exists():
+        df_e = pd.read_csv(eacs_path)
+        df_e["group"] = "ACS"
+        frames.append(df_e)
     demo = pd.concat(frames, ignore_index=True)
     demo["Age"] = pd.to_numeric(demo.get("Age"), errors="coerce")
     demo["Global_CDR"] = pd.to_numeric(demo.get("Global_CDR"), errors="coerce")
@@ -165,12 +165,14 @@ def _load_visit_all_cohort_ids(spec: CohortSpec = DEFAULT_COHORT_SPEC):
 
     # AD-side per-visit eligibility (P group + spec.p_cdr + Age present)
     ad_pool = demo[(demo["group"] == "P") & demo["Age"].notna()].copy()
-    ad_pool = apply_p_cdr_filter(ad_pool, spec)
+    ad_pool = p_filter(ad_pool, f"p_{spec.p_cdr}")
     ad_ids = set(ad_pool["ID"].astype(str))
 
     # HC-side per-visit eligibility (NAD/ACS + spec.hc_strict + Age present)
     hc_pool = demo[demo["group"].isin(["NAD", "ACS"]) & demo["Age"].notna()].copy()
-    hc_pool = apply_hc_strict_filter(hc_pool, spec)
+    hc_pool = hc_filter(
+        hc_pool,
+        "hc_cdr0_or_mmse26" if spec.hc_strict else "hc_cdrall_or_mmseall")
     hc_ids = set(hc_pool["ID"].astype(str))
 
     # Hi-lo (mmse / casi): AD-side + metric present

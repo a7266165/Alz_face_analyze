@@ -121,23 +121,10 @@ def extract_mefem_embeddings(
 
 def build_dataset_from_embeddings(embeddings, demographics_dir):
     """Pair MeFEm embeddings with BMI labels."""
-    dfs = []
-    for csv_name, id_prefix_re in [
-        ("P.csv", r"^(P\d+)"),
-        ("NAD.csv", r"^(NAD\d+)"),
-        ("ACS.csv", r"^(ACS\d+)"),
-    ]:
-        path = demographics_dir / csv_name
-        if not path.exists():
-            continue
-        df = pd.read_csv(path)
-        if "BMI" not in df.columns:
-            continue
-        df = df[["ID", "BMI"]].dropna(subset=["BMI"])
-        df["base_id"] = df["ID"].str.extract(id_prefix_re)
-        dfs.append(df)
-
-    demo = pd.concat(dfs, ignore_index=True)
+    demo = pd.read_csv(demographics_dir / "hospital_A.csv")
+    demo["base_id"] = demo["Group"] + demo["ID"].astype(str)
+    demo["ID"] = demo["base_id"] + "-" + demo["Photo_Session"].astype(str)
+    demo = demo[["ID", "base_id", "BMI"]].dropna(subset=["BMI"])
 
     rows_x, rows_y, rows_g, rows_id = [], [], [], []
     for _, row in demo.iterrows():
@@ -173,14 +160,10 @@ def main():
     model, emb_dim = load_mefem(args.variant, device)
 
     # ── Load all IDs with BMI ───────────────────────────
-    dfs = []
-    for csv_name in ["P.csv", "NAD.csv", "ACS.csv"]:
-        path = DEMOGRAPHICS_DIR / csv_name
-        if path.exists():
-            df = pd.read_csv(path)
-            if "BMI" in df.columns:
-                dfs.append(df[["ID", "BMI"]].dropna(subset=["BMI"]))
-    all_ids = pd.concat(dfs)["ID"].tolist()
+    _bmi = pd.read_csv(DEMOGRAPHICS_DIR / "hospital_A.csv")
+    _bmi = _bmi.dropna(subset=["BMI"])
+    all_ids = (_bmi["Group"] + _bmi["ID"].astype(str)
+               + "-" + _bmi["Photo_Session"].astype(str)).tolist()
     logger.info(f"IDs with BMI: {len(all_ids)}")
 
     # ── Extract embeddings ──────────────────────────────

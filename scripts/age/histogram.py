@@ -20,12 +20,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from _paths import PROJECT_ROOT  # noqa: F401
 
-from src.config import cohort_name, cohort_spec_from_name, WORKSPACE_DIR
-from src.cohort import (
-    build_cohort_ad_vs_HCgroup,
-)
+from src.config import cohort_name, cohort_spec_from_name, AGE_ANALYSIS_DIR
+from src.common.cohort import cohort_list
+from src.common.legacy.matching import match_cohort_ad_vs_hc
 
 COLORS = {"NAD": "#9ecae1", "ACS": "#6baed6", "P": "#fc9272"}
 BINS = np.arange(35, 110, 2)
@@ -58,14 +58,16 @@ def _plot_panel(ax, cohort, unit, title):
 def run(cohort_mode, priority_groups=None):
     spec = cohort_spec_from_name(cohort_name(cohort_mode))
 
-    full, _ = build_cohort_ad_vs_HCgroup(
-        "HC", design="cross_naive", cohort_mode=cohort_mode)
-    matched, pairs = build_cohort_ad_vs_HCgroup(
-        "HC", design="cross_matched", cohort_mode=cohort_mode,
-        priority_groups=priority_groups, match_level="subject")
-    matched_visit, _ = build_cohort_ad_vs_HCgroup(
-        "HC", design="cross_matched", cohort_mode=cohort_mode,
-        priority_groups=priority_groups, match_level="visit")
+    full = cohort_list(
+        f"p_{spec.p_visit}", f"p_{spec.p_cdr}", f"hc_{spec.hc_visit}",
+        "hc_cdr0_or_mmse26" if spec.hc_strict else "hc_cdrall_or_mmseall")
+    full["group"] = full["Group"]
+    full["base_id"] = full["Group"] + full["ID"].astype(str)
+    full["ID"] = full["base_id"] + "-" + full["Photo_Session"].astype(str)
+    matched, pairs = match_cohort_ad_vs_hc(
+        full, priority_groups=priority_groups, match_level="subject")
+    matched_visit, _ = match_cohort_ad_vs_hc(
+        full, priority_groups=priority_groups, match_level="visit")
 
     n_pairs = len(pairs) if pairs is not None else 0
     priority_tag = ""
@@ -92,7 +94,7 @@ def run(cohort_mode, priority_groups=None):
         fontsize=12)
     fig.tight_layout(rect=[0, 0, 1, 0.93])
 
-    out_dir = (WORKSPACE_DIR / "age" / "analysis"
+    out_dir = (AGE_ANALYSIS_DIR
                / spec.visit_dir / spec.cdr_mmse_dir / "histogram")
     out_dir.mkdir(parents=True, exist_ok=True)
 

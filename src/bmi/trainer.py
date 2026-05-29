@@ -71,27 +71,14 @@ def build_dataset(
         groups: (N,) int — base_id encoded as integer for GroupKFold
         ids:    list of N ID strings
     """
-    dfs = []
-    for csv_name, id_prefix_re in [
-        ("P.csv", r"^(P\d+)"),
-        ("NAD.csv", r"^(NAD\d+)"),
-        ("ACS.csv", r"^(ACS\d+)"),
-    ]:
-        path = demographics_dir / csv_name
-        if not path.exists():
-            continue
-        df = pd.read_csv(path)
-        if "BMI" not in df.columns:
-            logger.warning(f"{csv_name} has no BMI column, skipping")
-            continue
-        df = df[["ID", "BMI"]].dropna(subset=["BMI"])
-        df["base_id"] = df["ID"].str.extract(id_prefix_re)
-        dfs.append(df)
-
-    if not dfs:
+    # 單一乾淨表 hospital_A.csv（split schema）：base_id = Group+ID，
+    # 完整特徵 ID（對應 .npy）= Group+ID+"-"+Photo_Session。
+    demo = pd.read_csv(demographics_dir / "hospital_A.csv")
+    if "BMI" not in demo.columns:
         raise RuntimeError("No demographics with BMI found")
-
-    demo = pd.concat(dfs, ignore_index=True)
+    demo["base_id"] = demo["Group"] + demo["ID"].astype(str)
+    demo["ID"] = demo["base_id"] + "-" + demo["Photo_Session"].astype(str)
+    demo = demo[["ID", "base_id", "BMI"]].dropna(subset=["BMI"])
 
     all_ids = demo["ID"].tolist()
     feats = load_arcface_features(all_ids, features_dir, photo_mode="mean")

@@ -1,16 +1,14 @@
 """
 Landmark 不對稱性分析
 
-三個任務:
+兩個任務:
   1. visualize — 視覺化 65 組 landmark pairs
   2. cross-sectional — CDR 嚴重度三類別分類 (CDR 0.5 vs 1 vs 2+)
-  3. longitudinal — 首末 visit landmark 變化量 vs 認知退化
 
 Usage:
   python run_landmark_asymmetry_analysis.py --task all
   python run_landmark_asymmetry_analysis.py --task visualize
   python run_landmark_asymmetry_analysis.py --task cross-sectional
-  python run_landmark_asymmetry_analysis.py --task longitudinal
 """
 
 import argparse
@@ -41,7 +39,6 @@ from src.config import (
     ASYMMETRY_LANDMARKS_DIR,
     ASYMMETRY_PAIR_FEATURES_FILE,
     PREDICTED_AGES_FILE,
-    WORKSPACE_DIR,
 )
 
 # Import directly to avoid __init__.py chain that pulls in unresolvable deps
@@ -67,8 +64,7 @@ logger = logging.getLogger(__name__)
 # === Paths ===
 LANDMARK_FEATURES_CSV = ASYMMETRY_PAIR_FEATURES_FILE
 LANDMARKS_DIR = ASYMMETRY_LANDMARKS_DIR
-DEMOGRAPHICS_CSV = PROJECT_ROOT / "data" / "demographics" / "P.csv"
-PATIENT_DELTAS_CSV = WORKSPACE_DIR / "longitudinal" / "features" / "patient_deltas.csv"
+DEMOGRAPHICS_CSV = PROJECT_ROOT / "data" / "demographics" / "hospital_A.csv"
 OUTPUT_DIR = ASYMMETRY_ANALYSIS_DIR
 
 N_FOLDS = 5
@@ -240,8 +236,10 @@ def prepare_cross_sectional_data(visit_selection):
     feat_df = pd.read_csv(LANDMARK_FEATURES_CSV)
     feat_df = feat_df[feat_df["subject_id"].str.startswith("P")].copy()
 
-    # Load demographics
+    # Load demographics（hospital_A split schema；組回完整特徵 ID 以對應 subject_id）
     demo = pd.read_csv(DEMOGRAPHICS_CSV)
+    demo["ID"] = (demo["Group"] + demo["ID"].astype(str)
+                  + "-" + demo["Photo_Session"].astype(str))
     demo["Global_CDR"] = pd.to_numeric(demo["Global_CDR"], errors="coerce")
 
     # Load predicted ages
@@ -252,7 +250,7 @@ def prepare_cross_sectional_data(visit_selection):
     merged = feat_df.merge(demo[["ID", "Global_CDR", "Age"]], left_on="subject_id", right_on="ID", how="inner")
     merged = merged.drop(columns=["ID"])
 
-    from src.cohort import apply_predicted_age_filter
+    from src.common.legacy.predicted_age import apply_predicted_age_filter
     merged = merged[pd.to_numeric(merged["Global_CDR"], errors="coerce") >= 0.5]
     merged = apply_predicted_age_filter(merged, pred_ages=pred_ages,
                                         min_age=65, id_col="subject_id")
@@ -393,151 +391,13 @@ def run_cross_sectional():
 
 
 # ============================================================
-#  Task 3: Longitudinal Analysis
-# ============================================================
-
-def run_longitudinal():
-    """縱向分析：landmark 變化量 vs 認知退化。"""
-    logger.info("Task 3: Longitudinal analysis...")
-
-    # Load patient deltas
-    deltas = pd.read_csv(PATIENT_DELTAS_CSV)
-    logger.info(f"Patient deltas: {len(deltas)} patients")
-
-    # Compute landmark feature deltas for each patient
-    landmark_delta_rows = []
-    missing_count = 0
-
-    for _, row in deltas.iterrows():
-        first_npy = LANDMARKS_DIR / f"{row['first_visit_id']}.npy"
-        last_npy = LANDMARKS_DIR / f"{row['last_visit_id']}.npy"
-
-        if not first_npy.exists() or not last_npy.exists():
-            missing_count += 1
-            continue
-
-        # Load and mean-pool across images
-        first_arr = np.load(first_npy)  # (n_images, 468, 2)
-        last_arr = np.load(last_npy)
-        first_lm = first_arr.mean(axis=0)  # (468, 2)
-        last_lm = last_arr.mean(axis=0)
-
-        # Compute features for each visit
-        first_feats = compute_pair_features(first_lm)
-        last_feats = compute_pair_features(last_lm)
-
-        # Delta
-        delta_feats = {k: last_feats[k] - first_feats[k] for k in first_feats}
-        delta_feats["base_id"] = row["base_id"]
-
-        # Scalar summaries
-        delta_vec = np.array([delta_feats[k] for k in first_feats])
-        delta_feats["landmark_l2_norm"] = float(np.linalg.norm(delta_vec))
-        delta_feats["landmark_mean_abs"] = float(np.mean(np.abs(delta_vec)))
-
-        # Per-region L2 norms
-        for region, pairs in ALL_PAIRS.items():
-            n_pairs = len(pairs)
-            region_cols = ([f"{region}_x_pair_{i}" for i in range(1, n_pairs + 1)]
-                           + [f"{region}_y_pair_{i}" for i in range(1, n_pairs + 1)]
-                           + [f"{region}_area_diff"])
-            region_vec = np.array([delta_feats[c] for c in region_cols if c in delta_feats])
-            delta_feats[f"{region}_l2"] = float(np.linalg.norm(region_vec))
-
-        landmark_delta_rows.append(delta_feats)
-
-    logger.info(f"Landmark deltas computed: {len(landmark_delta_rows)} patients "
-                f"({missing_count} missing .npy)")
-
-    landmark_deltas = pd.DataFrame(landmark_delta_rows)
-
-    # Save landmark deltas
-    delta_out = OUTPUT_DIR / "longitudinal_landmark_deltas.csv"
-    landmark_deltas.to_csv(delta_out, index=False)
-    logger.info(f"Saved: {delta_out}")
-
-    # Merge with cognitive deltas
-    merged = landmark_deltas.merge(
-        deltas[["base_id", "delta_MMSE", "delta_CASI", "delta_CDR_SB",
-                "emb_cosine_dist", "follow_up_days", "n_visits"]],
-        on="base_id",
-        how="inner",
-    )
-    logger.info(f"Merged with cognitive deltas: {len(merged)} patients")
-
-    # Correlation analysis
-    scalar_metrics = ["landmark_l2_norm", "landmark_mean_abs",
-                      "eye_l2", "nose_l2", "mouth_l2", "face_oval_l2"]
-    cognitive_measures = ["delta_CDR_SB", "delta_MMSE", "delta_CASI"]
-
-    corr_rows = []
-    for metric in scalar_metrics:
-        for cog in cognitive_measures:
-            valid = merged[[metric, cog]].dropna()
-            if len(valid) < 10:
-                continue
-            x, y = valid[metric].values, valid[cog].values
-            pr, pp = stats.pearsonr(x, y)
-            sr, sp = stats.spearmanr(x, y)
-            corr_rows.append({
-                "metric": metric,
-                "cognitive_measure": cog,
-                "pearson_r": float(pr),
-                "pearson_p": float(pp),
-                "spearman_r": float(sr),
-                "spearman_p": float(sp),
-                "n": len(valid),
-            })
-
-    # Also compute embedding cosine dist correlations for comparison
-    for cog in cognitive_measures:
-        valid = merged[["emb_cosine_dist", cog]].dropna()
-        if len(valid) < 10:
-            continue
-        x, y = valid["emb_cosine_dist"].values, valid[cog].values
-        pr, pp = stats.pearsonr(x, y)
-        sr, sp = stats.spearmanr(x, y)
-        corr_rows.append({
-            "metric": "emb_cosine_dist",
-            "cognitive_measure": cog,
-            "pearson_r": float(pr),
-            "pearson_p": float(pp),
-            "spearman_r": float(sr),
-            "spearman_p": float(sp),
-            "n": len(valid),
-        })
-
-    corr_df = pd.DataFrame(corr_rows)
-    corr_path = OUTPUT_DIR / "longitudinal_correlations.csv"
-    corr_df.to_csv(corr_path, index=False)
-    logger.info(f"Saved: {corr_path}")
-
-    # Print results
-    print("\n" + "=" * 80)
-    print("LONGITUDINAL CORRELATION RESULTS")
-    print("=" * 80)
-    for cog in cognitive_measures:
-        print(f"\n--- vs {cog} ---")
-        sub = corr_df[corr_df["cognitive_measure"] == cog].sort_values(
-            "spearman_r", ascending=False, key=abs
-        )
-        for _, row in sub.iterrows():
-            sig = "***" if row["spearman_p"] < 0.001 else "**" if row["spearman_p"] < 0.01 else "*" if row["spearman_p"] < 0.05 else ""
-            print(f"  {row['metric']:>20} | n={row['n']:>4} | "
-                  f"Pearson r={row['pearson_r']:+.3f} (p={row['pearson_p']:.4f}) | "
-                  f"Spearman r={row['spearman_r']:+.3f} (p={row['spearman_p']:.4f}) {sig}")
-
-    return corr_df
-
-
-# ============================================================
 #  Main
 # ============================================================
 
 def main():
     parser = argparse.ArgumentParser(description="Landmark asymmetry analysis")
     parser.add_argument("--task", default="all",
-                        choices=["all", "visualize", "cross-sectional", "longitudinal"])
+                        choices=["all", "visualize", "cross-sectional"])
     args = parser.parse_args()
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -547,9 +407,6 @@ def main():
 
     if args.task in ("all", "cross-sectional"):
         run_cross_sectional()
-
-    if args.task in ("all", "longitudinal"):
-        run_longitudinal()
 
 
 if __name__ == "__main__":

@@ -52,7 +52,8 @@ from src.config import (
     cohort_path,
     cohort_spec_from_name,
 )
-from src.cohort import build_cohort_ad_vs_HCgroup
+from src.common.cohort import cohort_list
+from src.common.legacy.matching import match_cohort_ad_vs_hc
 
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s - %(levelname)s - %(message)s")
@@ -363,12 +364,13 @@ def main():
 
     all_metrics = []
 
-    cohort_naive, _ = build_cohort_ad_vs_HCgroup(
-        "HC", design="cross_naive",
-        cohort_mode=args.cohort_mode,
-        hc_source_mode="ACS",
-    )
-    cohort_naive = _add_base_id(cohort_naive)
+    cohort_naive = cohort_list(
+        f"p_{spec.p_visit}", f"p_{spec.p_cdr}", f"hc_{spec.hc_visit}",
+        "hc_cdr0_or_mmse26" if spec.hc_strict else "hc_cdrall_or_mmseall")
+    cohort_naive["group"] = cohort_naive["Group"]
+    cohort_naive["base_id"] = cohort_naive["Group"] + cohort_naive["ID"].astype(str)
+    cohort_naive["ID"] = cohort_naive["base_id"] + "-" + cohort_naive["Photo_Session"].astype(str)
+    cohort_naive["label"] = (cohort_naive["group"] == "P").astype(int)
 
     for model in MODELS:
         for feat in FEATURE_TYPES:
@@ -378,10 +380,8 @@ def main():
             for ml in MATCH_LEVELS:
                 ml_arg = MATCH_LEVEL_ARG[ml]
 
-                cohort_matched, _ = build_cohort_ad_vs_HCgroup(
-                    "HC", design="cross_matched",
-                    cohort_mode=args.cohort_mode,
-                    hc_source_mode="ACS",
+                cohort_matched, _ = match_cohort_ad_vs_hc(
+                    cohort_naive,
                     match_level=ml_arg,
                     priority_groups=args.match_priority,
                 )
