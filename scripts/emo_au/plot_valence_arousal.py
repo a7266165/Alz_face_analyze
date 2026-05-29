@@ -16,10 +16,9 @@ from src.config import DEMOGRAPHICS_DIR, WORKSPACE_DIR, PREDICTED_AGES_FILE
 
 # --- Load data ---
 # Demographics
-demo = pd.read_csv(DEMOGRAPHICS_DIR / "hospital_A.csv", encoding="utf-8-sig")
+from src.common.cohort import load_demographics
+demo = load_demographics()
 demo["group"] = demo["Group"]
-demo["ID"] = (demo["Group"] + demo["ID"].astype(str)
-              + "-" + demo["Photo_Session"].astype(str))
 demo = demo[["ID", "Age", "group"]]
 
 # Emotion scores

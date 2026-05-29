@@ -37,12 +37,10 @@ logger = logging.getLogger(__name__)
 # ── data loading ─────────────────────────────────────────────────────────────
 
 def load_demographics(demo_dir: Path) -> pd.DataFrame:
-    # 單一乾淨表 hospital_A.csv（split schema）；組回完整特徵 ID（"P1-2"）。
-    df = pd.read_csv(demo_dir / "hospital_A.csv", encoding="utf-8-sig")
+    # 唯一讀取點：cohort.load_demographics() 已組好 ID(完整鍵) 並解析 Age。
+    from src.common.cohort import load_demographics as _load_demo
+    df = _load_demo()
     df["group"] = df["Group"]
-    df["ID"] = (df["Group"] + df["ID"].astype(str)
-                + "-" + df["Photo_Session"].astype(str))
-    df["Age"] = pd.to_numeric(df["Age"], errors="coerce")
     return df[["ID", "Age", "group"]]
 
 

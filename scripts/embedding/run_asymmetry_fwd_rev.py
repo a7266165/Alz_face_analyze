@@ -441,8 +441,7 @@ def main():
         f"p_{spec.p_visit}", f"p_{spec.p_cdr}", f"hc_{spec.hc_visit}",
         "hc_cdr0_or_mmse26" if spec.hc_strict else "hc_cdrall_or_mmseall")
     full_cohort["group"] = full_cohort["Group"]
-    full_cohort["base_id"] = full_cohort["Group"] + full_cohort["ID"].astype(str)
-    full_cohort["ID"] = full_cohort["base_id"] + "-" + full_cohort["Photo_Session"].astype(str)
+    full_cohort["base_id"] = full_cohort["Group"] + full_cohort["Number"].astype(str)
     full_cohort["label"] = (full_cohort["group"] == "P").astype(int)
 
     matched_subj, _ = match_cohort_ad_vs_hc(

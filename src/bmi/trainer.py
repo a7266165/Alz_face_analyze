@@ -71,13 +71,11 @@ def build_dataset(
         groups: (N,) int — base_id encoded as integer for GroupKFold
         ids:    list of N ID strings
     """
-    # 單一乾淨表 hospital_A.csv（split schema）：base_id = Group+ID，
-    # 完整特徵 ID（對應 .npy）= Group+ID+"-"+Photo_Session。
-    demo = pd.read_csv(demographics_dir / "hospital_A.csv")
+    # 唯一讀取點：load_demographics() 已組好 ID(完整鍵，對應 .npy) / base_id。
+    from src.common.cohort import load_demographics
+    demo = load_demographics()
     if "BMI" not in demo.columns:
         raise RuntimeError("No demographics with BMI found")
-    demo["base_id"] = demo["Group"] + demo["ID"].astype(str)
-    demo["ID"] = demo["base_id"] + "-" + demo["Photo_Session"].astype(str)
     demo = demo[["ID", "base_id", "BMI"]].dropna(subset=["BMI"])
 
     all_ids = demo["ID"].tolist()

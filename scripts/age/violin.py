@@ -47,14 +47,10 @@ HILO_COMPARISONS = ["mmse_high_vs_low", "casi_high_vs_low"]
 
 def load_all_with_error():
     preds = load_predicted_ages(PREDICTED_AGES_FILE)
-    # 單一乾淨表 hospital_A.csv（split schema）；組回完整特徵 ID（"P1-2"）。
-    df = pd.read_csv(DEMOGRAPHICS_DIR / "hospital_A.csv", encoding="utf-8-sig")
+    # 唯一讀取點：cohort.load_demographics() 已組好 ID(完整鍵) 並解析 Age/MMSE/CASI。
+    from src.common.cohort import load_demographics
+    df = load_demographics()
     df["group"] = df["Group"]
-    df["ID"] = (df["Group"] + df["ID"].astype(str)
-                + "-" + df["Photo_Session"].astype(str))
-    df["Age"] = pd.to_numeric(df["Age"], errors="coerce")
-    for col in ["MMSE", "CASI"]:
-        df[col] = pd.to_numeric(df.get(col), errors="coerce")
     df["predicted_age"] = df["ID"].map(preds)
     df = df.dropna(subset=["Age", "predicted_age"])
     df["age_error"] = df["Age"] - df["predicted_age"]

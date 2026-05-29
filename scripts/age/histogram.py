@@ -62,8 +62,7 @@ def run(cohort_mode, priority_groups=None):
         f"p_{spec.p_visit}", f"p_{spec.p_cdr}", f"hc_{spec.hc_visit}",
         "hc_cdr0_or_mmse26" if spec.hc_strict else "hc_cdrall_or_mmseall")
     full["group"] = full["Group"]
-    full["base_id"] = full["Group"] + full["ID"].astype(str)
-    full["ID"] = full["base_id"] + "-" + full["Photo_Session"].astype(str)
+    full["base_id"] = full["Group"] + full["Number"].astype(str)  # ID 已是完整鍵
     matched, pairs = match_cohort_ad_vs_hc(
         full, priority_groups=priority_groups, match_level="subject")
     matched_visit, _ = match_cohort_ad_vs_hc(

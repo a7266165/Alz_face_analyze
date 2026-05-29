@@ -368,8 +368,7 @@ def main():
         f"p_{spec.p_visit}", f"p_{spec.p_cdr}", f"hc_{spec.hc_visit}",
         "hc_cdr0_or_mmse26" if spec.hc_strict else "hc_cdrall_or_mmseall")
     cohort_naive["group"] = cohort_naive["Group"]
-    cohort_naive["base_id"] = cohort_naive["Group"] + cohort_naive["ID"].astype(str)
-    cohort_naive["ID"] = cohort_naive["base_id"] + "-" + cohort_naive["Photo_Session"].astype(str)
+    cohort_naive["base_id"] = cohort_naive["Group"] + cohort_naive["Number"].astype(str)
     cohort_naive["label"] = (cohort_naive["group"] == "P").astype(int)
 
     for model in MODELS:

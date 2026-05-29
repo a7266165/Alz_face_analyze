@@ -121,9 +121,8 @@ def extract_mefem_embeddings(
 
 def build_dataset_from_embeddings(embeddings, demographics_dir):
     """Pair MeFEm embeddings with BMI labels."""
-    demo = pd.read_csv(demographics_dir / "hospital_A.csv")
-    demo["base_id"] = demo["Group"] + demo["ID"].astype(str)
-    demo["ID"] = demo["base_id"] + "-" + demo["Photo_Session"].astype(str)
+    from src.common.cohort import load_demographics
+    demo = load_demographics()
     demo = demo[["ID", "base_id", "BMI"]].dropna(subset=["BMI"])
 
     rows_x, rows_y, rows_g, rows_id = [], [], [], []
@@ -160,10 +159,8 @@ def main():
     model, emb_dim = load_mefem(args.variant, device)
 
     # ── Load all IDs with BMI ───────────────────────────
-    _bmi = pd.read_csv(DEMOGRAPHICS_DIR / "hospital_A.csv")
-    _bmi = _bmi.dropna(subset=["BMI"])
-    all_ids = (_bmi["Group"] + _bmi["ID"].astype(str)
-               + "-" + _bmi["Photo_Session"].astype(str)).tolist()
+    from src.common.cohort import load_demographics
+    all_ids = load_demographics().dropna(subset=["BMI"])["ID"].tolist()
     logger.info(f"IDs with BMI: {len(all_ids)}")
 
     # ── Extract embeddings ──────────────────────────────

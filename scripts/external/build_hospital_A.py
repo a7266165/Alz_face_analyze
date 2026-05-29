@@ -2,18 +2,20 @@
 從 data/demographics/legacy/{P,NAD,ACS}.csv 與去連結 Excel 的「生日」欄，
 重建單一乾淨的 data/demographics/hospital_A.csv。
 
-hospital_A.csv 規格（14 欄）：
-  Group         P / NAD / ACS（明確一欄，不再靠 ID 前綴猜）
-  ID            受試者編號數字（1, 2, 3…；同一人的不同 visit 共用同一 ID）
-  Photo_Session 第幾次拍照（搭配 Group+ID 還原完整特徵 ID："P1-2"）
+hospital_A.csv 規格（14 欄，正規化：不存可推導的 ID）：
+  Group         P / NAD / ACS
+  Number        個案編號（人；1, 2, 3…，只在同 Group 內唯一）
+  Photo_Session 第幾次拍照
   Photo_Date, Birth_Date, Sex, Age, BMI,
   NPT_Date, NPT_Session(Int), Diff_Days, MMSE, CASI, Global_CDR
 
-完整特徵 ID（對應 .npy / predicted_ages.json）由下游自行組回：
-    Group + str(ID) + "-" + str(Photo_Session)   # 例如 "P1-2"
+單筆唯一鍵 ID（"P1-2"，= .npy / predicted_ages.json 的鍵）不存檔，由唯一讀取點
+src.common.cohort.load_demographics() 於讀入時組出：
+    ID      = Group + str(Number) + "-" + str(Photo_Session)   # "P1-2"
+    base_id = Group + str(Number)                              # "P1"（人鍵）
 
 Birth_Date 來源：去連結 Excel 的三張「基本資料及NPT檢查」分頁（各含「生日」欄），
-以 (Group, 受試者編號數字) 對應；Excel 編號格式各異（P:"1"、NAD:"NAD-001"、
+以 (Group, 個案編號數字) 對應；Excel 編號格式各異（P:"1"、NAD:"NAD-001"、
 ACS:"ACS001"），統一抽數字後比對。
 
 用法：
@@ -32,8 +34,8 @@ LEGACY_DIR = DEMOGRAPHICS_DIR / "legacy"
 EXCEL_PATH = DEMOGRAPHICS_DIR.parent / "TO中山大學AI收案 20250416去連結.xlsx"
 OUTPUT_CSV = DEMOGRAPHICS_DIR / "hospital_A.csv"
 
-COLS = ["Group", "ID", "Photo_Session", "Photo_Date", "Birth_Date", "Sex",
-        "Age", "BMI", "NPT_Date", "NPT_Session", "Diff_Days",
+COLS = ["Group", "Number", "Photo_Session", "Photo_Date", "Birth_Date",
+        "Sex", "Age", "BMI", "NPT_Date", "NPT_Session", "Diff_Days",
         "MMSE", "CASI", "Global_CDR"]
 
 
@@ -90,9 +92,9 @@ def main():
     for grp in ("P", "NAD", "ACS"):
         df = pd.read_csv(LEGACY_DIR / f"{grp}.csv")
         df["Group"] = grp
-        # 完整 ID "P1-2" → 受試者數字 "1"
-        df["ID"] = df["ID"].str.extract(r"^[A-Za-z]+(\d+)-")[0].astype(int)
-        df["Birth_Date"] = df["ID"].apply(lambda s: birth_map.get((grp, int(s))))
+        # 來源完整 ID "P1-2" → 個案編號 Number=1（ID 不存檔，讀入時再組）。
+        df["Number"] = df["ID"].str.extract(r"^[A-Za-z]+(\d+)-")[0].astype(int)
+        df["Birth_Date"] = df["Number"].apply(lambda s: birth_map.get((grp, int(s))))
         for c in COLS:
             if c not in df.columns:
                 df[c] = pd.NA  # ACS 無 Global_CDR

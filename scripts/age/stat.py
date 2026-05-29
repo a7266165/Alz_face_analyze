@@ -66,9 +66,7 @@ def build_matched(preds: dict, cohort_mode: str) -> pd.DataFrame:
     cohort = cohort_list(
         f"p_{spec.p_visit}", f"p_{spec.p_cdr}", f"hc_{spec.hc_visit}",
         "hc_cdr0_or_mmse26" if spec.hc_strict else "hc_cdrall_or_mmseall")
-    cohort["group"] = cohort["Group"]
-    cohort["ID"] = (cohort["Group"] + cohort["ID"].astype(str)
-                    + "-" + cohort["Photo_Session"].astype(str))
+    cohort["group"] = cohort["Group"]  # ID 已是完整鍵 "P1-2"
     df = cohort.copy()
     df["real_age"] = pd.to_numeric(df["Age"], errors="coerce")
     df["predicted_age"] = df["ID"].map(preds)

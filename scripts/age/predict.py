@@ -107,18 +107,10 @@ def load_demographic_ids() -> set:
     predict 已不再輸出 actual_age，這裡只用於成員判斷（決定哪些受試者要預測），
     故回傳 set 而非 {ID: age}；無法轉成 float 的年齡視為無效、不納入。
     """
-    import pandas as pd
-    ids = set()
-    csv_path = DEMOGRAPHICS_DIR / "hospital_A.csv"
-    if not csv_path.exists():
-        return ids
-    df = pd.read_csv(csv_path, encoding="utf-8-sig")
-    # 組回完整特徵 ID（"P1-2"）；年齡可轉 float 才納入。
-    full_id = (df["Group"] + df["ID"].astype(str)
-               + "-" + df["Photo_Session"].astype(str))
-    age = pd.to_numeric(df["Age"], errors="coerce")
-    ids.update(full_id[age.notna()].tolist())
-    return ids
+    # 唯一讀取點：cohort.load_demographics() 已組好 ID(完整鍵) 並解析 Age。
+    from src.common.cohort import load_demographics
+    df = load_demographics()
+    return set(df["ID"][df["Age"].notna()])
 
 
 def default_output(model_name: str) -> Path:

@@ -143,12 +143,11 @@ def _load_visit_all_cohort_ids(spec: CohortSpec = DEFAULT_COHORT_SPEC):
     """
     DEMOGRAPHICS_DIR = PROJECT_ROOT / "data" / "demographics"
     frames = []
-    # 內部 P/NAD/ACS 來自單一乾淨表 hospital_A（split schema → 組回完整 ID "P1-2"）。
-    hospital_A = pd.read_csv(DEMOGRAPHICS_DIR / "hospital_A.csv")
-    hospital_A["ID"] = (hospital_A["Group"] + hospital_A["ID"].astype(str)
-                    + "-" + hospital_A["Photo_Session"].astype(str))
-    hospital_A["group"] = hospital_A["Group"]
-    frames.append(hospital_A)
+    # 內部 P/NAD/ACS 走唯一讀取點 load_demographics()（已組好完整 ID "P1-2"）。
+    from src.common.cohort import load_demographics
+    internal = load_demographics()
+    internal["group"] = internal["Group"]
+    frames.append(internal)
     # 外部 EACS（完整 ID）仍標為 ACS。
     eacs_path = DEMOGRAPHICS_DIR / "EACS.csv"
     if eacs_path.exists():

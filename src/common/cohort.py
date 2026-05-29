@@ -1,21 +1,19 @@
 """
 Cohort 定義與族群挑選。
 
-讀取單一乾淨人口學表 data/demographics/hospital_A.csv，依
+讀取人口學表 data/demographics/hospital_A.csv，依
   (1) visit 設定（first / all）
   (2) P 的 CDR 設定、HC 的 CDR / MMSE 設定
 挑選研究族群，並回傳名單。
 
-回傳 7 欄：Group, ID, Photo_Session, Age, MMSE, CASI, Global_CDR。
-  - Group         P / NAD / ACS（直接一欄，下游不需再用正則從 ID 拆 group）
-  - ID            受試者數字（1, 2, …；同一人不同 visit 共用同一 ID）
-  - Photo_Session 第幾次拍照
+回傳 8 欄：ID, Group, Number, Photo_Session, Age, MMSE, CASI, Global_CDR。
+  - ID      單筆唯一鍵（"P1-2"），即 .npy / predicted_ages.json 的鍵，下游直接用。
+            此欄不存於 CSV，由 load_demographics() 於讀入時組出（正規化、零冗餘）。
+  - Group   P / NAD / ACS
+  - Number  個案編號（人；只在同 Group 內唯一）。人鍵 base_id = Group+Number（"P1"）。
 
-下游若需對應特徵檔（.npy）/ predicted_ages.json 的完整 ID（"P1-2"），自行組回：
-    feature_id = Group + ID.astype(str) + "-" + Photo_Session.astype(str)
-而 group / base_id 不必再用正則，直接：
-    group   = Group
-    base_id = Group + ID.astype(str)            # 例如 "P1"
+load_demographics() 是讀人口學的唯一入口——含直接讀檔需求的模組都應走它，
+ID 的組裝邏輯只存在這一處。group 直接用 Group 欄，base_id = Group + Number。
 """
 import pandas as pd
 
@@ -26,23 +24,24 @@ P_SCORE = {"p_cdrall", "p_cdr05", "p_cdr1", "p_cdr2"}
 HC_VISIT = {"hc_first", "hc_all"}
 HC_SCORE = {"hc_cdrall_or_mmseall", "hc_cdr0_or_mmse26"}
 
-_OUTPUT_COLS = ["Group", "ID", "Photo_Session", "Age", "MMSE", "CASI",
-                "Global_CDR"]
+_OUTPUT_COLS = ["ID", "Group", "Number", "Photo_Session", "Age", "MMSE",
+                "CASI", "Global_CDR"]
 _P_CDR_THR = {"p_cdr05": 0.5, "p_cdr1": 1.0, "p_cdr2": 2.0}  # Global_CDR >= 門檻
 
 
 def load_demographics(groups=("P", "NAD", "ACS")):
     """讀取 hospital_A.csv，篩出指定 *groups*。
 
-    數值欄（Age / Global_CDR / MMSE / CASI）解析為數值；另補兩個內部便利欄供
-    挑選用：base_id（= Group+ID，受試者層級）、visit（= Photo_Session）。
+    數值欄（Age / Global_CDR / MMSE / CASI）解析為數值；組出唯一鍵 ID（"P1-2"）與
+    內部便利欄：base_id（= Group+Number，受試者層級，例 "P1"）、visit（= Photo_Session）。
     """
     demo = pd.read_csv(HOSPITAL_A_CSV)
     demo = demo[demo["Group"].isin(groups)].copy()
     for c in ("Age", "Global_CDR", "MMSE", "CASI"):
         if c in demo.columns:
             demo[c] = pd.to_numeric(demo[c], errors="coerce")
-    demo["base_id"] = demo["Group"] + demo["ID"].astype(str)
+    demo["base_id"] = demo["Group"] + demo["Number"].astype(str)
+    demo["ID"] = demo["base_id"] + "-" + demo["Photo_Session"].astype(str)
     demo["visit"] = pd.to_numeric(demo["Photo_Session"], errors="coerce")
     return demo
 
@@ -83,7 +82,7 @@ def cohort_list(p_visit, p_score, hc_visit, hc_score):
     hc_visit ∈ {hc_first, hc_all}
     hc_score ∈ {hc_cdrall_or_mmseall, hc_cdr0_or_mmse26}
 
-    回傳欄位：Group, ID, Photo_Session, Age, MMSE, CASI, Global_CDR。
+    回傳欄位：ID, Group, Number, Photo_Session, Age, MMSE, CASI, Global_CDR。
     """
     for v, vocab in [(p_visit, P_VISIT), (p_score, P_SCORE),
                      (hc_visit, HC_VISIT), (hc_score, HC_SCORE)]:

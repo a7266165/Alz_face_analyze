@@ -1,6 +1,6 @@
 example: 
 
-Group	ID	Photo_Session	Photo_Date	Birth_Date	Sex	Age	BMI	NPT_Date	NPT_Session	Diff_Days	MMSE	CASI	Global_CDR
+Group	Number	Photo_Session	Photo_Date	Birth_Date	Sex	Age	BMI	NPT_Date	NPT_Session	Diff_Days	MMSE	CASI	Global_CDR
 P	1	2	2020/1/7	1941/06/15	F	78.56	22.37	2020/5/13	2	127	15	56	0.5
 NAD	1	1	2019/12/10	1947/10/05	F	72.18	19.63
 ACS	1	1	2020/3/3	1980/01/10	F	40.15	19.26	2020/5/19	1	77	30	97

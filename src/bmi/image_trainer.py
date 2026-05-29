@@ -82,11 +82,9 @@ def build_image_dataset_info(
     Returns (ids, bmi_values, groups) — same as trainer.build_dataset but
     without loading embeddings.
     """
-    # 單一乾淨表 hospital_A.csv（split schema）：base_id = Group+ID，
-    # 完整特徵 ID = Group+ID+"-"+Photo_Session。
-    demo = pd.read_csv(demographics_dir / "hospital_A.csv")
-    demo["base_id"] = demo["Group"] + demo["ID"].astype(str)
-    demo["ID"] = demo["base_id"] + "-" + demo["Photo_Session"].astype(str)
+    # 唯一讀取點：load_demographics() 已組好 ID(完整鍵) / base_id。
+    from src.common.cohort import load_demographics
+    demo = load_demographics()
     demo = demo[["ID", "base_id", "BMI"]].dropna(subset=["BMI"])
     ids = demo["ID"].tolist()
     bmi = demo["BMI"].to_numpy(dtype=np.float64)

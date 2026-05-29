@@ -157,8 +157,7 @@ def build_matching_cache(
         f"p_{spec.p_visit}", f"p_{spec.p_cdr}", f"hc_{spec.hc_visit}",
         "hc_cdr0_or_mmse26" if spec.hc_strict else "hc_cdrall_or_mmseall")
     demo["group"] = demo["Group"]
-    demo["base_id"] = demo["Group"] + demo["ID"].astype(str)
-    demo["ID"] = demo["base_id"] + "-" + demo["Photo_Session"].astype(str)
+    demo["base_id"] = demo["Group"] + demo["Number"].astype(str)  # ID 已是完整鍵
     demo["label"] = (demo["group"] == "P").astype(int)
 
     cache = {"demo": demo}

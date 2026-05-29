@@ -388,8 +388,7 @@ def run_one_combo(output_dir, cohort_mode, hc_source_mode,
     if hc_source_mode == "ACS":
         roster = cohort_list(*tokens)
         roster["group"] = roster["Group"]
-        roster["base_id"] = roster["Group"] + roster["ID"].astype(str)
-        roster["ID"] = roster["base_id"] + "-" + roster["Photo_Session"].astype(str)
+        roster["base_id"] = roster["Group"] + roster["Number"].astype(str)
     else:
         from src.common.legacy.eacs import cohort_list_with_eacs
         roster = cohort_list_with_eacs(hc_source_mode, *tokens)

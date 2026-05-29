@@ -13,7 +13,7 @@ import os
 
 import pandas as pd
 
-from src.config import HOSPITAL_A_CSV, DEMOGRAPHICS_DIR
+from src.config import DEMOGRAPHICS_DIR
 
 VALID_HC_SOURCE_MODES = ("ACS", "ACS_ext", "EACS")
 
@@ -39,12 +39,10 @@ def load_combined_demographics_with_eacs(hc_source_mode="ACS_ext"):
     groups_to_load = ["P", "NAD"]
     if hc_source_mode != "EACS":
         groups_to_load.append("ACS")
-    hospital_A = pd.read_csv(HOSPITAL_A_CSV)
+    from src.common.cohort import load_demographics
+    internal = load_demographics(tuple(groups_to_load))  # 已組好完整 ID "P1-2"
     for grp in groups_to_load:
-        df = hospital_A[hospital_A["Group"] == grp].copy()
-        # hospital_A 為 split schema；組回完整特徵 ID（"P1-2"）供 match / 特徵對應。
-        df["ID"] = (df["Group"] + df["ID"].astype(str)
-                    + "-" + df["Photo_Session"].astype(str))
+        df = internal[internal["Group"] == grp].copy()
         df["group"] = grp
         df["Source"] = "internal"
         frames.append(df)

@@ -135,16 +135,13 @@ class DataLoader:
 
         logger.info("載入人口學資料...")
 
-        # 單一乾淨表 hospital_A.csv（split schema）；組回完整特徵 ID（"P1-2"）。
-        demographics = pd.read_csv(self.demographics_dir / "hospital_A.csv")
+        # 唯一讀取點：load_demographics() 已組好 ID(完整鍵) / base_id。
+        from src.common.cohort import load_demographics
+        groups = (self.group_filter,) if self.group_filter else ("P", "NAD", "ACS")
         if self.group_filter:
-            demographics = demographics[
-                demographics["Group"] == self.group_filter].copy()
             logger.info(f"群組篩選: 僅載入 {self.group_filter}")
+        demographics = load_demographics(groups)
         demographics["group"] = demographics["Group"]
-        demographics["ID"] = (demographics["Group"]
-                              + demographics["ID"].astype(str)
-                              + "-" + demographics["Photo_Session"].astype(str))
 
         if "Sex" in demographics.columns:
             demographics["Sex"] = demographics["Sex"].map({"F": 0, "M": 1})

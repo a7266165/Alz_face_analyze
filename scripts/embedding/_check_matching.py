@@ -16,8 +16,7 @@ def _roster(hc_source):
         f"p_{spec.p_visit}", f"p_{spec.p_cdr}", f"hc_{spec.hc_visit}",
         "hc_cdr0_or_mmse26" if spec.hc_strict else "hc_cdrall_or_mmseall")
     roster["group"] = roster["Group"]
-    roster["base_id"] = roster["Group"] + roster["ID"].astype(str)
-    roster["ID"] = roster["base_id"] + "-" + roster["Photo_Session"].astype(str)
+    roster["base_id"] = roster["Group"] + roster["Number"].astype(str)
     if hc_source in ("ACS", "NAD"):
         roster = roster[roster["group"].isin(["P", hc_source])].reset_index(drop=True)
     return roster

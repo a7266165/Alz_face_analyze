@@ -379,8 +379,7 @@ def _build_ad_vs_hcgroup(hc_source):
         full = cohort_list(*tokens)
         # split schema → 直接由 Group 取 key，組回特徵 ID。
         full["group"] = full["Group"]
-        full["base_id"] = full["Group"] + full["ID"].astype(str)
-        full["ID"] = full["base_id"] + "-" + full["Photo_Session"].astype(str)
+        full["base_id"] = full["Group"] + full["Number"].astype(str)
     else:
         # EACS-extended HC 走 legacy（cohort 核心只含 P/NAD/ACS）；
         # EACS roster 為完整 ID + group 欄，base_id 用正則拆。
@@ -408,8 +407,7 @@ def _build_metric_hilo(metric):
     df = load_demographics(("P",))
     df = p_filter(df, f"p_{spec.p_cdr}").copy()
     df = df.dropna(subset=[metric, "Age"])
-    # base_id 由 load_demographics 提供；組回特徵 ID 供下游對應 .npy。
-    df["ID"] = df["base_id"] + "-" + df["Photo_Session"].astype(str)
+    # load_demographics 已提供 ID(完整鍵) 與 base_id。
     cohort = visit_selection(df, "p_first")
     cohort, _median = split_by_metric_median(
         cohort, metric=metric, group_col=group_col,

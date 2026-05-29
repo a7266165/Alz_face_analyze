@@ -236,10 +236,9 @@ def prepare_cross_sectional_data(visit_selection):
     feat_df = pd.read_csv(LANDMARK_FEATURES_CSV)
     feat_df = feat_df[feat_df["subject_id"].str.startswith("P")].copy()
 
-    # Load demographics（hospital_A split schema；組回完整特徵 ID 以對應 subject_id）
-    demo = pd.read_csv(DEMOGRAPHICS_CSV)
-    demo["ID"] = (demo["Group"] + demo["ID"].astype(str)
-                  + "-" + demo["Photo_Session"].astype(str))
+    # Load demographics（唯一讀取點，ID 為完整鍵以對應 subject_id；只取 P）
+    from src.common.cohort import load_demographics
+    demo = load_demographics(("P",))
     demo["Global_CDR"] = pd.to_numeric(demo["Global_CDR"], errors="coerce")
 
     # Load predicted ages
