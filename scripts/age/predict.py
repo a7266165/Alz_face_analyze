@@ -5,7 +5,6 @@ scripts/age/predict.py
 輸出格式 (JSON):
   {
     "subject_id": {
-      "actual_age": 40.15,
       "predicted_ages": [31.39, 32.10, 30.85, ...]
     },
     ...
@@ -26,6 +25,7 @@ import logging
 from pathlib import Path
 from tqdm import tqdm
 import cv2
+import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
 from _paths import PROJECT_ROOT
@@ -50,6 +50,21 @@ def scan_subjects(aligned_dir: Path) -> list:
     return sorted(d for d in aligned_dir.iterdir() if d.is_dir())
 
 
+def _imread_unicode(path: Path):
+    """Unicode-safe 影像讀取。
+
+    cv2.imread 在 Windows 走 ANSI API，路徑含非 ASCII（例如中文）字元時會靜默
+    回傳 None。改用 np.fromfile 讀進 bytes、再 cv2.imdecode 解碼，含中文的路徑也能讀。
+    """
+    try:
+        data = np.fromfile(str(path), dtype=np.uint8)
+    except OSError:
+        return None
+    if data.size == 0:
+        return None
+    return cv2.imdecode(data, cv2.IMREAD_COLOR)
+
+
 def load_images(subject_dir: Path, max_images: int = 10) -> list:
     """載入前 N 張影像"""
     valid_ext = {'.jpg', '.jpeg', '.png'}
@@ -57,7 +72,7 @@ def load_images(subject_dir: Path, max_images: int = 10) -> list:
 
     for f in sorted(subject_dir.iterdir()):
         if f.suffix.lower() in valid_ext:
-            img = cv2.imread(str(f))
+            img = _imread_unicode(f)
             if img is not None:
                 images.append(img)
             if len(images) >= max_images:
@@ -139,6 +154,10 @@ def main():
     if args.merge and output_file.exists():
         with open(output_file, "r", encoding="utf-8") as f:
             results = json.load(f)
+        # predict 不再輸出 actual_age；既有檔若有殘留也順手清掉，保持一致
+        for entry in results.values():
+            if isinstance(entry, dict):
+                entry.pop("actual_age", None)
         logger.info(f"merge 模式：既有 {len(results)} 個 id")
 
     skipped_no_demo = 0
@@ -161,7 +180,6 @@ def main():
         if ages:
             results[subject_id] = {
                 "predicted_ages": [round(a, 2) for a in ages],
-                "actual_age": actual_ages[subject_id],
             }
         else:
             logger.warning(f"{subject_id}: 預測失敗")
