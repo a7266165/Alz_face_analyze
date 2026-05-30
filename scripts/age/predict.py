@@ -1,5 +1,4 @@
 """
-scripts/age/predict.py
 遍歷對齊影像目錄，用指定模型預測年齡並儲存
 
 輸出格式 (JSON):
@@ -9,14 +8,9 @@ scripts/age/predict.py
     },
     ...
   }
-每個 subject 保留最多 10 張影像的逐張預測值。
 
 模型選項:
-  mivolo (預設)   → PREDICTED_AGES_FILE（供 pipeline 下游使用）
-  insightface     → AGE_PREDICTIONS_DIR/2_InsightFace/predicted_ages.json
-  deepface        → AGE_PREDICTIONS_DIR/3_DeepFace/predicted_ages.json
-  fairface        → AGE_PREDICTIONS_DIR/4_FairFace/predicted_ages.json
-  opencv_dnn      → AGE_PREDICTIONS_DIR/5_OpenCV_DNN/predicted_ages.json
+  mivolo、insightface、deepface、fairface、opencv_dnn
 """
 
 import sys
