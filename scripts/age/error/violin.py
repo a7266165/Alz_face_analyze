@@ -42,11 +42,9 @@ HILO_COMPARISONS = ["mmse_high_vs_low", "casi_high_vs_low"]
 # ── data loading ─────────────────────────────────────────────────────────────
 
 def load_all_with_error():
-    # age_error 表（不篩 cohort，取完整 demographics）由共用 loader 提供；
-    # 這裡只把欄位名對齊 violin 下游慣用的 age_error。
-    df = load_age_error_table()
-    df["age_error"] = df["error"]
-    return df
+    # age_error 表（不篩 cohort，取完整 demographics）由共用 loader 提供，
+    # 欄位已直接叫 age_error，violin 下游照用。
+    return load_age_error_table()
 
 # ── matching ─────────────────────────────────────────────────────────────────
 

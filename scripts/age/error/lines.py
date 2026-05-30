@@ -61,7 +61,7 @@ def build_internal(cohort_mode: str) -> pd.DataFrame:
     legacy column name ``error_before`` for the plot helpers below.
     """
     df = load_age_error_table(cohort_mode)
-    df["error_before"] = df["error"]
+    df["error_before"] = df["age_error"]
     return df[["group", "real_age", "predicted_age", "error_before", "age_int"]]
 
 # ── plot functions ───────────────────────────────────────────────────────────

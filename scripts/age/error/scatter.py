@@ -98,7 +98,7 @@ def main():
 
     args.scatter_dir.mkdir(parents=True, exist_ok=True)
 
-    df_matched = load_age_error_table()[
+    df_matched = load_age_error_table().rename(columns={"age_error": "error"})[
         ["ID", "real_age", "predicted_age", "group", "error"]]
     logger.info(f"matched={len(df_matched)}")
 

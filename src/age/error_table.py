@@ -1,7 +1,7 @@
 """
 年齡 error 表：real vs predicted age 的逐受試者比較表，供 scripts/age/error/ 的
 四個 consumer（stat / lines / scatter / violin）共用，取代原本各自重抄一遍的
-「load preds → join ID → dropna → error = real − predicted」區塊。
+「load preds → join ID → dropna → age_error = real − predicted」區塊。
 
 stat / lines 走 canonical cohort（套 CDR/MMSE/visit 篩選）；scatter / violin 走
 完整 demographics（不篩）。差別只在 cohort_mode 給不給——把這個「篩/不篩」做成
@@ -26,7 +26,7 @@ def load_age_error_table(cohort_mode=None, *, predictions_file=PREDICTED_AGES_FI
                           （scatter / violin 用）。
 
     回傳欄位（在來源欄位之上補出）：
-        group, real_age, predicted_age, error(=real−predicted), age_int, subject,
+        group, real_age, predicted_age, age_error(=real−predicted), age_int, subject,
         以及 MMSE / CASI / Global_CDR（來源缺者補 NaN）。
         來源本身的欄位（ID, Age, Group, Number, BMI …）一併保留。
     無 predicted_age 或 real_age 的列已 dropna。
@@ -49,7 +49,7 @@ def load_age_error_table(cohort_mode=None, *, predictions_file=PREDICTED_AGES_FI
     df["real_age"] = pd.to_numeric(df["Age"], errors="coerce")
     df["predicted_age"] = df["ID"].map(preds)
     df = df.dropna(subset=["real_age", "predicted_age"]).reset_index(drop=True)
-    df["error"] = df["real_age"] - df["predicted_age"]
+    df["age_error"] = df["real_age"] - df["predicted_age"]
     df["age_int"] = df["real_age"].astype(int)
     df["subject"] = df["ID"].apply(lambda x: str(x).rsplit("-", 1)[0])
     for c in _SCORE_COLS:

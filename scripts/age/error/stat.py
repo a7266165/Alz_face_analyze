@@ -60,7 +60,7 @@ def build_matched(cohort_mode: str) -> pd.DataFrame:
     ``src.age.error_table.load_age_error_table`` (cohort_mode given → filtered,
     matching ``histogram.py`` exactly).
     """
-    df = load_age_error_table(cohort_mode)
+    df = load_age_error_table(cohort_mode).rename(columns={"age_error": "error"})
     return df[["ID", "real_age", "predicted_age", "group", "error",
                "MMSE", "CASI", "Global_CDR"]]
 
