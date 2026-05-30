@@ -1,11 +1,9 @@
 """
-鏡射生成（pure functions）
+產生左右臉鏡射。
 
-產生左右臉鏡射。兩種方法：
-- midline: 沿臉部中線鏡射（較精確，需 landmarks）
-- flip:    水平翻轉（較快速，忽略 landmarks）
-
-參數由 src.config.MirrorConfig 帶入。
+兩種方法：
+- midline: 沿臉部中線鏡射
+- flip:    水平翻轉
 """
 
 from typing import Tuple

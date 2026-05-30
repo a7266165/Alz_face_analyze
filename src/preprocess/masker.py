@@ -1,7 +1,5 @@
 """
-臉部去背遮罩（pure functions）
-
-以 468/478 landmarks 的凸包建立遮罩，把臉部以外區域塗黑。
+臉部去背。
 """
 
 from typing import Tuple

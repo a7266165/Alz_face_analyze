@@ -1,11 +1,5 @@
 """
-臉部偵測（pure functions + 一個資源工廠）
-
-open_face_mesh()  開一個 MediaPipe Face Mesh（建構昂貴、需 close），用 with 管生命週期。
-detect_faces()    純函式：吃 face_mesh handle + 影像 → FaceInfo 清單。
-
-mediapipe 的初始化/釋放收在這支；呼叫端只透過 open_face_mesh 拿不透明 handle，
-不必自己 import mediapipe（就像 `with open(...) as f` 把 file handle 傳給函式）。
+偵測臉部資訊。
 """
 
 import logging
@@ -53,7 +47,7 @@ def detect_faces(
     paths: Optional[List[Path]] = None,
     midline_points: Tuple[int, ...] = MIDLINE_POINTS,
 ) -> List[FaceInfo]:
-    """批次偵測：每張影像跑 FaceMesh，回傳成功偵測到臉的 FaceInfo 清單。"""
+    """依序偵測每張相片並回傳 FaceInfo 清單。"""
     face_infos = []
     for i, image in enumerate(images):
         info = _detect_single(
@@ -94,10 +88,7 @@ def _landmarks_to_array(landmarks, image_shape: Tuple[int, int]) -> np.ndarray:
 
 def _vertex_angle_sum(points: np.ndarray,
                       midline_points: Tuple[int, ...]) -> float:
-    """中軸線頂點夾角總和（度）：折線各頂點相鄰線段夾角之和，越小越正面。
-
-    points 為已縮放的 (N, 2) 特徵點陣列（見 _landmarks_to_array）。
-    """
+    """中軸線頂點夾角總和（度）：折線各頂點相鄰線段夾角之和。"""
     dots = [points[i] for i in midline_points]
     vector1 = dots[1] - dots[0]
     vector2 = dots[2] - dots[1]

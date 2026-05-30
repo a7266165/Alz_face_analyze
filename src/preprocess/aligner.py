@@ -1,7 +1,5 @@
 """
-臉部對齊（pure functions，純旋轉）
-
-依中軸線傾斜角把臉轉正使其垂直。去背（凸包遮罩）見 masker.py。
+依中軸線傾斜角把臉轉正。
 """
 
 import logging

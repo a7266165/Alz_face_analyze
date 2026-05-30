@@ -1,27 +1,14 @@
 """
-scripts/preprocess/run_preprocess.py
-預處理 pipeline：raw 影像資料夾 → selected / aligned / mirrors。
+掃描母資料夾所有個案的人臉相片資料夾，依序進行：
+1. 臉部偵測
+2. 選擇最正面相片
+3. 去背（可選）
+4. 轉正
+5. 鏡射（可選）
 
-掃描指定子樹的直接子目錄，每個「含影像」的資料夾當一個 subject，依序跑五站：
-    detect（偵測臉 + landmarks）
-      → select（選最正面 n 張）
-      → 去背（mask，可選）
-      → align（轉正）
-      → mirror（左右鏡射，可選）
-
-bg / mirror 是 toggle，一次出齊：
-    --backgrounds no_background background   要產哪些背景變體（預設兩者都產）
-    --no-mirror                              不產鏡射（只到 aligned 為止）
-
-mediapipe 的 FaceMesh 由 open_face_mesh() 在 main 開一次、with 區塊結束自動釋放；
-五站皆為 pure function，直接 import 呼叫，不必當物件穿過來穿過去。
-
-下游「影像 → 特徵」見 scripts/embedding/extract_mirror_features.py。
-
-用法：
-    "C:/Users/4080/anaconda3/envs/Alz_face_rotation/python.exe" scripts/preprocess/run_preprocess.py
-    python scripts/preprocess/run_preprocess.py --backgrounds no_background --no-mirror
+並將中間過程存至workspace
 """
+
 import os
 import sys
 import logging
@@ -53,7 +40,6 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 SUFFIXES = {".jpg", ".jpeg", ".png"}
-# 預設掃描的三塊子樹（過濾掉 patient/bad、health/NAD資料檢查、NAD_to_P 等）
 DEFAULT_SUBTREES = ["health/ACS", "health/NAD", "patient/good"]
 
 
@@ -72,12 +58,7 @@ def limit_cpu(n_cores):
 
 def already_done(subject_id: str, variants: List[Tuple[str, bool]],
                  mirror: bool) -> bool:
-    """所有要求的變體都「完整」產出才跳過（嚴格斷點續傳）。
-
-    以 selected/ 的張數 K（= 選中臉數）為基準：每個變體的 aligned 需有 K 張、
-    （產鏡射時）mirrors 需有 K 對；任一不足即視為半完成 → 重跑。
-    （只看「有無任一檔」會把中途崩潰的半完成 subject 誤判為已完成。）
-    """
+    """斷點檢查"""
     sel = preprocess_dir("selected") / subject_id
     if not sel.is_dir():
         return False
@@ -97,7 +78,6 @@ def already_done(subject_id: str, variants: List[Tuple[str, bool]],
 
 def process_subject(subject_dir: Path, face_mesh, cfg: PreprocessConfig,
                     variants: List[Tuple[str, bool]], mirror: bool) -> bool:
-    """raw 資料夾 → detect → select → (每 variant: 去背→align→存；可選鏡射)。"""
     subject_id = subject_dir.name
 
     images, paths = [], []
@@ -120,15 +100,13 @@ def process_subject(subject_dir: Path, face_mesh, cfg: PreprocessConfig,
         logger.warning(f"{subject_id}: select 後沒有臉部")
         return False
 
-    # 存 selected（原始、未去背未轉正）→ no_background/selected
-    # 必須先整批寫完再做下方 aligned/mirror：already_done 以 selected/ 張數為目標基準 K，勿合併兩迴圈
+    # 合併兩迴圈 already_done 會失效
     sel_dir = preprocess_dir("selected") / subject_id
     sel_dir.mkdir(parents=True, exist_ok=True)
     for i, f in enumerate(selected):
         cv2.imwrite(str(sel_dir / f"selected_{i:03d}_vas_{f.vertex_angle_sum:.1f}.png"),
                     f.image)
 
-    # 每張臉算一次 tilt；no_bg 與 bg 共用同一旋轉角，差別只在轉正前是否去背
     for i, face in enumerate(selected):
         tilt = calculate_midline_tilt(face.landmarks, cfg.midline_points)
         stem = face.path.stem if face.path else None
@@ -143,9 +121,8 @@ def process_subject(subject_dir: Path, face_mesh, cfg: PreprocessConfig,
 
             if mirror:
                 if cfg.mirror.mirror_method == "flip":
-                    lm = face.landmarks  # flip 忽略 landmarks，免一次 re-detect
+                    lm = face.landmarks
                 else:
-                    # midline：對齊後重新偵測，找不到才退回對齊前 landmark
                     redet = detect_faces(face_mesh, [aligned],
                                          midline_points=cfg.midline_points)
                     lm = redet[0].landmarks if redet else face.landmarks
@@ -183,8 +160,7 @@ def main():
     variants = [(name, name == "background") for name in args.backgrounds]
     mirror = not args.no_mirror
 
-    # 各子樹只看一層：直接子目錄即一個 subject（含影像者）。
-    # 不往下遞迴——subject_id = 資料夾名，是下游 .npy/demographics 的鍵，必須唯一。
+    # 不用rglob，結構目錄默認 raw_root/DEFAULT_SUBTREES/subject_ID/figs.jpg，
     subjects: List[Path] = []
     for sub in (args.subtrees or DEFAULT_SUBTREES):
         root = raw_root / sub
