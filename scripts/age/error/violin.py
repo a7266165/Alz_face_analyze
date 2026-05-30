@@ -29,12 +29,8 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))  # scripts/
 from _paths import PROJECT_ROOT  # noqa: F401
 
-from src.config import (
-    AGE_VIOLIN_DIR,
-    DEMOGRAPHICS_DIR,
-    PREDICTED_AGES_FILE,
-)
-from src.age.utils import load_predicted_ages
+from src.config import AGE_VIOLIN_DIR
+from src.age.error_table import load_age_error_table
 
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s - %(levelname)s - %(message)s")
@@ -46,16 +42,11 @@ HILO_COMPARISONS = ["mmse_high_vs_low", "casi_high_vs_low"]
 # ── data loading ─────────────────────────────────────────────────────────────
 
 def load_all_with_error():
-    preds = load_predicted_ages(PREDICTED_AGES_FILE)
-    # 唯一讀取點：cohort.load_demographics() 已組好 ID(完整鍵) 並解析 Age/MMSE/CASI。
-    from src.common.cohort import load_demographics
-    df = load_demographics()
-    df["group"] = df["Group"]
-    df["predicted_age"] = df["ID"].map(preds)
-    df = df.dropna(subset=["Age", "predicted_age"])
-    df["age_error"] = df["Age"] - df["predicted_age"]
-    df["subject"] = df["ID"].apply(lambda x: x.rsplit("-", 1)[0])
-    return df.reset_index(drop=True)
+    # age_error 表（不篩 cohort，取完整 demographics）由共用 loader 提供；
+    # 這裡只把欄位名對齊 violin 下游慣用的 age_error。
+    df = load_age_error_table()
+    df["age_error"] = df["error"]
+    return df
 
 # ── matching ─────────────────────────────────────────────────────────────────
 

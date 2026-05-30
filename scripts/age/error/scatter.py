@@ -18,45 +18,17 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))  # scripts/
 from _paths import PROJECT_ROOT  # noqa: F401
 
-from src.config import (
-    DEMOGRAPHICS_DIR,
-    AGE_SCATTER_DIR,
-    PREDICTED_AGES_FILE,
-)
-from src.age.utils import load_predicted_ages
+from src.config import AGE_SCATTER_DIR
+from src.age.error_table import load_age_error_table
 
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
-# ── data loading ─────────────────────────────────────────────────────────────
-
-def load_demographics(demo_dir: Path) -> pd.DataFrame:
-    # 唯一讀取點：cohort.load_demographics() 已組好 ID(完整鍵) 並解析 Age。
-    from src.common.cohort import load_demographics as _load_demo
-    df = _load_demo()
-    df["group"] = df["Group"]
-    return df[["ID", "Age", "group"]]
-
-
-def match_ages(predicted_ages: dict, demo: pd.DataFrame) -> pd.DataFrame:
-    records = []
-    for sid, pred in predicted_ages.items():
-        row = demo[demo["ID"] == sid]
-        if row.empty:
-            continue
-        real = row["Age"].values[0]
-        if pd.isna(real):
-            continue
-        records.append({"ID": sid, "real_age": real, "predicted_age": pred,
-                        "group": row["group"].values[0],
-                        "error": real - pred})
-    return pd.DataFrame(records)
 
 # ── panel helpers ────────────────────────────────────────────────────────────
 
@@ -126,9 +98,8 @@ def main():
 
     args.scatter_dir.mkdir(parents=True, exist_ok=True)
 
-    preds = load_predicted_ages(PREDICTED_AGES_FILE)
-    demo = load_demographics(DEMOGRAPHICS_DIR)
-    df_matched = match_ages(preds, demo)
+    df_matched = load_age_error_table()[
+        ["ID", "real_age", "predicted_age", "group", "error"]]
     logger.info(f"matched={len(df_matched)}")
 
     plot_main_scatter(df_matched, args.scatter_dir)

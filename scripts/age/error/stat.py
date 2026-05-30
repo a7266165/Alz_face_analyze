@@ -42,13 +42,10 @@ from _paths import PROJECT_ROOT  # noqa: F401
 from src.config import (
     AGE_ANALYSIS_DIR,
     DEFAULT_COHORT_MODE,
-    PREDICTED_AGES_FILE,
     VALID_COHORT_CHOICES,
     cohort_path,
-    cohort_spec_from_name,
 )
-from src.age.utils import load_predicted_ages
-from src.common.cohort import cohort_list
+from src.age.error_table import load_age_error_table
 
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s - %(levelname)s - %(message)s")
@@ -56,25 +53,14 @@ logger = logging.getLogger(__name__)
 
 # ── data loading ─────────────────────────────────────────────────────────────
 
-def build_matched(preds: dict, cohort_mode: str) -> pd.DataFrame:
+def build_matched(cohort_mode: str) -> pd.DataFrame:
     """Canonical cohort × predicted ages → per-row error table.
 
-    Cohort filtering (CDR / MMSE / visit selection) is delegated to
-    ``cohort_list`` so it matches ``histogram.py`` exactly.
+    The cohort × predictions join + error column is delegated to the shared
+    ``src.age.error_table.load_age_error_table`` (cohort_mode given → filtered,
+    matching ``histogram.py`` exactly).
     """
-    spec = cohort_spec_from_name(cohort_mode)
-    cohort = cohort_list(
-        f"p_{spec.p_visit}", f"p_{spec.p_cdr}", f"hc_{spec.hc_visit}",
-        "hc_cdr0_or_mmse26" if spec.hc_strict else "hc_cdrall_or_mmseall")
-    cohort["group"] = cohort["Group"]  # ID 已是完整鍵 "P1-2"
-    df = cohort.copy()
-    df["real_age"] = pd.to_numeric(df["Age"], errors="coerce")
-    df["predicted_age"] = df["ID"].map(preds)
-    df = df.dropna(subset=["real_age", "predicted_age"]).reset_index(drop=True)
-    df["error"] = df["real_age"] - df["predicted_age"]
-    for c in ["MMSE", "CASI", "Global_CDR"]:
-        if c not in df.columns:
-            df[c] = np.nan
+    df = load_age_error_table(cohort_mode)
     return df[["ID", "real_age", "predicted_age", "group", "error",
                "MMSE", "CASI", "Global_CDR"]]
 
@@ -252,8 +238,7 @@ def main():
     logger.info(f"cohort-mode = {args.cohort_mode}")
     logger.info(f"stat-dir    = {stat_dir}")
 
-    preds = load_predicted_ages(PREDICTED_AGES_FILE)
-    df_matched = build_matched(preds, args.cohort_mode)
+    df_matched = build_matched(args.cohort_mode)
     logger.info(f"matched={len(df_matched)} "
                 f"({df_matched['group'].value_counts().to_dict()})")
 
