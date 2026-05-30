@@ -1,12 +1,12 @@
 """
-scripts/age/scatter.py
+scripts/age/error/scatter.py
 Age prediction scatter plots (internal ACS / NAD / P).
 
 Outputs (to scatter/ directory):
   predicted_ages_scatter.png   — HC (NAD+ACS) vs P
 
 Usage:
-  conda run -n Alz_face_age python scripts/age/scatter.py
+  conda run -n Alz_face_age python scripts/age/error/scatter.py
 """
 
 import argparse
@@ -20,7 +20,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))  # scripts/
 from _paths import PROJECT_ROOT  # noqa: F401
 
 from src.config import (

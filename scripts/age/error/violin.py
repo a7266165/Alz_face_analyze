@@ -1,5 +1,5 @@
 """
-scripts/age/violin.py
+scripts/age/error/violin.py
 Age prediction error violin plots — 1:1 age-matched and unmatched comparisons.
 
 Comparisons:
@@ -11,8 +11,8 @@ Output:
   violin/all/{comparison}/unmatched_violin.png
 
 Usage:
-  conda run -n Alz_face_age python scripts/age/violin.py
-  conda run -n Alz_face_age python scripts/age/violin.py --comparison ad_vs_hc
+  conda run -n Alz_face_age python scripts/age/error/violin.py
+  conda run -n Alz_face_age python scripts/age/error/violin.py --comparison ad_vs_hc
 """
 
 import argparse
@@ -26,7 +26,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))  # scripts/
 from _paths import PROJECT_ROOT  # noqa: F401
 
 from src.config import (

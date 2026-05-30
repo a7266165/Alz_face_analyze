@@ -1,5 +1,5 @@
 """
-scripts/age/lines.py
+scripts/age/error/lines.py
 Prediction-residual (real − predicted) line plots by true age, for the
 internal ACS / NAD / P groups.
 
@@ -13,8 +13,8 @@ Outputs (under <AGE_ANALYSIS_DIR>/<visit_dir>/<cdr_mmse_dir>/lines/):
   sliding_window_10/lines_internal_sw10.png  — residual by 10-y sliding window
 
 Usage:
-  conda run -n Alz_face_main_analysis python scripts/age/lines.py
-  conda run -n Alz_face_main_analysis python scripts/age/lines.py \
+  conda run -n Alz_face_main_analysis python scripts/age/error/lines.py
+  conda run -n Alz_face_main_analysis python scripts/age/error/lines.py \
       --cohort-mode p_all_cdrall_hc_all_cdrall_or_mmseall
 """
 
@@ -29,7 +29,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))  # scripts/
 from _paths import PROJECT_ROOT  # noqa: F401
 
 from src.config import (

@@ -1,5 +1,5 @@
 """
-scripts/age/stat.py
+scripts/age/error/stat.py
 Age prediction error statistics — stratified CSVs and correlation analysis.
 
 Cohort is built with the canonical ``src.common.cohort.cohort_list`` — the same
@@ -19,8 +19,8 @@ Outputs (to <AGE_ANALYSIS_DIR>/<visit_dir>/<cdr_mmse_dir>/stat/):
   patient_casi_vs_error.png     — CASI-error scatter
 
 Usage:
-  conda run -n Alz_face_main_analysis python scripts/age/stat.py
-  conda run -n Alz_face_main_analysis python scripts/age/stat.py \
+  conda run -n Alz_face_main_analysis python scripts/age/error/stat.py
+  conda run -n Alz_face_main_analysis python scripts/age/error/stat.py \
       --cohort-mode p_all_cdrall_hc_all_cdrall_or_mmseall
 """
 
@@ -36,7 +36,7 @@ import numpy as np
 import pandas as pd
 from scipy import stats as sp_stats
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))  # scripts/
 from _paths import PROJECT_ROOT  # noqa: F401
 
 from src.config import (
