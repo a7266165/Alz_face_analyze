@@ -1,14 +1,19 @@
 """
 年齡模組共用工具
 
-load_predicted_ages: 載入預測年齡 JSON，回傳 {ID: mean_age}（僅依賴標準函式庫）。
-load_age_error:      指定 cohort 的逐受試者年齡誤差 DataFrame[ID, age_error]
-                     （延遲載入 pandas / cohort，import 本模組本身仍只依賴標準函式庫）。
+load_predicted_ages: 載入預測年齡 JSON，回傳 {ID: mean_age}（函數本身僅用標準函式庫）。
+load_age_error:      指定 cohort 的逐受試者年齡誤差 DataFrame[ID, age_error]。
+
+依賴（pandas / config / cohort）一律於模組開頭 import；import 本模組會連帶拉進
+pandas + cohort，但不涉及 cv2/torch，meta 等輕環境仍可直接 import。
 """
 
 import json
 from pathlib import Path
+import pandas as pd
 
+from src.config import PREDICTED_AGES_FILE
+from src.common.cohort import cohort_list
 
 def load_predicted_ages(path: Path) -> dict:
     """載入預測年齡 JSON，回傳 {ID: mean_age}。
@@ -46,11 +51,6 @@ def load_age_error(p_visit, p_score, hc_visit, hc_score, *,
     無預測值的受試者已 dropna。其餘 metadata（group / 分數等）請消費端自行從
     cohort_list 取，再以 ID join。
     """
-    import pandas as pd
-
-    from src.config import PREDICTED_AGES_FILE
-    from src.common.cohort import cohort_list
-
     if predictions_file is None:
         predictions_file = PREDICTED_AGES_FILE
     preds = load_predicted_ages(predictions_file)

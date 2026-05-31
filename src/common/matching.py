@@ -8,14 +8,6 @@ from src.common.cohort import cohort_list
 __all__ = ["match_by_age", "match_by_score"]
 
 
-def _prep_cohort(p_visit, p_score, hc_visit, hc_score):
-    """cohort_list(spec) → 補 group(=Group) / base_id(由 ID 去尾)，供配對引擎用。"""
-    prep = cohort_list(p_visit, p_score, hc_visit, hc_score).copy()
-    prep["group"] = prep["Group"]
-    prep["base_id"] = prep["ID"].str.extract(r"^(.+)-\d+$")[0]
-    return prep
-
-
 # ── 主入口 1：按組別、以年齡配對 ───────────────────────────────────────────────
 
 def match_by_age(p_visit, p_score, hc_visit, hc_score, *,
@@ -27,7 +19,9 @@ def match_by_age(p_visit, p_score, hc_visit, hc_score, *,
     （兩 list 等長、index 對齊），"1toN" 做 caliper 平衡擴充（兩 list 不等長；
     keep_groups / ttest_threshold 為其參數）。
     """
-    prep = _prep_cohort(p_visit, p_score, hc_visit, hc_score)
+    prep = cohort_list(p_visit, p_score, hc_visit, hc_score).copy()
+    prep["group"] = prep["Group"]                              # 引擎以小寫 group 餵入（priority 分支、1toN merge）
+    prep["base_id"] = prep["ID"].str.extract(r"^(.+)-\d+$")[0]  # ID 去 -session 尾，供 subject-level 去重
     if controls is not None:
         prep = prep[prep["group"].isin(["P", *controls])].copy()
     prep["label"] = (prep["group"] == "P").astype(int)
@@ -74,8 +68,9 @@ def match_by_score(p_visit, p_score, hc_visit, hc_score,
     within ∈ {P, NAD, ACS}；questionnaire ∈ {MMSE, CASI, Global_CDR …}；
     threshold="median"（組內中位數）或給數值。
     """
-    prep = _prep_cohort(p_visit, p_score, hc_visit, hc_score)
-    prep = prep[prep["group"] == within].copy()
+    prep = cohort_list(p_visit, p_score, hc_visit, hc_score).copy()
+    prep["base_id"] = prep["ID"].str.extract(r"^(.+)-\d+$")[0]  # ID 去 -session 尾，供 subject-level 去重
+    prep = prep[prep["Group"] == within].copy()                # 此入口不傳 priority，直接用大寫 Group 篩
     s = pd.to_numeric(prep[questionnaire], errors="coerce")
     prep = prep[s.notna()].copy()
     s = pd.to_numeric(prep[questionnaire], errors="coerce")
