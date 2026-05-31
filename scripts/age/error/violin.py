@@ -4,7 +4,7 @@ Age prediction error violin plots — full cohort and 1:1 age-matched comparison
 
 Cohort is built with the canonical ``src.common.cohort.cohort_list`` (same
 gold-standard filtering as histogram / stat / lines). Comparisons:
-  AD vs HC / NAD / ACS      — group matching      (canonical match_cohort)
+  AD vs HC / NAD / ACS      — group matching      (canonical match_by_age)
   MMSE / CASI high vs low   — score-median match  (canonical match_by_score)
 
 Each comparison outputs both the full cohort and the 1:1 age-matched subset:
@@ -37,8 +37,8 @@ from src.config import (
     cohort_spec_from_name,
 )
 from src.common.cohort import cohort_list
-from src.age.error_table import load_age_error
-from src.common.matching import match_cohort, match_by_score
+from src.age.utils import load_age_error
+from src.common.matching import match_by_age, match_by_score
 
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s - %(levelname)s - %(message)s")
@@ -76,9 +76,9 @@ def save_violin(left_vals, right_vals, left_label, right_label, title, out_path)
 # ── comparison runners ───────────────────────────────────────────────────────
 
 def run_hc_comparison(df_all, tokens, comparison, output_dir, caliper=1.0):
-    """AD vs {HC, NAD, ACS} violin — full cohort + 1:1 age-matched (match_cohort).
+    """AD vs {HC, NAD, ACS} violin — full cohort + 1:1 age-matched (match_by_age).
 
-    ``controls`` 餵給 canonical match_cohort：None → 全部非 P（NAD+ACS）；指定
+    ``controls`` 餵給 canonical match_by_age：None → 全部非 P（NAD+ACS）；指定
     組則只取該組當對照。
     """
     cmp_map = {
@@ -98,8 +98,8 @@ def run_hc_comparison(df_all, tokens, comparison, output_dir, caliper=1.0):
                     f"Age prediction error: {label} vs AD (full)",
                     output_dir / "full" / comparison / "violin.png")
 
-    # 1:1 age-matched (canonical match_cohort)
-    p_ids, hc_ids = match_cohort(*tokens, controls=controls, caliper=caliper)
+    # 1:1 age-matched (canonical match_by_age)
+    p_ids, hc_ids = match_by_age(*tokens, controls=controls, caliper=caliper)
     msub = df_all[df_all["ID"].isin(set(p_ids) | set(hc_ids))].reset_index(drop=True)
     m_hc = msub[msub["group"] != "P"]
     m_ad = msub[msub["group"] == "P"]
@@ -138,7 +138,7 @@ def run_hilo_comparison(df_all, tokens, metric, output_dir, caliper=1.0):
 
         # 1:1 age-matched（canonical match_by_score；high/low 由回傳兩 list 直接決定）
         high_ids, low_ids = match_by_score(
-            grp, metric, "median", *tokens, caliper=caliper)
+            *tokens, grp, metric, "median", caliper=caliper)
         hi = df_all[df_all["ID"].isin(high_ids)]["age_error"].dropna().values
         lo = df_all[df_all["ID"].isin(low_ids)]["age_error"].dropna().values
         if len(hi) > 0 and len(lo) > 0:

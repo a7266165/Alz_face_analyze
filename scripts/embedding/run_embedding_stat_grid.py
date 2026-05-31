@@ -41,7 +41,7 @@ from src.config import (
     cohort_spec_from_name,
 )
 from src.common.cohort import cohort_list
-from src.common.matching import match_cohort
+from src.common.matching import match_by_age
 from scripts.utilities.stats_helpers import bh_fdr, permanova, welch_t_test
 
 logging.basicConfig(level=logging.INFO,
@@ -387,7 +387,7 @@ def run_one_combo(output_dir, cohort_mode,
     roster = cohort_list(*tokens)
     roster["group"] = roster["Group"]
     roster["base_id"] = roster["Group"] + roster["Number"].astype(str)
-    p_ids, hc_ids = match_cohort(*tokens, level=ml_arg, priority=priority_groups)
+    p_ids, hc_ids = match_by_age(*tokens, level=ml_arg, priority=priority_groups)
     hc_cohort = roster[roster["ID"].isin(set(p_ids) | set(hc_ids))].copy()
 
     all_long = []

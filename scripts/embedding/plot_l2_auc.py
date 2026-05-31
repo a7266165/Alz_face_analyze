@@ -42,7 +42,7 @@ from src.config import (
     cohort_spec_from_name,
 )
 from src.common.cohort import cohort_list
-from src.common.matching import match_cohort
+from src.common.matching import match_by_age
 
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s - %(levelname)s - %(message)s")
@@ -245,7 +245,7 @@ def main():
             for ml in MATCH_LEVELS:
                 ml_arg = MATCH_LEVEL_ARG[ml]
 
-                p_ids, hc_ids = match_cohort(
+                p_ids, hc_ids = match_by_age(
                     *tokens,
                     level=ml_arg,
                     priority=args.match_priority,

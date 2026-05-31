@@ -5,9 +5,10 @@
 真正存取時才會 import ``predictor``。
 """
 
-from .utils import load_predicted_ages
+from .utils import load_age_error, load_predicted_ages
 
 __all__ = [
+    "load_age_error",
     "load_predicted_ages",
     "BasePredictor",
     "MiVOLOPredictor",

@@ -48,8 +48,8 @@ from src.config import (
     cohort_spec_from_name,
 )
 from src.common.cohort import cohort_list
-from src.age.error_table import load_age_error
-from src.common.matching import match_cohort
+from src.age.utils import load_age_error
+from src.common.matching import match_by_age
 
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s - %(levelname)s - %(message)s")
@@ -246,7 +246,7 @@ def main():
     full["group"] = full["Group"]
     full["real_age"] = full["Age"]
     full["predicted_age"] = full["real_age"] - full["age_error"]
-    p_ids, hc_ids = match_cohort(*tokens)
+    p_ids, hc_ids = match_by_age(*tokens)
     matched = full[full["ID"].isin(set(p_ids) | set(hc_ids))].reset_index(drop=True)
     logger.info(f"full={len(full)} ({full['group'].value_counts().to_dict()}), "
                 f"1by1matched={len(matched)} "

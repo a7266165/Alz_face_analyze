@@ -52,7 +52,7 @@ from src.config import (
     cohort_spec_from_name,
 )
 from src.common.cohort import cohort_list
-from src.common.matching import match_cohort
+from src.common.matching import match_by_age
 from scripts.utilities.stats_helpers import bootstrap_auc_ci
 
 logging.basicConfig(level=logging.INFO,
@@ -444,7 +444,7 @@ def main():
     full_cohort["base_id"] = full_cohort["Group"] + full_cohort["Number"].astype(str)
     full_cohort["label"] = (full_cohort["group"] == "P").astype(int)
 
-    ps_ids, hs_ids = match_cohort(
+    ps_ids, hs_ids = match_by_age(
         *tokens, level="subject",
         priority=args.match_priority)
     matched_subj = full_cohort[full_cohort["ID"].isin(
@@ -453,7 +453,7 @@ def main():
         matched_subj["base_id"] = (matched_subj["ID"].astype(str)
                                    .str.extract(r"^(.+)-\d+$")[0])
 
-    pv_ids, hv_ids = match_cohort(
+    pv_ids, hv_ids = match_by_age(
         *tokens, level="visit",
         priority=args.match_priority)
     matched_visit = full_cohort[full_cohort["ID"].isin(

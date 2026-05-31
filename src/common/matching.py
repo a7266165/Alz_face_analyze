@@ -1,11 +1,11 @@
-"""配對模組：match_cohort（按組別配對）和 match_by_score（按問卷分數配對）兩個主入口，
-皆吃 cohort spec、回 (case_ids, control_ids) 兩個 ID list。"""
+"""配對模組：match_by_age（按組別、以年齡配對）和 match_by_score（按問卷分數配對）
+兩個主入口，皆吃 cohort spec、回 (case_ids, control_ids) 兩個 ID list。"""
 import numpy as np
 import pandas as pd
 
 from src.common.cohort import cohort_list
 
-__all__ = ["match_cohort", "match_by_score"]
+__all__ = ["match_by_age", "match_by_score"]
 
 
 def _prep_cohort(p_visit, p_score, hc_visit, hc_score):
@@ -16,9 +16,9 @@ def _prep_cohort(p_visit, p_score, hc_visit, hc_score):
     return prep
 
 
-# ── 主入口 1：按組別配對 ───────────────────────────────────────────────────────
+# ── 主入口 1：按組別、以年齡配對 ───────────────────────────────────────────────
 
-def match_cohort(p_visit, p_score, hc_visit, hc_score, *,
+def match_by_age(p_visit, p_score, hc_visit, hc_score, *,
                  controls=None, caliper=1.0, priority=None, level="subject",
                  mode="1to1", keep_groups=None, ttest_threshold=0.05):
     """載入 cohort(spec) 做 AD(P) vs 對照組年齡配對，回 (p_ids, hc_ids)。
@@ -33,7 +33,7 @@ def match_cohort(p_visit, p_score, hc_visit, hc_score, *,
     prep["label"] = (prep["group"] == "P").astype(int)
     prep["mmse_group"] = np.where(prep["label"] == 1, "high", "low")
     prep["MMSE"] = prep["MMSE"].fillna(999)
-    matched, _, _ = _age_match_1to1(
+    matched, _, _ = _age_match_1_by_1(
         prep, caliper=caliper, metric="MMSE",
         group_col="mmse_group", priority_groups=priority,
         match_level=level,
@@ -46,7 +46,7 @@ def match_cohort(p_visit, p_score, hc_visit, hc_score, *,
             on="ID", how="left", suffixes=("", "_p"),
         )
         out = out.drop(columns=[c for c in out.columns if c.endswith("_p")])
-        expanded, _ = _caliper_group_match(
+        expanded, _ = _age_match_1_by_n(
             prep, out, keep_groups=keep_groups, caliper=caliper,
             ttest_threshold=ttest_threshold)
         rep = (prep.sort_values(["base_id", "Age"])
@@ -65,8 +65,8 @@ def match_cohort(p_visit, p_score, hc_visit, hc_score, *,
 
 # ── 主入口 2：按問卷分數配對 ───────────────────────────────────────────────────
 
-def match_by_score(within, questionnaire, threshold,
-                   p_visit, p_score, hc_visit, hc_score,
+def match_by_score(p_visit, p_score, hc_visit, hc_score,
+                   within, questionnaire, threshold,
                    *, caliper=1.0, level="subject"):
     """載入 cohort(spec)、篩到 within 組，按 questionnaire 的 threshold 切 high/low
     再做年齡配對，回 (high_ids, low_ids)。
@@ -81,7 +81,7 @@ def match_by_score(within, questionnaire, threshold,
     s = pd.to_numeric(prep[questionnaire], errors="coerce")
     thr = float(s.median()) if threshold == "median" else float(threshold)
     prep["score_group"] = np.where(s >= thr, "high", "low")
-    matched, _, _ = _age_match_1to1(
+    matched, _, _ = _age_match_1_by_1(
         prep, caliper=caliper, metric=questionnaire,
         group_col="score_group", match_level=level,
     )
@@ -93,8 +93,8 @@ def match_by_score(within, questionnaire, threshold,
 
 # ── 私有核心 ───────────────────────────────────────────────────────────────────
 
-def _age_match_1to1(cohort, caliper=2.0, metric="MMSE", group_col=None,
-                    priority_groups=None, id_col="ID", match_level="subject"):
+def _age_match_1_by_1(cohort, caliper=2.0, metric="MMSE", group_col=None,
+                      priority_groups=None, id_col="ID", match_level="subject"):
     """核心：scipy 最佳指派的 1:1 年齡配對（cohort 需含 group_col 'high'/'low'），回 (matched, pairs, (minor_label, major_label))。
 
     priority_groups 設定時稀少組先配一輪；match_level="subject" 每人去重、
@@ -211,9 +211,9 @@ def _age_match_1to1(cohort, caliper=2.0, metric="MMSE", group_col=None,
     return matched, pairs_df, (minor_label, major_label)
 
 
-def _caliper_group_match(full_cohort, matched_cohort,
-                         keep_groups=None, caliper=1.0,
-                         ttest_threshold=0.05):
+def _age_match_1_by_n(full_cohort, matched_cohort,
+                      keep_groups=None, caliper=1.0,
+                      ttest_threshold=0.05):
     """核心：在 1:1 配對之上做 1:N caliper 平衡擴充（每輪加 P + Welch t-test 守門），回 (expanded, age_balance)。
 
     keep_groups 限定對照組（如 {"P", "ACS"}）；ttest_threshold 為年齡平衡 p 值下限。

@@ -25,7 +25,7 @@ from _paths import PROJECT_ROOT  # noqa: F401
 
 from src.config import cohort_name, cohort_spec_from_name, AGE_ANALYSIS_DIR
 from src.common.cohort import cohort_list
-from src.common.matching import match_cohort
+from src.common.matching import match_by_age
 
 COLORS = {"NAD": "#9ecae1", "ACS": "#6baed6", "P": "#fc9272"}
 BINS = np.arange(35, 110, 2)
@@ -63,9 +63,9 @@ def run(cohort_mode, priority_groups=None):
     full = cohort_list(*tokens)
     full["group"] = full["Group"]
     full["base_id"] = full["Group"] + full["Number"].astype(str)  # ID 已是完整鍵
-    p_ids, hc_ids = match_cohort(*tokens, priority=priority_groups, level="subject")
+    p_ids, hc_ids = match_by_age(*tokens, priority=priority_groups, level="subject")
     matched = full[full["ID"].isin(set(p_ids) | set(hc_ids))].copy()
-    pv_ids, hv_ids = match_cohort(*tokens, priority=priority_groups, level="visit")
+    pv_ids, hv_ids = match_by_age(*tokens, priority=priority_groups, level="visit")
     matched_visit = full[full["ID"].isin(set(pv_ids) | set(hv_ids))].copy()
 
     n_pairs = len(p_ids)
