@@ -46,7 +46,8 @@ from src.config import (
     VALID_COHORT_CHOICES,
     cohort_path,
 )
-from src.age.error_table import load_age_error_table, matched_ad_vs_hc
+from src.age.error_table import load_age_error_table
+from src.common.matching import match_cohort
 
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s - %(levelname)s - %(message)s")
@@ -237,7 +238,11 @@ def main():
     logger.info(f"stat-dir    = {stat_dir}")
 
     full = load_age_error_table(args.cohort_mode)
-    matched = matched_ad_vs_hc(full)
+    roster = full[["ID", "group", "MMSE"]].copy()
+    roster["Age"] = full["real_age"]
+    ml = match_cohort(roster)
+    ids = set(ml.case["ID"]) | set(ml.control["ID"])
+    matched = full[full["ID"].isin(ids)].reset_index(drop=True)
     logger.info(f"full={len(full)} ({full['group'].value_counts().to_dict()}), "
                 f"1by1matched={len(matched)} "
                 f"({matched['group'].value_counts().to_dict()})")

@@ -35,11 +35,8 @@ from src.config import (
     VALID_COHORT_CHOICES,
     cohort_path,
 )
-from src.age.error_table import (
-    load_age_error_table,
-    matched_ad_vs_hc,
-    matched_by_score,
-)
+from src.age.error_table import load_age_error_table
+from src.common.matching import match_cohort, match_by_score
 
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s - %(levelname)s - %(message)s")
@@ -99,8 +96,12 @@ def run_hc_comparison(df_all, comparison, output_dir, caliper=1.0):
                     f"Age prediction error: {label} vs AD (full)",
                     output_dir / "full" / comparison / "violin.png")
 
-    # 1:1 age-matched (canonical)
-    msub = matched_ad_vs_hc(df_all, controls=controls, caliper=caliper)
+    # 1:1 age-matched (canonical match_cohort)
+    roster = df_all[["ID", "group", "MMSE"]].copy()
+    roster["Age"] = df_all["real_age"]
+    ml = match_cohort(roster, controls=controls, caliper=caliper)
+    ids = set(ml.case["ID"]) | set(ml.control["ID"])
+    msub = df_all[df_all["ID"].isin(ids)].reset_index(drop=True)
     m_hc = msub[msub["group"] != "P"]
     m_ad = msub[msub["group"] == "P"]
     if not m_hc.empty and not m_ad.empty:
@@ -137,7 +138,11 @@ def run_hilo_comparison(df_all, metric, output_dir, caliper=1.0):
                 output_dir / "full" / comparison / f"{grp_label}_violin.png")
 
         # 1:1 age-matched (canonical match_by_score; same median split)
-        msub = matched_by_score(df_valid, metric, cut="median", caliper=caliper)
+        roster = df_valid[["ID", metric]].copy()
+        roster["Age"] = df_valid["real_age"]
+        ml = match_by_score(roster, metric, cut="median", caliper=caliper)
+        ids = set(ml.case["ID"]) | set(ml.control["ID"])
+        msub = df_valid[df_valid["ID"].isin(ids)].reset_index(drop=True)
         if not msub.empty:
             sm = pd.to_numeric(msub[metric], errors="coerce")
             hi = msub[sm >= median_val]["age_error"].values
