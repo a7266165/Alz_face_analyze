@@ -7,7 +7,8 @@ gold-standard filtering ``histogram.py`` uses — so the CDR/MMSE/visit filters
 actually applied match the output directory's cohort name. Errors are computed
 directly from the raw MiVOLO predictions.
 
-Outputs (to <AGE_ANALYSIS_DIR>/<visit_dir>/<cdr_mmse_dir>/stat/):
+Outputs (under <AGE_ANALYSIS_DIR>/<visit_dir>/<cdr_mmse_dir>/stat/{full,1by1matched}/
+— full cohort and the AD-vs-HC 1:1 age-matched subset):
   age_error_stat_2.csv          — age-stratified stats per group
   age_error_sliding_window.csv  — 10-year sliding window stats
   patient_cdr_age_error.csv     — Patient CDR-stratified stats
@@ -45,7 +46,7 @@ from src.config import (
     VALID_COHORT_CHOICES,
     cohort_path,
 )
-from src.age.error_table import load_age_error_table
+from src.age.error_table import load_age_error_table, matched_ad_vs_hc
 
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s - %(levelname)s - %(message)s")
@@ -53,16 +54,14 @@ logger = logging.getLogger(__name__)
 
 # ── data loading ─────────────────────────────────────────────────────────────
 
-def build_matched(cohort_mode: str) -> pd.DataFrame:
-    """Canonical cohort × predicted ages → per-row error table.
+def _prep(df: pd.DataFrame) -> pd.DataFrame:
+    """error 表 → stat 用精簡表（age_error 改回 error 供既有 write_* 沿用）。
 
-    The cohort × predictions join + error column is delegated to the shared
-    ``src.age.error_table.load_age_error_table`` (cohort_mode given → filtered,
-    matching ``histogram.py`` exactly).
+    吃已載入的 error 表（完整 cohort 或 1by1matched 子集皆可）。
     """
-    df = load_age_error_table(cohort_mode).rename(columns={"age_error": "error"})
-    return df[["ID", "real_age", "predicted_age", "group", "error",
-               "MMSE", "CASI", "Global_CDR"]]
+    return df.rename(columns={"age_error": "error"})[
+        ["ID", "real_age", "predicted_age", "group", "error",
+         "MMSE", "CASI", "Global_CDR"]]
 
 # ── constants ────────────────────────────────────────────────────────────────
 
@@ -233,22 +232,27 @@ def main():
 
     stat_dir = args.stat_dir or (
         AGE_ANALYSIS_DIR / cohort_path(args.cohort_mode) / "stat")
-    stat_dir.mkdir(parents=True, exist_ok=True)
 
     logger.info(f"cohort-mode = {args.cohort_mode}")
     logger.info(f"stat-dir    = {stat_dir}")
 
-    df_matched = build_matched(args.cohort_mode)
-    logger.info(f"matched={len(df_matched)} "
-                f"({df_matched['group'].value_counts().to_dict()})")
+    full = load_age_error_table(args.cohort_mode)
+    matched = matched_ad_vs_hc(full)
+    logger.info(f"full={len(full)} ({full['group'].value_counts().to_dict()}), "
+                f"1by1matched={len(matched)} "
+                f"({matched['group'].value_counts().to_dict()})")
 
-    write_age_error_stat(df_matched, stat_dir)
-    write_sliding_window(df_matched, stat_dir)
-    write_patient_cdr(df_matched, stat_dir)
-    write_patient_score(df_matched, "MMSE", MMSE_BINS, stat_dir)
-    write_patient_score(df_matched, "CASI", CASI_BINS, stat_dir)
-    write_patient_corr(df_matched, "MMSE", stat_dir)
-    write_patient_corr(df_matched, "CASI", stat_dir)
+    for sub_name, sub_df in [("full", full), ("1by1matched", matched)]:
+        df = _prep(sub_df)
+        sd = stat_dir / sub_name
+        sd.mkdir(parents=True, exist_ok=True)
+        write_age_error_stat(df, sd)
+        write_sliding_window(df, sd)
+        write_patient_cdr(df, sd)
+        write_patient_score(df, "MMSE", MMSE_BINS, sd)
+        write_patient_score(df, "CASI", CASI_BINS, sd)
+        write_patient_corr(df, "MMSE", sd)
+        write_patient_corr(df, "CASI", sd)
 
 
 if __name__ == "__main__":

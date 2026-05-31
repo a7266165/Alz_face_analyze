@@ -8,9 +8,10 @@ gold-standard filtering ``histogram.py`` uses — so the CDR/MMSE/visit filters
 actually applied match the output directory's cohort name. Residuals are computed
 directly from the raw MiVOLO predictions (no age-calibration involved).
 
-Outputs (under <AGE_ANALYSIS_DIR>/<visit_dir>/<cdr_mmse_dir>/lines/):
-  no_sliding_window/lines_internal.png       — residual by integer age (mean ± std)
-  sliding_window_10/lines_internal_sw10.png  — residual by 10-y sliding window
+Outputs (under <AGE_ANALYSIS_DIR>/<visit_dir>/<cdr_mmse_dir>/lines/), for both the
+full cohort and the AD-vs-HC 1:1 age-matched subset:
+  {full,1by1matched}/no_sliding_window/lines_internal.png       — residual by integer age (mean ± std)
+  {full,1by1matched}/sliding_window_10/lines_internal_sw10.png  — residual by 10-y sliding window
 
 Usage:
   conda run -n Alz_face_main_analysis python scripts/age/error/lines.py
@@ -38,7 +39,7 @@ from src.config import (
     VALID_COHORT_CHOICES,
     cohort_path,
 )
-from src.age.error_table import load_age_error_table
+from src.age.error_table import load_age_error_table, matched_ad_vs_hc
 
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s - %(levelname)s - %(message)s")
@@ -53,14 +54,13 @@ GROUPS = ["ACS", "NAD", "P"]
 
 # ── data loading ─────────────────────────────────────────────────────────────
 
-def build_internal(cohort_mode: str) -> pd.DataFrame:
-    """ACS/NAD/P residual = real − predicted, on the canonical cohort.
+def build_internal(df: pd.DataFrame) -> pd.DataFrame:
+    """把 error 表精簡成繪圖用欄位（ACS/NAD/P residual = real − predicted）。
 
-    The cohort × predictions join is delegated to the shared
-    ``src.age.error_table.load_age_error_table``; the residual is kept under the
-    legacy column name ``error_before`` for the plot helpers below.
+    殘差沿用 legacy 欄名 ``error_before`` 供下方 plot helper 使用。吃已載入的
+    error 表（完整 cohort 或 1by1matched 子集皆可）。
     """
-    df = load_age_error_table(cohort_mode)
+    df = df.copy()
     df["error_before"] = df["age_error"]
     return df[["group", "real_age", "predicted_age", "error_before", "age_int"]]
 
@@ -154,27 +154,31 @@ def main():
 
     output_dir = args.output_dir or (
         AGE_ANALYSIS_DIR / cohort_path(args.cohort_mode) / "lines")
-    dir_py = output_dir / "no_sliding_window"
-    dir_sw = output_dir / "sliding_window_10"
 
     logger.info(f"cohort-mode = {args.cohort_mode}")
     logger.info(f"output-dir  = {output_dir}")
 
-    df_int = build_internal(args.cohort_mode)
-    logger.info(f"internal rows: {len(df_int)} "
-                f"({df_int['group'].value_counts().to_dict()})")
+    full = load_age_error_table(args.cohort_mode)
+    matched = matched_ad_vs_hc(full)
+    logger.info(f"full={len(full)} ({full['group'].value_counts().to_dict()}), "
+                f"1by1matched={len(matched)} "
+                f"({matched['group'].value_counts().to_dict()})")
 
     ylabel = "Prediction Residual (real − predicted)"
     title_state = "Residual = real − predicted"
 
-    plot_combined(
-        df_int, dir_py / "lines_internal.png", groups=GROUPS,
-        title=f"{title_state} by True Age — ACS / NAD / P (mean ± std)",
-        ylabel=ylabel, y_col="error_before")
-    plot_sliding_window(
-        df_int, dir_sw / "lines_internal_sw10.png", groups=GROUPS,
-        title=f"{title_state} by True Age — ACS / NAD / P (10-y sliding window)",
-        ylabel=ylabel, y_col="error_before")
+    for sub_name, sub_df in [("full", full), ("1by1matched", matched)]:
+        df_int = build_internal(sub_df)
+        base = output_dir / sub_name
+        suffix = "" if sub_name == "full" else " — age-matched 1:1"
+        plot_combined(
+            df_int, base / "no_sliding_window" / "lines_internal.png", groups=GROUPS,
+            title=f"{title_state} by True Age — ACS / NAD / P (mean ± std){suffix}",
+            ylabel=ylabel, y_col="error_before")
+        plot_sliding_window(
+            df_int, base / "sliding_window_10" / "lines_internal_sw10.png", groups=GROUPS,
+            title=f"{title_state} by True Age — ACS / NAD / P (10-y sliding window){suffix}",
+            ylabel=ylabel, y_col="error_before")
 
 
 if __name__ == "__main__":

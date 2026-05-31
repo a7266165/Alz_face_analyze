@@ -1,18 +1,19 @@
 """
 scripts/age/error/violin.py
-Age prediction error violin plots — 1:1 age-matched and unmatched comparisons.
+Age prediction error violin plots — full cohort and 1:1 age-matched comparisons.
 
-Comparisons:
-  AD vs HC/NAD/ACS         — age-matched 1:1 + unmatched
-  MMSE/CASI high vs low    — within AD, age-matched 1:1 + unmatched
+Cohort is built with the canonical ``src.common.cohort.cohort_list`` (same
+gold-standard filtering as histogram / stat / lines). Comparisons:
+  AD vs HC / NAD / ACS      — group matching      (canonical match_cohort)
+  MMSE / CASI high vs low   — score-median match  (canonical match_by_score)
 
-Output:
-  violin/1by1match/{comparison}/matched_violin.png
-  violin/all/{comparison}/unmatched_violin.png
+Each comparison outputs both the full cohort and the 1:1 age-matched subset:
+  violin/full/{comparison}/...
+  violin/1by1matched/{comparison}/...
 
 Usage:
-  conda run -n Alz_face_age python scripts/age/error/violin.py
-  conda run -n Alz_face_age python scripts/age/error/violin.py --comparison ad_vs_hc
+  conda run -n Alz_face_main_analysis python scripts/age/error/violin.py
+  conda run -n Alz_face_main_analysis python scripts/age/error/violin.py --comparison ad_vs_hc
 """
 
 import argparse
@@ -23,14 +24,22 @@ from pathlib import Path
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))  # scripts/
 from _paths import PROJECT_ROOT  # noqa: F401
 
-from src.config import AGE_VIOLIN_DIR
-from src.age.error_table import load_age_error_table
+from src.config import (
+    AGE_ANALYSIS_DIR,
+    DEFAULT_COHORT_MODE,
+    VALID_COHORT_CHOICES,
+    cohort_path,
+)
+from src.age.error_table import (
+    load_age_error_table,
+    matched_ad_vs_hc,
+    matched_by_score,
+)
 
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s - %(levelname)s - %(message)s")
@@ -38,32 +47,6 @@ logger = logging.getLogger(__name__)
 
 HC_COMPARISONS = ["ad_vs_hc", "ad_vs_nad", "ad_vs_acs"]
 HILO_COMPARISONS = ["mmse_high_vs_low", "casi_high_vs_low"]
-
-# ── data loading ─────────────────────────────────────────────────────────────
-
-def load_all_with_error():
-    # age_error 表（不篩 cohort，取完整 demographics）由共用 loader 提供，
-    # 欄位已直接叫 age_error，violin 下游照用。
-    return load_age_error_table()
-
-# ── matching ─────────────────────────────────────────────────────────────────
-
-def match_1to1_by_age(df_minor, df_major, caliper=5.0):
-    """1:1 nearest-age matching without replacement."""
-    minor = df_minor.sample(frac=1, random_state=42).reset_index(drop=True)
-    major_pool = df_major.copy().reset_index(drop=True)
-    used = set()
-    pairs = []
-    for _, row_m in minor.iterrows():
-        dists = (major_pool["Age"] - row_m["Age"]).abs()
-        dists.loc[list(used)] = np.inf
-        idx = dists.idxmin()
-        if dists[idx] <= caliper:
-            used.add(idx)
-            pairs.append((row_m["ID"], major_pool.loc[idx, "ID"]))
-    matched_ids = {p[0] for p in pairs} | {p[1] for p in pairs}
-    return df_minor[df_minor["ID"].isin(matched_ids)].copy(), \
-           df_major[df_major["ID"].isin(matched_ids)].copy()
 
 # ── violin drawing ───────────────────────────────────────────────────────────
 
@@ -82,8 +65,7 @@ def _draw_violin(ax, left_vals, right_vals, left_label, right_label,
     ax.axhline(0, color="gray", linestyle="--", linewidth=0.8)
 
 
-def save_violin(left_vals, right_vals, left_label, right_label,
-                title, out_path):
+def save_violin(left_vals, right_vals, left_label, right_label, title, out_path):
     fig, ax = plt.subplots(figsize=(5, 5))
     _draw_violin(ax, left_vals, right_vals, left_label, right_label, title)
     fig.tight_layout()
@@ -94,36 +76,46 @@ def save_violin(left_vals, right_vals, left_label, right_label,
 
 # ── comparison runners ───────────────────────────────────────────────────────
 
-def run_hc_comparison(df_all, comparison, output_dir, caliper=5.0):
-    """AD vs {HC, NAD, ACS} violin."""
-    cmp_map = {
-        "ad_vs_hc": (["NAD", "ACS"], "HC"),
-        "ad_vs_nad": (["NAD"], "NAD"),
-        "ad_vs_acs": (["ACS"], "ACS"),
-    }
-    groups, label = cmp_map[comparison]
-    df_hc = df_all[df_all["group"].isin(groups)]
-    df_ad = df_all[df_all["group"] == "P"]
+def run_hc_comparison(df_all, comparison, output_dir, caliper=1.0):
+    """AD vs {HC, NAD, ACS} violin — full cohort + 1:1 age-matched (match_cohort).
 
-    # unmatched
+    ``controls`` 餵給 canonical match_cohort：None → 全部非 P（NAD+ACS）；指定
+    組則只取該組當對照。
+    """
+    cmp_map = {
+        "ad_vs_hc": (None, ["NAD", "ACS"], "HC"),
+        "ad_vs_nad": (["NAD"], ["NAD"], "NAD"),
+        "ad_vs_acs": (["ACS"], ["ACS"], "ACS"),
+    }
+    controls, hc_groups, label = cmp_map[comparison]
+
+    # full (unmatched)
+    df_hc = df_all[df_all["group"].isin(hc_groups)]
+    df_ad = df_all[df_all["group"] == "P"]
     hc_err = df_hc["age_error"].dropna().values
     ad_err = df_ad["age_error"].dropna().values
     if len(hc_err) > 0 and len(ad_err) > 0:
         save_violin(hc_err, ad_err, label, "AD",
-                    f"Age prediction error: {label} vs AD (all)",
-                    output_dir / "all" / comparison / "unmatched_violin.png")
+                    f"Age prediction error: {label} vs AD (full)",
+                    output_dir / "full" / comparison / "violin.png")
 
-    # 1:1 matched
-    hc_m, ad_m = match_1to1_by_age(df_hc, df_ad, caliper=caliper)
-    if not hc_m.empty and not ad_m.empty:
-        save_violin(hc_m["age_error"].values, ad_m["age_error"].values,
-                    label, "AD",
-                    f"Age prediction error: {label} vs AD\n(age-matched 1:1, caliper={caliper}y)",
-                    output_dir / "1by1match" / comparison / "matched_violin.png")
+    # 1:1 age-matched (canonical)
+    msub = matched_ad_vs_hc(df_all, controls=controls, caliper=caliper)
+    m_hc = msub[msub["group"] != "P"]
+    m_ad = msub[msub["group"] == "P"]
+    if not m_hc.empty and not m_ad.empty:
+        save_violin(m_hc["age_error"].values, m_ad["age_error"].values, label, "AD",
+                    f"Age prediction error: {label} vs AD\n"
+                    f"(age-matched 1:1, caliper={caliper}y)",
+                    output_dir / "1by1matched" / comparison / "violin.png")
 
 
-def run_hilo_comparison(df_all, metric, output_dir, caliper=5.0):
-    """MMSE/CASI high vs low within AD (and NAD)."""
+def run_hilo_comparison(df_all, metric, output_dir, caliper=1.0):
+    """MMSE/CASI high vs low within AD (and NAD) — full + 1:1 age-matched.
+
+    1:1 matched 子集委派給 canonical match_by_score（在該組內以中位數切 high/low
+    再做年齡配對）；繪圖時以同一中位數把被選中的列分回兩臂。
+    """
     comparison = f"{metric.lower()}_high_vs_low"
 
     for grp, grp_label in [("P", "ad"), ("NAD", "nad")]:
@@ -136,49 +128,61 @@ def run_hilo_comparison(df_all, metric, output_dir, caliper=5.0):
         df_high = df_valid[df_valid[metric] >= median_val]
         df_low = df_valid[df_valid[metric] < median_val]
 
-        # unmatched
+        # full (unmatched)
         if not df_high.empty and not df_low.empty:
             save_violin(
                 df_high["age_error"].values, df_low["age_error"].values,
                 f"High {metric}", f"Low {metric}",
-                f"Age error by {metric} ({grp_label.upper()}, all)\nmedian={median_val:.0f}",
-                output_dir / "all" / comparison / f"{grp_label}_unmatched_violin.png")
+                f"Age error by {metric} ({grp_label.upper()}, full)\nmedian={median_val:.0f}",
+                output_dir / "full" / comparison / f"{grp_label}_violin.png")
 
-        # 1:1 matched
-        hi_m, lo_m = match_1to1_by_age(df_high, df_low, caliper=caliper)
-        if not hi_m.empty and not lo_m.empty:
-            save_violin(
-                hi_m["age_error"].values, lo_m["age_error"].values,
-                f"High {metric}", f"Low {metric}",
-                f"Age error by {metric} ({grp_label.upper()})\n(age-matched 1:1, caliper={caliper}y)",
-                output_dir / "1by1match" / comparison / f"{grp_label}_matched_violin.png")
+        # 1:1 age-matched (canonical match_by_score; same median split)
+        msub = matched_by_score(df_valid, metric, cut="median", caliper=caliper)
+        if not msub.empty:
+            sm = pd.to_numeric(msub[metric], errors="coerce")
+            hi = msub[sm >= median_val]["age_error"].values
+            lo = msub[sm < median_val]["age_error"].values
+            if len(hi) > 0 and len(lo) > 0:
+                save_violin(
+                    hi, lo, f"High {metric}", f"Low {metric}",
+                    f"Age error by {metric} ({grp_label.upper()})\n"
+                    f"(age-matched 1:1, caliper={caliper}y, median={median_val:.0f})",
+                    output_dir / "1by1matched" / comparison / f"{grp_label}_violin.png")
 
 # ── main ─────────────────────────────────────────────────────────────────────
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--output-dir", type=Path, default=AGE_VIOLIN_DIR)
+    ap.add_argument("--cohort-mode", default=DEFAULT_COHORT_MODE,
+                    choices=VALID_COHORT_CHOICES,
+                    help=f"canonical cohort name (預設: {DEFAULT_COHORT_MODE})")
+    ap.add_argument("--output-dir", type=Path, default=None,
+                    help="覆寫輸出目錄；留空依 cohort-mode 自動決定")
     ap.add_argument("--comparison", default=None,
                     choices=HC_COMPARISONS + HILO_COMPARISONS,
                     help="Run only one comparison; default runs all")
-    ap.add_argument("--caliper", type=float, default=5.0)
+    ap.add_argument("--caliper", type=float, default=1.0)
     args = ap.parse_args()
 
-    df_all = load_all_with_error()
-    logger.info(f"loaded {len(df_all)} rows (ACS={int((df_all['group']=='ACS').sum())}, "
-                f"NAD={int((df_all['group']=='NAD').sum())}, P={int((df_all['group']=='P').sum())})")
+    output_dir = args.output_dir or (
+        AGE_ANALYSIS_DIR / cohort_path(args.cohort_mode) / "violin")
+    logger.info(f"cohort-mode = {args.cohort_mode}")
+    logger.info(f"output-dir  = {output_dir}")
+
+    df_all = load_age_error_table(args.cohort_mode)
+    logger.info(f"loaded {len(df_all)} rows "
+                f"({df_all['group'].value_counts().to_dict()})")
 
     targets = [args.comparison] if args.comparison else HC_COMPARISONS + HILO_COMPARISONS
-
     for cmp in targets:
         logger.info(f"--- {cmp} ---")
         if cmp in HC_COMPARISONS:
-            run_hc_comparison(df_all, cmp, args.output_dir, caliper=args.caliper)
+            run_hc_comparison(df_all, cmp, output_dir, caliper=args.caliper)
         elif cmp == "mmse_high_vs_low":
-            run_hilo_comparison(df_all, "MMSE", args.output_dir, caliper=args.caliper)
+            run_hilo_comparison(df_all, "MMSE", output_dir, caliper=args.caliper)
         elif cmp == "casi_high_vs_low":
-            run_hilo_comparison(df_all, "CASI", args.output_dir, caliper=args.caliper)
+            run_hilo_comparison(df_all, "CASI", output_dir, caliper=args.caliper)
 
 
 if __name__ == "__main__":

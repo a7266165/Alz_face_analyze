@@ -2,11 +2,18 @@
 scripts/age/error/scatter.py
 Age prediction scatter plots (internal ACS / NAD / P).
 
-Outputs (to scatter/ directory):
-  predicted_ages_scatter.png   — HC (NAD+ACS) vs P
+Cohort is built with the canonical ``src.common.cohort.cohort_list`` (same
+gold-standard filtering as histogram / stat / lines); both the full cohort and
+the AD-vs-HC 1:1 age-matched subset are plotted.
+
+Outputs (under <AGE_ANALYSIS_DIR>/<visit_dir>/<cdr_mmse_dir>/scatter/):
+  full/predicted_ages_scatter.png         — HC (NAD+ACS) vs P, full cohort
+  1by1matched/predicted_ages_scatter.png  — HC vs P, age-matched 1:1 subset
 
 Usage:
-  conda run -n Alz_face_age python scripts/age/error/scatter.py
+  conda run -n Alz_face_main_analysis python scripts/age/error/scatter.py
+  conda run -n Alz_face_main_analysis python scripts/age/error/scatter.py \
+      --cohort-mode p_all_cdrall_hc_all_cdrall_or_mmseall
 """
 
 import argparse
@@ -22,8 +29,13 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))  # scripts/
 from _paths import PROJECT_ROOT  # noqa: F401
 
-from src.config import AGE_SCATTER_DIR
-from src.age.error_table import load_age_error_table
+from src.config import (
+    AGE_ANALYSIS_DIR,
+    DEFAULT_COHORT_MODE,
+    VALID_COHORT_CHOICES,
+    cohort_path,
+)
+from src.age.error_table import load_age_error_table, matched_ad_vs_hc
 
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s - %(levelname)s - %(message)s")
@@ -72,14 +84,14 @@ def _draw_panel(ax, df, title, colors, labels):
 
 # ── scatter plots ────────────────────────────────────────────────────────────
 
-def plot_main_scatter(df_matched, scatter_dir):
-    df_hc = df_matched[df_matched["group"].isin(["ACS", "NAD"])]
-    df_p = df_matched[df_matched["group"] == "P"]
+def plot_main_scatter(df, scatter_dir, note=""):
+    df_hc = df[df["group"].isin(["ACS", "NAD"])]
+    df_p = df[df["group"] == "P"]
     fig, (ax_l, ax_r) = plt.subplots(1, 2, figsize=(16, 8))
-    _draw_panel(ax_l, df_hc, "Healthy Controls (NAD + ACS)",
+    _draw_panel(ax_l, df_hc, f"Healthy Controls (NAD + ACS){note}",
                 {"NAD": "#2196F3", "ACS": "#4CAF50"},
                 {"NAD": "NAD", "ACS": "ACS"})
-    _draw_panel(ax_r, df_p, "Patients (P)",
+    _draw_panel(ax_r, df_p, f"Patients (P){note}",
                 {"P": "#F44336"}, {"P": "Patient"})
     plt.tight_layout()
     out = scatter_dir / "predicted_ages_scatter.png"
@@ -90,19 +102,37 @@ def plot_main_scatter(df_matched, scatter_dir):
 
 # ── main ─────────────────────────────────────────────────────────────────────
 
+_COLS = ["ID", "real_age", "predicted_age", "group", "error"]
+
+
+def _prep(df):
+    return df.rename(columns={"age_error": "error"})[_COLS]
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--scatter-dir", type=Path, default=AGE_SCATTER_DIR)
+    ap.add_argument("--cohort-mode", default=DEFAULT_COHORT_MODE,
+                    choices=VALID_COHORT_CHOICES,
+                    help=f"canonical cohort name (預設: {DEFAULT_COHORT_MODE})")
+    ap.add_argument("--output-dir", type=Path, default=None,
+                    help="覆寫輸出目錄；留空依 cohort-mode 自動決定")
     args = ap.parse_args()
 
-    args.scatter_dir.mkdir(parents=True, exist_ok=True)
+    output_dir = args.output_dir or (
+        AGE_ANALYSIS_DIR / cohort_path(args.cohort_mode) / "scatter")
+    logger.info(f"cohort-mode = {args.cohort_mode}")
+    logger.info(f"output-dir  = {output_dir}")
 
-    df_matched = load_age_error_table().rename(columns={"age_error": "error"})[
-        ["ID", "real_age", "predicted_age", "group", "error"]]
-    logger.info(f"matched={len(df_matched)}")
+    full = load_age_error_table(args.cohort_mode)
+    matched = matched_ad_vs_hc(full)
+    logger.info(f"full={len(full)} ({full['group'].value_counts().to_dict()}), "
+                f"1by1matched={len(matched)} "
+                f"({matched['group'].value_counts().to_dict()})")
 
-    plot_main_scatter(df_matched, args.scatter_dir)
+    plot_main_scatter(_prep(full), output_dir / "full")
+    plot_main_scatter(_prep(matched), output_dir / "1by1matched",
+                      note="\n(age-matched 1:1)")
 
 
 if __name__ == "__main__":
