@@ -20,11 +20,10 @@ def match_by_age(p_visit, p_score, hc_visit, hc_score, *,
     keep_groups / ttest_threshold 為其參數）。
     """
     prep = cohort_list(p_visit, p_score, hc_visit, hc_score).copy()
-    prep["group"] = prep["Group"]                              # 引擎以小寫 group 餵入（priority 分支、1toN merge）
     prep["base_id"] = prep["ID"].str.extract(r"^(.+)-\d+$")[0]  # ID 去 -session 尾，供 subject-level 去重
     if controls is not None:
-        prep = prep[prep["group"].isin(["P", *controls])].copy()
-    prep["label"] = (prep["group"] == "P").astype(int)
+        prep = prep[prep["Group"].isin(["P", *controls])].copy()
+    prep["label"] = (prep["Group"] == "P").astype(int)
     prep["mmse_group"] = np.where(prep["label"] == 1, "high", "low")
     prep["MMSE"] = prep["MMSE"].fillna(999)
     matched, _, _ = _age_match_1_by_1(
@@ -35,7 +34,7 @@ def match_by_age(p_visit, p_score, hc_visit, hc_score, *,
 
     if mode == "1toN":
         out = matched.merge(
-            prep[["ID", "base_id", "group", "Age", "MMSE", "Global_CDR",
+            prep[["ID", "base_id", "Group", "Age", "MMSE", "Global_CDR",
                   "label"]].drop_duplicates("ID"),
             on="ID", how="left", suffixes=("", "_p"),
         )
@@ -70,7 +69,7 @@ def match_by_score(p_visit, p_score, hc_visit, hc_score,
     """
     prep = cohort_list(p_visit, p_score, hc_visit, hc_score).copy()
     prep["base_id"] = prep["ID"].str.extract(r"^(.+)-\d+$")[0]  # ID 去 -session 尾，供 subject-level 去重
-    prep = prep[prep["Group"] == within].copy()                # 此入口不傳 priority，直接用大寫 Group 篩
+    prep = prep[prep["Group"] == within].copy()                # 篩到 within 指定的組別
     s = pd.to_numeric(prep[questionnaire], errors="coerce")
     prep = prep[s.notna()].copy()
     s = pd.to_numeric(prep[questionnaire], errors="coerce")
@@ -153,18 +152,18 @@ def _age_match_1_by_1(cohort, caliper=2.0, metric="MMSE", group_col=None,
                 rec[f"major_{metric_low}"] = ma_row[metric]
             pairs_records.append(rec)
 
-    if priority_groups and "group" in cohort.columns:
+    if priority_groups and "Group" in cohort.columns:
         prio = priority_groups[0]
-        grp_on_minor = prio in minor_subj["group"].unique()
+        grp_on_minor = prio in minor_subj["Group"].unique()
         if grp_on_minor:
             mi_prio = minor_subj[
-                minor_subj["group"] == prio
+                minor_subj["Group"] == prio
             ].reset_index(drop=True)
             ma_prio = major_subj.reset_index(drop=True)
         else:
             mi_prio = minor_subj.reset_index(drop=True)
             ma_prio = major_subj[
-                major_subj["group"] == prio
+                major_subj["Group"] == prio
             ].reset_index(drop=True)
         assignments = _optimal_assign(mi_prio, ma_prio)
         _record_pairs(mi_prio, ma_prio, assignments)
@@ -215,13 +214,13 @@ def _age_match_1_by_n(full_cohort, matched_cohort,
     """
     from scipy import stats as _st
 
-    cols = ["base_id", "Age", "label", "group"]
+    cols = ["base_id", "Age", "label", "Group"]
     mc = matched_cohort.drop_duplicates("base_id")
 
     # --- HC side (fixed) ---
     if keep_groups is not None:
         hc_groups = set(keep_groups) - {"P"}
-        hc_subj = mc[mc["group"].isin(hc_groups)][cols].copy()
+        hc_subj = mc[mc["Group"].isin(hc_groups)][cols].copy()
     else:
         hc_subj = mc[mc["label"] == 0][cols].copy()
 
@@ -229,7 +228,7 @@ def _age_match_1_by_n(full_cohort, matched_cohort,
     matched_p_bids = set(mc[mc["label"] == 1]["base_id"])
     if keep_groups is not None:
         hc_pair_ids = set(
-            matched_cohort[matched_cohort["group"].isin(hc_groups)]["pair_id"])
+            matched_cohort[matched_cohort["Group"].isin(hc_groups)]["pair_id"])
         matched_p_in_scope = set(
             matched_cohort[
                 (matched_cohort["pair_id"].isin(hc_pair_ids))
