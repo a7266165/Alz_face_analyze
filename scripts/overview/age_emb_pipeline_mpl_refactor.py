@@ -231,6 +231,18 @@ def build():
     for hx2 in hsx:
         line(ax, hx2, cy_hs + NODE_H / 2, CX_S, cy_fc - NODE_H / 2)
 
+    # ════ Demographic → Cohort cluster FRAME ════
+    # Group/Number/Photo_Session/MMSE/Global_CDR feed cohort construction; the
+    # cohort has no single target block, so connect to its top frame
+    # (intentionally block→frame, unlike the rest — kept simple for now).
+    coh_left = CX_S - c1_w / 2
+    coh_right = CX_S + c1_w / 2
+    for cx, cyy in [(above_x[0], dy_above), (above_x[1], dy_above),
+                    (above_x[2], dy_above), (below_x[2], dy_below),
+                    (below_x[4], dy_below)]:
+        tx = min(max(cx, coh_left + 0.3), coh_right - 0.3)
+        line(ax, cx, cyy, tx, coh_top)
+
     # ════ Preprocessing (LIT) ════
     _cl(ax, CX_S, (c_pre_top + c_pre_bot) / 2,
         pre_cluster_w, c_pre_bot - c_pre_top, C_PRE['bg'])
@@ -265,11 +277,12 @@ def build():
     # Embedding Models — REMOVED (sole consumer Asymmetry is gone;
     # mirrored_face now feeds nothing).
 
-    # ════ Age branch (Part A): face x10 → models → Predict Age x10 → mean x1 ════
+    # ════ Age branch: ONE big cluster around models → Predict Age x10 → mean x1 ════
+    # (age_error is kept as its OWN separate cluster, below.)
     pred_cw = TOTAL_AM + 0.9
     am_top = y_emb - age_h / 2 - SP
-    am_bot = y_emb + age_h / 2 + SP
-    _cl(ax, X_AGE, y_emb, pred_cw, am_bot - am_top, C_AGE['bg'], on=True)
+    _cl(ax, X_AGE, (am_top + c_pa_bot) / 2, pred_cw, c_pa_bot - am_top,
+        C_AGE['bg'], on=True)
     for x, lab in zip(amx, AGE_MODELS):
         _n(ax, x, y_emb, NW_AM, age_h, lab, C_AGE['nd'], on=True)
     for x in amx:
@@ -277,22 +290,48 @@ def build():
     for x in amx:
         line(ax, X_AGE, y_ext + eacs_h / 2, x, y_emb - age_h / 2)
 
-    _cl(ax, X_AGE, y_ft, age_w + 0.6, NODE_H + 2 * SP, C_AGE['bg'], on=True)
     _n(ax, X_AGE, y_ft, age_w, age_h, "Predict Age x 10", C_AGE['nd'], on=True)
     for x in amx:
         line(ax, x, y_emb + age_h / 2, X_AGE, y_ft - age_h / 2)
 
-    _cl(ax, X_AGE, y_pa, age_w + 0.6, NODE_H + 2 * SP, C_AGE['bg'], on=True)
     _n(ax, X_AGE, y_pa, age_w, age_h, "Predict Age mean x 1", C_AGE['nd'], on=True)
     line(ax, X_AGE, y_ft + age_h / 2, X_AGE, y_pa - age_h / 2)
 
     ae_node_w = 5.5
-    _cl(ax, X_AGE, y_pd, ae_node_w + 0.9, NODE_H + 2 * SP, C_AGE['bg'], on=True)
     _n(ax, X_AGE, y_pd, ae_node_w, age_h,
-       "age_error = real_age - predicted_age", C_AGE['nd'], on=True)
+       "age_error = real_age - predicted_age", C_AOUT['nd'], on=True)
     line(ax, X_AGE, y_pa + age_h / 2, X_AGE, y_pd - age_h / 2)
     # real_age feed: demographic 'Age' column → age_error (right edge)
     line(ax, below_x[0], dy_below + NODE_H / 2, X_AGE + ae_node_w / 2, y_pd)
+
+    # ════ age_error + violin / lines / scatter — ONE shared cluster (C_AOUT, lit) ════
+    # age_error is the source (orange node); real age also feeds the three plots.
+    nw_vls = 2.6; gap_vls = 0.5
+    total_vls = 3 * nw_vls + 2 * gap_vls
+    vls_top = c_pd_bot + SP
+    y_vls = vls_top + SP + NODE_H / 2
+    vls_bot = y_vls + NODE_H / 2 + SP
+    vls_x = [X_AGE + (i - 1) * (nw_vls + gap_vls) for i in range(3)]
+    ae_merge_top = y_pd - NODE_H / 2 - SP        # extend up to enclose age_error
+    _cl(ax, X_AGE, (ae_merge_top + vls_bot) / 2, total_vls + 0.9,
+        vls_bot - ae_merge_top, C_AOUT['bg'], on=True)
+    for x, lab in zip(vls_x, ['violin', 'lines', 'scatter']):
+        _n(ax, x, y_vls, nw_vls, NODE_H, lab, C_AOUT['nd'], on=True)
+        line(ax, X_AGE, y_pd, x, y_vls)               # age_error → consumer
+        line(ax, below_x[0], dy_below, x, y_vls)      # real age → consumer
+
+    # age → histogram ; age + Sex + BMI → stat. Placed in the gap between the
+    # age-prediction column and the demographic/cohort column.
+    x_mid = ((X_AGE + pred_cw / 2) + (CX_S - (total_dc + 0.9) / 2)) / 2
+    nw_o = 2.4
+    y_stat = dy_block
+    y_hist = dy_below
+    _n(ax, x_mid, y_stat, nw_o, NODE_H, 'stat', C4['nd'], on=True)
+    _n(ax, x_mid, y_hist, nw_o, NODE_H, 'histogram', C4['nd'], on=True)
+    line(ax, below_x[0], dy_below, x_mid, y_hist)     # Age → histogram
+    line(ax, below_x[0], dy_below, x_mid, y_stat)     # Age → stat
+    line(ax, below_x[1], dy_below, x_mid, y_stat)     # BMI → stat
+    line(ax, above_x[3], dy_above, x_mid, y_stat)     # Sex → stat
 
     # (age calibration & age outputs removed)
 
