@@ -1,53 +1,148 @@
-"""1:1 / caliper 年齡配對 — 全專案 case-control 配對的 canonical 實作。
+"""年齡配對 — 全專案 case-control 配對的 canonical 實作。
 
-cohort（src.common.cohort）只負責「人口學族群挑選」，回傳未配對 roster；
-配對屬於下游 eval chain（1by1matched / caliper_group / priority_*），由本模組
-統一負責。embedding / meta / age / stat 等所有 consumer 共用此模組（gold
-standard，已從 src.common.legacy 提升至 src.common）。
+cohort（src.common.cohort）只負責「挑族群」，回傳未配對 roster；配對由本模組
+負責。對外只有兩個主入口，都回 MatchedLists(case, control)：
 
-公開 API：
-    match_cohort_ad_vs_hc — roster → 1:1 年齡配對的 AD-vs-HC（封裝層，caliper 預設 1.0）
-    match_1to1            — scipy 最佳指派 1:1 配對（核心，caliper 預設 2.0）
-    build_caliper_group   — 在 1:1 之上做 1:N 平衡擴充（Welch t-test 守門）
+    match_cohort(table, controls, caliper, *, mode)  — 按 Group 標籤分臂（AD vs HC/NAD/ACS）
+    match_by_score(table, score, cut, caliper)       — 按問卷分數中位數/閾值分臂（MMSE/CASI/CDR）
+
+MatchedLists.case / .control 各是 DataFrame[ID, Age, MMSE, CASI, Global_CDR]：
+    match_cohort   → case = 患者(P) 組,    control = 對照(HC/NAD/ACS) 組
+    match_by_score → case = high 組,        control = low 組
+mode="1to1"（預設）兩組等長、index 對齊（case[i] 配 control[i]）；
+mode="1toN" 做 caliper 平衡擴充（Welch t-test 守門），case(P) 比 control 長。
+
+內部私有引擎 _age_match_1to1（1:1 最佳指派）/ _caliper_group_match（1:N 擴充）
+不對外；所有外部 caller 一律走上面兩個主入口。
 
 scipy import 留在函式內，避免 import 此模組就強制載入 scipy。
 """
+from collections import namedtuple
+
 import numpy as np
 import pandas as pd
 
+__all__ = ["match_cohort", "match_by_score", "MatchedLists"]
 
-def match_cohort_ad_vs_hc(cohort, caliper=1.0, seed=42,
-                          priority_groups=None, match_level="subject"):
-    """從 AD-vs-HC 的未配對 roster 做 1:1 年齡配對，回傳 (matched_cohort, pairs)。
+MatchedLists = namedtuple("MatchedLists", ["case", "control"])
+
+_LIST_COLS = ["ID", "Age", "MMSE", "CASI", "Global_CDR"]
+
+
+def _make_lists(case_ids, control_ids, table):
+    """依 ID 從原 table 取 _LIST_COLS（原值，不含配對時的 MMSE fillna），組 MatchedLists。
+
+    依 case_ids / control_ids 的順序排列 → 1:1 時 index 對齊即 pair 對應。
+    """
+    src = table.drop_duplicates("ID").set_index("ID")
+
+    def take(ids):
+        ids = list(ids)
+        df = pd.DataFrame({"ID": ids})
+        for c in _LIST_COLS[1:]:
+            df[c] = src[c].reindex(ids).to_numpy() if c in src.columns else np.nan
+        return df[_LIST_COLS]
+
+    return MatchedLists(take(case_ids), take(control_ids))
+
+
+# ── 主入口 1：按組別配對 ───────────────────────────────────────────────────────
+
+def match_cohort(table, controls=None, caliper=1.0, *,
+                 priority=None, level="subject",
+                 mode="1to1", keep_groups=None, ttest_threshold=0.05):
+    """AD(P) vs 對照組的年齡配對封裝（組別配對的主入口）。
 
     這是 ``src.common.cohort.cohort_list`` 之後的配對步驟——cohort 只回傳未配對
-    roster（6 欄），配對由此處負責。base_id / group / label 由 ID 以正則拆出
-    （EACS roster 已帶 ``group`` 欄則沿用，因 EACS ID 無法用 regex 拆 group）。
+    roster，配對由此處負責。兩臂依 Group 標籤定義：
+
+        controls=None       → 所有非 P 都當對照（標準 AD-vs-HC）
+        controls=["NAD"] 等 → 只取指定組當對照（P vs NAD / P vs ACS）
+
+    配對比例由 mode 決定（兩者都回 MatchedLists(case=P, control=HC)）：
+        mode="1to1"（預設）→ 1:1 成對，case/control 等長、index 對齊
+        mode="1toN"        → 在 1:1 之上做 caliper 平衡擴充（Welch t-test 守門，
+                             keep_groups / ttest_threshold 為其參數），case(P) 較長
+
+    group / label 由 ID 以正則拆出（roster 已帶 ``group`` 欄則沿用，因 EACS ID
+    無法用 regex 拆 group）。內部把 P 標 high、對照標 low，餵給私有核心
+    _age_match_1to1。
     """
-    prep = cohort.copy()
+    prep = table.copy()
     prep["base_id"] = prep["ID"].str.extract(r"^(.+)-\d+$")[0]
     if "group" not in prep.columns:
         prep["group"] = prep["ID"].str.extract(r"^([A-Za-z]+)\d")[0]
+    if controls is not None:
+        prep = prep[prep["group"].isin(["P", *controls])].copy()
     prep["label"] = (prep["group"] == "P").astype(int)
     prep["mmse_group"] = np.where(prep["label"] == 1, "high", "low")
     prep["MMSE"] = prep["MMSE"].fillna(999)
-    matched, pairs, _ = match_1to1(
-        prep, caliper=caliper, seed=seed, metric="MMSE",
-        group_col="mmse_group", priority_groups=priority_groups,
-        match_level=match_level,
+    matched, _, _ = _age_match_1to1(
+        prep, caliper=caliper, metric="MMSE",
+        group_col="mmse_group", priority_groups=priority,
+        match_level=level,
     )
-    out = matched.merge(
-        prep[["ID", "base_id", "group", "Age", "MMSE", "Global_CDR",
-              "label"]].drop_duplicates("ID"),
-        on="ID", how="left", suffixes=("", "_p"),
-    )
-    out = out.drop(columns=[c for c in out.columns if c.endswith("_p")])
-    return out, pairs
+
+    if mode == "1toN":
+        out = matched.merge(
+            prep[["ID", "base_id", "group", "Age", "MMSE", "Global_CDR",
+                  "label"]].drop_duplicates("ID"),
+            on="ID", how="left", suffixes=("", "_p"),
+        )
+        out = out.drop(columns=[c for c in out.columns if c.endswith("_p")])
+        expanded, _ = _caliper_group_match(
+            prep, out, keep_groups=keep_groups, caliper=caliper,
+            ttest_threshold=ttest_threshold)
+        rep = (prep.sort_values(["base_id", "Age"])
+               .drop_duplicates("base_id")[["base_id", "ID"]])
+        exp = expanded.merge(rep, on="base_id", how="left")
+        case_ids = exp[exp["label"] == 1]["ID"].tolist()
+        control_ids = exp[exp["label"] == 0]["ID"].tolist()
+    else:
+        lab = prep[["ID", "label"]].drop_duplicates("ID")
+        m = matched.merge(lab, on="ID", how="left")
+        case_ids = m[m["label"] == 1].sort_values("pair_id")["ID"].tolist()
+        control_ids = m[m["label"] == 0].sort_values("pair_id")["ID"].tolist()
+
+    return _make_lists(case_ids, control_ids, table)
 
 
-def match_1to1(cohort, caliper=2.0, seed=42, metric="MMSE", group_col=None,
-               match_mode="visit", priority_groups=None, id_col="ID",
-               match_level="subject"):
+# ── 主入口 2：按問卷分數配對 ───────────────────────────────────────────────────
+
+def match_by_score(table, score, cut="median", caliper=1.0, *,
+                   level="subject"):
+    """依問卷分數切 high/low 兩臂，做年齡 1:1 配對，回 MatchedLists(case=high, control=low)。
+
+    score ∈ {MMSE, CASI, Global_CDR …}（任何 table 內的數值欄）。
+        cut="median"   → 以中位數切（high: score>=median, low: score<median）
+        cut=<數值>     → 以該值切（high: score>=cut,    low: score<cut）
+
+    兩臂都來自 table；若只想在某一組內切（例如僅患者 P 內比 high/low），先自行
+    篩好子集再傳入。case/control 兩組各為 DataFrame[ID, Age, MMSE, CASI, Global_CDR]，
+    index 對齊（case[i] 配 control[i]）。
+    """
+    prep = table.copy()
+    if "base_id" not in prep.columns:
+        prep["base_id"] = prep["ID"].str.extract(r"^(.+)-\d+$")[0]
+    s = pd.to_numeric(prep[score], errors="coerce")
+    prep = prep[s.notna()].copy()
+    s = pd.to_numeric(prep[score], errors="coerce")
+    thr = float(s.median()) if cut == "median" else float(cut)
+    prep["score_group"] = np.where(s >= thr, "high", "low")
+    matched, _, _ = _age_match_1to1(
+        prep, caliper=caliper, metric=score,
+        group_col="score_group", match_level=level,
+    )
+    # matched 的 score_group 欄（high/low）由核心輸出，據以分組、按 pair_id 對齊。
+    case_ids = matched[matched["score_group"] == "high"].sort_values("pair_id")["ID"].tolist()
+    control_ids = matched[matched["score_group"] == "low"].sort_values("pair_id")["ID"].tolist()
+    return _make_lists(case_ids, control_ids, table)
+
+
+# ── 核心引擎：年齡 1:1 最佳指派（低階；進階 caller 直接用）──────────────────────
+
+def _age_match_1to1(cohort, caliper=2.0, metric="MMSE", group_col=None,
+                    priority_groups=None, id_col="ID", match_level="subject"):
     """1:1 age-optimal match; cohort must have *group_col* 'high'/'low'.
 
     Uses ``scipy.optimize.linear_sum_assignment`` to maximise the number
@@ -68,7 +163,6 @@ def match_1to1(cohort, caliper=2.0, seed=42, metric="MMSE", group_col=None,
     if group_col is None:
         group_col = f"{metric.lower()}_group"
     metric_low = metric.lower() if metric else None
-    rng = np.random.RandomState(seed)
 
     high = cohort[cohort[group_col] == "high"].copy()
     low = cohort[cohort[group_col] == "low"].copy()
@@ -175,9 +269,11 @@ def match_1to1(cohort, caliper=2.0, seed=42, metric="MMSE", group_col=None,
     return matched, pairs_df, (minor_label, major_label)
 
 
-def build_caliper_group(full_cohort, matched_cohort,
-                        keep_groups=None, caliper=1.0,
-                        ttest_threshold=0.05):
+# ── 1:N caliper 平衡擴充（低階；接在 1:1 之上）─────────────────────────────────
+
+def _caliper_group_match(full_cohort, matched_cohort,
+                         keep_groups=None, caliper=1.0,
+                         ttest_threshold=0.05):
     """1:N balanced matching built on top of a 1:1 matched cohort.
 
     Starting from the 1:1 pairs, round-robin adds P subjects to each HC

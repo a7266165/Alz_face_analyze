@@ -25,7 +25,7 @@ from _paths import PROJECT_ROOT  # noqa: F401
 
 from src.config import cohort_name, cohort_spec_from_name, AGE_ANALYSIS_DIR
 from src.common.cohort import cohort_list
-from src.common.matching import match_cohort_ad_vs_hc
+from src.common.matching import match_cohort
 
 COLORS = {"NAD": "#9ecae1", "ACS": "#6baed6", "P": "#fc9272"}
 BINS = np.arange(35, 110, 2)
@@ -63,12 +63,14 @@ def run(cohort_mode, priority_groups=None):
         "hc_cdr0_or_mmse26" if spec.hc_strict else "hc_cdrall_or_mmseall")
     full["group"] = full["Group"]
     full["base_id"] = full["Group"] + full["Number"].astype(str)  # ID 已是完整鍵
-    matched, pairs = match_cohort_ad_vs_hc(
-        full, priority_groups=priority_groups, match_level="subject")
-    matched_visit, _ = match_cohort_ad_vs_hc(
-        full, priority_groups=priority_groups, match_level="visit")
+    _ml = match_cohort(full, priority=priority_groups, level="subject")
+    matched = full[full["ID"].isin(
+        set(_ml.case["ID"]) | set(_ml.control["ID"]))].copy()
+    _mlv = match_cohort(full, priority=priority_groups, level="visit")
+    matched_visit = full[full["ID"].isin(
+        set(_mlv.case["ID"]) | set(_mlv.control["ID"]))].copy()
 
-    n_pairs = len(pairs) if pairs is not None else 0
+    n_pairs = len(_ml.case)
     priority_tag = ""
     if priority_groups:
         priority_tag = f"_{'_'.join(g.lower() for g in priority_groups)}_first"

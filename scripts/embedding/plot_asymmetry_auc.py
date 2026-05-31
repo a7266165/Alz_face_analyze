@@ -53,7 +53,7 @@ from src.config import (
     cohort_spec_from_name,
 )
 from src.common.cohort import cohort_list
-from src.common.matching import match_cohort_ad_vs_hc
+from src.common.matching import match_cohort
 
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s - %(levelname)s - %(message)s")
@@ -379,11 +379,13 @@ def main():
             for ml in MATCH_LEVELS:
                 ml_arg = MATCH_LEVEL_ARG[ml]
 
-                cohort_matched, _ = match_cohort_ad_vs_hc(
+                _ml = match_cohort(
                     cohort_naive,
-                    match_level=ml_arg,
-                    priority_groups=args.match_priority,
+                    level=ml_arg,
+                    priority=args.match_priority,
                 )
+                cohort_matched = cohort_naive[cohort_naive["ID"].isin(
+                    set(_ml.case["ID"]) | set(_ml.control["ID"]))].copy()
                 cohort_matched = _add_base_id(cohort_matched)
 
                 matched_bids = set(cohort_matched["base_id"].unique())

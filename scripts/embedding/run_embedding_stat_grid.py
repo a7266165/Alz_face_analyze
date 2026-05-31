@@ -41,7 +41,7 @@ from src.config import (
     cohort_spec_from_name,
 )
 from src.common.cohort import cohort_list
-from src.common.matching import match_cohort_ad_vs_hc
+from src.common.matching import match_cohort
 from scripts.utilities.stats_helpers import bh_fdr, permanova, welch_t_test
 
 logging.basicConfig(level=logging.INFO,
@@ -392,8 +392,9 @@ def run_one_combo(output_dir, cohort_mode, hc_source_mode,
     else:
         from src.common.legacy.eacs import cohort_list_with_eacs
         roster = cohort_list_with_eacs(hc_source_mode, *tokens)
-    hc_cohort, _ = match_cohort_ad_vs_hc(
-        roster, match_level=ml_arg, priority_groups=priority_groups)
+    _ml = match_cohort(roster, level=ml_arg, priority=priority_groups)
+    hc_cohort = roster[roster["ID"].isin(
+        set(_ml.case["ID"]) | set(_ml.control["ID"]))].copy()
 
     all_long = []
     for partition in PARTITIONS:

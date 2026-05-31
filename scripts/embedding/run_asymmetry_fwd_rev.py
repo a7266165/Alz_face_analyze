@@ -52,7 +52,7 @@ from src.config import (
     cohort_spec_from_name,
 )
 from src.common.cohort import cohort_list
-from src.common.matching import match_cohort_ad_vs_hc
+from src.common.matching import match_cohort
 from scripts.utilities.stats_helpers import bootstrap_auc_ci
 
 logging.basicConfig(level=logging.INFO,
@@ -444,16 +444,20 @@ def main():
     full_cohort["base_id"] = full_cohort["Group"] + full_cohort["Number"].astype(str)
     full_cohort["label"] = (full_cohort["group"] == "P").astype(int)
 
-    matched_subj, _ = match_cohort_ad_vs_hc(
-        full_cohort, match_level="subject",
-        priority_groups=args.match_priority)
+    _mls = match_cohort(
+        full_cohort, level="subject",
+        priority=args.match_priority)
+    matched_subj = full_cohort[full_cohort["ID"].isin(
+        set(_mls.case["ID"]) | set(_mls.control["ID"]))].copy()
     if "base_id" not in matched_subj.columns:
         matched_subj["base_id"] = (matched_subj["ID"].astype(str)
                                    .str.extract(r"^(.+)-\d+$")[0])
 
-    matched_visit, _ = match_cohort_ad_vs_hc(
-        full_cohort, match_level="visit",
-        priority_groups=args.match_priority)
+    _mlv = match_cohort(
+        full_cohort, level="visit",
+        priority=args.match_priority)
+    matched_visit = full_cohort[full_cohort["ID"].isin(
+        set(_mlv.case["ID"]) | set(_mlv.control["ID"]))].copy()
     if "base_id" not in matched_visit.columns:
         matched_visit["base_id"] = (matched_visit["ID"].astype(str)
                                     .str.extract(r"^(.+)-\d+$")[0])
