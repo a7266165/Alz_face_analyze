@@ -29,7 +29,7 @@ from sklearn.metrics import (
 )
 
 from src.common.cohort import cohort_list
-from src.common.matching import match_1to1, build_caliper_group
+from src.common.matching import match_by_age, match_by_score
 from src.config import cohort_spec_from_name
 
 logger = logging.getLogger(__name__)
@@ -124,6 +124,42 @@ def _write_json(path, data):
         json.dump(data, f, indent=2, ensure_ascii=False, default=str)
 
 
+def _group_of(base_id):
+    """base_id（如 NAD1）→ group（NAD）。"""
+    return base_id.rstrip("0123456789")
+
+
+def _matched_df(case_ids, control_ids):
+    """兩個 1:1 對齊的 ID list → matched DataFrame（ID/base_id/group/pair_id/label）。
+
+    case→label 1（P 或 high）、control→label 0（HC 或 low）；第 i 對共用 pair_id=i。
+    """
+    rows = []
+    for i, (c, k) in enumerate(zip(case_ids, control_ids)):
+        for sid, lab in ((c, 1), (k, 0)):
+            bid = sid.rsplit("-", 1)[0]
+            rows.append({"ID": sid, "base_id": bid, "group": _group_of(bid),
+                         "pair_id": i, "label": lab})
+    return pd.DataFrame(rows)
+
+
+def _age_balance(demo, p_ids, hc_ids, caliper):
+    """重算 caliper 1:N 擴充後的年齡平衡摘要（Welch t-test）。"""
+    amap = demo.drop_duplicates("ID").set_index("ID")["Age"]
+    pa = pd.to_numeric(amap.reindex(p_ids), errors="coerce").dropna().to_numpy(float)
+    ha = pd.to_numeric(amap.reindex(hc_ids), errors="coerce").dropna().to_numpy(float)
+    if len(pa) >= 2 and len(ha) >= 2:
+        t_stat, t_pval = stats.ttest_ind(pa, ha, equal_var=False)
+    else:
+        t_stat, t_pval = float("nan"), float("nan")
+    return {
+        "caliper": caliper, "n_p_total": len(p_ids), "n_hc": len(hc_ids),
+        "p_age_mean": float(pa.mean()) if len(pa) else None,
+        "hc_age_mean": float(ha.mean()) if len(ha) else None,
+        "ttest_t": float(t_stat), "ttest_p": float(t_pval),
+    }
+
+
 # ====================================================================
 # Global matching cache — call once, reuse across all runs
 # ====================================================================
@@ -153,14 +189,14 @@ def build_matching_cache(
         match_strategies = list(MATCH_STRATEGIES)
 
     spec = cohort_spec_from_name(cohort_mode)
-    demo = cohort_list(
-        f"p_{spec.p_visit}", f"p_{spec.p_cdr}", f"hc_{spec.hc_visit}",
-        "hc_cdr0_or_mmse26" if spec.hc_strict else "hc_cdrall_or_mmseall")
+    tokens = (f"p_{spec.p_visit}", f"p_{spec.p_cdr}", f"hc_{spec.hc_visit}",
+              "hc_cdr0_or_mmse26" if spec.hc_strict else "hc_cdrall_or_mmseall")
+    demo = cohort_list(*tokens)
     demo["group"] = demo["Group"]
     demo["base_id"] = demo["Group"] + demo["Number"].astype(str)  # ID 已是完整鍵
     demo["label"] = (demo["group"] == "P").astype(int)
 
-    cache = {"demo": demo}
+    cache = {"demo": demo, "tokens": tokens}
 
     has_ad = bool(set(partitions) & AD_VS_PARTITIONS)
     has_hilo = [p for p in partitions if p in HILO_PARTITIONS]
@@ -177,7 +213,7 @@ def build_matching_cache(
                     priority = ["NAD"]
                 try:
                     full, matched, pairs = _build_ad_partition(
-                        demo, caliper, seed, priority,
+                        tokens, demo, caliper, priority,
                         match_level=ml_param,
                     )
                     cache[("ad", match_strat, ml_name)] = (full, matched, pairs)
@@ -189,7 +225,7 @@ def build_matching_cache(
             metric = "MMSE" if hilo_part == "mmse_hilo" else "CASI"
             try:
                 full, matched, pairs = _build_hilo_partition(
-                    demo, caliper, seed, metric,
+                    tokens, caliper, metric,
                     match_level=ml_param,
                 )
                 cache[(hilo_part, ml_name)] = (full, matched, pairs)
@@ -240,6 +276,7 @@ def run_matched_eval_chain(
         match_strategies = list(MATCH_STRATEGIES)
 
     demo = matching_cache.get("demo")
+    tokens = matching_cache.get("tokens")
     if demo is None:
         logger.error("matching_cache 缺少 demo")
         return
@@ -303,7 +340,7 @@ def run_matched_eval_chain(
                                 oof_subj, matched_eval, pairs,
                                 full, keep_groups, demo,
                                 eval_strat, ml_name, eval_unit,
-                                caliper, seed,
+                                caliper, seed, tokens,
                             )
                         except Exception as e:
                             logger.warning(f"    {cell_dir.name}: {e}")
@@ -331,79 +368,23 @@ def run_matched_eval_chain(
     return results_all
 
 
-def _build_ad_partition(demo, caliper, seed, priority_groups,
+def _build_ad_partition(tokens, demo, caliper, priority_groups,
                         match_level="subject"):
-    cols = ["ID", "Age", "base_id", "group", "label"]
-    for extra in ["MMSE", "CASI"]:
-        if extra in demo.columns:
-            cols.append(extra)
-    cohort = demo[[c for c in cols if c in demo.columns]].copy()
-    if "base_id" not in cohort.columns:
-        cohort["base_id"] = cohort["ID"].str.extract(r"^([A-Za-z]+\d+)")[0]
-    if "group" not in cohort.columns:
-        cohort["group"] = cohort["base_id"].apply(
-            lambda b: "P" if b.startswith("P")
-            else ("ACS" if b.startswith("ACS") else "NAD")
-        )
-    if "label" not in cohort.columns:
-        cohort["label"] = (cohort["group"] == "P").astype(int)
-    cohort["hc_group"] = np.where(cohort["group"] == "P", "low", "high")
-
-    matched, pairs, _ = match_1to1(
-        cohort, caliper=caliper, seed=seed,
-        group_col="hc_group", metric=None, match_level=match_level,
-        priority_groups=priority_groups,
-    )
-
-    keep_cols = ["base_id", "group", "label"]
-    for c in keep_cols:
-        if c not in matched.columns and c in cohort.columns:
-            matched = matched.merge(
-                cohort[["ID", c]].drop_duplicates("ID"),
-                on="ID", how="left",
-            )
-
-    return cohort, matched, pairs
+    """P vs 全 HC 的 1:1 年齡配對（canonical cohort）。回 (full=demo, matched, None)。"""
+    p_ids, hc_ids = match_by_age(
+        *tokens, priority=priority_groups, level=match_level, caliper=caliper)
+    return demo, _matched_df(p_ids, hc_ids), None
 
 
-def _build_hilo_partition(demo, caliper, seed, metric,
-                          match_level="subject"):
-    metric_col = metric.upper() if metric.upper() in demo.columns else metric
-    if metric_col not in demo.columns:
-        raise FileNotFoundError(f"Demographics 缺少 {metric} 欄位")
-
-    cols = ["ID", "Age", metric_col]
-    if "base_id" in demo.columns:
-        cols.append("base_id")
-    cohort = demo[cols].copy()
-    if "base_id" not in cohort.columns:
-        cohort["base_id"] = cohort["ID"].str.extract(r"^([A-Za-z]+\d+)")[0]
-
-    p_only = cohort[cohort["base_id"].str.startswith("P")].copy()
-    p_only = p_only.dropna(subset=[metric_col])
-    if len(p_only) < 10:
-        raise ValueError(f"{metric} 資料不足 ({len(p_only)} 筆)")
-    median_val = p_only[metric_col].median()
-    p_only["label"] = (p_only[metric_col] >= median_val).astype(int)
-    p_only["hilo_group"] = p_only["label"].map({1: "high", 0: "low"})
-
-    matched, pairs, _ = match_1to1(
-        p_only, caliper=caliper, seed=seed,
-        group_col="hilo_group", metric=None, match_level=match_level,
-    )
-
-    for c in ["base_id", "label"]:
-        if c not in matched.columns and c in p_only.columns:
-            matched = matched.merge(
-                p_only[["ID", c]].drop_duplicates("ID"),
-                on="ID", how="left",
-            )
-
-    return p_only, matched, pairs
+def _build_hilo_partition(tokens, caliper, metric, match_level="subject"):
+    """P 內按 metric 中位數切 high/low 的 1:1 年齡配對。回 (None, matched, None)。"""
+    hi_ids, lo_ids = match_by_score(
+        *tokens, "P", metric, "median", level=match_level, caliper=caliper)
+    return None, _matched_df(hi_ids, lo_ids), None
 
 
 def _eval_cell(oof_subj, matched_eval, pairs, full_cohort, keep_groups,
-               demo, eval_strat, match_level, eval_unit, caliper, seed):
+               demo, eval_strat, match_level, eval_unit, caliper, seed, tokens):
     if eval_unit == "eval_by_visit":
         matched_bids = set(matched_eval["base_id"].unique())
         demo_subset = demo[["ID", "Age", "base_id"]].copy() if "base_id" in demo.columns \
@@ -421,12 +402,17 @@ def _eval_cell(oof_subj, matched_eval, pairs, full_cohort, keep_groups,
     if len(scores) < 5 or scores["label"].nunique() < 2:
         return {"metrics_matched": None, "paired_wilcoxon": None}
 
-    if eval_strat == "caliper_group" and "group" in full_cohort.columns:
+    if eval_strat == "caliper_group" and full_cohort is not None \
+            and "group" in full_cohort.columns:
         try:
-            cal_cohort, age_balance = build_caliper_group(
-                full_cohort, matched_eval,
-                keep_groups=keep_groups, caliper=caliper,
-            )
+            cal_p, cal_hc = match_by_age(
+                *tokens, mode="1toN", keep_groups=keep_groups, caliper=caliper)
+            cal_cohort = pd.DataFrame({
+                "base_id": [i.rsplit("-", 1)[0] for i in cal_p]
+                           + [i.rsplit("-", 1)[0] for i in cal_hc],
+                "label": [1] * len(cal_p) + [0] * len(cal_hc),
+            })
+            age_balance = _age_balance(demo, cal_p, cal_hc, caliper)
             if eval_unit == "eval_by_visit":
                 cal_bids = set(cal_cohort["base_id"].unique())
                 demo_cal = demo[["ID", "Age", "base_id"]].copy() if "base_id" in demo.columns \

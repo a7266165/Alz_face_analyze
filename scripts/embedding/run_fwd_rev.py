@@ -276,7 +276,7 @@ from src.common.cohort import (
     p_filter,
     visit_selection,
 )
-from src.common.matching import match_1to1, match_cohort_ad_vs_hc
+from src.common.matching import match_by_age, match_by_score
 from src.common.legacy.splits import split_by_metric_median
 from scripts.utilities.stats_helpers import bootstrap_auc_ci
 
@@ -326,8 +326,8 @@ def load_embedding(ids, model, feature_type="original", photo_mode=None):
                              **{f"{model}__dim_{i}": float(a[k, i])
                                 for i in range(a.shape[1])}})
     return pd.DataFrame(rows) if rows else None
-# (bootstrap_auc_ci, match_1to1, split_by_metric_median, load_demographics,
-# visit_selection, cohort_list are imported above — no importlib reuse here.)
+# (bootstrap_auc_ci, match_by_age, match_by_score, cohort_list are imported
+# above — no importlib reuse here.)
 
 
 # ============================================================
@@ -359,6 +359,45 @@ def _train_cache_key(partition, embedding, classifier, n_folds, seed):
             tuple(_MATCH_PRIORITY) if _MATCH_PRIORITY else None)
 
 
+def _tokens():
+    """由 _COHORT_MODE 取 cohort_list 的四個 spec token。"""
+    spec = cohort_spec_from_name(_COHORT_MODE)
+    return (f"p_{spec.p_visit}", f"p_{spec.p_cdr}", f"hc_{spec.hc_visit}",
+            "hc_cdr0_or_mmse26" if spec.hc_strict else "hc_cdrall_or_mmseall")
+
+
+def _matched_df(case_ids, control_ids):
+    """兩個 1:1 對齊的 ID list → matched DataFrame（ID/base_id/group/pair_id/label）。
+
+    case→label 1（P 或 high）、control→label 0（HC 或 low）；第 i 對共用 pair_id=i。
+    """
+    rows = []
+    for i, (c, k) in enumerate(zip(case_ids, control_ids)):
+        for sid, lab in ((c, 1), (k, 0)):
+            bid = sid.rsplit("-", 1)[0]
+            rows.append({"ID": sid, "base_id": bid,
+                         "group": bid.rstrip("0123456789"),
+                         "pair_id": i, "label": lab})
+    return pd.DataFrame(rows)
+
+
+def _age_balance(full_cohort, p_ids, hc_ids, caliper):
+    """重算 caliper 1:N 擴充後的年齡平衡摘要（Welch t-test）。"""
+    amap = full_cohort.drop_duplicates("ID").set_index("ID")["Age"]
+    pa = pd.to_numeric(amap.reindex(p_ids), errors="coerce").dropna().to_numpy(float)
+    ha = pd.to_numeric(amap.reindex(hc_ids), errors="coerce").dropna().to_numpy(float)
+    if len(pa) >= 2 and len(ha) >= 2:
+        t_stat, t_pval = stats.ttest_ind(pa, ha, equal_var=False)
+    else:
+        t_stat, t_pval = float("nan"), float("nan")
+    return {
+        "caliper": caliper, "n_p_total": len(p_ids), "n_hc": len(hc_ids),
+        "p_age_mean": float(pa.mean()) if len(pa) else None,
+        "hc_age_mean": float(ha.mean()) if len(ha) else None,
+        "ttest_t": float(t_stat), "ttest_p": float(t_pval),
+    }
+
+
 def _build_ad_vs_hcgroup(hc_source):
     """ad_vs_hc / ad_vs_nad / ad_vs_acs.
 
@@ -372,26 +411,19 @@ def _build_ad_vs_hcgroup(hc_source):
       'p_all_cdr05_hc_all_cdrall_or_mmseall':                P all + HC all visits
     """
     # hc_source 固定 "HC"（NAD/ACS partition 由下游 group 過濾）。
-    spec = cohort_spec_from_name(_COHORT_MODE)
-    tokens = (f"p_{spec.p_visit}", f"p_{spec.p_cdr}", f"hc_{spec.hc_visit}",
-              "hc_cdr0_or_mmse26" if spec.hc_strict else "hc_cdrall_or_mmseall")
-    if _HC_SOURCE_MODE == "ACS":
-        full = cohort_list(*tokens)
-        # split schema → 直接由 Group 取 key，組回特徵 ID。
-        full["group"] = full["Group"]
-        full["base_id"] = full["Group"] + full["Number"].astype(str)
-    else:
-        # EACS-extended HC 走 legacy（cohort 核心只含 P/NAD/ACS）；
-        # EACS roster 為完整 ID + group 欄，base_id 用正則拆。
-        from src.common.legacy.eacs import cohort_list_with_eacs
-        full = cohort_list_with_eacs(_HC_SOURCE_MODE, *tokens)
-        full["base_id"] = full["ID"].str.extract(r"^(.+)-\d+$")[0]
+    tokens = _tokens()
+    if _HC_SOURCE_MODE != "ACS":
+        raise NotImplementedError(
+            "EACS-extended HC matching 待遷移；目前只支援 _HC_SOURCE_MODE='ACS'。")
+    full = cohort_list(*tokens)
+    # split schema → 直接由 Group 取 key，組回特徵 ID。
+    full["group"] = full["Group"]
+    full["base_id"] = full["Group"] + full["Number"].astype(str)
     full["label"] = (full["group"] == "P").astype(int)
-    matched, pairs = match_cohort_ad_vs_hc(
-        full, priority_groups=_MATCH_PRIORITY, match_level="subject")
-    matched_visit, pairs_visit = match_cohort_ad_vs_hc(
-        full, priority_groups=_MATCH_PRIORITY, match_level="visit")
-    return full, matched, pairs, matched_visit, pairs_visit
+    p_ids, hc_ids = match_by_age(*tokens, priority=_MATCH_PRIORITY, level="subject")
+    pv_ids, hv_ids = match_by_age(*tokens, priority=_MATCH_PRIORITY, level="visit")
+    return (full, _matched_df(p_ids, hc_ids), None,
+            _matched_df(pv_ids, hv_ids), None)
 
 
 def _build_metric_hilo(metric):
@@ -400,36 +432,29 @@ def _build_metric_hilo(metric):
     Splits by median, matches 1:1 by age (caliper 2y).
     Labels: high=1, low=0.
     """
-    metric_low = metric.lower()
-    group_col = f"{metric_low}_group"
-
     spec = cohort_spec_from_name(_COHORT_MODE)
-    df = load_demographics(("P",))
-    df = p_filter(df, f"p_{spec.p_cdr}").copy()
-    df = df.dropna(subset=[metric, "Age"])
-    # load_demographics 已提供 ID(完整鍵) 與 base_id。
-    cohort = visit_selection(df, "p_first")
-    cohort, _median = split_by_metric_median(
-        cohort, metric=metric, group_col=group_col,
-    )
-    cohort["label"] = (cohort[group_col] == "high").astype(int)
+    # hilo 固定取 P first-visit；hc_* token 對 P-only 無作用，僅為湊滿 spec。
+    hilo_tokens = ("p_first", f"p_{spec.p_cdr}", f"hc_{spec.hc_visit}",
+                   "hc_cdr0_or_mmse26" if spec.hc_strict else "hc_cdrall_or_mmseall")
+    # full = 全 P-first，按 metric 中位數標 high(1)/low(0)（與 match_by_score 同切法）。
+    # 不加小寫 group 欄 → 下游 caliper_group 會自動略過（P-only 不做 1:N）。
+    full = cohort_list(*hilo_tokens)
+    full = full[full["Group"] == "P"].copy()
+    full["base_id"] = full["Group"] + full["Number"].astype(str)
+    s = pd.to_numeric(full[metric], errors="coerce")
+    full = full[s.notna()].copy()
+    s = pd.to_numeric(full[metric], errors="coerce")
+    full["label"] = (s >= s.median()).astype(int)
 
-    matched, pairs, _labels = match_1to1(
-        cohort, caliper=1.0, seed=42, metric=metric, group_col=group_col,
-    )
-    existing = set(matched.columns) - {"ID"}
-    extra_cols = ["ID"] + [c for c in ["base_id", "label", group_col]
-                           if c not in existing]
-    extra = cohort[extra_cols].drop_duplicates("ID")
-    matched = matched.merge(extra, on="ID", how="left")
-    return cohort, matched, pairs
+    hi_ids, lo_ids = match_by_score(*hilo_tokens, "P", metric, "median", caliper=1.0)
+    return full, _matched_df(hi_ids, lo_ids), None
 
 
 def build_partition_cohort(partition):
     """Returns (full, matched, pairs, matched_visit, pairs_visit, keep_groups).
 
     full / matched DataFrames must have at least: ID, base_id, label, group.
-    matched must additionally have pair_id (from match_1to1).
+    matched must additionally have pair_id (from _matched_df).
 
     keep_groups is an optional set of group strings used at evaluation time
     to subset the cohort. ad_vs_nad and ad_vs_acs reuse the ad_vs_hc training
@@ -781,11 +806,14 @@ def _forward_eval_caliper_group(oof_subj, full_cohort, matched_cohort,
     if "group" not in full_cohort.columns:
         return None
 
-    from src.common.matching import build_caliper_group
-    cal_cohort, age_balance = build_caliper_group(
-        full_cohort, matched_cohort,
-        keep_groups=keep_groups, caliper=caliper,
-    )
+    cal_p, cal_hc = match_by_age(*_tokens(), mode="1toN",
+                                 keep_groups=keep_groups, caliper=caliper)
+    cal_cohort = pd.DataFrame({
+        "base_id": [i.rsplit("-", 1)[0] for i in cal_p]
+                   + [i.rsplit("-", 1)[0] for i in cal_hc],
+        "label": [1] * len(cal_p) + [0] * len(cal_hc),
+    })
+    age_balance = _age_balance(full_cohort, cal_p, cal_hc, caliper)
     if len(cal_cohort) < 5:
         return None
 
