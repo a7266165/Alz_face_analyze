@@ -25,7 +25,7 @@ from _paths import PROJECT_ROOT  # noqa: F401
 
 from src.config import cohort_name, cohort_spec_from_name, AGE_ANALYSIS_DIR
 from src.common.cohort import cohort_list
-from src.common.legacy.matching import match_cohort_ad_vs_hc
+from src.common.matching import match_cohort_ad_vs_hc
 
 COLORS = {"NAD": "#9ecae1", "ACS": "#6baed6", "P": "#fc9272"}
 BINS = np.arange(35, 110, 2)

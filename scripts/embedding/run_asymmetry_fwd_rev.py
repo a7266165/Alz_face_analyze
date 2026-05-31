@@ -52,7 +52,7 @@ from src.config import (
     cohort_spec_from_name,
 )
 from src.common.cohort import cohort_list
-from src.common.legacy.matching import match_cohort_ad_vs_hc
+from src.common.matching import match_cohort_ad_vs_hc
 from scripts.utilities.stats_helpers import bootstrap_auc_ci
 
 logging.basicConfig(level=logging.INFO,

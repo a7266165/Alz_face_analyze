@@ -276,7 +276,7 @@ from src.common.cohort import (
     p_filter,
     visit_selection,
 )
-from src.common.legacy.matching import match_1to1, match_cohort_ad_vs_hc
+from src.common.matching import match_1to1, match_cohort_ad_vs_hc
 from src.common.legacy.splits import split_by_metric_median
 from scripts.utilities.stats_helpers import bootstrap_auc_ci
 
@@ -781,7 +781,7 @@ def _forward_eval_caliper_group(oof_subj, full_cohort, matched_cohort,
     if "group" not in full_cohort.columns:
         return None
 
-    from src.common.legacy.matching import build_caliper_group
+    from src.common.matching import build_caliper_group
     cal_cohort, age_balance = build_caliper_group(
         full_cohort, matched_cohort,
         keep_groups=keep_groups, caliper=caliper,

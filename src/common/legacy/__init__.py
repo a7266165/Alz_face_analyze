@@ -8,7 +8,8 @@
 不做 eager re-export（比照 src.common），避免把 scipy 等重 dep 帶進不需要
 它的 env。Callers 直接 import 子模組：
 
-    from src.common.legacy.matching import match_1to1
     from src.common.legacy.predicted_age import apply_predicted_age_filter
     from src.common.legacy.feature_gate import keep_visits_with_features
+
+（1:1 / caliper 配對已提升為 canonical 模組 src.common.matching，不再屬於本區。）
 """

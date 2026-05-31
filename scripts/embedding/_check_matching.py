@@ -3,7 +3,7 @@ including priority_groups ordering."""
 import sys
 sys.path.insert(0, ".")
 from src.common.cohort import cohort_list
-from src.common.legacy.matching import match_cohort_ad_vs_hc
+from src.common.matching import match_cohort_ad_vs_hc
 from src.common.legacy.predicted_age import filter_pairs_by_predicted_age
 from src.config import cohort_spec_from_name
 

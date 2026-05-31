@@ -1,8 +1,14 @@
-"""[LEGACY] 1:1 / caliper 配對 — 從 src/cohort.py 隔離。
+"""1:1 / caliper 年齡配對 — 全專案 case-control 配對的 canonical 實作。
 
-配對屬於 flowchart 下游的 eval chain（1by1matched / caliper_group /
-priority_*），不是 cohort 的「族群挑選」職責。暫存待後續搬到獨立的
-matching / eval 階段。
+cohort（src.common.cohort）只負責「人口學族群挑選」，回傳未配對 roster；
+配對屬於下游 eval chain（1by1matched / caliper_group / priority_*），由本模組
+統一負責。embedding / meta / age / stat 等所有 consumer 共用此模組（gold
+standard，已從 src.common.legacy 提升至 src.common）。
+
+公開 API：
+    match_cohort_ad_vs_hc — roster → 1:1 年齡配對的 AD-vs-HC（封裝層，caliper 預設 1.0）
+    match_1to1            — scipy 最佳指派 1:1 配對（核心，caliper 預設 2.0）
+    build_caliper_group   — 在 1:1 之上做 1:N 平衡擴充（Welch t-test 守門）
 
 scipy import 留在函式內，避免 import 此模組就強制載入 scipy。
 """

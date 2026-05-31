@@ -29,7 +29,7 @@ from sklearn.metrics import (
 )
 
 from src.common.cohort import cohort_list
-from src.common.legacy.matching import match_1to1, build_caliper_group
+from src.common.matching import match_1to1, build_caliper_group
 from src.config import cohort_spec_from_name
 
 logger = logging.getLogger(__name__)
