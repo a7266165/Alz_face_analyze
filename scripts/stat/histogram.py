@@ -58,19 +58,17 @@ def _plot_panel(ax, cohort, unit, title):
 def run(cohort_mode, priority_groups=None):
     spec = cohort_spec_from_name(cohort_name(cohort_mode))
 
-    full = cohort_list(
-        f"p_{spec.p_visit}", f"p_{spec.p_cdr}", f"hc_{spec.hc_visit}",
-        "hc_cdr0_or_mmse26" if spec.hc_strict else "hc_cdrall_or_mmseall")
+    tokens = (f"p_{spec.p_visit}", f"p_{spec.p_cdr}", f"hc_{spec.hc_visit}",
+              "hc_cdr0_or_mmse26" if spec.hc_strict else "hc_cdrall_or_mmseall")
+    full = cohort_list(*tokens)
     full["group"] = full["Group"]
     full["base_id"] = full["Group"] + full["Number"].astype(str)  # ID 已是完整鍵
-    _ml = match_cohort(full, priority=priority_groups, level="subject")
-    matched = full[full["ID"].isin(
-        set(_ml.case["ID"]) | set(_ml.control["ID"]))].copy()
-    _mlv = match_cohort(full, priority=priority_groups, level="visit")
-    matched_visit = full[full["ID"].isin(
-        set(_mlv.case["ID"]) | set(_mlv.control["ID"]))].copy()
+    p_ids, hc_ids = match_cohort(*tokens, priority=priority_groups, level="subject")
+    matched = full[full["ID"].isin(set(p_ids) | set(hc_ids))].copy()
+    pv_ids, hv_ids = match_cohort(*tokens, priority=priority_groups, level="visit")
+    matched_visit = full[full["ID"].isin(set(pv_ids) | set(hv_ids))].copy()
 
-    n_pairs = len(_ml.case)
+    n_pairs = len(p_ids)
     priority_tag = ""
     if priority_groups:
         priority_tag = f"_{'_'.join(g.lower() for g in priority_groups)}_first"

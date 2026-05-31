@@ -38,8 +38,10 @@ from src.config import (
     DEFAULT_COHORT_MODE,
     VALID_COHORT_CHOICES,
     cohort_path,
+    cohort_spec_from_name,
 )
-from src.age.error_table import load_age_error_table
+from src.common.cohort import cohort_list
+from src.age.error_table import load_age_error
 from src.common.matching import match_cohort
 
 logging.basicConfig(level=logging.INFO,
@@ -159,12 +161,16 @@ def main():
     logger.info(f"cohort-mode = {args.cohort_mode}")
     logger.info(f"output-dir  = {output_dir}")
 
-    full = load_age_error_table(args.cohort_mode)
-    roster = full[["ID", "group", "MMSE"]].copy()
-    roster["Age"] = full["real_age"]
-    ml = match_cohort(roster)
-    ids = set(ml.case["ID"]) | set(ml.control["ID"])
-    matched = full[full["ID"].isin(ids)].reset_index(drop=True)
+    spec = cohort_spec_from_name(args.cohort_mode)
+    tokens = (f"p_{spec.p_visit}", f"p_{spec.p_cdr}", f"hc_{spec.hc_visit}",
+              "hc_cdr0_or_mmse26" if spec.hc_strict else "hc_cdrall_or_mmseall")
+    full = cohort_list(*tokens).merge(load_age_error(*tokens), on="ID", how="inner")
+    full["group"] = full["Group"]
+    full["real_age"] = full["Age"]
+    full["predicted_age"] = full["real_age"] - full["age_error"]
+    full["age_int"] = full["real_age"].astype(int)
+    p_ids, hc_ids = match_cohort(*tokens)
+    matched = full[full["ID"].isin(set(p_ids) | set(hc_ids))].reset_index(drop=True)
     logger.info(f"full={len(full)} ({full['group'].value_counts().to_dict()}), "
                 f"1by1matched={len(matched)} "
                 f"({matched['group'].value_counts().to_dict()})")

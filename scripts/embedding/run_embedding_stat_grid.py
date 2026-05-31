@@ -373,7 +373,7 @@ def run_one_partition(partition_dir, partition, cohort, bg_mode, eval_unit):
     return result_df
 
 
-def run_one_combo(output_dir, cohort_mode, hc_source_mode,
+def run_one_combo(output_dir, cohort_mode,
                   match_level, eval_unit, bg_mode, priority_groups=None):
     """Run stat grid for one (match_level, eval_unit) combination."""
     ml_arg = MATCH_LEVEL_ARG[match_level]
@@ -381,20 +381,14 @@ def run_one_combo(output_dir, cohort_mode, hc_source_mode,
                       if priority_groups else "no_priority")
     logger.info(f"--- {match_level} / {eval_unit} / {match_strategy} ---")
 
-    # EACS-extended HC 走 legacy（cohort 核心只含 P/NAD/ACS）；ACS 用核心 cohort_list。
     spec = cohort_spec_from_name(cohort_mode)
     tokens = (f"p_{spec.p_visit}", f"p_{spec.p_cdr}", f"hc_{spec.hc_visit}",
               "hc_cdr0_or_mmse26" if spec.hc_strict else "hc_cdrall_or_mmseall")
-    if hc_source_mode == "ACS":
-        roster = cohort_list(*tokens)
-        roster["group"] = roster["Group"]
-        roster["base_id"] = roster["Group"] + roster["Number"].astype(str)
-    else:
-        from src.common.legacy.eacs import cohort_list_with_eacs
-        roster = cohort_list_with_eacs(hc_source_mode, *tokens)
-    _ml = match_cohort(roster, level=ml_arg, priority=priority_groups)
-    hc_cohort = roster[roster["ID"].isin(
-        set(_ml.case["ID"]) | set(_ml.control["ID"]))].copy()
+    roster = cohort_list(*tokens)
+    roster["group"] = roster["Group"]
+    roster["base_id"] = roster["Group"] + roster["Number"].astype(str)
+    p_ids, hc_ids = match_cohort(*tokens, level=ml_arg, priority=priority_groups)
+    hc_cohort = roster[roster["ID"].isin(set(p_ids) | set(hc_ids))].copy()
 
     all_long = []
     for partition in PARTITIONS:
@@ -414,12 +408,12 @@ def run_one_combo(output_dir, cohort_mode, hc_source_mode,
     return all_long
 
 
-def run_all(root_dir, cohort_mode, hc_source_mode, bg_mode,
+def run_all(root_dir, cohort_mode, bg_mode,
             priority_groups=None):
     """Run all 4 (match_level × eval_unit) combinations."""
     for ml in MATCH_LEVELS:
         for eu in EVAL_UNITS:
-            run_one_combo(root_dir, cohort_mode, hc_source_mode,
+            run_one_combo(root_dir, cohort_mode,
                           ml, eu, bg_mode,
                           priority_groups=priority_groups)
 
@@ -431,8 +425,6 @@ def main():
     p.add_argument("--cohort-mode",
                    choices=VALID_COHORT_CHOICES,
                    default="p_first_cdrall_hc_all_cdrall_or_mmseall")
-    p.add_argument("--hc-source", choices=["ACS", "ACS_ext", "EACS"],
-                   default="ACS")
     p.add_argument("--bg-mode",
                    choices=["no_background", "background"],
                    default="no_background")
@@ -450,12 +442,11 @@ def main():
                     / cohort_path(args.cohort_mode)
                     / args.bg_mode)
     root_dir.mkdir(parents=True, exist_ok=True)
-    logger.info(f"hc_source={args.hc_source}  cohort_mode={args.cohort_mode}  "
+    logger.info(f"cohort_mode={args.cohort_mode}  "
                 f"bg_mode={args.bg_mode}  root={root_dir}")
 
     run_all(root_dir,
             cohort_mode=args.cohort_mode,
-            hc_source_mode=args.hc_source,
             bg_mode=args.bg_mode,
             priority_groups=args.match_priority)
 

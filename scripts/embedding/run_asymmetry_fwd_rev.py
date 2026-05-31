@@ -437,27 +437,27 @@ def main():
     feat_types = [args.feature_type] if args.feature_type else FEATURE_TYPES
 
     # Build cohorts once (shared across ad_vs_hc/nad/acs)
-    full_cohort = cohort_list(
-        f"p_{spec.p_visit}", f"p_{spec.p_cdr}", f"hc_{spec.hc_visit}",
-        "hc_cdr0_or_mmse26" if spec.hc_strict else "hc_cdrall_or_mmseall")
+    tokens = (f"p_{spec.p_visit}", f"p_{spec.p_cdr}", f"hc_{spec.hc_visit}",
+              "hc_cdr0_or_mmse26" if spec.hc_strict else "hc_cdrall_or_mmseall")
+    full_cohort = cohort_list(*tokens)
     full_cohort["group"] = full_cohort["Group"]
     full_cohort["base_id"] = full_cohort["Group"] + full_cohort["Number"].astype(str)
     full_cohort["label"] = (full_cohort["group"] == "P").astype(int)
 
-    _mls = match_cohort(
-        full_cohort, level="subject",
+    ps_ids, hs_ids = match_cohort(
+        *tokens, level="subject",
         priority=args.match_priority)
     matched_subj = full_cohort[full_cohort["ID"].isin(
-        set(_mls.case["ID"]) | set(_mls.control["ID"]))].copy()
+        set(ps_ids) | set(hs_ids))].copy()
     if "base_id" not in matched_subj.columns:
         matched_subj["base_id"] = (matched_subj["ID"].astype(str)
                                    .str.extract(r"^(.+)-\d+$")[0])
 
-    _mlv = match_cohort(
-        full_cohort, level="visit",
+    pv_ids, hv_ids = match_cohort(
+        *tokens, level="visit",
         priority=args.match_priority)
     matched_visit = full_cohort[full_cohort["ID"].isin(
-        set(_mlv.case["ID"]) | set(_mlv.control["ID"]))].copy()
+        set(pv_ids) | set(hv_ids))].copy()
     if "base_id" not in matched_visit.columns:
         matched_visit["base_id"] = (matched_visit["ID"].astype(str)
                                     .str.extract(r"^(.+)-\d+$")[0])

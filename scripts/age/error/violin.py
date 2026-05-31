@@ -34,8 +34,10 @@ from src.config import (
     DEFAULT_COHORT_MODE,
     VALID_COHORT_CHOICES,
     cohort_path,
+    cohort_spec_from_name,
 )
-from src.age.error_table import load_age_error_table
+from src.common.cohort import cohort_list
+from src.age.error_table import load_age_error
 from src.common.matching import match_cohort, match_by_score
 
 logging.basicConfig(level=logging.INFO,
@@ -73,7 +75,7 @@ def save_violin(left_vals, right_vals, left_label, right_label, title, out_path)
 
 # ── comparison runners ───────────────────────────────────────────────────────
 
-def run_hc_comparison(df_all, comparison, output_dir, caliper=1.0):
+def run_hc_comparison(df_all, tokens, comparison, output_dir, caliper=1.0):
     """AD vs {HC, NAD, ACS} violin — full cohort + 1:1 age-matched (match_cohort).
 
     ``controls`` 餵給 canonical match_cohort：None → 全部非 P（NAD+ACS）；指定
@@ -97,11 +99,8 @@ def run_hc_comparison(df_all, comparison, output_dir, caliper=1.0):
                     output_dir / "full" / comparison / "violin.png")
 
     # 1:1 age-matched (canonical match_cohort)
-    roster = df_all[["ID", "group", "MMSE"]].copy()
-    roster["Age"] = df_all["real_age"]
-    ml = match_cohort(roster, controls=controls, caliper=caliper)
-    ids = set(ml.case["ID"]) | set(ml.control["ID"])
-    msub = df_all[df_all["ID"].isin(ids)].reset_index(drop=True)
+    p_ids, hc_ids = match_cohort(*tokens, controls=controls, caliper=caliper)
+    msub = df_all[df_all["ID"].isin(set(p_ids) | set(hc_ids))].reset_index(drop=True)
     m_hc = msub[msub["group"] != "P"]
     m_ad = msub[msub["group"] == "P"]
     if not m_hc.empty and not m_ad.empty:
@@ -111,11 +110,11 @@ def run_hc_comparison(df_all, comparison, output_dir, caliper=1.0):
                     output_dir / "1by1matched" / comparison / "violin.png")
 
 
-def run_hilo_comparison(df_all, metric, output_dir, caliper=1.0):
+def run_hilo_comparison(df_all, tokens, metric, output_dir, caliper=1.0):
     """MMSE/CASI high vs low within AD (and NAD) — full + 1:1 age-matched.
 
     1:1 matched 子集委派給 canonical match_by_score（在該組內以中位數切 high/low
-    再做年齡配對）；繪圖時以同一中位數把被選中的列分回兩臂。
+    再做年齡配對）；high/low 兩臂直接由回傳的兩個 ID list 決定。
     """
     comparison = f"{metric.lower()}_high_vs_low"
 
@@ -137,22 +136,17 @@ def run_hilo_comparison(df_all, metric, output_dir, caliper=1.0):
                 f"Age error by {metric} ({grp_label.upper()}, full)\nmedian={median_val:.0f}",
                 output_dir / "full" / comparison / f"{grp_label}_violin.png")
 
-        # 1:1 age-matched (canonical match_by_score; same median split)
-        roster = df_valid[["ID", metric]].copy()
-        roster["Age"] = df_valid["real_age"]
-        ml = match_by_score(roster, metric, cut="median", caliper=caliper)
-        ids = set(ml.case["ID"]) | set(ml.control["ID"])
-        msub = df_valid[df_valid["ID"].isin(ids)].reset_index(drop=True)
-        if not msub.empty:
-            sm = pd.to_numeric(msub[metric], errors="coerce")
-            hi = msub[sm >= median_val]["age_error"].values
-            lo = msub[sm < median_val]["age_error"].values
-            if len(hi) > 0 and len(lo) > 0:
-                save_violin(
-                    hi, lo, f"High {metric}", f"Low {metric}",
-                    f"Age error by {metric} ({grp_label.upper()})\n"
-                    f"(age-matched 1:1, caliper={caliper}y, median={median_val:.0f})",
-                    output_dir / "1by1matched" / comparison / f"{grp_label}_violin.png")
+        # 1:1 age-matched（canonical match_by_score；high/low 由回傳兩 list 直接決定）
+        high_ids, low_ids = match_by_score(
+            grp, metric, "median", *tokens, caliper=caliper)
+        hi = df_all[df_all["ID"].isin(high_ids)]["age_error"].dropna().values
+        lo = df_all[df_all["ID"].isin(low_ids)]["age_error"].dropna().values
+        if len(hi) > 0 and len(lo) > 0:
+            save_violin(
+                hi, lo, f"High {metric}", f"Low {metric}",
+                f"Age error by {metric} ({grp_label.upper()})\n"
+                f"(age-matched 1:1, caliper={caliper}y)",
+                output_dir / "1by1matched" / comparison / f"{grp_label}_violin.png")
 
 # ── main ─────────────────────────────────────────────────────────────────────
 
@@ -175,7 +169,11 @@ def main():
     logger.info(f"cohort-mode = {args.cohort_mode}")
     logger.info(f"output-dir  = {output_dir}")
 
-    df_all = load_age_error_table(args.cohort_mode)
+    spec = cohort_spec_from_name(args.cohort_mode)
+    tokens = (f"p_{spec.p_visit}", f"p_{spec.p_cdr}", f"hc_{spec.hc_visit}",
+              "hc_cdr0_or_mmse26" if spec.hc_strict else "hc_cdrall_or_mmseall")
+    df_all = cohort_list(*tokens).merge(load_age_error(*tokens), on="ID", how="inner")
+    df_all["group"] = df_all["Group"]
     logger.info(f"loaded {len(df_all)} rows "
                 f"({df_all['group'].value_counts().to_dict()})")
 
@@ -183,11 +181,11 @@ def main():
     for cmp in targets:
         logger.info(f"--- {cmp} ---")
         if cmp in HC_COMPARISONS:
-            run_hc_comparison(df_all, cmp, output_dir, caliper=args.caliper)
+            run_hc_comparison(df_all, tokens, cmp, output_dir, caliper=args.caliper)
         elif cmp == "mmse_high_vs_low":
-            run_hilo_comparison(df_all, "MMSE", output_dir, caliper=args.caliper)
+            run_hilo_comparison(df_all, tokens, "MMSE", output_dir, caliper=args.caliper)
         elif cmp == "casi_high_vs_low":
-            run_hilo_comparison(df_all, "CASI", output_dir, caliper=args.caliper)
+            run_hilo_comparison(df_all, tokens, "CASI", output_dir, caliper=args.caliper)
 
 
 if __name__ == "__main__":

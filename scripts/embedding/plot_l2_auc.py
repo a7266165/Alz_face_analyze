@@ -230,9 +230,9 @@ def main():
     all_metrics = []
 
     # Pre-build full (unmatched) cohort for expanding visits
-    cohort_naive = cohort_list(
-        f"p_{spec.p_visit}", f"p_{spec.p_cdr}", f"hc_{spec.hc_visit}",
-        "hc_cdr0_or_mmse26" if spec.hc_strict else "hc_cdrall_or_mmseall")
+    tokens = (f"p_{spec.p_visit}", f"p_{spec.p_cdr}", f"hc_{spec.hc_visit}",
+              "hc_cdr0_or_mmse26" if spec.hc_strict else "hc_cdrall_or_mmseall")
+    cohort_naive = cohort_list(*tokens)
     cohort_naive["group"] = cohort_naive["Group"]
     cohort_naive["base_id"] = cohort_naive["Group"] + cohort_naive["Number"].astype(str)
     cohort_naive["label"] = (cohort_naive["group"] == "P").astype(int)
@@ -245,13 +245,13 @@ def main():
             for ml in MATCH_LEVELS:
                 ml_arg = MATCH_LEVEL_ARG[ml]
 
-                _ml = match_cohort(
-                    cohort_naive,
+                p_ids, hc_ids = match_cohort(
+                    *tokens,
                     level=ml_arg,
                     priority=args.match_priority,
                 )
                 cohort_matched = cohort_naive[cohort_naive["ID"].isin(
-                    set(_ml.case["ID"]) | set(_ml.control["ID"]))].copy()
+                    set(p_ids) | set(hc_ids))].copy()
                 if "base_id" not in cohort_matched.columns:
                     cohort_matched["base_id"] = (
                         cohort_matched["ID"].astype(str)
