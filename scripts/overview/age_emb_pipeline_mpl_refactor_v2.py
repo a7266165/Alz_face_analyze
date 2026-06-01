@@ -233,15 +233,15 @@ def build(mode='center'):
         for src in [x_face, x_mirr]:
             line(ax, src, y_pre5 + NODE_H / 2, x, y_mod - NODE_H / 2)
 
-    # emotion models  (DIMMED)
+    # emotion models  (LIT)
     EMO_MODELS = ['EmoNet', 'Open\nFace', 'FER', 'HS\nEmotion', 'Libre\nFace',
                   'DAN', 'POSTER\n++', 'Py-Feat', 'ViT']
     nw_om = 2.2; gap_om = 0.3
     omx, om_tot = _rowx(X_EMO_C, len(EMO_MODELS), nw_om, gap_om)
-    cluster(ax, X_EMO_C, y_mod, om_tot + 0.9, NODE_H + 2 * SP, G['bg'])
+    cluster(ax, X_EMO_C, y_mod, om_tot + 0.9, NODE_H + 2 * SP, C_EMO['bg'])
     for x, lab in zip(omx, EMO_MODELS):
-        node(ax, x, y_mod, nw_om, NODE_H, lab, G['nd'])
-        _dln(x_face, y_pre5 + NODE_H / 2, x, y_mod - NODE_H / 2)
+        node(ax, x, y_mod, nw_om, NODE_H, lab, C_EMO['nd'])
+        line(ax, x_face, y_pre5 + NODE_H / 2, x, y_mod - NODE_H / 2)
 
     # ════════════════════════════════════════════════════════
     # step 3 — per-branch features
@@ -254,8 +254,8 @@ def build(mode='center'):
         line(ax, x, y_mod + NODE_H / 2, X_AGE_C, y_feat - NODE_H / 2)
 
     # ── Age step 5: mean -> age_error -> violin/lines/scatter/stat (LIT) ──
-    cluster(ax, X_AGE_C, y_d1, age_w + 0.9, NODE_H + 2 * SP, C_AGE['bg'])
-    node(ax, X_AGE_C, y_d1, age_w, NODE_H, 'Predict Age mean x 1', C_AGE['nd'])
+    cluster(ax, X_AGE_C, y_d1, age_w + 0.9, NODE_H + 2 * SP, C_AOUT['bg'])
+    node(ax, X_AGE_C, y_d1, age_w, NODE_H, 'Predict Age mean x 1', C_AOUT['nd'])
     line(ax, X_AGE_C, y_feat + NODE_H / 2, X_AGE_C, y_d1 - NODE_H / 2)
 
     ae_w = 5.5
@@ -270,15 +270,29 @@ def build(mode='center'):
         node(ax, x, y_d3, 2.6, NODE_H, lab, C_AOUT['nd'])
         line(ax, X_AGE_C, y_d2 + NODE_H / 2, x, y_d3 - NODE_H / 2)
 
-    # embedding: 5 features (original = 1, asymmetry = 4)  (LIT)
-    EMB_FEATS = ['original', 'diff', '|diff|', 'rel_diff', '|rel_diff|']
+    # embedding features split into TWO clusters (mirrors age_emb_pipeline_mpl):
+    #   - 'original'                       (single-node cluster)
+    #   - 'diff / |diff| / rel_diff / |rel_diff|'  (asymmetry cluster)
     nw_ef = 1.9; gap_ef = 0.3
-    efx, ef_tot = _rowx(X_EMB_C, len(EMB_FEATS), nw_ef, gap_ef)
-    cluster(ax, X_EMB_C, y_feat, ef_tot + 0.9, NODE_H + 2 * SP, C_FT['bg'])
-    for x, lab in zip(efx, EMB_FEATS):
-        node(ax, x, y_feat, nw_ef, NODE_H, lab, C_FT['nd'])
+    ASYM_FEATS = ['diff', '|diff|', 'rel_diff', '|rel_diff|']
+    orig_cl_w = nw_ef + 0.6
+    _, asym_tot = _rowx(0, len(ASYM_FEATS), nw_ef, gap_ef)
+    asym_cl_w = asym_tot + 0.6
+    gap_cl = 1.0
+    pair_w = orig_cl_w + gap_cl + asym_cl_w
+    pair_left = X_EMB_C - pair_w / 2
+    x_orig = pair_left + orig_cl_w / 2
+    asym_c = pair_left + orig_cl_w + gap_cl + asym_cl_w / 2
+    asymx, _ = _rowx(asym_c, len(ASYM_FEATS), nw_ef, gap_ef)
+
+    cluster(ax, x_orig, y_feat, orig_cl_w, NODE_H + 2 * SP, C2['bg'])
+    node(ax, x_orig, y_feat, nw_ef, NODE_H, 'original', C2['nd'])
+    cluster(ax, asym_c, y_feat, asym_cl_w, NODE_H + 2 * SP, C2['bg'])
+    for x, lab in zip(asymx, ASYM_FEATS):
+        node(ax, x, y_feat, nw_ef, NODE_H, lab, C2['nd'])
+    for fx in [x_orig] + asymx:
         for ex in emx:
-            line(ax, ex, y_mod + NODE_H / 2, x, y_feat - NODE_H / 2)
+            line(ax, ex, y_mod + NODE_H / 2, fx, y_feat - NODE_H / 2)
 
     # emotion: 10 features in 3 sub-groups (V/A | contempt | 7 shared)
     EMO_VA = ['valence', 'arousal']
@@ -300,18 +314,18 @@ def build(mode='center'):
     for c, tot, xs, labs in [(va_c, va_tot, vax, EMO_VA),
                              (ct_c, ct_tot, ctx, EMO_CT),
                              (sh_c, sh_tot, shx, EMO_SH)]:
-        cluster(ax, c, y_feat, tot + 0.6, NODE_H + 2 * SP, G['bg'])
+        cluster(ax, c, y_feat, tot + 0.6, NODE_H + 2 * SP, C_EMO['bg'])
         for x, lab in zip(xs, labs):
-            node(ax, x, y_feat, nw_of, NODE_H, lab, G['nd'])
-    # EmoNet -> V/A ; EmoNet+OpenFace -> contempt ; all 9 -> 7 shared  (DIMMED)
+            node(ax, x, y_feat, nw_of, NODE_H, lab, C_EMO['nd'])
+    # EmoNet -> V/A ; EmoNet+OpenFace -> contempt ; all 9 -> 7 shared  (LIT)
     for fx in vax:
-        _dln(omx[0], y_mod + NODE_H / 2, fx, y_feat - NODE_H / 2)
+        line(ax, omx[0], y_mod + NODE_H / 2, fx, y_feat - NODE_H / 2)
     for fx in ctx:
         for src in [omx[0], omx[1]]:
-            _dln(src, y_mod + NODE_H / 2, fx, y_feat - NODE_H / 2)
+            line(ax, src, y_mod + NODE_H / 2, fx, y_feat - NODE_H / 2)
     for fx in shx:
         for mx in omx:
-            _dln(mx, y_mod + NODE_H / 2, fx, y_feat - NODE_H / 2)
+            line(ax, mx, y_mod + NODE_H / 2, fx, y_feat - NODE_H / 2)
 
     # ════════════════════════════════════════════════════════
     # step 4 — Demographic + Cohort  (shared by all branches; standalone for now)
