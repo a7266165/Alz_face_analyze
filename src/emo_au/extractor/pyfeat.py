@@ -5,8 +5,6 @@ Py-Feat AU 特徵提取器
 AU 輸出為 probability [0, 1]，情緒輸出為 probability [0, 1]
 """
 
-import tempfile
-from pathlib import Path
 from typing import Dict, List, Optional
 
 import cv2
@@ -38,7 +36,7 @@ class PyFeatExtractor(EmoAUExtractor):
 
     @property
     def output_columns(self) -> List[str]:
-        # 落地序照 _do_extract:AU probabilities → emotion probabilities
+        # 落地序照 extract:AU probabilities → emotion probabilities
         return list(PYFEAT_AU_MAP.keys()) + list(PYFEAT_EMOTION_MAP.keys())
 
     def is_available(self) -> bool:
@@ -77,39 +75,26 @@ class PyFeatExtractor(EmoAUExtractor):
         logger.info(f"Py-Feat Detector 載入完成 (device={self._device})")
 
     def extract(self, image: np.ndarray) -> Optional[Dict[str, float]]:
+        """從單一影像（BGR ndarray）提取 AU 和情緒特徵（假設已 initialize()）。
+
+        直接把 array 餵進 py-feat，不寫 temp 檔。py-feat 的 detect_image 在
+        output_size=None（我們的用法）時，ImageDataset 只做 read_image（讀成 RGB
+        uint8 tensor、Scale=1、不 resize/pad），真正的前處理在各 detect_* 內部。
+        故此處複製 detect_image 的 waterfall，只把「讀檔成 tensor」換成「由傳入
+        array 轉成等價 tensor」，輸出與讀檔路徑 byte-identical。
         """
-        從單一影像提取 AU 和情緒特徵
-
-        Py-Feat detect_image 是 path-only API（無法直接吃 numpy array），故在此將
-        numpy array 暫存為臨時檔案再餵入（temp 檔處理為私有實作細節，不洩漏到契約）。
-        用 .png 無損暫存:與「直接讀原始對齊 PNG」像素一致，避免 JPEG 重壓縮改變輸出。
-        """
-        with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as f:
-            tmp_path = f.name
-            cv2.imwrite(tmp_path, image)
-
         try:
-            return self._do_extract(tmp_path)
-        finally:
-            Path(tmp_path).unlink(missing_ok=True)
-
-    def _do_extract(self, image_path: str) -> Optional[Dict[str, float]]:
-        """從檔案路徑提取 AU 和情緒特徵（假設已 initialize()）"""
-        try:
-            result = self._detector.detect_image(image_path)
-
-            if result is None or len(result) == 0:
+            fex = self._detect_array(image)
+            if fex is None or len(fex) == 0:
                 return None
 
-            row = result.iloc[0]
+            row = fex.iloc[0]
             features = {}
-
             for pf_col in PYFEAT_AU_MAP:
-                if pf_col in result.columns:
+                if pf_col in fex.columns:
                     features[pf_col] = float(row[pf_col])
-
             for pf_col in PYFEAT_EMOTION_MAP:
-                if pf_col in result.columns:
+                if pf_col in fex.columns:
                     features[pf_col] = float(row[pf_col])
 
             return features if features else None
@@ -117,3 +102,38 @@ class PyFeatExtractor(EmoAUExtractor):
         except Exception as e:
             logger.debug(f"Py-Feat 提取失敗: {e}")
             return None
+
+    def _detect_array(self, image: np.ndarray):
+        """把 BGR ndarray 跑完 py-feat 偵測 waterfall，回傳 Fex（與 detect_image 同路徑）。
+
+        Image tensor 構造成與 torchvision.io.read_image 等價（RGB、uint8、CHW），
+        batch_data 用 default_collate（與 detect_image 內 DataLoader(batch_size=1) 的
+        collate 相同），故 _run_detection_waterfall / _create_fex 收到的輸入與讀檔
+        路徑完全一致。
+        """
+        import torch
+        try:
+            from torch.utils.data import default_collate
+        except ImportError:  # 舊版 torch
+            from torch.utils.data._utils.collate import default_collate
+
+        rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        # read_image() 回 (C,H,W) uint8 RGB;對齊其 dtype / 通道序 / 維度排列
+        img_tensor = torch.from_numpy(rgb).permute(2, 0, 1).contiguous()
+        item = {
+            "Image": img_tensor,
+            "Scale": 1.0,
+            "Padding": {"Left": 0, "Top": 0, "Right": 0, "Bottom": 0},
+            "FileNames": "<in_memory>",
+        }
+        batch_data = default_collate([item])
+
+        d = self._detector
+        # 與 detect_image 內部呼叫一致:6 個 model-kwargs 皆用空 dict（預設）。
+        faces, landmarks, poses, aus, emotions, identities = (
+            d._run_detection_waterfall(
+                batch_data, 0.5, {}, {}, {}, {}, {}, {})
+        )
+        return d._create_fex(
+            faces, landmarks, poses, aus, emotions, identities,
+            batch_data["FileNames"], 0)
