@@ -19,7 +19,7 @@ import torch
 from torch import nn
 import logging
 
-from .base import BaseAUExtractor
+from .base import EmoAUExtractor
 from src.emo_au.extractor.au_config import (
     EMONET_EMOTION_INDEX,
     HARMONIZED_EMOTIONS,
@@ -30,7 +30,7 @@ from src.emo_au.extractor.au_config import (
 logger = logging.getLogger(__name__)
 
 
-class EmoNetExtractor(BaseAUExtractor):
+class EmoNetExtractor(EmoAUExtractor):
     """
     EmoNet Emotion 提取器
 
@@ -46,20 +46,14 @@ class EmoNetExtractor(BaseAUExtractor):
         self._available = None
 
     @property
-    def tool_name(self) -> str:
+    def model_name(self) -> str:
         return "emonet"
 
     @property
-    def au_columns(self) -> List[str]:
-        return []
-
-    @property
-    def emotion_columns(self) -> List[str]:
-        return list(HARMONIZED_EMOTIONS)
-
-    @property
-    def extra_columns(self) -> List[str]:
-        return ["valence", "arousal"]
+    def output_columns(self) -> List[str]:
+        # 落地序照 extract():EMONET_EMOTION_INDEX 過濾序（非 harmonized 序）+ valence/arousal
+        emotions = [e for e in EMONET_EMOTION_INDEX.values() if e in HARMONIZED_EMOTIONS]
+        return emotions + ["valence", "arousal"]
 
     def is_available(self) -> bool:
         if self._available is not None:
@@ -91,7 +85,7 @@ class EmoNetExtractor(BaseAUExtractor):
         self._model = model
         logger.info(f"EmoNet 模型載入完成 (n_expression={self._n_expression}, device={self._device})")
 
-    def extract_frame(self, image: np.ndarray) -> Optional[Dict[str, float]]:
+    def extract(self, image: np.ndarray) -> Optional[Dict[str, float]]:
         self._init_model()
         try:
             rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)

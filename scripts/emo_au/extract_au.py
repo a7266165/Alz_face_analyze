@@ -11,7 +11,7 @@ import argparse
 import sys
 import logging
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 import pandas as pd
 from tqdm import tqdm
@@ -20,6 +20,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
 from _paths import PROJECT_ROOT
 
 from src.config import preprocess_dir
+from src.emo_au.extractor import get_extractor
 from src.emo_au.extractor.au_config import AU_RAW_DIR, AUExtractionConfig
 
 ALIGNED_DIR = preprocess_dir("aligned")
@@ -33,41 +34,40 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 ALL_STEPS = ["extract", "harmonize", "aggregate"]
+IMAGE_EXTS = (".jpg", ".jpeg", ".png", ".bmp")
 
 
 # ═══════════════════════════════════════════════════════════
 # Step 1: 提取
 # ═══════════════════════════════════════════════════════════
 
-def _get_extractor_class(tool_name: str):
-    if tool_name == "openface":
-        from src.emo_au.extractor.openface import OpenFaceExtractor
-        return OpenFaceExtractor
-    elif tool_name == "pyfeat":
-        from src.emo_au.extractor.pyfeat import PyFeatExtractor
-        return PyFeatExtractor
-    elif tool_name == "libreface":
-        from src.emo_au.extractor.libreface import LibreFaceExtractor
-        return LibreFaceExtractor
-    elif tool_name == "poster_pp":
-        from src.emo_au.extractor.poster_pp import PosterPPExtractor
-        return PosterPPExtractor
-    elif tool_name == "dan":
-        from src.emo_au.extractor.dan import DANExtractor
-        return DANExtractor
-    elif tool_name == "emonet":
-        from src.emo_au.extractor.emonet import EmoNetExtractor
-        return EmoNetExtractor
-    elif tool_name == "fer":
-        from src.emo_au.extractor.fer_extractor import FERExtractor
-        return FERExtractor
-    elif tool_name == "hsemotion":
-        from src.emo_au.extractor.hsemotion import HSEmotionExtractor
-        return HSEmotionExtractor
-    elif tool_name == "vit":
-        from src.emo_au.extractor.vit import ViTExtractor
-        return ViTExtractor
-    return None
+def _extract_subject(extractor, subject_dir: Path) -> Optional[pd.DataFrame]:
+    """掃描 subject 目錄所有影像 → 每幀一列的 DataFrame。
+
+    （此邏輯原在 EmoAUExtractor.extract_subject，依鏡像 embedding 的設計移回 producer。）
+    欄序由 extractor.output_columns 決定（reindex），保證落地穩定;缺欄補 0.0。
+    """
+    image_paths = sorted(
+        [p for p in subject_dir.iterdir() if p.suffix.lower() in IMAGE_EXTS],
+        key=lambda p: p.name,
+    )
+    if not image_paths:
+        logger.warning(f"  {subject_dir.name}: 沒有找到影像")
+        return None
+
+    rows = []
+    for img_path in image_paths:
+        frame_data = extractor.extract_from_path(img_path)
+        if frame_data is not None:
+            frame_data["frame"] = img_path.stem
+            rows.append(frame_data)
+
+    if not rows:
+        logger.warning(f"  {subject_dir.name}: 沒有成功提取任何幀")
+        return None
+
+    df = pd.DataFrame(rows)
+    return df.reindex(columns=["frame"] + extractor.output_columns, fill_value=0.0)
 
 
 def get_subject_dirs(input_dir: Path, exclude_acs: bool = True,
@@ -102,14 +102,9 @@ def run_extract(tools: List[str], config: AUExtractionConfig, device: str):
         tool_output_dir = config.output_dir / tool_name
         tool_output_dir.mkdir(parents=True, exist_ok=True)
 
-        extractor_cls = _get_extractor_class(tool_name)
-        if extractor_cls is None:
-            logger.error(f"未知工具: {tool_name}")
-            continue
-
-        extractor = extractor_cls(device=device)
-        if not extractor.is_available():
-            logger.error(f"{tool_name} 不可用，跳過")
+        extractor = get_extractor(tool_name, device=device)
+        if extractor is None:
+            logger.error(f"{tool_name} 未知或不可用，跳過")
             continue
 
         logger.info(f"\n--- {tool_name} ---")
@@ -121,7 +116,7 @@ def run_extract(tools: List[str], config: AUExtractionConfig, device: str):
                 skip += 1
                 continue
             try:
-                df = extractor.extract_subject(subject_dir)
+                df = _extract_subject(extractor, subject_dir)
                 if df is not None and len(df) > 0:
                     df.to_csv(output_file, index=False, encoding="utf-8-sig")
                     success += 1

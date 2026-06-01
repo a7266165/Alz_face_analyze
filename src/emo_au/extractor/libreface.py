@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 import logging
 
-from .base import BaseAUExtractor
+from .base import EmoAUExtractor
 from src.emo_au.extractor.au_config import LIBREFACE_AU_MAP, LIBREFACE_EMOTION_MAP, LIBREFACE_WEIGHTS_DIR
 
 logger = logging.getLogger(__name__)
@@ -63,7 +63,7 @@ LIBREFACE_EMOTION_LABEL_MAP: Dict[str, str] = {
 }
 
 
-class LibreFaceExtractor(BaseAUExtractor):
+class LibreFaceExtractor(EmoAUExtractor):
     """
     LibreFace AU 特徵提取器
 
@@ -81,20 +81,15 @@ class LibreFaceExtractor(BaseAUExtractor):
         self._device = device
 
     @property
-    def tool_name(self) -> str:
+    def model_name(self) -> str:
         return "libreface"
 
     @property
-    def au_columns(self) -> List[str]:
-        return list(LIBREFACE_INTENSITY_KEY_MAP.values())
-
-    @property
-    def emotion_columns(self) -> List[str]:
-        return list(LIBREFACE_EMOTION_MAP.values())
-
-    @property
-    def extra_columns(self) -> List[str]:
-        return list(LIBREFACE_DETECTION_KEY_MAP.values())
+    def output_columns(self) -> List[str]:
+        # 落地序照 _do_extract:AU intensity → AU detection → emotion one-hot
+        return (list(LIBREFACE_INTENSITY_KEY_MAP.values())
+                + list(LIBREFACE_DETECTION_KEY_MAP.values())
+                + list(LIBREFACE_EMOTION_MAP.values()))
 
     def is_available(self) -> bool:
         if self._available is not None:
@@ -107,8 +102,11 @@ class LibreFaceExtractor(BaseAUExtractor):
             self._available = False
         return self._available
 
-    def extract_frame(self, image: np.ndarray) -> Optional[Dict[str, float]]:
-        """從 numpy 影像提取（需先存為暫存檔）"""
+    def extract(self, image: np.ndarray) -> Optional[Dict[str, float]]:
+        """從 numpy 影像提取（需先存為暫存檔）。
+
+        producer 走 extract_from_path() 時會直接吃路徑、跳過此暫存。
+        """
         import tempfile
         import cv2
 
@@ -121,8 +119,8 @@ class LibreFaceExtractor(BaseAUExtractor):
         finally:
             Path(tmp_path).unlink(missing_ok=True)
 
-    def _extract_from_path(self, image_path: Path) -> Optional[Dict[str, float]]:
-        """直接使用檔案路徑提取，避免不必要的暫存"""
+    def extract_from_path(self, image_path: Path) -> Optional[Dict[str, float]]:
+        """直接使用檔案路徑提取，避免不必要的暫存（覆寫 base 預設）"""
         return self._do_extract(str(image_path))
 
     def _do_extract(self, image_path: str) -> Optional[Dict[str, float]]:

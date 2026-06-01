@@ -14,7 +14,7 @@ import numpy as np
 import torch
 import logging
 
-from .base import BaseAUExtractor
+from .base import EmoAUExtractor
 from src.emo_au.extractor.au_config import HARMONIZED_EMOTIONS
 
 logger = logging.getLogger(__name__)
@@ -27,7 +27,7 @@ VIT_LABEL_MAP = {
 }
 
 
-class ViTExtractor(BaseAUExtractor):
+class ViTExtractor(EmoAUExtractor):
     """
     ViT Emotion 提取器
 
@@ -46,20 +46,13 @@ class ViTExtractor(BaseAUExtractor):
         self._available = None
 
     @property
-    def tool_name(self) -> str:
+    def model_name(self) -> str:
         return "vit"
 
     @property
-    def au_columns(self) -> List[str]:
-        return []
-
-    @property
-    def emotion_columns(self) -> List[str]:
+    def output_columns(self) -> List[str]:
+        # extract() 回 ViT 原生序;落地統一為 HARMONIZED_EMOTIONS（producer reindex）
         return list(HARMONIZED_EMOTIONS)
-
-    @property
-    def extra_columns(self) -> List[str]:
-        return []
 
     def is_available(self) -> bool:
         if self._available is not None:
@@ -85,7 +78,7 @@ class ViTExtractor(BaseAUExtractor):
         self._model.eval()
         logger.info(f"ViT 模型載入完成 (model={self._model_name}, device={self._device})")
 
-    def extract_frame(self, image: np.ndarray) -> Optional[Dict[str, float]]:
+    def extract(self, image: np.ndarray) -> Optional[Dict[str, float]]:
         self._init_model()
         try:
             rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)

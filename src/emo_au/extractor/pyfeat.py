@@ -13,13 +13,13 @@ import cv2
 import numpy as np
 import logging
 
-from .base import BaseAUExtractor
+from .base import EmoAUExtractor
 from src.emo_au.extractor.au_config import PYFEAT_AU_MAP, PYFEAT_EMOTION_MAP
 
 logger = logging.getLogger(__name__)
 
 
-class PyFeatExtractor(BaseAUExtractor):
+class PyFeatExtractor(EmoAUExtractor):
     """
     Py-Feat AU 特徵提取器
 
@@ -33,20 +33,13 @@ class PyFeatExtractor(BaseAUExtractor):
         self._device = device
 
     @property
-    def tool_name(self) -> str:
+    def model_name(self) -> str:
         return "pyfeat"
 
     @property
-    def au_columns(self) -> List[str]:
-        return list(PYFEAT_AU_MAP.keys())
-
-    @property
-    def emotion_columns(self) -> List[str]:
-        return list(PYFEAT_EMOTION_MAP.keys())
-
-    @property
-    def extra_columns(self) -> List[str]:
-        return []
+    def output_columns(self) -> List[str]:
+        # 落地序照 _do_extract:AU probabilities → emotion probabilities
+        return list(PYFEAT_AU_MAP.keys()) + list(PYFEAT_EMOTION_MAP.keys())
 
     def is_available(self) -> bool:
         if self._available is not None:
@@ -83,11 +76,12 @@ class PyFeatExtractor(BaseAUExtractor):
             logger.info(f"Py-Feat Detector 載入完成 (device={self._device})")
         return self._detector
 
-    def extract_frame(self, image: np.ndarray) -> Optional[Dict[str, float]]:
+    def extract(self, image: np.ndarray) -> Optional[Dict[str, float]]:
         """
         從單一影像提取 AU 和情緒特徵（需先存為暫存檔）
 
-        Py-Feat detect_image 需要檔案路徑，無法直接接受 numpy array
+        Py-Feat detect_image 需要檔案路徑，無法直接接受 numpy array。
+        producer 走 extract_from_path() 時會直接吃路徑、跳過此暫存。
         """
         with tempfile.NamedTemporaryFile(suffix=".jpg", delete=False) as f:
             tmp_path = f.name
@@ -98,8 +92,8 @@ class PyFeatExtractor(BaseAUExtractor):
         finally:
             Path(tmp_path).unlink(missing_ok=True)
 
-    def _extract_from_path(self, image_path: Path) -> Optional[Dict[str, float]]:
-        """直接使用檔案路徑提取，避免不必要的暫存"""
+    def extract_from_path(self, image_path: Path) -> Optional[Dict[str, float]]:
+        """直接使用檔案路徑提取，避免不必要的暫存（覆寫 base 預設）"""
         return self._do_extract(str(image_path))
 
     def _do_extract(self, image_path: str) -> Optional[Dict[str, float]]:

@@ -20,7 +20,7 @@ import torch
 import torchvision.transforms as transforms
 import logging
 
-from .base import BaseAUExtractor
+from .base import EmoAUExtractor
 from src.emo_au.extractor.au_config import (
     POSTER_PP_EMOTION_INDEX,
     POSTER_PP_WEIGHTS_DIR,
@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 _POSTER_V2_DIR = WEIGHTS_DIR / "POSTER_V2"
 
 
-class PosterPPExtractor(BaseAUExtractor):
+class PosterPPExtractor(EmoAUExtractor):
     """
     POSTER++ (POSTER V2) Emotion 提取器
 
@@ -54,20 +54,12 @@ class PosterPPExtractor(BaseAUExtractor):
         self._available = None
 
     @property
-    def tool_name(self) -> str:
+    def model_name(self) -> str:
         return "poster_pp"
 
     @property
-    def au_columns(self) -> List[str]:
-        return []
-
-    @property
-    def emotion_columns(self) -> List[str]:
+    def output_columns(self) -> List[str]:
         return list(POSTER_PP_EMOTION_INDEX.values())
-
-    @property
-    def extra_columns(self) -> List[str]:
-        return []
 
     def is_available(self) -> bool:
         if self._available is not None:
@@ -195,7 +187,7 @@ class PosterPPExtractor(BaseAUExtractor):
 
         logger.info(f"POSTER++ 模型載入完成（device={self._device}）")
 
-    def extract_frame(self, image: np.ndarray) -> Optional[Dict[str, float]]:
+    def extract(self, image: np.ndarray) -> Optional[Dict[str, float]]:
         """
         對單一影像（numpy BGR）提取 7-class emotion probability
 

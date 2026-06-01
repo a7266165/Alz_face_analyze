@@ -14,7 +14,7 @@ import numpy as np
 import torch
 import logging
 
-from .base import BaseAUExtractor
+from .base import EmoAUExtractor
 from src.emo_au.extractor.au_config import (
     OPENFACE_AU_INDEX,
     OPENFACE_EMOTION_INDEX,
@@ -25,7 +25,7 @@ from src.emo_au.extractor.au_config import (
 logger = logging.getLogger(__name__)
 
 
-class OpenFaceExtractor(BaseAUExtractor):
+class OpenFaceExtractor(EmoAUExtractor):
     """
     OpenFace 3.0 AU 特徵提取器
 
@@ -48,20 +48,15 @@ class OpenFaceExtractor(BaseAUExtractor):
         self._available = None
 
     @property
-    def tool_name(self) -> str:
+    def model_name(self) -> str:
         return "openface"
 
     @property
-    def au_columns(self) -> List[str]:
-        return list(OPENFACE_AU_INDEX.values())
-
-    @property
-    def emotion_columns(self) -> List[str]:
-        return list(OPENFACE_EMOTION_INDEX.values())
-
-    @property
-    def extra_columns(self) -> List[str]:
-        return OPENFACE_GAZE_COLUMNS
+    def output_columns(self) -> List[str]:
+        # 8 AU + 8 emotion(含 contempt)+ 2D gaze，順序照 _parse_outputs 寫入序
+        return (list(OPENFACE_AU_INDEX.values())
+                + list(OPENFACE_EMOTION_INDEX.values())
+                + list(OPENFACE_GAZE_COLUMNS))
 
     def is_available(self) -> bool:
         if self._available is not None:
@@ -119,12 +114,12 @@ class OpenFaceExtractor(BaseAUExtractor):
         )
         logger.info("OpenFace 3.0 模型載入完成")
 
-    def extract_frame(self, image: np.ndarray) -> Optional[Dict[str, float]]:
+    def extract(self, image: np.ndarray) -> Optional[Dict[str, float]]:
         """
         對單一影像（numpy BGR）提取特徵
 
-        FaceDetector.get_face() 需要檔案路徑，
-        所以將 numpy array 暫存為臨時檔案
+        FaceDetector.get_face() 需要檔案路徑，所以將 numpy array 暫存為臨時檔案。
+        producer 走 extract_from_path() 時會直接吃路徑、跳過此暫存。
         """
         self._init_models()
 
@@ -137,8 +132,8 @@ class OpenFaceExtractor(BaseAUExtractor):
         finally:
             Path(tmp_path).unlink(missing_ok=True)
 
-    def _extract_from_path(self, image_path: Path) -> Optional[Dict[str, float]]:
-        """直接使用檔案路徑提取，避免不必要的暫存"""
+    def extract_from_path(self, image_path: Path) -> Optional[Dict[str, float]]:
+        """直接使用檔案路徑提取，避免不必要的暫存（覆寫 base 預設）"""
         self._init_models()
         return self._do_extract(str(image_path))
 

@@ -1,56 +1,58 @@
 """
-AU 特徵提取器基礎類別
+emotion / AU 特徵提取器基礎類別
 
-定義所有 AU 提取器的共同介面
+定義所有 emotion / AU 提取器的共同介面。與 src/embedding/extractor 的
+EmbeddingExtractor 互為鏡像:
+
+  EmbeddingExtractor.extract(img) -> ndarray      EmoAUExtractor.extract(img) -> dict
+  EmbeddingExtractor.extract_batch(images)        EmoAUExtractor.extract_batch(paths)
+
+兩處刻意不對稱(honest asymmetry):
+  - embedding 用單一 int `feature_dim` 描述 schema;emo_au 特徵具名且跨工具變長,
+    故改用單一有序 `output_columns`(raw CSV 欄序的唯一真實來源,不含 frame)。
+  - embedding 批次吃 arrays(mirror/original 需在記憶體配對/堆疊);emo_au 各幀獨立,
+    且 OpenFace / LibreFace 的 API 只吃檔案路徑,故批次吃 image paths,並透過
+    extract_from_path() 把「array-native vs path-native」差異封裝在 extractor 內。
 """
 
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Dict, List, Optional
 
-import cv2
 import numpy as np
-import pandas as pd
 import logging
 
 logger = logging.getLogger(__name__)
 
 
-class BaseAUExtractor(ABC):
+class EmoAUExtractor(ABC):
     """
-    AU 特徵提取器抽象基底類別
+    emotion / AU 特徵提取器抽象基底類別
 
-    所有 AU 提取器（OpenFace, Py-Feat, LibreFace）繼承此類
+    所有提取器（OpenFace, Py-Feat, LibreFace, POSTER++, DAN, EmoNet, FER,
+    HSEmotion, ViT）繼承此類。
     """
 
     @property
     @abstractmethod
-    def tool_name(self) -> str:
+    def model_name(self) -> str:
         """工具名稱識別符"""
         ...
 
     @property
     @abstractmethod
-    def au_columns(self) -> List[str]:
-        """此工具輸出的所有 AU 欄位名稱（原始名稱）"""
-        ...
+    def output_columns(self) -> List[str]:
+        """此工具 raw CSV 的有序欄位（不含 frame）。
 
-    @property
-    @abstractmethod
-    def emotion_columns(self) -> List[str]:
-        """此工具輸出的情緒欄位名稱（原始名稱）"""
-        ...
-
-    @property
-    @abstractmethod
-    def extra_columns(self) -> List[str]:
-        """此工具輸出的額外欄位（如 gaze, pose）"""
-        ...
-
-    @abstractmethod
-    def extract_frame(self, image: np.ndarray) -> Optional[Dict[str, float]]:
+        為 schema 的唯一真實來源:producer 以此 reindex 落地，保證欄序穩定。
+        必須等於該工具實際輸出的欄序（含 AU / emotion / 額外欄如 gaze、valence）。
         """
-        從單一影像中提取 AU 特徵
+        ...
+
+    @abstractmethod
+    def extract(self, image: np.ndarray) -> Optional[Dict[str, float]]:
+        """
+        從單一影像（numpy BGR）提取特徵
 
         Args:
             image: BGR 格式的影像
@@ -60,54 +62,49 @@ class BaseAUExtractor(ABC):
         """
         ...
 
-    def _extract_from_path(self, image_path: Path) -> Optional[Dict[str, float]]:
+    def extract_from_path(self, image_path: Path) -> Optional[Dict[str, float]]:
         """
-        從檔案路徑提取單幀特徵
+        從檔案路徑提取單幀特徵（producer 呼叫的統一入口）。
 
-        預設：cv2.imread → extract_frame。
-        若 API 需要檔案路徑（如 OpenFace, LibreFace），子類可覆寫此方法
-        以避免不必要的暫存檔讀寫。
+        預設:cv2.imread → extract。若 API 原生吃檔案路徑（如 OpenFace, LibreFace），
+        子類可覆寫此方法以避免不必要的 decode→encode→暫存檔來回。
         """
+        import cv2
+
         img = cv2.imread(str(image_path))
         if img is None:
-            logger.warning(f"  無法載入: {image_path.name}")
+            logger.warning(f"  無法載入: {Path(image_path).name}")
             return None
-        return self.extract_frame(img)
+        return self.extract(img)
 
-    def extract_subject(self, subject_dir: Path) -> Optional[pd.DataFrame]:
+    def extract_batch(
+        self,
+        image_paths: List[Path],
+        verbose: bool = False,
+    ) -> List[Optional[Dict[str, float]]]:
         """
-        提取單一受試者所有影像的特徵
+        批次提取特徵（鏡像 EmbeddingExtractor.extract_batch）
 
         Args:
-            subject_dir: 受試者影像目錄
+            image_paths: 影像檔案路徑列表
+            verbose: 是否顯示進度
 
         Returns:
-            DataFrame (n_frames, n_features)，每列一幀
+            特徵字典列表（與 image_paths 等長，失敗者為 None）
         """
-        image_paths = sorted(
-            [p for p in subject_dir.iterdir()
-             if p.suffix.lower() in (".jpg", ".jpeg", ".png", ".bmp")],
-            key=lambda p: p.name,
-        )
+        results: List[Optional[Dict[str, float]]] = []
+        for i, image_path in enumerate(image_paths):
+            if verbose and i % 10 == 0:
+                logger.info(f"{self.model_name} 處理進度: {i}/{len(image_paths)}")
+            try:
+                results.append(self.extract_from_path(image_path))
+            except Exception as e:
+                logger.error(f"{self.model_name} 提取失敗: {e}")
+                results.append(None)
 
-        if not image_paths:
-            logger.warning(f"  {subject_dir.name}: 沒有找到影像")
-            return None
-
-        results = []
-        for img_path in image_paths:
-            frame_data = self._extract_from_path(img_path)
-            if frame_data is not None:
-                frame_data["frame"] = img_path.stem
-                results.append(frame_data)
-
-        if not results:
-            logger.warning(f"  {subject_dir.name}: 沒有成功提取任何幀")
-            return None
-
-        df = pd.DataFrame(results)
-        cols = ["frame"] + [c for c in df.columns if c != "frame"]
-        return df[cols]
+        success = sum(1 for f in results if f is not None)
+        logger.info(f"{self.model_name}: {success}/{len(image_paths)} 成功")
+        return results
 
     def is_available(self) -> bool:
         """檢查此提取器是否可用（依賴已安裝）"""

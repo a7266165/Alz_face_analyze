@@ -13,7 +13,7 @@ from typing import Dict, List, Optional
 import numpy as np
 import logging
 
-from .base import BaseAUExtractor
+from .base import EmoAUExtractor
 from src.emo_au.extractor.au_config import HARMONIZED_EMOTIONS
 
 logger = logging.getLogger(__name__)
@@ -30,7 +30,7 @@ FER_LABEL_MAP = {
 }
 
 
-class FERExtractor(BaseAUExtractor):
+class FERExtractor(EmoAUExtractor):
     """
     FER Emotion 提取器
 
@@ -46,20 +46,13 @@ class FERExtractor(BaseAUExtractor):
         self._available = None
 
     @property
-    def tool_name(self) -> str:
+    def model_name(self) -> str:
         return "fer"
 
     @property
-    def au_columns(self) -> List[str]:
-        return []
-
-    @property
-    def emotion_columns(self) -> List[str]:
+    def output_columns(self) -> List[str]:
+        # extract() 回 FER 原生序;落地統一為 HARMONIZED_EMOTIONS（producer reindex）
         return list(HARMONIZED_EMOTIONS)
-
-    @property
-    def extra_columns(self) -> List[str]:
-        return []
 
     def is_available(self) -> bool:
         if self._available is not None:
@@ -79,7 +72,7 @@ class FERExtractor(BaseAUExtractor):
         self._detector = FER(mtcnn=self._mtcnn)
         logger.info(f"FER detector 初始化完成 (MTCNN={self._mtcnn})")
 
-    def extract_frame(self, image: np.ndarray) -> Optional[Dict[str, float]]:
+    def extract(self, image: np.ndarray) -> Optional[Dict[str, float]]:
         self._init_model()
         try:
             detections = self._detector.detect_emotions(image)

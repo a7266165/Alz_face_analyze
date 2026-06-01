@@ -15,7 +15,7 @@ import cv2
 import numpy as np
 import logging
 
-from .base import BaseAUExtractor
+from .base import EmoAUExtractor
 from src.emo_au.extractor.au_config import HARMONIZED_EMOTIONS
 
 logger = logging.getLogger(__name__)
@@ -27,7 +27,7 @@ HSEMOTION_LABEL_ORDER = [
 ]
 
 
-class HSEmotionExtractor(BaseAUExtractor):
+class HSEmotionExtractor(EmoAUExtractor):
     """
     HSEmotion Emotion 提取器
 
@@ -44,20 +44,13 @@ class HSEmotionExtractor(BaseAUExtractor):
         self._available = None
 
     @property
-    def tool_name(self) -> str:
+    def model_name(self) -> str:
         return "hsemotion"
 
     @property
-    def au_columns(self) -> List[str]:
-        return []
-
-    @property
-    def emotion_columns(self) -> List[str]:
+    def output_columns(self) -> List[str]:
+        # extract() 回 HSEmotion 原生序;落地統一為 HARMONIZED_EMOTIONS（producer reindex）
         return list(HARMONIZED_EMOTIONS)
-
-    @property
-    def extra_columns(self) -> List[str]:
-        return []
 
     def is_available(self) -> bool:
         if self._available is not None:
@@ -81,7 +74,7 @@ class HSEmotionExtractor(BaseAUExtractor):
         )
         logger.info(f"HSEmotion 模型載入完成 (model={self._model_name}, device={self._device})")
 
-    def extract_frame(self, image: np.ndarray) -> Optional[Dict[str, float]]:
+    def extract(self, image: np.ndarray) -> Optional[Dict[str, float]]:
         self._init_model()
         try:
             rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
