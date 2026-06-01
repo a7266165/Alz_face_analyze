@@ -1,19 +1,8 @@
 """
-scripts/embedding/extract_features.py
-影像 → embedding 特徵：統一萃取入口，依 --source 切換兩種來源。
+embedding 特徵萃取入口，根據兩種不同相片來源進行pic embedding。
 
-  --source original : aligned/<subj>/*.{jpg,png}  → 每張圖的原始 embedding
-        存 {model}/{bg_variant}/original/<subj>.npy   形狀 (n_images, dim)
-
-  --source mirror   : mirrors/<subj>/*_left.png, *_right.png  → 左右配對不對稱特徵
-        存 {model}/{bg_variant}/<ftype>/<subj>.npy    ftype = 5 種，裸 (n_pairs, dim) 陣列
-
-兩種來源共用：CPU 限制、subject 掃描、斷點續傳（model × ftype 取交集）、tqdm、stats。
-輸入影像由 scripts/preprocess/run_preprocess.py 產出；本步驟不需 mediapipe。
-
-用法：
-  conda run -n <embedding-env> python scripts/embedding/extract_features.py --source original
-  python scripts/embedding/extract_features.py --source mirror --bg-variant background
+1. 將每張原始人臉相片 embedding 存 {model}/{bg_variant}/original/<subj>.npy，形狀 (n_images, dim)
+2. 將每對鏡射人臉相片 embedding 存 {model}/{bg_variant}/<ftype>/<subj>.npy，形狀 (n_pairs, dim)
 """
 import os
 import sys
