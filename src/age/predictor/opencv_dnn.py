@@ -31,6 +31,11 @@ class OpenCVDNNPredictor(BasePredictor):
         self._net = None
         self._face_detector = None
 
+    def is_available(self) -> bool:
+        model_dir = EXTERNAL_DIR / "age" / "opencv_age"
+        return ((model_dir / "age_deploy.prototxt").exists()
+                and (model_dir / "age_net.caffemodel").exists())
+
     def initialize(self):
         model_dir = EXTERNAL_DIR / "age" / "opencv_age"
         proto_path = model_dir / "age_deploy.prototxt"

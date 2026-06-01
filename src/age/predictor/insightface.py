@@ -18,6 +18,13 @@ class InsightFacePredictor(BasePredictor):
     def __init__(self):
         self._app = None
 
+    def is_available(self) -> bool:
+        try:
+            import insightface  # noqa: F401
+            return True
+        except ImportError:
+            return False
+
     def initialize(self):
         try:
             from insightface.app import FaceAnalysis

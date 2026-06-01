@@ -31,7 +31,7 @@ from src.config import (
     AGE_BENCHMARK_DIR,
     DEMOGRAPHICS_DIR,
 )
-from src.age import PREDICTOR_MAP, BENCHMARK_DIR_NAMES
+from src.age import PREDICTORS, get_predictor, BENCHMARK_DIR_NAMES
 from src.common.image_io import iter_subject_dirs, load_subject
 
 logging.basicConfig(
@@ -82,7 +82,7 @@ def main():
     import argparse
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--model", choices=list(PREDICTOR_MAP),
+    ap.add_argument("--model", choices=list(PREDICTORS),
                     default="mivolo", help="年齡預測模型 (預設: mivolo)")
     ap.add_argument("--aligned-dir", type=Path, default=None,
                     help="覆寫對齊影像目錄；留空用含背景的對齊影像（aligned, background）")
@@ -114,8 +114,10 @@ def main():
         logger.info(f"Subject filter prefix: {args.subject_prefix}")
 
     logger.info(f"初始化 {args.model}...")
-    predictor_cls = PREDICTOR_MAP[args.model]
-    predictor = predictor_cls()
+    predictor = get_predictor(args.model)
+    if predictor is None:
+        logger.error(f"模型 {args.model} 不可用（依賴未安裝或權重缺失），中止")
+        sys.exit(1)
     predictor.initialize()
 
     subjects = iter_subject_dirs(aligned_dir, include_prefix=args.subject_prefix)

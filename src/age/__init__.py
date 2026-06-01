@@ -16,8 +16,10 @@ __all__ = [
     "DeepFacePredictor",
     "FairFacePredictor",
     "OpenCVDNNPredictor",
-    "PREDICTOR_MAP",
+    "PREDICTORS",
     "BENCHMARK_DIR_NAMES",
+    "get_predictor",
+    "available_predictors",
 ]
 
 _PREDICTOR_EXPORTS = {
@@ -27,8 +29,10 @@ _PREDICTOR_EXPORTS = {
     "DeepFacePredictor",
     "FairFacePredictor",
     "OpenCVDNNPredictor",
-    "PREDICTOR_MAP",
+    "PREDICTORS",
     "BENCHMARK_DIR_NAMES",
+    "get_predictor",
+    "available_predictors",
 }
 
 

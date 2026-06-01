@@ -4,7 +4,6 @@ VGGFace 特徵提取器
 使用 DeepFace 提取 4096 維人臉特徵
 """
 
-import tempfile
 from typing import Optional
 import numpy as np
 import logging
@@ -47,24 +46,12 @@ class VGGFaceExtractor(EmbeddingExtractor):
             return
 
         try:
-            import cv2
-            import os
-
-            # 測試 VGGFace 模型是否可用（會自動下載模型）
+            # 自我測試（會自動下載模型）。DeepFace 第一個參數雖名為 img_path，
+            # 但也接受 BGR numpy array，直接傳空白影像即可，免暫存檔。
             test_img = np.zeros((224, 224, 3), dtype=np.uint8)
-            with tempfile.NamedTemporaryFile(suffix='.jpg', delete=False) as f:
-                cv2.imwrite(f.name, test_img)
-                temp_path = f.name
-
-            try:
-                self._deepface.represent(
-                    img_path=temp_path,
-                    model_name='VGG-Face',
-                    enforce_detection=False
-                )
-            finally:
-                os.unlink(temp_path)
-
+            self._deepface.represent(
+                test_img, model_name='VGG-Face', enforce_detection=False,
+            )
             self._available = True
 
         except Exception as e:
@@ -72,10 +59,9 @@ class VGGFaceExtractor(EmbeddingExtractor):
 
     def extract(self, image: np.ndarray) -> Optional[np.ndarray]:
         """提取 VGGFace 特徵 (4096維)。接受 BGR numpy array。"""
+        # DeepFace 第一個參數（img_path）也接受 BGR numpy array，直接傳。
         result = self._deepface.represent(
-            img_path=image,
-            model_name='VGG-Face',
-            enforce_detection=False
+            image, model_name='VGG-Face', enforce_detection=False,
         )
 
         if result and len(result) > 0:

@@ -13,6 +13,9 @@ import os
 os.environ["USE_TF"] = "0"
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
+import logging
+from typing import Dict, List, Optional, Type
+
 from .base import BasePredictor
 from .mivolo import MiVOLOPredictor
 from .insightface import InsightFacePredictor
@@ -20,7 +23,11 @@ from .deepface import DeepFacePredictor
 from .fairface import FairFacePredictor
 from .opencv_dnn import OpenCVDNNPredictor
 
-PREDICTOR_MAP = {
+logger = logging.getLogger(__name__)
+
+# 名稱 → 類別（加新模型只要在這裡多一行）。各 wrapper 把重依賴延遲到 initialize()，
+# 故 eager import class 很便宜（與 EmbeddingExtractor 的 registry 同風格）。
+PREDICTORS: Dict[str, Type[BasePredictor]] = {
     "mivolo": MiVOLOPredictor,
     "insightface": InsightFacePredictor,
     "deepface": DeepFacePredictor,
@@ -36,6 +43,37 @@ BENCHMARK_DIR_NAMES = {
     "opencv_dnn": "5_OpenCV_DNN",
 }
 
+_cache: Dict[str, Optional[BasePredictor]] = {}
+
+
+def get_predictor(name: str) -> Optional[BasePredictor]:
+    """取得預測器（建構 + is_available 篩選 + 快取）。未知/不可用一律回 None。
+
+    回傳的是「尚未載入權重」的 predictor;呼叫端需自行 initialize()（eager 載入）。
+    """
+    if name in _cache:
+        return _cache[name]
+    if name not in PREDICTORS:
+        logger.warning(f"未知的預測器: {name}")
+        _cache[name] = None
+        return None
+    try:
+        p: Optional[BasePredictor] = PREDICTORS[name]()
+        if not p.is_available():
+            logger.warning(f"✗ {name} 不可用（依賴未安裝或權重缺失）")
+            p = None
+    except Exception as e:
+        logger.warning(f"✗ {name} 建立失敗: {e}")
+        p = None
+    _cache[name] = p
+    return p
+
+
+def available_predictors(names: Optional[List[str]] = None) -> List[str]:
+    """實際可用的預測器名稱（會觸發 is_available 探測）。"""
+    return [n for n in (names or PREDICTORS) if get_predictor(n) is not None]
+
+
 __all__ = [
     "BasePredictor",
     "MiVOLOPredictor",
@@ -43,6 +81,8 @@ __all__ = [
     "DeepFacePredictor",
     "FairFacePredictor",
     "OpenCVDNNPredictor",
-    "PREDICTOR_MAP",
+    "PREDICTORS",
     "BENCHMARK_DIR_NAMES",
+    "get_predictor",
+    "available_predictors",
 ]

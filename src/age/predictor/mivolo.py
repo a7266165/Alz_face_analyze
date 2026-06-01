@@ -26,6 +26,14 @@ class MiVOLOPredictor(BasePredictor):
         self.face_detector = None
         self.device = None
 
+    def is_available(self) -> bool:
+        try:
+            import transformers  # noqa: F401
+            import torch  # noqa: F401
+            return True
+        except ImportError:
+            return False
+
     def initialize(self):
         """載入模型"""
         try:
