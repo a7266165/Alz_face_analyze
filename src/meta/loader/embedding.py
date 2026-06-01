@@ -178,26 +178,11 @@ class DataLoader:
         for npy_file in npy_files:
             subject_id = npy_file.stem
             try:
-                loaded = np.load(npy_file, allow_pickle=True)
-
-                if loaded.dtype == object:
-                    data_dict = loaded.item()
-                    feature_key = list(data_dict.keys())[0]
-                    feature_array = data_dict[feature_key]
-                    features[subject_id] = feature_array
-                    if data_format is None:
-                        data_format = "per_image"
-                        logger.debug(f"偵測到 dict 格式 (per_image)，key={feature_key}")
-                elif loaded.ndim == 2:
-                    features[subject_id] = loaded
-                    if data_format is None:
-                        data_format = "per_image"
-                        logger.debug("偵測到 array 格式 (per_image)")
-                else:
-                    features[subject_id] = loaded
-                    if data_format is None:
-                        data_format = "averaged"
-                        logger.debug("偵測到 averaged 格式")
+                loaded = np.load(npy_file)
+                features[subject_id] = loaded
+                if data_format is None:
+                    data_format = "per_image" if loaded.ndim == 2 else "averaged"
+                    logger.debug(f"偵測到 {data_format} 格式")
 
             except Exception as e:
                 logger.warning(f"載入 {npy_file.name} 失敗: {e}")

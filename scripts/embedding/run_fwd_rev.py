@@ -306,9 +306,7 @@ def load_embedding(ids, model, feature_type="original", photo_mode=None):
         npy = emb_dir / f"{sid}.npy"
         if not npy.exists():
             continue
-        a = np.load(npy, allow_pickle=True)
-        if a.dtype == object:
-            a = list(a.item().values())[0]
+        a = np.load(npy)
         if a.ndim != 2:
             # Already a single 1-D vector, no per-photo dim available.
             rows.append({"subject_id": sid, "photo_idx": -1,

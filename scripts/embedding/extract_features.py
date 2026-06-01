@@ -6,9 +6,7 @@ scripts/embedding/extract_features.py
         存 {model}/{bg_variant}/original/<subj>.npy   形狀 (n_images, dim)
 
   --source mirror   : mirrors/<subj>/*_left.png, *_right.png  → 左右配對不對稱特徵
-        存 {model}/{bg_variant}/<ftype>/<subj>.npy    ftype = 5 種
-        （注意：mirror 落地的是 calculate_differences 回傳的 dict 物件，
-          下游以 np.load(..., allow_pickle=True).item() 取值，須維持此格式。）
+        存 {model}/{bg_variant}/<ftype>/<subj>.npy    ftype = 5 種，裸 (n_pairs, dim) 陣列
 
 兩種來源共用：CPU 限制、subject 掃描、斷點續傳（model × ftype 取交集）、tqdm、stats。
 輸入影像由 scripts/preprocess/run_preprocess.py 產出；本步驟不需 mediapipe。
@@ -131,11 +129,7 @@ class OriginalSource(FeatureSource):
 
 
 class MirrorSource(FeatureSource):
-    """mirrors 左右影像 → 配對算不對稱特徵（5 種）。
-
-    落地值為 calculate_differences 回傳的 dict（如 {"embedding_differences": arr}），
-    沿用既有檔案格式，下游以 .item() 取值。
-    """
+    """mirrors 左右影像 → 配對算不對稱特徵（5 種），存裸 (n_pairs, dim) 陣列。"""
 
     name = "mirror"
     ftypes = list(FTYPE_TO_METHOD)
@@ -170,9 +164,12 @@ class MirrorSource(FeatureSource):
             return {}
         left_array = np.array([p[0] for p in valid_pairs])
         right_array = np.array([p[1] for p in valid_pairs])
+        # calculate_differences 是多-method API，回傳 {method: arr}；此處每次只算
+        # 單一 method，取出該 arr 存裸陣列（與 original 格式一致）。
         return {
-            ftype: calculate_differences(
-                left_array, right_array, methods=[FTYPE_TO_METHOD[ftype]])
+            ftype: next(iter(calculate_differences(
+                left_array, right_array,
+                methods=[FTYPE_TO_METHOD[ftype]]).values()))
             for ftype in self.ftypes
         }
 

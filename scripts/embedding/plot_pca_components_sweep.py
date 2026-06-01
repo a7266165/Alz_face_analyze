@@ -222,9 +222,7 @@ def compute_cumulative_eigenvalue_ratio(feature_subdir, cohort_mode="all_npy",
         for npy in sorted(feat_dir.glob("*.npy")):
             if keep_ids is not None and npy.stem not in keep_ids:
                 continue
-            a = np.load(npy, allow_pickle=True)
-            if a.dtype == object:
-                a = list(a.item().values())[0]
+            a = np.load(npy)
             v = a.mean(axis=0) if a.ndim == 2 else a
             vecs.append(v)
         if not vecs:

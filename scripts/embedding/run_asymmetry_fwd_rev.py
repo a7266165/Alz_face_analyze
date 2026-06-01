@@ -92,9 +92,7 @@ def _load_vectors_for_cohort(cohort, model, feature_type, bg_mode):
         npy = feat_dir / f"{sid}.npy"
         if not npy.exists():
             continue
-        a = np.load(npy, allow_pickle=True)
-        if a.dtype == object:
-            a = list(a.item().values())[0]
+        a = np.load(npy)
         vec = a.mean(axis=0) if a.ndim == 2 else a
         bid = r["base_id"] if "base_id" in r.index else sid.rsplit("-", 1)[0]
         rows.append({"ID": sid, "base_id": bid,

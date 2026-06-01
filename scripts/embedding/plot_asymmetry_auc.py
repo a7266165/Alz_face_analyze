@@ -109,9 +109,7 @@ def _load_npy_mean(feat_dir, sid):
     npy = feat_dir / f"{sid}.npy"
     if not npy.exists():
         return None
-    a = np.load(npy, allow_pickle=True)
-    if a.dtype == object:
-        a = list(a.item().values())[0]
+    a = np.load(npy)
     return a.mean(axis=0) if a.ndim == 2 else a
 
 

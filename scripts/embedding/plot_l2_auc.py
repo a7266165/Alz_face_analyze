@@ -93,9 +93,7 @@ def _load_l2_norms(ids, model, feature_type, bg_mode):
         npy = feat_dir / f"{sid}.npy"
         if not npy.exists():
             continue
-        a = np.load(npy, allow_pickle=True)
-        if a.dtype == object:
-            a = list(a.item().values())[0]
+        a = np.load(npy)
         vec = a.mean(axis=0) if a.ndim == 2 else a
         results[sid] = float(np.linalg.norm(vec))
     return results

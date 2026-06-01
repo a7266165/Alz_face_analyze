@@ -88,9 +88,7 @@ def load_age_error(subject_ids, demo):
 
 def _load_and_pool_npy(path):
     """Load .npy, unwrap object-dtype wrapping, return mean-pooled vector."""
-    a = np.load(path, allow_pickle=True)
-    if a.dtype == object:
-        a = list(a.item().values())[0]
+    a = np.load(path)
     return a.mean(axis=0) if a.ndim == 2 else a
 
 
