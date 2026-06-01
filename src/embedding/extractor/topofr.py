@@ -9,13 +9,13 @@ from typing import Optional
 import numpy as np
 import logging
 
-from .base import BaseExtractor
+from .base import EmbeddingExtractor
 from src.config import EXTERNAL_DIR
 
 logger = logging.getLogger(__name__)
 
 
-class TopoFRExtractor(BaseExtractor):
+class TopoFRExtractor(EmbeddingExtractor):
     """
     TopoFR 特徵提取器
 

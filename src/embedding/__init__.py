@@ -5,7 +5,7 @@
 """
 
 from .extractor import (
-    BaseExtractor,
+    EmbeddingExtractor,
     DlibExtractor,
     ArcFaceExtractor,
     TopoFRExtractor,
@@ -17,7 +17,7 @@ from .extractor import (
 
 __all__ = [
     # 契約
-    "BaseExtractor",
+    "EmbeddingExtractor",
     # 具體提取器
     "DlibExtractor",
     "ArcFaceExtractor",

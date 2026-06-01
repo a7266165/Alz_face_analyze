@@ -12,7 +12,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class BaseExtractor(ABC):
+class EmbeddingExtractor(ABC):
     """
     特徵提取器抽象基礎類別
 

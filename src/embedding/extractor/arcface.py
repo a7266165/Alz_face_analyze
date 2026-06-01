@@ -8,12 +8,12 @@ from typing import Optional
 import numpy as np
 import logging
 
-from .base import BaseExtractor
+from .base import EmbeddingExtractor
 
 logger = logging.getLogger(__name__)
 
 
-class ArcFaceExtractor(BaseExtractor):
+class ArcFaceExtractor(EmbeddingExtractor):
     """
     ArcFace 特徵提取器
 

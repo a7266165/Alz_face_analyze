@@ -1,12 +1,12 @@
 """特徵提取器。
 
-BaseExtractor 定義單一模型的契約；各模型實作於同層檔案。
+EmbeddingExtractor 定義單一模型的契約；各模型實作於同層檔案。
 EXTRACTORS 是「名稱 → 類別」對照表，get_extractor() 負責懶載入 + 快取。
 """
 import logging
 from typing import Dict, List, Optional, Type
 
-from .base import BaseExtractor
+from .base import EmbeddingExtractor
 from .dlib import DlibExtractor
 from .arcface import ArcFaceExtractor
 from .topofr import TopoFRExtractor
@@ -15,17 +15,17 @@ from .vggface import VGGFaceExtractor
 logger = logging.getLogger(__name__)
 
 # 名稱 → 類別（加新模型只要在這裡多一行）
-EXTRACTORS: Dict[str, Type[BaseExtractor]] = {
+EXTRACTORS: Dict[str, Type[EmbeddingExtractor]] = {
     "dlib": DlibExtractor,
     "arcface": ArcFaceExtractor,
     "topofr": TopoFRExtractor,
     "vggface": VGGFaceExtractor,
 }
 
-_cache: Dict[str, Optional[BaseExtractor]] = {}
+_cache: Dict[str, Optional[EmbeddingExtractor]] = {}
 
 
-def get_extractor(name: str) -> Optional[BaseExtractor]:
+def get_extractor(name: str) -> Optional[EmbeddingExtractor]:
     """取得提取器（懶載入 + 快取）。未知/載入失敗/不可用一律回 None。"""
     if name in _cache:
         return _cache[name]
@@ -34,7 +34,7 @@ def get_extractor(name: str) -> Optional[BaseExtractor]:
         _cache[name] = None
         return None
     try:
-        ext: Optional[BaseExtractor] = EXTRACTORS[name]()
+        ext: Optional[EmbeddingExtractor] = EXTRACTORS[name]()
         if ext.is_available():
             logger.info(f"✓ {name} 載入成功")
         else:
@@ -53,7 +53,7 @@ def available_extractors(names: Optional[List[str]] = None) -> List[str]:
 
 
 __all__ = [
-    "BaseExtractor",
+    "EmbeddingExtractor",
     "DlibExtractor",
     "ArcFaceExtractor",
     "TopoFRExtractor",
