@@ -270,15 +270,15 @@ def build(mode='center'):
         node(ax, x, y_d3, 2.6, NODE_H, lab, C_AOUT['nd'])
         line(ax, X_AGE_C, y_d2 + NODE_H / 2, x, y_d3 - NODE_H / 2)
 
-    # embedding: 5 features (original = 1, asymmetry = 4)  (DIMMED)
+    # embedding: 5 features (original = 1, asymmetry = 4)  (LIT)
     EMB_FEATS = ['original', 'diff', '|diff|', 'rel_diff', '|rel_diff|']
     nw_ef = 1.9; gap_ef = 0.3
     efx, ef_tot = _rowx(X_EMB_C, len(EMB_FEATS), nw_ef, gap_ef)
-    cluster(ax, X_EMB_C, y_feat, ef_tot + 0.9, NODE_H + 2 * SP, G['bg'])
+    cluster(ax, X_EMB_C, y_feat, ef_tot + 0.9, NODE_H + 2 * SP, C_FT['bg'])
     for x, lab in zip(efx, EMB_FEATS):
-        node(ax, x, y_feat, nw_ef, NODE_H, lab, G['nd'])
+        node(ax, x, y_feat, nw_ef, NODE_H, lab, C_FT['nd'])
         for ex in emx:
-            _dln(ex, y_mod + NODE_H / 2, x, y_feat - NODE_H / 2)
+            line(ax, ex, y_mod + NODE_H / 2, x, y_feat - NODE_H / 2)
 
     # emotion: 10 features in 3 sub-groups (V/A | contempt | 7 shared)
     EMO_VA = ['valence', 'arousal']
