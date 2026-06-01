@@ -118,10 +118,14 @@ def build(mode='center'):
        mode='side'   : Demographic+Cohort parked beside the whole chain (left)."""
     # ════ column centres (left -> right) ════
     if mode == 'side':
-        X_AGE_C, X_EMB_C, X_EMO_C = 24.0, 40.0, 60.0
+        X_AGE_C, X_EMB_C, X_EMO_C = 24.0, 45.0, 70.0
     else:
-        X_AGE_C, X_EMB_C, X_EMO_C = 7.0, 24.0, 45.0
+        X_AGE_C, X_EMB_C, X_EMO_C = 7.0, 30.0, 55.0
     PRE_CX = X_EMB_C        # preprocess aligned to the embedding centre-line
+    # embedding splits into two aligned sub-columns: each feature cluster sits
+    # directly above its own downstream path.
+    X_ORIG = X_EMB_C - 6.0     # 'original' -> dim-reduce -> classifier
+    X_ASYM = X_EMB_C + 6.0     # 'asymmetry' -> L2/CD/LDA scoring
 
     # ════ vertical bands (top -> bottom) ════
     top = 0.5
@@ -154,11 +158,11 @@ def build(mode='center'):
     if mode == 'side':
         dc_cx = 8.5                       # left spine, beside the chain
         s4_top = top                      # top-aligned with Preprocessing
-        x_left, x_right = -1.5, 73.0
+        x_left, x_right = -1.5, 88.0
     else:
         dc_cx = X_EMB_C                   # central, below the features
         s4_top = d3_bot + SP
-        x_left, x_right = -1.5, 58.5
+        x_left, x_right = -1.5, 66.0
     dc_bot = s4_top + _DC_H
 
     # ════ parked matched-logic region (eval chain + Fwd/Rev), below everything ════
@@ -261,7 +265,7 @@ def build(mode='center'):
     ae_w = 5.5
     cluster(ax, X_AGE_C, y_d2, ae_w + 0.9, NODE_H + 2 * SP, C_AOUT['bg'])
     node(ax, X_AGE_C, y_d2, ae_w, NODE_H,
-         'age_error = real_age - predicted_age', C_AOUT['nd'], fs=FS_SM)
+         'age_error = real_age - predicted_age', C_AOUT['nd'])
     line(ax, X_AGE_C, y_d1 + NODE_H / 2, X_AGE_C, y_d2 - NODE_H / 2)
 
     vls_x, vls_tot = _rowx(X_AGE_C, 4, 2.6, 0.5)
@@ -270,29 +274,67 @@ def build(mode='center'):
         node(ax, x, y_d3, 2.6, NODE_H, lab, C_AOUT['nd'])
         line(ax, X_AGE_C, y_d2 + NODE_H / 2, x, y_d3 - NODE_H / 2)
 
-    # embedding features split into TWO clusters (mirrors age_emb_pipeline_mpl):
-    #   - 'original'                       (single-node cluster)
-    #   - 'diff / |diff| / rel_diff / |rel_diff|'  (asymmetry cluster)
+    # embedding features split into TWO clusters, each centred on its sub-column
+    # (mirrors age_emb_pipeline_mpl): 'original' above X_ORIG, asymmetry above X_ASYM
     nw_ef = 1.9; gap_ef = 0.3
     ASYM_FEATS = ['diff', '|diff|', 'rel_diff', '|rel_diff|']
-    orig_cl_w = nw_ef + 0.6
-    _, asym_tot = _rowx(0, len(ASYM_FEATS), nw_ef, gap_ef)
-    asym_cl_w = asym_tot + 0.6
-    gap_cl = 1.0
-    pair_w = orig_cl_w + gap_cl + asym_cl_w
-    pair_left = X_EMB_C - pair_w / 2
-    x_orig = pair_left + orig_cl_w / 2
-    asym_c = pair_left + orig_cl_w + gap_cl + asym_cl_w / 2
-    asymx, _ = _rowx(asym_c, len(ASYM_FEATS), nw_ef, gap_ef)
+    x_orig = X_ORIG
+    asymx, asym_tot = _rowx(X_ASYM, len(ASYM_FEATS), nw_ef, gap_ef)
 
-    cluster(ax, x_orig, y_feat, orig_cl_w, NODE_H + 2 * SP, C2['bg'])
+    cluster(ax, x_orig, y_feat, nw_ef + 0.6, NODE_H + 2 * SP, C2['bg'])
     node(ax, x_orig, y_feat, nw_ef, NODE_H, 'original', C2['nd'])
-    cluster(ax, asym_c, y_feat, asym_cl_w, NODE_H + 2 * SP, C2['bg'])
+    cluster(ax, X_ASYM, y_feat, asym_tot + 0.6, NODE_H + 2 * SP, C2['bg'])
     for x, lab in zip(asymx, ASYM_FEATS):
         node(ax, x, y_feat, nw_ef, NODE_H, lab, C2['nd'])
     for fx in [x_orig] + asymx:
         for ex in emx:
             line(ax, ex, y_mod + NODE_H / 2, fx, y_feat - NODE_H / 2)
+
+    # ── embedding step 5 (shares Age's y_d1/y_d2/y_d3 bands) ──
+    #   shared:    original + asymmetry -> mean/all (avg feature vectors?)
+    #   original:  mean/all -> no_drop/PCA/DropCorr (dim-reduce) -> LR/XGB
+    #   asymmetry: mean/all -> L2/CD/LDA (three scoring methods)
+    # Each path is centred on its sub-column (X_ORIG / X_ASYM), aligned with the
+    # feature cluster above it. Cluster details kept (cf. age_emb_pipeline_mpl).
+
+    # NOTE: the whole embedding step-5 (everything after the features) is DIMMED.
+    # shared mean/all aggregation (both feature clusters feed it)
+    eax, ea_tot = _rowx(X_EMB_C, 2, 2.4, 0.65)
+    cluster(ax, X_EMB_C, y_d1, ea_tot + 0.9, NODE_H + 2 * SP, G['bg'])
+    for x, lab in zip(eax, ['mean', 'all']):
+        node(ax, x, y_d1, 2.4, NODE_H, lab, G['nd'])
+    for fx in [x_orig] + asymx:
+        for px in eax:
+            _dln(fx, y_feat + NODE_H / 2, px, y_d1 - NODE_H / 2)
+
+    # original path: dimensionality reduction (aligned under 'original')
+    pdx, pd_tot = _rowx(X_ORIG, 3, 2.0, 0.5)
+    cluster(ax, X_ORIG, y_d2, pd_tot + 0.8, NODE_H + 2 * SP, G['bg'])
+    for x, lab in zip(pdx, ['no_drop', 'PCA', 'DropCorr']):
+        node(ax, x, y_d2, 2.0, NODE_H, lab, G['nd'])
+        for px in eax:
+            _dln(px, y_d1 + NODE_H / 2, x, y_d2 - NODE_H / 2)
+
+    # asymmetry path: three scoring methods (aligned under the asymmetry feats)
+    scx, sc_tot = _rowx(X_ASYM, 3, 2.9, 0.4)
+    cluster(ax, X_ASYM, y_d2, sc_tot + 0.8, NODE_H + 2 * SP, G['bg'])
+    for x, lab in zip(scx, ['L2 Norm\n$\\sqrt{\\Sigma_i f_i^2}$',
+                            'Centroid Dist\n$\\Delta\\cos(x,\\mu)$',
+                            'LDA Proj\nFisher 1D']):
+        node(ax, x, y_d2, 2.9, NODE_H, lab, G['nd'])
+        for px in eax:
+            _dln(px, y_d1 + NODE_H / 2, x, y_d2 - NODE_H / 2)
+
+    # original path: classifier (aligned under the dim-reduce row)
+    clfx, clf_tot = _rowx(X_ORIG, 2, 4.2, 0.5)
+    cluster(ax, X_ORIG, y_d3, clf_tot + 0.8, NODE_H + 2 * SP, G['bg'])
+    for x, lab in zip(clfx, [
+            'Logistic Regression\n$C \\in \\{10^{-3}\\,.\\,.\\,10^{2}\\}$',
+            'XGBoost\nn_tree x max_depth x lr\n'
+            '{200,500,1k}x{3,6,9}x{.05,.1,.2}']):
+        node(ax, x, y_d3, 4.2, NODE_H, lab, G['nd'])
+        for dx in pdx:
+            _dln(dx, y_d2 + NODE_H / 2, x, y_d3 - NODE_H / 2)
 
     # emotion: 10 features in 3 sub-groups (V/A | contempt | 7 shared)
     EMO_VA = ['valence', 'arousal']
@@ -365,12 +407,12 @@ def build(mode='center'):
     node(ax, xl, fr_y1, nw_col, NODE_H, 'Full Cohort', G['nd'])
     node(ax, xl, fr_y2, nw_col, NODE_H, 'OOF Scores', G['nd'])
     node(ax, xl, fr_y3, nw_col, NODE_H,
-         'Full Cohort Eval\nMatched Subset Eval (1:1)', G['nd'], fs=FS_SM)
+         'Full Cohort Eval\nMatched Subset Eval (1:1)', G['nd'])
     cluster(ax, xr, (park_top + fr_bot) / 2, cw, cl_h, G['bg'])
     node(ax, xr, fr_y1, nw_col, NODE_H, 'Matched Cohort', G['nd'])
-    node(ax, xr, fr_y2, nw_col, NODE_H, 'Predict Full Cohort', G['nd'], fs=FS_SM)
+    node(ax, xr, fr_y2, nw_col, NODE_H, 'Predict Full Cohort', G['nd'])
     node(ax, xr, fr_y3, nw_col, NODE_H,
-         'Matched OOF Eval\nUnmatched Eval', G['nd'], fs=FS_SM)
+         'Matched OOF Eval\nUnmatched Eval', G['nd'])
     for col in [xl, xr]:
         for ya, yb in [(fr_y1, fr_y2), (fr_y2, fr_y3)]:
             _dln(col, ya + NODE_H / 2, col, yb - NODE_H / 2)
