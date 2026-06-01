@@ -49,7 +49,7 @@ external/public_face_datasets/
 4. **產 demographics** → `scripts/external/build_external_demographics.py`
    輸出：`data/demographics/EACS.csv`（7,933 rows + Source 欄）
 5. **Feature extraction**（未做）→ 先 `scripts/preprocess/run_preprocess.py`（raw→mirror），
-   再 `scripts/embedding/extract_mirror_features.py`（mirror→features）對 EACS 影像
+   再 `scripts/embedding/extract_features.py --source mirror`（mirror→features）對 EACS 影像
 6. **Stat grid** → `scripts/experiments/run_stat_grid.py --hc-source {ACS, ACS_ext, EACS}`
 
 ## `--hc-source` 三模式
