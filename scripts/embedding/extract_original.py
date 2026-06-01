@@ -32,7 +32,7 @@ from src.config import (
     WORKSPACE_DIR,
     preprocess_dir,
 )
-from src.embedding import FeatureExtractor
+from src.embedding import get_extractor
 
 # 設定日誌
 logging.basicConfig(
@@ -158,9 +158,6 @@ def main():
         logger.info("所有受試者已處理完成")
         return
 
-    # 初始化提取器
-    extractor = FeatureExtractor()
-
     success = 0
     fail = 0
 
@@ -177,17 +174,14 @@ def main():
                     continue
 
                 # 提取各模型的特徵
-                results = extractor.extract_features(
-                    images, models=models
-                )
-
                 for model in models:
-                    if model not in results:
+                    extractor = get_extractor(model)
+                    if extractor is None:
                         continue
 
-                    features = results[model]
                     # 過濾 None
-                    valid = [f for f in features if f is not None]
+                    valid = [f for f in extractor.extract_batch(images)
+                             if f is not None]
                     if not valid:
                         logger.warning(f"{subject_id}: {model} 沒有有效特徵")
                         continue

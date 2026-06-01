@@ -4,7 +4,7 @@ scripts/embedding/extract_mirror_features.py
 
 職責（preprocess 的下游）：
   mirrors/<subject>/*_left.png, *_right.png
-    → 各 embedding 模型抽特徵（FeatureExtractor）
+    → 各 embedding 模型抽特徵（get_extractor）
     → 左右配對算差異/平均/相對等（calculate_differences）
     → 存 EMBEDDING_FEATURES_DIR/<model>/<bg_variant>/<ftype>/<subject>.npy
 
@@ -30,7 +30,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
 from _paths import PROJECT_ROOT  # noqa: F401
 
 from src.config import EMBEDDING_FEATURES_DIR, preprocess_dir
-from src.embedding import FeatureExtractor
+from src.embedding import get_extractor
 from src.asymmetry import calculate_differences
 
 logging.basicConfig(
@@ -155,15 +155,12 @@ class MirrorFeaturePipeline:
             self._print_statistics()
             return
 
-        logger.info("初始化特徵提取器...")
-        extractor = FeatureExtractor()
-
         with tqdm(remaining, desc="抽特徵") as pbar:
             for subject_dir in pbar:
                 subject_id = subject_dir.name
                 pbar.set_description(f"處理 {subject_id}")
                 try:
-                    features = self._process_subject(subject_id, extractor)
+                    features = self._process_subject(subject_id)
                     if features:
                         self._save_subject_features(subject_id, features)
                         self.stats["successful_subjects"] += 1
@@ -183,8 +180,7 @@ class MirrorFeaturePipeline:
         logger.info("\n特徵提取完成！")
 
     # ------------------------------------------------------------------
-    def _process_subject(self, subject_id: str,
-                         extractor: FeatureExtractor) -> Optional[Dict]:
+    def _process_subject(self, subject_id: str) -> Optional[Dict]:
         mirror_dir = self.mirrors_dir / subject_id
         left_files = sorted(mirror_dir.glob("*_left.png"))
         right_files = sorted(mirror_dir.glob("*_right.png"))
@@ -204,24 +200,22 @@ class MirrorFeaturePipeline:
         self.stats["total_images"] += len(left_images) + len(right_images)
 
         return self._extract_and_compute_asymmetry(
-            subject_id, left_images, right_images, extractor)
+            subject_id, left_images, right_images)
 
     def _extract_and_compute_asymmetry(
-        self, subject_id, left_images, right_images, extractor,
+        self, subject_id, left_images, right_images,
     ) -> Optional[Dict]:
         subject_features = {}
         for model in self.embedding_models:
-            if model not in extractor.available_models:
+            extractor = get_extractor(model)
+            if extractor is None:
                 continue
             model_features = {}
             try:
-                left_dict = extractor.extract_features(left_images, model)
-                right_dict = extractor.extract_features(right_images, model)
-                if model not in left_dict or model not in right_dict:
-                    logger.warning(f"{subject_id}: {model} 特徵提取失敗")
-                    continue
+                left_feats = extractor.extract_batch(left_images)
+                right_feats = extractor.extract_batch(right_images)
                 valid_pairs = [
-                    (l, r) for l, r in zip(left_dict[model], right_dict[model])
+                    (l, r) for l, r in zip(left_feats, right_feats)
                     if l is not None and r is not None
                 ]
                 if not valid_pairs:

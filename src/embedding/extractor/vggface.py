@@ -10,12 +10,10 @@ import numpy as np
 import logging
 
 from .base import BaseExtractor
-from .feature_extractor import FeatureExtractor
 
 logger = logging.getLogger(__name__)
 
 
-@FeatureExtractor.register("vggface")
 class VGGFaceExtractor(BaseExtractor):
     """
     VGGFace 特徵提取器
