@@ -3,7 +3,7 @@ DAN / HSEmotion / ViT (trpakov) 統一提取腳本
 
 在 fer_models 環境中執行:
     conda activate fer_models
-    python scripts/run_new_models_extract.py --tools dan hsemotion vit
+    python scripts/emo_au/extract_new_models.py --tools dan hsemotion vit
 """
 
 import argparse
