@@ -21,9 +21,7 @@ class VGGFaceExtractor(EmbeddingExtractor):
     """
 
     def __init__(self):
-        self._available = False
         self._deepface = None
-        self._init_vggface()
 
     @property
     def model_name(self) -> str:
@@ -34,28 +32,25 @@ class VGGFaceExtractor(EmbeddingExtractor):
         return 4096
 
     def is_available(self) -> bool:
-        return self._available
-
-    def _init_vggface(self):
-        """初始化 VGGFace"""
         try:
-            from deepface import DeepFace
-            self._deepface = DeepFace
+            from deepface import DeepFace  # noqa: F401
+            return True
         except ImportError:
             logger.debug("deepface 未安裝")
+            return False
+
+    def initialize(self) -> None:
+        """載入 DeepFace VGG-Face。以一張空白影像做自我測試 + warm-up（首次會自動下載權重）。"""
+        if self._deepface is not None:
             return
-
-        try:
-            # 自我測試（會自動下載模型）。DeepFace 第一個參數雖名為 img_path，
-            # 但也接受 BGR numpy array，直接傳空白影像即可，免暫存檔。
-            test_img = np.zeros((224, 224, 3), dtype=np.uint8)
-            self._deepface.represent(
-                test_img, model_name='VGG-Face', enforce_detection=False,
-            )
-            self._available = True
-
-        except Exception as e:
-            logger.warning(f"VGGFace 初始化失敗: {e}")
+        from deepface import DeepFace
+        # DeepFace 第一個參數雖名為 img_path，但也接受 BGR numpy array，
+        # 直接傳空白影像即可觸發下載與 warm-up，免暫存檔。
+        test_img = np.zeros((224, 224, 3), dtype=np.uint8)
+        DeepFace.represent(
+            test_img, model_name='VGG-Face', enforce_detection=False,
+        )
+        self._deepface = DeepFace
 
     def extract(self, image: np.ndarray) -> Optional[np.ndarray]:
         """提取 VGGFace 特徵 (4096維)。接受 BGR numpy array。"""

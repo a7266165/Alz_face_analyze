@@ -52,29 +52,29 @@ class PyFeatExtractor(EmoAUExtractor):
             self._available = False
         return self._available
 
-    def _get_detector(self):
-        """懶載入 Detector
+    def initialize(self) -> None:
+        """載入 Py-Feat Detector。
 
         Monkey-patch Fex.compute_identities 成 no-op —
         pyfeat 0.6 在 Windows 跑 identity embeddings (FaceNet) 會有 GIL
         violation fatal crash（>5000 張時必現）。我們只要 AU + emotion，
         不需要 identity 聚合。
         """
-        if self._detector is None:
-            from feat import Detector
-            from feat.data import Fex
-            if not getattr(Fex.compute_identities, "_patched", False):
-                def _noop_compute_identities(self, *args, **kwargs):
-                    # inplace=True 時原版返回 None；維持同語義
-                    if kwargs.get("inplace", False):
-                        return None
-                    return self
-                _noop_compute_identities._patched = True
-                Fex.compute_identities = _noop_compute_identities
-            logger.info("載入 Py-Feat Detector（compute_identities 已 no-op）...")
-            self._detector = Detector(device=self._device)
-            logger.info(f"Py-Feat Detector 載入完成 (device={self._device})")
-        return self._detector
+        if self._detector is not None:
+            return
+        from feat import Detector
+        from feat.data import Fex
+        if not getattr(Fex.compute_identities, "_patched", False):
+            def _noop_compute_identities(self, *args, **kwargs):
+                # inplace=True 時原版返回 None；維持同語義
+                if kwargs.get("inplace", False):
+                    return None
+                return self
+            _noop_compute_identities._patched = True
+            Fex.compute_identities = _noop_compute_identities
+        logger.info("載入 Py-Feat Detector（compute_identities 已 no-op）...")
+        self._detector = Detector(device=self._device)
+        logger.info(f"Py-Feat Detector 載入完成 (device={self._device})")
 
     def extract(self, image: np.ndarray) -> Optional[Dict[str, float]]:
         """
@@ -94,14 +94,9 @@ class PyFeatExtractor(EmoAUExtractor):
             Path(tmp_path).unlink(missing_ok=True)
 
     def _do_extract(self, image_path: str) -> Optional[Dict[str, float]]:
-        """從檔案路徑提取 AU 和情緒特徵"""
-        if not self.is_available():
-            return None
-
-        detector = self._get_detector()
-
+        """從檔案路徑提取 AU 和情緒特徵（假設已 initialize()）"""
         try:
-            result = detector.detect_image(image_path)
+            result = self._detector.detect_image(image_path)
 
             if result is None or len(result) == 0:
                 return None

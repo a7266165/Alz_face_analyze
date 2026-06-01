@@ -232,6 +232,24 @@ def run_extraction(source: FeatureSource, models: List[str], bg_variant: str,
         logger.info("所有受試者已處理完成")
         return
 
+    # 顯式建構並載入所有模型一次（fail-fast：載入錯誤在進 subject 迴圈前就爆，不會
+    # 被逐 subject 的 try/except 吞成「每個受試者都失敗」）。單一模型失敗只跳過該模型。
+    extractors = {}
+    for model in models:
+        ext = get_extractor(model)
+        if ext is None:
+            logger.warning(f"{model} 不可用（未安裝或權重缺失），跳過")
+            continue
+        try:
+            ext.initialize()
+        except Exception as e:
+            logger.error(f"{model} 初始化失敗，跳過: {e}")
+            continue
+        extractors[model] = ext
+    if not extractors:
+        logger.error("沒有任何可用模型，結束")
+        return
+
     stats = {"total": len(subject_dirs), "skipped": len(processed),
              "success": 0, "fail": 0, "start": datetime.now(), "end": None}
 
@@ -246,10 +264,7 @@ def run_extraction(source: FeatureSource, models: List[str], bg_variant: str,
                     continue
 
                 saved_any = False
-                for model in models:
-                    extractor = get_extractor(model)
-                    if extractor is None:
-                        continue
+                for model, extractor in extractors.items():
                     feats = source.compute(payload, extractor)
                     if not feats:
                         logger.warning(f"{subject_id}: {model} 沒有有效特徵")

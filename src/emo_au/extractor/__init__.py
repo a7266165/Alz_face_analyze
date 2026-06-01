@@ -35,9 +35,10 @@ _cache: Dict[tuple, Optional[EmoAUExtractor]] = {}
 
 
 def get_extractor(name: str, device: str = "cuda") -> Optional[EmoAUExtractor]:
-    """取得提取器（懶載入 + 快取）。未知/載入失敗/不可用一律回 None。
+    """取得提取器（import 模組 + 建構 + is_available 探測 + 快取）。未知/不可用回 None。
 
     以 (name, device) 為快取鍵；只 import 被點名工具的模組，保證跨 env 隔離。
+    回傳的是「尚未載入權重」的 extractor;呼叫端需自行 initialize()（eager 載入）。
     """
     key = (name, device)
     if key in _cache:
@@ -50,13 +51,11 @@ def get_extractor(name: str, device: str = "cuda") -> Optional[EmoAUExtractor]:
         mod_name, cls_name = EXTRACTORS[name].split(":")
         module = importlib.import_module(f".{mod_name}", __package__)
         ext: Optional[EmoAUExtractor] = getattr(module, cls_name)(device=device)
-        if ext.is_available():
-            logger.info(f"✓ {name} 載入成功")
-        else:
-            logger.warning(f"✗ {name} 不可用")
+        if not ext.is_available():
+            logger.warning(f"✗ {name} 不可用（依賴未安裝或權重缺失）")
             ext = None
     except Exception as e:
-        logger.warning(f"✗ {name} 初始化失敗: {e}")
+        logger.warning(f"✗ {name} 建立失敗: {e}")
         ext = None
     _cache[key] = ext
     return ext
@@ -66,7 +65,7 @@ def available_extractors(
     names: Optional[List[str]] = None,
     device: str = "cuda",
 ) -> List[str]:
-    """實際可載入的工具名稱（會觸發載入）。只 probe 傳入的 names，保證 env 隔離。"""
+    """實際可用的工具名稱（會觸發 import + is_available 探測，不載入權重）。只 probe 傳入的 names。"""
     return [n for n in (names or EXTRACTORS)
             if get_extractor(n, device=device) is not None]
 

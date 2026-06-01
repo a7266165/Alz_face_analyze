@@ -21,9 +21,15 @@ class DlibExtractor(EmbeddingExtractor):
     使用 dlib 的 ResNet 模型提取 128 維人臉特徵
     """
 
+    # 模型檔案（external/embedding/dlib/ 下）
+    _PREDICTOR_FILE = "shape_predictor_68_face_landmarks.dat"
+    _FACE_REC_FILE = "dlib_face_recognition_resnet_model_v1.dat"
+
     def __init__(self):
-        self._available = False
-        self._init_dlib()
+        self._dlib = None
+        self._detector = None
+        self._predictor = None
+        self._face_rec = None
 
     @property
     def model_name(self) -> str:
@@ -34,48 +40,34 @@ class DlibExtractor(EmbeddingExtractor):
         return 128
 
     def is_available(self) -> bool:
-        return self._available
-
-    def _init_dlib(self):
-        """初始化 Dlib"""
         try:
-            import dlib
-            self._dlib = dlib
+            import dlib  # noqa: F401
         except ImportError:
             logger.debug("Dlib 未安裝")
+            return False
+        dlib_dir = EXTERNAL_DIR / "embedding" / "dlib"
+        return ((dlib_dir / self._PREDICTOR_FILE).exists()
+                and (dlib_dir / self._FACE_REC_FILE).exists())
+
+    def initialize(self) -> None:
+        """載入 Dlib 偵測器 + 68 landmark + ResNet 人臉辨識模型。"""
+        if self._face_rec is not None:
             return
+        import dlib
+        self._dlib = dlib
+        self._detector = dlib.get_frontal_face_detector()
 
-        try:
-            # 人臉檢測器
-            self._detector = dlib.get_frontal_face_detector()
+        dlib_dir = EXTERNAL_DIR / "embedding" / "dlib"
+        predictor_path = dlib_dir / self._PREDICTOR_FILE
+        face_rec_path = dlib_dir / self._FACE_REC_FILE
+        if not predictor_path.exists() or not face_rec_path.exists():
+            raise FileNotFoundError(
+                f"Dlib 模型檔案缺失於 {dlib_dir}/（需 {self._PREDICTOR_FILE} 與 "
+                f"{self._FACE_REC_FILE}），請下載並放置到 external/embedding/dlib/"
+            )
 
-            # 檢查模型檔案
-            dlib_dir = EXTERNAL_DIR / "embedding" / "dlib"
-            predictor_path = dlib_dir / "shape_predictor_68_face_landmarks.dat"
-            face_rec_path = dlib_dir / "dlib_face_recognition_resnet_model_v1.dat"
-
-            missing_files = []
-            if not predictor_path.exists():
-                missing_files.append(str(predictor_path))
-            if not face_rec_path.exists():
-                missing_files.append(str(face_rec_path))
-
-            if missing_files:
-                logger.warning(
-                    f"Dlib 模型檔案缺失:\n" +
-                    "\n".join(f"  - {f}" for f in missing_files) +
-                    "\n請下載並放置到 external/embedding/dlib/ 目錄"
-                )
-                return
-
-            # 載入模型
-            self._predictor = dlib.shape_predictor(str(predictor_path))
-            self._face_rec = dlib.face_recognition_model_v1(str(face_rec_path))
-
-            self._available = True
-
-        except Exception as e:
-            logger.warning(f"Dlib 初始化失敗: {e}")
+        self._predictor = dlib.shape_predictor(str(predictor_path))
+        self._face_rec = dlib.face_recognition_model_v1(str(face_rec_path))
 
     def extract(self, image: np.ndarray) -> Optional[np.ndarray]:
         """

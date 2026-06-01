@@ -78,8 +78,8 @@ class OpenFaceExtractor(EmoAUExtractor):
             self._available = False
         return self._available
 
-    def _init_models(self):
-        """延遲載入模型（首次呼叫時才初始化）"""
+    def initialize(self) -> None:
+        """載入 OpenFace 3.0 FaceDetector + MultitaskPredictor（含 mobilenet 路徑 monkey-patch）。"""
         if self._detector is not None:
             return
 
@@ -122,8 +122,6 @@ class OpenFaceExtractor(EmoAUExtractor):
         再餵入（temp 檔處理為私有實作細節，不洩漏到契約）。
         用 .png 無損暫存:與「直接讀原始對齊 PNG」像素一致，避免 JPEG 重壓縮改變輸出。
         """
-        self._init_models()
-
         with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as f:
             tmp_path = f.name
             cv2.imwrite(tmp_path, image)

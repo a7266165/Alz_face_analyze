@@ -65,7 +65,8 @@ class HSEmotionExtractor(EmoAUExtractor):
             self._available = False
         return self._available
 
-    def _init_model(self):
+    def initialize(self) -> None:
+        """載入 HSEmotion recognizer。"""
         if self._fer is not None:
             return
         from hsemotion.facial_emotions import HSEmotionRecognizer
@@ -75,7 +76,6 @@ class HSEmotionExtractor(EmoAUExtractor):
         logger.info(f"HSEmotion 模型載入完成 (model={self._model_name}, device={self._device})")
 
     def extract(self, image: np.ndarray) -> Optional[Dict[str, float]]:
-        self._init_model()
         try:
             rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
             _, scores = self._fer.predict_emotions(rgb, logits=False)

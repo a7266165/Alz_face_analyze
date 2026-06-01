@@ -89,8 +89,8 @@ class PosterPPExtractor(EmoAUExtractor):
             self._available = False
         return self._available
 
-    def _init_model(self):
-        """延遲載入 POSTER++ 模型"""
+    def initialize(self) -> None:
+        """載入 POSTER++ 模型（含 monkey-patch torch.load 重導 hardcode 權重路徑）。"""
         if self._model is not None:
             return
 
@@ -196,8 +196,6 @@ class PosterPPExtractor(EmoAUExtractor):
         3. Forward pass → 7-dim logits
         4. Softmax → probability
         """
-        self._init_model()
-
         try:
             # BGR → RGB
             rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)

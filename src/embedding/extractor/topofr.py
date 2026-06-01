@@ -23,10 +23,9 @@ class TopoFRExtractor(EmbeddingExtractor):
     """
 
     def __init__(self):
-        self._available = False
+        self._torch = None
         self._model = None
         self._device = None
-        self._init_topofr()
 
     @property
     def model_name(self) -> str:
@@ -36,69 +35,65 @@ class TopoFRExtractor(EmbeddingExtractor):
     def feature_dim(self) -> int:
         return 512
 
-    def is_available(self) -> bool:
-        return self._available
+    def _topofr_dir(self):
+        return EXTERNAL_DIR / "embedding" / "TopoFR"
 
-    def _init_topofr(self):
-        """初始化 TopoFR"""
+    def _find_model_file(self):
+        """external/embedding/TopoFR/model/ 下第一個 *TopoFR*.pt/.pth;無則 None。"""
+        model_dir = self._topofr_dir() / "model"
+        files = (list(model_dir.glob("*TopoFR*.pt"))
+                 + list(model_dir.glob("*TopoFR*.pth")))
+        return files[0] if files else None
+
+    def is_available(self) -> bool:
         try:
-            import torch
-            self._torch = torch
+            import torch  # noqa: F401
         except ImportError:
             logger.debug("PyTorch 未安裝")
+            return False
+        return self._topofr_dir().exists() and self._find_model_file() is not None
+
+    def initialize(self) -> None:
+        """載入 TopoFR backbone（架構由權重檔名 R50/R100/R200 推斷）。"""
+        if self._model is not None:
             return
+        import torch
+        self._torch = torch
 
-        try:
-            # 嘗試載入 TopoFR
-            topofr_path = EXTERNAL_DIR / "embedding" / "TopoFR"
-
-            if not topofr_path.exists():
-                logger.debug("TopoFR 路徑不存在")
-                return
-
+        topofr_path = self._topofr_dir()
+        if str(topofr_path) not in sys.path:
             sys.path.insert(0, str(topofr_path))
-            from backbones import get_model
+        from backbones import get_model
 
-            # 尋找模型
-            model_dir = topofr_path / "model"
-            model_files = list(model_dir.glob("*TopoFR*.pt")) + \
-                         list(model_dir.glob("*TopoFR*.pth"))
+        model_path = self._find_model_file()
+        if model_path is None:
+            raise FileNotFoundError(
+                f"TopoFR 模型檔案不存在於: {topofr_path / 'model'}")
 
-            if not model_files:
-                logger.warning(f"TopoFR 模型檔案不存在於: {model_dir}")
-                return
+        # 由檔名判斷架構
+        model_name = model_path.stem.upper()
+        if "R100" in model_name:
+            network = "r100"
+        elif "R50" in model_name:
+            network = "r50"
+        elif "R200" in model_name:
+            network = "r200"
+        else:
+            network = "r100"
 
-            model_path = model_files[0]
+        self._device = torch.device(
+            'cuda' if torch.cuda.is_available() else 'cpu'
+        )
+        model = get_model(network, fp16=False)
 
-            # 判斷架構
-            model_name = model_path.stem.upper()
-            if "R100" in model_name:
-                network = "r100"
-            elif "R50" in model_name:
-                network = "r50"
-            elif "R200" in model_name:
-                network = "r200"
-            else:
-                network = "r100"
+        checkpoint = torch.load(model_path, map_location=self._device)
+        if isinstance(checkpoint, dict):
+            checkpoint = checkpoint.get('state_dict', checkpoint)
 
-            # 載入
-            self._device = self._torch.device(
-                'cuda' if self._torch.cuda.is_available() else 'cpu'
-            )
-            self._model = get_model(network, fp16=False)
-
-            checkpoint = self._torch.load(model_path, map_location=self._device)
-            if isinstance(checkpoint, dict):
-                checkpoint = checkpoint.get('state_dict', checkpoint)
-
-            self._model.load_state_dict(checkpoint, strict=False)
-            self._model.to(self._device).eval()
-
-            self._available = True
-            logger.debug(f"TopoFR 使用架構: {network}, 設備: {self._device}")
-
-        except Exception as e:
-            logger.warning(f"TopoFR 初始化失敗: {e}")
+        model.load_state_dict(checkpoint, strict=False)
+        model.to(self._device).eval()
+        self._model = model
+        logger.debug(f"TopoFR 使用架構: {network}, 設備: {self._device}")
 
     def extract(self, image: np.ndarray) -> Optional[np.ndarray]:
         """

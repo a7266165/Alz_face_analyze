@@ -102,6 +102,12 @@ class LibreFaceExtractor(EmoAUExtractor):
             self._available = False
         return self._available
 
+    def initialize(self) -> None:
+        """no-op:LibreFace 由套件內部於每次呼叫時自行管理模型載入/快取，無可預載的 handle。
+
+        為對齊三家族契約（建構 → is_available → initialize → extract）保留此方法。
+        """
+
     def extract(self, image: np.ndarray) -> Optional[Dict[str, float]]:
         """從 numpy 影像提取。
 

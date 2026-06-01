@@ -67,7 +67,8 @@ class ViTExtractor(EmoAUExtractor):
             self._available = False
         return self._available
 
-    def _init_model(self):
+    def initialize(self) -> None:
+        """從 HuggingFace Hub 載入 ViT processor + 模型（首次會自動下載）。"""
         if self._model is not None:
             return
         from transformers import ViTImageProcessor, ViTForImageClassification
@@ -79,7 +80,6 @@ class ViTExtractor(EmoAUExtractor):
         logger.info(f"ViT 模型載入完成 (model={self._model_name}, device={self._device})")
 
     def extract(self, image: np.ndarray) -> Optional[Dict[str, float]]:
-        self._init_model()
         try:
             rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
             from PIL import Image

@@ -66,7 +66,8 @@ class EmoNetExtractor(EmoAUExtractor):
             self._available = True
         return self._available
 
-    def _init_model(self):
+    def initialize(self) -> None:
+        """載入 EmoNet 模型權重。"""
         if self._model is not None:
             return
 
@@ -86,7 +87,6 @@ class EmoNetExtractor(EmoAUExtractor):
         logger.info(f"EmoNet 模型載入完成 (n_expression={self._n_expression}, device={self._device})")
 
     def extract(self, image: np.ndarray) -> Optional[Dict[str, float]]:
-        self._init_model()
         try:
             rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
             rgb = cv2.resize(rgb, (256, 256))

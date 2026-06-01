@@ -78,7 +78,8 @@ class DANExtractor(EmoAUExtractor):
             self._available = True
         return self._available
 
-    def _init_model(self):
+    def initialize(self) -> None:
+        """載入 DAN 模型（RAF-DB checkpoint）。"""
         if self._model is not None:
             return
 
@@ -99,7 +100,6 @@ class DANExtractor(EmoAUExtractor):
         logger.info(f"DAN 模型載入完成 (device={self._device})")
 
     def extract(self, image: np.ndarray) -> Optional[Dict[str, float]]:
-        self._init_model()
         try:
             rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
             tensor = self._transform(rgb).unsqueeze(0).to(self._device)

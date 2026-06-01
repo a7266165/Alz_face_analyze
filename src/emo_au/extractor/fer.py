@@ -65,7 +65,8 @@ class FERExtractor(EmoAUExtractor):
             self._available = False
         return self._available
 
-    def _init_model(self):
+    def initialize(self) -> None:
+        """建立 FER detector（MTCNN 或 Haar cascade）。"""
         if self._detector is not None:
             return
         from fer.fer import FER
@@ -73,7 +74,6 @@ class FERExtractor(EmoAUExtractor):
         logger.info(f"FER detector 初始化完成 (MTCNN={self._mtcnn})")
 
     def extract(self, image: np.ndarray) -> Optional[Dict[str, float]]:
-        self._init_model()
         try:
             detections = self._detector.detect_emotions(image)
             if not detections:

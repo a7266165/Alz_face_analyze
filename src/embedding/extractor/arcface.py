@@ -21,9 +21,7 @@ class ArcFaceExtractor(EmbeddingExtractor):
     """
 
     def __init__(self):
-        self._available = False
         self._app = None
-        self._init_arcface()
 
     @property
     def model_name(self) -> str:
@@ -34,27 +32,24 @@ class ArcFaceExtractor(EmbeddingExtractor):
         return 512
 
     def is_available(self) -> bool:
-        return self._available
-
-    def _init_arcface(self):
-        """初始化 ArcFace"""
         try:
-            from insightface.app import FaceAnalysis
+            import insightface  # noqa: F401
+            return True
         except ImportError:
             logger.debug("InsightFace 未安裝")
+            return False
+
+    def initialize(self) -> None:
+        """載入 ArcFace（buffalo_l，首次會自動下載模型）。"""
+        if self._app is not None:
             return
-
-        try:
-            self._app = FaceAnalysis(
-                name='buffalo_l',
-                providers=['CUDAExecutionProvider', 'CPUExecutionProvider']
-            )
-            self._app.prepare(ctx_id=0, det_size=(640, 640))
-
-            self._available = True
-
-        except Exception as e:
-            logger.warning(f"ArcFace 初始化失敗: {e}")
+        from insightface.app import FaceAnalysis
+        app = FaceAnalysis(
+            name='buffalo_l',
+            providers=['CUDAExecutionProvider', 'CPUExecutionProvider']
+        )
+        app.prepare(ctx_id=0, det_size=(640, 640))
+        self._app = app
 
     def extract(self, image: np.ndarray) -> Optional[np.ndarray]:
         """

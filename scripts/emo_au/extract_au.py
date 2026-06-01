@@ -109,6 +109,13 @@ def run_extract(tools: List[str], config: AUExtractionConfig, device: str):
         if extractor is None:
             logger.error(f"{tool_name} 未知或不可用，跳過")
             continue
+        # 顯式載入（fail-fast：載入錯誤在進 subject 迴圈前就爆，不會被逐 subject 的
+        # try/except 吞成「每個受試者都失敗」）。單一 tool 失敗只跳過該 tool。
+        try:
+            extractor.initialize()
+        except Exception as e:
+            logger.error(f"{tool_name} 初始化失敗，跳過: {e}")
+            continue
 
         logger.info(f"\n--- {tool_name} ---")
         success, skip, fail = 0, 0, 0
