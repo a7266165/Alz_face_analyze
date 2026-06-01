@@ -20,6 +20,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
 from _paths import PROJECT_ROOT
 
 from src.config import preprocess_dir
+from src.common.image_io import iter_subject_dirs, load_subject
 from src.emo_au.extractor import get_extractor
 from src.emo_au.extractor.au_config import AU_RAW_DIR, AUExtractionConfig
 
@@ -34,7 +35,6 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 ALL_STEPS = ["extract", "harmonize", "aggregate"]
-IMAGE_EXTS = (".jpg", ".jpeg", ".png", ".bmp")
 
 
 # ═══════════════════════════════════════════════════════════
@@ -42,22 +42,19 @@ IMAGE_EXTS = (".jpg", ".jpeg", ".png", ".bmp")
 # ═══════════════════════════════════════════════════════════
 
 def _extract_subject(extractor, subject_dir: Path) -> Optional[pd.DataFrame]:
-    """掃描 subject 目錄所有影像 → 每幀一列的 DataFrame。
+    """個案資料夾 → 每幀一列的 DataFrame。
 
-    （此邏輯原在 EmoAUExtractor.extract_subject，依鏡像 embedding 的設計移回 producer。）
+    讀檔/遍歷由 common.image_io.load_subject 負責;extractor 只吃單張 ndarray。
     欄序由 extractor.output_columns 決定（reindex），保證落地穩定;缺欄補 0.0。
     """
-    image_paths = sorted(
-        [p for p in subject_dir.iterdir() if p.suffix.lower() in IMAGE_EXTS],
-        key=lambda p: p.name,
-    )
-    if not image_paths:
+    frames = load_subject(subject_dir, with_path=True)   # [(Path, ndarray), ...]
+    if not frames:
         logger.warning(f"  {subject_dir.name}: 沒有找到影像")
         return None
 
     rows = []
-    for img_path in image_paths:
-        frame_data = extractor.extract_from_path(img_path)
+    for img_path, image in frames:
+        frame_data = extractor.extract(image)
         if frame_data is not None:
             frame_data["frame"] = img_path.stem
             rows.append(frame_data)
@@ -72,13 +69,19 @@ def _extract_subject(extractor, subject_dir: Path) -> Optional[pd.DataFrame]:
 
 def get_subject_dirs(input_dir: Path, exclude_acs: bool = True,
                      subject_prefix: str = None) -> List[Path]:
-    dirs = sorted([d for d in input_dir.iterdir() if d.is_dir()])
+    """列舉受試者目錄（委派 common.image_io.iter_subject_dirs，加上 log）。
+
+    subject_prefix（include）優先於 exclude_acs;對應 iter_subject_dirs 的
+    include_prefix / exclude_prefix。
+    """
+    dirs = iter_subject_dirs(
+        input_dir,
+        exclude_prefix="ACS" if exclude_acs else None,
+        include_prefix=subject_prefix,
+    )
     if subject_prefix:
-        dirs = [d for d in dirs if d.name.startswith(subject_prefix)]
         logger.info(f"prefix={subject_prefix} 過濾後剩餘 {len(dirs)} 個受試者")
-        return dirs
-    if exclude_acs:
-        dirs = [d for d in dirs if not d.name.startswith("ACS")]
+    elif exclude_acs:
         logger.info(f"排除 ACS 後剩餘 {len(dirs)} 個受試者")
     return dirs
 

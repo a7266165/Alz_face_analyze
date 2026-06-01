@@ -21,6 +21,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
 from _paths import PROJECT_ROOT  # noqa: F401
 
 from src.config import EMBEDDING_FEATURES_DIR, preprocess_dir
+from src.common.image_io import (
+    batch_apply, imread_unicode, iter_subject_dirs, load_subject,
+)
 from src.embedding import get_extractor
 from src.asymmetry import calculate_differences
 
@@ -31,7 +34,6 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 DEFAULT_MODELS = ["arcface", "dlib", "topofr"]
-IMAGE_EXTS = {".jpg", ".jpeg", ".png"}
 
 # mirror ftype → calculate_differences 的 method 名
 FTYPE_TO_METHOD = {
@@ -62,17 +64,6 @@ def setup_cpu_limit(max_cores: Optional[int]):
         torch.set_num_interop_threads(max_cores)
     except Exception:
         pass
-
-
-def _load_images(subject_dir: Path) -> List[np.ndarray]:
-    """載入受試者目錄下所有影像（BGR）。"""
-    images = []
-    for fp in sorted(subject_dir.iterdir()):
-        if fp.is_file() and fp.suffix.lower() in IMAGE_EXTS:
-            img = cv2.imread(str(fp))
-            if img is not None:
-                images.append(img)
-    return images
 
 
 # =============================================================================
@@ -106,14 +97,15 @@ class OriginalSource(FeatureSource):
         return preprocess_dir("aligned", background=background)
 
     def load(self, subject_dir: Path) -> Optional[List[np.ndarray]]:
-        images = _load_images(subject_dir)
+        images = load_subject(subject_dir)
         if not images:
             logger.warning(f"{subject_dir.name}: 沒有影像")
             return None
         return images
 
     def compute(self, payload, extractor) -> Dict[str, object]:
-        valid = [f for f in extractor.extract_batch(payload) if f is not None]
+        feats = batch_apply(extractor.extract, payload, label=extractor.model_name)
+        valid = [f for f in feats if f is not None]
         return {"original": np.array(valid)} if valid else {}
 
 
@@ -134,9 +126,9 @@ class MirrorSource(FeatureSource):
                 f"{subject_dir.name}: mirror 檔案不完整 "
                 f"(left={len(left_files)}, right={len(right_files)})")
             return None
-        left_images = [im for im in (cv2.imread(str(f)) for f in left_files)
+        left_images = [im for im in (imread_unicode(f) for f in left_files)
                        if im is not None]
-        right_images = [im for im in (cv2.imread(str(f)) for f in right_files)
+        right_images = [im for im in (imread_unicode(f) for f in right_files)
                         if im is not None]
         if not left_images or len(left_images) != len(right_images):
             logger.warning(f"{subject_dir.name}: 無法讀取完整 mirror 影像")
@@ -145,8 +137,8 @@ class MirrorSource(FeatureSource):
 
     def compute(self, payload, extractor) -> Dict[str, object]:
         left_images, right_images = payload
-        left_feats = extractor.extract_batch(left_images)
-        right_feats = extractor.extract_batch(right_images)
+        left_feats = batch_apply(extractor.extract, left_images, label=extractor.model_name)
+        right_feats = batch_apply(extractor.extract, right_images, label=extractor.model_name)
         valid_pairs = [(l, r) for l, r in zip(left_feats, right_feats)
                        if l is not None and r is not None]
         if not valid_pairs:
@@ -225,7 +217,7 @@ def run_extraction(source: FeatureSource, models: List[str], bg_variant: str,
         for ftype in source.ftypes:
             (output_dir / model / bg_variant / ftype).mkdir(parents=True, exist_ok=True)
 
-    subject_dirs = sorted(d for d in input_dir.iterdir() if d.is_dir())
+    subject_dirs = iter_subject_dirs(input_dir)
     logger.info(f"找到 {len(subject_dirs)} 個受試者")
     if not subject_dirs:
         logger.error("沒有找到任何受試者目錄")

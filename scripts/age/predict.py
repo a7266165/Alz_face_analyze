@@ -32,48 +32,13 @@ from src.config import (
     DEMOGRAPHICS_DIR,
 )
 from src.age import PREDICTOR_MAP, BENCHMARK_DIR_NAMES
+from src.common.image_io import iter_subject_dirs, load_subject
 
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
-
-
-def scan_subjects(aligned_dir: Path) -> list:
-    """掃描所有受試者目錄"""
-    return sorted(d for d in aligned_dir.iterdir() if d.is_dir())
-
-
-def _imread_unicode(path: Path):
-    """Unicode-safe 影像讀取。
-
-    cv2.imread 在 Windows 走 ANSI API，路徑含非 ASCII（例如中文）字元時會靜默
-    回傳 None。改用 np.fromfile 讀進 bytes、再 cv2.imdecode 解碼，含中文的路徑也能讀。
-    """
-    try:
-        data = np.fromfile(str(path), dtype=np.uint8)
-    except OSError:
-        return None
-    if data.size == 0:
-        return None
-    return cv2.imdecode(data, cv2.IMREAD_COLOR)
-
-
-def load_images(subject_dir: Path, max_images: int = 10) -> list:
-    """載入前 N 張影像，回傳 (檔名, 影像) 配對清單"""
-    valid_ext = {'.jpg', '.jpeg', '.png'}
-    images = []
-
-    for f in sorted(subject_dir.iterdir()):
-        if f.suffix.lower() in valid_ext:
-            img = _imread_unicode(f)
-            if img is not None:
-                images.append((f.name, img))
-            if len(images) >= max_images:
-                break
-
-    return images
 
 
 def _imwrite_unicode(path: Path, img) -> None:
@@ -153,9 +118,7 @@ def main():
     predictor = predictor_cls()
     predictor.initialize()
 
-    subjects = scan_subjects(aligned_dir)
-    if args.subject_prefix:
-        subjects = [s for s in subjects if s.name.startswith(args.subject_prefix)]
+    subjects = iter_subject_dirs(aligned_dir, include_prefix=args.subject_prefix)
     logger.info(f"找到 {len(subjects)} 個受試者")
 
     valid_ids = load_demographic_ids()
@@ -187,7 +150,7 @@ def main():
         if args.resume and subject_id in results:
             continue
 
-        pairs = load_images(subject_dir)
+        pairs = load_subject(subject_dir, with_path=True, max_images=10)
         if not pairs:
             logger.warning(f"{subject_id}: 無影像")
             continue
@@ -201,16 +164,18 @@ def main():
             crop_dir = output_file.parent / "input" / subject_id
             crop_dir.mkdir(parents=True, exist_ok=True)
             crops = []
-            for name, img in pairs:
+            for img_path, img in pairs:
                 crop = predictor.face_crop(img)
-                _imwrite_unicode(crop_dir / name, crop)
+                _imwrite_unicode(crop_dir / img_path.name, crop)
                 crops.append(crop)
             if hasattr(predictor, "predict_cropped"):
                 ages = predictor.predict_cropped(crops)
             else:
-                ages = predictor.predict(images)
+                ages = [a for img in images
+                        if (a := predictor.predict_single(img)) is not None]
         else:
-            ages = predictor.predict(images)
+            ages = [a for img in images
+                    if (a := predictor.predict_single(img)) is not None]
 
         if ages:
             results[subject_id] = {

@@ -118,12 +118,13 @@ class OpenFaceExtractor(EmoAUExtractor):
         """
         對單一影像（numpy BGR）提取特徵
 
-        FaceDetector.get_face() 需要檔案路徑，所以將 numpy array 暫存為臨時檔案。
-        producer 走 extract_from_path() 時會直接吃路徑、跳過此暫存。
+        FaceDetector.get_face() 是 path-only API，故在此將 numpy array 暫存為臨時檔案
+        再餵入（temp 檔處理為私有實作細節，不洩漏到契約）。
+        用 .png 無損暫存:與「直接讀原始對齊 PNG」像素一致，避免 JPEG 重壓縮改變輸出。
         """
         self._init_models()
 
-        with tempfile.NamedTemporaryFile(suffix=".jpg", delete=False) as f:
+        with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as f:
             tmp_path = f.name
             cv2.imwrite(tmp_path, image)
 
@@ -131,11 +132,6 @@ class OpenFaceExtractor(EmoAUExtractor):
             return self._do_extract(tmp_path)
         finally:
             Path(tmp_path).unlink(missing_ok=True)
-
-    def extract_from_path(self, image_path: Path) -> Optional[Dict[str, float]]:
-        """直接使用檔案路徑提取，避免不必要的暫存（覆寫 base 預設）"""
-        self._init_models()
-        return self._do_extract(str(image_path))
 
     def _do_extract(self, image_path: str) -> Optional[Dict[str, float]]:
         """

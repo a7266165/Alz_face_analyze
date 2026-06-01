@@ -107,11 +107,11 @@ def main():
             stats["fail"] += 1
             continue
 
-        ages = predictor.predict([img])
-        if not ages:
+        age = predictor.predict_single(img)
+        if age is None:
             stats["fail"] += 1
             continue
-        new_pred = round(sum(ages) / len(ages), 2)
+        new_pred = round(age, 2)
         old_pred = preds.get(sid)
         if old_pred is None or abs(new_pred - old_pred) > 0.01:
             changes.append((sid, old_pred, new_pred, kind))

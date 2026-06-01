@@ -103,14 +103,16 @@ class LibreFaceExtractor(EmoAUExtractor):
         return self._available
 
     def extract(self, image: np.ndarray) -> Optional[Dict[str, float]]:
-        """從 numpy 影像提取（需先存為暫存檔）。
+        """從 numpy 影像提取。
 
-        producer 走 extract_from_path() 時會直接吃路徑、跳過此暫存。
+        libreface 的 API 是 path-only，故在此將 numpy array 暫存為臨時檔案再餵入
+        （temp 檔處理為私有實作細節，不洩漏到契約）。
+        用 .png 無損暫存:與「直接讀原始對齊 PNG」像素一致，避免 JPEG 重壓縮改變輸出。
         """
         import tempfile
         import cv2
 
-        with tempfile.NamedTemporaryFile(suffix=".jpg", delete=False) as f:
+        with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as f:
             tmp_path = f.name
             cv2.imwrite(tmp_path, image)
 
@@ -118,10 +120,6 @@ class LibreFaceExtractor(EmoAUExtractor):
             return self._do_extract(tmp_path)
         finally:
             Path(tmp_path).unlink(missing_ok=True)
-
-    def extract_from_path(self, image_path: Path) -> Optional[Dict[str, float]]:
-        """直接使用檔案路徑提取，避免不必要的暫存（覆寫 base 預設）"""
-        return self._do_extract(str(image_path))
 
     def _do_extract(self, image_path: str) -> Optional[Dict[str, float]]:
         """從檔案路徑提取所有特徵（單次 API 呼叫）"""
