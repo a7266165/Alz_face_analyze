@@ -223,15 +223,15 @@ def build(mode='center'):
         node(ax, x, y_mod, NW_AM, NODE_H, lab, C_AGE['nd'])
         line(ax, x_face, y_pre5 + NODE_H / 2, x, y_mod - NODE_H / 2)
 
-    # embedding models  (DIMMED)
+    # embedding models  (LIT)
     EMB_MODELS = ['dlib', 'TopoFR', 'ArcFace', 'VGGFace']
     nw_em = 2.2; gap_em = 0.5
     emx, em_tot = _rowx(X_EMB_C, len(EMB_MODELS), nw_em, gap_em)
-    cluster(ax, X_EMB_C, y_mod, em_tot + 0.9, NODE_H + 2 * SP, G['bg'])
+    cluster(ax, X_EMB_C, y_mod, em_tot + 0.9, NODE_H + 2 * SP, C2['bg'])
     for x, lab in zip(emx, EMB_MODELS):
-        node(ax, x, y_mod, nw_em, NODE_H, lab, G['nd'])
+        node(ax, x, y_mod, nw_em, NODE_H, lab, C2['nd'])
         for src in [x_face, x_mirr]:
-            _dln(src, y_pre5 + NODE_H / 2, x, y_mod - NODE_H / 2)
+            line(ax, src, y_pre5 + NODE_H / 2, x, y_mod - NODE_H / 2)
 
     # emotion models  (DIMMED)
     EMO_MODELS = ['EmoNet', 'Open\nFace', 'FER', 'HS\nEmotion', 'Libre\nFace',

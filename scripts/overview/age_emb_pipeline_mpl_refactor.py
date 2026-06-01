@@ -304,18 +304,21 @@ def build():
     # real_age feed: demographic 'Age' column → age_error (right edge)
     line(ax, below_x[0], dy_below + NODE_H / 2, X_AGE + ae_node_w / 2, y_pd)
 
-    # ════ age_error + violin / lines / scatter — ONE shared cluster (C_AOUT, lit) ════
-    # age_error is the source (orange node); real age also feeds the three plots.
+    # ════ age_error + violin / lines / scatter / stat — ONE shared cluster (C_AOUT) ════
+    # age_error is the source node; real age also feeds the plots.
+    vls_labels = ['violin', 'lines', 'scatter', 'stat']
+    n_vls = len(vls_labels)
     nw_vls = 2.6; gap_vls = 0.5
-    total_vls = 3 * nw_vls + 2 * gap_vls
+    total_vls = n_vls * nw_vls + (n_vls - 1) * gap_vls
     vls_top = c_pd_bot + SP
     y_vls = vls_top + SP + NODE_H / 2
     vls_bot = y_vls + NODE_H / 2 + SP
-    vls_x = [X_AGE + (i - 1) * (nw_vls + gap_vls) for i in range(3)]
+    vls_x = [X_AGE + (i - (n_vls - 1) / 2) * (nw_vls + gap_vls)
+             for i in range(n_vls)]
     ae_merge_top = y_pd - NODE_H / 2 - SP        # extend up to enclose age_error
     _cl(ax, X_AGE, (ae_merge_top + vls_bot) / 2, total_vls + 0.9,
         vls_bot - ae_merge_top, C_AOUT['bg'], on=True)
-    for x, lab in zip(vls_x, ['violin', 'lines', 'scatter']):
+    for x, lab in zip(vls_x, vls_labels):
         _n(ax, x, y_vls, nw_vls, NODE_H, lab, C_AOUT['nd'], on=True)
         line(ax, X_AGE, y_pd, x, y_vls)               # age_error → consumer
         line(ax, below_x[0], dy_below, x, y_vls)      # real age → consumer
@@ -367,10 +370,10 @@ def build():
     CX_EV = CX_S
     total_em_ev = 2 * nw_ev + gap_ev
     _cl(ax, CX_EV, (c_em_top + c_em_bot) / 2,
-        total_em_ev + 0.9, c_em_bot - c_em_top, C_ES['bg'])
+        total_em_ev + 0.9, c_em_bot - c_em_top, C_ES['bg'], on=True)
     esx = [CX_EV - (nw_ev + gap_ev) / 2, CX_EV + (nw_ev + gap_ev) / 2]
     for x, lab in zip(esx, ['1by1matched', 'caliper_group']):
-        _n(ax, x, y_em, nw_ev, NODE_H, lab, C_ES['nd'])
+        _n(ax, x, y_em, nw_ev, NODE_H, lab, C_ES['nd'], on=True)
 
     # ════ Rest of eval chain — kept, now headless (no eval-head feed) ════
     _cl(ax, CX_EV, (c_ml_top + c_ml_bot) / 2,
