@@ -108,7 +108,7 @@ def _demo_cohort(ax, cx, s4_top):
     # matched-head sub-cluster (shared matching primitives)
     mtx, mt_tot = _rowx(cx, 2, 2.6, 0.6)
     cluster(ax, cx, my, mt_tot + 0.9, NODE_H + 2 * SP, C_ES['bg'])
-    for x, lab in zip(mtx, ['1by1matched', 'caliper_group']):
+    for x, lab in zip(mtx, ['1 by 1 matched', 'caliper_group']):
         node(ax, x, my, 2.6, NODE_H, lab, C_ES['nd'])
     return s4_bot
 
@@ -428,15 +428,13 @@ def build(mode='center'):
     xr = FR_CX + (cw + gap_col) / 2
     cl_h = fr_bot - park_top
     cluster(ax, xl, (park_top + fr_bot) / 2, cw, cl_h, G['bg'])
-    node(ax, xl, fr_y1, nw_col, NODE_H, 'Full Cohort', G['nd'])
-    node(ax, xl, fr_y2, nw_col, NODE_H, 'OOF Scores', G['nd'])
-    node(ax, xl, fr_y3, nw_col, NODE_H,
-         'Full Cohort Eval\nMatched Subset Eval (1:1)', G['nd'])
+    node(ax, xl, fr_y1, nw_col, NODE_H, 'K fold(K=10)', G['nd'])
+    node(ax, xl, fr_y2, nw_col, NODE_H, '1 by 1 matched', G['nd'])
+    node(ax, xl, fr_y3, nw_col, NODE_H, 'eval\n(all + matched)', G['nd'])
     cluster(ax, xr, (park_top + fr_bot) / 2, cw, cl_h, G['bg'])
-    node(ax, xr, fr_y1, nw_col, NODE_H, 'Matched Cohort', G['nd'])
-    node(ax, xr, fr_y2, nw_col, NODE_H, 'Predict Full Cohort', G['nd'])
-    node(ax, xr, fr_y3, nw_col, NODE_H,
-         'Matched OOF Eval\nUnmatched Eval', G['nd'])
+    node(ax, xr, fr_y1, nw_col, NODE_H, '1 by 1 matched', G['nd'])
+    node(ax, xr, fr_y2, nw_col, NODE_H, 'K fold(K=10)', G['nd'])
+    node(ax, xr, fr_y3, nw_col, NODE_H, 'eval\n(matched + other)', G['nd'])
     for col in [xl, xr]:
         for ya, yb in [(fr_y1, fr_y2), (fr_y2, fr_y3)]:
             _dln(col, ya + NODE_H / 2, col, yb - NODE_H / 2)
