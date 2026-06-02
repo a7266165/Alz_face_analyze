@@ -3,7 +3,7 @@ __pycache__*
 
 /_legacy/*
 /workspace/*
-/workspace_refactor_20260601/*
+/workspace_refactor/*
 
 external/*
 !external/embedding/

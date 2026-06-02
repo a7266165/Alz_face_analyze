@@ -76,7 +76,7 @@ EMBEDDING_CLASSIFICATION_DIR = EMBEDDING_ANALYSIS_DIR / "classification"
 # Refactor sandbox (2026-06): the rebuilt downstream writes its OOF / metrics here
 # so results never mix with the legacy workspace/ outputs. Mirrors the same relative
 # layout under a separate root → trivial A/B diff (same relative path, two roots).
-WORKSPACE_REFACTOR_DIR = PROJECT_ROOT / "workspace_refactor_20260601"
+WORKSPACE_REFACTOR_DIR = PROJECT_ROOT / "workspace_refactor"
 EMBEDDING_CLASSIFICATION_REFACTOR_DIR = (
     WORKSPACE_REFACTOR_DIR / "embedding" / "analysis" / "classification")
 
@@ -196,6 +196,7 @@ def embedding_classification_path(
     photo_mode: str = "mean",
     reducer: str = "no_drop",
     clf: Optional[str] = None,
+    clf_param: Optional[str] = None,
     direction: Optional[str] = None,
     eval_method: Optional[str] = None,
     match_level: Optional[str] = None,
@@ -209,7 +210,7 @@ def embedding_classification_path(
 
     Layout (follows 10-variable pipeline order):
       classification/<visit>/<cdr_mmse>/<bg_mode>/<emb>/<variant>/<photo>/<reducer>/
-        <clf>/<direction>/<eval_method>/<match_level>/<eval_unit>/<match_strategy>/<partition>/
+        <clf>/<clf_param>/<direction>/<eval_method>/<match_level>/<eval_unit>/<match_strategy>/<partition>/
 
     Args:
         p_visit, p_score, hc_visit, hc_score: cohort 4-token(見上方 cohort token 區塊)
@@ -219,15 +220,25 @@ def embedding_classification_path(
                  relative_differences | absolute_relative_differences
         photo_mode: mean | all
         reducer: no_drop | pca/n_components_X | drop_feats/pearson_r_X.X
-        clf, direction, eval_method, match_level, eval_unit,
-        match_strategy, partition: 可選
+        clf, clf_param, direction, eval_method, match_level, eval_unit,
+        match_strategy, partition: 可選。clf_param = classifier 的 hyperparameter 子層
+            (grid search 用,如 C_1.0 / ne_300_md_6_lr_0.1);scorer / 非 grid 時為 None。
     """
     visit_dir, cdr_mmse_dir = cohort_dirs(p_visit, p_score, hc_visit, hc_score)
     base = root if root is not None else EMBEDDING_CLASSIFICATION_DIR
     p = (base / visit_dir / cdr_mmse_dir
          / bg_mode / emb / variant / photo_mode / reducer)
-    for seg in (clf, direction, eval_method, match_level, eval_unit,
-                match_strategy, partition):
+    # clf 之後接一個可選的 hyperparameter 子層(grid search 用,如 logistic/C_1.0、
+    # xgb/ne_300_md_6_lr_0.1),再接 direction 起的評估鏈。clf_param 只在 clf 存在時
+    # 插入;scorer / 非 grid 時為 None → 退回 clf/direction。
+    segs = []
+    if clf is not None:
+        segs.append(clf)
+        if clf_param is not None:
+            segs.append(clf_param)
+        segs += [direction, eval_method, match_level, eval_unit,
+                 match_strategy, partition]
+    for seg in segs:
         if seg is None:
             break
         p = p / seg
