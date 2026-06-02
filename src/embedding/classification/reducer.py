@@ -8,6 +8,8 @@ Classification 下游的「降維」leaf —— no_drop / PCA / DropCorr。
 做成 BaseEstimator 子類,cross-val / 折迴圈每折才能 clone(主成分、相關欄位只能從
 train fold 學 → leakage 結構上不可能,前提是 reducer 在 Pipeline 內隨整支一起 fit)。
 """
+import warnings
+
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 
@@ -59,7 +61,14 @@ class TorchGPUPCA(BaseEstimator, TransformerMixin):
         torch.cuda.manual_seed_all(42)
         Xt = torch.from_numpy(np.ascontiguousarray(X, dtype=np.float32)).cuda()
         self.mean_ = Xt.mean(0, keepdim=True)
+        # clamp 為強制:torch.pca_lowrank 在 q > min(m, n) 時直接報錯,故 q 必須 ≤ fold rank。
+        # 但 clamp 會悄悄降維,故發 warning 讓使用者可發現(實際維度見 n_components_)。
         q = min(int(self.n_components), Xt.shape[0], Xt.shape[1])
+        if q < int(self.n_components):
+            warnings.warn(
+                f"TorchGPUPCA: n_components {self.n_components} exceeds fold rank; "
+                f"clamped to {q} (see n_components_)."
+            )
         _, _, V = torch.pca_lowrank(Xt - self.mean_, q=q, niter=self.niter)
         self.V_ = V[:, :q].contiguous()
         self.n_components_ = q

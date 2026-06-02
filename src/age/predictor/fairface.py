@@ -22,11 +22,20 @@ class FairFacePredictor(BasePredictor):
     AGE_MIDPOINTS = [1.0, 6.0, 14.5, 24.5, 34.5,
                      44.5, 54.5, 64.5, 75.0]
     WEIGHT_FILENAME = "fairface_alldata_20191111.pt"
+    LEGACY_WEIGHT_FILENAME = "res34_fair_align_multi_7_20190809.pt"
 
     def __init__(self):
         self._model = None
         self._transform = None
         self._device = None
+
+    def _resolve_weight(self):
+        d = EXTERNAL_DIR / "age" / "fairface"
+        for name in (self.WEIGHT_FILENAME, self.LEGACY_WEIGHT_FILENAME):
+            path = d / name
+            if path.exists():
+                return path
+        return None
 
     def is_available(self) -> bool:
         try:
@@ -34,24 +43,17 @@ class FairFacePredictor(BasePredictor):
             from torchvision import models  # noqa: F401
         except ImportError:
             return False
-        weight_dir = EXTERNAL_DIR / "age" / "fairface"
-        return ((weight_dir / self.WEIGHT_FILENAME).exists()
-                or (weight_dir / "res34_fair_align_multi_7_20190809.pt").exists())
+        return self._resolve_weight() is not None
 
     def initialize(self):
         import torch
         from torchvision import transforms, models
 
         weight_dir = EXTERNAL_DIR / "age" / "fairface"
-        weight_path = weight_dir / self.WEIGHT_FILENAME
-        # 也接受舊版權重名稱
-        if not weight_path.exists():
-            alt = weight_dir / "res34_fair_align_multi_7_20190809.pt"
-            if alt.exists():
-                weight_path = alt
-        if not weight_path.exists():
+        weight_path = self._resolve_weight()
+        if weight_path is None:
             raise FileNotFoundError(
-                f"FairFace 權重不存在: {weight_path}\n"
+                f"FairFace 權重不存在: {weight_dir}\n"
                 f"請從 https://drive.google.com/drive/folders/"
                 f"1F_pXfbzWvG-bhCpNsRj6F_xsdjpesiFu 下載並放到 {weight_dir}/"
             )

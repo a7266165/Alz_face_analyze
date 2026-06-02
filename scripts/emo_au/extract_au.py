@@ -17,14 +17,11 @@ import pandas as pd
 from tqdm import tqdm
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
-from _paths import PROJECT_ROOT
+import _paths  # noqa: F401  # sys.path 副作用，下方 from src... import 仰賴之
 
-from src.config import preprocess_dir
 from src.common.image_io import iter_subject_dirs, load_subject
 from src.emo_au.extractor import get_extractor
-from src.emo_au.extractor.au_config import AU_RAW_DIR, AUExtractionConfig
-
-ALIGNED_DIR = preprocess_dir("aligned")
+from src.emo_au.extractor.au_config import AUExtractionConfig
 from src.emo_au.postprocess.harmonizer import AUHarmonizer
 from src.emo_au.postprocess.aggregator import TemporalAggregator
 
@@ -68,7 +65,7 @@ def _extract_subject(extractor, subject_dir: Path) -> Optional[pd.DataFrame]:
 
 
 def get_subject_dirs(input_dir: Path, exclude_acs: bool = True,
-                     subject_prefix: str = None) -> List[Path]:
+                     subject_prefix: Optional[str] = None) -> List[Path]:
     """列舉受試者目錄（委派 common.image_io.iter_subject_dirs，加上 log）。
 
     subject_prefix（include）優先於 exclude_acs;對應 iter_subject_dirs 的
@@ -97,7 +94,7 @@ def run_extract(tools: List[str], config: AUExtractionConfig, device: str):
 
     subject_dirs = get_subject_dirs(
         config.input_dir, config.exclude_acs,
-        subject_prefix=getattr(config, "_subject_prefix", None),
+        subject_prefix=config.subject_prefix,
     )
     logger.info(f"共 {len(subject_dirs)} 個受試者待處理")
 
@@ -213,7 +210,7 @@ def main():
     if args.subject_prefix:
         # prefix 走自訂路徑，關掉 exclude_acs 保證不會誤殺 EACS_ 之類
         config.exclude_acs = False
-        config._subject_prefix = args.subject_prefix
+        config.subject_prefix = args.subject_prefix
     tools = args.tools or config.tools
 
     logger.info(f"工具: {tools}")

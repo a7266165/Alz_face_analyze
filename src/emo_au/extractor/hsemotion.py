@@ -40,7 +40,7 @@ class HSEmotionExtractor(EmoAUExtractor):
     def __init__(self, device: str = "cuda", model_name: str = "enet_b2_7"):
         self._device = device
         self._model_name = model_name
-        self._fer = None
+        self._recognizer = None
         self._available = None
 
     @property
@@ -67,10 +67,10 @@ class HSEmotionExtractor(EmoAUExtractor):
 
     def initialize(self) -> None:
         """載入 HSEmotion recognizer。"""
-        if self._fer is not None:
+        if self._recognizer is not None:
             return
         from hsemotion.facial_emotions import HSEmotionRecognizer
-        self._fer = HSEmotionRecognizer(
+        self._recognizer = HSEmotionRecognizer(
             model_name=self._model_name, device=self._device,
         )
         logger.info(f"HSEmotion 模型載入完成 (model={self._model_name}, device={self._device})")
@@ -78,10 +78,10 @@ class HSEmotionExtractor(EmoAUExtractor):
     def extract(self, image: np.ndarray) -> Optional[Dict[str, float]]:
         try:
             rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-            _, scores = self._fer.predict_emotions(rgb, logits=False)
+            _, scores = self._recognizer.predict_emotions(rgb, logits=False)
             return {
-                HSEMOTION_LABEL_ORDER[i]: float(scores[i])
-                for i in range(7)
+                name: float(scores[i])
+                for i, name in enumerate(HSEMOTION_LABEL_ORDER)
             }
         except Exception as e:
             logger.debug(f"  HSEmotion 提取失敗: {e}")

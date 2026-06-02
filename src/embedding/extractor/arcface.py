@@ -71,9 +71,7 @@ class ArcFaceExtractor(EmbeddingExtractor):
             logger.debug("ArcFace 未檢測到人臉，使用整張圖")
 
             img_resized = cv2.resize(image_rgb, (112, 112))
-            img_input = np.transpose(img_resized, (2, 0, 1))[np.newaxis, ...]
-            img_input = (img_input - 127.5) / 127.5
-            img_input = img_input.astype(np.float32)
+            img_input = (np.transpose(img_resized, (2, 0, 1))[np.newaxis, ...].astype(np.float32) - 127.5) / 127.5
             embedding = self._app.models['recognition'].forward(img_input)
             return embedding.flatten().astype(np.float32)
 

@@ -4,12 +4,13 @@
 這支對應概念模型裡的 **scorer**:把(asymmetry)特徵映成一個不對稱程度的分數。注意三者
 機制不同(見 build_scorer):
   - centroid / lda **會 fit**(從 labeled train fold 學質心 / 判別方向)→ 是 estimator、
-    需進 10-fold,行為跟 trainer 一樣(否則用到 test 樣本算 → leakage)。
+    需進 10-fold(否則用到 test 樣本算 → leakage)。
   - l2_norm **不 fit**:``score = ‖x‖``,純函數、不看 label、不需 CV → 不進迴圈
     (引擎見 needs_cv=False 直接在全體算 norm)。
 
-build_scorer 與 trainer.py 的 trainer() 同協定,回傳 ``(estimator, score_method, needs_cv)``,
-讓兩支能丟進 eval 裡同一個迴圈。scorer 固定 no_drop(不接 reducer,對齊 legacy)。
+build_scorer 回傳 ``(estimator, score_method, needs_cv)``,正好對應 train.py 的 train()
+所吃的 (build_est, score_method, needs_cv) 三參數,讓兩支能丟進同一個 OOF 迴圈。
+scorer 固定 no_drop(不接 reducer,對齊 legacy)。
 """
 from typing import Optional, Tuple
 
@@ -35,9 +36,14 @@ class CentroidEstimator(ClassifierMixin, BaseEstimator):
         return self
 
     def decision_function(self, X):
-        from scipy.spatial.distance import cosine
         X = np.asarray(X, dtype=np.float64)
-        return np.array([cosine(x, self.c_hc_) - cosine(x, self.c_ad_) for x in X])
+        # 向量化:cosdist = 1 − cossim,+1 常數對消 →
+        # cosdist(x,μ_HC) − cosdist(x,μ_AD) = cossim(x,μ_AD) − cossim(x,μ_HC)。
+        eps = 1e-12
+        Xn = X / (np.linalg.norm(X, axis=1, keepdims=True) + eps)
+        ad_n = self.c_ad_ / (np.linalg.norm(self.c_ad_) + eps)
+        hc_n = self.c_hc_ / (np.linalg.norm(self.c_hc_) + eps)
+        return (Xn @ ad_n) - (Xn @ hc_n)
 
     def predict(self, X):
         return (self.decision_function(X) >= 0).astype(int)

@@ -13,7 +13,7 @@ Outputs (under <AGE_ANALYSIS_DIR>/<visit_dir>/<cdr_mmse_dir>/scatter/):
 Usage:
   conda run -n Alz_face_main_analysis python scripts/age/error/scatter.py
   conda run -n Alz_face_main_analysis python scripts/age/error/scatter.py \
-      --cohort-mode p_all_cdrall_hc_all_cdrall_or_mmseall
+      --p-visit p_all --p-score p_cdrall --hc-visit hc_all --hc-score hc_cdrall_or_mmseall
 """
 
 import argparse
@@ -119,7 +119,7 @@ def main():
     ap.add_argument("--hc-visit", choices=list(HC_VISIT_TOKENS), default=DEFAULT_COHORT_TOKENS[2])
     ap.add_argument("--hc-score", choices=list(HC_SCORE_TOKENS), default=DEFAULT_COHORT_TOKENS[3])
     ap.add_argument("--output-dir", type=Path, default=None,
-                    help="覆寫輸出目錄；留空依 cohort-mode 自動決定")
+                    help="覆寫輸出目錄；留空依 cohort 自動決定")
     args = ap.parse_args()
 
     cohort = (args.p_visit, args.p_score, args.hc_visit, args.hc_score)
@@ -132,7 +132,7 @@ def main():
     full["group"] = full["Group"]
     full["real_age"] = full["Age"]
     full["predicted_age"] = full["real_age"] - full["age_error"]
-    p_ids, hc_ids = match_by_age(*tokens)
+    p_ids, hc_ids = match_by_age(*cohort)
     matched = full[full["ID"].isin(set(p_ids) | set(hc_ids))].reset_index(drop=True)
     logger.info(f"full={len(full)} ({full['group'].value_counts().to_dict()}), "
                 f"1by1matched={len(matched)} "

@@ -6,15 +6,17 @@ LibreFace AU 特徵提取器
 需要在獨立 conda 環境 (libreface_env) 中執行
 """
 
+import tempfile
 from pathlib import Path
 from typing import Dict, List, Optional
 
+import cv2
 import numpy as np
 import pandas as pd
 import logging
 
 from .base import EmoAUExtractor
-from src.emo_au.extractor.au_config import LIBREFACE_AU_MAP, LIBREFACE_EMOTION_MAP, LIBREFACE_WEIGHTS_DIR
+from src.emo_au.extractor.au_config import LIBREFACE_EMOTION_MAP, LIBREFACE_WEIGHTS_DIR
 
 logger = logging.getLogger(__name__)
 
@@ -115,9 +117,6 @@ class LibreFaceExtractor(EmoAUExtractor):
         （temp 檔處理為私有實作細節，不洩漏到契約）。
         用 .png 無損暫存:與「直接讀原始對齊 PNG」像素一致，避免 JPEG 重壓縮改變輸出。
         """
-        import tempfile
-        import cv2
-
         with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as f:
             tmp_path = f.name
             cv2.imwrite(tmp_path, image)

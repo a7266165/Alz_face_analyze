@@ -13,6 +13,7 @@ import cv2
 import numpy as np
 import torch
 import logging
+from PIL import Image
 
 from .base import EmoAUExtractor
 from src.emo_au.extractor.au_config import HARMONIZED_EMOTIONS
@@ -82,13 +83,12 @@ class ViTExtractor(EmoAUExtractor):
     def extract(self, image: np.ndarray) -> Optional[Dict[str, float]]:
         try:
             rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-            from PIL import Image
             pil_img = Image.fromarray(rgb)
             inputs = self._processor(images=pil_img, return_tensors="pt").to(self._device)
             with torch.no_grad():
                 outputs = self._model(**inputs)
             probs = torch.softmax(outputs.logits, dim=1).squeeze(0).cpu().numpy()
-            return {VIT_LABEL_MAP[i]: float(probs[i]) for i in range(7)}
+            return {name: float(probs[idx]) for idx, name in VIT_LABEL_MAP.items()}
         except Exception as e:
             logger.debug(f"  ViT 提取失敗: {e}")
             return None

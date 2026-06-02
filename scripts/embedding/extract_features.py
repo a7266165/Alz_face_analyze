@@ -276,11 +276,9 @@ def run_extraction(source: FeatureSource, models: List[str], bg_variant: str,
                     saved_any = True
 
                 stats["success" if saved_any else "fail"] += 1
-            except Exception as e:
-                logger.error(f"{subject_id}: {e}")
+            except Exception:
+                logger.exception(f"{subject_id}: extraction failed")
                 stats["fail"] += 1
-                import traceback
-                traceback.print_exc()
 
     stats["end"] = datetime.now()
     _save_stats(stats, source, output_dir)

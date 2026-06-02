@@ -16,7 +16,7 @@ full cohort and the AD-vs-HC 1:1 age-matched subset:
 Usage:
   conda run -n Alz_face_main_analysis python scripts/age/error/lines.py
   conda run -n Alz_face_main_analysis python scripts/age/error/lines.py \
-      --cohort-mode p_all_cdrall_hc_all_cdrall_or_mmseall
+      --p-visit p_all --p-score p_cdrall --hc-visit hc_all --hc-score hc_cdrall_or_mmseall
 """
 
 import argparse
@@ -53,18 +53,6 @@ COLORS = {
     "P":   "#F44336",
 }
 GROUPS = ["ACS", "NAD", "P"]
-
-# ── data loading ─────────────────────────────────────────────────────────────
-
-def build_internal(df: pd.DataFrame) -> pd.DataFrame:
-    """把 error 表精簡成繪圖用欄位（ACS/NAD/P residual = real − predicted）。
-
-    殘差沿用 legacy 欄名 ``error_before`` 供下方 plot helper 使用。吃已載入的
-    error 表（完整 cohort 或 1by1matched 子集皆可）。
-    """
-    df = df.copy()
-    df["error_before"] = df["age_error"]
-    return df[["group", "real_age", "predicted_age", "error_before", "age_int"]]
 
 # ── plot functions ───────────────────────────────────────────────────────────
 
@@ -152,7 +140,7 @@ def main():
     ap.add_argument("--hc-visit", choices=list(HC_VISIT_TOKENS), default=DEFAULT_COHORT_TOKENS[2])
     ap.add_argument("--hc-score", choices=list(HC_SCORE_TOKENS), default=DEFAULT_COHORT_TOKENS[3])
     ap.add_argument("--output-dir", type=Path, default=None,
-                    help="覆寫輸出目錄；留空依 cohort-mode 自動決定")
+                    help="覆寫輸出目錄；留空依 cohort 自動決定")
     args = ap.parse_args()
 
     cohort = (args.p_visit, args.p_score, args.hc_visit, args.hc_score)
@@ -167,7 +155,7 @@ def main():
     full["real_age"] = full["Age"]
     full["predicted_age"] = full["real_age"] - full["age_error"]
     full["age_int"] = full["real_age"].astype(int)
-    p_ids, hc_ids = match_by_age(*tokens)
+    p_ids, hc_ids = match_by_age(*cohort)
     matched = full[full["ID"].isin(set(p_ids) | set(hc_ids))].reset_index(drop=True)
     logger.info(f"full={len(full)} ({full['group'].value_counts().to_dict()}), "
                 f"1by1matched={len(matched)} "
@@ -177,17 +165,16 @@ def main():
     title_state = "Residual = real − predicted"
 
     for sub_name, sub_df in [("full", full), ("1by1matched", matched)]:
-        df_int = build_internal(sub_df)
         base = output_dir / sub_name
         suffix = "" if sub_name == "full" else " — age-matched 1:1"
         plot_combined(
-            df_int, base / "no_sliding_window" / "lines_internal.png", groups=GROUPS,
+            sub_df, base / "no_sliding_window" / "lines_internal.png", groups=GROUPS,
             title=f"{title_state} by True Age — ACS / NAD / P (mean ± std){suffix}",
-            ylabel=ylabel, y_col="error_before")
+            ylabel=ylabel, y_col="age_error")
         plot_sliding_window(
-            df_int, base / "sliding_window_10" / "lines_internal_sw10.png", groups=GROUPS,
+            sub_df, base / "sliding_window_10" / "lines_internal_sw10.png", groups=GROUPS,
             title=f"{title_state} by True Age — ACS / NAD / P (10-y sliding window){suffix}",
-            ylabel=ylabel, y_col="error_before")
+            ylabel=ylabel, y_col="age_error")
 
 
 if __name__ == "__main__":

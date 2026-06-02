@@ -25,6 +25,12 @@ class DeepFacePredictor(BasePredictor):
         except ImportError:
             return False
 
+    def _analyze_age(self, img):
+        # DeepFace 第一個參數（img_path）也接受 BGR numpy array，直接傳。
+        return self._deepface.analyze(
+            img, actions=['age'], enforce_detection=False, silent=True,
+        )
+
     def initialize(self):
         try:
             from deepface import DeepFace
@@ -33,21 +39,15 @@ class DeepFacePredictor(BasePredictor):
             raise RuntimeError("deepface 未安裝")
 
         try:
-            # DeepFace 第一個參數（img_path）也接受 BGR numpy array，直接傳。
             test_img = np.zeros((224, 224, 3), dtype=np.uint8)
-            self._deepface.analyze(
-                test_img, actions=['age'], enforce_detection=False, silent=True,
-            )
+            self._analyze_age(test_img)
             logger.info("DeepFace 初始化完成")
         except Exception as e:
             raise RuntimeError(f"DeepFace 初始化失敗: {e}")
 
     def predict_single(self, image: np.ndarray) -> Optional[float]:
         try:
-            # DeepFace 第一個參數（img_path）也接受 BGR numpy array，直接傳。
-            result = self._deepface.analyze(
-                image, actions=['age'], enforce_detection=False, silent=True,
-            )
+            result = self._analyze_age(image)
             if result:
                 return float(result[0]['age'])
         except Exception as e:

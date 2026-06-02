@@ -9,7 +9,13 @@ from typing import Dict, List, Optional
 
 import cv2
 import numpy as np
+import torch
 import logging
+
+try:
+    from torch.utils.data import default_collate
+except ImportError:  # 舊版 torch
+    from torch.utils.data._utils.collate import default_collate
 
 from .base import EmoAUExtractor
 from src.emo_au.extractor.au_config import PYFEAT_AU_MAP, PYFEAT_EMOTION_MAP
@@ -111,12 +117,6 @@ class PyFeatExtractor(EmoAUExtractor):
         collate 相同），故 _run_detection_waterfall / _create_fex 收到的輸入與讀檔
         路徑完全一致。
         """
-        import torch
-        try:
-            from torch.utils.data import default_collate
-        except ImportError:  # 舊版 torch
-            from torch.utils.data._utils.collate import default_collate
-
         rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         # read_image() 回 (C,H,W) uint8 RGB;對齊其 dtype / 通道序 / 維度排列
         img_tensor = torch.from_numpy(rgb).permute(2, 0, 1).contiguous()

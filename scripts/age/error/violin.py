@@ -157,7 +157,7 @@ def main():
     ap.add_argument("--hc-visit", choices=list(HC_VISIT_TOKENS), default=DEFAULT_COHORT_TOKENS[2])
     ap.add_argument("--hc-score", choices=list(HC_SCORE_TOKENS), default=DEFAULT_COHORT_TOKENS[3])
     ap.add_argument("--output-dir", type=Path, default=None,
-                    help="覆寫輸出目錄；留空依 cohort-mode 自動決定")
+                    help="覆寫輸出目錄；留空依 cohort 自動決定")
     ap.add_argument("--comparison", default=None,
                     choices=HC_COMPARISONS + HILO_COMPARISONS,
                     help="Run only one comparison; default runs all")
@@ -179,11 +179,11 @@ def main():
     for cmp in targets:
         logger.info(f"--- {cmp} ---")
         if cmp in HC_COMPARISONS:
-            run_hc_comparison(df_all, tokens, cmp, output_dir, caliper=args.caliper)
+            run_hc_comparison(df_all, cohort, cmp, output_dir, caliper=args.caliper)
         elif cmp == "mmse_high_vs_low":
-            run_hilo_comparison(df_all, tokens, "MMSE", output_dir, caliper=args.caliper)
+            run_hilo_comparison(df_all, cohort, "MMSE", output_dir, caliper=args.caliper)
         elif cmp == "casi_high_vs_low":
-            run_hilo_comparison(df_all, tokens, "CASI", output_dir, caliper=args.caliper)
+            run_hilo_comparison(df_all, cohort, "CASI", output_dir, caliper=args.caliper)
 
 
 if __name__ == "__main__":

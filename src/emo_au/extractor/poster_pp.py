@@ -135,10 +135,8 @@ class PosterPPExtractor(EmoAUExtractor):
         checkpoint_path = self._weights_dir / "poster_pp_rafdb.pth"
         logger.info(f"載入 POSTER++ checkpoint: {checkpoint_path}")
 
-        import sys as _sys
-        import types
         # 建立假的 class 讓 pickle unpickle 不會失敗
-        _main = _sys.modules.get("__main__")
+        _main = sys.modules.get("__main__")
         _patched_attrs = []
         for cls_name in ("RecorderMeter", "RecorderMeter1"):
             if not hasattr(_main, cls_name):
@@ -165,7 +163,7 @@ class PosterPPExtractor(EmoAUExtractor):
         state_dict = checkpoint.get("state_dict", checkpoint)
         new_state_dict = {}
         for k, v in state_dict.items():
-            new_key = k.replace("module.", "") if k.startswith("module.") else k
+            new_key = k.removeprefix("module.")
             new_state_dict[new_key] = v
 
         model.load_state_dict(new_state_dict, strict=False)

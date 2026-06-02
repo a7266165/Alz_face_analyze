@@ -13,6 +13,10 @@ from .base import BasePredictor
 
 logger = logging.getLogger(__name__)
 
+_OPENCV_AGE_DIR = EXTERNAL_DIR / "age" / "opencv_age"
+_PROTO = _OPENCV_AGE_DIR / "age_deploy.prototxt"
+_MODEL = _OPENCV_AGE_DIR / "age_net.caffemodel"
+
 
 class OpenCVDNNPredictor(BasePredictor):
     """OpenCV DNN (Caffe) 年齡預測器"""
@@ -32,22 +36,16 @@ class OpenCVDNNPredictor(BasePredictor):
         self._face_detector = None
 
     def is_available(self) -> bool:
-        model_dir = EXTERNAL_DIR / "age" / "opencv_age"
-        return ((model_dir / "age_deploy.prototxt").exists()
-                and (model_dir / "age_net.caffemodel").exists())
+        return _PROTO.exists() and _MODEL.exists()
 
     def initialize(self):
-        model_dir = EXTERNAL_DIR / "age" / "opencv_age"
-        proto_path = model_dir / "age_deploy.prototxt"
-        model_path = model_dir / "age_net.caffemodel"
-
-        if not proto_path.exists() or not model_path.exists():
+        if not _PROTO.exists() or not _MODEL.exists():
             raise FileNotFoundError(
-                f"OpenCV DNN 模型不存在: {model_dir}\n"
-                f"請下載 age_deploy.prototxt 和 age_net.caffemodel 到 {model_dir}/"
+                f"OpenCV DNN 模型不存在: {_OPENCV_AGE_DIR}\n"
+                f"請下載 age_deploy.prototxt 和 age_net.caffemodel 到 {_OPENCV_AGE_DIR}/"
             )
 
-        self._net = cv2.dnn.readNet(str(model_path), str(proto_path))
+        self._net = cv2.dnn.readNet(str(_MODEL), str(_PROTO))
         self._face_detector = cv2.CascadeClassifier(
             cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'
         )

@@ -11,7 +11,6 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
 from _paths import PROJECT_ROOT
-project_root = PROJECT_ROOT
 from src.config import DEMOGRAPHICS_DIR, WORKSPACE_DIR, PREDICTED_AGES_FILE
 
 # --- Load data ---
@@ -43,33 +42,7 @@ print(f"ACS: {len(acs)}, NAD: {len(nad)}, AD(P): {len(ad)}")
 # --- Statistics: 3-group mean, std, tests ---
 from scipy import stats
 
-print("\n===== Valence & Arousal: Group Statistics =====")
-for feat in ["Valence", "Arousal"]:
-    print(f"\n--- {feat} ---")
-    for name, grp in [("ACS", acs), ("NAD", nad), ("AD", ad)]:
-        print(f"  {name:>3s}: mean={grp[feat].mean():.4f}, std={grp[feat].std():.4f}, n={len(grp)}")
-
-    # Kruskal-Wallis (3-group)
-    H, p_kw = stats.kruskal(acs[feat], nad[feat], ad[feat])
-    print(f"  Kruskal-Wallis H={H:.4f}, p={p_kw:.2e}")
-
-    # Pairwise Mann-Whitney U
-    for (n1, g1), (n2, g2) in [
-        (("ACS", acs), ("NAD", nad)),
-        (("ACS", acs), ("AD", ad)),
-        (("NAD", nad), ("AD", ad)),
-    ]:
-        U, p_mw = stats.mannwhitneyu(g1[feat], g2[feat], alternative="two-sided")
-        # Cohen's d
-        nx, ny = len(g1), len(g2)
-        pooled = np.sqrt(((nx-1)*g1[feat].std()**2 + (ny-1)*g2[feat].std()**2) / (nx+ny-2))
-        d = (g1[feat].mean() - g2[feat].mean()) / pooled if pooled > 0 else 0
-        print(f"  {n1} vs {n2}: U={U:.0f}, p={p_mw:.2e}, d={d:+.4f}")
-
-# --- Export statistics to CSV ---
-STATS_DIR = WORKSPACE_DIR / "embedding" / "statistics" / "m3m4_deep"
-STATS_DIR.mkdir(parents=True, exist_ok=True)
-
+# 統計值只計算一次：descriptive rows 與 pairwise-test rows，console 與 CSV 共用。
 # 1) Group descriptive statistics
 desc_rows = []
 for feat in ["Valence", "Arousal"]:
@@ -80,12 +53,8 @@ for feat in ["Valence", "Arousal"]:
             "median": grp[feat].median(),
             "q25": grp[feat].quantile(0.25), "q75": grp[feat].quantile(0.75),
         })
-desc_df = pd.DataFrame(desc_rows)
-desc_path = STATS_DIR / "valence_arousal_descriptive.csv"
-desc_df.to_csv(desc_path, index=False)
-print(f"\nSaved: {desc_path}")
 
-# 2) Pairwise comparisons
+# 2) Pairwise comparisons (Kruskal-Wallis + Mann-Whitney U + Cohen's d)
 pair_rows = []
 for feat in ["Valence", "Arousal"]:
     # Kruskal-Wallis
@@ -112,6 +81,34 @@ for feat in ["Valence", "Arousal"]:
             "n1": nx, "n2": ny,
             "statistic": U, "p_value": p_mw, "cohens_d": d,
         })
+
+# --- Console summary (driven by collected rows) ---
+print("\n===== Valence & Arousal: Group Statistics =====")
+for feat in ["Valence", "Arousal"]:
+    print(f"\n--- {feat} ---")
+    for row in desc_rows:
+        if row["feature"] != feat:
+            continue
+        print(f"  {row['group']:>3s}: mean={row['mean']:.4f}, std={row['std']:.4f}, n={row['n']}")
+
+    for row in pair_rows:
+        if row["feature"] != feat:
+            continue
+        if row["test"] == "Kruskal-Wallis":
+            print(f"  Kruskal-Wallis H={row['statistic']:.4f}, p={row['p_value']:.2e}")
+        else:
+            print(f"  {row['group1']} vs {row['group2']}: "
+                  f"U={row['statistic']:.0f}, p={row['p_value']:.2e}, d={row['cohens_d']:+.4f}")
+
+# --- Export statistics to CSV ---
+STATS_DIR = WORKSPACE_DIR / "embedding" / "statistics" / "m3m4_deep"
+STATS_DIR.mkdir(parents=True, exist_ok=True)
+
+desc_df = pd.DataFrame(desc_rows)
+desc_path = STATS_DIR / "valence_arousal_descriptive.csv"
+desc_df.to_csv(desc_path, index=False)
+print(f"\nSaved: {desc_path}")
+
 pair_df = pd.DataFrame(pair_rows)
 pair_path = STATS_DIR / "valence_arousal_tests.csv"
 pair_df.to_csv(pair_path, index=False)
@@ -132,6 +129,20 @@ try:
 except Exception:
     pass
 
+
+def style_va_axes(ax):
+    """Valence–Arousal 座標軸樣式：軸線交於 (0,0)、標籤置於正向端、加上格線。"""
+    ax.spines["left"].set_position("zero")
+    ax.spines["bottom"].set_position("zero")
+    ax.spines["right"].set_visible(False)
+    ax.spines["top"].set_visible(False)
+    ax.set_xlabel("Valence", loc="right")
+    ax.set_ylabel("Arousal", loc="top")
+    ax.xaxis.set_label_coords(1.0, -0.02)
+    ax.yaxis.set_label_coords(-0.02, 1.0)
+    ax.grid(True, alpha=0.3)
+
+
 fig, ax = plt.subplots(figsize=(8, 6))
 
 # AD first (background) - X markers
@@ -149,32 +160,17 @@ ax.scatter(nad["Valence"], nad["Arousal"],
            marker="o", s=20, alpha=0.5, color="#4CAF50", edgecolors="none",
            label=f"NAD (n={len(nad)})", zorder=3)
 
-ax.set_xlabel("Valence")
-ax.set_ylabel("Arousal")
 ax.set_title("Valence–Arousal Distribution by Diagnostic Group")
 ax.legend(loc="upper right", framealpha=0.9)
 
-# Move axes to cross at (0, 0)
-ax.spines["left"].set_position("zero")
-ax.spines["bottom"].set_position("zero")
-ax.spines["right"].set_visible(False)
-ax.spines["top"].set_visible(False)
+style_va_axes(ax)
 
-# Place axis labels at the positive ends of each axis
-ax.set_xlabel("Valence", loc="right")
-ax.set_ylabel("Arousal", loc="top")
-ax.xaxis.set_label_coords(1.0, -0.02)
-ax.yaxis.set_label_coords(-0.02, 1.0)
-
-ax.grid(True, alpha=0.3)
-
-out_path = project_root / "paper" / "figures" / "fig_valence_arousal_scatter.png"
+out_path = PROJECT_ROOT / "paper" / "figures" / "fig_valence_arousal_scatter.png"
 fig.savefig(out_path)
 plt.close(fig)
 print(f"\nSaved V1: {out_path}")
 
 # --- Plot V2: ACS (n=223) vs AD random 223 ---
-np.random.seed(42)
 ad_sample = ad.sample(n=len(acs), random_state=42)
 print(f"\nV2: ACS={len(acs)}, AD_sample={len(ad_sample)}")
 
@@ -191,18 +187,9 @@ ax2.scatter(acs["Valence"], acs["Arousal"],
 ax2.set_title("Valence–Arousal: ACS vs AD (matched n=223)")
 ax2.legend(loc="upper right", framealpha=0.9)
 
-ax2.spines["left"].set_position("zero")
-ax2.spines["bottom"].set_position("zero")
-ax2.spines["right"].set_visible(False)
-ax2.spines["top"].set_visible(False)
+style_va_axes(ax2)
 
-ax2.set_xlabel("Valence", loc="right")
-ax2.set_ylabel("Arousal", loc="top")
-ax2.xaxis.set_label_coords(1.0, -0.02)
-ax2.yaxis.set_label_coords(-0.02, 1.0)
-ax2.grid(True, alpha=0.3)
-
-out_path2 = project_root / "paper" / "figures" / "fig_valence_arousal_scatter_v2.png"
+out_path2 = PROJECT_ROOT / "paper" / "figures" / "fig_valence_arousal_scatter_v2.png"
 fig2.savefig(out_path2)
 plt.close(fig2)
 print(f"Saved V2: {out_path2}")
@@ -225,18 +212,9 @@ ax3.scatter(nad_sample["Valence"], nad_sample["Arousal"],
 ax3.set_title("Valence–Arousal: NAD vs AD (matched n=200)")
 ax3.legend(loc="upper right", framealpha=0.9)
 
-ax3.spines["left"].set_position("zero")
-ax3.spines["bottom"].set_position("zero")
-ax3.spines["right"].set_visible(False)
-ax3.spines["top"].set_visible(False)
+style_va_axes(ax3)
 
-ax3.set_xlabel("Valence", loc="right")
-ax3.set_ylabel("Arousal", loc="top")
-ax3.xaxis.set_label_coords(1.0, -0.02)
-ax3.yaxis.set_label_coords(-0.02, 1.0)
-ax3.grid(True, alpha=0.3)
-
-out_path3 = project_root / "paper" / "figures" / "fig_valence_arousal_scatter_v3.png"
+out_path3 = PROJECT_ROOT / "paper" / "figures" / "fig_valence_arousal_scatter_v3.png"
 fig3.savefig(out_path3)
 plt.close(fig3)
 print(f"Saved V3: {out_path3}")
@@ -304,7 +282,7 @@ fig4.supylabel("Arousal", fontsize=14)
 fig4.suptitle("Valence–Arousal by Age Stratum", fontsize=15, fontweight="bold")
 fig4.tight_layout(rect=[0.02, 0.02, 1, 0.96])
 
-out_path4 = project_root / "paper" / "figures" / "fig_valence_arousal_scatter_v4.png"
+out_path4 = PROJECT_ROOT / "paper" / "figures" / "fig_valence_arousal_scatter_v4.png"
 fig4.savefig(out_path4)
 plt.close(fig4)
 print(f"\nSaved V4: {out_path4}")

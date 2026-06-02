@@ -347,6 +347,7 @@ class AUExtractionConfig:
     output_dir: Path = AU_RAW_DIR
     exclude_acs: bool = True
     min_frames: int = 3
+    subject_prefix: Optional[str] = None
 
     # OpenFace 3.0 設定
     openface_weights_dir: Optional[Path] = None

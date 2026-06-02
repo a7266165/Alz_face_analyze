@@ -20,11 +20,10 @@ import logging
 from pathlib import Path
 from tqdm import tqdm
 import cv2
-import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
-from _paths import PROJECT_ROOT
-project_root = PROJECT_ROOT
+# 僅為其 sys.path 副作用而 import；PROJECT_ROOT 本檔未直接使用
+from _paths import PROJECT_ROOT  # noqa: F401
 
 from src.config import (
     preprocess_dir,
@@ -162,6 +161,7 @@ def main():
         # 存下實際餵入模型的人臉裁切（含最小臉框守門後的結果），格式比照 preprocess。
         # 裁切只算一次：存檔後直接餵給模型（predict_cropped），避免對同一張圖
         # 重跑兩次人臉偵測，也確保「存下來的」與「實際推論的」是同一份裁切。
+        crops = None
         if args.save_input and hasattr(predictor, "face_crop"):
             crop_dir = output_file.parent / "input" / subject_id
             crop_dir.mkdir(parents=True, exist_ok=True)
@@ -170,11 +170,9 @@ def main():
                 crop = predictor.face_crop(img)
                 _imwrite_unicode(crop_dir / img_path.name, crop)
                 crops.append(crop)
-            if hasattr(predictor, "predict_cropped"):
-                ages = predictor.predict_cropped(crops)
-            else:
-                ages = [a for img in images
-                        if (a := predictor.predict_single(img)) is not None]
+
+        if crops is not None and hasattr(predictor, "predict_cropped"):
+            ages = predictor.predict_cropped(crops)
         else:
             ages = [a for img in images
                     if (a := predictor.predict_single(img)) is not None]

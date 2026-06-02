@@ -10,7 +10,6 @@ Reference:
 """
 
 import sys
-from pathlib import Path
 from typing import Dict, List, Optional
 
 import cv2
@@ -44,6 +43,9 @@ class DANExtractor(EmoAUExtractor):
         4: "sadness", 5: "anger", 6: "neutral",
     }
 
+    # RAF-DB checkpoint 檔名
+    CHECKPOINT_NAME = "rafdb_epoch21_acc0.8970_bacc0.8272.pth"
+
     def __init__(self, device: str = "cuda"):
         self._device = device
         self._model = None
@@ -70,7 +72,7 @@ class DANExtractor(EmoAUExtractor):
     def is_available(self) -> bool:
         if self._available is not None:
             return self._available
-        checkpoint = DAN_WEIGHTS_DIR / "rafdb_epoch21_acc0.8970_bacc0.8272.pth"
+        checkpoint = DAN_WEIGHTS_DIR / self.CHECKPOINT_NAME
         if not checkpoint.exists():
             logger.warning(f"DAN 權重不存在: {checkpoint}")
             self._available = False
@@ -89,7 +91,7 @@ class DANExtractor(EmoAUExtractor):
         from networks.dan import DAN
 
         model = DAN(num_class=7, num_head=4, pretrained=False)
-        checkpoint_path = DAN_WEIGHTS_DIR / "rafdb_epoch21_acc0.8970_bacc0.8272.pth"
+        checkpoint_path = DAN_WEIGHTS_DIR / self.CHECKPOINT_NAME
         checkpoint = torch.load(
             str(checkpoint_path), map_location="cpu", weights_only=False,
         )
@@ -106,7 +108,7 @@ class DANExtractor(EmoAUExtractor):
             with torch.no_grad():
                 out, _, _ = self._model(tensor)
             probs = torch.softmax(out, dim=1).squeeze(0).cpu().numpy()
-            return {self.RAFDB_INDEX[i]: float(probs[i]) for i in range(7)}
+            return {name: float(probs[i]) for i, name in self.RAFDB_INDEX.items()}
         except Exception as e:
             logger.debug(f"  DAN 提取失敗: {e}")
             return None

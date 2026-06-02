@@ -83,7 +83,7 @@ class AUHarmonizer:
             tool: 工具名稱
 
         Returns:
-            Harmonized DataFrame，只保留 19 統一特徵 + frame 欄
+            Harmonized DataFrame，只保留 15 統一特徵 + frame 欄
         """
         au_map = self.AU_MAPS.get(tool, {})
         emotion_map = self.EMOTION_MAPS.get(tool, {})

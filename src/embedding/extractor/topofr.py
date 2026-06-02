@@ -71,15 +71,20 @@ class TopoFRExtractor(EmbeddingExtractor):
                 f"TopoFR 模型檔案不存在於: {topofr_path / 'model'}")
 
         # 由檔名判斷架構
-        model_name = model_path.stem.upper()
-        if "R100" in model_name:
+        weight_stem = model_path.stem.upper()
+        if "R100" in weight_stem:
             network = "r100"
-        elif "R50" in model_name:
+        elif "R50" in weight_stem:
             network = "r50"
-        elif "R200" in model_name:
+        elif "R200" in weight_stem:
             network = "r200"
         else:
             network = "r100"
+            logger.warning(
+                '無法從檔名推斷 TopoFR 架構，預設 r100（若權重非 r100，'
+                'strict=False 會靜默丟棄不符層並產生錯誤特徵）: %s',
+                model_path.name,
+            )
 
         self._device = torch.device(
             'cuda' if torch.cuda.is_available() else 'cpu'

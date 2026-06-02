@@ -21,10 +21,10 @@ class MiVOLOPredictor(BasePredictor):
     MIN_FACE_AREA_FRAC = 0.08
 
     def __init__(self):
-        self.model = None
-        self.processor = None
-        self.face_detector = None
-        self.device = None
+        self._model = None
+        self._processor = None
+        self._face_detector = None
+        self._device = None
 
     def is_available(self) -> bool:
         try:
@@ -40,27 +40,27 @@ class MiVOLOPredictor(BasePredictor):
             from transformers import AutoModelForImageClassification, AutoImageProcessor
             import torch
 
-            self.device = "cuda" if torch.cuda.is_available() else "cpu"
-            dtype = torch.float16 if torch.cuda.is_available() else torch.float32
+            use_cuda = torch.cuda.is_available()
+            self._device = "cuda" if use_cuda else "cpu"
+            dtype = torch.float16 if use_cuda else torch.float32
 
-            self.model = AutoModelForImageClassification.from_pretrained(
+            self._model = AutoModelForImageClassification.from_pretrained(
                 "iitolstykh/mivolo_v2",
                 trust_remote_code=True,
                 dtype=dtype
             )
-            self.processor = AutoImageProcessor.from_pretrained(
+            self._processor = AutoImageProcessor.from_pretrained(
                 "iitolstykh/mivolo_v2",
                 trust_remote_code=True
             )
-            self.face_detector = cv2.CascadeClassifier(
+            self._face_detector = cv2.CascadeClassifier(
                 cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'
             )
 
-            if torch.cuda.is_available():
-                self.model = self.model.cuda()
+            self._model = self._model.to(self._device)
 
-            self.model.eval()
-            logger.info(f"✓ MiVOLO 初始化完成 ({self.device.upper()})")
+            self._model.eval()
+            logger.info(f"✓ MiVOLO 初始化完成 ({self._device.upper()})")
 
         except Exception as e:
             raise RuntimeError(f"MiVOLO 初始化失敗: {e}")
@@ -74,7 +74,7 @@ class MiVOLOPredictor(BasePredictor):
         （影像已對齊、臉在中央，整張圖預測仍正確）。
         """
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        faces = self.face_detector.detectMultiScale(gray, 1.1, 5, minSize=(30, 30))
+        faces = self._face_detector.detectMultiScale(gray, 1.1, 5, minSize=(30, 30))
 
         if len(faces) == 0:
             return image
@@ -99,15 +99,17 @@ class MiVOLOPredictor(BasePredictor):
 
         try:
             # 預處理
-            inputs = self.processor(images=[face_crop])["pixel_values"]
-            inputs = inputs.to(dtype=self.model.dtype, device=self.model.device)
+            inputs = self._processor(images=[face_crop])["pixel_values"]
+            inputs = inputs.to(dtype=self._model.dtype, device=self._model.device)
 
             # 推論
             with torch.no_grad():
-                outputs = self.model(faces_input=inputs, body_input=inputs)
+                outputs = self._model(faces_input=inputs, body_input=inputs)
 
             if hasattr(outputs, 'age_output'):
                 return outputs.age_output[0].item()
+            else:
+                logger.debug('MiVOLO output missing age_output attribute (schema mismatch?)')
 
         except Exception as e:
             logger.debug(f"預測失敗: {e}")

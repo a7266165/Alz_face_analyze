@@ -41,20 +41,20 @@ GROUP_MARKERS = {"Patient": "o", "NAD": "s", "ACS": "D"}
 
 # 模型顏色/marker
 MODEL_COLORS = {
-    "Py-Feat": "#9B59B6",
-    "POSTER++": "#E67E22",
-    "FER": "#1ABC9C",
-    "DAN": "#E74C3C",
-    "HSEmotion": "#3498DB",
-    "ViT": "#2C3E50",
+    "pyfeat": "#9B59B6",
+    "poster_pp": "#E67E22",
+    "fer": "#1ABC9C",
+    "dan": "#E74C3C",
+    "hsemotion": "#3498DB",
+    "vit": "#2C3E50",
 }
 MODEL_MARKERS = {
-    "Py-Feat": "o",
-    "POSTER++": "s",
-    "FER": "D",
-    "DAN": "^",
-    "HSEmotion": "v",
-    "ViT": "P",
+    "pyfeat": "o",
+    "poster_pp": "s",
+    "fer": "D",
+    "dan": "^",
+    "hsemotion": "v",
+    "vit": "P",
 }
 
 
@@ -125,12 +125,12 @@ def plot_same_group_diff_model(dfs: dict, group_key: str, group_label: str):
             continue
         means = sub[EMO_COLS].mean().values
         stds = sub[EMO_COLS].std().values
-        color = MODEL_COLORS[tool_label]
+        color = MODEL_COLORS[tool_key]
         ax.fill_between(x, means - stds, means + stds, color=color, alpha=0.06)
         ax.plot(x, means + stds, "--", color=color, lw=0.5, alpha=0.4)
         ax.plot(x, means - stds, "--", color=color, lw=0.5, alpha=0.4)
         ax.plot(x, means, "-", color=color, label=f"{tool_label} (n={len(sub)})",
-                marker=MODEL_MARKERS[tool_label], markersize=6, linewidth=1.8, zorder=5)
+                marker=MODEL_MARKERS[tool_key], markersize=6, linewidth=1.8, zorder=5)
 
     ax.set_xticks(x)
     ax.set_xticklabels(EMO_LABELS, fontsize=12)

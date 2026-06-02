@@ -10,7 +10,6 @@ Reference:
 """
 
 import sys
-from pathlib import Path
 from typing import Dict, List, Optional
 
 import cv2
@@ -39,6 +38,10 @@ class EmoNetExtractor(EmoAUExtractor):
               + valence [-1,1] + arousal [-1,1]
     """
 
+    # 落地序照 EMONET_EMOTION_INDEX 過濾序（非 harmonized 序）
+    _EMOTION_NAMES = [e for e in EMONET_EMOTION_INDEX.values() if e in HARMONIZED_EMOTIONS]
+    _NAME_TO_IDX = {n: i for i, n in EMONET_EMOTION_INDEX.items()}
+
     def __init__(self, device: str = "cuda", n_expression: int = 8):
         self._device = device
         self._n_expression = n_expression
@@ -51,9 +54,8 @@ class EmoNetExtractor(EmoAUExtractor):
 
     @property
     def output_columns(self) -> List[str]:
-        # 落地序照 extract():EMONET_EMOTION_INDEX 過濾序（非 harmonized 序）+ valence/arousal
-        emotions = [e for e in EMONET_EMOTION_INDEX.values() if e in HARMONIZED_EMOTIONS]
-        return emotions + ["valence", "arousal"]
+        # 落地序照 _EMOTION_NAMES（EMONET_EMOTION_INDEX 過濾序）+ valence/arousal
+        return self._EMOTION_NAMES + ["valence", "arousal"]
 
     def is_available(self) -> bool:
         if self._available is not None:
@@ -103,9 +105,10 @@ class EmoNetExtractor(EmoAUExtractor):
 
             # Map to harmonized emotions (drop contempt if 8-class)
             result: Dict[str, float] = {}
-            for idx, emo_name in EMONET_EMOTION_INDEX.items():
-                if idx < len(probs) and emo_name in HARMONIZED_EMOTIONS:
-                    result[emo_name] = float(probs[idx])
+            for name in self._EMOTION_NAMES:
+                idx = self._NAME_TO_IDX[name]
+                if idx < len(probs):
+                    result[name] = float(probs[idx])
 
             # Valence and arousal
             result["valence"] = float(output["valence"].clamp(-1.0, 1.0).cpu().item())

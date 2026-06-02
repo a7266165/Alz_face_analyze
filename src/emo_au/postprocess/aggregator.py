@@ -2,7 +2,7 @@
 時序統計聚合
 
 將 per-frame 的 harmonized 特徵聚合為 subject-level 特徵向量
-計算 mean, std, range, trend, entropy 五項統計量
+計算 mean, std, range, entropy 四項統計量
 """
 
 from pathlib import Path
@@ -11,7 +11,6 @@ from typing import Dict, List, Optional, Callable
 import numpy as np
 import pandas as pd
 import logging
-from scipy.stats import linregress
 
 from src.emo_au.extractor.au_config import (
     HARMONIZED_FEATURES,
@@ -28,33 +27,17 @@ def _safe_entropy(values: np.ndarray, n_bins: int = 10) -> float:
     """計算直方圖熵，處理邊界情況"""
     if len(values) < 2:
         return 0.0
-    # 去除 NaN
-    values = values[~np.isnan(values)]
-    if len(values) < 2:
-        return 0.0
     hist, _ = np.histogram(values, bins=n_bins, density=True)
     hist = hist + 1e-10  # 避免 log(0)
     hist = hist / hist.sum()
     return float(-np.sum(hist * np.log2(hist)))
 
 
-def _safe_trend(values: np.ndarray) -> float:
-    """計算線性回歸斜率，處理邊界情況"""
-    values = values[~np.isnan(values)]
-    if len(values) < 2:
-        return 0.0
-    try:
-        slope, _, _, _, _ = linregress(np.arange(len(values)), values)
-        return float(slope)
-    except Exception:
-        return 0.0
-
-
 # 統計量計算函數（非時序資料，不含 trend）
 STAT_FUNCTIONS: Dict[str, Callable] = {
-    "mean": lambda x: float(np.nanmean(x)) if len(x) > 0 else 0.0,
-    "std": lambda x: float(np.nanstd(x)) if len(x) > 1 else 0.0,
-    "range": lambda x: float(np.nanmax(x) - np.nanmin(x)) if len(x) > 0 else 0.0,
+    "mean": lambda x: float(np.mean(x)),
+    "std": lambda x: float(np.std(x)),
+    "range": lambda x: float(np.max(x) - np.min(x)),
     "entropy": _safe_entropy,
 }
 
@@ -69,7 +52,7 @@ class TemporalAggregator:
     def __init__(self, min_frames: int = 3):
         """
         Args:
-            min_frames: 計算 trend/entropy 的最少幀數
+            min_frames: 計算 entropy 的最少幀數
         """
         self.min_frames = min_frames
 
@@ -94,7 +77,6 @@ class TemporalAggregator:
             ]
 
         result = {}
-        n_frames = len(frame_df)
 
         for col in feature_columns:
             if col not in frame_df.columns:
@@ -109,9 +91,11 @@ class TemporalAggregator:
                     result[f"{col}_{stat_name}"] = 0.0
                 continue
 
+            n_valid = len(values)
+
             for stat_name, stat_fn in STAT_FUNCTIONS.items():
-                # trend/entropy 在幀數不足時設為 0
-                if stat_name in ("trend", "entropy") and n_frames < self.min_frames:
+                # entropy 在有效幀數不足時設為 0
+                if stat_name == "entropy" and n_valid < self.min_frames:
                     result[f"{col}_{stat_name}"] = 0.0
                 else:
                     result[f"{col}_{stat_name}"] = stat_fn(values)
@@ -137,7 +121,7 @@ class TemporalAggregator:
             output_dir: 輸出目錄
 
         Returns:
-            聚合後的 DataFrame (n_subjects, n_features * 5)
+            聚合後的 DataFrame (n_subjects, n_features * 4)
         """
         if output_dir is None:
             output_dir = AU_AGGREGATED_DIR

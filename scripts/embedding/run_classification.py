@@ -118,7 +118,7 @@ def run_cell(cohort, bg_mode, embedding, variant, photo_mode, reducer,
     y_full = np.array([label_map[i] for i in ids_full], dtype=int)
 
     # estimator factory(每折要全新 estimator,故傳 0-arg factory)
-    _, sm, cv = _build_estimator(model, ep)
+    _, score_method, needs_cv = _build_estimator(model, ep)
     build_est = lambda: _build_estimator(model, ep)[0]
 
     # 路徑:forward l2 無 fwd/rev 段、其餘 fwd;reverse 一律 rev。
@@ -129,7 +129,7 @@ def run_cell(cohort, bg_mode, embedding, variant, photo_mode, reducer,
         clf=model, direction=dir_seg, root=root)
 
     # train → 只產 OOF;report → 只把 OOF 落地成 oof_scores.csv(評估是獨立下游步驟)。
-    oof = train(X_full, ids_full, y_full, build_est, sm, cv, direction,
+    oof = train(X_full, ids_full, y_full, build_est, score_method, needs_cv, direction,
                 cohort=cohort, match_strategies=match_strategies)
     paths = report(oof, out_dir, direction)
     logger.info(f"  [{direction}] wrote {len(paths)} oof_scores.csv")
