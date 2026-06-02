@@ -7,7 +7,7 @@
 ```
 Alz_face_analyze/
 ├── src/                              # Library code
-│   ├── config.py                     # 全專案路徑常數 + CohortSpec (V2.2 5-axis)
+│   ├── config.py                     # 全專案路徑常數 + cohort 4-token helpers
 │   ├── common/                       # 跨模態共用 helpers
 │   ├── meta/                         # 跨模態 modeling layer (loader / classifier / stacking / evaluation)
 │   ├── preprocess/                   # 對齊 / 偵測 / 鏡射 / 選圖

@@ -64,11 +64,14 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.config import (
+    DEFAULT_COHORT_TOKENS,
     EMBEDDING_CLASSIFICATION_DIR,
     EMBEDDING_FEATURES_DIR,
-    VALID_COHORT_CHOICES,
-    cohort_name,
-    cohort_spec_from_name,
+    HC_SCORE_TOKENS,
+    HC_VISIT_TOKENS,
+    P_SCORE_TOKENS,
+    P_VISIT_TOKENS,
+    cohort_dirs,
 )
 
 EMBEDDING_FEAT_DIR = EMBEDDING_FEATURES_DIR
@@ -92,7 +95,7 @@ _DROP_CORR_THRESHOLD = None  # None = disabled; float = enabled at this Pearson 
 _DROP_CORR_METHOD = "pearson"
 _PCA_COMPONENTS = None       # None = disabled; int = n_components; float<1 = variance ratio
 _PHOTO_MODE = "mean"   # "mean" = current behavior (mean over 10 photos); "all" = one row per photo
-_COHORT_MODE = os.environ.get("COHORT_MODE", "p_first_cdr05_hc_first_cdrall_or_mmseall")  # default=p_first_cdr05_hc_first_cdrall_or_mmseall / p_first_cdr05_hc_all_cdrall_or_mmseall / p_all_cdr05_hc_all_cdrall_or_mmseall
+_COHORT = DEFAULT_COHORT_TOKENS  # 4-token cohort tuple (p_visit, p_score, hc_visit, hc_score); set in main()
 _LR_C = 1.0  # LogisticRegression C; encoded at cell-level leaf as logistic/C_<value>/
 _XGB_PARAMS = {"n_estimators": 300, "max_depth": 6, "learning_rate": 0.1}
 _MATCH_PRIORITY = None  # e.g. ["ACS", "NAD"] — HC sub-group priority for matching
@@ -127,7 +130,7 @@ def _reducer_label():
 
 def output_dir_for(feature_type, drop_corr=None,
                     photo_mode="mean", pca_components=None,
-                    cohort_mode="p_first_cdr05_hc_first_cdrall_or_mmseall",
+                    cohort=DEFAULT_COHORT_TOKENS,
                     embedding=None, bg_mode="no_background"):
     """Build output dir up to the reducer level.
 
@@ -150,8 +153,8 @@ def output_dir_for(feature_type, drop_corr=None,
         reducer = Path("no_drop")
     else:
         reducer = Path("drop_feats") / f"pearson_r_{drop_corr:g}"
-    spec = cohort_spec_from_name(cohort_name(cohort_mode))
-    return (EMBEDDING_CLASSIFICATION_DIR / spec.visit_dir / spec.cdr_mmse_dir
+    visit_dir, cdr_mmse_dir = cohort_dirs(*cohort)
+    return (EMBEDDING_CLASSIFICATION_DIR / visit_dir / cdr_mmse_dir
             / bg_mode / embedding / feature_type / photo_mode / reducer)
 
 
@@ -280,9 +283,9 @@ from src.common.matching import match_by_age, match_by_score
 from src.common.legacy.splits import split_by_metric_median
 from scripts.utilities.stats_helpers import bootstrap_auc_ci
 
-# Module-level _COHORT_MODE is set in main() after argparse; cohort builders
-# get it threaded as a parameter (no env-var-at-load globals).
-_COHORT_MODE = "p_first_cdr05_hc_first_cdrall_or_mmseall"
+# Module-level _COHORT (4-token tuple) is set in main() after argparse; cohort
+# builders read it via *_COHORT (no env-var-at-load globals).
+_COHORT = DEFAULT_COHORT_TOKENS
 _HC_SOURCE_MODE = os.environ.get("HC_SOURCE_MODE", "ACS")
 
 
@@ -358,10 +361,8 @@ def _train_cache_key(partition, embedding, classifier, n_folds, seed):
 
 
 def _tokens():
-    """由 _COHORT_MODE 取 cohort_list 的四個 spec token。"""
-    spec = cohort_spec_from_name(_COHORT_MODE)
-    return (f"p_{spec.p_visit}", f"p_{spec.p_cdr}", f"hc_{spec.hc_visit}",
-            "hc_cdr0_or_mmse26" if spec.hc_strict else "hc_cdrall_or_mmseall")
+    """cohort_list 的四個 token 即 _COHORT (p_visit, p_score, hc_visit, hc_score)。"""
+    return _COHORT
 
 
 def _matched_df(case_ids, control_ids):
@@ -403,10 +404,10 @@ def _build_ad_vs_hcgroup(hc_source):
     full from design='cross_naive' (no matching), matched from design=
     'cross_matched' (1:1 age).
 
-    Visit selection is fully encoded in cohort_mode:
-      'p_first_cdr05_hc_first_cdrall_or_mmseall' (p_first_cdr05_hc_first_cdrall_or_mmseall): P first + HC first
-      'p_first_cdr05_hc_all_cdrall_or_mmseall':              P first + HC all visits
-      'p_all_cdr05_hc_all_cdrall_or_mmseall':                P all + HC all visits
+    Visit selection is fully encoded in the cohort tuple (p_visit / hc_visit):
+      (p_first, *, hc_first, *): P first + HC first
+      (p_first, *, hc_all,   *): P first + HC all visits
+      (p_all,   *, hc_all,   *): P all + HC all visits
     """
     # hc_source 固定 "HC"（NAD/ACS partition 由下游 group 過濾）。
     tokens = _tokens()
@@ -425,15 +426,13 @@ def _build_ad_vs_hcgroup(hc_source):
 
 
 def _build_metric_hilo(metric):
-    """mmse_hilo / casi_hilo (AD-only, P group; CDR filter per CohortSpec.p_cdr).
+    """mmse_hilo / casi_hilo (AD-only, P group; CDR filter per cohort p_score).
 
     Splits by median, matches 1:1 by age (caliper 2y).
     Labels: high=1, low=0.
     """
-    spec = cohort_spec_from_name(_COHORT_MODE)
-    # hilo 固定取 P first-visit；hc_* token 對 P-only 無作用，僅為湊滿 spec。
-    hilo_tokens = ("p_first", f"p_{spec.p_cdr}", f"hc_{spec.hc_visit}",
-                   "hc_cdr0_or_mmse26" if spec.hc_strict else "hc_cdrall_or_mmseall")
+    # hilo 固定取 P first-visit；hc_* token 對 P-only 無作用，僅為湊滿 cohort。
+    hilo_tokens = ("p_first", _COHORT[1], _COHORT[2], _COHORT[3])
     # full = 全 P-first，按 metric 中位數標 high(1)/low(0)（與 match_by_score 同切法）。
     # 不加小寫 group 欄 → 下游 caliper_group 會自動略過（P-only 不做 1:N）。
     full = cohort_list(*hilo_tokens)
@@ -486,7 +485,7 @@ def build_partition_cohort(partition):
 def build_feature_matrix(cohort, embedding):
     """Returns (X, y, base_ids, ids). Drops subjects without .npy.
 
-    Row count depends on (cohort_mode, photo_mode):
+    Row count depends on (cohort, photo_mode):
       - default            + mean: 1 row per base_id
       - default            + all : 10 rows per base_id (one per photo)
       - p_*_hc_all (multi) + mean: 1 row per (base_id, visit)
@@ -1530,12 +1529,14 @@ def run_grid_search(partitions, embeddings, classifiers, strategies,
 def _refresh_summary_csv():
     """Subprocess-call build_sweep_metrics.py to refresh the
     `<OUTPUT_DIR>/_summary/all_metrics_with_cm.csv` aggregate. Handles all
-    feature_type variants under the active cohort_mode."""
+    feature_type variants under the active cohort."""
     import subprocess
+    # build_sweep_metrics.py is now 4-token (and lives under legacy/); pass tokens.
     cmd = [
         sys.executable,
-        str(PROJECT_ROOT / "scripts" / "embedding" / "build_sweep_metrics.py"),
-        "--cohort-mode", _COHORT_MODE,
+        str(PROJECT_ROOT / "scripts" / "embedding" / "legacy" / "build_sweep_metrics.py"),
+        "--p-visit", _COHORT[0], "--p-score", _COHORT[1],
+        "--hc-visit", _COHORT[2], "--hc-score", _COHORT[3],
     ]
     logger.info(f"Refreshing summary CSV: {' '.join(cmd)}")
     try:
@@ -1587,14 +1588,19 @@ def main():
                              "subject into 1 feature vector (current "
                              "behavior). 'all': keep all 10 photos as "
                              "individual training rows.")
-    parser.add_argument("--cohort-mode", default="p_first_cdr05_hc_first_cdrall_or_mmseall",
-                        choices=VALID_COHORT_CHOICES,
-                        help="'p_first_cdr05_hc_first_cdrall_or_mmseall' (p_first_cdr05_hc_first_cdrall_or_mmseall), 'p_first_cdr05_hc_all_cdrall_or_mmseall' "
-                             "(first-visit P + ALL NAD/ACS), or 'p_all_cdr05_hc_all_cdrall_or_mmseall' "
-                             "(ALL P visits + ALL NAD/ACS). Output goes to "
-                             "<cohort>/embedding_*classification/ . "
-                             "Threaded as a function parameter to "
-                             "scripts.utilities.cohort.build_cohort_*.")
+    parser.add_argument("--p-visit", choices=list(P_VISIT_TOKENS),
+                        default=DEFAULT_COHORT_TOKENS[0],
+                        help="P visit token (p_first / p_all).")
+    parser.add_argument("--p-score", choices=list(P_SCORE_TOKENS),
+                        default=DEFAULT_COHORT_TOKENS[1],
+                        help="P CDR-score token (p_cdrall / p_cdr05 / p_cdr1 / p_cdr2).")
+    parser.add_argument("--hc-visit", choices=list(HC_VISIT_TOKENS),
+                        default=DEFAULT_COHORT_TOKENS[2],
+                        help="HC visit token (hc_first / hc_all).")
+    parser.add_argument("--hc-score", choices=list(HC_SCORE_TOKENS),
+                        default=DEFAULT_COHORT_TOKENS[3],
+                        help="HC cognitive-filter token "
+                             "(hc_cdrall_or_mmseall / hc_cdr0_or_mmse26).")
     parser.add_argument("--n-folds", type=int, default=10)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--lr-C", type=float, default=1.0,
@@ -1644,7 +1650,7 @@ def main():
     args = parser.parse_args()
 
     global _FEATURE_TYPE, _BG_MODE, _DROP_CORR_THRESHOLD, _DROP_CORR_METHOD
-    global _PCA_COMPONENTS, _PHOTO_MODE, _COHORT_MODE, _LR_C
+    global _PCA_COMPONENTS, _PHOTO_MODE, _COHORT, _LR_C
     global OUTPUT_DIR
     global _RFE_DROP, _RFE_ITERS, _SAVE_OOF_PROB, _MATCH_PRIORITY, _CALIPER_GROUP
     if args.drop_correlated_threshold is not None and args.pca_components is not None:
@@ -1667,7 +1673,7 @@ def main():
             parser.error("--pca-components float must be in (0, 1) for "
                          "variance ratio")
     _PHOTO_MODE = args.photo_mode
-    _COHORT_MODE = args.cohort_mode
+    _COHORT = (args.p_visit, args.p_score, args.hc_visit, args.hc_score)
     _LR_C = args.lr_C
     _RFE_DROP = args.rfe_drop
     _RFE_ITERS = args.rfe_iters
@@ -1694,12 +1700,12 @@ def main():
     for embedding in embeddings:
         OUTPUT_DIR = output_dir_for(
             _FEATURE_TYPE, _DROP_CORR_THRESHOLD, _PHOTO_MODE,
-            _PCA_COMPONENTS, _COHORT_MODE,
+            _PCA_COMPONENTS, _COHORT,
             embedding=embedding, bg_mode=_BG_MODE,
         )
         logger.info(f"Feature type: {_FEATURE_TYPE}  ·  bg={_BG_MODE}  ·  "
                     f"emb={embedding}  ·  {reducer_label}  ·  "
-                    f"photo={_PHOTO_MODE}  ·  cohort={_COHORT_MODE}  ·  "
+                    f"photo={_PHOTO_MODE}  ·  cohort={_COHORT}  ·  "
                     f"lr_C={_LR_C}  ·  match={_match_subdir()}  "
                     f"→  {OUTPUT_DIR}")
         OUTPUT_DIR.mkdir(parents=True, exist_ok=True)

@@ -30,7 +30,6 @@ from sklearn.metrics import (
 
 from src.common.cohort import cohort_list
 from src.common.matching import match_by_age, match_by_score
-from src.config import cohort_spec_from_name
 
 logger = logging.getLogger(__name__)
 
@@ -67,8 +66,14 @@ def bootstrap_auc_ci(y_true, y_prob, n=100, seed=42):
 
 
 def compute_clf_metrics(y_true, y_score, threshold=0.5, n_bootstrap=100,
-                        seed=42):
-    y_pred = (y_score >= threshold).astype(int)
+                        seed=42, y_pred=None):
+    # y_pred 預設 None → 沿用固定 threshold(meta pipeline 走這條,行為不變)。
+    # 下游可傳入預先算好的 label(如 leave-fold-out Youden),此時 threshold 失效;
+    # AUC / CI 永遠用連續 y_score,不受 y_pred 影響。
+    if y_pred is None:
+        y_pred = (y_score >= threshold).astype(int)
+    else:
+        y_pred = np.asarray(y_pred).astype(int)
     if len(np.unique(y_true)) > 1:
         cm = confusion_matrix(y_true, y_pred)
         tn, fp, fn, tp = cm.ravel() if cm.shape == (2, 2) else (0, 0, 0, 0)
@@ -165,7 +170,10 @@ def _age_balance(demo, p_ids, hc_ids, caliper):
 # ====================================================================
 
 def build_matching_cache(
-    cohort_mode: str,
+    p_visit: str,
+    p_score: str,
+    hc_visit: str,
+    hc_score: str,
     partitions: List[str] = None,
     match_levels: List[str] = None,
     match_strategies: List[str] = None,
@@ -175,7 +183,7 @@ def build_matching_cache(
     """Build all matching cohorts upfront. Returns cache dict.
 
     Uses cohort_list to get cohort-filtered demographics that respect
-    the p_visit / hc_visit / CDR / MMSE settings.
+    the p_visit / p_score / hc_visit / hc_score 4-token cohort spec.
 
     Only depends on demographics (Age), independent of embedding/features.
     AD partitions share one matching per (match_strat, match_level).
@@ -188,9 +196,7 @@ def build_matching_cache(
     if match_strategies is None:
         match_strategies = list(MATCH_STRATEGIES)
 
-    spec = cohort_spec_from_name(cohort_mode)
-    tokens = (f"p_{spec.p_visit}", f"p_{spec.p_cdr}", f"hc_{spec.hc_visit}",
-              "hc_cdr0_or_mmse26" if spec.hc_strict else "hc_cdrall_or_mmseall")
+    tokens = (p_visit, p_score, hc_visit, hc_score)
     demo = cohort_list(*tokens)
     demo["group"] = demo["Group"]
     demo["base_id"] = demo["Group"] + demo["Number"].astype(str)  # ID 已是完整鍵
@@ -289,7 +295,8 @@ def run_matched_eval_chain(
             if re.match(r"^([A-Za-z]+\d+)", s) else s
         )
 
-    oof_subj = oof[["base_id", "y_score"]].drop_duplicates("base_id")
+    _keep = ["base_id", "y_score"] + (["y_pred"] if "y_pred" in oof.columns else [])
+    oof_subj = oof[_keep].drop_duplicates("base_id")
 
     results_all = []
     saved_cohorts = set()
@@ -431,6 +438,8 @@ def _eval_cell(oof_subj, matched_eval, pairs, full_cohort, keep_groups,
                 cal_scores["label"].to_numpy(int),
                 cal_scores["y_score"].to_numpy(float),
                 seed=seed,
+                y_pred=(cal_scores["y_pred"].to_numpy()
+                        if "y_pred" in cal_scores.columns else None),
             )
             return {
                 "metrics_matched": metrics,
@@ -444,6 +453,7 @@ def _eval_cell(oof_subj, matched_eval, pairs, full_cohort, keep_groups,
         scores["label"].to_numpy(int),
         scores["y_score"].to_numpy(float),
         seed=seed,
+        y_pred=(scores["y_pred"].to_numpy() if "y_pred" in scores.columns else None),
     )
     paired = paired_wilcoxon_by_pair(scores)
 

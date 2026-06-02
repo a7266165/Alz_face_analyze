@@ -4,10 +4,9 @@
 路徑常數、專案級設定、處理參數
 """
 
-import re
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Literal, Optional, Tuple
+from typing import Optional, Tuple
 
 
 # =============================================================================
@@ -74,6 +73,13 @@ EMBEDDING_ANALYSIS_DIR = EMBEDDING_DIR / "analysis"
 EMBEDDING_FEATURE_STAT_DIR = EMBEDDING_ANALYSIS_DIR / "feature_stat"
 EMBEDDING_CLASSIFICATION_DIR = EMBEDDING_ANALYSIS_DIR / "classification"
 
+# Refactor sandbox (2026-06): the rebuilt downstream writes its OOF / metrics here
+# so results never mix with the legacy workspace/ outputs. Mirrors the same relative
+# layout under a separate root → trivial A/B diff (same relative path, two roots).
+WORKSPACE_REFACTOR_DIR = PROJECT_ROOT / "workspace_refactor_20260601"
+EMBEDDING_CLASSIFICATION_REFACTOR_DIR = (
+    WORKSPACE_REFACTOR_DIR / "embedding" / "analysis" / "classification")
+
 # -----------------------------------------------------------------------------
 # Age
 # -----------------------------------------------------------------------------
@@ -82,7 +88,7 @@ AGE_PREDICTIONS_DIR = AGE_DIR / "predictions"
 AGE_BENCHMARK_DIR = AGE_PREDICTIONS_DIR
 AGE_ANALYSIS_DIR = AGE_DIR / "analysis"
 
-# 預設指向 DEFAULT_COHORT_MODE（analysis 下）。
+# 預設指向 DEFAULT_COHORT_TOKENS（analysis 下）。
 _AGE_DEFAULT_ANALYSIS = AGE_ANALYSIS_DIR / "P_first_HC_first" / "P_cdr05_HC_cdrall_mmseall"
 
 PREDICTED_AGES_FILE = AGE_PREDICTIONS_DIR / "1_MiVOLO" / "predicted_ages.json"
@@ -130,123 +136,60 @@ ASYMMETRY_CLASSIFICATION_DIR = ASYMMETRY_ANALYSIS_DIR / "classification"
 OVERVIEW_DIR = WORKSPACE_DIR / "overview"
 
 # -----------------------------------------------------------------------------
-# Cohort spec (V2.2 — explicit 5-axis canonical naming)
+# Cohort tokens (4-axis — same signature as src.common.cohort.cohort_list)
 #
-# Canonical:
-#   p_<p_visit>_<p_cdr>_hc_<hc_visit>_<hc_cdr>_or_<hc_mmse>
+#   p_visit  ∈ {p_first, p_all}
+#   p_score  ∈ {p_cdrall, p_cdr05, p_cdr1, p_cdr2}     (Global_CDR >= 0 / .5 / 1 / 2)
+#   hc_visit ∈ {hc_first, hc_all}
+#   hc_score ∈ {hc_cdrall_or_mmseall, hc_cdr0_or_mmse26}
 #
-# Axes:
-#   p_visit:  first | all
-#   p_cdr:    cdr05 (Global_CDR>=0.5) | cdrall (no filter)
-#   hc_visit: first | all
-#   hc_cdr:   cdr0  (Global_CDR==0)   | cdrall (no filter)
-#   hc_mmse:  mmse26 (MMSE>=26)       | mmseall (no filter)
-#
-# HC two tokens are coupled.  Only two valid combos:
-#   (cdrall, mmseall) -> no HC cognitive filter
-#   (cdr0,   mmse26)  -> HC cognitive filter: CDR==0 OR (CDR.isna() AND MMSE>=26)
+# 一個 cohort = 這 4 個 token 的 tuple,順序同 cohort_list,程式內以 ``*cohort`` 流通。
+# 取代舊的 cohort_mode 字串 / 5-axis CohortSpec —— 後者 p_cdr 只有 cdr05/cdrall,表達
+# 不出 p_cdr1 / p_cdr2;4-token 是其嚴格超集。輸出路徑沿用舊命名,逐字相容。
 # -----------------------------------------------------------------------------
 
+P_VISIT_TOKENS = ("p_first", "p_all")
+P_SCORE_TOKENS = ("p_cdrall", "p_cdr05", "p_cdr1", "p_cdr2")
+HC_VISIT_TOKENS = ("hc_first", "hc_all")
+HC_SCORE_TOKENS = ("hc_cdrall_or_mmseall", "hc_cdr0_or_mmse26")
 
-@dataclass(frozen=True)
-class CohortSpec:
-    """5-axis cohort specification.
+DEFAULT_COHORT_TOKENS = ("p_first", "p_cdr05", "hc_first", "hc_cdrall_or_mmseall")
 
-    Use ``cohort_spec_from_name`` to parse canonical strings, or construct
-    directly.  ``canonical_name`` always returns the explicit form.
-    """
-
-    p_visit: Literal["first", "all"]
-    p_cdr: Literal["cdr05", "cdrall"]
-    hc_visit: Literal["first", "all"]
-    hc_cdr: Literal["cdr0", "cdrall"]
-    hc_mmse: Literal["mmse26", "mmseall"]
-
-    def __post_init__(self) -> None:
-        if (self.hc_cdr, self.hc_mmse) not in _VALID_HC_COMBOS:
-            raise ValueError(
-                f"Invalid HC filter combo: hc_cdr={self.hc_cdr!r}, "
-                f"hc_mmse={self.hc_mmse!r}. Only (cdrall, mmseall) and "
-                f"(cdr0, mmse26) are supported."
-            )
-
-    @property
-    def canonical_name(self) -> str:
-        return (f"p_{self.p_visit}_{self.p_cdr}"
-                f"_hc_{self.hc_visit}_{self.hc_cdr}_or_{self.hc_mmse}")
-
-    @property
-    def visit_dir(self) -> str:
-        return f"P_{self.p_visit}_HC_{self.hc_visit}"
-
-    @property
-    def cdr_mmse_dir(self) -> str:
-        return f"P_{self.p_cdr}_HC_{self.hc_cdr}_{self.hc_mmse}"
-
-    @property
-    def hc_strict(self) -> bool:
-        """True when HC cognitive filter is active (CDR==0 OR MMSE>=26)."""
-        return (self.hc_cdr, self.hc_mmse) == ("cdr0", "mmse26")
+# hc_score token → 路徑片段(對齊 legacy cdr_mmse_dir 的 HC 部分:cdr0_mmse26 / cdrall_mmseall)
+_HC_SCORE_DIR = {
+    "hc_cdrall_or_mmseall": "cdrall_mmseall",
+    "hc_cdr0_or_mmse26": "cdr0_mmse26",
+}
 
 
-_VALID_HC_COMBOS = frozenset({("cdrall", "mmseall"), ("cdr0", "mmse26")})
+def validate_cohort_tokens(p_visit, p_score, hc_visit, hc_score) -> None:
+    """4 token 各自落在合法字彙;否則 raise。"""
+    for tok, vocab in ((p_visit, P_VISIT_TOKENS), (p_score, P_SCORE_TOKENS),
+                       (hc_visit, HC_VISIT_TOKENS), (hc_score, HC_SCORE_TOKENS)):
+        if tok not in vocab:
+            raise ValueError(f"invalid cohort token {tok!r}; expected one of {vocab}")
 
 
-DEFAULT_COHORT_SPEC = CohortSpec(
-    p_visit="first", p_cdr="cdr05",
-    hc_visit="first", hc_cdr="cdrall", hc_mmse="mmseall",
-)
-
-DEFAULT_COHORT_MODE = DEFAULT_COHORT_SPEC.canonical_name
-
-# 16 valid canonical names (4 p_visit×p_cdr combos × 2 hc_visit × 2 hc_filter).
-VALID_COHORT_CHOICES = sorted([
-    CohortSpec(pv, pc, hv, hc, hm).canonical_name
-    for pv in ("first", "all")
-    for pc in ("cdr05", "cdrall")
-    for hv in ("first", "all")
-    for (hc, hm) in _VALID_HC_COMBOS
-])
+def cohort_dirs(p_visit, p_score, hc_visit, hc_score) -> Tuple[str, str]:
+    """4 token → (visit_dir, cdr_mmse_dir)。逐字相容舊 CohortSpec 命名,並支援新的
+    p_cdr1 / p_cdr2(舊 5-axis 表達不出)。"""
+    validate_cohort_tokens(p_visit, p_score, hc_visit, hc_score)
+    visit_dir = f"P_{p_visit.split('_', 1)[1]}_HC_{hc_visit.split('_', 1)[1]}"
+    cdr_mmse_dir = f"P_{p_score.split('_', 1)[1]}_HC_{_HC_SCORE_DIR[hc_score]}"
+    return visit_dir, cdr_mmse_dir
 
 
-_CANONICAL_RE = re.compile(
-    r"^p_(?P<pv>first|all)_(?P<pc>cdr05|cdrall)"
-    r"_hc_(?P<hv>first|all)_(?P<hc>cdr0|cdrall)_or_(?P<hm>mmse26|mmseall)$"
-)
-
-
-def cohort_name(cohort_mode: str) -> str:
-    """Validate and return the canonical cohort name (passthrough)."""
-    if cohort_mode not in VALID_COHORT_CHOICES:
-        raise ValueError(
-            f"Unknown cohort_mode {cohort_mode!r}. "
-            f"Must be one of the 16 canonical names.")
-    return cohort_mode
-
-
-def cohort_path(cohort_mode: str) -> Path:
-    """Return two-level directory path: <visit_dir>/<cdr_mmse_dir>."""
-    spec = cohort_spec_from_name(cohort_name(cohort_mode))
-    return Path(spec.visit_dir) / spec.cdr_mmse_dir
-
-
-def cohort_spec_from_name(name: str) -> CohortSpec:
-    """Parse canonical name to CohortSpec; raise on invalid."""
-    m = _CANONICAL_RE.match(name)
-    if m is None:
-        raise ValueError(
-            f"Cannot parse cohort name {name!r}. "
-            f"Expected canonical form "
-            f"'p_<first|all>_<cdr05|cdrall>_hc_<first|all>_<cdr0|cdrall>_or_<mmse26|mmseall>'."
-        )
-    return CohortSpec(
-        p_visit=m["pv"], p_cdr=m["pc"],
-        hc_visit=m["hv"], hc_cdr=m["hc"], hc_mmse=m["hm"],
-    )
+def cohort_path(p_visit, p_score, hc_visit, hc_score) -> Path:
+    """Two-level cohort 目錄:<visit_dir>/<cdr_mmse_dir>。"""
+    visit_dir, cdr_mmse_dir = cohort_dirs(p_visit, p_score, hc_visit, hc_score)
+    return Path(visit_dir) / cdr_mmse_dir
 
 
 def embedding_classification_path(
-    cohort: str,
+    p_visit: str,
+    p_score: str,
+    hc_visit: str,
+    hc_score: str,
     bg_mode: str,
     emb: str,
     variant: str,
@@ -259,6 +202,7 @@ def embedding_classification_path(
     eval_unit: Optional[str] = None,
     match_strategy: Optional[str] = None,
     partition: Optional[str] = None,
+    root: Optional[Path] = None,
 ) -> Path:
     """
     Compose embedding classification output path.
@@ -268,7 +212,7 @@ def embedding_classification_path(
         <clf>/<direction>/<eval_method>/<match_level>/<eval_unit>/<match_strategy>/<partition>/
 
     Args:
-        cohort: canonical cohort name → split into visit_dir + cdr_mmse_dir
+        p_visit, p_score, hc_visit, hc_score: cohort 4-token(見上方 cohort token 區塊)
         bg_mode: background | no_background
         emb: arcface | topofr | dlib | vggface
         variant: original | difference | absolute_difference | average |
@@ -278,8 +222,9 @@ def embedding_classification_path(
         clf, direction, eval_method, match_level, eval_unit,
         match_strategy, partition: 可選
     """
-    spec = cohort_spec_from_name(cohort_name(cohort))
-    p = (EMBEDDING_CLASSIFICATION_DIR / spec.visit_dir / spec.cdr_mmse_dir
+    visit_dir, cdr_mmse_dir = cohort_dirs(p_visit, p_score, hc_visit, hc_score)
+    base = root if root is not None else EMBEDDING_CLASSIFICATION_DIR
+    p = (base / visit_dir / cdr_mmse_dir
          / bg_mode / emb / variant / photo_mode / reducer)
     for seg in (clf, direction, eval_method, match_level, eval_unit,
                 match_strategy, partition):
@@ -294,7 +239,10 @@ META_ANALYSIS_DIR = META_DIR / "analysis"
 
 
 def meta_analysis_path(
-    cohort: str,
+    p_visit: str,
+    p_score: str,
+    hc_visit: str,
+    hc_score: str,
     bg_mode: str,
     emb_model: str,
     asymmetry_variant: str,
@@ -319,8 +267,8 @@ def meta_analysis_path(
         <base_clf>/<base_param>/<direction>/<eval_method>/<match_level>/<eval_unit>/
         <match_strategy>/<partition>/<normalize_tag>/<meta_clf>/
     """
-    spec = cohort_spec_from_name(cohort_name(cohort))
-    p = (META_ANALYSIS_DIR / spec.visit_dir / spec.cdr_mmse_dir
+    visit_dir, cdr_mmse_dir = cohort_dirs(p_visit, p_score, hc_visit, hc_score)
+    p = (META_ANALYSIS_DIR / visit_dir / cdr_mmse_dir
          / bg_mode / emb_model / asymmetry_variant / photo_mode / reducer)
     for seg in (base_classifier, base_classifier_param, direction,
                 eval_method, match_level, eval_unit, match_strategy,

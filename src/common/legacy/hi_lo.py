@@ -8,7 +8,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from src.config import DEFAULT_COHORT_MODE, cohort_spec_from_name
+from src.config import DEFAULT_COHORT_TOKENS
 from src.common.cohort import load_demographics, p_filter, visit_selection
 
 VALID_DESIGNS = ("cross_naive", "cross_matched")
@@ -16,7 +16,7 @@ VALID_DESIGNS = ("cross_naive", "cross_matched")
 
 def build_cohort_ad_hi_lo(
     design,
-    cohort_mode=DEFAULT_COHORT_MODE,
+    cohort=DEFAULT_COHORT_TOKENS,
     metric="MMSE",
     matched_features_csv=None,
 ):
@@ -24,15 +24,15 @@ def build_cohort_ad_hi_lo(
     if design not in VALID_DESIGNS:
         raise ValueError(
             f"design must be one of {VALID_DESIGNS}, got {design!r}")
-    spec = cohort_spec_from_name(cohort_mode)
+    p_visit, p_score, _hc_visit, _hc_score = cohort
     metric_low = metric.lower()
     group_col = f"{metric_low}_group"
 
     if design == "cross_naive":
         demo = load_demographics(("P",))  # 已含 ID(完整鍵) / base_id
         demo = demo[demo[metric].notna() & demo["Age"].notna()].copy()
-        demo = p_filter(demo, f"p_{spec.p_cdr}")
-        cohort = visit_selection(demo, f"p_{spec.p_visit}")
+        demo = p_filter(demo, p_score)
+        cohort = visit_selection(demo, p_visit)
         med = cohort[metric].median()
         cohort[group_col] = np.where(cohort[metric] >= med, "high", "low")
         cohort["label"] = (cohort[group_col] == "high").astype(int)

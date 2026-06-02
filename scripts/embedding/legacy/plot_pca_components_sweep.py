@@ -34,10 +34,12 @@ import sys as _sys
 _sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.config import (  # noqa: E402
-    CohortSpec,
-    DEFAULT_COHORT_SPEC,
-    VALID_COHORT_CHOICES,
-    cohort_spec_from_name,
+    DEFAULT_COHORT_TOKENS,
+    HC_SCORE_TOKENS,
+    HC_VISIT_TOKENS,
+    P_SCORE_TOKENS,
+    P_VISIT_TOKENS,
+    cohort_dirs,
 )
 from src.common.cohort import (  # noqa: E402
     hc_filter,
@@ -66,21 +68,17 @@ logger = logging.getLogger(__name__)
 
 
 def resolve_paths(variant, embedding, bg_mode="no_background",
-                   cohort_mode="p_first_cdr05_hc_first_cdrall_or_mmseall",
+                   cohort=DEFAULT_COHORT_TOKENS,
                    photo_mode="mean", match_strategy="no_priority"):
     """Return (class_root, out, reducer_dirs, cell_json_for, feature_subdir, feat_root).
 
     class_root             → .../<visit>/<cdr_mmse>/<bg_mode>/<emb>/<variant>/<photo>
     cell_json_for(reducer, part, clf) → cell metrics json
     """
-    from src.config import (
-        EMBEDDING_CLASSIFICATION_DIR,
-        cohort_name, cohort_spec_from_name,
-    )
-    cohort_dir = cohort_name(cohort_mode)
-    spec = cohort_spec_from_name(cohort_dir)
+    from src.config import EMBEDDING_CLASSIFICATION_DIR
+    visit_dir, cdr_mmse_dir = cohort_dirs(*cohort)
     feature_subdir = variant if variant is not None else "original"
-    class_root = (EMBEDDING_CLASSIFICATION_DIR / spec.visit_dir / spec.cdr_mmse_dir
+    class_root = (EMBEDDING_CLASSIFICATION_DIR / visit_dir / cdr_mmse_dir
                   / bg_mode / embedding / feature_subdir / photo_mode)
     out = class_root / "pca" / "_summary"
     feat_root = EMBEDDING_FEAT_DIR
@@ -130,7 +128,7 @@ def _parse_pca_label(name):
         return None
 
 
-def _load_visit_all_cohort_ids(spec: CohortSpec = DEFAULT_COHORT_SPEC):
+def _load_visit_all_cohort_ids(cohort=DEFAULT_COHORT_TOKENS):
     """Build the union of visit=all cohort IDs across the 5 partitions
     (ad_vs_hc / ad_vs_nad / ad_vs_acs / mmse_hilo / casi_hilo).
 
@@ -162,16 +160,14 @@ def _load_visit_all_cohort_ids(spec: CohortSpec = DEFAULT_COHORT_SPEC):
     demo["base_id"] = demo["ID"].astype(str).str.extract(r"^(.+)-\d+$")[0]
     demo["visit"] = demo["ID"].astype(str).str.extract(r"-(\d+)$").astype(float)
 
-    # AD-side per-visit eligibility (P group + spec.p_cdr + Age present)
+    # AD-side per-visit eligibility (P group + cohort p_score + Age present)
     ad_pool = demo[(demo["group"] == "P") & demo["Age"].notna()].copy()
-    ad_pool = p_filter(ad_pool, f"p_{spec.p_cdr}")
+    ad_pool = p_filter(ad_pool, cohort[1])
     ad_ids = set(ad_pool["ID"].astype(str))
 
-    # HC-side per-visit eligibility (NAD/ACS + spec.hc_strict + Age present)
+    # HC-side per-visit eligibility (NAD/ACS + cohort hc_score + Age present)
     hc_pool = demo[demo["group"].isin(["NAD", "ACS"]) & demo["Age"].notna()].copy()
-    hc_pool = hc_filter(
-        hc_pool,
-        "hc_cdr0_or_mmse26" if spec.hc_strict else "hc_cdrall_or_mmseall")
+    hc_pool = hc_filter(hc_pool, cohort[3])
     hc_ids = set(hc_pool["ID"].astype(str))
 
     # Hi-lo (mmse / casi): AD-side + metric present
@@ -184,13 +180,13 @@ def _load_visit_all_cohort_ids(spec: CohortSpec = DEFAULT_COHORT_SPEC):
     logger.info(f"visit=all union cohort: {len(ids)} unique IDs "
                 f"(ad={len(ad_ids)}, hc={len(hc_ids)}, "
                 f"mmse={len(mmse_ids)}, casi={len(casi_ids)})  "
-                f"spec={spec.canonical_name}")
+                f"cohort={'_'.join(cohort)}")
     return ids
 
 
 def compute_cumulative_eigenvalue_ratio(feature_subdir, cohort_mode="all_npy",
                                          feat_root=None,
-                                         spec: CohortSpec = DEFAULT_COHORT_SPEC):
+                                         cohort=DEFAULT_COHORT_TOKENS):
     """For each embedding model, fit PCA on the feature pool determined by
     cohort_mode and return the cumulative explained-variance ratio.
 
@@ -203,13 +199,13 @@ def compute_cumulative_eigenvalue_ratio(feature_subdir, cohort_mode="all_npy",
                          analyzing visit=all sweeps so the eigenvalue panel
                          matches the data the classifier actually saw.
 
-    ``spec`` is forwarded to ``_load_visit_all_cohort_ids`` to drive the
-    P CDR + HC strict filters per V2.2 cohort spec.
+    ``cohort`` (4-token tuple) is forwarded to ``_load_visit_all_cohort_ids``
+    to drive the P CDR + HC filters.
     """
     from sklearn.decomposition import PCA
     keep_ids = None
     if cohort_mode == "visit_all":
-        keep_ids = _load_visit_all_cohort_ids(spec=spec)
+        keep_ids = _load_visit_all_cohort_ids(cohort=cohort)
     if feat_root is None:
         feat_root = EMBEDDING_FEAT_DIR
     rows = []
@@ -296,11 +292,19 @@ def main():
                         choices=["arcface", "topofr", "dlib", "vggface"])
     parser.add_argument("--bg-mode", default="no_background",
                         choices=["background", "no_background"])
-    parser.add_argument("--cohort-mode", default="p_first_cdr05_hc_first_cdrall_or_mmseall",
-                        choices=VALID_COHORT_CHOICES,
-                        help="Output cohort routing. 'p_first_cdr05_hc_first_cdrall_or_mmseall'=p_first_cdr05_hc_first_cdrall_or_mmseall; "
-                             "'p_first_cdr05_hc_all_cdrall_or_mmseall'=p_first_cdr05_hc_all_cdrall_or_mmseall/; "
-                             "'p_all_cdr05_hc_all_cdrall_or_mmseall'=p_all_cdr05_hc_all_cdrall_or_mmseall/.")
+    parser.add_argument("--p-visit", choices=list(P_VISIT_TOKENS),
+                        default=DEFAULT_COHORT_TOKENS[0],
+                        help="P visit token (p_first / p_all).")
+    parser.add_argument("--p-score", choices=list(P_SCORE_TOKENS),
+                        default=DEFAULT_COHORT_TOKENS[1],
+                        help="P CDR-score token (p_cdrall / p_cdr05 / p_cdr1 / p_cdr2).")
+    parser.add_argument("--hc-visit", choices=list(HC_VISIT_TOKENS),
+                        default=DEFAULT_COHORT_TOKENS[2],
+                        help="HC visit token (hc_first / hc_all).")
+    parser.add_argument("--hc-score", choices=list(HC_SCORE_TOKENS),
+                        default=DEFAULT_COHORT_TOKENS[3],
+                        help="HC cognitive-filter token "
+                             "(hc_cdrall_or_mmseall / hc_cdr0_or_mmse26).")
     parser.add_argument("--eigen-source", default="all_npy",
                         choices=["all_npy", "visit_all"],
                         help="Eigenvalue panel data source. 'all_npy' (default): "
@@ -310,14 +314,15 @@ def main():
                              "matches what a --visit-mode all sweep saw.")
     args = parser.parse_args()
 
+    cohort = (args.p_visit, args.p_score, args.hc_visit, args.hc_score)
     class_root, out, reducer_dirs, cell_json_for, feature_subdir, feat_root = resolve_paths(
-        args.variant, args.embedding, args.bg_mode, args.cohort_mode
+        args.variant, args.embedding, args.bg_mode, cohort
     )
     out.mkdir(parents=True, exist_ok=True)
     logger.info(f"ROOT: {class_root}")
     logger.info(f"OUT : {out}")
     logger.info(f"feature_subdir for eigenvalue PCA: {feature_subdir}")
-    logger.info(f"cohort_mode: {args.cohort_mode}  eigen_source: {args.eigen_source}")
+    logger.info(f"cohort: {cohort}  eigen_source: {args.eigen_source}")
     logger.info(f"reducer_dirs: {[r.name for r in reducer_dirs]}")
 
     df = collect(reducer_dirs)
@@ -333,7 +338,7 @@ def main():
     eig_df = compute_cumulative_eigenvalue_ratio(feature_subdir,
                                                    cohort_mode=args.eigen_source,
                                                    feat_root=feat_root,
-                                                   spec=cohort_spec_from_name(args.cohort_mode))
+                                                   cohort=cohort)
     if len(eig_df):
         eig_csv_name = ("cumulative_eigenvalue_ratio.csv"
                         if args.eigen_source == "all_npy"

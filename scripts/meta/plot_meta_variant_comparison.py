@@ -24,9 +24,10 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from _paths import PROJECT_ROOT
 
-from src.config import cohort_name, cohort_spec_from_name
+from src.config import cohort_dirs
 
-COHORT_MODE = "p_first_cdrall_hc_all_cdrall_or_mmseall"
+COHORT = ("p_first", "p_cdrall", "hc_all", "hc_cdrall_or_mmseall")
+VISIT_DIR, CDR_MMSE_DIR = cohort_dirs(*COHORT)
 BG_MODE = "background"
 PHOTO_MODE = "mean"
 REDUCER = "no_drop"
@@ -64,8 +65,7 @@ METRIC_YLIM = {"auc": (0.3, 0.85), "balacc": (0.5, 0.8), "mcc": (0.1, 0.6)}
 
 
 def load_data():
-    spec = cohort_spec_from_name(cohort_name(COHORT_MODE))
-    cohort_dir = META_ROOT / spec.visit_dir / spec.cdr_mmse_dir
+    cohort_dir = META_ROOT / VISIT_DIR / CDR_MMSE_DIR
 
     matched_path = cohort_dir / "summary_all_metrics.csv"
     matched_df = pd.read_csv(matched_path) if matched_path.exists() else pd.DataFrame()
@@ -87,7 +87,7 @@ def load_data():
         full_rows.append(df)
 
     full_df = pd.concat(full_rows, ignore_index=True) if full_rows else pd.DataFrame()
-    return matched_df, full_df, spec
+    return matched_df, full_df
 
 
 def plot_single_clf(
@@ -245,9 +245,9 @@ def plot_variant_comparison(
 
 
 def main():
-    matched_df, full_df, spec = load_data()
+    matched_df, full_df = load_data()
 
-    summary_root = META_ROOT / spec.visit_dir / spec.cdr_mmse_dir / "_summary"
+    summary_root = META_ROOT / VISIT_DIR / CDR_MMSE_DIR / "_summary"
 
     emb_models = full_df["emb_model"].unique() if not full_df.empty else []
     norm_tags = sorted(full_df["normalize"].unique()) if not full_df.empty else []

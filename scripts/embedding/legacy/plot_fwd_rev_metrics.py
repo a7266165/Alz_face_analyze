@@ -30,7 +30,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 import sys as _sys
 _sys.path.insert(0, str(PROJECT_ROOT))
 from src.config import EMBEDDING_CLASSIFICATION_DIR, cohort_path
-DEFAULT_ROOT = EMBEDDING_CLASSIFICATION_DIR / cohort_path("p_first_cdr05_hc_first_cdrall_or_mmseall") / "no_background" / "arcface" / "original" / "mean" / "no_drop"
+DEFAULT_ROOT = EMBEDDING_CLASSIFICATION_DIR / cohort_path("p_first", "p_cdr05", "hc_first", "hc_cdrall_or_mmseall") / "no_background" / "arcface" / "original" / "mean" / "no_drop"
 ROOT = DEFAULT_ROOT  # set by main() when --root is passed
 SUMMARY = ROOT / "_summary"
 

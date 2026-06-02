@@ -26,7 +26,8 @@ Output:
 Usage:
     conda run -n Alz_face_main_analysis python \
         scripts/utilities/build_asym_sweep_metrics_with_cm.py \
-        --cohort-mode p_all_cdr05_hc_all_cdrall_or_mmseall
+        --p-visit p_all --p-score p_cdr05 \
+        --hc-visit hc_all --hc-score hc_cdrall_or_mmseall
 """
 import argparse
 import json
@@ -257,22 +258,31 @@ def walk_root(root, label):
 def main():
     from src.config import (
         EMBEDDING_CLASSIFICATION_DIR,
-        VALID_COHORT_CHOICES,
-        cohort_name,
+        P_VISIT_TOKENS,
+        P_SCORE_TOKENS,
+        HC_VISIT_TOKENS,
+        HC_SCORE_TOKENS,
+        DEFAULT_COHORT_TOKENS,
+        cohort_dirs,
     )
     p = argparse.ArgumentParser(__doc__)
-    p.add_argument("--cohort-mode", default="p_first_cdr05_hc_first_cdrall_or_mmseall",
-                    choices=VALID_COHORT_CHOICES)
+    p.add_argument("--p-visit", choices=list(P_VISIT_TOKENS),
+                    default=DEFAULT_COHORT_TOKENS[0])
+    p.add_argument("--p-score", choices=list(P_SCORE_TOKENS),
+                    default=DEFAULT_COHORT_TOKENS[1])
+    p.add_argument("--hc-visit", choices=list(HC_VISIT_TOKENS),
+                    default=DEFAULT_COHORT_TOKENS[2])
+    p.add_argument("--hc-score", choices=list(HC_SCORE_TOKENS),
+                    default=DEFAULT_COHORT_TOKENS[3])
     args = p.parse_args()
-    cohort_dir = cohort_name(args.cohort_mode)
+    cohort = (args.p_visit, args.p_score, args.hc_visit, args.hc_score)
     classification_root = EMBEDDING_CLASSIFICATION_DIR
 
     total_files, total_rows = 0, 0
     # New layout: <visit>/<cdr_mmse>/<bg_mode>/<embedding>/<variant>/<photo>/<reducer>/...
     # Cohort is split into visit + cdr_mmse directories.
-    from src.config import cohort_spec_from_name
-    spec = cohort_spec_from_name(cohort_dir)
-    visit_dir = classification_root / spec.visit_dir / spec.cdr_mmse_dir
+    visit_d, cdr_mmse_d = cohort_dirs(*cohort)
+    visit_dir = classification_root / visit_d / cdr_mmse_d
     if visit_dir.is_dir():
         for bg_dir in sorted(visit_dir.iterdir()):
             if not bg_dir.is_dir() or bg_dir.name.startswith("_"):

@@ -18,12 +18,16 @@ Global_CDR    臨床失智評分。
 """
 import pandas as pd
 
-from src.config import HOSPITAL_A_CSV
+from src.config import (
+    HOSPITAL_A_CSV,
+    P_VISIT_TOKENS, P_SCORE_TOKENS, HC_VISIT_TOKENS, HC_SCORE_TOKENS,
+)
 
-P_VISIT = {"p_first", "p_all"}
-P_SCORE = {"p_cdrall", "p_cdr05", "p_cdr1", "p_cdr2"}
-HC_VISIT = {"hc_first", "hc_all"}
-HC_SCORE = {"hc_cdrall_or_mmseall", "hc_cdr0_or_mmse26"}
+# 字彙的單一真相在 config(同時供 CLI choices / 路徑 helper 用),這裡只是別名。
+P_VISIT = set(P_VISIT_TOKENS)
+P_SCORE = set(P_SCORE_TOKENS)
+HC_VISIT = set(HC_VISIT_TOKENS)
+HC_SCORE = set(HC_SCORE_TOKENS)
 
 _OUTPUT_COLS = ["ID", "Group", "Number", "Photo_Session", "Age", "MMSE",
                 "CASI", "Global_CDR"]

@@ -3,20 +3,13 @@ including priority_groups ordering."""
 import sys
 sys.path.insert(0, ".")
 from src.common.matching import match_by_age
-from src.config import cohort_spec_from_name
 
-CM = "p_all_cdrall_hc_all_cdrall_or_mmseall"
-
-
-def _tokens():
-    spec = cohort_spec_from_name(CM)
-    return (f"p_{spec.p_visit}", f"p_{spec.p_cdr}", f"hc_{spec.hc_visit}",
-            "hc_cdr0_or_mmse26" if spec.hc_strict else "hc_cdrall_or_mmseall")
+COHORT = ("p_all", "p_cdrall", "hc_all", "hc_cdrall_or_mmseall")
 
 
 def _run(label, controls, priority_groups=None):
     # match_by_age 回 1:1 index 對齊的兩 list → 第 i 對 = (p_ids[i], hc_ids[i])。
-    p_ids, hc_ids = match_by_age(*_tokens(), controls=controls,
+    p_ids, hc_ids = match_by_age(*COHORT, controls=controls,
                                  priority=priority_groups)
     pairs = list(zip(p_ids, hc_ids))
     acs_pairs = [(p, h) for p, h in pairs if h.startswith("ACS")]

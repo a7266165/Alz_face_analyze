@@ -9,9 +9,7 @@ from _paths import PROJECT_ROOT
 import logging
 logging.basicConfig(level=logging.WARNING)
 
-from src.config import (
-    META_ANALYSIS_DIR, PREDICTED_AGES_FILE, cohort_name, cohort_spec_from_name,
-)
+from src.config import META_ANALYSIS_DIR, PREDICTED_AGES_FILE
 from src.meta.stacking.config import MetaConfig
 from src.meta.loader.meta import MetaDataLoader
 from src.meta.stacking.trainer import create_trainer
@@ -20,8 +18,7 @@ from src.meta.evaluation.matched_eval import (
 )
 import re
 
-COHORT = "p_first_cdrall_hc_all_cdrall_or_mmseall"
-spec = cohort_spec_from_name(cohort_name(COHORT))
+COHORT = ("p_first", "p_cdrall", "hc_all", "hc_cdrall_or_mmseall")
 DEMO = PROJECT_ROOT / "data" / "demographics"
 AGES = PREDICTED_AGES_FILE
 
@@ -39,13 +36,12 @@ def timed(label):
 print("=== Profiling single run: background/no_bmi/arcface/none/none/raw/tabpfn ===\n")
 
 with timed("build_matching_cache (10 calls)"):
-    mc = build_matching_cache(
-        cohort_mode=COHORT,
-    )
+    mc = build_matching_cache(*COHORT)
 
 with timed("MetaDataLoader init + load"):
     loader = MetaDataLoader(
-        emb_model="arcface", cohort_mode=COHORT, bg_mode="background",
+        emb_model="arcface", p_visit=COHORT[0], p_score=COHORT[1],
+        hc_visit=COHORT[2], hc_score=COHORT[3], bg_mode="background",
         photo_mode="mean", reducer="no_drop",
         base_classifier="logistic", base_classifier_param="C_1",
         direction="fwd", eval_method="1by1matched",

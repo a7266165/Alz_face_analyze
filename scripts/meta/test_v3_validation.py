@@ -10,12 +10,12 @@ logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 
 from src.config import (
-    META_ANALYSIS_DIR, PREDICTED_AGES_FILE, cohort_name, cohort_spec_from_name,
+    META_ANALYSIS_DIR, PREDICTED_AGES_FILE, cohort_dirs,
 )
 from src.meta import MetaConfig, MetaPipeline
 
-COHORT = "p_first_cdrall_hc_all_cdrall_or_mmseall"
-spec = cohort_spec_from_name(cohort_name(COHORT))
+COHORT = ("p_first", "p_cdrall", "hc_all", "hc_cdrall_or_mmseall")
+VISIT_DIR, CDR_MMSE_DIR = cohort_dirs(*COHORT)
 DEMO = PROJECT_ROOT / "data" / "demographics"
 AGES = PREDICTED_AGES_FILE
 
@@ -27,14 +27,15 @@ tests = [
 
 for bg, extra, asym, scoring, label in tests:
     ef_tag = "with_bmi" if "bmi" in extra else "no_bmi"
-    out = (META_ANALYSIS_DIR / spec.visit_dir / spec.cdr_mmse_dir
+    out = (META_ANALYSIS_DIR / VISIT_DIR / CDR_MMSE_DIR
            / bg / ef_tag / "arcface" / asym / scoring
            / "mean" / "no_drop" / "fwd" / "raw" / "tabpfn")
     print(f"\n{'='*60}")
     print(f"  {label} -> {out}")
     print(f"{'='*60}")
     cfg = MetaConfig(
-        cohort_mode=COHORT, bg_mode=bg,
+        p_visit=COHORT[0], p_score=COHORT[1],
+        hc_visit=COHORT[2], hc_score=COHORT[3], bg_mode=bg,
         match_strategy="priority_acs",
         scoring_method=scoring, extra_features=extra,
         models=["arcface"], meta_classifiers=["tabpfn"],

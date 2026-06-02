@@ -24,7 +24,8 @@ Output:
 Usage:
     conda run -n Alz_face_main_analysis python \\
         scripts/embedding/plot_asymmetry_auc.py \\
-        --cohort-mode p_first_cdrall_hc_all_cdrall_or_mmseall \\
+        --p-visit p_first --p-score p_cdrall \\
+        --hc-visit hc_all --hc-score hc_cdrall_or_mmseall \\
         --bg-mode no_background --match-priority ACS
 """
 import argparse
@@ -48,9 +49,12 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from src.config import (
     EMBEDDING_CLASSIFICATION_DIR,
     EMBEDDING_FEATURES_DIR,
-    VALID_COHORT_CHOICES,
-    cohort_path,
-    cohort_spec_from_name,
+    P_VISIT_TOKENS,
+    P_SCORE_TOKENS,
+    HC_VISIT_TOKENS,
+    HC_SCORE_TOKENS,
+    DEFAULT_COHORT_TOKENS,
+    cohort_dirs,
 )
 from src.common.cohort import cohort_list
 from src.common.matching import match_by_age
@@ -347,24 +351,28 @@ def main():
     p = argparse.ArgumentParser(
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--cohort-mode",
-                   choices=VALID_COHORT_CHOICES,
-                   default="p_first_cdrall_hc_all_cdrall_or_mmseall")
+    p.add_argument("--p-visit", choices=list(P_VISIT_TOKENS),
+                   default=DEFAULT_COHORT_TOKENS[0])
+    p.add_argument("--p-score", choices=list(P_SCORE_TOKENS),
+                   default=DEFAULT_COHORT_TOKENS[1])
+    p.add_argument("--hc-visit", choices=list(HC_VISIT_TOKENS),
+                   default=DEFAULT_COHORT_TOKENS[2])
+    p.add_argument("--hc-score", choices=list(HC_SCORE_TOKENS),
+                   default=DEFAULT_COHORT_TOKENS[3])
     p.add_argument("--bg-mode",
                    choices=["no_background", "background"],
                    default="no_background")
     p.add_argument("--match-priority", nargs="*", default=None)
     args = p.parse_args()
 
-    spec = cohort_spec_from_name(args.cohort_mode)
-    cohort_dir = spec.visit_dir + "/" + spec.cdr_mmse_dir
+    cohort = (args.p_visit, args.p_score, args.hc_visit, args.hc_score)
+    visit_dir, cdr_mmse_dir = cohort_dirs(*cohort)
+    cohort_dir = visit_dir + "/" + cdr_mmse_dir
     match_dir = _match_strategy_dir(args.match_priority)
 
     all_metrics = []
 
-    tokens = (f"p_{spec.p_visit}", f"p_{spec.p_cdr}", f"hc_{spec.hc_visit}",
-              "hc_cdr0_or_mmse26" if spec.hc_strict else "hc_cdrall_or_mmseall")
-    cohort_naive = cohort_list(*tokens)
+    cohort_naive = cohort_list(*cohort)
     cohort_naive["group"] = cohort_naive["Group"]
     cohort_naive["base_id"] = cohort_naive["Group"] + cohort_naive["Number"].astype(str)
     cohort_naive["label"] = (cohort_naive["group"] == "P").astype(int)
@@ -378,7 +386,7 @@ def main():
                 ml_arg = MATCH_LEVEL_ARG[ml]
 
                 p_ids, hc_ids = match_by_age(
-                    *tokens,
+                    *cohort,
                     level=ml_arg,
                     priority=args.match_priority,
                 )

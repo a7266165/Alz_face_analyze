@@ -18,7 +18,8 @@ Output:
 Usage:
     conda run -n Alz_face_main_analysis python \\
         scripts/embedding/run_embedding_stat_grid.py \\
-        --cohort-mode p_first_cdrall_hc_all_cdrall_or_mmseall \\
+        --p-visit p_first --p-score p_cdrall \\
+        --hc-visit hc_all --hc-score hc_cdrall_or_mmseall \\
         --bg-mode no_background --match-priority ACS
 """
 import argparse
@@ -36,9 +37,11 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from src.config import (
     EMBEDDING_FEATURES_DIR,
     EMBEDDING_FEATURE_STAT_DIR,
-    VALID_COHORT_CHOICES,
+    P_VISIT_TOKENS,
+    P_SCORE_TOKENS,
+    HC_VISIT_TOKENS,
+    HC_SCORE_TOKENS,
     cohort_path,
-    cohort_spec_from_name,
 )
 from src.common.cohort import cohort_list
 from src.common.matching import match_by_age
@@ -371,7 +374,7 @@ def run_one_partition(partition_dir, partition, cohort, bg_mode, eval_unit):
     return result_df
 
 
-def run_one_combo(output_dir, cohort_mode,
+def run_one_combo(output_dir, cohort,
                   match_level, eval_unit, bg_mode, priority_groups=None):
     """Run stat grid for one (match_level, eval_unit) combination."""
     ml_arg = MATCH_LEVEL_ARG[match_level]
@@ -379,13 +382,10 @@ def run_one_combo(output_dir, cohort_mode,
                       if priority_groups else "no_priority")
     logger.info(f"--- {match_level} / {eval_unit} / {match_strategy} ---")
 
-    spec = cohort_spec_from_name(cohort_mode)
-    tokens = (f"p_{spec.p_visit}", f"p_{spec.p_cdr}", f"hc_{spec.hc_visit}",
-              "hc_cdr0_or_mmse26" if spec.hc_strict else "hc_cdrall_or_mmseall")
-    roster = cohort_list(*tokens)
+    roster = cohort_list(*cohort)
     roster["group"] = roster["Group"]
     roster["base_id"] = roster["Group"] + roster["Number"].astype(str)
-    p_ids, hc_ids = match_by_age(*tokens, level=ml_arg, priority=priority_groups)
+    p_ids, hc_ids = match_by_age(*cohort, level=ml_arg, priority=priority_groups)
     hc_cohort = roster[roster["ID"].isin(set(p_ids) | set(hc_ids))].copy()
 
     all_long = []
@@ -406,12 +406,12 @@ def run_one_combo(output_dir, cohort_mode,
     return all_long
 
 
-def run_all(root_dir, cohort_mode, bg_mode,
+def run_all(root_dir, cohort, bg_mode,
             priority_groups=None):
     """Run all 4 (match_level × eval_unit) combinations."""
     for ml in MATCH_LEVELS:
         for eu in EVAL_UNITS:
-            run_one_combo(root_dir, cohort_mode,
+            run_one_combo(root_dir, cohort,
                           ml, eu, bg_mode,
                           priority_groups=priority_groups)
 
@@ -420,9 +420,14 @@ def main():
     p = argparse.ArgumentParser(
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--cohort-mode",
-                   choices=VALID_COHORT_CHOICES,
-                   default="p_first_cdrall_hc_all_cdrall_or_mmseall")
+    p.add_argument("--p-visit", choices=list(P_VISIT_TOKENS),
+                   default="p_first")
+    p.add_argument("--p-score", choices=list(P_SCORE_TOKENS),
+                   default="p_cdrall")
+    p.add_argument("--hc-visit", choices=list(HC_VISIT_TOKENS),
+                   default="hc_all")
+    p.add_argument("--hc-score", choices=list(HC_SCORE_TOKENS),
+                   default="hc_cdrall_or_mmseall")
     p.add_argument("--bg-mode",
                    choices=["no_background", "background"],
                    default="no_background")
@@ -433,18 +438,20 @@ def main():
     p.add_argument("--output-dir", type=Path, default=None)
     args = p.parse_args()
 
+    cohort = (args.p_visit, args.p_score, args.hc_visit, args.hc_score)
+
     if args.output_dir is not None:
         root_dir = args.output_dir
     else:
         root_dir = (EMBEDDING_FEATURE_STAT_DIR
-                    / cohort_path(args.cohort_mode)
+                    / cohort_path(*cohort)
                     / args.bg_mode)
     root_dir.mkdir(parents=True, exist_ok=True)
-    logger.info(f"cohort_mode={args.cohort_mode}  "
+    logger.info(f"cohort={cohort}  "
                 f"bg_mode={args.bg_mode}  root={root_dir}")
 
     run_all(root_dir,
-            cohort_mode=args.cohort_mode,
+            cohort=cohort,
             bg_mode=args.bg_mode,
             priority_groups=args.match_priority)
 

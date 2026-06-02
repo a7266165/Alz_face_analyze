@@ -23,7 +23,10 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from _paths import PROJECT_ROOT  # noqa: F401
 
-from src.config import cohort_name, cohort_spec_from_name, AGE_ANALYSIS_DIR
+from src.config import (
+    AGE_ANALYSIS_DIR, cohort_path,
+    P_VISIT_TOKENS, P_SCORE_TOKENS, HC_VISIT_TOKENS, HC_SCORE_TOKENS,
+)
 from src.common.cohort import cohort_list
 from src.common.matching import match_by_age
 
@@ -55,17 +58,13 @@ def _plot_panel(ax, cohort, unit, title):
     ax.grid(True, alpha=0.2)
 
 
-def run(cohort_mode, priority_groups=None):
-    spec = cohort_spec_from_name(cohort_name(cohort_mode))
-
-    tokens = (f"p_{spec.p_visit}", f"p_{spec.p_cdr}", f"hc_{spec.hc_visit}",
-              "hc_cdr0_or_mmse26" if spec.hc_strict else "hc_cdrall_or_mmseall")
-    full = cohort_list(*tokens)
+def run(cohort, priority_groups=None):
+    full = cohort_list(*cohort)
     full["group"] = full["Group"]
     full["base_id"] = full["Group"] + full["Number"].astype(str)  # ID 已是完整鍵
-    p_ids, hc_ids = match_by_age(*tokens, priority=priority_groups, level="subject")
+    p_ids, hc_ids = match_by_age(*cohort, priority=priority_groups, level="subject")
     matched = full[full["ID"].isin(set(p_ids) | set(hc_ids))].copy()
-    pv_ids, hv_ids = match_by_age(*tokens, priority=priority_groups, level="visit")
+    pv_ids, hv_ids = match_by_age(*cohort, priority=priority_groups, level="visit")
     matched_visit = full[full["ID"].isin(set(pv_ids) | set(hv_ids))].copy()
 
     n_pairs = len(p_ids)
@@ -89,12 +88,11 @@ def run(cohort_mode, priority_groups=None):
 
     fig.suptitle(
         f"Age distribution before vs after 1:1 age-matching\n"
-        f"cohort = {cohort_mode}  ·  {n_pairs} matched pairs",
+        f"cohort = {cohort}  ·  {n_pairs} matched pairs",
         fontsize=12)
     fig.tight_layout(rect=[0, 0, 1, 0.93])
 
-    out_dir = (AGE_ANALYSIS_DIR
-               / spec.visit_dir / spec.cdr_mmse_dir / "histogram")
+    out_dir = AGE_ANALYSIS_DIR / cohort_path(*cohort) / "histogram"
     out_dir.mkdir(parents=True, exist_ok=True)
 
     fname = f"age_hist_before_after_matching{priority_tag}.png"
@@ -124,17 +122,22 @@ def run(cohort_mode, priority_groups=None):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--cohort-mode", nargs="*",
-                        default=["p_all_cdrall_hc_all_cdrall_or_mmseall",
-                                 "p_first_cdrall_hc_all_cdrall_or_mmseall"])
+    # 預設掃 p_visit ∈ {p_all, p_first}(其餘 token 固定),對應舊的兩個 cohort_mode 預設。
+    parser.add_argument("--p-visit", nargs="*", choices=list(P_VISIT_TOKENS),
+                        default=["p_all", "p_first"])
+    parser.add_argument("--p-score", choices=list(P_SCORE_TOKENS), default="p_cdrall")
+    parser.add_argument("--hc-visit", choices=list(HC_VISIT_TOKENS), default="hc_all")
+    parser.add_argument("--hc-score", choices=list(HC_SCORE_TOKENS),
+                        default="hc_cdrall_or_mmseall")
     parser.add_argument("--match-priority", nargs="*", default=None)
     args = parser.parse_args()
 
-    for cm in args.cohort_mode:
+    for pv in args.p_visit:
+        cohort = (pv, args.p_score, args.hc_visit, args.hc_score)
         print(f"\n{'='*60}")
-        print(f"Cohort: {cm}")
+        print(f"Cohort: {cohort}")
         print(f"{'='*60}")
-        run(cm, priority_groups=args.match_priority)
+        run(cohort, priority_groups=args.match_priority)
 
 
 if __name__ == "__main__":

@@ -33,18 +33,19 @@ import pandas as pd
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 import sys as _sys
 _sys.path.insert(0, str(PROJECT_ROOT))
+from src.config import (DEFAULT_COHORT_TOKENS, P_VISIT_TOKENS, P_SCORE_TOKENS,
+                        HC_VISIT_TOKENS, HC_SCORE_TOKENS)
 ASYM_VARIANTS = ["difference", "absolute_difference", "average",
                  "relative_differences", "absolute_relative_differences"]
 
 
 def resolve_paths(variant, embedding, bg_mode="no_background",
-                   cohort_mode="p_first_cdr05_hc_first_cdrall_or_mmseall",
+                   cohort=DEFAULT_COHORT_TOKENS,
                    photo_mode="mean"):
-    from src.config import EMBEDDING_CLASSIFICATION_DIR, cohort_name, cohort_spec_from_name
-    cohort_dir = cohort_name(cohort_mode)
-    spec = cohort_spec_from_name(cohort_dir)
+    from src.config import EMBEDDING_CLASSIFICATION_DIR, cohort_dirs
+    visit_dir, cdr_mmse_dir = cohort_dirs(*cohort)
     v = variant if variant is not None else "original"
-    return (EMBEDDING_CLASSIFICATION_DIR / spec.visit_dir / spec.cdr_mmse_dir
+    return (EMBEDDING_CLASSIFICATION_DIR / visit_dir / cdr_mmse_dir
             / bg_mode / embedding / v / photo_mode / "pca" / "_summary")
 
 
@@ -192,12 +193,14 @@ def main():
                         choices=["arcface", "topofr", "dlib", "vggface"])
     parser.add_argument("--bg-mode", default="no_background",
                         choices=["background", "no_background"])
-    from src.config import VALID_COHORT_CHOICES
-    parser.add_argument("--cohort-mode", default="p_first_cdr05_hc_first_cdrall_or_mmseall",
-                        choices=VALID_COHORT_CHOICES)
+    parser.add_argument("--p-visit",  choices=list(P_VISIT_TOKENS),  default=DEFAULT_COHORT_TOKENS[0])
+    parser.add_argument("--p-score",  choices=list(P_SCORE_TOKENS),  default=DEFAULT_COHORT_TOKENS[1])
+    parser.add_argument("--hc-visit", choices=list(HC_VISIT_TOKENS), default=DEFAULT_COHORT_TOKENS[2])
+    parser.add_argument("--hc-score", choices=list(HC_SCORE_TOKENS), default=DEFAULT_COHORT_TOKENS[3])
     args = parser.parse_args()
 
-    out = resolve_paths(args.variant, args.embedding, args.bg_mode, args.cohort_mode)
+    cohort = (args.p_visit, args.p_score, args.hc_visit, args.hc_score)
+    out = resolve_paths(args.variant, args.embedding, args.bg_mode, cohort)
     logger.info(f"OUT: {out}")
     long_csv = out / "all_pca_metrics.csv"
     eig_csv = out / "cumulative_eigenvalue_ratio.csv"

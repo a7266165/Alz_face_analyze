@@ -78,7 +78,10 @@ class MetaPipeline:
     def run_single(self, emb_model: str, meta_clf_name: str) -> Dict[str, Any]:
         loader = MetaDataLoader(
             emb_model=emb_model,
-            cohort_mode=self.config.cohort_mode,
+            p_visit=self.config.p_visit,
+            p_score=self.config.p_score,
+            hc_visit=self.config.hc_visit,
+            hc_score=self.config.hc_score,
             bg_mode=self.config.bg_mode,
             photo_mode=self.config.photo_mode,
             reducer=self.config.reducer,

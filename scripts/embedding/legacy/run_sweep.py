@@ -17,7 +17,8 @@ Reducer naming (a single positional value, parsed):
     "drop_<thr>"   -> DropCorrelatedFeatures(threshold=<thr>)
 
 Default settings:
-    --cohort-mode p_first_cdr05_hc_all_cdrall_or_mmseall   (P first-visit + HC all visits)
+    --p-visit p_first --p-score p_cdr05 --hc-visit hc_all
+        --hc-score hc_cdrall_or_mmseall   (P first-visit + HC all visits)
     --photo-mode mean              (mean-pool 10 photos -> 1 vector per visit)
 
 Usage:
@@ -104,7 +105,10 @@ def label_for(kind, value):
 def run_one(feat, kind, value, args, progress=""):
     cmd = [PYTHON, str(PROJECT_ROOT / "scripts" / "embedding" /
                         "run_fwd_rev.py"),
-           "--cohort-mode", args.cohort_mode,
+           "--p-visit", args.p_visit,
+           "--p-score", args.p_score,
+           "--hc-visit", args.hc_visit,
+           "--hc-score", args.hc_score,
            "--photo-mode", args.photo_mode,
            "--feature-type", feat]
     if kind == "pca":
@@ -140,10 +144,17 @@ def main():
     p.add_argument("--reducers", nargs="*", default=None,
                     help="Reducer specs (no_drop, pca_<N>, pca_<ratio>, "
                          "drop_<thr>). Default: full grid (32 reducers).")
-    from src.config import VALID_COHORT_CHOICES
-    p.add_argument("--cohort-mode",
-                    default="p_first_cdr05_hc_all_cdrall_or_mmseall",
-                    choices=VALID_COHORT_CHOICES)
+    from src.config import (
+        P_VISIT_TOKENS, P_SCORE_TOKENS, HC_VISIT_TOKENS, HC_SCORE_TOKENS,
+    )
+    p.add_argument("--p-visit", choices=list(P_VISIT_TOKENS),
+                    default="p_first")
+    p.add_argument("--p-score", choices=list(P_SCORE_TOKENS),
+                    default="p_cdr05")
+    p.add_argument("--hc-visit", choices=list(HC_VISIT_TOKENS),
+                    default="hc_all")
+    p.add_argument("--hc-score", choices=list(HC_SCORE_TOKENS),
+                    default="hc_cdrall_or_mmseall")
     p.add_argument("--photo-mode", default="mean", choices=["mean", "all"])
     p.add_argument("--skip-existing", action="store_true",
                     help="Skip invocations whose output dir already has a "
@@ -170,9 +181,11 @@ def main():
     specs = args.reducers if args.reducers else DEFAULT_REDUCERS
     parsed = [parse_reducer(s) for s in specs]
 
+    cohort = (args.p_visit, args.p_score, args.hc_visit, args.hc_score)
+
     print(f"\n{'#'*70}")
     print(f"# SWEEP: {args.embedding or 'ALL'} | {args.bg_mode} | "
-          f"{args.cohort_mode}")
+          f"{cohort}")
     print(f"# Features ({len(args.feature_types)}): {args.feature_types}")
     print(f"# Reducers ({len(parsed)}): "
           f"{[label_for(k, v) for k, v in parsed]}")
@@ -197,7 +210,7 @@ def main():
                 pca = value if kind == "pca" else None
                 drop = value if kind == "drop" else None
                 out = imp.output_dir_for(feat, drop,
-                                          args.photo_mode, pca, args.cohort_mode,
+                                          args.photo_mode, pca, cohort,
                                           embedding="arcface",
                                           bg_mode=args.bg_mode)
                 if (out / "_summary" / "combined_summary.csv").exists():

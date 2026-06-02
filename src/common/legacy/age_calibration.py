@@ -10,7 +10,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from src.config import DEFAULT_COHORT_MODE, cohort_spec_from_name
+from src.config import DEFAULT_COHORT_TOKENS
 from src.common.legacy.feature_gate import (
     keep_visits_with_features,
     pick_first_visit_with_features,
@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 def build_cohort_for_age_calibration(
-    cohort_mode=DEFAULT_COHORT_MODE,
+    cohort=DEFAULT_COHORT_TOKENS,
     hc_source_mode="ACS",
     predicted_ages_file=None,
 ):
@@ -38,10 +38,7 @@ def build_cohort_for_age_calibration(
     from src.common.legacy.eacs import load_combined_demographics_with_eacs
     from src.common.legacy.predicted_age import apply_predicted_age_filter
 
-    p_score = f"p_{spec.p_cdr}"
-    hc_score = "hc_cdr0_or_mmse26" if spec.hc_strict else "hc_cdrall_or_mmseall"
-
-    spec = cohort_spec_from_name(cohort_mode)
+    p_visit, p_score, hc_visit, hc_score = cohort
 
     if predicted_ages_file is not None:
         pred_ages = json.loads(Path(predicted_ages_file).read_text(
@@ -56,7 +53,7 @@ def build_cohort_for_age_calibration(
     p_all = p_filter(p_all, p_score)
     p_all = p_all.sort_values(["base_id", "visit"])
     p_all = apply_predicted_age_filter(p_all, pred_ages=pred_ages)
-    if spec.p_visit == "first":
+    if p_visit == "p_first":
         p_df = pick_first_visit_with_features(p_all)
     else:
         p_df = keep_visits_with_features(p_all)
@@ -68,7 +65,7 @@ def build_cohort_for_age_calibration(
         hc = hc_filter(hc, hc_score)
         hc = hc.sort_values(["base_id", "visit"])
         hc = apply_predicted_age_filter(hc, pred_ages=pred_ages)
-        if spec.hc_visit == "first":
+        if hc_visit == "hc_first":
             hc = hc.groupby("base_id", as_index=False).first()
         hc_frames[grp] = hc
 
@@ -95,6 +92,6 @@ def build_cohort_for_age_calibration(
         ].copy()
 
     logger.info(
-        f"build_cohort_for_age_calibration (cohort_mode={cohort_mode}): "
+        f"build_cohort_for_age_calibration (cohort={cohort}): "
         f"ACS={len(out['ACS'])}, NAD={len(out['NAD'])}, P={len(out['P'])}")
     return out["ACS"], out["NAD"], out["P"]

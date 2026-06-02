@@ -24,9 +24,9 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from _paths import PROJECT_ROOT
 
-from src.config import cohort_name, cohort_spec_from_name
+from src.config import cohort_dirs
 
-COHORT_MODE = "p_first_cdrall_hc_all_cdrall_or_mmseall"
+COHORT = ("p_first", "p_cdrall", "hc_all", "hc_cdrall_or_mmseall")
 META_ROOT = PROJECT_ROOT / "workspace" / "meta" / "analysis"
 
 METRIC_FIELDS = [
@@ -144,8 +144,8 @@ def save_summaries(cohort_root: Path, full_df: pd.DataFrame):
 
 
 def main():
-    spec = cohort_spec_from_name(cohort_name(COHORT_MODE))
-    cohort_root = META_ROOT / spec.visit_dir / spec.cdr_mmse_dir
+    visit_dir, cdr_mmse_dir = cohort_dirs(*COHORT)
+    cohort_root = META_ROOT / visit_dir / cdr_mmse_dir
 
     print(f"Scanning: {cohort_root}")
     full_df = collect_all_metrics(cohort_root)

@@ -11,7 +11,11 @@ from typing import List, Optional
 class MetaConfig:
 
     # --- embedding pipeline 路徑參數 ---
-    cohort_mode: str = "p_first_cdr05_hc_first_cdrall_or_mmseall"
+    # cohort 4-token(順序同 cohort_list);取代舊的 cohort_mode 字串。
+    p_visit: str = "p_first"
+    p_score: str = "p_cdr05"
+    hc_visit: str = "hc_first"
+    hc_score: str = "hc_cdrall_or_mmseall"
     bg_mode: str = "no_background"
     photo_mode: str = "mean"
     reducer: str = "no_drop"

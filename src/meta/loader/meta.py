@@ -19,8 +19,7 @@ import pandas as pd
 
 from src.config import (
     EMBEDDING_CLASSIFICATION_DIR,
-    cohort_name,
-    cohort_spec_from_name,
+    cohort_dirs,
 )
 from src.meta.loader.base import extract_base_id
 from src.meta.loader.dataset import FoldData, MetaDataset
@@ -49,7 +48,10 @@ class MetaDataLoader:
     def __init__(
         self,
         emb_model: str,
-        cohort_mode: str,
+        p_visit: str,
+        p_score: str,
+        hc_visit: str,
+        hc_score: str,
         bg_mode: str,
         photo_mode: str,
         reducer: str,
@@ -77,7 +79,7 @@ class MetaDataLoader:
         hc_source_mode: str = "ACS",
     ):
         self.emb_model = emb_model
-        self.cohort_mode = cohort_mode
+        self.cohort = (p_visit, p_score, hc_visit, hc_score)
         self.hc_source_mode = hc_source_mode
         self.bg_mode = bg_mode
         self.photo_mode = photo_mode
@@ -168,7 +170,7 @@ class MetaDataLoader:
             "emb_model": self.emb_model,
             "reducer": self.reducer,
             "emotion_method": self.emotion_method,
-            "cohort_mode": self.cohort_mode,
+            "cohort": list(self.cohort),
             "bg_mode": self.bg_mode,
             "partition": self.partition,
             "base_classifier": self.base_classifier,
@@ -186,10 +188,10 @@ class MetaDataLoader:
         return dataset
 
     def _load_oof_scores(self, feature_type: str) -> pd.DataFrame:
-        spec = cohort_spec_from_name(cohort_name(self.cohort_mode))
+        visit_dir, cdr_mmse_dir = cohort_dirs(*self.cohort)
         base = (
             EMBEDDING_CLASSIFICATION_DIR
-            / spec.visit_dir / spec.cdr_mmse_dir
+            / visit_dir / cdr_mmse_dir
             / self.bg_mode / self.emb_model / feature_type
             / self.photo_mode / self.reducer
         )
@@ -213,10 +215,10 @@ class MetaDataLoader:
         return df[["subject_id", "base_id", score_col, "y_true", "fold"]]
 
     def _load_asymmetry_scores(self) -> pd.DataFrame:
-        spec = cohort_spec_from_name(cohort_name(self.cohort_mode))
+        visit_dir, cdr_mmse_dir = cohort_dirs(*self.cohort)
         base = (
             EMBEDDING_CLASSIFICATION_DIR
-            / spec.visit_dir / spec.cdr_mmse_dir
+            / visit_dir / cdr_mmse_dir
             / self.bg_mode / self.emb_model / self.asymmetry_variant
             / self.photo_mode / self.reducer
         )

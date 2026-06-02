@@ -31,10 +31,9 @@ from _paths import PROJECT_ROOT  # noqa: F401
 
 from src.config import (
     AGE_ANALYSIS_DIR,
-    DEFAULT_COHORT_MODE,
-    VALID_COHORT_CHOICES,
     cohort_path,
-    cohort_spec_from_name,
+    P_VISIT_TOKENS, P_SCORE_TOKENS, HC_VISIT_TOKENS, HC_SCORE_TOKENS,
+    DEFAULT_COHORT_TOKENS,
 )
 from src.common.cohort import cohort_list
 from src.age.utils import load_age_error
@@ -153,9 +152,10 @@ def run_hilo_comparison(df_all, tokens, metric, output_dir, caliper=1.0):
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--cohort-mode", default=DEFAULT_COHORT_MODE,
-                    choices=VALID_COHORT_CHOICES,
-                    help=f"canonical cohort name (預設: {DEFAULT_COHORT_MODE})")
+    ap.add_argument("--p-visit", choices=list(P_VISIT_TOKENS), default=DEFAULT_COHORT_TOKENS[0])
+    ap.add_argument("--p-score", choices=list(P_SCORE_TOKENS), default=DEFAULT_COHORT_TOKENS[1])
+    ap.add_argument("--hc-visit", choices=list(HC_VISIT_TOKENS), default=DEFAULT_COHORT_TOKENS[2])
+    ap.add_argument("--hc-score", choices=list(HC_SCORE_TOKENS), default=DEFAULT_COHORT_TOKENS[3])
     ap.add_argument("--output-dir", type=Path, default=None,
                     help="覆寫輸出目錄；留空依 cohort-mode 自動決定")
     ap.add_argument("--comparison", default=None,
@@ -164,15 +164,13 @@ def main():
     ap.add_argument("--caliper", type=float, default=1.0)
     args = ap.parse_args()
 
+    cohort = (args.p_visit, args.p_score, args.hc_visit, args.hc_score)
     output_dir = args.output_dir or (
-        AGE_ANALYSIS_DIR / cohort_path(args.cohort_mode) / "violin")
-    logger.info(f"cohort-mode = {args.cohort_mode}")
+        AGE_ANALYSIS_DIR / cohort_path(*cohort) / "violin")
+    logger.info(f"cohort = {cohort}")
     logger.info(f"output-dir  = {output_dir}")
 
-    spec = cohort_spec_from_name(args.cohort_mode)
-    tokens = (f"p_{spec.p_visit}", f"p_{spec.p_cdr}", f"hc_{spec.hc_visit}",
-              "hc_cdr0_or_mmse26" if spec.hc_strict else "hc_cdrall_or_mmseall")
-    df_all = cohort_list(*tokens).merge(load_age_error(*tokens), on="ID", how="inner")
+    df_all = cohort_list(*cohort).merge(load_age_error(*cohort), on="ID", how="inner")
     df_all["group"] = df_all["Group"]
     logger.info(f"loaded {len(df_all)} rows "
                 f"({df_all['group'].value_counts().to_dict()})")

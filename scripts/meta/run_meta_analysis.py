@@ -24,8 +24,7 @@ from _paths import PROJECT_ROOT
 from src.config import (
     META_ANALYSIS_DIR,
     PREDICTED_AGES_FILE,
-    cohort_name,
-    cohort_spec_from_name,
+    cohort_dirs,
 )
 from src.meta import MetaConfig, MetaPipeline
 from src.meta.evaluation.matched_eval import build_matching_cache
@@ -37,7 +36,7 @@ DEMOGRAPHICS_DIR = PROJECT_ROOT / "data" / "demographics"
 
 # ========== 分析設定 ==========
 
-COHORT_MODE = "p_first_cdrall_hc_all_cdrall_or_mmseall"
+COHORT = ("p_first", "p_cdrall", "hc_all", "hc_cdrall_or_mmseall")
 PHOTO_MODE = "mean"
 REDUCER = "no_drop"
 BASE_CLASSIFIER = "logistic"
@@ -67,7 +66,7 @@ ASYMMETRY_CONFIGS = [
 ]
 
 # Age predictions (raw MiVOLO predictions; cohort-agnostic)
-spec = cohort_spec_from_name(cohort_name(COHORT_MODE))
+VISIT_DIR, CDR_MMSE_DIR = cohort_dirs(*COHORT)
 PREDICTED_AGES = PREDICTED_AGES_FILE
 
 EMOTION_METHOD = None
@@ -86,7 +85,7 @@ def build_output_dir(bg_mode, extra_feat_tag, emb_model,
                      normalize, meta_clf):
     norm_tag = normalize if normalize else "raw"
     return (
-        META_ANALYSIS_DIR / spec.visit_dir / spec.cdr_mmse_dir
+        META_ANALYSIS_DIR / VISIT_DIR / CDR_MMSE_DIR
         / bg_mode / extra_feat_tag / emb_model
         / asym_variant / scoring_method
         / PHOTO_MODE / REDUCER / "fwd"
@@ -117,9 +116,7 @@ def main():
         sys.exit(1)
 
     logger.info("建構全局 matching cache...")
-    matching_cache = build_matching_cache(
-        cohort_mode=COHORT_MODE,
-    )
+    matching_cache = build_matching_cache(*COHORT)
 
     all_summaries = []
 
@@ -158,7 +155,8 @@ def main():
                             logger.info(f"{'='*60}")
 
                             config = MetaConfig(
-                                cohort_mode=COHORT_MODE,
+                                p_visit=COHORT[0], p_score=COHORT[1],
+                                hc_visit=COHORT[2], hc_score=COHORT[3],
                                 bg_mode=bg_mode,
                                 photo_mode=PHOTO_MODE,
                                 reducer=REDUCER,
@@ -197,7 +195,7 @@ def main():
     if all_summaries:
         combined = pd.concat(all_summaries, ignore_index=True)
         combined = combined.sort_values("mcc", ascending=False)
-        summary_path = META_ANALYSIS_DIR / spec.visit_dir / spec.cdr_mmse_dir / "summary_all.csv"
+        summary_path = META_ANALYSIS_DIR / VISIT_DIR / CDR_MMSE_DIR / "summary_all.csv"
         summary_path.parent.mkdir(parents=True, exist_ok=True)
         combined.to_csv(summary_path, index=False, encoding="utf-8-sig")
         logger.info(f"\n合併結果已儲存: {summary_path}")
