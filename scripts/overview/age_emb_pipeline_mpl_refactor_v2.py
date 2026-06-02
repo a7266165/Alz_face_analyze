@@ -194,7 +194,8 @@ def build(mode='center'):
     e_fr_y2 = e_fr_y1 + NODE_H + SP            # Rev Kfold
     e_er_y = e_fr_y2 + NODE_H + SP + 0.5       # all+1by1 / 1by1+other (dimmed)
     e_eb_y = e_er_y + NODE_H + SP + 0.5        # eval_by_subject / eval_by_visit
-    e_fr_bot = e_eb_y + NODE_H / 2 + SP
+    e_cmp_y = e_eb_y + NODE_H + SP + 0.5       # AD-vs-HC / NAD / ACS contrasts
+    e_fr_bot = e_cmp_y + NODE_H / 2 + SP
 
     fig_h = max(dc_bot, e_fr_bot) + 0.5
 
@@ -211,6 +212,10 @@ def build(mode='center'):
     def _dln(x1, y1, x2, y2):
         ax.plot([x1, x2], [y1, y2], color=DIM_LN, lw=1.4,
                 solid_capstyle='round', zorder=2)
+
+    def _uline(x1, y1, x2, y2):           # connector routed UNDER cluster fills
+        ax.plot([x1, x2], [y1, y2], color=EC, lw=1.4,
+                solid_capstyle='round', zorder=-1)
 
     # ════════════════════════════════════════════════════════
     # step 1 — Preprocessing (shared head)
@@ -328,10 +333,12 @@ def build(mode='center'):
     # asymmetry path: three scoring methods (aligned under the asymmetry feats), LIT
     scx, sc_tot = _rowx(X_ASYM, 3, 2.9, 0.4)
     cluster(ax, X_ASYM, y_d2, sc_tot + 0.8, NODE_H + 2 * SP, C_ASY['bg'])
-    for x, lab in zip(scx, ['L2 Norm\n$\\sqrt{\\Sigma_i f_i^2}$',
-                            'Centroid Dist\n$\\Delta\\cos(x,\\mu)$',
-                            'LDA Proj\nFisher 1D']):
-        node(ax, x, y_d2, 2.9, NODE_H, lab, C_ASY['nd'])
+    sc_labels = ['Centroid Dist\n$\\Delta\\cos(x,\\mu)$',
+                 'LDA Proj\nFisher 1D',
+                 'L2 Norm\n$\\sqrt{\\Sigma_i f_i^2}$']
+    sc_colors = [C_ASY['nd'], C_ASY['nd'], C6['nd']]   # L2 Norm singled out, rightmost
+    for x, lab, nc in zip(scx, sc_labels, sc_colors):
+        node(ax, x, y_d2, 2.9, NODE_H, lab, nc)
         for px in eax:
             line(ax, px, y_d1 + NODE_H / 2, x, y_d2 - NODE_H / 2)
 
@@ -442,23 +449,47 @@ def build(mode='center'):
     node(ax, fxr, e_fr_y2, nw_col, NODE_H, 'K fold(K=10)', CR['nd'])
     line(ax, fxr, e_fr_y1 + NODE_H / 2, fxr, e_fr_y2 - NODE_H / 2)
 
-    # two independent eval-result clusters (DIMMED)
-    cluster(ax, fxl, e_er_y, nw_col + 0.8, NODE_H + 2 * SP, G['bg'])
-    node(ax, fxl, e_er_y, nw_col, NODE_H, 'all + 1 by 1', G['nd'])
-    cluster(ax, fxr, e_er_y, nw_col + 0.8, NODE_H + 2 * SP, G['bg'])
-    node(ax, fxr, e_er_y, nw_col, NODE_H, '1 by 1 + other', G['nd'])
-    _dln(fxl, e_fr_y1 + NODE_H / 2, fxl, e_er_y - NODE_H / 2)   # Fwd  -> all+1by1
-    _dln(fxr, e_fr_y2 + NODE_H / 2, fxr, e_er_y - NODE_H / 2)   # Rev  -> 1by1+other
+    # two independent eval-result clusters (LIT, matching their feeders)
+    cluster(ax, fxl, e_er_y, nw_col + 0.8, NODE_H + 2 * SP, CF['bg'])
+    node(ax, fxl, e_er_y, nw_col, NODE_H, 'all + 1 by 1', CF['nd'])
+    cluster(ax, fxr, e_er_y, nw_col + 0.8, NODE_H + 2 * SP, CR['bg'])
+    node(ax, fxr, e_er_y, nw_col, NODE_H, '1 by 1 + other', CR['nd'])
+    line(ax, fxl, e_fr_y1 + NODE_H / 2, fxl, e_er_y - NODE_H / 2)   # Fwd  -> all+1by1
+    line(ax, fxr, e_fr_y2 + NODE_H / 2, fxr, e_er_y - NODE_H / 2)   # Rev  -> 1by1+other
 
-    # central eval_by (dimmed), fed by both eval-result clusters
+    # central eval_by (LIT) + the 3 contrasts below share ONE C_ES cluster
     nw_ev = 2.4; gap_ev = 0.65
     esx, es_tot = _rowx(X_EMB_C, 2, nw_ev, gap_ev)
-    cluster(ax, X_EMB_C, e_eb_y, es_tot + 0.9, NODE_H + 2 * SP, G['bg'])
+    cmpx, cmp_tot = _rowx(X_EMB_C, 3, 3.0, 0.5)
+    eb_cy = (e_eb_y + e_cmp_y) / 2
+    eb_h = (e_cmp_y - e_eb_y) + NODE_H + 2 * SP
+    cluster(ax, X_EMB_C, eb_cy, max(es_tot, cmp_tot) + 0.9, eb_h, C_ES['bg'])
     for x, lab in zip(esx, ['eval_by_subject', 'eval_by_visit']):
-        node(ax, x, e_eb_y, nw_ev, NODE_H, lab, G['nd'])
+        node(ax, x, e_eb_y, nw_ev, NODE_H, lab, C_ES['nd'])
     for srcx in [fxl, fxr]:
         for ex in esx:
-            _dln(srcx, e_er_y + NODE_H / 2, ex, e_eb_y - NODE_H / 2)
+            line(ax, srcx, e_er_y + NODE_H / 2, ex, e_eb_y - NODE_H / 2)
+
+    # ── wire embedding step-5 outputs into the eval protocols ──
+    #   every classifier/scoring box EXCEPT L2 Norm -> Fwd & Rev tops
+    #   (K fold / 1 by 1 matched); L2 Norm bypasses the folds and connects
+    #   straight to the final eval_by_subject / eval_by_visit.
+    fr_tops = [(fxl, e_fr_y1), (fxr, e_fr_y1)]          # Fwd K fold / Rev 1by1matched
+    for sx in clfx:                                     # LR, XGBoost   (y_d3)
+        for tx, ty in fr_tops:
+            line(ax, sx, y_d3 + NODE_H / 2, tx, ty - NODE_H / 2)
+    for sx in scx[:2]:                                  # Centroid Dist, LDA Proj (y_d2)
+        for tx, ty in fr_tops:
+            line(ax, sx, y_d2 + NODE_H / 2, tx, ty - NODE_H / 2)
+    for ex in esx:                                      # L2 Norm (scx[2]) -> eval_by
+        _uline(scx[2], y_d2 + NODE_H / 2, ex, e_eb_y - NODE_H / 2)
+
+    # ── eval_by -> three diagnostic contrasts (inside the shared C_ES cluster) ──
+    for x, lab in zip(cmpx, ['AD vs HC', 'AD vs NAD', 'AD vs ACS']):
+        node(ax, x, e_cmp_y, 3.0, NODE_H, lab, C_ES['nd'])
+    for ex in esx:
+        for cx2 in cmpx:
+            line(ax, ex, e_eb_y + NODE_H / 2, cx2, e_cmp_y - NODE_H / 2)
 
     # ── Save ── (side is the chosen layout -> the primary file)
     suffix = '' if mode == 'side' else '_center'
