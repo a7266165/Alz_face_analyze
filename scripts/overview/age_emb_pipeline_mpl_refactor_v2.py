@@ -222,7 +222,6 @@ def build(mode='center'):
     # ════════════════════════════════════════════════════════
     # Age models
     amx, am_tot = _rowx(X_AGE_C, len(AGE_MODELS), NW_AM, GAP_AM)
-    cluster(ax, X_AGE_C, y_mod, am_tot + 0.9, NODE_H + 2 * SP, C_AGE['bg'])
     for x, lab in zip(amx, AGE_MODELS):
         node(ax, x, y_mod, NW_AM, NODE_H, lab, C_AGE['nd'])
         line(ax, x_face, y_pre5 + NODE_H / 2, x, y_mod - NODE_H / 2)
@@ -231,7 +230,6 @@ def build(mode='center'):
     EMB_MODELS = ['dlib', 'TopoFR', 'ArcFace', 'VGGFace']
     nw_em = 2.2; gap_em = 0.5
     emx, em_tot = _rowx(X_EMB_C, len(EMB_MODELS), nw_em, gap_em)
-    cluster(ax, X_EMB_C, y_mod, em_tot + 0.9, NODE_H + 2 * SP, C2['bg'])
     for x, lab in zip(emx, EMB_MODELS):
         node(ax, x, y_mod, nw_em, NODE_H, lab, C2['nd'])
         for src in [x_face, x_mirr]:
@@ -242,7 +240,6 @@ def build(mode='center'):
                   'DAN', 'POSTER\n++', 'Py-Feat', 'ViT']
     nw_om = 2.2; gap_om = 0.3
     omx, om_tot = _rowx(X_EMO_C, len(EMO_MODELS), nw_om, gap_om)
-    cluster(ax, X_EMO_C, y_mod, om_tot + 0.9, NODE_H + 2 * SP, C_EMO['bg'])
     for x, lab in zip(omx, EMO_MODELS):
         node(ax, x, y_mod, nw_om, NODE_H, lab, C_EMO['nd'])
         line(ax, x_face, y_pre5 + NODE_H / 2, x, y_mod - NODE_H / 2)
@@ -252,24 +249,20 @@ def build(mode='center'):
     # ════════════════════════════════════════════════════════
     # Age: Predict Age x 10
     age_w = 4.5
-    cluster(ax, X_AGE_C, y_feat, age_w + 0.9, NODE_H + 2 * SP, C_AGE['bg'])
     node(ax, X_AGE_C, y_feat, age_w, NODE_H, 'Predict Age x 10', C_AGE['nd'])
     for x in amx:
         line(ax, x, y_mod + NODE_H / 2, X_AGE_C, y_feat - NODE_H / 2)
 
     # ── Age step 5: mean -> age_error -> violin/lines/scatter/stat (LIT) ──
-    cluster(ax, X_AGE_C, y_d1, age_w + 0.9, NODE_H + 2 * SP, C_AOUT['bg'])
     node(ax, X_AGE_C, y_d1, age_w, NODE_H, 'Predict Age mean x 1', C_AOUT['nd'])
     line(ax, X_AGE_C, y_feat + NODE_H / 2, X_AGE_C, y_d1 - NODE_H / 2)
 
     ae_w = 5.5
-    cluster(ax, X_AGE_C, y_d2, ae_w + 0.9, NODE_H + 2 * SP, C_AOUT['bg'])
     node(ax, X_AGE_C, y_d2, ae_w, NODE_H,
          'age_error = real_age - predicted_age', C_AOUT['nd'])
     line(ax, X_AGE_C, y_d1 + NODE_H / 2, X_AGE_C, y_d2 - NODE_H / 2)
 
     vls_x, vls_tot = _rowx(X_AGE_C, 4, 2.6, 0.5)
-    cluster(ax, X_AGE_C, y_d3, vls_tot + 0.9, NODE_H + 2 * SP, C_AOUT['bg'])
     for x, lab in zip(vls_x, ['violin', 'lines', 'scatter', 'stat']):
         node(ax, x, y_d3, 2.6, NODE_H, lab, C_AOUT['nd'])
         line(ax, X_AGE_C, y_d2 + NODE_H / 2, x, y_d3 - NODE_H / 2)
@@ -281,9 +274,7 @@ def build(mode='center'):
     x_orig = X_ORIG
     asymx, asym_tot = _rowx(X_ASYM, len(ASYM_FEATS), nw_ef, gap_ef)
 
-    cluster(ax, x_orig, y_feat, nw_ef + 0.6, NODE_H + 2 * SP, C2['bg'])
     node(ax, x_orig, y_feat, nw_ef, NODE_H, 'original', C2['nd'])
-    cluster(ax, X_ASYM, y_feat, asym_tot + 0.6, NODE_H + 2 * SP, C2['bg'])
     for x, lab in zip(asymx, ASYM_FEATS):
         node(ax, x, y_feat, nw_ef, NODE_H, lab, C2['nd'])
     for fx in [x_orig] + asymx:
@@ -297,44 +288,43 @@ def build(mode='center'):
     # Each path is centred on its sub-column (X_ORIG / X_ASYM), aligned with the
     # feature cluster above it. Cluster details kept (cf. age_emb_pipeline_mpl).
 
-    # NOTE: the whole embedding step-5 (everything after the features) is DIMMED.
+    # mean/all is LIT (C_PA); the original path (dim-reduce + classifier) is LIT
+    # and shares ONE colour family (C4); only the asymmetry scoring stays dimmed.
     # shared mean/all aggregation (both feature clusters feed it)
     eax, ea_tot = _rowx(X_EMB_C, 2, 2.4, 0.65)
-    cluster(ax, X_EMB_C, y_d1, ea_tot + 0.9, NODE_H + 2 * SP, G['bg'])
+    cluster(ax, X_EMB_C, y_d1, ea_tot + 0.9, NODE_H + 2 * SP, C_PA['bg'])
     for x, lab in zip(eax, ['mean', 'all']):
-        node(ax, x, y_d1, 2.4, NODE_H, lab, G['nd'])
+        node(ax, x, y_d1, 2.4, NODE_H, lab, C_PA['nd'])
     for fx in [x_orig] + asymx:
         for px in eax:
-            _dln(fx, y_feat + NODE_H / 2, px, y_d1 - NODE_H / 2)
+            line(ax, fx, y_feat + NODE_H / 2, px, y_d1 - NODE_H / 2)
 
     # original path: dimensionality reduction (aligned under 'original')
     pdx, pd_tot = _rowx(X_ORIG, 3, 2.0, 0.5)
-    cluster(ax, X_ORIG, y_d2, pd_tot + 0.8, NODE_H + 2 * SP, G['bg'])
     for x, lab in zip(pdx, ['no_drop', 'PCA', 'DropCorr']):
-        node(ax, x, y_d2, 2.0, NODE_H, lab, G['nd'])
+        node(ax, x, y_d2, 2.0, NODE_H, lab, C4['nd'])
         for px in eax:
-            _dln(px, y_d1 + NODE_H / 2, x, y_d2 - NODE_H / 2)
+            line(ax, px, y_d1 + NODE_H / 2, x, y_d2 - NODE_H / 2)
 
-    # asymmetry path: three scoring methods (aligned under the asymmetry feats)
+    # asymmetry path: three scoring methods (aligned under the asymmetry feats), LIT
     scx, sc_tot = _rowx(X_ASYM, 3, 2.9, 0.4)
-    cluster(ax, X_ASYM, y_d2, sc_tot + 0.8, NODE_H + 2 * SP, G['bg'])
+    cluster(ax, X_ASYM, y_d2, sc_tot + 0.8, NODE_H + 2 * SP, C_ASY['bg'])
     for x, lab in zip(scx, ['L2 Norm\n$\\sqrt{\\Sigma_i f_i^2}$',
                             'Centroid Dist\n$\\Delta\\cos(x,\\mu)$',
                             'LDA Proj\nFisher 1D']):
-        node(ax, x, y_d2, 2.9, NODE_H, lab, G['nd'])
+        node(ax, x, y_d2, 2.9, NODE_H, lab, C_ASY['nd'])
         for px in eax:
-            _dln(px, y_d1 + NODE_H / 2, x, y_d2 - NODE_H / 2)
+            line(ax, px, y_d1 + NODE_H / 2, x, y_d2 - NODE_H / 2)
 
     # original path: classifier (aligned under the dim-reduce row)
     clfx, clf_tot = _rowx(X_ORIG, 2, 4.2, 0.5)
-    cluster(ax, X_ORIG, y_d3, clf_tot + 0.8, NODE_H + 2 * SP, G['bg'])
     for x, lab in zip(clfx, [
             'Logistic Regression\n$C \\in \\{10^{-3}\\,.\\,.\\,10^{2}\\}$',
             'XGBoost\nn_tree x max_depth x lr\n'
             '{200,500,1k}x{3,6,9}x{.05,.1,.2}']):
-        node(ax, x, y_d3, 4.2, NODE_H, lab, G['nd'])
+        node(ax, x, y_d3, 4.2, NODE_H, lab, C4['nd'])
         for dx in pdx:
-            _dln(dx, y_d2 + NODE_H / 2, x, y_d3 - NODE_H / 2)
+            line(ax, dx, y_d2 + NODE_H / 2, x, y_d3 - NODE_H / 2)
 
     # emotion: 10 features in 3 sub-groups (V/A | contempt | 7 shared)
     EMO_VA = ['valence', 'arousal']
@@ -356,7 +346,6 @@ def build(mode='center'):
     for c, tot, xs, labs in [(va_c, va_tot, vax, EMO_VA),
                              (ct_c, ct_tot, ctx, EMO_CT),
                              (sh_c, sh_tot, shx, EMO_SH)]:
-        cluster(ax, c, y_feat, tot + 0.6, NODE_H + 2 * SP, C_EMO['bg'])
         for x, lab in zip(xs, labs):
             node(ax, x, y_feat, nw_of, NODE_H, lab, C_EMO['nd'])
     # EmoNet -> V/A ; EmoNet+OpenFace -> contempt ; all 9 -> 7 shared  (LIT)
@@ -368,6 +357,41 @@ def build(mode='center'):
     for fx in shx:
         for mx in omx:
             line(ax, mx, y_mod + NODE_H / 2, fx, y_feat - NODE_H / 2)
+
+    # ════════════════════════════════════════════════════════
+    # group wrappers — one big cluster per same-colour group (drawn behind:
+    # cluster() is zorder 0, so it sits under the already-placed nodes/lines)
+    # ════════════════════════════════════════════════════════
+    PADX = 0.5; PADY = SP
+
+    def _grp(x0, x1, y0, y1, fc):
+        cluster(ax, (x0 + x1) / 2, (y0 + y1) / 2, x1 - x0, y1 - y0, fc)
+
+    y_mr_top = y_mod - NODE_H / 2 - PADY     # models row top
+    y_ft_bot = y_feat + NODE_H / 2 + PADY    # features row bottom
+
+    # age: models + Predict Age x10
+    half = max(am_tot, age_w) / 2 + PADX
+    _grp(X_AGE_C - half, X_AGE_C + half, y_mr_top, y_ft_bot, C_AGE['bg'])
+
+    # age_error: Predict Age mean -> age_error -> violin/lines/scatter/stat
+    half = max(age_w, ae_w, vls_tot) / 2 + PADX
+    _grp(X_AGE_C - half, X_AGE_C + half,
+         y_d1 - NODE_H / 2 - PADY, y_d3 + NODE_H / 2 + PADY, C_AOUT['bg'])
+
+    # embedding: models + original/asymmetry features
+    eL = min(X_EMB_C - em_tot / 2, X_ORIG - nw_ef / 2) - PADX
+    eR = max(X_EMB_C + em_tot / 2, X_ASYM + asym_tot / 2) + PADX
+    _grp(eL, eR, y_mr_top, y_ft_bot, C2['bg'])
+
+    # emotion: models + features
+    half = max(om_tot, total_of) / 2 + PADX
+    _grp(X_EMO_C - half, X_EMO_C + half, y_mr_top, y_ft_bot, C_EMO['bg'])
+
+    # embedding original path: dim-reduce + classifier wrapped together (lit, C4)
+    half = max(pd_tot, clf_tot) / 2 + PADX
+    _grp(X_ORIG - half, X_ORIG + half,
+         y_d2 - NODE_H / 2 - PADY, y_d3 + NODE_H / 2 + PADY, C4['bg'])
 
     # ════════════════════════════════════════════════════════
     # step 4 — Demographic + Cohort  (shared by all branches; standalone for now)
