@@ -20,9 +20,10 @@ from draw_age_emb_pipeline_common import *
 
 
 _DC_PAD = 0.7
-# height of the whole shared block (Demographic + Cohort + matched head, incl.
-# outer pads); used to size/position it. Mirrors the y-spacing in _demo_cohort.
-_DC_H = 2 * _DC_PAD + 9 * NODE_H + 14 * SP + 0.6
+# height of the whole shared block (Demographic + Cohort + matched sub-tree:
+# 1by1matched/caliper -> subject/visit match -> priority -> matched cohort),
+# incl. outer pads. Mirrors the y-spacing in _demo_cohort.
+_DC_H = 2 * _DC_PAD + 12 * NODE_H + 17 * SP + 0.6
 
 
 def _rowx(cx, n, w, gap):
@@ -50,8 +51,11 @@ def _demo_cohort(ax, cx, s4_top):
     cy_fc = cy_hs + NODE_H + SP
     co_bot = cy_fc + NODE_H / 2 + SP
     mt_top = co_bot + SP + 0.3
-    my = mt_top + SP + NODE_H / 2          # 1by1matched / caliper_group
-    mt_bot = my + NODE_H / 2 + SP
+    my = mt_top + SP + NODE_H / 2          # 1 by 1 matched / caliper_group
+    my2 = my + NODE_H + SP                  # subject_match / visit_match
+    my3 = my2 + NODE_H + SP                 # no_priority / priority_acs / priority_nad
+    my4 = my3 + NODE_H + SP                 # matched cohort (output)
+    mt_bot = my4 + NODE_H / 2 + SP
     s4_bot = mt_bot + pad
 
     DEMO_ABOVE = ['Group', 'Number', 'Photo_Session', 'Sex']
@@ -105,11 +109,30 @@ def _demo_cohort(ax, cx, s4_top):
     for hx2 in hsx:
         line(ax, hx2, cy_hs + NODE_H / 2, cx, cy_fc - NODE_H / 2)
 
-    # matched-head sub-cluster (shared matching primitives)
+    # matched sub-cluster: 1by1matched/caliper, then 1by1matched's config
+    # (subject/visit match -> priority) and a final matched-cohort output
     mtx, mt_tot = _rowx(cx, 2, 2.6, 0.6)
-    cluster(ax, cx, my, mt_tot + 0.9, NODE_H + 2 * SP, C_ES['bg'])
+    prx, pr_tot = _rowx(cx, 3, 2.4, 0.65)
+    mt_w = max(mt_tot, pr_tot) + 0.9
+    mt_box_top = my - NODE_H / 2 - SP
+    mt_box_bot = my4 + NODE_H / 2 + SP
+    cluster(ax, cx, (mt_box_top + mt_box_bot) / 2, mt_w,
+            mt_box_bot - mt_box_top, C_ES['bg'])
     for x, lab in zip(mtx, ['1 by 1 matched', 'caliper_group']):
         node(ax, x, my, 2.6, NODE_H, lab, C_ES['nd'])
+    for x, lab in zip(mtx, ['subject_match', 'visit_match']):
+        node(ax, x, my2, 2.6, NODE_H, lab, C_ES['nd'])
+    for x, lab in zip(prx, ['no_priority', 'priority_acs', 'priority_nad']):
+        node(ax, x, my3, 2.4, NODE_H, lab, C_ES['nd'])
+    node(ax, cx, my4, 3.6, NODE_H, 'matched cohort', C_ES['nd'])
+    # 1by1matched -> subject/visit match -> priority -> matched cohort
+    for sx in mtx:
+        line(ax, mtx[0], my + NODE_H / 2, sx, my2 - NODE_H / 2)
+    for sx in mtx:
+        for px in prx:
+            line(ax, sx, my2 + NODE_H / 2, px, my3 - NODE_H / 2)
+    for px in prx:
+        line(ax, px, my3 + NODE_H / 2, cx, my4 - NODE_H / 2)
     return s4_bot
 
 
@@ -165,19 +188,15 @@ def build(mode='center'):
         x_left, x_right = -1.5, 66.0
     dc_bot = s4_top + _DC_H
 
-    # ════ parked matched-logic region (eval chain + Fwd/Rev), below everything ════
-    park_top = max(d3_bot, dc_bot) + SP + 0.6
-    ev_y1 = park_top + SP + NODE_H / 2       # subject_match / visit_match
-    ev_y2 = ev_y1 + NODE_H + SP              # eval_by_subject / eval_by_visit
-    ev_y3 = ev_y2 + NODE_H + SP              # priority
-    ev_bot = ev_y3 + NODE_H / 2 + SP
-    fr_y1 = park_top + SP + NODE_H / 2
-    fr_y2 = fr_y1 + NODE_H + SP
-    fr_y3 = fr_y2 + NODE_H + SP
-    fr_bot = fr_y3 + NODE_H / 2 + SP
-    park_bot = max(ev_bot, fr_bot)
+    # ════ embedding Fwd/Rev -> eval-result -> eval_by — below the step-5 ════
+    e_fr_top = d3_bot + SP + 0.6
+    e_fr_y1 = e_fr_top + SP + NODE_H / 2       # Fwd Kfold / Rev 1by1matched
+    e_fr_y2 = e_fr_y1 + NODE_H + SP            # Rev Kfold
+    e_er_y = e_fr_y2 + NODE_H + SP + 0.5       # all+1by1 / 1by1+other (dimmed)
+    e_eb_y = e_er_y + NODE_H + SP + 0.5        # eval_by_subject / eval_by_visit
+    e_fr_bot = e_eb_y + NODE_H / 2 + SP
 
-    fig_h = max(dc_bot, d3_bot, park_bot) + 0.5
+    fig_h = max(dc_bot, e_fr_bot) + 0.5
 
     fig, ax = plt.subplots(figsize=((x_right - x_left), fig_h))
     ax.set_xlim(x_left, x_right)
@@ -392,6 +411,9 @@ def build(mode='center'):
     half = max(pd_tot, clf_tot) / 2 + PADX
     _grp(X_ORIG - half, X_ORIG + half,
          y_d2 - NODE_H / 2 - PADY, y_d3 + NODE_H / 2 + PADY, C4['bg'])
+    # ...and one inner sub-cluster per row (drawn after the wrapper so they show)
+    cluster(ax, X_ORIG, y_d2, pd_tot + 0.6, NODE_H + 0.6, C4['bg'])
+    cluster(ax, X_ORIG, y_d3, clf_tot + 0.6, NODE_H + 0.6, C4['bg'])
 
     # ════════════════════════════════════════════════════════
     # step 4 — Demographic + Cohort  (shared by all branches; standalone for now)
@@ -399,45 +421,44 @@ def build(mode='center'):
     _demo_cohort(ax, dc_cx, s4_top)
 
     # ════════════════════════════════════════════════════════
-    # matched logic — parked in the bottom-right corner, all DIMMED
-    #   (1by1matched / caliper_group now live in the shared cluster on the left)
+    # embedding Fwd / Rev (lit) -> two independent eval-result clusters
+    #   (all+1by1 / 1by1+other) -> central eval_by (dimmed)
     # ════════════════════════════════════════════════════════
-    EV_CX = x_right - 17.0
-    FR_CX = x_right - 6.0
-
-    # eval chain: subject_match..priority wrapped in ONE big dimmed cluster
-    nw_ev = 2.4; gap_ev = 0.65
-    esx, es_tot = _rowx(EV_CX, 2, nw_ev, gap_ev)
-    msx, ms_tot = _rowx(EV_CX, 3, 2.4, 0.65)
-    cluster(ax, EV_CX, (park_top + ev_bot) / 2,
-            max(es_tot, ms_tot) + 1.4, ev_bot - park_top, G['bg'])
-    for x, lab in zip(esx, ['subject_match', 'visit_match']):
-        node(ax, x, ev_y1, nw_ev, NODE_H, lab, G['nd'])
-    for x, lab in zip(esx, ['eval_by_subject', 'eval_by_visit']):
-        node(ax, x, ev_y2, nw_ev, NODE_H, lab, G['nd'])
-    for x, lab in zip(msx, ['no_priority', 'priority_acs', 'priority_nad']):
-        node(ax, x, ev_y3, 2.4, NODE_H, lab, G['nd'])
-    for ya, yb, xbs in [(ev_y1, ev_y2, esx), (ev_y2, ev_y3, msx)]:
-        for xa in esx:
-            for xb in xbs:
-                _dln(xa, ya + NODE_H / 2, xb, yb - NODE_H / 2)
-
-    # Fwd / Rev cohort clusters — dimmed
     nw_col = 3.3; gap_col = 0.7; cw = nw_col + 0.8
-    xl = FR_CX - (cw + gap_col) / 2
-    xr = FR_CX + (cw + gap_col) / 2
-    cl_h = fr_bot - park_top
-    cluster(ax, xl, (park_top + fr_bot) / 2, cw, cl_h, G['bg'])
-    node(ax, xl, fr_y1, nw_col, NODE_H, 'K fold(K=10)', G['nd'])
-    node(ax, xl, fr_y2, nw_col, NODE_H, '1 by 1 matched', G['nd'])
-    node(ax, xl, fr_y3, nw_col, NODE_H, 'eval\n(all + matched)', G['nd'])
-    cluster(ax, xr, (park_top + fr_bot) / 2, cw, cl_h, G['bg'])
-    node(ax, xr, fr_y1, nw_col, NODE_H, '1 by 1 matched', G['nd'])
-    node(ax, xr, fr_y2, nw_col, NODE_H, 'K fold(K=10)', G['nd'])
-    node(ax, xr, fr_y3, nw_col, NODE_H, 'eval\n(matched + other)', G['nd'])
-    for col in [xl, xr]:
-        for ya, yb in [(fr_y1, fr_y2), (fr_y2, fr_y3)]:
-            _dln(col, ya + NODE_H / 2, col, yb - NODE_H / 2)
+    fxl = X_EMB_C - (cw + gap_col) / 2
+    fxr = X_EMB_C + (cw + gap_col) / 2
+
+    # Fwd: K fold only (1 by 1 matched removed)
+    fwd_top = e_fr_y1 - NODE_H / 2 - SP
+    fwd_bot = e_fr_y1 + NODE_H / 2 + SP
+    cluster(ax, fxl, e_fr_y1, cw, fwd_bot - fwd_top, CF['bg'])
+    node(ax, fxl, e_fr_y1, nw_col, NODE_H, 'K fold(K=10)', CF['nd'])
+
+    # Rev: 1 by 1 matched -> K fold
+    rev_top = e_fr_y1 - NODE_H / 2 - SP
+    rev_bot = e_fr_y2 + NODE_H / 2 + SP
+    cluster(ax, fxr, (rev_top + rev_bot) / 2, cw, rev_bot - rev_top, CR['bg'])
+    node(ax, fxr, e_fr_y1, nw_col, NODE_H, '1 by 1 matched', CR['nd'])
+    node(ax, fxr, e_fr_y2, nw_col, NODE_H, 'K fold(K=10)', CR['nd'])
+    line(ax, fxr, e_fr_y1 + NODE_H / 2, fxr, e_fr_y2 - NODE_H / 2)
+
+    # two independent eval-result clusters (DIMMED)
+    cluster(ax, fxl, e_er_y, nw_col + 0.8, NODE_H + 2 * SP, G['bg'])
+    node(ax, fxl, e_er_y, nw_col, NODE_H, 'all + 1 by 1', G['nd'])
+    cluster(ax, fxr, e_er_y, nw_col + 0.8, NODE_H + 2 * SP, G['bg'])
+    node(ax, fxr, e_er_y, nw_col, NODE_H, '1 by 1 + other', G['nd'])
+    _dln(fxl, e_fr_y1 + NODE_H / 2, fxl, e_er_y - NODE_H / 2)   # Fwd  -> all+1by1
+    _dln(fxr, e_fr_y2 + NODE_H / 2, fxr, e_er_y - NODE_H / 2)   # Rev  -> 1by1+other
+
+    # central eval_by (dimmed), fed by both eval-result clusters
+    nw_ev = 2.4; gap_ev = 0.65
+    esx, es_tot = _rowx(X_EMB_C, 2, nw_ev, gap_ev)
+    cluster(ax, X_EMB_C, e_eb_y, es_tot + 0.9, NODE_H + 2 * SP, G['bg'])
+    for x, lab in zip(esx, ['eval_by_subject', 'eval_by_visit']):
+        node(ax, x, e_eb_y, nw_ev, NODE_H, lab, G['nd'])
+    for srcx in [fxl, fxr]:
+        for ex in esx:
+            _dln(srcx, e_er_y + NODE_H / 2, ex, e_eb_y - NODE_H / 2)
 
     # ── Save ── (side is the chosen layout -> the primary file)
     suffix = '' if mode == 'side' else '_center'
