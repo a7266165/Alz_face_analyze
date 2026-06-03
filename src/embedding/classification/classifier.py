@@ -1,10 +1,5 @@
 """
-Classification 下游的「分類器」leaf —— logistic / xgb。
-
-對應概念模型裡 classify 列。**只回 classifier 本體 + needs_scaler 旗標**;scaler/reducer/
-clf 串成 Pipeline 由 producer 的 _build_estimator 做。純 leaf:不知道 reducer、不碰 Pipeline。
-
-needs_scaler:LR 是線性 + L2,需要 scale → True;XGB 是 tree-based、scale-invariant → False。
+分類器(Classifier)，使用時，前面需串聯分類器(classifier)
 """
 from typing import Optional, Tuple
 
@@ -21,9 +16,17 @@ def build_classifier(
     xgb_device: str = "cuda",
     seed: int = 42,
 ) -> Tuple[object, bool]:
-    """回傳 (estimator, needs_scaler)。classifier_type ∈ CLASSIFIERS。
+    """依 classifier_type 建立分類器。
 
-    inline 分支 —— 函數本身即 dispatcher(每條分支只是建物件回傳,不抽私有 worker)。
+    Args:
+        classifier_type: logistic | xgb
+        lr_C: LogisticRegression 正則化強度倒數。
+        xgb_params: XGBClassifier 參數。
+        xgb_device: cuda | cpu
+        seed: 隨機種子。
+
+    Returns:
+        (estimator, needs_scaler)，needs_scaler 表示該模型是否需要先標準化特徵
     """
     if classifier_type == "logistic":
         from sklearn.linear_model import LogisticRegression
