@@ -1,9 +1,10 @@
 """
-embedding 特徵萃取入口，根據兩種不同相片來源進行pic embedding。
+embedding extractor入口。
 
-1. 將每張原始人臉相片 embedding 存 {model}/{bg_variant}/original/<subj>.npy，形狀 (n_images, dim)
-2. 將每對鏡射人臉相片 embedding 存 {model}/{bg_variant}/<ftype>/<subj>.npy，形狀 (n_pairs, dim)
+1. 將每張原始人臉相片 embedding 後存至 {model}/{bg_variant}/original/<subj>.npy，形狀 (n_images, dim)
+2. 將每對鏡射人臉相片 embedding 後存至 {model}/{bg_variant}/<ftype>/<subj>.npy，形狀 (n_pairs, dim)
 """
+
 import os
 import sys
 import json
@@ -22,7 +23,10 @@ from _paths import PROJECT_ROOT  # noqa: F401
 
 from src.config import EMBEDDING_FEATURES_DIR, preprocess_dir
 from src.common.image_io import (
-    batch_apply, imread_unicode, iter_subject_dirs, load_subject,
+    batch_apply,
+    imread_unicode,
+    iter_subject_dirs,
+    load_subject,
 )
 from src.embedding import get_extractor
 from src.asymmetry import calculate_differences
@@ -51,8 +55,12 @@ def setup_cpu_limit(max_cores: Optional[int]):
         logger.info("CPU 核心數: 不限制")
         return
     logger.info(f"CPU 核心數: 限制為 {max_cores} 核心")
-    for var in ("OMP_NUM_THREADS", "MKL_NUM_THREADS",
-                "OPENBLAS_NUM_THREADS", "NUMEXPR_NUM_THREADS"):
+    for var in (
+        "OMP_NUM_THREADS",
+        "MKL_NUM_THREADS",
+        "OPENBLAS_NUM_THREADS",
+        "NUMEXPR_NUM_THREADS",
+    ):
         os.environ[var] = str(max_cores)
     try:
         cv2.setNumThreads(max_cores)
@@ -60,6 +68,7 @@ def setup_cpu_limit(max_cores: Optional[int]):
         pass
     try:
         import torch
+
         torch.set_num_threads(max_cores)
         torch.set_num_interop_threads(max_cores)
     except Exception:
@@ -67,7 +76,7 @@ def setup_cpu_limit(max_cores: Optional[int]):
 
 
 # =============================================================================
-# Feature sources：唯一因來源而異的部分（輸入形狀 + 後處理）
+# Feature sources
 # =============================================================================
 class FeatureSource(ABC):
     """一種特徵來源：負責「讀一個 subject 的 payload」與「把 payload 經 extractor 算成 {ftype: 落地值}」。"""
@@ -80,7 +89,7 @@ class FeatureSource(ABC):
 
     @abstractmethod
     def load(self, subject_dir: Path) -> Optional[object]:
-        """讀一個 subject 的影像；無法使用回 None（每個 subject 只讀一次，跨模型共用）。"""
+        """讀一個 subject 的影像；無法使用回 None。"""
 
     @abstractmethod
     def compute(self, payload: object, extractor) -> Dict[str, object]:
@@ -124,12 +133,15 @@ class MirrorSource(FeatureSource):
         if not left_files or len(left_files) != len(right_files):
             logger.warning(
                 f"{subject_dir.name}: mirror 檔案不完整 "
-                f"(left={len(left_files)}, right={len(right_files)})")
+                f"(left={len(left_files)}, right={len(right_files)})"
+            )
             return None
-        left_images = [im for im in (imread_unicode(f) for f in left_files)
-                       if im is not None]
-        right_images = [im for im in (imread_unicode(f) for f in right_files)
-                        if im is not None]
+        left_images = [
+            im for im in (imread_unicode(f) for f in left_files) if im is not None
+        ]
+        right_images = [
+            im for im in (imread_unicode(f) for f in right_files) if im is not None
+        ]
         if not left_images or len(left_images) != len(right_images):
             logger.warning(f"{subject_dir.name}: 無法讀取完整 mirror 影像")
             return None
@@ -137,21 +149,29 @@ class MirrorSource(FeatureSource):
 
     def compute(self, payload, extractor) -> Dict[str, object]:
         left_images, right_images = payload
-        left_feats = batch_apply(extractor.extract, left_images, label=extractor.model_name)
-        right_feats = batch_apply(extractor.extract, right_images, label=extractor.model_name)
-        valid_pairs = [(l, r) for l, r in zip(left_feats, right_feats)
-                       if l is not None and r is not None]
+        left_feats = batch_apply(
+            extractor.extract, left_images, label=extractor.model_name
+        )
+        right_feats = batch_apply(
+            extractor.extract, right_images, label=extractor.model_name
+        )
+        valid_pairs = [
+            (l, r)
+            for l, r in zip(left_feats, right_feats)
+            if l is not None and r is not None
+        ]
         if not valid_pairs:
             return {}
         left_array = np.array([p[0] for p in valid_pairs])
         right_array = np.array([p[1] for p in valid_pairs])
-        # calculate_differences 是多-method API，回傳 {method: arr}；此處每次只算
-        # 單一 method，取出該 arr 存裸陣列（與 original 格式一致）。
+        # calculate_differences 一次算齊所有 method，回傳 {"embedding_<method>": arr}；
+        # 依 ftype→method 取出對應 arr 存裸陣列（與 original 格式一致）。
+        results = calculate_differences(
+            left_array, right_array, methods=list(FTYPE_TO_METHOD.values())
+        )
         return {
-            ftype: next(iter(calculate_differences(
-                left_array, right_array,
-                methods=[FTYPE_TO_METHOD[ftype]]).values()))
-            for ftype in self.ftypes
+            ftype: results[f"embedding_{method}"]
+            for ftype, method in FTYPE_TO_METHOD.items()
         }
 
 
@@ -161,15 +181,18 @@ SOURCES = {"original": OriginalSource, "mirror": MirrorSource}
 # =============================================================================
 # 共用 runner
 # =============================================================================
-def _processed_subjects(output_dir: Path, models: List[str],
-                        ftypes: List[str], bg_variant: str) -> Set[str]:
-    """所有 model × ftype 都有 .npy 才算完成（取交集）。"""
+def _processed_subjects(
+    output_dir: Path, models: List[str], ftypes: List[str], bg_variant: str
+) -> Set[str]:
+    """檢查個案處理狀態"""
     subject_sets = []
+    # 檢查一名個案所有 model × ftype 是否有 .npy
     for model in models:
         for ftype in ftypes:
             d = output_dir / model / bg_variant / ftype
-            subject_sets.append({f.stem for f in d.glob("*.npy")}
-                                if d.exists() else set())
+            subject_sets.append(
+                {f.stem for f in d.glob("*.npy")} if d.exists() else set()
+            )
     if not subject_sets:
         return set()
     processed = subject_sets[0]
@@ -181,8 +204,10 @@ def _processed_subjects(output_dir: Path, models: List[str],
 def _save_stats(stats: dict, source: FeatureSource, output_dir: Path):
     logger.info("=" * 70)
     logger.info(f"完成 — source={source.name}")
-    logger.info(f"總受試者: {stats['total']} | 跳過: {stats['skipped']} | "
-                f"成功: {stats['success']} | 失敗: {stats['fail']}")
+    logger.info(
+        f"總受試者: {stats['total']} | 跳過: {stats['skipped']} | "
+        f"成功: {stats['success']} | 失敗: {stats['fail']}"
+    )
     if stats.get("start") and stats.get("end"):
         logger.info(f"總耗時: {stats['end'] - stats['start']}")
     logger.info("=" * 70)
@@ -196,8 +221,13 @@ def _save_stats(stats: dict, source: FeatureSource, output_dir: Path):
     logger.info(f"統計已儲存: {stats_file}")
 
 
-def run_extraction(source: FeatureSource, models: List[str], bg_variant: str,
-                   max_cpu_cores: Optional[int], output_dir: Path):
+def run_extraction(
+    source: FeatureSource,
+    models: List[str],
+    bg_variant: str,
+    max_cpu_cores: Optional[int],
+    output_dir: Path,
+):
     setup_cpu_limit(max_cpu_cores)
     input_dir = source.input_dir(bg_variant == "background")
 
@@ -232,8 +262,7 @@ def run_extraction(source: FeatureSource, models: List[str], bg_variant: str,
         logger.info("所有受試者已處理完成")
         return
 
-    # 顯式建構並載入所有模型一次（fail-fast：載入錯誤在進 subject 迴圈前就爆，不會
-    # 被逐 subject 的 try/except 吞成「每個受試者都失敗」）。單一模型失敗只跳過該模型。
+    # 依序載入模型，載入失敗則跳過。
     extractors = {}
     for model in models:
         ext = get_extractor(model)
@@ -250,9 +279,16 @@ def run_extraction(source: FeatureSource, models: List[str], bg_variant: str,
         logger.error("沒有任何可用模型，結束")
         return
 
-    stats = {"total": len(subject_dirs), "skipped": len(processed),
-             "success": 0, "fail": 0, "start": datetime.now(), "end": None}
+    stats = {
+        "total": len(subject_dirs),
+        "skipped": len(processed),
+        "success": 0,
+        "fail": 0,
+        "start": datetime.now(),
+        "end": None,
+    }
 
+    # 提取進度條
     with tqdm(remaining, desc=f"抽特徵({source.name})") as pbar:
         for subject_dir in pbar:
             subject_id = subject_dir.name
@@ -270,8 +306,13 @@ def run_extraction(source: FeatureSource, models: List[str], bg_variant: str,
                         logger.warning(f"{subject_id}: {model} 沒有有效特徵")
                         continue
                     for ftype, value in feats.items():
-                        out_path = (output_dir / model / bg_variant / ftype
-                                    / f"{subject_id}.npy")
+                        out_path = (
+                            output_dir
+                            / model
+                            / bg_variant
+                            / ftype
+                            / f"{subject_id}.npy"
+                        )
                         np.save(out_path, value)
                     saved_any = True
 
@@ -288,18 +329,32 @@ def main():
     import argparse
 
     ap = argparse.ArgumentParser(
-        description=__doc__,
-        formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--source", required=True, choices=list(SOURCES),
-                    help="original: aligned 原始 embedding；mirror: 鏡射不對稱特徵")
-    ap.add_argument("--bg-variant", choices=["no_background", "background"],
-                    default="no_background")
-    ap.add_argument("--models", nargs="+", default=DEFAULT_MODELS,
-                    help=f"嵌入模型 (預設: {DEFAULT_MODELS})")
-    ap.add_argument("--max-cpu-cores", type=int, default=2,
-                    help="限制 CPU 核心數；傳 0 表示不限制")
-    ap.add_argument("--output-dir", type=Path, default=EMBEDDING_FEATURES_DIR,
-                    help="覆寫 EMBEDDING_FEATURES_DIR")
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    ap.add_argument(
+        "--source",
+        required=True,
+        choices=list(SOURCES),
+        help="original: aligned 原始 embedding；mirror: 鏡射不對稱特徵",
+    )
+    ap.add_argument(
+        "--bg-variant", choices=["no_background", "background"], default="no_background"
+    )
+    ap.add_argument(
+        "--models",
+        nargs="+",
+        default=DEFAULT_MODELS,
+        help=f"嵌入模型 (預設: {DEFAULT_MODELS})",
+    )
+    ap.add_argument(
+        "--max-cpu-cores", type=int, default=2, help="限制 CPU 核心數；傳 0 表示不限制"
+    )
+    ap.add_argument(
+        "--output-dir",
+        type=Path,
+        default=EMBEDDING_FEATURES_DIR,
+        help="覆寫 EMBEDDING_FEATURES_DIR",
+    )
     args = ap.parse_args()
 
     source = SOURCES[args.source]()
