@@ -1,16 +1,6 @@
 """
-下游 Stage-1 的「不對稱分數」分支 —— l2 / centroid / lda。
-
-這支對應概念模型裡的 **scorer**:把(asymmetry)特徵映成一個不對稱程度的分數。注意三者
-機制不同(見 build_scorer):
-  - centroid / lda **會 fit**(從 labeled train fold 學質心 / 判別方向)→ 是 estimator、
-    需進 10-fold(否則用到 test 樣本算 → leakage)。
-  - l2_norm **不 fit**:``score = ‖x‖``,純函數、不看 label、不需 CV → 不進迴圈
-    (引擎見 needs_cv=False 直接在全體算 norm)。
-
-build_scorer 回傳 ``(estimator, score_method, needs_cv)``,正好對應 train.py 的 train()
-所吃的 (build_est, score_method, needs_cv) 三參數,讓兩支能丟進同一個 OOF 迴圈。
-scorer 固定 no_drop(不接 reducer,對齊 legacy)。
+把(asymmetry)特徵映成不對稱程度的評分器。
+l2 / centroid / lda
 """
 from typing import Optional, Tuple
 
@@ -21,13 +11,23 @@ ASYMMETRY_METHODS = ("l2_norm", "centroid_dist", "lda_projection")
 
 
 class CentroidEstimator(ClassifierMixin, BaseEstimator):
-    """非對稱質心距離評分:score(x) = cosdist(x, μ_HC) − cosdist(x, μ_AD)(越大越像 AD)。
+    """以「離 AD 質心 vs 離 HC 質心的 cosine 距離差」當分數的 sklearn 評分器。
 
-    在 train fold 上 fit 兩個 class 質心,對 test 用 decision_function 算分數。
-    做成 ClassifierMixin 子類並設 classes_,以滿足 cross_val_predict(method='decision_function')。
+    fit 時對每群取平均向量當質心:μ_AD = AD(y=1) 樣本均值、μ_HC = HC(y=0) 樣本均值。
+    分數 score(x) = cosdist(x, μ_HC) − cosdist(x, μ_AD);越大代表 x 在 cosine 空間裡
+    越靠近 AD 質心、遠離 HC 質心,越可能是 AD。predict 以 0 為門檻。
     """
 
     def fit(self, X, y):
+        """估出 AD / HC 兩群的質心。
+
+        Args:
+            X: 特徵矩陣 (n_samples, n_features)。
+            y: 標籤,1=AD、0=HC。
+
+        Returns:
+            self(已存好 c_ad_、c_hc_、classes_)。
+        """
         X = np.asarray(X, dtype=np.float64)
         y = np.asarray(y)
         self.classes_ = np.unique(y)
@@ -36,9 +36,18 @@ class CentroidEstimator(ClassifierMixin, BaseEstimator):
         return self
 
     def decision_function(self, X):
+        """回傳每筆樣本的不對稱分數(越大越像 AD)。
+
+        Args:
+            X: 特徵矩陣 (n_samples, n_features)。
+
+        Returns:
+            分數陣列 (n_samples,)。
+        """
         X = np.asarray(X, dtype=np.float64)
-        # 向量化:cosdist = 1 − cossim,+1 常數對消 →
-        # cosdist(x,μ_HC) − cosdist(x,μ_AD) = cossim(x,μ_AD) − cossim(x,μ_HC)。
+        # 因 cosdist = 1 − cossim,兩項相減後常數 1 對消,故
+        #   score = cosdist(x,μ_HC) − cosdist(x,μ_AD) = cossim(x,μ_AD) − cossim(x,μ_HC)。
+        # 把 x 與兩質心都先做 L2 normalize,cossim 即化為內積,可一次矩陣乘算完全部樣本。
         eps = 1e-12
         Xn = X / (np.linalg.norm(X, axis=1, keepdims=True) + eps)
         ad_n = self.c_ad_ / (np.linalg.norm(self.c_ad_) + eps)
@@ -46,13 +55,26 @@ class CentroidEstimator(ClassifierMixin, BaseEstimator):
         return (Xn @ ad_n) - (Xn @ hc_n)
 
     def predict(self, X):
+        """分數 >= 0 判為 AD(1),否則 HC(0)。
+
+        Args:
+            X: 特徵矩陣 (n_samples, n_features)。
+
+        Returns:
+            預測標籤陣列 (n_samples,),值為 0 或 1。
+        """
         return (self.decision_function(X) >= 0).astype(int)
 
 
 def build_scorer(method: str) -> Tuple[Optional[object], Optional[str], bool]:
-    """回傳 (estimator, score_method, needs_cv)。method ∈ ASYMMETRY_METHODS。
+    """依 method 建立不對稱評分器。
 
-    l2_norm 無 estimator、不需 CV(引擎直接算 norm);centroid / lda 會 fit、進 CV。
+    Args:
+        method: l2_norm | centroid_dist | lda_projection
+
+    Returns:
+        (estimator, score_method, needs_cv)。l2_norm 無 estimator、不需 CV
+        (引擎直接算 norm);centroid_dist / lda_projection 會 fit、需進 CV。
     """
     if method == "l2_norm":
         return None, None, False
