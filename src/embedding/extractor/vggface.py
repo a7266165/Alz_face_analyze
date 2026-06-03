@@ -1,7 +1,5 @@
 """
-VGGFace 特徵提取器
-
-使用 DeepFace 提取 4096 維人臉特徵
+VGGFace 特徵提取器（DeepFace VGG-Face，輸出 4096 維）。
 """
 
 from typing import Optional
@@ -15,9 +13,7 @@ logger = logging.getLogger(__name__)
 
 class VGGFaceExtractor(EmbeddingExtractor):
     """
-    VGGFace 特徵提取器
-
-    使用 DeepFace 的 VGG-Face 模型提取 4096 維特徵
+    VGGFace 4096 維人臉特徵提取器
     """
 
     def __init__(self):
@@ -34,33 +30,45 @@ class VGGFaceExtractor(EmbeddingExtractor):
     def is_available(self) -> bool:
         try:
             from deepface import DeepFace  # noqa: F401
+
             return True
         except ImportError:
             logger.debug("deepface 未安裝")
             return False
 
     def initialize(self) -> None:
-        """載入 DeepFace VGG-Face。以一張空白影像做自我測試 + warm-up（首次會自動下載權重）。"""
+        """載入 DeepFace VGG-Face 模型，並以空圖預熱一次。"""
         if self._deepface is not None:
             return
         from deepface import DeepFace
-        # DeepFace 第一個參數雖名為 img_path，但也接受 BGR numpy array，
-        # 直接傳空白影像即可觸發下載與 warm-up，免暫存檔。
+
+        # 預熱模型
         test_img = np.zeros((224, 224, 3), dtype=np.uint8)
         DeepFace.represent(
-            test_img, model_name='VGG-Face', enforce_detection=False,
+            test_img,
+            model_name="VGG-Face",
+            enforce_detection=False,
         )
         self._deepface = DeepFace
 
     def extract(self, image: np.ndarray) -> Optional[np.ndarray]:
-        """提取 VGGFace 特徵 (4096維)。接受 BGR numpy array。"""
-        # DeepFace 第一個參數（img_path）也接受 BGR numpy array，直接傳。
+        """
+        提取 VGGFace 特徵 (4096維)
+
+        Args:
+            image: BGR 格式的影像
+
+        Returns:
+            4096 維特徵向量
+        """
         result = self._deepface.represent(
-            image, model_name='VGG-Face', enforce_detection=False,
+            image,
+            model_name="VGG-Face",
+            enforce_detection=False,
         )
 
         if result and len(result) > 0:
-            embedding = np.array(result[0]['embedding'], dtype=np.float32)
+            embedding = np.array(result[0]["embedding"], dtype=np.float32)
             return embedding
 
         return None

@@ -1,7 +1,5 @@
 """
-Dlib 特徵提取器
-
-提取 128 維人臉特徵
+Dlib 特徵提取器（ResNet 人臉辨識模型，輸出 128 維）。
 """
 
 from typing import Optional
@@ -16,9 +14,7 @@ logger = logging.getLogger(__name__)
 
 class DlibExtractor(EmbeddingExtractor):
     """
-    Dlib 特徵提取器
-
-    使用 dlib 的 ResNet 模型提取 128 維人臉特徵
+    Dlib 128 維人臉特徵提取器
     """
 
     # 模型檔案（external/embedding/dlib/ 下）
@@ -46,14 +42,16 @@ class DlibExtractor(EmbeddingExtractor):
             logger.debug("Dlib 未安裝")
             return False
         dlib_dir = EXTERNAL_DIR / "embedding" / "dlib"
-        return ((dlib_dir / self._PREDICTOR_FILE).exists()
-                and (dlib_dir / self._FACE_REC_FILE).exists())
+        return (dlib_dir / self._PREDICTOR_FILE).exists() and (
+            dlib_dir / self._FACE_REC_FILE
+        ).exists()
 
     def initialize(self) -> None:
         """載入 Dlib 偵測器 + 68 landmark + ResNet 人臉辨識模型。"""
         if self._face_rec is not None:
             return
         import dlib
+
         self._dlib = dlib
         self._detector = dlib.get_frontal_face_detector()
 

@@ -1,7 +1,5 @@
 """
-ArcFace 特徵提取器
-
-使用 InsightFace 提取 512 維人臉特徵
+ArcFace 特徵提取器（InsightFace buffalo_l，輸出 512 維）。
 """
 
 from typing import Optional
@@ -15,9 +13,7 @@ logger = logging.getLogger(__name__)
 
 class ArcFaceExtractor(EmbeddingExtractor):
     """
-    ArcFace 特徵提取器
-
-    使用 InsightFace 的 buffalo_l 模型提取 512 維特徵
+    ArcFace 512 維人臉特徵提取器
     """
 
     def __init__(self):
@@ -34,19 +30,21 @@ class ArcFaceExtractor(EmbeddingExtractor):
     def is_available(self) -> bool:
         try:
             import insightface  # noqa: F401
+
             return True
         except ImportError:
             logger.debug("InsightFace 未安裝")
             return False
 
     def initialize(self) -> None:
-        """載入 ArcFace（buffalo_l，首次會自動下載模型）。"""
+        """載入 InsightFace FaceAnalysis（buffalo_l 偵測器 + ArcFace 辨識模型）。"""
         if self._app is not None:
             return
         from insightface.app import FaceAnalysis
+
         app = FaceAnalysis(
-            name='buffalo_l',
-            providers=['CUDAExecutionProvider', 'CPUExecutionProvider']
+            name="buffalo_l",
+            providers=["CUDAExecutionProvider", "CPUExecutionProvider"],
         )
         app.prepare(ctx_id=0, det_size=(640, 640))
         self._app = app
@@ -71,8 +69,11 @@ class ArcFaceExtractor(EmbeddingExtractor):
             logger.debug("ArcFace 未檢測到人臉，使用整張圖")
 
             img_resized = cv2.resize(image_rgb, (112, 112))
-            img_input = (np.transpose(img_resized, (2, 0, 1))[np.newaxis, ...].astype(np.float32) - 127.5) / 127.5
-            embedding = self._app.models['recognition'].forward(img_input)
+            img_input = (
+                np.transpose(img_resized, (2, 0, 1))[np.newaxis, ...].astype(np.float32)
+                - 127.5
+            ) / 127.5
+            embedding = self._app.models["recognition"].forward(img_input)
             return embedding.flatten().astype(np.float32)
 
         return faces[0].embedding.astype(np.float32)
