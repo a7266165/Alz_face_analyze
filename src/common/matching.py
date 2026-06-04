@@ -1,88 +1,126 @@
-"""配對模組：match_by_age（按組別、以年齡配對）和 match_by_score（按問卷分數配對）
-兩個主入口，皆吃 cohort spec、回 (case_ids, control_ids) 兩個 ID list。"""
+"""配對模組：三層職責
+
+  切兩臂   split_by_group / split_by_score  —— 把 cohort 標成 high/low 兩族群
+  年齡配對 age_match                        —— 把兩臂按年齡 1:1(或 1toN)配對(group-blind)
+  常用食譜 match_by_age / match_by_score     —— 4-token cohort spec 一步到位(= 切 + 配)
+
+底層配對引擎只有一個(_age_match_1_by_1);match_by_age 與 match_by_score 是
+「切兩臂 + age_match」的兄弟捷徑,差別只在「按組別切」還是「按分數切」。
+"""
 import numpy as np
 import pandas as pd
 
 from src.common.cohort import base_id_of, cohort_list
 
-__all__ = ["match_by_age", "match_by_score"]
+__all__ = ["split_by_group", "split_by_score", "age_match",
+           "match_by_age", "match_by_score"]
 
 
-# ── 主入口 1：按組別、以年齡配對 ───────────────────────────────────────────────
+# ── 切兩臂：把 cohort 標成 'arm' = high / low ─────────────────────────────────────
 
-def match_by_age(p_visit, p_score, hc_visit, hc_score, *,
-                 controls=None, caliper=1.0, priority=None, level="subject",
-                 mode="1to1", keep_groups=None, ttest_threshold=0.05):
-    """載入 cohort(spec) 做 AD(P) vs 對照組年齡配對，回 (p_ids, hc_ids)。
+def split_by_group(df, case="P", control=None):
+    """按 Group 把 df 切兩臂：case 列標 'high'、control 列標 'low'。
 
-    controls 選對照臂（None=全部非 P / ["NAD"] / ["ACS"]）；mode="1to1" 成對
-    （兩 list 等長、index 對齊），"1toN" 做 caliper 平衡擴充（兩 list 不等長；
-    keep_groups / ttest_threshold 為其參數）。
+    control=None 表示「所有非 case」皆為 control；給清單則只留 case∪control、其餘丟掉。
+    case / control 可為單一字串或字串清單。回傳新增 'arm' 欄的 df 副本。
     """
-    prep = cohort_list(p_visit, p_score, hc_visit, hc_score).copy()
-    prep["base_id"] = prep["ID"].map(base_id_of)  # ID 去 -session 尾，供 subject-level 去重
-    if controls is not None:
-        prep = prep[prep["Group"].isin(["P", *controls])].copy()
-    prep["label"] = (prep["Group"] == "P").astype(int)
-    prep["mmse_group"] = np.where(prep["label"] == 1, "high", "low")
-    prep["MMSE"] = prep["MMSE"].fillna(999)
+    cases = [case] if isinstance(case, str) else list(case)
+    df = df.copy()
+    is_case = df["Group"].isin(cases)
+    if control is not None:
+        ctrls = [control] if isinstance(control, str) else list(control)
+        df = df[is_case | df["Group"].isin(ctrls)].copy()
+        is_case = df["Group"].isin(cases)
+    df["arm"] = np.where(is_case, "high", "low")
+    return df
+
+
+def split_by_score(df, questionnaire, threshold="median"):
+    """按問卷分數把 df 切兩臂。
+
+    首先丟棄缺少問卷評分的個案，接著以剩餘個案的分數中位數(或給定 threshold)
+    區分高/低分：分數 >= 門檻標 'high'、否則 'low'。回傳新增 'arm' 欄的 df 副本。
+    """
+    s = pd.to_numeric(df[questionnaire], errors="coerce")
+    out = df[s.notna()].copy()
+    s = pd.to_numeric(out[questionnaire], errors="coerce")
+    thr = float(s.median()) if threshold == "median" else float(threshold)
+    out["arm"] = np.where(s >= thr, "high", "low")
+    return out
+
+
+# ── 年齡配對：把已切好的 'arm'(high/low)兩臂按年齡配對(group-blind)──────────────
+
+def age_match(df, *, caliper=1.0, priority=None, level="subject",
+              mode="1to1", keep_groups=None, ttest_threshold=0.05):
+    """把 df 的 'arm'(high/low)兩臂按年齡配對，回 (high_ids, low_ids)。
+
+    泛用配對器，不認得 Group——切兩臂的責任在 split_by_group / split_by_score。
+    priority 是「先配哪些列」的旋鈕(讀 df 的 'Group' 欄,不傳則不啟用);mode="1to1"
+    兩 list 等長且 index 對齊，"1toN" 做 caliper 平衡擴充(keep_groups / ttest_threshold
+    為其參數);level="subject" 每人去重、"visit" 每次拜訪獨立。
+    """
+    df = df.copy()
+    if "base_id" not in df.columns:
+        df["base_id"] = df["ID"].map(base_id_of)  # ID 去 -session 尾，供 subject-level 去重
+
     matched, _, _ = _age_match_1_by_1(
-        prep, caliper=caliper, metric="MMSE",
-        group_col="mmse_group", priority_groups=priority,
-        match_level=level,
+        df, caliper=caliper, metric=None,
+        group_col="arm", priority_groups=priority, match_level=level,
     )
 
     if mode == "1toN":
+        df["label"] = (df["arm"] == "high").astype(int)
         out = matched.merge(
-            prep[["ID", "base_id", "Group", "Age", "MMSE", "Global_CDR",
-                  "label"]].drop_duplicates("ID"),
+            df[["ID", "base_id", "Group", "Age", "MMSE", "Global_CDR",
+                "label"]].drop_duplicates("ID"),
             on="ID", how="left", suffixes=("", "_p"),
         )
         out = out.drop(columns=[c for c in out.columns if c.endswith("_p")])
         expanded, _ = _age_match_1_by_n(
-            prep, out, keep_groups=keep_groups, caliper=caliper,
+            df, out, keep_groups=keep_groups, caliper=caliper,
             ttest_threshold=ttest_threshold)
-        rep = (prep.sort_values(["base_id", "Age"])
+        rep = (df.sort_values(["base_id", "Age"])
                .drop_duplicates("base_id")[["base_id", "ID"]])
         exp = expanded.merge(rep, on="base_id", how="left")
-        p_ids = exp[exp["label"] == 1]["ID"].tolist()
-        hc_ids = exp[exp["label"] == 0]["ID"].tolist()
+        high_ids = exp[exp["label"] == 1]["ID"].tolist()
+        low_ids = exp[exp["label"] == 0]["ID"].tolist()
     else:
-        lab = prep[["ID", "label"]].drop_duplicates("ID")
-        m = matched.merge(lab, on="ID", how="left")
-        p_ids = m[m["label"] == 1].sort_values("pair_id")["ID"].tolist()
-        hc_ids = m[m["label"] == 0].sort_values("pair_id")["ID"].tolist()
+        high_ids = matched[matched["arm"] == "high"].sort_values("pair_id")["ID"].tolist()
+        low_ids = matched[matched["arm"] == "low"].sort_values("pair_id")["ID"].tolist()
 
-    return p_ids, hc_ids
+    return high_ids, low_ids
 
 
-# ── 主入口 2：按問卷分數配對 ───────────────────────────────────────────────────
+# ── 常用食譜：4-token cohort spec 一步到位(= 切兩臂 + age_match)────────────────────
+
+def match_by_age(p_visit, p_score, hc_visit, hc_score, *,
+                 controls=None, caliper=1.0, priority=None, level="subject",
+                 mode="1to1", keep_groups=None, ttest_threshold=0.05):
+    """AD(P) vs 對照組年齡配對，回 (p_ids, hc_ids)。= split_by_group(P) + age_match。
+
+    controls 選對照臂(None=全部非 P / ["NAD"] / ["ACS"]);priority 例如 ["ACS"]
+    讓稀少對照先配;mode / keep_groups / ttest_threshold / level 透傳給 age_match。
+    """
+    df = split_by_group(cohort_list(p_visit, p_score, hc_visit, hc_score),
+                        case="P", control=controls)
+    return age_match(df, caliper=caliper, priority=priority, level=level,
+                     mode=mode, keep_groups=keep_groups,
+                     ttest_threshold=ttest_threshold)
+
 
 def match_by_score(p_visit, p_score, hc_visit, hc_score,
                    within, questionnaire, threshold,
                    *, caliper=1.0, level="subject"):
-    """載入 cohort(spec)、篩到 within 組，按 questionnaire 的 threshold 切 high/low
-    再做年齡配對，回 (high_ids, low_ids)。
+    """within 組內按 questionnaire 切 high/low 再年齡配對，回 (high_ids, low_ids)。
+    = split_by_score + age_match。
 
-    within ∈ {P, NAD, ACS}；questionnaire ∈ {MMSE, CASI, Global_CDR …}；
-    threshold="median"（組內中位數）或給數值。
+    within ∈ {P, NAD, ACS};questionnaire ∈ {MMSE, CASI, Global_CDR …};
+    threshold="median"(組內中位數)或給數值。
     """
-    prep = cohort_list(p_visit, p_score, hc_visit, hc_score).copy()
-    prep["base_id"] = prep["ID"].map(base_id_of)  # ID 去 -session 尾，供 subject-level 去重
-    prep = prep[prep["Group"] == within].copy()                # 篩到 within 指定的組別
-    s = pd.to_numeric(prep[questionnaire], errors="coerce")
-    prep = prep[s.notna()].copy()
-    s = pd.to_numeric(prep[questionnaire], errors="coerce")
-    thr = float(s.median()) if threshold == "median" else float(threshold)
-    prep["score_group"] = np.where(s >= thr, "high", "low")
-    matched, _, _ = _age_match_1_by_1(
-        prep, caliper=caliper, metric=questionnaire,
-        group_col="score_group", match_level=level,
-    )
-    # matched 的 score_group 欄（high/low）由核心輸出，據以分組、按 pair_id 對齊。
-    high_ids = matched[matched["score_group"] == "high"].sort_values("pair_id")["ID"].tolist()
-    low_ids = matched[matched["score_group"] == "low"].sort_values("pair_id")["ID"].tolist()
-    return high_ids, low_ids
+    df = cohort_list(p_visit, p_score, hc_visit, hc_score)
+    df = split_by_score(df[df["Group"] == within], questionnaire, threshold)
+    return age_match(df, caliper=caliper, level=level)
 
 
 # ── 私有核心 ───────────────────────────────────────────────────────────────────
