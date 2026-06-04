@@ -22,8 +22,8 @@ Alz_face_analyze/
 │   ├── utilities/                    # cohort / feature_loaders / stats_helpers / emotion_loader
 │   ├── preprocess/                   # run_preprocess.py（raw→aligned+mirror）
 │   ├── age/                          # predict_ages, run_classifiers, run_window_classifier, plot_*
-│   ├── asymmetry/                    # extract_landmarks, run_analysis
-│   ├── embedding/                    # extract / run_fwd_rev / run_sweep / plot_*
+│   ├── asymmetry/                    # extract_landmarks
+│   ├── embedding/                    # extract_features / classification/ / evaluate/
 │   ├── emo_au/                       # extract_au, plot_emotion_comparison, plot_valence_arousal
 │   ├── longitudinal/                 # build_dataset, build_hc_and_vectors
 │   ├── rotation/                     # process_angle
