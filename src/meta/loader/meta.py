@@ -271,26 +271,34 @@ class MetaDataLoader:
             rows.append({"subject_id": sid, **dict(zip(self.emotion_columns, mean_vec))})
         return pd.DataFrame(rows)
 
-    def _load_age_data(self) -> pd.DataFrame:
-        from src.common.legacy.eacs import load_combined_demographics_with_eacs
-        demo = load_combined_demographics_with_eacs(self.hc_source_mode)
-        demo = demo.rename(columns={"ID": "subject_id", "Age": "real_age"})
-        demo["real_age"] = pd.to_numeric(demo["real_age"], errors="coerce")
+    def _core_demographics(self) -> pd.DataFrame:
+        """P/NAD/ACS demographics keyed by subject_id (session-level ID).
 
+        Replaces the former src/common/legacy/eacs loader. Only the core
+        cohort (hc_source_mode='ACS') is supported; the EACS-extended HC
+        modes were removed together with legacy/eacs.py.
+        """
+        if self.hc_source_mode != "ACS":
+            raise NotImplementedError(
+                f"hc_source_mode={self.hc_source_mode!r} (EACS extension) was "
+                "removed with src/common/legacy/eacs.py; only 'ACS' is supported.")
+        from src.common.cohort import load_demographics
+        return load_demographics().rename(columns={"ID": "subject_id"})
+
+    def _load_age_data(self) -> pd.DataFrame:
+        from src.age.utils import load_predicted_ages
         if not self.predicted_ages_file.exists():
             raise FileNotFoundError(f"找不到預測年齡檔案: {self.predicted_ages_file}")
-        with open(self.predicted_ages_file, "r") as f:
-            predicted_ages = json.load(f)
-
-        demo["predicted_age"] = demo["subject_id"].map(predicted_ages)
+        demo = self._core_demographics().rename(columns={"Age": "real_age"})
+        demo["real_age"] = pd.to_numeric(demo["real_age"], errors="coerce")
+        preds = load_predicted_ages(self.predicted_ages_file)
+        demo["predicted_age"] = demo["subject_id"].map(preds)
         demo = demo.dropna(subset=["real_age", "predicted_age"])
         demo["age_error"] = demo["real_age"] - demo["predicted_age"]
         return demo[["subject_id", "real_age", "age_error"]]
 
     def _load_bmi_data(self) -> pd.DataFrame:
-        from src.common.legacy.eacs import load_combined_demographics_with_eacs
-        demo = load_combined_demographics_with_eacs(self.hc_source_mode)
-        demo = demo.rename(columns={"ID": "subject_id", "BMI": "bmi"})
+        demo = self._core_demographics().rename(columns={"BMI": "bmi"})
         demo["bmi"] = pd.to_numeric(demo["bmi"], errors="coerce")
         demo = demo.dropna(subset=["bmi"])
         return demo[["subject_id", "bmi"]].drop_duplicates("subject_id")
