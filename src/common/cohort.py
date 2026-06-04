@@ -48,6 +48,24 @@ def load_demographics(groups=("P", "NAD", "ACS")):
     return demo
 
 
+# ── ID 工具:全庫「ID ↔ subject ↔ group」的單一真實來源 ──────────────────────────
+# 上面 load_demographics 構造 base_id = Group+Number、ID = base_id+"-"+session,
+# 以下兩個 helper 是其逆運算,供任何只有 ID 字串的下游(train OOF 分組 / 評估配對 …)取用。
+
+def base_id_of(id_str) -> str:
+    """ID(含 -session 尾)→ base_id(Group+Number),如 'ACS1-1' → 'ACS1'。
+
+    ID = base_id + '-' + Photo_Session 的逆運算:去掉最後一段 -<session>。
+    已是 base_id(無 -session 尾)則原樣回傳。
+    """
+    return str(id_str).rsplit("-", 1)[0]
+
+
+def group_of(base_id) -> str:
+    """base_id(如 NAD1)→ Group(NAD):去掉尾端數字編號。"""
+    return str(base_id).rstrip("0123456789")
+
+
 def p_filter(df, p_score):
     """P 側 CDR 門檻：p_cdrall 不篩；p_cdr05/1/2 = Global_CDR >= 0.5/1/2。"""
     if p_score == "p_cdrall":

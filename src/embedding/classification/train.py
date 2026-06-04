@@ -1,28 +1,23 @@
 """
 訓練流程
 """
-import re
-
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import GroupKFold
 
+from src.common.cohort import base_id_of
 from src.common.matching import match_by_age
 
 _DEFAULT_MS = ("no_priority", "priority_acs", "priority_nad")
 _MS_PRIORITY = {"no_priority": None, "priority_acs": ["ACS"], "priority_nad": ["NAD"]}
-_BASE_ID_RE = re.compile(r"^([A-Za-z]+\d+)")
 
 
 # ----------------------------------------------------------------------------
 # 共用小工具(私有,只服務 OOF)
 # ----------------------------------------------------------------------------
 def _subject_of(ids) -> np.ndarray:
-    """ID → subject base_id，如 'ACS1-1' → 'ACS1'。"""
-    def bid(i):
-        m = _BASE_ID_RE.match(str(i))
-        return m.group(1) if m else str(i)
-    return np.array([bid(i) for i in ids], dtype=object)
+    """ID → subject base_id，如 'ACS1-1' → 'ACS1'(GroupKFold 分組用)。"""
+    return np.array([base_id_of(i) for i in ids], dtype=object)
 
 
 def _score(est, X, score_method: str) -> np.ndarray:

@@ -3,7 +3,7 @@
 import numpy as np
 import pandas as pd
 
-from src.common.cohort import cohort_list
+from src.common.cohort import base_id_of, cohort_list
 
 __all__ = ["match_by_age", "match_by_score"]
 
@@ -20,7 +20,7 @@ def match_by_age(p_visit, p_score, hc_visit, hc_score, *,
     keep_groups / ttest_threshold 為其參數）。
     """
     prep = cohort_list(p_visit, p_score, hc_visit, hc_score).copy()
-    prep["base_id"] = prep["ID"].str.extract(r"^(.+)-\d+$")[0]  # ID 去 -session 尾，供 subject-level 去重
+    prep["base_id"] = prep["ID"].map(base_id_of)  # ID 去 -session 尾，供 subject-level 去重
     if controls is not None:
         prep = prep[prep["Group"].isin(["P", *controls])].copy()
     prep["label"] = (prep["Group"] == "P").astype(int)
@@ -68,7 +68,7 @@ def match_by_score(p_visit, p_score, hc_visit, hc_score,
     threshold="median"（組內中位數）或給數值。
     """
     prep = cohort_list(p_visit, p_score, hc_visit, hc_score).copy()
-    prep["base_id"] = prep["ID"].str.extract(r"^(.+)-\d+$")[0]  # ID 去 -session 尾，供 subject-level 去重
+    prep["base_id"] = prep["ID"].map(base_id_of)  # ID 去 -session 尾，供 subject-level 去重
     prep = prep[prep["Group"] == within].copy()                # 篩到 within 指定的組別
     s = pd.to_numeric(prep[questionnaire], errors="coerce")
     prep = prep[s.notna()].copy()
