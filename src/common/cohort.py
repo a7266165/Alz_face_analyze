@@ -18,16 +18,7 @@ Global_CDR    臨床失智評分。
 """
 import pandas as pd
 
-from src.config import (
-    HOSPITAL_A_CSV,
-    P_VISIT_TOKENS, P_SCORE_TOKENS, HC_VISIT_TOKENS, HC_SCORE_TOKENS,
-)
-
-# 字彙的單一真相在 config(同時供 CLI choices / 路徑 helper 用),這裡只是別名。
-P_VISIT = set(P_VISIT_TOKENS)
-P_SCORE = set(P_SCORE_TOKENS)
-HC_VISIT = set(HC_VISIT_TOKENS)
-HC_SCORE = set(HC_SCORE_TOKENS)
+from src.config import HOSPITAL_A_CSV, validate_cohort_tokens
 
 _OUTPUT_COLS = ["ID", "Group", "Number", "Photo_Session", "Age", "MMSE",
                 "CASI", "Global_CDR"]
@@ -48,10 +39,7 @@ def load_demographics(groups=("P", "NAD", "ACS")):
     return demo
 
 
-# ── ID 工具:全庫「ID ↔ subject ↔ group」的單一真實來源 ──────────────────────────
-# 上面 load_demographics 構造 base_id = Group+Number、ID = base_id+"-"+session,
-# 以下兩個 helper 是其逆運算,供任何只有 ID 字串的下游(train OOF 分組 / 評估配對 …)取用。
-
+# ID 切分工具
 def base_id_of(id_str) -> str:
     """ID(含 -session 尾)→ base_id(Group+Number),如 'ACS1-1' → 'ACS1'。
 
@@ -65,7 +53,7 @@ def group_of(base_id) -> str:
     """base_id(如 NAD1)→ Group(NAD):去掉尾端數字編號。"""
     return str(base_id).rstrip("0123456789")
 
-
+# 個案篩選工具
 def p_filter(df, p_score):
     """P 側 CDR 門檻：p_cdrall 不篩；p_cdr05/1/2 = Global_CDR >= 0.5/1/2。"""
     if p_score == "p_cdrall":
@@ -91,7 +79,7 @@ def visit_selection(df, visit):
         return df.groupby("base_id", as_index=False).first()
     return df.reset_index(drop=True)
 
-
+# 主入口
 def cohort_list(p_visit, p_score, hc_visit, hc_score):
     """挑選 AD-vs-HC 族群，回傳 8 欄未配對名單。
 
@@ -102,11 +90,7 @@ def cohort_list(p_visit, p_score, hc_visit, hc_score):
 
     回傳欄位：ID, Group, Number, Photo_Session, Age, MMSE, CASI, Global_CDR。
     """
-    for v, vocab in [(p_visit, P_VISIT), (p_score, P_SCORE),
-                     (hc_visit, HC_VISIT), (hc_score, HC_SCORE)]:
-        if v not in vocab:
-            raise ValueError(
-                f"invalid token {v!r}; expected one of {sorted(vocab)}")
+    validate_cohort_tokens(p_visit, p_score, hc_visit, hc_score)
 
     demo = load_demographics()
     demo = demo[demo["Age"].notna()].copy()
