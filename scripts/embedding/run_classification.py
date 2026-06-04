@@ -3,7 +3,7 @@ Embedding 下游 classification producer(重構版)—— **只產 OOF 分數,�
 
 流程(每個 cell):
   build cohort(ID+label)→ load_feature_matrix → _build_estimator(model, reducer)
-  → train(X, ids, y, build_est, ..., direction)  → oof
+  → train(X, ids, y, build_estimator, ..., direction)  → oof
   → report(oof, out_dir, direction)               → 寫 oof_scores.csv
       forward:full cohort OOF → oof_scores.csv
       reverse:每 match_strategy 的 matched OOF + external ensemble → <ms>/oof_scores.csv
@@ -139,7 +139,7 @@ def run_cell(cohort, bg_mode, embedding, variant, photo_mode, reducer,
 
     # estimator factory(每折要全新 estimator,故傳 0-arg factory)
     _, score_method, needs_cv = _build_estimator(model, ep)
-    build_est = lambda: _build_estimator(model, ep)[0]
+    build_estimator = lambda: _build_estimator(model, ep)[0]
 
     # 路徑:forward l2 無 fwd/rev 段、其餘 fwd;reverse 一律 rev。
     dir_seg = ("rev" if direction == "reverse"
@@ -151,7 +151,7 @@ def run_cell(cohort, bg_mode, embedding, variant, photo_mode, reducer,
         clf=model, clf_param=clf_param, direction=dir_seg, root=root)
 
     # train → 只產 OOF;report → 只把 OOF 落地成 oof_scores.csv(評估是獨立下游步驟)。
-    oof = train(X_full, ids_full, y_full, build_est, score_method, needs_cv, direction,
+    oof = train(X_full, ids_full, y_full, build_estimator, score_method, needs_cv, direction,
                 cohort=cohort, match_strategies=match_strategies)
     paths = report(oof, out_dir, direction)
     logger.info(f"  [{direction}] wrote {len(paths)} oof_scores.csv")
