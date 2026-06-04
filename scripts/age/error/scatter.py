@@ -55,8 +55,7 @@ def _draw_panel(ax, df, title, colors, labels):
                    c=color, label=labels.get(grp, grp),
                    alpha=0.6, s=30, edgecolors="white", linewidth=0.3)
 
-    age_min = min(df["real_age"].min(), df["predicted_age"].min()) - 5
-    age_max = max(df["real_age"].max(), df["predicted_age"].max()) + 5
+    age_min, age_max = 25, 110  # fixed axis for cross-cohort/version comparability
     ax.plot([age_min, age_max], [age_min, age_max],
             "k--", alpha=0.5, linewidth=1, label="y = x")
 
@@ -132,7 +131,7 @@ def main():
     full["group"] = full["Group"]
     full["real_age"] = full["Age"]
     full["predicted_age"] = full["real_age"] - full["age_error"]
-    p_ids, hc_ids = match_by_age(*cohort)
+    p_ids, hc_ids = match_by_age(*cohort, priority=["ACS"])  # ACS-first: rare ACS controls matched first
     matched = full[full["ID"].isin(set(p_ids) | set(hc_ids))].reset_index(drop=True)
     logger.info(f"full={len(full)} ({full['group'].value_counts().to_dict()}), "
                 f"1by1matched={len(matched)} "

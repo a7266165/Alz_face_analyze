@@ -244,7 +244,7 @@ def main():
     full["group"] = full["Group"]
     full["real_age"] = full["Age"]
     full["predicted_age"] = full["real_age"] - full["age_error"]
-    p_ids, hc_ids = match_by_age(*cohort)
+    p_ids, hc_ids = match_by_age(*cohort, priority=["ACS"])  # ACS-first: rare ACS controls matched first
     matched = full[full["ID"].isin(set(p_ids) | set(hc_ids))].reset_index(drop=True)
     logger.info(f"full={len(full)} ({full['group'].value_counts().to_dict()}), "
                 f"1by1matched={len(matched)} "

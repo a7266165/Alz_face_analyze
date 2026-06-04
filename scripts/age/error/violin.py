@@ -4,8 +4,15 @@ Age prediction error violin plots — full cohort and 1:1 age-matched comparison
 
 Cohort is built with the canonical ``src.common.cohort.cohort_list`` (same
 gold-standard filtering as histogram / stat / lines). Comparisons:
-  AD vs HC / NAD / ACS      — group matching      (canonical match_by_age)
+  AD vs HC / NAD / ACS      — slices of ONE ACS-first match (see note below)
   MMSE / CASI high vs low   — score-median match  (canonical match_by_score)
+
+The three AD-vs-{HC,NAD,ACS} matched arms are subsets of a *single* ACS-first
+AD-vs-HC match (``priority=["ACS"]``): the rare ACS controls are matched first,
+the remainder against NAD. NAD/ACS comparisons are then just the NAD-paired /
+ACS-paired slices of that one match, so they stay consistent with ad_vs_hc and
+with scatter/lines/stat (HC = NAD ∪ ACS, e.g. 412 = 382 NAD + 30 ACS) rather
+than being an independent re-match (which over-counts NAD, e.g. 404).
 
 Each comparison outputs both the full cohort and the 1:1 age-matched subset:
   violin/full/{comparison}/...
@@ -37,7 +44,8 @@ from src.config import (
 )
 from src.common.cohort import cohort_list
 from src.age.utils import load_age_error
-from src.common.matching import match_by_age, match_by_score
+from src.common.matching import (match_by_age, match_by_score,
+                                 split_by_group, split_by_score)
 
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s - %(levelname)s - %(message)s")
@@ -61,6 +69,7 @@ def _draw_violin(ax, left_vals, right_vals, left_label, right_label,
     ax.set_ylabel("Age error (real - predicted)")
     ax.set_title(title)
     ax.axhline(0, color="gray", linestyle="--", linewidth=0.8)
+    ax.set_ylim(-35, 35)  # fixed axis for cross-cohort/version comparability
 
 
 def save_violin(left_vals, right_vals, left_label, right_label, title, out_path):
@@ -75,35 +84,39 @@ def save_violin(left_vals, right_vals, left_label, right_label, title, out_path)
 # ── comparison runners ───────────────────────────────────────────────────────
 
 def run_hc_comparison(df_all, tokens, comparison, output_dir, caliper=1.0):
-    """AD vs {HC, NAD, ACS} violin — full cohort + 1:1 age-matched (match_by_age).
+    """AD vs {HC, NAD, ACS} violin — full cohort + 1:1 age-matched.
 
-    ``controls`` 餵給 canonical match_by_age：None → 全部非 P（NAD+ACS）；指定
-    組則只取該組當對照。
+    The matched arm is a *slice* of ONE ACS-first global AD-vs-HC match
+    (``priority=["ACS"]``): ACS controls match first, the rest against NAD. The
+    NAD / ACS comparisons are then the NAD-paired / ACS-paired slices of that
+    single match — so they stay consistent with ad_vs_hc and scatter/lines/stat
+    (HC = NAD ∪ ACS) instead of being an independent re-match.
     """
-    cmp_map = {
-        "ad_vs_hc": (None, ["NAD", "ACS"], "HC"),
-        "ad_vs_nad": (["NAD"], ["NAD"], "NAD"),
-        "ad_vs_acs": (["ACS"], ["ACS"], "ACS"),
-    }
-    controls, hc_groups, label = cmp_map[comparison]
+    hc_subgroups, label = {
+        "ad_vs_hc":  ({"NAD", "ACS"}, "HC"),
+        "ad_vs_nad": ({"NAD"},        "NAD"),
+        "ad_vs_acs": ({"ACS"},        "ACS"),
+    }[comparison]
 
-    # full (unmatched)
-    df_hc = df_all[df_all["group"].isin(hc_groups)]
-    df_ad = df_all[df_all["group"] == "P"]
-    hc_err = df_hc["age_error"].dropna().values
-    ad_err = df_ad["age_error"].dropna().values
+    # full (unmatched) — split AD(P) vs this comparison's control group(s)
+    df_split = split_by_group(df_all, "P", control=list(hc_subgroups))
+    ad_err = df_split[df_split["arm"] == "high"]["age_error"].dropna().values
+    hc_err = df_split[df_split["arm"] == "low"]["age_error"].dropna().values
     if len(hc_err) > 0 and len(ad_err) > 0:
         save_violin(hc_err, ad_err, label, "AD",
                     f"Age prediction error: {label} vs AD (full)",
                     output_dir / "full" / comparison / "violin.png")
 
-    # 1:1 age-matched (canonical match_by_age)
-    p_ids, hc_ids = match_by_age(*tokens, controls=controls, caliper=caliper)
-    msub = df_all[df_all["ID"].isin(set(p_ids) | set(hc_ids))].reset_index(drop=True)
-    m_hc = msub[msub["group"] != "P"]
-    m_ad = msub[msub["group"] == "P"]
-    if not m_hc.empty and not m_ad.empty:
-        save_violin(m_hc["age_error"].values, m_ad["age_error"].values, label, "AD",
+    # 1:1 age-matched — slice the single ACS-first global match by HC subgroup
+    group_of = cohort_list(*tokens).set_index("ID")["Group"]
+    p_ids, hc_ids = match_by_age(*tokens, priority=["ACS"], caliper=caliper)
+    keep_hc = [h for h in hc_ids if group_of.get(h) in hc_subgroups]
+    keep_p = [p for p, h in zip(p_ids, hc_ids) if group_of.get(h) in hc_subgroups]
+    msub = df_all[df_all["ID"].isin(set(keep_p) | set(keep_hc))]
+    m_hc = msub[msub["group"].isin(hc_subgroups)]["age_error"].dropna().values
+    m_ad = msub[msub["group"] == "P"]["age_error"].dropna().values
+    if len(m_hc) > 0 and len(m_ad) > 0:
+        save_violin(m_hc, m_ad, label, "AD",
                     f"Age prediction error: {label} vs AD\n"
                     f"(age-matched 1:1, caliper={caliper}y)",
                     output_dir / "1by1matched" / comparison / "violin.png")
@@ -118,14 +131,13 @@ def run_hilo_comparison(df_all, tokens, metric, output_dir, caliper=1.0):
     comparison = f"{metric.lower()}_high_vs_low"
 
     for grp, grp_label in [("P", "ad"), ("NAD", "nad")]:
-        df_grp = df_all[df_all["group"] == grp].copy()
-        df_grp[metric] = pd.to_numeric(df_grp[metric], errors="coerce")
-        df_valid = df_grp.dropna(subset=[metric, "age_error"])
-        if df_valid.empty:
+        df_grp = df_all[df_all["group"] == grp].dropna(subset=["age_error"])
+        df_split = split_by_score(df_grp, metric)  # 第二切：組內按分數中位數標 high/low
+        if df_split.empty:
             continue
-        median_val = df_valid[metric].median()
-        df_high = df_valid[df_valid[metric] >= median_val]
-        df_low = df_valid[df_valid[metric] < median_val]
+        median_val = pd.to_numeric(df_split[metric], errors="coerce").median()
+        df_high = df_split[df_split["arm"] == "high"]
+        df_low = df_split[df_split["arm"] == "low"]
 
         # full (unmatched)
         if not df_high.empty and not df_low.empty:
