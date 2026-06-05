@@ -208,9 +208,9 @@ def _emit_forward(out, scope, *, eval_unit, contrast, matched_by,
     _emit(out, scope, scope["y_true"], direction="forward",
           matched_unit=None, matching_priority=None,
           eval_unit=eval_unit, contrast=contrast, domain="all", seed=seed)
+    # visit-match × eval_by_subject 亦保留：visit 層配到的對塌回 subject 層評估
+    # （_join_matched 走 base_id join，每 subject 取其首個 visit-pair 的 label/pair_id）。
     for matched_unit in matched_units:
-        if matched_unit == "visit" and eval_unit == "eval_by_subject":
-            continue
         for mp in matching_priorities:
             matched = _filter_contrast(matched_by[(matched_unit, mp)], contrast)
             sub = _join_matched(scope, matched,
