@@ -223,7 +223,7 @@ def embedding_classification_path(
         p_visit, p_score, hc_visit, hc_score: cohort 4-token(見上方 cohort token 區塊)
         bg_mode: background | no_background
         emb: arcface | topofr | dlib | vggface
-        variant: original | difference | absolute_difference |
+        variant: original | differences | absolute_differences |
                  relative_differences | absolute_relative_differences
         photo_mode: mean | all
         reducer: no_drop | pca/n_components_X | drop_feats/pearson_r_X.X

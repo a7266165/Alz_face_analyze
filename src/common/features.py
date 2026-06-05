@@ -21,7 +21,7 @@ def load_feature_matrix(
     Args:
         ids: 載入清單。
         model: arcface | dlib | topofr | vggface | ...
-        variant: original | difference | absolute_difference |
+        variant: original | differences | absolute_differences |
                  relative_differences | absolute_relative_differences
         bg_mode: background | no_background
         photo_mode: mean | all

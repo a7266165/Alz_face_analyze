@@ -39,13 +39,11 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_MODELS = ["arcface", "dlib", "topofr"]
 
-# mirror ftype → calculate_differences 的 method 名
-FTYPE_TO_METHOD = {
-    "difference": "differences",
-    "absolute_difference": "absolute_differences",
-    "relative_differences": "relative_differences",
-    "absolute_relative_differences": "absolute_relative_differences",
-}
+# mirror ftype 名（== calculate_differences 的 method 名，故 ftype 即 method）
+MIRROR_FTYPES = [
+    "differences", "absolute_differences",
+    "relative_differences", "absolute_relative_differences",
+]
 
 
 def setup_cpu_limit(max_cores: Optional[int]):
@@ -121,7 +119,7 @@ class MirrorSource(FeatureSource):
     """mirrors 左右影像 → 配對算不對稱特徵（5 種），存裸 (n_pairs, dim) 陣列。"""
 
     name = "mirror"
-    ftypes = list(FTYPE_TO_METHOD)
+    ftypes = MIRROR_FTYPES
 
     def input_dir(self, background: bool) -> Path:
         return preprocess_dir("mirrors", background=background)
@@ -164,14 +162,11 @@ class MirrorSource(FeatureSource):
         left_array = np.array([p[0] for p in valid_pairs])
         right_array = np.array([p[1] for p in valid_pairs])
         # calculate_differences 一次算齊所有 method，回傳 {"embedding_<method>": arr}；
-        # 依 ftype→method 取出對應 arr 存裸陣列（與 original 格式一致）。
+        # ftype 即 method，依名取出對應 arr 存裸陣列（與 original 格式一致）。
         results = calculate_differences(
-            left_array, right_array, methods=list(FTYPE_TO_METHOD.values())
+            left_array, right_array, methods=MIRROR_FTYPES
         )
-        return {
-            ftype: results[f"embedding_{method}"]
-            for ftype, method in FTYPE_TO_METHOD.items()
-        }
+        return {ft: results[f"embedding_{ft}"] for ft in MIRROR_FTYPES}
 
 
 SOURCES = {"original": OriginalSource, "mirror": MirrorSource}
