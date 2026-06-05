@@ -43,7 +43,6 @@ DEFAULT_MODELS = ["arcface", "dlib", "topofr"]
 FTYPE_TO_METHOD = {
     "difference": "differences",
     "absolute_difference": "absolute_differences",
-    "average": "averages",
     "relative_differences": "relative_differences",
     "absolute_relative_differences": "absolute_relative_differences",
 }

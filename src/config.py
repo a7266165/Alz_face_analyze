@@ -114,6 +114,11 @@ BMI_ANALYSIS_DIR = BMI_DIR / "analysis"
 EMO_AU_DIR = WORKSPACE_DIR / "emo_au"
 EMO_AU_FEATURES_DIR = EMO_AU_DIR / "features"
 EMO_AU_FEATURES_SCHEMA_FILE = EMO_AU_FEATURES_DIR / "_schema.json"
+
+# Refactor sandbox (2026-06): the rebuilt producer scripts/emo_au/extract.py writes
+# its per-subject npy features + _schema.json here, mirroring the workspace/emo_au/
+# features layout under a separate root → trivial A/B diff (same relative path).
+EMO_AU_FEATURES_REFACTOR_DIR = WORKSPACE_REFACTOR_DIR / "emo_au" / "features"
 EMO_AU_ANALYSIS_DIR = EMO_AU_DIR / "analysis"
 EMO_AU_FEATURE_STAT_DIR = EMO_AU_ANALYSIS_DIR / "feature_stat"
 EMO_AU_CLASSIFICATION_DIR = EMO_AU_ANALYSIS_DIR / "classification"
@@ -216,7 +221,7 @@ def embedding_classification_path(
         p_visit, p_score, hc_visit, hc_score: cohort 4-token(見上方 cohort token 區塊)
         bg_mode: background | no_background
         emb: arcface | topofr | dlib | vggface
-        variant: original | difference | absolute_difference | average |
+        variant: original | difference | absolute_difference |
                  relative_differences | absolute_relative_differences
         photo_mode: mean | all
         reducer: no_drop | pca/n_components_X | drop_feats/pearson_r_X.X

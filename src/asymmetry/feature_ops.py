@@ -28,7 +28,7 @@ def calculate_differences(
         raise ValueError("必須明確指定 methods 參數")
 
     valid_methods = {
-        "differences", "absolute_differences", "averages",
+        "differences", "absolute_differences",
         "relative_differences", "absolute_relative_differences"
     }
     if invalid := set(methods) - valid_methods:
@@ -43,11 +43,6 @@ def calculate_differences(
     if "absolute_differences" in methods:
         abs_diff = np.abs(left_features - right_features)
         results["embedding_absolute_differences"] = abs_diff.astype(np.float32)
-
-    if "averages" in methods:
-        results["embedding_averages"] = (
-            (left_features + right_features) / 2
-        ).astype(np.float32)
 
     if "relative_differences" in methods:
         diff = left_features - right_features

@@ -44,7 +44,7 @@ logger = logging.getLogger("classification_sweep")
 
 # 各軸合法全集(sweep 預設)
 EMBEDDINGS = ["arcface", "topofr", "dlib", "vggface"]
-VARIANTS = ["original", "difference", "absolute_difference", "average",
+VARIANTS = ["original", "difference", "absolute_difference",
             "relative_differences", "absolute_relative_differences"]
 BG_MODES = ["background", "no_background"]
 PHOTO_MODES = ["mean", "all"]

@@ -41,7 +41,7 @@ class DataLoader:
         self.demographics_dir = Path(demographics_dir)
 
         self.embedding_models = embedding_models or ["arcface", "dlib", "topofr"]
-        self.feature_types = feature_types or ["difference", "average", "relative"]
+        self.feature_types = feature_types or ["difference", "relative"]
         self.cdr_thresholds = cdr_thresholds or [0, 0.5, 1.0, 2.0]
         self.data_balancing = data_balancing
         self.use_all_visits = use_all_visits
