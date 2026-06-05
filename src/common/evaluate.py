@@ -182,7 +182,7 @@ def _join_matched(scope, matched, *, matched_unit, eval_unit):
 
 def _emit(out, df, labels, *, direction, matched_unit, matching_priority,
           eval_unit, contrast, domain, seed, paired=False):
-    """計算指標"""
+    """清 NaN label 後算一格指標並 append 到 out;n<5 或單一類別則跳過(paired=True 時加配對 Wilcoxon)。"""
     df = df.reset_index(drop=True)
     labels = pd.Series(np.asarray(labels)).reset_index(drop=True)
     keep = labels.notna()
@@ -202,6 +202,37 @@ def _emit(out, df, labels, *, direction, matched_unit, matching_priority,
     out.append(row)
 
 
+def _emit_forward(out, scope, *, eval_unit, contrast, matched_by,
+                  matched_units, matching_priorities, seed):
+    """forward:先發 'all'(整 scope),再對每個 (matched_unit, priority) 的 1:1 配對發 'paired' 指標。"""
+    _emit(out, scope, scope["y_true"], direction="forward",
+          matched_unit=None, matching_priority=None,
+          eval_unit=eval_unit, contrast=contrast, domain="all", seed=seed)
+    for matched_unit in matched_units:
+        if matched_unit == "visit" and eval_unit == "eval_by_subject":
+            continue
+        for mp in matching_priorities:
+            matched = _filter_contrast(matched_by[(matched_unit, mp)], contrast)
+            sub = _join_matched(scope, matched,
+                                matched_unit=matched_unit, eval_unit=eval_unit)
+            _emit(out, sub, sub["__lab"], direction="forward",
+                  matched_unit=matched_unit, matching_priority=mp,
+                  eval_unit=eval_unit, contrast=contrast,
+                  domain="1by1", seed=seed, paired=True)
+
+
+def _emit_reverse(out, scope, *, eval_unit, contrast, matching_priority_train, seed):
+    """reverse:in-fold(fold>=0)發 '1by1'、out-of-fold(fold==-1)發 'other' 指標。"""
+    m1 = scope[scope["fold"] >= 0]
+    _emit(out, m1, m1["y_true"], direction="reverse",
+          matched_unit=None, matching_priority=matching_priority_train,
+          eval_unit=eval_unit, contrast=contrast, domain="1by1", seed=seed)
+    mo = scope[scope["fold"] == -1]
+    _emit(out, mo, mo["y_true"], direction="reverse",
+          matched_unit=None, matching_priority=matching_priority_train,
+          eval_unit=eval_unit, contrast=contrast, domain="other", seed=seed)
+
+
 # ----------------------------------------------------------------------------
 # 入口
 # ----------------------------------------------------------------------------
@@ -210,8 +241,17 @@ def evaluate(oof_path, cohort, *, direction,
              matched_units=MATCHED_UNITS, matching_priorities=MATCHING_PRIORITIES,
              eval_units=EVAL_UNITS, contrasts=AD_CONTRASTS,
              write=True, out_name="metrics.csv", seed=42):
-    """
-    根據指定組合至對應資料夾讀取 csv 並計算指標儲存。
+    """讀 oof_path 的 OOF 預測，逐 eval_unit × contrast 算分類指標；回 metrics DataFrame。
+
+    Args:
+        oof_path: OOF 預測 csv 路徑（含 ID / y_true / y_score / fold）。
+        cohort: 4-token cohort spec (p_visit, p_score, hc_visit, hc_score)。
+        direction: forward | reverse
+        write: 為真時把結果寫到 oof_path 同目錄的 out_name。
+
+    Returns:
+        指標 DataFrame（每列一個 direction × matched_unit × priority × eval_unit ×
+        contrast × domain 組合）。
     """
     if direction not in ("forward", "reverse"):
         raise ValueError(f"direction must be 'forward'|'reverse', got {direction!r}")
@@ -236,33 +276,12 @@ def evaluate(oof_path, cohort, *, direction,
             scope = d if kg is None else d[d["group"].isin(set(kg))]
 
             if direction == "forward":
-                # all
-                _emit(out, scope, scope["y_true"], direction="forward",
-                      matched_unit=None, matching_priority=None,
-                      eval_unit=eval_unit, contrast=contrast, domain="all", seed=seed)
-                # 1by1
-                for matched_unit in matched_units:
-                    if matched_unit == "visit" and eval_unit == "eval_by_subject":
-                        continue
-                    for mp in matching_priorities:
-                        matched = _filter_contrast(matched_by[(matched_unit, mp)], contrast)
-                        sub = _join_matched(scope, matched,
-                                            matched_unit=matched_unit, eval_unit=eval_unit)
-                        _emit(out, sub, sub["__lab"], direction="forward",
-                              matched_unit=matched_unit, matching_priority=mp,
-                              eval_unit=eval_unit, contrast=contrast,
-                              domain="1by1", seed=seed, paired=True)
-            else:  # reverse
-                # 1by1
-                m1 = scope[scope["fold"] >= 0]
-                _emit(out, m1, m1["y_true"], direction="reverse",
-                      matched_unit=None, matching_priority=matching_priority_train,
-                      eval_unit=eval_unit, contrast=contrast, domain="1by1", seed=seed)
-                # other
-                mo = scope[scope["fold"] == -1]
-                _emit(out, mo, mo["y_true"], direction="reverse",
-                      matched_unit=None, matching_priority=matching_priority_train,
-                      eval_unit=eval_unit, contrast=contrast, domain="other", seed=seed)
+                _emit_forward(out, scope, eval_unit=eval_unit, contrast=contrast,
+                              matched_by=matched_by, matched_units=matched_units,
+                              matching_priorities=matching_priorities, seed=seed)
+            else:
+                _emit_reverse(out, scope, eval_unit=eval_unit, contrast=contrast,
+                              matching_priority_train=matching_priority_train, seed=seed)
     res = pd.DataFrame(out)
 
     # 寫檔

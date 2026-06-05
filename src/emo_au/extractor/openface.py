@@ -132,11 +132,7 @@ class OpenFaceExtractor(EmoAUExtractor):
             Path(tmp_path).unlink(missing_ok=True)
 
     def _do_extract(self, image_path: str) -> Optional[Dict[str, float]]:
-        """
-        從檔案路徑提取 AU / emotion / gaze 特徵
-
-        流程：FaceDetector.get_face() → MultitaskPredictor.predict()
-        """
+        """從檔案路徑提取 AU / emotion / gaze 特徵；偵測不到臉回 None。"""
         try:
             cropped_face, dets = self._detector.get_face(image_path)
 

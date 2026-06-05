@@ -37,9 +37,9 @@ class HSEmotionExtractor(EmoAUExtractor):
     - 需要 hsemotion pip package
     """
 
-    def __init__(self, device: str = "cuda", model_name: str = "enet_b2_7"):
+    def __init__(self, device: str = "cuda", backbone: str = "enet_b2_7"):
         self._device = device
-        self._model_name = model_name
+        self._backbone = backbone
         self._recognizer = None
         self._available = None
 
@@ -49,7 +49,7 @@ class HSEmotionExtractor(EmoAUExtractor):
 
     @property
     def output_columns(self) -> List[str]:
-        # extract() 回 HSEmotion 原生序;落地統一為 HARMONIZED_EMOTIONS（producer reindex）
+        # 只輸出 7 情緒（harmonized 名稱、無 AU）；extract() 回 name→prob dict。
         return list(HARMONIZED_EMOTIONS)
 
     def is_available(self) -> bool:
@@ -71,9 +71,9 @@ class HSEmotionExtractor(EmoAUExtractor):
             return
         from hsemotion.facial_emotions import HSEmotionRecognizer
         self._recognizer = HSEmotionRecognizer(
-            model_name=self._model_name, device=self._device,
+            model_name=self._backbone, device=self._device,
         )
-        logger.info(f"HSEmotion 模型載入完成 (model={self._model_name}, device={self._device})")
+        logger.info(f"HSEmotion 模型載入完成 (model={self._backbone}, device={self._device})")
 
     def extract(self, image: np.ndarray) -> Optional[Dict[str, float]]:
         try:

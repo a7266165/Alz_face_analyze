@@ -35,7 +35,7 @@ class DropCorrReducer(BaseEstimator, TransformerMixin):
 
 
 class TorchGPUPCA(BaseEstimator, TransformerMixin):
-    """GPU PCA"""
+    """GPU 版 PCA(torch.pca_lowrank);n_components 為固定維度、niter 為 power-iteration 次數。"""
 
     def __init__(self, n_components, niter=4):
         self.n_components = n_components

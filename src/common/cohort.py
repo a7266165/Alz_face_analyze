@@ -1,20 +1,6 @@
-"""
-Cohort 定義與族群挑選。
+"""Cohort 定義與族群挑選：讀 hospital_A.csv，依 4-token 規格挑 AD-vs-HC 名單。
 
-讀取人口學表 data/demographics/hospital_A.csv，依
-  (1) visit 設定（first / all）
-  (2) P 的 CDR 設定、HC 的 CDR / MMSE 設定
-挑選研究族群，並回傳含八欄位的名單。
-
-欄位說明：
-ID            資料唯一鍵 = Group + Number + "-" + Photo_Session。
-Group         組別：P / NAD / ACS。
-Number        個案編號；在同一 Group 內唯一。
-Photo_Session 第幾次拍照。
-Age           拍照當下年齡。
-MMSE          認知測驗分數。
-CASI          認知測驗分數。
-Global_CDR    臨床失智評分。
+選取軸與回傳欄位見 cohort_list。
 """
 import pandas as pd
 
@@ -26,8 +12,7 @@ _P_CDR_THR = {"p_cdr05": 0.5, "p_cdr1": 1.0, "p_cdr2": 2.0}  # Global_CDR >= 門
 
 
 def load_demographics(groups=("P", "NAD", "ACS")):
-    """讀取 hospital_A.csv，篩出指定 *groups*。
-    """
+    """讀取 hospital_A.csv，篩出指定 *groups*。"""
     demo = pd.read_csv(HOSPITAL_A_CSV)
     demo = demo[demo["Group"].isin(groups)].copy()
     for c in ("Age", "Global_CDR", "MMSE", "CASI"):
@@ -41,11 +26,7 @@ def load_demographics(groups=("P", "NAD", "ACS")):
 
 # ID 切分工具
 def base_id_of(id_str) -> str:
-    """ID(含 -session 尾)→ base_id(Group+Number),如 'ACS1-1' → 'ACS1'。
-
-    ID = base_id + '-' + Photo_Session 的逆運算:去掉最後一段 -<session>。
-    已是 base_id(無 -session 尾)則原樣回傳。
-    """
+    """ID(含 -session 尾)→ base_id(Group+Number),如 'ACS1-1' → 'ACS1'。"""
     return str(id_str).rsplit("-", 1)[0]
 
 

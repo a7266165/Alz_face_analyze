@@ -1,7 +1,4 @@
-"""
-把(asymmetry)特徵映成不對稱程度的評分器。
-l2 / centroid / lda
-"""
+"""把 asymmetry 特徵映成不對稱程度的評分器(l2_norm | centroid_dist | lda_projection)。"""
 from typing import Optional, Tuple
 
 import numpy as np

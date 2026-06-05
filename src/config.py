@@ -8,6 +8,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional, Tuple
 
+from src.common.mediapipe_utils import MIDLINE_POINTS
+
 
 # =============================================================================
 # 路徑常數
@@ -328,7 +330,7 @@ class MirrorConfig:
     mirror_size: Tuple[int, int] = (512, 512)  # 輸出鏡射影像大小
     feather_px: int = 2  # 邊緣羽化像素
     margin: float = 0.08  # 畫布邊緣留白比例
-    midline_points: Tuple[int, ...] = (10, 168, 4, 2)  # 臉部中軸線特徵點索引
+    midline_points: Tuple[int, ...] = MIDLINE_POINTS  # 臉部中軸線特徵點索引
 
 
 @dataclass
@@ -339,8 +341,7 @@ class PreprocessConfig:
     不再放在 config（昔日的 steps / also_save_aligned_background 已移除）。
     """
 
-    # MediaPipe 特徵點（同 src.common.mediapipe_utils.MIDLINE_POINTS）
-    midline_points: Tuple[int, ...] = (10, 168, 4, 2)
+    midline_points: Tuple[int, ...] = MIDLINE_POINTS
 
     # 相片選擇 / 偵測
     n_select: int = 10  # 選擇多少張最正的臉部相片

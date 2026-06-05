@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 IMAGE_EXTS: Tuple[str, ...] = (".jpg", ".jpeg", ".png", ".bmp")
 
 
-def imread_unicode(path) -> Optional[np.ndarray]:
+def imread_unicode(path: Union[str, Path]) -> Optional[np.ndarray]:
     """Unicode-safe 影像讀取（回傳 BGR ndarray，讀不到回 None）。
 
     cv2.imread 在 Windows 走 ANSI API，路徑含非 ASCII（例如中文）字元時會靜默回 None。

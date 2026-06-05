@@ -33,21 +33,24 @@ def _safe_entropy(values: np.ndarray, n_bins: int = 10) -> float:
     return float(-np.sum(hist * np.log2(hist)))
 
 
-# 統計量計算函數（非時序資料，不含 trend）
+# name → 統計函數；統計量名稱集合的單一真相在 au_config.TEMPORAL_STATS（迴圈都依它排序）。
 STAT_FUNCTIONS: Dict[str, Callable] = {
     "mean": lambda x: float(np.mean(x)),
     "std": lambda x: float(np.std(x)),
     "range": lambda x: float(np.max(x) - np.min(x)),
     "entropy": _safe_entropy,
 }
+assert set(STAT_FUNCTIONS) == set(TEMPORAL_STATS), \
+    "STAT_FUNCTIONS 與 au_config.TEMPORAL_STATS 不一致"
+
+
+def _zero_stats(col: str) -> Dict[str, float]:
+    """該特徵無資料時的零填統計（每個 stat 補 0.0）。"""
+    return {f"{col}_{s}": 0.0 for s in TEMPORAL_STATS}
 
 
 class TemporalAggregator:
-    """
-    時序統計聚合器
-
-    將多幀特徵聚合為 subject-level 向量
-    """
+    """將 per-frame 特徵聚合為 subject-level 統計向量。"""
 
     def __init__(self, min_frames: int = 3):
         """
@@ -80,25 +83,23 @@ class TemporalAggregator:
 
         for col in feature_columns:
             if col not in frame_df.columns:
-                for stat_name in TEMPORAL_STATS:
-                    result[f"{col}_{stat_name}"] = 0.0
+                result.update(_zero_stats(col))
                 continue
 
             values = frame_df[col].dropna().values.astype(float)
 
             if len(values) == 0:
-                for stat_name in TEMPORAL_STATS:
-                    result[f"{col}_{stat_name}"] = 0.0
+                result.update(_zero_stats(col))
                 continue
 
             n_valid = len(values)
 
-            for stat_name, stat_fn in STAT_FUNCTIONS.items():
+            for stat_name in TEMPORAL_STATS:
                 # entropy 在有效幀數不足時設為 0
                 if stat_name == "entropy" and n_valid < self.min_frames:
                     result[f"{col}_{stat_name}"] = 0.0
                 else:
-                    result[f"{col}_{stat_name}"] = stat_fn(values)
+                    result[f"{col}_{stat_name}"] = STAT_FUNCTIONS[stat_name](values)
 
         return result
 

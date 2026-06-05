@@ -144,16 +144,19 @@ def _train_reverse(X_full, ids_full, y_full, build_estimator, score_method, need
 # ----------------------------------------------------------------------------
 def train(X, row_ids, y, build_estimator, score_method, needs_cv, direction, *,
           cohort=None, match_strategies=None, n_splits=10):
-    """訓練流程入口**
+    """訓練流程入口。
 
     Args:
         X, row_ids, y: full cohort 的特徵 / ID / label。
         build_estimator: 全新 estimator。
         score_method, needs_cv: 來自 producer 的 _build_estimator。
-        direction: forward|reverse
+        direction: forward | reverse
         cohort: 僅 reverse 用, 供 match_by_age 當場算 matched 訓練池。
-        match_strategies: 僅 reverse 用,no_priority|priority_acs|priority_nad
+        match_strategies: 僅 reverse 用,no_priority | priority_acs | priority_nad
         n_splits: 折數上限,實際折數 = min(n_splits, 受試者數),預設 10。
+
+    Returns:
+        forward → DataFrame[ID, y_true, y_score, fold];reverse → dict[match_strategy → DataFrame]。
     """
     if direction == "forward":
         return _train_forward(X, row_ids, y, build_estimator, score_method, needs_cv, n_splits)

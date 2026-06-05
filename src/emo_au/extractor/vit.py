@@ -39,9 +39,9 @@ class ViTExtractor(EmoAUExtractor):
     - 模型自動從 HuggingFace Hub 下載
     """
 
-    def __init__(self, device: str = "cuda", model_name: str = "trpakov/vit-face-expression"):
+    def __init__(self, device: str = "cuda", hub_id: str = "trpakov/vit-face-expression"):
         self._device = device
-        self._model_name = model_name
+        self._hub_id = hub_id
         self._model = None
         self._processor = None
         self._available = None
@@ -52,7 +52,7 @@ class ViTExtractor(EmoAUExtractor):
 
     @property
     def output_columns(self) -> List[str]:
-        # extract() 回 ViT 原生序;落地統一為 HARMONIZED_EMOTIONS（producer reindex）
+        # 只輸出 7 情緒（harmonized 名稱、無 AU）；extract() 回 name→prob dict。
         return list(HARMONIZED_EMOTIONS)
 
     def is_available(self) -> bool:
@@ -73,12 +73,12 @@ class ViTExtractor(EmoAUExtractor):
         if self._model is not None:
             return
         from transformers import ViTImageProcessor, ViTForImageClassification
-        self._processor = ViTImageProcessor.from_pretrained(self._model_name)
+        self._processor = ViTImageProcessor.from_pretrained(self._hub_id)
         self._model = ViTForImageClassification.from_pretrained(
-            self._model_name,
+            self._hub_id,
         ).to(self._device)
         self._model.eval()
-        logger.info(f"ViT 模型載入完成 (model={self._model_name}, device={self._device})")
+        logger.info(f"ViT 模型載入完成 (model={self._hub_id}, device={self._device})")
 
     def extract(self, image: np.ndarray) -> Optional[Dict[str, float]]:
         try:

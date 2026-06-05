@@ -40,7 +40,8 @@ class FERExtractor(EmoAUExtractor):
     - 需要 fer pip package（TensorFlow 環境）
     """
 
-    def __init__(self, mtcnn: bool = True, **kwargs):
+    def __init__(self, mtcnn: bool = True, device: str = "cuda"):
+        # device 為對齊工廠統一簽名而收;FER 的 TF detector 不吃 device。
         self._mtcnn = mtcnn
         self._detector = None
         self._available = None
@@ -51,7 +52,7 @@ class FERExtractor(EmoAUExtractor):
 
     @property
     def output_columns(self) -> List[str]:
-        # extract() 回 FER 原生序;落地統一為 HARMONIZED_EMOTIONS（producer reindex）
+        # 只輸出 7 情緒（harmonized 名稱、無 AU）；extract() 回 name→prob dict。
         return list(HARMONIZED_EMOTIONS)
 
     def is_available(self) -> bool:

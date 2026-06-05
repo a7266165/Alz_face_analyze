@@ -64,20 +64,19 @@ def age_match(df, *, caliper=1.0, priority=None, level="subject",
     if "base_id" not in df.columns:
         df["base_id"] = df["ID"].map(base_id_of)  # ID 去 -session 尾，供 subject-level 去重
 
-    matched, _, _ = _age_match_1_by_1(
-        df, caliper=caliper, metric=None,
-        group_col="arm", priority_groups=priority, match_level=level,
+    matched = _age_match_1_by_1(
+        df, caliper=caliper, group_col="arm",
+        priority_groups=priority, match_level=level,
     )
 
     if mode == "1toN":
         df["label"] = (df["arm"] == "high").astype(int)
+        # 只併入 matched 沒有的欄(base_id/Group/label);不取 Age 以免欄名衝突。
         out = matched.merge(
-            df[["ID", "base_id", "Group", "Age", "MMSE", "Global_CDR",
-                "label"]].drop_duplicates("ID"),
-            on="ID", how="left", suffixes=("", "_p"),
+            df[["ID", "base_id", "Group", "label"]].drop_duplicates("ID"),
+            on="ID", how="left",
         )
-        out = out.drop(columns=[c for c in out.columns if c.endswith("_p")])
-        expanded, _ = _age_match_1_by_n(
+        expanded = _age_match_1_by_n(
             df, out, keep_groups=keep_groups, caliper=caliper,
             ttest_threshold=ttest_threshold)
         rep = (df.sort_values(["base_id", "Age"])
@@ -125,18 +124,14 @@ def match_by_score(p_visit, p_score, hc_visit, hc_score,
 
 # ── 私有核心 ───────────────────────────────────────────────────────────────────
 
-def _age_match_1_by_1(cohort, caliper=2.0, metric="MMSE", group_col=None,
+def _age_match_1_by_1(cohort, *, caliper=1.0, group_col,
                       priority_groups=None, id_col="ID", match_level="subject"):
-    """核心：scipy 最佳指派的 1:1 年齡配對（cohort 需含 group_col 'high'/'low'），回 (matched, pairs, (minor_label, major_label))。
+    """核心：scipy 最佳指派的 1:1 年齡配對，回 matched（每對兩列，欄含 pair_id / Age / group_col）。
 
-    priority_groups 設定時稀少組先配一輪；match_level="subject" 每人去重、
-    "visit" 每次拜訪獨立。
+    cohort 需含 group_col(值為 'high'/'low')；priority_groups 設定時稀少組先配一輪；
+    match_level="subject" 每人去重、"visit" 每次拜訪獨立。
     """
     from scipy.optimize import linear_sum_assignment
-
-    if group_col is None:
-        group_col = f"{metric.lower()}_group"
-    metric_low = metric.lower() if metric else None
 
     high = cohort[cohort[group_col] == "high"].copy()
     low = cohort[cohort[group_col] == "low"].copy()
@@ -179,16 +174,10 @@ def _age_match_1_by_1(cohort, caliper=2.0, metric="MMSE", group_col=None,
         for ri, ci in assignments:
             mi_row = mi_df.iloc[ri]
             ma_row = ma_df.iloc[ci]
-            rec = {
-                "pair_id": None,
+            pairs_records.append({
                 "minor_id": mi_row[id_col], "minor_age": mi_row["Age"],
                 "major_id": ma_row[id_col], "major_age": ma_row["Age"],
-                "age_diff": ma_row["Age"] - mi_row["Age"],
-            }
-            if metric_low:
-                rec[f"minor_{metric_low}"] = mi_row[metric]
-                rec[f"major_{metric_low}"] = ma_row[metric]
-            pairs_records.append(rec)
+            })
 
     if priority_groups and "Group" in cohort.columns:
         prio = priority_groups[0]
@@ -224,29 +213,21 @@ def _age_match_1_by_1(cohort, caliper=2.0, metric="MMSE", group_col=None,
 
     matched_records = []
     for i, rec in enumerate(pairs_records):
-        rec["pair_id"] = i
-        minor_rec = {
+        matched_records.append({
             "pair_id": i, id_col: rec["minor_id"],
             "Age": rec["minor_age"], group_col: minor_label,
-        }
-        major_rec = {
+        })
+        matched_records.append({
             "pair_id": i, id_col: rec["major_id"],
             "Age": rec["major_age"], group_col: major_label,
-        }
-        if metric_low:
-            minor_rec[metric] = rec[f"minor_{metric_low}"]
-            major_rec[metric] = rec[f"major_{metric_low}"]
-        matched_records.append(minor_rec)
-        matched_records.append(major_rec)
-    pairs_df = pd.DataFrame(pairs_records)
-    matched = pd.DataFrame(matched_records)
-    return matched, pairs_df, (minor_label, major_label)
+        })
+    return pd.DataFrame(matched_records)
 
 
 def _age_match_1_by_n(full_cohort, matched_cohort,
                       keep_groups=None, caliper=1.0,
                       ttest_threshold=0.05):
-    """核心：在 1:1 配對之上做 1:N caliper 平衡擴充（每輪加 P + Welch t-test 守門），回 (expanded, age_balance)。
+    """核心：在 1:1 配對之上做 1:N caliper 平衡擴充（每輪加 P + Welch t-test 守門），回 expanded。
 
     keep_groups 限定對照組（如 {"P", "ACS"}）；ttest_threshold 為年齡平衡 p 值下限。
     """
@@ -326,25 +307,4 @@ def _age_match_1_by_n(full_cohort, matched_cohort,
                   [cols].copy())
     expanded = pd.concat([hc_subj, p_matched, added_p_df],
                          ignore_index=True)
-
-    all_p_in = expanded[expanded["label"] == 1]
-    p_arr_final = all_p_in["Age"].to_numpy(float)
-    if len(p_arr_final) >= 2 and len(hc_ages) >= 2:
-        t_stat, t_pval = _st.ttest_ind(p_arr_final, hc_ages, equal_var=False)
-    else:
-        t_stat, t_pval = float("nan"), float("nan")
-
-    age_balance = {
-        "caliper": caliper,
-        "ttest_threshold": ttest_threshold,
-        "n_hc": len(hc_subj),
-        "n_p_matched_1to1": len(p_matched),
-        "n_p_added": len(added_p_bids),
-        "n_p_total": len(all_p_in),
-        "n_p_pool": len(all_p),
-        "hc_age_mean": float(hc_ages.mean()),
-        "p_age_mean": float(p_arr_final.mean()) if len(p_arr_final) else None,
-        "ttest_t": float(t_stat),
-        "ttest_p": float(t_pval),
-    }
-    return expanded, age_balance
+    return expanded

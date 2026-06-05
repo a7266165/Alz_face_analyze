@@ -66,7 +66,7 @@ class DANExtractor(EmoAUExtractor):
 
     @property
     def output_columns(self) -> List[str]:
-        # extract() 回 RAF-DB 原生序;落地統一為 HARMONIZED_EMOTIONS（producer reindex）
+        # 只輸出 7 情緒（harmonized 名稱、無 AU）；extract() 回 name→prob dict。
         return list(HARMONIZED_EMOTIONS)
 
     def is_available(self) -> bool:

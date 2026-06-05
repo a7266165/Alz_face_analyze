@@ -1,14 +1,10 @@
-"""
-AU 特徵提取配置
-
-定義統一的 AU / 情緒特徵名稱、欄位對映表、量綱轉換規則
-"""
+"""統一的 AU / 情緒特徵名稱、欄位對映與量綱轉換規則。"""
 
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from src.config import WORKSPACE_DIR, preprocess_dir, EXTERNAL_DIR, EMO_AU_DIR
+from src.config import preprocess_dir, EXTERNAL_DIR, EMO_AU_FEATURES_DIR
 
 # =============================================================================
 # 統一特徵名稱
@@ -36,6 +32,10 @@ HARMONIZED_FEATURES: List[str] = HARMONIZED_AUS + HARMONIZED_EMOTIONS
 
 # 統計量名稱（非時序資料，不含 trend）
 TEMPORAL_STATS: List[str] = ["mean", "std", "range", "entropy"]
+
+# 純情緒工具的「原始名 → harmonized 名」皆為 identity（原始已用 harmonized 名、同序）；
+# 以單一映射取代逐工具複製，各工具仍保留具名別名供 import。
+IDENTITY_EMOTION_MAP: Dict[str, str] = {e: e for e in HARMONIZED_EMOTIONS}
 
 # =============================================================================
 # OpenFace 3.0 欄位對映
@@ -121,15 +121,7 @@ PYFEAT_AU_MAP: Dict[str, str] = {
     "AU43": "AU43",
 }
 
-PYFEAT_EMOTION_MAP: Dict[str, str] = {
-    "anger": "anger",
-    "disgust": "disgust",
-    "fear": "fear",
-    "happiness": "happiness",
-    "sadness": "sadness",
-    "surprise": "surprise",
-    "neutral": "neutral",
-}
+PYFEAT_EMOTION_MAP: Dict[str, str] = IDENTITY_EMOTION_MAP
 
 # =============================================================================
 # LibreFace 欄位對映（暫時保留）
@@ -151,15 +143,7 @@ LIBREFACE_AU_MAP: Dict[str, str] = {
     "AU26": "AU26",
 }
 
-LIBREFACE_EMOTION_MAP: Dict[str, str] = {
-    "anger": "anger",
-    "disgust": "disgust",
-    "fear": "fear",
-    "happiness": "happiness",
-    "sadness": "sadness",
-    "surprise": "surprise",
-    "neutral": "neutral",
-}
+LIBREFACE_EMOTION_MAP: Dict[str, str] = IDENTITY_EMOTION_MAP
 
 # =============================================================================
 # POSTER++ (POSTER V2) 欄位對映
@@ -184,83 +168,32 @@ POSTER_PP_EMOTION_INDEX: Dict[int, str] = {
     6: "neutral",
 }
 
-POSTER_PP_AU_MAP: Dict[str, str] = {}
-
-POSTER_PP_EMOTION_MAP: Dict[str, str] = {
-    "anger": "anger",
-    "disgust": "disgust",
-    "fear": "fear",
-    "happiness": "happiness",
-    "sadness": "sadness",
-    "surprise": "surprise",
-    "neutral": "neutral",
-}
+POSTER_PP_EMOTION_MAP: Dict[str, str] = IDENTITY_EMOTION_MAP
 
 # =============================================================================
 # FER (justinshenk/fer) 欄位對映
 # =============================================================================
 
 # FER 只輸出 7-class emotion probability，無 AU
-# 提取腳本已直接輸出 harmonized 欄名
-FER_AU_MAP: Dict[str, str] = {}
-
-FER_EMOTION_MAP: Dict[str, str] = {
-    "anger": "anger",
-    "disgust": "disgust",
-    "fear": "fear",
-    "happiness": "happiness",
-    "sadness": "sadness",
-    "surprise": "surprise",
-    "neutral": "neutral",
-}
+FER_EMOTION_MAP: Dict[str, str] = IDENTITY_EMOTION_MAP
 
 # =============================================================================
 # DAN 欄位對映
 # =============================================================================
 
-DAN_AU_MAP: Dict[str, str] = {}
-
-DAN_EMOTION_MAP: Dict[str, str] = {
-    "anger": "anger",
-    "disgust": "disgust",
-    "fear": "fear",
-    "happiness": "happiness",
-    "sadness": "sadness",
-    "surprise": "surprise",
-    "neutral": "neutral",
-}
+DAN_EMOTION_MAP: Dict[str, str] = IDENTITY_EMOTION_MAP
 
 # =============================================================================
 # HSEmotion 欄位對映
 # =============================================================================
 
-HSEMOTION_AU_MAP: Dict[str, str] = {}
-
-HSEMOTION_EMOTION_MAP: Dict[str, str] = {
-    "anger": "anger",
-    "disgust": "disgust",
-    "fear": "fear",
-    "happiness": "happiness",
-    "sadness": "sadness",
-    "surprise": "surprise",
-    "neutral": "neutral",
-}
+HSEMOTION_EMOTION_MAP: Dict[str, str] = IDENTITY_EMOTION_MAP
 
 # =============================================================================
 # ViT (trpakov) 欄位對映
 # =============================================================================
 
-VIT_AU_MAP: Dict[str, str] = {}
-
-VIT_EMOTION_MAP: Dict[str, str] = {
-    "anger": "anger",
-    "disgust": "disgust",
-    "fear": "fear",
-    "happiness": "happiness",
-    "sadness": "sadness",
-    "surprise": "surprise",
-    "neutral": "neutral",
-}
+VIT_EMOTION_MAP: Dict[str, str] = IDENTITY_EMOTION_MAP
 
 # =============================================================================
 # EmoNet 欄位對映
@@ -277,18 +210,6 @@ EMONET_EMOTION_INDEX: Dict[int, str] = {
     5: "disgust",
     6: "anger",
     7: "contempt",  # 不在 harmonized 7 情緒中
-}
-
-EMONET_AU_MAP: Dict[str, str] = {}
-
-EMONET_EMOTION_MAP: Dict[str, str] = {
-    "neutral": "neutral",
-    "happiness": "happiness",
-    "sadness": "sadness",
-    "surprise": "surprise",
-    "fear": "fear",
-    "disgust": "disgust",
-    "anger": "anger",
 }
 
 # =============================================================================
@@ -314,12 +235,9 @@ AU_SCALE_INFO = {
 # 路徑配置
 # =============================================================================
 
-AU_FEATURES_DIR = EMO_AU_DIR / "features"
-AU_RAW_DIR = AU_FEATURES_DIR / "raw"
-AU_HARMONIZED_DIR = AU_FEATURES_DIR / "harmonized"
-AU_AGGREGATED_DIR = AU_FEATURES_DIR / "aggregated"
-
-AU_ANALYSIS_DIR = EMO_AU_DIR / "analysis"
+AU_RAW_DIR = EMO_AU_FEATURES_DIR / "raw"
+AU_HARMONIZED_DIR = EMO_AU_FEATURES_DIR / "harmonized"
+AU_AGGREGATED_DIR = EMO_AU_FEATURES_DIR / "aggregated"
 
 # 權重目錄
 WEIGHTS_DIR = EXTERNAL_DIR / "emotion"

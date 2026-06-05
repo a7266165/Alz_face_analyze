@@ -1,10 +1,4 @@
-"""
-產生左右臉鏡射。
-
-兩種方法：
-- midline: 沿臉部中線鏡射
-- flip:    水平翻轉
-"""
+"""產生左右臉鏡射（midline 沿臉部中線 | flip 水平翻轉）。"""
 
 from typing import Tuple
 

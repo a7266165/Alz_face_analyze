@@ -186,14 +186,7 @@ class PosterPPExtractor(EmoAUExtractor):
         logger.info(f"POSTER++ 模型載入完成（device={self._device}）")
 
     def extract(self, image: np.ndarray) -> Optional[Dict[str, float]]:
-        """
-        對單一影像（numpy BGR）提取 7-class emotion probability
-
-        1. BGR → RGB
-        2. Resize 224x224 + ImageNet normalize
-        3. Forward pass → 7-dim logits
-        4. Softmax → probability
-        """
+        """numpy BGR 影像 → 7-class emotion probability。"""
         try:
             # BGR → RGB
             rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)

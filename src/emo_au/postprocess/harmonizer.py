@@ -24,15 +24,10 @@ from src.emo_au.extractor.au_config import (
     PYFEAT_EMOTION_MAP,
     LIBREFACE_AU_MAP,
     LIBREFACE_EMOTION_MAP,
-    POSTER_PP_AU_MAP,
     POSTER_PP_EMOTION_MAP,
-    FER_AU_MAP,
     FER_EMOTION_MAP,
-    DAN_AU_MAP,
     DAN_EMOTION_MAP,
-    HSEMOTION_AU_MAP,
     HSEMOTION_EMOTION_MAP,
-    VIT_AU_MAP,
     VIT_EMOTION_MAP,
     AU_SCALE_INFO,
     AU_RAW_DIR,
@@ -43,22 +38,13 @@ logger = logging.getLogger(__name__)
 
 
 class AUHarmonizer:
-    """
-    AU 特徵 harmonization
+    """將各工具原始 AU/情緒輸出統一到 [0,1] 量綱與統一欄名。"""
 
-    將各工具的原始 AU/情緒輸出統一到 [0, 1] 量綱，
-    使用統一的欄位名稱
-    """
-
+    # 只列有 AU 輸出的工具；純情緒工具走 .get(tool, {}) 的空預設。
     AU_MAPS = {
         "openface": OPENFACE_AU_MAP,
         "pyfeat": PYFEAT_AU_MAP,
         "libreface": LIBREFACE_AU_MAP,
-        "poster_pp": POSTER_PP_AU_MAP,
-        "fer": FER_AU_MAP,
-        "dan": DAN_AU_MAP,
-        "hsemotion": HSEMOTION_AU_MAP,
-        "vit": VIT_AU_MAP,
     }
 
     EMOTION_MAPS = {

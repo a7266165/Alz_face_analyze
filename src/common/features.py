@@ -1,6 +1,4 @@
-"""
-載入Embedding 特徵。
-"""
+"""載入 Embedding 特徵。"""
 
 from typing import List, Sequence, Tuple
 

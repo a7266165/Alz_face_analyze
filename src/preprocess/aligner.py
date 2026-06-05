@@ -8,11 +8,13 @@ from typing import Tuple
 import cv2
 import numpy as np
 
+from src.common.mediapipe_utils import MIDLINE_POINTS
+
 logger = logging.getLogger(__name__)
 
 
 def calculate_midline_tilt(landmarks: np.ndarray,
-                           midline_points: Tuple[int, ...] = (10, 168, 4, 2)) -> float:
+                           midline_points: Tuple[int, ...] = MIDLINE_POINTS) -> float:
     """中軸線相對垂直線的傾斜角（度）；正值=向右傾，負值=向左傾。"""
     angles = []
     for i in range(len(midline_points) - 1):

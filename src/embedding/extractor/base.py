@@ -38,10 +38,10 @@ class EmbeddingExtractor(ABC):
             image: BGR 格式的影像
 
         Returns:
-            特徵向量 (float32)，若提取失敗返回 None
+            特徵向量 (float32)；無法產生時回 None（多數實作偵測失敗會 fallback 到整張圖，不回 None）
         """
         ...
 
     def is_available(self) -> bool:
-        """檢查提取器"""
+        """依賴已安裝、權重存在則可用；registry 據此篩選（便宜探測、不載入）。"""
         return True
