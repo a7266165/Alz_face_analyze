@@ -17,8 +17,8 @@ import numpy as np
 import pandas as pd
 from sklearn.inspection import permutation_importance
 
-from src.meta.loader.dataset import MetaDataset
-from src.meta.stacking.evaluator import MetaEvaluator
+from src.meta.legacy.loader.dataset import MetaDataset
+from src.meta.legacy.stacking.evaluator import MetaEvaluator
 
 logger = logging.getLogger(__name__)
 

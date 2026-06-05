@@ -21,8 +21,8 @@ from src.config import (
     EMBEDDING_CLASSIFICATION_DIR,
     cohort_dirs,
 )
-from src.meta.loader.base import extract_base_id
-from src.meta.loader.dataset import FoldData, MetaDataset
+from src.meta.legacy.loader.base import extract_base_id
+from src.meta.legacy.loader.dataset import FoldData, MetaDataset
 
 logger = logging.getLogger(__name__)
 

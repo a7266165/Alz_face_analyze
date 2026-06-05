@@ -26,8 +26,8 @@ from src.config import (
     PREDICTED_AGES_FILE,
     cohort_dirs,
 )
-from src.meta import MetaConfig, MetaPipeline
-from src.meta.evaluation.matched_eval import build_matching_cache
+from src.meta.legacy import MetaConfig, MetaPipeline
+from src.meta.legacy.evaluation.matched_eval import build_matching_cache
 
 # ========== 路徑設定 ==========
 

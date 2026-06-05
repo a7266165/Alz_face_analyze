@@ -11,7 +11,7 @@ from typing import List, Optional
 import numpy as np
 import pandas as pd
 
-from src.meta.loader.base import Dataset, extract_base_id
+from src.meta.legacy.loader.base import Dataset, extract_base_id
 from src.config import DEMOGRAPHICS_DIR
 from src.emo_au.extractor.au_config import AU_AGGREGATED_DIR
 

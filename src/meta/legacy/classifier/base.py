@@ -34,7 +34,7 @@ from sklearn.metrics import (
 )
 from sklearn.model_selection import GroupKFold
 
-from src.meta.loader import Dataset
+from src.meta.legacy.loader import Dataset
 
 logger = logging.getLogger(__name__)
 

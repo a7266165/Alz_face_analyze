@@ -10,10 +10,10 @@ import logging
 logging.basicConfig(level=logging.WARNING)
 
 from src.config import META_ANALYSIS_DIR, PREDICTED_AGES_FILE
-from src.meta.stacking.config import MetaConfig
-from src.meta.loader.meta import MetaDataLoader
-from src.meta.stacking.trainer import create_trainer
-from src.meta.evaluation.matched_eval import (
+from src.meta.legacy.stacking.config import MetaConfig
+from src.meta.legacy.loader.meta import MetaDataLoader
+from src.meta.legacy.stacking.trainer import create_trainer
+from src.meta.legacy.evaluation.matched_eval import (
     build_matching_cache, run_matched_eval_chain,
 )
 import re

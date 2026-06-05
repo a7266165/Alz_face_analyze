@@ -12,7 +12,7 @@ logging.basicConfig(level=logging.INFO,
 from src.config import (
     META_ANALYSIS_DIR, PREDICTED_AGES_FILE, cohort_dirs,
 )
-from src.meta import MetaConfig, MetaPipeline
+from src.meta.legacy import MetaConfig, MetaPipeline
 
 COHORT = ("p_first", "p_cdrall", "hc_all", "hc_cdrall_or_mmseall")
 VISIT_DIR, CDR_MMSE_DIR = cohort_dirs(*COHORT)

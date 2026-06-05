@@ -12,10 +12,10 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import pandas as pd
 
-from src.meta.stacking.config import MetaConfig
-from src.meta.loader.meta import MetaDataLoader
-from src.meta.stacking.trainer import create_trainer, TrainResult
-from src.meta.evaluation.matched_eval import run_matched_eval_chain
+from src.meta.legacy.stacking.config import MetaConfig
+from src.meta.legacy.loader.meta import MetaDataLoader
+from src.meta.legacy.stacking.trainer import create_trainer, TrainResult
+from src.meta.legacy.evaluation.matched_eval import run_matched_eval_chain
 
 logger = logging.getLogger(__name__)
 
