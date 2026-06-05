@@ -1,6 +1,7 @@
-"""Meta producer：跑 TabPFN v3 over asymmetry variant × scorer 的窮舉,落地 leaderboard + OOF。
+"""Meta producer：跑 TabPFN v3 over feature set × asymmetry variant × scorer 的窮舉,落地 leaderboard + OOF。
 
-5 特徵 = age, MMSE, CASI, embedding-original OOF, asymmetry OOF(後者窮舉)。
+feature set = full(age, MMSE, CASI, original-OOF, asym-OOF) + mmse_casi / mmse_casi_orig /
+mmse_casi_asym 三個對照(見 src.meta.FEATURE_SETS);asymmetry variant × scorer 窮舉。
 輸出寫到 workspace_refactor(與 legacy 的 workspace/meta 分開)。
 
 用法:
@@ -57,14 +58,17 @@ def main():
         reducer=args.reducer, seed=args.seed, device=args.device)
 
     leaderboard.to_csv(out_dir / "leaderboard.csv", index=False, encoding="utf-8")
-    for (variant, method), oof in oof_dump.items():
-        d = out_dir / variant / method
+    for (feature_set, variant, method), oof in oof_dump.items():
+        d = out_dir / feature_set
+        if variant:
+            d = d / variant / method
         d.mkdir(parents=True, exist_ok=True)
         oof.to_csv(d / "oof_scores.csv", index=False, encoding="utf-8")
 
     logger.info(f"wrote leaderboard ({len(leaderboard)} rows) + {len(oof_dump)} oof_scores.csv")
     top = leaderboard.iloc[0]
-    logger.info(f"best: {top['variant']}/{top['method']}  auc={top['auc']:.3f}  mcc={top['mcc']:.3f}")
+    tag = top["feature_set"] + (f"/{top['variant']}/{top['method']}" if top["variant"] else "")
+    logger.info(f"best: {tag}  auc={top['auc']:.3f}  mcc={top['mcc']:.3f}")
 
 
 if __name__ == "__main__":

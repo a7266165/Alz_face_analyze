@@ -1,7 +1,9 @@
-"""精簡 meta：把 [age, MMSE, CASI, embedding-original OOF, asymmetry OOF] 餵 TabPFN v3。
+"""精簡 meta：把人口學 + base-OOF score 餵 TabPFN v3,窮舉 feature set × asymmetry variant × scorer。
 
-asymmetry 特徵窮舉 variant × scorer;兩個 base OOF 以共用模組(src.embedding.classification)
-forward 重新產生(GroupKFold by base_id),meta 沿用 original-OOF 的 fold 做 fold-aligned 評估。
+feature set 見 FEATURE_SETS:full(age, MMSE, CASI, original-OOF, asym-OOF)外加三個只用
+MMSE/CASI 的對照(±original-OOF、±asym-OOF)。兩個 base OOF 以共用模組
+(src.embedding.classification) forward 重新產生(GroupKFold by base_id),所有 feature set
+一律沿用 original-OOF 的 fold 做 fold-aligned 評估。
 """
 from pathlib import Path
 
@@ -16,15 +18,21 @@ from src.embedding.classification import (
 )
 
 __all__ = [
-    "ASYM_VARIANTS", "ASYM_METHODS", "FEATURE_COLS",
+    "ASYM_VARIANTS", "ASYM_METHODS", "FEATURE_SETS",
     "base_oof", "to_subject", "subject_demographics",
-    "build_feature_table", "make_tabpfn_v3", "tabpfn_oof", "sweep",
+    "build_base_table", "add_asym", "slice_xy",
+    "make_tabpfn_v3", "tabpfn_oof", "sweep",
 ]
 
 ASYM_VARIANTS = ("differences", "absolute_differences",
                  "relative_differences", "absolute_relative_differences")
 ASYM_METHODS = ("l2_norm", "centroid_dist", "lda_projection")
-FEATURE_COLS = ["age", "mmse", "casi", "oof_original", "oof_asym"]
+FEATURE_SETS = {
+    "full":           ["age", "mmse", "casi", "oof_original", "oof_asym"],
+    "mmse_casi":      ["mmse", "casi"],
+    "mmse_casi_orig": ["mmse", "casi", "oof_original"],
+    "mmse_casi_asym": ["mmse", "casi", "oof_asym"],
+}
 
 _V3_CKPT = (Path.home() / "AppData" / "Roaming" / "tabpfn"
             / "tabpfn-v3-classifier-v3_default.ckpt")
@@ -100,21 +108,31 @@ def subject_demographics(cohort):
         columns={"Age": "age", "MMSE": "mmse", "CASI": "casi"})
 
 
-def build_feature_table(demo, sub_original, sub_asym):
-    """以 base_id inner-join 三來源 → (table, X, y, fold)，5 欄見 FEATURE_COLS。
+def build_base_table(demo, sub_original):
+    """demo + original-OOF 以 base_id inner-join → subject 表(age, mmse, casi, oof_original, label, fold)。
 
-    fold 取自 original-OOF(real 0..k-1,當 meta 切分);assert label == original 的 y_true。
+    fold/y_true 取自 original-OOF:fold 為所有 feature set 共用的 meta 切分;assert label == y_true。
     """
-    t = (demo.merge(
-            sub_original[["base_id", "y_score", "fold", "y_true"]]
-            .rename(columns={"y_score": "oof_original"}), on="base_id", how="inner")
-         .merge(sub_asym[["base_id", "y_score"]]
-                .rename(columns={"y_score": "oof_asym"}), on="base_id", how="inner"))
+    t = demo.merge(
+        sub_original[["base_id", "y_score", "fold", "y_true"]]
+        .rename(columns={"y_score": "oof_original"}), on="base_id", how="inner")
     assert (t["label"].to_numpy() == t["y_true"].to_numpy()).all(), "label 與 OOF y_true 不一致"
-    X = t[FEATURE_COLS].to_numpy(dtype=float)
-    y = t["label"].to_numpy(dtype=int)
-    fold = t["fold"].to_numpy(dtype=int)
-    return t, X, y, fold
+    return t
+
+
+def add_asym(base_table, sub_asym):
+    """base 表再 inner-join 某 (variant, scorer) 的 asymmetry-OOF → 多一欄 oof_asym。"""
+    return base_table.merge(
+        sub_asym[["base_id", "y_score"]].rename(columns={"y_score": "oof_asym"}),
+        on="base_id", how="inner")
+
+
+def slice_xy(table, feature_cols):
+    """從 subject 表取 (X, y, fold):X 欄位由 feature_cols 指定、y=label、fold 為 meta 切分。"""
+    X = table[feature_cols].to_numpy(dtype=float)
+    y = table["label"].to_numpy(dtype=int)
+    fold = table["fold"].to_numpy(dtype=int)
+    return X, y, fold
 
 
 def make_tabpfn_v3(seed=42, device="auto"):
@@ -143,26 +161,39 @@ def tabpfn_oof(X, y, fold, *, seed=42, device="auto"):
 
 def sweep(cohort, *, emb="arcface", bg_mode="background", photo_mode="mean",
           reducer="no_drop", variants=ASYM_VARIANTS, methods=ASYM_METHODS,
-          seed=42, device="auto"):
-    """窮舉 asymmetry variant × scorer,各訓練 TabPFN v3,回 (leaderboard, {(variant,method): oof_df})。
+          feature_sets=FEATURE_SETS, seed=42, device="auto"):
+    """窮舉 feature set × asymmetry variant × scorer,各訓練 TabPFN v3。
 
-    embedding-original OOF 只算一次、跨組合共用;每組合的 5 特徵 = demographics +
-    original-OOF + 該組合 asymmetry-OOF,指標走 src.common.evaluate.compute_clf_metrics。
+    不含 oof_asym 的 feature set 與 variant/scorer 無關,各只跑一次(variant/method 留空);
+    含 oof_asym 者對每個 (variant, scorer) 各跑一次。embedding-original OOF 只算一次、跨組合
+    共用,所有 feature set 共用 original-OOF 的 fold。指標走 src.common.evaluate.compute_clf_metrics。
+    回 (leaderboard_df, {(feature_set, variant, method): oof_df}),variant/method 對 asym-無關
+    組合為空字串。
     """
     demo = subject_demographics(cohort)
-    sub_o = to_subject(base_oof(cohort, emb, "original", bg_mode, photo_mode,
-                                "logistic", reducer=reducer, lr_C=1.0))
-    rows, oof_dump = [], {}
+    base = build_base_table(demo, to_subject(base_oof(
+        cohort, emb, "original", bg_mode, photo_mode, "logistic", reducer=reducer, lr_C=1.0)))
+
+    indep = {k: v for k, v in feature_sets.items() if "oof_asym" not in v}
+    asym = {k: v for k, v in feature_sets.items() if "oof_asym" in v}
+
+    jobs = [(fs, cols, base, "", "") for fs, cols in indep.items()]
     for variant in variants:
         for method in methods:
-            sub_a = to_subject(base_oof(cohort, emb, variant, bg_mode, photo_mode, method))
-            t, X, y, fold = build_feature_table(demo, sub_o, sub_a)
-            meta = tabpfn_oof(X, y, fold, seed=seed, device=device)
-            metrics = compute_clf_metrics(y, meta, n_bootstrap=100, seed=seed)
-            rows.append({"variant": variant, "method": method, **metrics})
-            oof_dump[(variant, method)] = pd.DataFrame(
-                {"base_id": t["base_id"].to_numpy(), "y_true": y,
-                 "y_score": meta, "fold": fold})
+            t = add_asym(base, to_subject(
+                base_oof(cohort, emb, variant, bg_mode, photo_mode, method)))
+            jobs += [(fs, cols, t, variant, method) for fs, cols in asym.items()]
+
+    rows, oof_dump = [], {}
+    for fs, cols, table, variant, method in jobs:
+        X, y, fold = slice_xy(table, cols)
+        meta = tabpfn_oof(X, y, fold, seed=seed, device=device)
+        metrics = compute_clf_metrics(y, meta, n_bootstrap=100, seed=seed)
+        rows.append({"feature_set": fs, "variant": variant, "method": method, **metrics})
+        oof_dump[(fs, variant, method)] = pd.DataFrame(
+            {"base_id": table["base_id"].to_numpy(), "y_true": y,
+             "y_score": meta, "fold": fold})
+
     leaderboard = pd.DataFrame(rows).sort_values(
         "auc", ascending=False, ignore_index=True)
     return leaderboard, oof_dump

@@ -5,10 +5,12 @@
 from src.meta.tabpfn_meta import (
     ASYM_METHODS,
     ASYM_VARIANTS,
-    FEATURE_COLS,
+    FEATURE_SETS,
+    add_asym,
     base_oof,
-    build_feature_table,
+    build_base_table,
     make_tabpfn_v3,
+    slice_xy,
     subject_demographics,
     sweep,
     tabpfn_oof,
@@ -16,7 +18,8 @@ from src.meta.tabpfn_meta import (
 )
 
 __all__ = [
-    "ASYM_VARIANTS", "ASYM_METHODS", "FEATURE_COLS",
+    "ASYM_VARIANTS", "ASYM_METHODS", "FEATURE_SETS",
     "base_oof", "to_subject", "subject_demographics",
-    "build_feature_table", "make_tabpfn_v3", "tabpfn_oof", "sweep",
+    "build_base_table", "add_asym", "slice_xy",
+    "make_tabpfn_v3", "tabpfn_oof", "sweep",
 ]
