@@ -3,10 +3,11 @@ scripts/embedding/evaluate/plot.py
 Embedding 下游 evaluation 的 **best-first 第一層總覽圖** —— 吃 aggregate 的 all_metrics.csv。
 
 對 forward·1by1 的每個 (matching_priority, matched_unit, eval_unit) 切片畫一張
-1×3 圖:欄 = metric(balacc / AUC / MCC),每欄 x 軸 = 3 個 contrast(AD/HC、AD/NAD、
-AD/ACS)。每個 contrast 一個 box + 灰色散點 = 對『其餘所有軸』
-(emb×variant×model×clf_param×bg×photo)取的分布;★ = 該 (contrast, metric) 的冠軍
-config(標注值 + emb/model/variant)。
+3×4 圖:列 = metric(balacc / AUC / MCC),欄 = embedding(arcface / dlib /
+topofr / vggface)。每格 x 軸 = 3 個 contrast(AD/HC、AD/NAD、AD/ACS),一個
+box + 灰色散點 = 對該 embedding 底下『其餘所有軸』(variant×model×clf_param×
+bg×photo)取的分布;★ = 該 (embedding, contrast, metric) 的冠軍 config
+(標注值 + model/variant)。
 
 forward·1by1 的 4 個 (matched_unit × eval_unit) 組合全部畫(各一張)。
 
@@ -37,6 +38,7 @@ from src.config import (
     P_VISIT_TOKENS, P_SCORE_TOKENS, HC_VISIT_TOKENS, HC_SCORE_TOKENS,
     DEFAULT_COHORT_TOKENS,
 )
+from scripts.embedding.classification.sweep import EMBEDDINGS
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("evaluate_plot")
@@ -55,45 +57,51 @@ COMBOS = [("subject", "eval_by_subject"), ("subject", "eval_by_visit"),
 
 
 def make_figure(df, matched_unit, eval_unit, priority, out_path):
-    """一個切片 → 一張 1×3(metric)圖;每欄 3 個 contrast 的 box+strip+冠軍★。"""
+    """一個切片 → 一張 3(metric)×4(embedding)圖;每格 3 個 contrast 的 box+strip+冠軍★。"""
     rng = np.random.RandomState(0)
-    fig, axes = plt.subplots(1, 3, figsize=(13, 5))
-    for ax, (mcol, mlabel) in zip(axes, METRICS):
-        arrays = [df[df["contrast"] == con][mcol].dropna().values for con, _ in CONTRASTS]
-        box = ax.boxplot(arrays, positions=range(3), widths=0.55,
-                         showfliers=False, patch_artist=True)
-        for patch in box["boxes"]:
-            patch.set_facecolor("#cfe8ff")
-            patch.set_alpha(0.7)
-        ax.axhline(CHANCE[mcol], color="k", ls=":", lw=0.8, zorder=1)
-        xticklabels = []
-        for i, (con, clabel) in enumerate(CONTRASTS):
-            sub = df[df["contrast"] == con].dropna(subset=[mcol])
-            n_med = int(sub["n"].median()) if len(sub) else 0
-            xticklabels.append(f"{clabel}\nn={n_med}")
-            if not len(sub):
-                continue
-            y = sub[mcol].values
-            ax.scatter(rng.normal(i, 0.06, len(y)), y, s=4,
-                       color="gray", alpha=0.22, zorder=2)
-            champ = sub.loc[sub[mcol].idxmax()]
-            cv = champ[mcol]
-            cfg = f"{champ['emb']}/{champ['model']}/{VARIANT_SHORT.get(champ['variant'], champ['variant'])}"
-            ax.scatter([i], [cv], marker="*", s=280, color="crimson",
-                       edgecolor="black", linewidth=0.5, zorder=5)
-            ax.annotate(f"{cv:.3f}\n{cfg}", (i, cv), textcoords="offset points",
-                        xytext=(9, -4), fontsize=7, color="crimson", fontweight="bold")
-        ax.set_xticks(range(3))
-        ax.set_xticklabels(xticklabels, fontsize=9)
-        ax.set_title(mlabel, fontsize=13, fontweight="bold")
-        ax.set_ylim(*YLIM[mcol])
-        ax.grid(axis="y", alpha=0.3)
-    axes[0].set_ylabel("metric value\n(每點 = 一種其餘軸組合)", fontsize=10)
-    fig.suptitle(
-        f"Best-first 第1層 | forward 1by1 | {priority} | {matched_unit}-match | {eval_unit}\n"
-        "contrast x metric:對『其餘所有軸 (emb x variant x model x clf_param x bg x photo)』取分布"
-        "   (*) = 冠軍 config", fontsize=11)
-    fig.tight_layout(rect=(0, 0, 1, 0.95))
+    embs = [e for e in EMBEDDINGS if (df["emb"] == e).any()]
+    nrow, ncol = len(METRICS), len(embs)
+    fig, axes = plt.subplots(nrow, ncol, figsize=(3.3 * ncol, 2.9 * nrow),
+                             squeeze=False)
+    for r, (mcol, mlabel) in enumerate(METRICS):
+        for c, emb in enumerate(embs):
+            ax = axes[r][c]
+            de = df[df["emb"] == emb]
+            arrays = [de[de["contrast"] == con][mcol].dropna().values for con, _ in CONTRASTS]
+            box = ax.boxplot(arrays, positions=range(3), widths=0.55,
+                             showfliers=False, patch_artist=True)
+            for patch in box["boxes"]:
+                patch.set_facecolor("#cfe8ff")
+                patch.set_alpha(0.7)
+            ax.axhline(CHANCE[mcol], color="k", ls=":", lw=0.8, zorder=1)
+            xticklabels = []
+            for i, (con, clabel) in enumerate(CONTRASTS):
+                sub = de[de["contrast"] == con].dropna(subset=[mcol])
+                n_med = int(sub["n"].median()) if len(sub) else 0
+                xticklabels.append(f"{clabel}\nn={n_med}")
+                if not len(sub):
+                    continue
+                y = sub[mcol].values
+                ax.scatter(rng.normal(i, 0.06, len(y)), y, s=4,
+                           color="gray", alpha=0.22, zorder=2)
+                champ = sub.loc[sub[mcol].idxmax()]
+                cv = champ[mcol]
+                cfg = f"{champ['model']}/{VARIANT_SHORT.get(champ['variant'], champ['variant'])}"
+                ax.scatter([i], [cv], marker="*", s=200, color="crimson",
+                           edgecolor="black", linewidth=0.5, zorder=5)
+                ax.annotate(f"{cv:.3f}\n{cfg}", (i, cv), textcoords="offset points",
+                            xytext=(7, -4), fontsize=6, color="crimson", fontweight="bold")
+            ax.set_xticks(range(3))
+            ax.set_xticklabels(xticklabels if r == nrow - 1 else [], fontsize=8)
+            if r == 0:
+                ax.set_title(emb, fontsize=12, fontweight="bold")
+            if c == 0:
+                ax.set_ylabel(mlabel, fontsize=12, fontweight="bold")
+            else:
+                ax.set_yticklabels([])
+            ax.set_ylim(*YLIM[mcol])
+            ax.grid(axis="y", alpha=0.3)
+    fig.tight_layout()
     out_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out_path, dpi=130, bbox_inches="tight")
     plt.close(fig)
