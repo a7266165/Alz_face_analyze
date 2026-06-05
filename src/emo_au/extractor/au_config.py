@@ -1,5 +1,6 @@
 """統一的 AU / 情緒特徵名稱、欄位對映與量綱轉換規則。"""
 
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List, Optional
@@ -29,6 +30,33 @@ HARMONIZED_EMOTIONS: List[str] = [
 
 # 統一特徵向量（8 AU + 7 emotions = 15 維）
 HARMONIZED_FEATURES: List[str] = HARMONIZED_AUS + HARMONIZED_EMOTIONS
+
+# =============================================================================
+# 統一物理欄序
+# =============================================================================
+# 各工具輸出的欄位不一致（不同情緒/AU 子集），但落地（npz / schema）一律套用同一套
+# 物理順序，讓任一工具的同名欄都落在可比位置；每個工具只填自己有的欄。
+# 順序：共有 7 情緒(固定) → contempt(額外情緒) → AU(依編號；同號原始強度在 _det 之前)
+# → 其他額外欄(gaze 等，字典序)。純規則、不依賴其他工具，故各工具能在自己的 env 內
+# 獨立套用（見 src/emo_au/extractor/base.py 對 output_columns 的說明）。
+_AU_RE = re.compile(r"AU0*(\d+)(_det)?")
+
+
+def _canonical_key(col: str):
+    if col in HARMONIZED_EMOTIONS:
+        return (0, HARMONIZED_EMOTIONS.index(col), 0, col)
+    if col == "contempt":
+        return (1, 0, 0, col)
+    m = _AU_RE.fullmatch(col)
+    if m:
+        return (2, int(m.group(1)), 1 if m.group(2) else 0, col)
+    return (3, 0, 0, col)
+
+
+def canonical_order(columns: List[str]) -> List[str]:
+    """把任一工具的欄位排成全庫統一的物理順序（規則見上方），不改名、只重排。"""
+    return sorted(columns, key=_canonical_key)
+
 
 # 統計量名稱（非時序資料，不含 trend）
 TEMPORAL_STATS: List[str] = ["mean", "std", "range", "entropy"]
