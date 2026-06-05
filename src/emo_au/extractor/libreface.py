@@ -1,9 +1,6 @@
-"""
-LibreFace AU 特徵提取器
+"""LibreFace AU 特徵提取器（單次 get_facial_attributes_image() 呼叫；需 libreface_env）。
 
-使用 libreface 套件的 get_au_intensities() API
-提取 12 AU intensity + 情緒標籤
-需要在獨立 conda 環境 (libreface_env) 中執行
+輸出 12 AU intensity + 12 AU detection + 情緒 one-hot。
 """
 
 import tempfile
@@ -20,7 +17,7 @@ from src.emo_au.extractor.au_config import LIBREFACE_EMOTION_MAP, LIBREFACE_WEIG
 
 logger = logging.getLogger(__name__)
 
-# LibreFace get_au_intensities() 回傳的 key → 統一 AU 名稱
+# attrs["au_intensities"] 的 key → 統一 AU 名稱
 LIBREFACE_INTENSITY_KEY_MAP: Dict[str, str] = {
     "au_1_intensity": "AU1",
     "au_2_intensity": "AU2",
@@ -36,7 +33,7 @@ LIBREFACE_INTENSITY_KEY_MAP: Dict[str, str] = {
     "au_26_intensity": "AU26",
 }
 
-# LibreFace detect_action_units() 回傳的 key → 統一 AU 名稱（二值）
+# attrs["detected_aus"] 的 key → 統一 AU 名稱（二值）
 LIBREFACE_DETECTION_KEY_MAP: Dict[str, str] = {
     "au_1": "AU1_det",
     "au_2": "AU2_det",
@@ -66,16 +63,10 @@ LIBREFACE_EMOTION_LABEL_MAP: Dict[str, str] = {
 
 
 class LibreFaceExtractor(EmoAUExtractor):
-    """
-    LibreFace AU 特徵提取器
+    """LibreFace AU 特徵提取器。
 
-    API:
-    - libreface.get_au_intensities(path) → dict, 12 AU intensity [0, ~5]
-    - libreface.detect_action_units(path) → dict, 12 AU binary (0/1)
-    - libreface.get_facial_expression(path) → str, emotion label
-
-    注意：情緒只回傳標籤字串，不提供 probability，
-    因此 harmonized emotion 欄位用 one-hot 編碼
+    單次 get_facial_attributes_image(path) 取得 au_intensities / detected_aus /
+    facial_expression 三組結果。情緒只回標籤字串（無 probability），故用 one-hot 編碼。
     """
 
     def __init__(self, device: str = "cpu"):
@@ -148,10 +139,19 @@ class LibreFaceExtractor(EmoAUExtractor):
                 result[det_name] = float(detections.get(lf_key, 0))
 
             # 情緒（只有標籤，轉 one-hot）
+            emotion_cols = list(LIBREFACE_EMOTION_MAP.values())
             emotion_label = attrs.get("facial_expression", "")
             harmonized_label = LIBREFACE_EMOTION_LABEL_MAP.get(emotion_label, "")
-            for emo in LIBREFACE_EMOTION_MAP.values():
-                result[emo] = 1.0 if emo == harmonized_label else 0.0
+            # 預測落在 harmonized 7 類外（如 Contempt）或無預測時，該列情緒「無法表示」→
+            # 填 NaN 視為缺值；不要用 all-zero 偽裝成「確定都不是」而汙染下游均值。
+            if harmonized_label in emotion_cols:
+                for emo in emotion_cols:
+                    result[emo] = 1.0 if emo == harmonized_label else 0.0
+            else:
+                if emotion_label:
+                    logger.debug(f"  LibreFace 情緒標籤 {emotion_label!r} 無對應欄，該列填 NaN")
+                for emo in emotion_cols:
+                    result[emo] = float("nan")
 
             return result
 

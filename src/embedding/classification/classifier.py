@@ -1,5 +1,5 @@
 """
-分類器(Classifier)，使用時，前面需串聯分類器(classifier)
+分類器(classifier)，使用時，前面需串聯降維器(reducer)。
 """
 from typing import Optional, Tuple
 
