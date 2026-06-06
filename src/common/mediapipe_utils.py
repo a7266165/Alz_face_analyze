@@ -4,12 +4,12 @@ MediaPipe Face Mesh landmark 常數定義
 統一三處 landmark 定義：
 - 臉部偵測用的中軸線點 (preprocess/detector.py)
 - 頭部旋轉用的關鍵點 (rotation/angle_calc.py)
-- 面部不對稱性用的雙側 landmark (asymmetry/landmark_asymmetry.py)
+- 面部不對稱性用的雙側 landmark (landmark/analyzer.py)
 
 本模組只包含常數定義，不包含 FaceMesh 初始化邏輯。
 """
 
-from typing import Dict, FrozenSet, List, Tuple
+from typing import Dict, List, Tuple
 
 # ============================================================
 #  中軸線 (Midline) 定義
@@ -17,13 +17,6 @@ from typing import Dict, FrozenSet, List, Tuple
 
 # 4 點中軸線 — 用於臉部正面判定（頂點夾角計算）
 MIDLINE_POINTS: Tuple[int, ...] = (10, 168, 4, 2)
-
-# 完整中軸線邊集 — 用於中軸線角度計算（不對稱性分析）
-FACEMESH_MID_LINE: FrozenSet[Tuple[int, int]] = frozenset([
-    (10, 151), (151, 9), (9, 8), (8, 168),
-    (168, 6), (6, 197), (197, 195), (195, 5), (5, 4),
-    (4, 1), (1, 19), (19, 94), (94, 2)
-])
 
 
 # ============================================================

@@ -1,14 +1,8 @@
-"""
-區域式 Landmark-based 面部不對稱性
+"""分區 landmark 不對稱特徵。
 
-用 MediaPipe Face Mesh 468 landmarks 的左右對應點，
-分區域（眼、鼻、唇、臉部輪廓）計算座標差異和面積差異。
-
-兩步驟設計：
-  1. extract_and_save_landmarks(): 提取 + 正規化 + 存 .npy
-  2. compute_regional_features(): 從 .npy 計算 pair 差值 + 面積差 → CSV
-
-Landmark 正規化方式：最左點→X=0, 最頂點→Y=0, 臉寬→500
+以 MediaPipe 468 點的左右對應點，分區（眼/鼻/唇/臉輪廓）算座標差與面積差。
+兩步：extract_and_save_landmarks 取點存 .npy；compute_regional_features 從
+.npy 算特徵出 CSV。路徑由呼叫端（producer）決定，本層不碰 config。
 """
 
 import logging
@@ -22,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 # ============================================================
-#  Landmark Pair Definitions (right_idx, left_idx)
+#  左右對應點定義 (right_idx, left_idx)
 # ============================================================
 
 EYE_PAIRS: List[Tuple[int, int]] = [
@@ -39,15 +33,11 @@ NOSE_PAIRS: List[Tuple[int, int]] = [
     (115, 344), (48, 278),
 ]
 
-# 標準唇部輪廓 18 pairs
+# 唇部輪廓 18 pairs（外上/外下/內上/內下）
 MOUTH_PAIRS: List[Tuple[int, int]] = [
-    # Outer upper lip
     (61, 291), (185, 409), (40, 270), (39, 269), (37, 267),
-    # Outer lower lip
     (146, 375), (91, 321), (181, 405), (84, 314),
-    # Inner upper lip
     (78, 308), (191, 415), (80, 310), (81, 311), (82, 312),
-    # Inner lower lip
     (95, 324), (88, 318), (178, 402), (87, 317),
 ]
 
@@ -66,7 +56,7 @@ ALL_PAIRS: Dict[str, List[Tuple[int, int]]] = {
     "face_oval": FACE_OVAL_PAIRS,
 }
 
-# Ordered contour points for Shoelace area calculation
+# 各區依序的輪廓點 (right_contour, left_contour)，供 Shoelace 算面積
 AREA_CONTOURS: Dict[str, Tuple[List[int], List[int]]] = {
     "eye": (
         [33, 161, 160, 159, 158, 157, 173, 155, 154, 153, 145, 144, 163, 7, 133, 246],
@@ -88,11 +78,15 @@ AREA_CONTOURS: Dict[str, Tuple[List[int], List[int]]] = {
 
 
 # ============================================================
-#  Core Functions
+#  核心運算
 # ============================================================
 
 def normalize_landmarks(landmarks: np.ndarray, target_width: float = 500.0) -> np.ndarray:
-    """正規化：最左點→X=0, 最頂點→Y=0, 臉寬→target_width"""
+    """以 bbox 正規化：最左點→X=0、最頂點→Y=0、臉寬→target_width。
+
+    與 analyzer.LandmarkAsymmetryAnalyzer.normalize_landmarks（點 234/454 基準）
+    為不同基準、不可互換。
+    """
     lm = landmarks.copy()
     x_min, x_max = lm[:, 0].min(), lm[:, 0].max()
     y_min = lm[:, 1].min()
@@ -106,7 +100,7 @@ def normalize_landmarks(landmarks: np.ndarray, target_width: float = 500.0) -> n
 
 
 def shoelace_area(points: np.ndarray) -> float:
-    """Shoelace formula for polygon area."""
+    """多邊形面積（Shoelace 公式）；少於 3 點回 0。"""
     n = len(points)
     if n < 3:
         return 0.0
@@ -115,16 +109,8 @@ def shoelace_area(points: np.ndarray) -> float:
 
 
 def extract_landmarks_from_image(image_path: Path, face_mesh) -> Optional[np.ndarray]:
-    """Extract and normalize 468 landmarks from a single image.
-
-    Args:
-        image_path: Path to image file
-        face_mesh: Initialized MediaPipe FaceMesh instance
-
-    Returns:
-        (468, 2) normalized landmark array, or None if detection failed
-    """
-    import cv2  # lazy: 只有 producer 端 (Alz_face_asymmetry env) 用得到
+    """單張影像 → 正規化 (468, 2) landmarks；偵測失敗回 None。"""
+    import cv2  # lazy：只有 producer 端（含 mediapipe 的環境）用得到
     image = cv2.imread(str(image_path))
     if image is None:
         return None
@@ -143,16 +129,7 @@ def compute_pair_features(
     pairs: Optional[Dict[str, List[Tuple[int, int]]]] = None,
     area_contours: Optional[Dict[str, Tuple[List[int], List[int]]]] = None,
 ) -> Dict[str, float]:
-    """Compute (Δx, Δy) for all pairs + area diffs from a (468, 2) landmark array.
-
-    Args:
-        landmarks: (468, 2) normalized coordinates
-        pairs: Region → pair list mapping. Defaults to ALL_PAIRS.
-        area_contours: Region → (right_contour, left_contour). Defaults to AREA_CONTOURS.
-
-    Returns:
-        Dict of feature_name → value
-    """
+    """單筆 (468, 2) → 各 pair 的 (Δx, Δy) 與各區面積差。預設用 ALL_PAIRS / AREA_CONTOURS。"""
     if pairs is None:
         pairs = ALL_PAIRS
     if area_contours is None:
@@ -162,10 +139,8 @@ def compute_pair_features(
 
     for region_name, pair_list in pairs.items():
         for i, (r_idx, l_idx) in enumerate(pair_list, 1):
-            dx = landmarks[l_idx, 0] - landmarks[r_idx, 0]
-            dy = landmarks[l_idx, 1] - landmarks[r_idx, 1]
-            features[f"{region_name}_x_pair_{i}"] = dx
-            features[f"{region_name}_y_pair_{i}"] = dy
+            features[f"{region_name}_x_pair_{i}"] = landmarks[l_idx, 0] - landmarks[r_idx, 0]
+            features[f"{region_name}_y_pair_{i}"] = landmarks[l_idx, 1] - landmarks[r_idx, 1]
 
     for region_name, (contour_r, contour_l) in area_contours.items():
         area_r = shoelace_area(landmarks[contour_r])
@@ -176,21 +151,14 @@ def compute_pair_features(
 
 
 # ============================================================
-#  Step 1: Extract & Save
+#  Step 1：取點存 .npy
 # ============================================================
 
-def extract_and_save_landmarks(
-    aligned_dir: Path,
-    output_dir: Path,
-) -> Tuple[int, int]:
-    """Extract normalized landmarks from all aligned images, save as .npy per subject.
-
-    Args:
-        aligned_dir: Directory containing subject subdirectories with aligned .png images
-        output_dir: Directory to save {subject_id}.npy files, each with shape (n_images, 468, 2)
+def extract_and_save_landmarks(aligned_dir: Path, output_dir: Path) -> Tuple[int, int]:
+    """逐受試者從 aligned 影像取正規化 landmarks，每人存一個 (n_images, 468, 2) .npy。
 
     Returns:
-        (success_count, failed_count)
+        (success_count, failed_count)。
     """
     import mediapipe as mp
 
@@ -213,12 +181,10 @@ def extract_and_save_landmarks(
             failed += 1
             continue
 
-        all_landmarks = []
-        for img_path in images:
-            pts = extract_landmarks_from_image(img_path, face_mesh)
-            if pts is not None:
-                all_landmarks.append(pts)
-
+        all_landmarks = [
+            pts for img_path in images
+            if (pts := extract_landmarks_from_image(img_path, face_mesh)) is not None
+        ]
         if not all_landmarks:
             failed += 1
             continue
@@ -236,7 +202,7 @@ def extract_and_save_landmarks(
 
 
 # ============================================================
-#  Step 2: Compute Features from Saved Landmarks
+#  Step 2：從 .npy 算特徵
 # ============================================================
 
 def compute_regional_features(
@@ -245,17 +211,7 @@ def compute_regional_features(
     pairs: Optional[Dict[str, List[Tuple[int, int]]]] = None,
     area_contours: Optional[Dict[str, Tuple[List[int], List[int]]]] = None,
 ) -> pd.DataFrame:
-    """Read saved .npy landmarks, compute pair features, output CSV.
-
-    Args:
-        landmarks_dir: Directory containing {subject_id}.npy files
-        output_path: Path to save output CSV
-        pairs: Custom pair definitions (defaults to ALL_PAIRS)
-        area_contours: Custom area contours (defaults to AREA_CONTOURS)
-
-    Returns:
-        DataFrame with features
-    """
+    """讀 .npy landmarks，逐影像算 pair 特徵後取受試者平均，輸出 CSV。"""
     if pairs is None:
         pairs = ALL_PAIRS
     if area_contours is None:
@@ -266,26 +222,19 @@ def compute_regional_features(
 
     results = []
     for npy_file in npy_files:
-        subject_id = npy_file.stem
         arr = np.load(npy_file)  # (n_images, 468, 2)
-
-        img_features = []
-        for img_idx in range(arr.shape[0]):
-            feats = compute_pair_features(arr[img_idx], pairs, area_contours)
-            img_features.append(feats)
-
+        img_features = [compute_pair_features(arr[i], pairs, area_contours)
+                        for i in range(arr.shape[0])]
         avg = pd.DataFrame(img_features).mean().to_dict()
-        avg["subject_id"] = subject_id
+        avg["subject_id"] = npy_file.stem
         results.append(avg)
 
     df = pd.DataFrame(results)
-    cols = ["subject_id"] + [c for c in df.columns if c != "subject_id"]
-    df = df[cols]
+    df = df[["subject_id"] + [c for c in df.columns if c != "subject_id"]]
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(output_path, index=False)
 
-    n_pairs = sum(len(p) for p in pairs.values())
-    n_areas = len(area_contours)
-    logger.info(f"Done: {len(df)} subjects, {n_pairs * 2 + n_areas} features → {output_path}")
+    n_features = sum(len(p) for p in pairs.values()) * 2 + len(area_contours)
+    logger.info(f"Done: {len(df)} subjects, {n_features} features → {output_path}")
     return df

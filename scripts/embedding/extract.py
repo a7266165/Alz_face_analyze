@@ -27,8 +27,7 @@ from src.common.image_io import (
     iter_subject_dirs,
     load_subject,
 )
-from src.embedding import get_extractor
-from src.asymmetry import calculate_differences
+from src.embedding import get_extractor, calculate_differences
 
 logging.basicConfig(
     level=logging.INFO,

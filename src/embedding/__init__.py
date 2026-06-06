@@ -4,6 +4,7 @@
 提供多種深度學習特徵提取器的統一介面
 """
 
+from .asymmetry import calculate_differences
 from .extractor import (
     EmbeddingExtractor,
     DlibExtractor,
@@ -27,4 +28,6 @@ __all__ = [
     "EXTRACTORS",
     "get_extractor",
     "available_extractors",
+    # 鏡射不對稱特徵
+    "calculate_differences",
 ]
