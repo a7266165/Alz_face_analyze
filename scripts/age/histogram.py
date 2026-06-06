@@ -27,7 +27,7 @@ from src.config import (
     AGE_ANALYSIS_DIR, cohort_path,
     P_VISIT_TOKENS, P_SCORE_TOKENS, HC_VISIT_TOKENS, HC_SCORE_TOKENS,
 )
-from src.common.cohort import cohort_list
+from src.common.cohort import base_id_of, cohort_list
 from src.common.matching import match_by_age
 
 COLORS = {"NAD": "#9ecae1", "ACS": "#6baed6", "P": "#fc9272"}
@@ -61,7 +61,7 @@ def _plot_panel(ax, cohort, unit, title):
 def run(cohort, priority_groups=None):
     full = cohort_list(*cohort)
     full["group"] = full["Group"]
-    full["base_id"] = full["Group"] + full["Number"].astype(str)  # ID 已是完整鍵
+    full["base_id"] = full["ID"].map(base_id_of)
     p_ids, hc_ids = match_by_age(*cohort, priority=priority_groups, level="subject")
     matched = full[full["ID"].isin(set(p_ids) | set(hc_ids))].copy()
     pv_ids, hv_ids = match_by_age(*cohort, priority=priority_groups, level="visit")
