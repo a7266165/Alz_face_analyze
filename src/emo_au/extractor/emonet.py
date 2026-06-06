@@ -1,12 +1,7 @@
-"""
-EmoNet Emotion 特徵提取器
+"""EmoNet emotion 提取器:輸出 emotion 機率 + valence/arousal（[-1,1]），支援 5-class / 8-class。
 
-使用 EmoNet 模型提取 8-class emotion probability + valence/arousal
-支援 5-class 和 8-class 兩種模式
-
-Reference:
-  Toisoul et al., "Estimation of continuous valence and arousal levels
-  from faces in naturalistic conditions", Nature Machine Intelligence, 2021
+Reference: Toisoul et al., "Estimation of continuous valence and arousal levels
+from faces in naturalistic conditions", Nature Machine Intelligence, 2021.
 """
 
 import sys
@@ -30,13 +25,7 @@ logger = logging.getLogger(__name__)
 
 
 class EmoNetExtractor(EmoAUExtractor):
-    """
-    EmoNet Emotion 提取器
-
-    - Input: 256x256 RGB aligned face image
-    - Output: 7-class emotion probability (softmax, dropping contempt)
-              + valence [-1,1] + arousal [-1,1]
-    """
+    """輸入 256×256 RGB aligned 臉，輸出 harmonized 情緒機率（8-class softmax 去 contempt）+ valence/arousal（[-1,1]）。"""
 
     # 落地序照 EMONET_EMOTION_INDEX 過濾序（非 harmonized 序）
     _EMOTION_NAMES = [e for e in EMONET_EMOTION_INDEX.values() if e in HARMONIZED_EMOTIONS]
@@ -46,7 +35,6 @@ class EmoNetExtractor(EmoAUExtractor):
         self._device = device
         self._n_expression = n_expression
         self._model = None
-        self._available = None
 
     @property
     def model_name(self) -> str:
@@ -57,22 +45,11 @@ class EmoNetExtractor(EmoAUExtractor):
         # 落地序照 _EMOTION_NAMES（EMONET_EMOTION_INDEX 過濾序）+ valence/arousal
         return self._EMOTION_NAMES + ["valence", "arousal"]
 
-    def is_available(self) -> bool:
-        if self._available is not None:
-            return self._available
-        weight_path = EMONET_WEIGHTS_DIR / f"emonet_{self._n_expression}.pth"
-        if not weight_path.exists():
-            logger.warning(f"EmoNet 權重不存在: {weight_path}")
-            self._available = False
-        else:
-            self._available = True
-        return self._available
+    def _probe(self) -> bool:
+        return self._probe_weights(EMONET_WEIGHTS_DIR / f"emonet_{self._n_expression}.pth")
 
-    def initialize(self) -> None:
+    def _load(self) -> None:
         """載入 EmoNet 模型權重。"""
-        if self._model is not None:
-            return
-
         emonet_dir_str = str(EMONET_DIR)
         if emonet_dir_str not in sys.path:
             sys.path.insert(0, emonet_dir_str)
@@ -88,33 +65,29 @@ class EmoNetExtractor(EmoAUExtractor):
         self._model = model
         logger.info(f"EmoNet 模型載入完成 (n_expression={self._n_expression}, device={self._device})")
 
-    def extract(self, image: np.ndarray) -> Optional[Dict[str, float]]:
-        try:
-            rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-            rgb = cv2.resize(rgb, (256, 256))
+    def _extract(self, image: np.ndarray) -> Optional[Dict[str, float]]:
+        rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        rgb = cv2.resize(rgb, (256, 256))
 
-            # [0, 255] → [0, 1] tensor
-            tensor = torch.Tensor(rgb).permute(2, 0, 1).to(self._device) / 255.0
+        # [0, 255] → [0, 1] tensor
+        tensor = torch.Tensor(rgb).permute(2, 0, 1).to(self._device) / 255.0
 
-            with torch.no_grad():
-                output = self._model(tensor.unsqueeze(0))
+        with torch.no_grad():
+            output = self._model(tensor.unsqueeze(0))
 
-            # Emotion probabilities
-            expr_logits = output["expression"]
-            probs = nn.functional.softmax(expr_logits, dim=1).squeeze(0).cpu().numpy()
+        # Emotion probabilities
+        expr_logits = output["expression"]
+        probs = nn.functional.softmax(expr_logits, dim=1).squeeze(0).cpu().numpy()
 
-            # Map to harmonized emotions (drop contempt if 8-class)
-            result: Dict[str, float] = {}
-            for name in self._EMOTION_NAMES:
-                idx = self._NAME_TO_IDX[name]
-                if idx < len(probs):
-                    result[name] = float(probs[idx])
+        # Map to harmonized emotions (drop contempt if 8-class)
+        result: Dict[str, float] = {}
+        for name in self._EMOTION_NAMES:
+            idx = self._NAME_TO_IDX[name]
+            if idx < len(probs):
+                result[name] = float(probs[idx])
 
-            # Valence and arousal
-            result["valence"] = float(output["valence"].clamp(-1.0, 1.0).cpu().item())
-            result["arousal"] = float(output["arousal"].clamp(-1.0, 1.0).cpu().item())
+        # Valence and arousal
+        result["valence"] = float(output["valence"].clamp(-1.0, 1.0).cpu().item())
+        result["arousal"] = float(output["arousal"].clamp(-1.0, 1.0).cpu().item())
 
-            return result
-        except Exception as e:
-            logger.debug(f"  EmoNet 提取失敗: {e}")
-            return None
+        return result

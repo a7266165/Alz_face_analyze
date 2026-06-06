@@ -1,51 +1,37 @@
-"""
-OpenFace 3.0 AU 特徵提取器
+"""OpenFace 3.0 AU/emotion 提取器:openface-test API（FaceDetector + MultitaskPredictor），輸出 8 AU intensity、8 emotion、2D gaze。"""
 
-使用 openface-test Python API（FaceDetector + MultitaskPredictor）
-提取 8 AU intensity、8 emotions、2D gaze
-"""
-
-import tempfile
 from pathlib import Path
 from typing import Dict, List, Optional
 
-import cv2
 import numpy as np
 import torch
 import logging
 
 from .base import EmoAUExtractor
+from ._torch_patch import patched_torch_load
+from src.common.image_io import temp_image_png
 from src.emo_au.extractor.au_config import (
     OPENFACE_AU_INDEX,
     OPENFACE_EMOTION_INDEX,
     OPENFACE_GAZE_COLUMNS,
-    AUExtractionConfig,
+    OPENFACE_WEIGHTS_DIR,
 )
 
 logger = logging.getLogger(__name__)
 
 
 class OpenFaceExtractor(EmoAUExtractor):
-    """
-    OpenFace 3.0 AU 特徵提取器
-
-    使用 Python API：
-    - FaceDetector: RetinaFace 臉部偵測 + 裁切
-    - MultitaskPredictor: EfficientNet backbone 多任務預測
-      → 8 AU (DISFA), 8 emotions, 2D gaze (yaw/pitch)
-    """
+    """OpenFace 3.0:FaceDetector(RetinaFace 偵測+裁切) → MultitaskPredictor(EfficientNet 多任務) → 8 AU(DISFA)、8 emotion、2D gaze(yaw/pitch)。"""
 
     def __init__(
         self,
         weights_dir: Optional[Path] = None,
         device: Optional[str] = None,
     ):
-        config = AUExtractionConfig()
-        self._weights_dir = Path(weights_dir or config.openface_weights_dir)
-        self._device = device or config.openface_device
+        self._weights_dir = Path(weights_dir or OPENFACE_WEIGHTS_DIR)
+        self._device = device or "cuda"
         self._detector = None
         self._predictor = None
-        self._available = None
 
     @property
     def model_name(self) -> str:
@@ -58,96 +44,54 @@ class OpenFaceExtractor(EmoAUExtractor):
                 + list(OPENFACE_EMOTION_INDEX.values())
                 + list(OPENFACE_GAZE_COLUMNS))
 
-    def is_available(self) -> bool:
-        if self._available is not None:
-            return self._available
-        try:
-            import openface  # noqa: F401
-            retina_path = self._weights_dir / "Alignment_RetinaFace.pth"
-            mtl_path = self._weights_dir / "MTL_backbone.pth"
-            if not retina_path.exists() or not mtl_path.exists():
-                logger.warning(
-                    f"OpenFace 權重不存在: {self._weights_dir}\n"
-                    f"  請執行: openface download --output {self._weights_dir}"
-                )
-                self._available = False
-            else:
-                self._available = True
-        except ImportError:
-            logger.warning("openface-test 未安裝（pip install openface-test --no-deps）")
-            self._available = False
-        return self._available
+    def _probe(self) -> bool:
+        if not self._probe_import("openface", "pip install openface-test --no-deps"):
+            return False
+        retina = self._weights_dir / "Alignment_RetinaFace.pth"
+        mtl = self._weights_dir / "MTL_backbone.pth"
+        if retina.exists() and mtl.exists():
+            return True
+        logger.warning(f"OpenFace 權重不存在: {self._weights_dir}；"
+                       f"請執行: openface download --output {self._weights_dir}")
+        return False
 
-    def initialize(self) -> None:
-        """載入 OpenFace 3.0 FaceDetector + MultitaskPredictor（含 mobilenet 路徑 monkey-patch）。"""
-        if self._detector is not None:
-            return
-
+    def _load(self) -> None:
+        """載入 OpenFace 3.0 FaceDetector + MultitaskPredictor（含 mobilenet 路徑重導）。"""
         from openface.face_detection import FaceDetector
         from openface.multitask_model import MultitaskPredictor
 
         retina_path = str(self._weights_dir / "Alignment_RetinaFace.pth")
         mtl_path = str(self._weights_dir / "MTL_backbone.pth")
 
-        # openface 的 RetinaFace 內部 hardcode 了
-        # "./weights/mobilenetV1X0.25_pretrain.tar"，
-        # monkey-patch torch.load 重導到實際路徑
+        # RetinaFace 內部 hardcode "./weights/mobilenetV1X0.25_pretrain.tar"，建構時重導。
         mobilenet_path = str(self._weights_dir / "mobilenetV1X0.25_pretrain.tar")
-        original_torch_load = torch.load
-
-        def patched_load(f, *args, **kwargs):
-            if isinstance(f, str) and "mobilenetV1X0.25_pretrain.tar" in f:
-                f = mobilenet_path
-            return original_torch_load(f, *args, **kwargs)
 
         logger.info(f"載入 OpenFace 3.0 模型（device={self._device}）...")
-        try:
-            torch.load = patched_load
+        with patched_torch_load({"mobilenetV1X0.25_pretrain.tar": mobilenet_path}):
             self._detector = FaceDetector(
                 model_path=retina_path, device=self._device
             )
-        finally:
-            torch.load = original_torch_load
 
         self._predictor = MultitaskPredictor(
             model_path=mtl_path, device=self._device
         )
         logger.info("OpenFace 3.0 模型載入完成")
 
-    def extract(self, image: np.ndarray) -> Optional[Dict[str, float]]:
-        """
-        對單一影像（numpy BGR）提取特徵
-
-        FaceDetector.get_face() 是 path-only API，故在此將 numpy array 暫存為臨時檔案
-        再餵入（temp 檔處理為私有實作細節，不洩漏到契約）。
-        用 .png 無損暫存:與「直接讀原始對齊 PNG」像素一致，避免 JPEG 重壓縮改變輸出。
-        """
-        with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as f:
-            tmp_path = f.name
-            cv2.imwrite(tmp_path, image)
-
-        try:
-            return self._do_extract(tmp_path)
-        finally:
-            Path(tmp_path).unlink(missing_ok=True)
+    def _extract(self, image: np.ndarray) -> Optional[Dict[str, float]]:
+        """FaceDetector.get_face() 是 path-only API，故經 temp_image_png 暫存後餵入。"""
+        with temp_image_png(image) as path:
+            return self._do_extract(path)
 
     def _do_extract(self, image_path: str) -> Optional[Dict[str, float]]:
         """從檔案路徑提取 AU / emotion / gaze 特徵；偵測不到臉回 None。"""
-        try:
-            cropped_face, dets = self._detector.get_face(image_path)
-
-            if cropped_face is None or dets is None:
-                return None
-
-            emotion_output, gaze_output, au_output = (
-                self._predictor.predict(cropped_face)
-            )
-
-            return self._parse_outputs(emotion_output, gaze_output, au_output)
-
-        except Exception as e:
-            logger.debug(f"  提取失敗 {Path(image_path).name}: {e}")
+        cropped_face, dets = self._detector.get_face(image_path)
+        if cropped_face is None or dets is None:
             return None
+
+        emotion_output, gaze_output, au_output = (
+            self._predictor.predict(cropped_face)
+        )
+        return self._parse_outputs(emotion_output, gaze_output, au_output)
 
     def _parse_outputs(
         self,

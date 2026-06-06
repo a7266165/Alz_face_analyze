@@ -7,13 +7,16 @@ ndarray」。本模組是這些 I/O 的唯一真實來源:
   - iter_subject_dirs: 列舉個案子目錄（exclude / include prefix 過濾）
   - load_subject     : 個案資料夾 → List[img] 或 List[(Path, img)]
   - batch_apply      : 對 items 逐項套用 fn（per-item try/except→None + 進度 log）
+  - temp_image_png   : BGR ndarray → 暫存 .png 路徑（給只吃路徑的第三方 API 當 adapter）
 
 本模組需要 cv2 / numpy，由 producer（scripts/）import；extractor / predictor 的 base
 不得 import 本模組，以維持其 lazy / cv2-free 的 import。
 """
+import logging
+import tempfile
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Callable, List, Optional, Tuple, Union
-import logging
 
 import cv2
 import numpy as np
@@ -110,3 +113,18 @@ def batch_apply(
         ok = sum(1 for r in results if r is not None)
         logger.info(f"{label}: {ok}/{n} 成功")
     return results
+
+
+@contextmanager
+def temp_image_png(image: np.ndarray):
+    """把 BGR ndarray 寫成暫存 .png、yield 其路徑，離開時刪檔（給只吃路徑的第三方 API 當 adapter）。
+
+    用 .png 無損暫存:與「直接讀原始對齊 PNG」像素一致，避免 JPEG 重壓縮改變模型輸出。
+    """
+    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as f:
+        tmp_path = f.name
+        cv2.imwrite(tmp_path, image)
+    try:
+        yield tmp_path
+    finally:
+        Path(tmp_path).unlink(missing_ok=True)

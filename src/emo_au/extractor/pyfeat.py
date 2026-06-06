@@ -1,9 +1,4 @@
-"""
-Py-Feat AU 特徵提取器
-
-使用 py-feat (feat) 套件的 Detector API 提取 AU 與情緒特徵
-AU 輸出為 probability [0, 1]，情緒輸出為 probability [0, 1]
-"""
+"""Py-Feat AU/emotion 提取器:feat.Detector API，輸出 20 AU + 7 emotion 機率（皆 [0,1]）。"""
 
 from typing import Dict, List, Optional
 
@@ -24,16 +19,10 @@ logger = logging.getLogger(__name__)
 
 
 class PyFeatExtractor(EmoAUExtractor):
-    """
-    Py-Feat AU 特徵提取器
-
-    使用 feat.Detector 進行人臉偵測與 AU/情緒分析
-    輸出 20 AU probabilities + 7 emotion probabilities
-    """
+    """feat.Detector 偵測人臉並分析 AU/情緒，輸出 20 AU + 7 emotion 機率。"""
 
     def __init__(self, device: str = "cpu", **kwargs):
         self._detector = None
-        self._available = None
         self._device = device
 
     @property
@@ -45,18 +34,10 @@ class PyFeatExtractor(EmoAUExtractor):
         # 落地序照 extract:AU probabilities → emotion probabilities
         return list(PYFEAT_AU_MAP.keys()) + list(PYFEAT_EMOTION_MAP.keys())
 
-    def is_available(self) -> bool:
-        if self._available is not None:
-            return self._available
-        try:
-            from feat import Detector  # noqa: F401
-            self._available = True
-        except ImportError:
-            logger.warning("py-feat 未安裝，請執行: pip install py-feat")
-            self._available = False
-        return self._available
+    def _probe(self) -> bool:
+        return self._probe_import("feat", "pip install py-feat")
 
-    def initialize(self) -> None:
+    def _load(self) -> None:
         """載入 Py-Feat Detector。
 
         Monkey-patch Fex.compute_identities 成 no-op —
@@ -64,8 +45,6 @@ class PyFeatExtractor(EmoAUExtractor):
         violation fatal crash（>5000 張時必現）。我們只要 AU + emotion，
         不需要 identity 聚合。
         """
-        if self._detector is not None:
-            return
         from feat import Detector
         from feat.data import Fex
         if not getattr(Fex.compute_identities, "_patched", False):
@@ -80,7 +59,7 @@ class PyFeatExtractor(EmoAUExtractor):
         self._detector = Detector(device=self._device)
         logger.info(f"Py-Feat Detector 載入完成 (device={self._device})")
 
-    def extract(self, image: np.ndarray) -> Optional[Dict[str, float]]:
+    def _extract(self, image: np.ndarray) -> Optional[Dict[str, float]]:
         """從單一影像（BGR ndarray）提取 AU 和情緒特徵（假設已 initialize()）。
 
         直接把 array 餵進 py-feat，不寫 temp 檔。py-feat 的 detect_image 在
@@ -89,25 +68,20 @@ class PyFeatExtractor(EmoAUExtractor):
         故此處複製 detect_image 的 waterfall，只把「讀檔成 tensor」換成「由傳入
         array 轉成等價 tensor」，輸出與讀檔路徑 byte-identical。
         """
-        try:
-            fex = self._detect_array(image)
-            if fex is None or len(fex) == 0:
-                return None
-
-            row = fex.iloc[0]
-            features = {}
-            for pf_col in PYFEAT_AU_MAP:
-                if pf_col in fex.columns:
-                    features[pf_col] = float(row[pf_col])
-            for pf_col in PYFEAT_EMOTION_MAP:
-                if pf_col in fex.columns:
-                    features[pf_col] = float(row[pf_col])
-
-            return features if features else None
-
-        except Exception as e:
-            logger.debug(f"Py-Feat 提取失敗: {e}")
+        fex = self._detect_array(image)
+        if fex is None or len(fex) == 0:
             return None
+
+        row = fex.iloc[0]
+        features = {}
+        for pf_col in PYFEAT_AU_MAP:
+            if pf_col in fex.columns:
+                features[pf_col] = float(row[pf_col])
+        for pf_col in PYFEAT_EMOTION_MAP:
+            if pf_col in fex.columns:
+                features[pf_col] = float(row[pf_col])
+
+        return features if features else None
 
     def _detect_array(self, image: np.ndarray):
         """把 BGR ndarray 跑完 py-feat 偵測 waterfall，回傳 Fex（與 detect_image 同路徑）。

@@ -1,13 +1,7 @@
-"""
-POSTER++ (POSTER V2) Emotion 特徵提取器
+"""POSTER++ (POSTER V2) emotion 提取器:pyramid_trans_expr2，輸出 7-class emotion 機率（無 AU）。
 
-使用 POSTER V2 模型（pyramid_trans_expr2）
-提取 7-class emotion probability（無 AU 輸出）
-
-Reference:
-  Mao et al., "POSTER++: A simpler and stronger facial expression
-  recognition network", Pattern Recognition 2025
-  https://github.com/Talented-Q/POSTER_V2
+Reference: Mao et al., "POSTER++: A simpler and stronger facial expression
+recognition network", Pattern Recognition 2025. https://github.com/Talented-Q/POSTER_V2
 """
 
 import sys
@@ -21,6 +15,7 @@ import torchvision.transforms as transforms
 import logging
 
 from .base import EmoAUExtractor
+from ._torch_patch import patched_torch_load
 from src.emo_au.extractor.au_config import (
     POSTER_PP_EMOTION_INDEX,
     POSTER_PP_WEIGHTS_DIR,
@@ -34,13 +29,7 @@ _POSTER_V2_DIR = WEIGHTS_DIR / "POSTER_V2"
 
 
 class PosterPPExtractor(EmoAUExtractor):
-    """
-    POSTER++ (POSTER V2) Emotion 提取器
-
-    - Input: 224x224 RGB aligned face image
-    - Output: 7-class emotion probability (softmax)
-    - 無 AU 輸出
-    """
+    """輸入 224×224 RGB aligned 臉，softmax 輸出 7-class emotion 機率（無 AU）。"""
 
     def __init__(
         self,
@@ -51,7 +40,6 @@ class PosterPPExtractor(EmoAUExtractor):
         self._device = device or "cuda"
         self._model = None
         self._transform = None
-        self._available = None
 
     @property
     def model_name(self) -> str:
@@ -61,73 +49,36 @@ class PosterPPExtractor(EmoAUExtractor):
     def output_columns(self) -> List[str]:
         return list(POSTER_PP_EMOTION_INDEX.values())
 
-    def is_available(self) -> bool:
-        if self._available is not None:
-            return self._available
-        try:
-            checkpoint_path = self._weights_dir / "poster_pp_rafdb.pth"
-            ir50_path = self._weights_dir / "ir50.pth"
-            mobilefacenet_path = self._weights_dir / "mobilefacenet_model_best.pth.tar"
+    def _probe(self) -> bool:
+        return self._probe_weights(
+            self._weights_dir / "poster_pp_rafdb.pth",
+            self._weights_dir / "ir50.pth",
+            self._weights_dir / "mobilefacenet_model_best.pth.tar",
+        )
 
-            missing = []
-            if not checkpoint_path.exists():
-                missing.append(str(checkpoint_path))
-            if not ir50_path.exists():
-                missing.append(str(ir50_path))
-            if not mobilefacenet_path.exists():
-                missing.append(str(mobilefacenet_path))
-
-            if missing:
-                logger.warning(
-                    f"POSTER++ 權重不存在:\n  " + "\n  ".join(missing)
-                )
-                self._available = False
-            else:
-                self._available = True
-        except Exception as e:
-            logger.warning(f"POSTER++ 可用性檢查失敗: {e}")
-            self._available = False
-        return self._available
-
-    def initialize(self) -> None:
-        """載入 POSTER++ 模型（含 monkey-patch torch.load 重導 hardcode 權重路徑）。"""
-        if self._model is not None:
-            return
-
+    def _load(self) -> None:
+        """載入 POSTER++ 模型（torch.load 重導 hardcode 權重路徑 + pickle 訓練類別 shim）。"""
         # 把 POSTER_V2 repo 加入 sys.path 以便 import
         poster_v2_str = str(_POSTER_V2_DIR)
         if poster_v2_str not in sys.path:
             sys.path.insert(0, poster_v2_str)
 
-        # POSTER_V2 的 PosterV2_7cls.py 中 hardcode 了 weight 路徑，
-        # 我們 monkey-patch torch.load 來重定向路徑
-        original_torch_load = torch.load
-        weight_redirect = {
+        # PosterV2_7cls.py hardcode 了 ir50 / mobilefacenet 權重路徑，建構模型時重導。
+        # weights_only=False 以 setdefault 帶入（第三方載入未指定，等同強制）。
+        redirect = {
             "mobilefacenet_model_best.pth.tar": str(
                 self._weights_dir / "mobilefacenet_model_best.pth.tar"
             ),
             "ir50.pth": str(self._weights_dir / "ir50.pth"),
         }
-
-        def patched_load(f, *args, **kwargs):
-            f_str = str(f)
-            for key, redirect in weight_redirect.items():
-                if key in f_str:
-                    f = redirect
-                    break
-            kwargs.setdefault("map_location", lambda storage, loc: storage)
-            kwargs["weights_only"] = False
-            return original_torch_load(f, *args, **kwargs)
-
-        try:
-            torch.load = patched_load
+        with patched_torch_load(redirect,
+                                map_location=lambda storage, loc: storage,
+                                weights_only=False):
             # 避免重複 reload — 只在首次 import 時 patch
             if "models.PosterV2_7cls" in sys.modules:
                 del sys.modules["models.PosterV2_7cls"]
             from models.PosterV2_7cls import pyramid_trans_expr2
             model = pyramid_trans_expr2(img_size=224, num_classes=7)
-        finally:
-            torch.load = original_torch_load
 
         # 載入 task checkpoint
         # checkpoint 包含 RecorderMeter1 等訓練用 class，
@@ -185,29 +136,24 @@ class PosterPPExtractor(EmoAUExtractor):
 
         logger.info(f"POSTER++ 模型載入完成（device={self._device}）")
 
-    def extract(self, image: np.ndarray) -> Optional[Dict[str, float]]:
+    def _extract(self, image: np.ndarray) -> Optional[Dict[str, float]]:
         """numpy BGR 影像 → 7-class emotion probability。"""
-        try:
-            # BGR → RGB
-            rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        # BGR → RGB
+        rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-            # Transform
-            tensor = self._transform(rgb).unsqueeze(0).to(self._device)
+        # Transform
+        tensor = self._transform(rgb).unsqueeze(0).to(self._device)
 
-            # Forward
-            with torch.no_grad():
-                logits = self._model(tensor)
+        # Forward
+        with torch.no_grad():
+            logits = self._model(tensor)
 
-            # Softmax → probability
-            probs = torch.softmax(logits, dim=1).squeeze(0).cpu().numpy()
+        # Softmax → probability
+        probs = torch.softmax(logits, dim=1).squeeze(0).cpu().numpy()
 
-            # Map index → emotion name
-            result = {}
-            for idx, emo_name in POSTER_PP_EMOTION_INDEX.items():
-                result[emo_name] = float(probs[idx])
+        # Map index → emotion name
+        result = {}
+        for idx, emo_name in POSTER_PP_EMOTION_INDEX.items():
+            result[emo_name] = float(probs[idx])
 
-            return result
-
-        except Exception as e:
-            logger.debug(f"  POSTER++ 提取失敗: {e}")
-            return None
+        return result

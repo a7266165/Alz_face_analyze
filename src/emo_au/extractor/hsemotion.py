@@ -1,12 +1,8 @@
-"""
-HSEmotion Emotion 特徵提取器
+"""HSEmotion emotion 提取器:EfficientNet-based，輸出 7-class emotion 機率。
 
-使用 HSEmotion (EfficientNet-based) 模型提取 7-class emotion probability
-
-Reference:
-  Savchenko, A.V., "Facial expression and attributes recognition based
-  on multi-task learning of lightweight neural networks", 2021
-  https://github.com/HSE-asavchenko/face-emotion-recognition
+Reference: Savchenko, "Facial expression and attributes recognition based on
+multi-task learning of lightweight neural networks", 2021.
+https://github.com/HSE-asavchenko/face-emotion-recognition
 """
 
 from typing import Dict, List, Optional
@@ -28,20 +24,12 @@ HSEMOTION_LABEL_ORDER = [
 
 
 class HSEmotionExtractor(EmoAUExtractor):
-    """
-    HSEmotion Emotion 提取器
-
-    - Input: BGR aligned face image
-    - Output: 7-class emotion probability
-    - 無 AU 輸出
-    - 需要 hsemotion pip package
-    """
+    """輸入 BGR aligned 臉，輸出 7-class emotion 機率（無 AU）；需 hsemotion 套件。"""
 
     def __init__(self, device: str = "cuda", backbone: str = "enet_b2_7"):
         self._device = device
         self._backbone = backbone
         self._recognizer = None
-        self._available = None
 
     @property
     def model_name(self) -> str:
@@ -52,37 +40,21 @@ class HSEmotionExtractor(EmoAUExtractor):
         # 只輸出 7 情緒（harmonized 名稱、無 AU）；extract() 回 name→prob dict。
         return list(HARMONIZED_EMOTIONS)
 
-    def is_available(self) -> bool:
-        if self._available is not None:
-            return self._available
-        try:
-            from hsemotion.facial_emotions import HSEmotionRecognizer  # noqa: F401
-            self._available = True
-        except ImportError:
-            logger.warning(
-                "HSEmotion 套件未安裝。請執行: pip install hsemotion"
-            )
-            self._available = False
-        return self._available
+    def _probe(self) -> bool:
+        return self._probe_import("hsemotion.facial_emotions", "pip install hsemotion")
 
-    def initialize(self) -> None:
+    def _load(self) -> None:
         """載入 HSEmotion recognizer。"""
-        if self._recognizer is not None:
-            return
         from hsemotion.facial_emotions import HSEmotionRecognizer
         self._recognizer = HSEmotionRecognizer(
             model_name=self._backbone, device=self._device,
         )
         logger.info(f"HSEmotion 模型載入完成 (model={self._backbone}, device={self._device})")
 
-    def extract(self, image: np.ndarray) -> Optional[Dict[str, float]]:
-        try:
-            rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-            _, scores = self._recognizer.predict_emotions(rgb, logits=False)
-            return {
-                name: float(scores[i])
-                for i, name in enumerate(HSEMOTION_LABEL_ORDER)
-            }
-        except Exception as e:
-            logger.debug(f"  HSEmotion 提取失敗: {e}")
-            return None
+    def _extract(self, image: np.ndarray) -> Optional[Dict[str, float]]:
+        rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        _, scores = self._recognizer.predict_emotions(rgb, logits=False)
+        return {
+            name: float(scores[i])
+            for i, name in enumerate(HSEMOTION_LABEL_ORDER)
+        }

@@ -1,12 +1,7 @@
-"""
-DAN (Distract Your Attention Network) Emotion 特徵提取器
+"""DAN (Distract Your Attention Network) emotion 提取器:RAF-DB 訓練、ResNet18 + multi-head attention，輸出 7-class emotion 機率。
 
-使用 DAN 模型提取 7-class emotion probability
-RAF-DB trained, ResNet18 backbone + multi-head attention
-
-Reference:
-  Wen et al., "Distract Your Attention: Multi-head Cross Attention
-  Network for Facial Expression Recognition", 2023
+Reference: Wen et al., "Distract Your Attention: Multi-head Cross Attention Network
+for Facial Expression Recognition", 2023.
 """
 
 import sys
@@ -29,13 +24,7 @@ logger = logging.getLogger(__name__)
 
 
 class DANExtractor(EmoAUExtractor):
-    """
-    DAN Emotion 提取器
-
-    - Input: 224x224 RGB aligned face image
-    - Output: 7-class emotion probability (softmax)
-    - 無 AU 輸出
-    """
+    """輸入 224×224 RGB aligned 臉，softmax 輸出 7-class emotion 機率（無 AU）。"""
 
     # RAF-DB label order
     RAFDB_INDEX = {
@@ -58,7 +47,6 @@ class DANExtractor(EmoAUExtractor):
                 std=[0.229, 0.224, 0.225],
             ),
         ])
-        self._available = None
 
     @property
     def model_name(self) -> str:
@@ -69,22 +57,11 @@ class DANExtractor(EmoAUExtractor):
         # 只輸出 7 情緒（harmonized 名稱、無 AU）；extract() 回 name→prob dict。
         return list(HARMONIZED_EMOTIONS)
 
-    def is_available(self) -> bool:
-        if self._available is not None:
-            return self._available
-        checkpoint = DAN_WEIGHTS_DIR / self.CHECKPOINT_NAME
-        if not checkpoint.exists():
-            logger.warning(f"DAN 權重不存在: {checkpoint}")
-            self._available = False
-        else:
-            self._available = True
-        return self._available
+    def _probe(self) -> bool:
+        return self._probe_weights(DAN_WEIGHTS_DIR / self.CHECKPOINT_NAME)
 
-    def initialize(self) -> None:
+    def _load(self) -> None:
         """載入 DAN 模型（RAF-DB checkpoint）。"""
-        if self._model is not None:
-            return
-
         dan_dir_str = str(DAN_DIR)
         if dan_dir_str not in sys.path:
             sys.path.insert(0, dan_dir_str)
@@ -101,14 +78,10 @@ class DANExtractor(EmoAUExtractor):
         self._model = model
         logger.info(f"DAN 模型載入完成 (device={self._device})")
 
-    def extract(self, image: np.ndarray) -> Optional[Dict[str, float]]:
-        try:
-            rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-            tensor = self._transform(rgb).unsqueeze(0).to(self._device)
-            with torch.no_grad():
-                out, _, _ = self._model(tensor)
-            probs = torch.softmax(out, dim=1).squeeze(0).cpu().numpy()
-            return {name: float(probs[i]) for i, name in self.RAFDB_INDEX.items()}
-        except Exception as e:
-            logger.debug(f"  DAN 提取失敗: {e}")
-            return None
+    def _extract(self, image: np.ndarray) -> Optional[Dict[str, float]]:
+        rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        tensor = self._transform(rgb).unsqueeze(0).to(self._device)
+        with torch.no_grad():
+            out, _, _ = self._model(tensor)
+        probs = torch.softmax(out, dim=1).squeeze(0).cpu().numpy()
+        return {name: float(probs[i]) for i, name in self.RAFDB_INDEX.items()}

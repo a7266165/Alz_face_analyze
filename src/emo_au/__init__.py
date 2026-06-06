@@ -1,5 +1,1 @@
-"""
-Emotion / AU 分析模組
-
-提供 AU 特徵提取、Harmonization、時序聚合功能
-"""
+"""emotion / AU 特徵提取模組（extractor 子套件：單張臉 → name→value dict）。"""
