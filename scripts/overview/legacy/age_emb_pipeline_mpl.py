@@ -1,13 +1,21 @@
-"""scripts/overview/age_emb_pipeline_mpl.py
+"""scripts/overview/legacy/age_emb_pipeline_mpl.py
 Full four-branch age/embedding pipeline overview
 (Age + Embedding + Asymmetry + Emotion), matplotlib.
+
+Archived: superseded by ../age_emb_pipeline_mpl_refactor.py; kept runnable for
+reference. The shim below puts the parent dir on sys.path so the shared
+draw_age_emb_pipeline_common helpers resolve from legacy/.
 
 Output:
   workspace/overview/age_emb_pipeline_mpl.png
 
 Usage:
-    python scripts/overview/age_emb_pipeline_mpl.py
+    python scripts/overview/legacy/age_emb_pipeline_mpl.py
 """
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 import matplotlib.pyplot as plt
 from draw_age_emb_pipeline_common import *
 
