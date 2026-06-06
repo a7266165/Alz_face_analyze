@@ -1,9 +1,9 @@
-"""Prediction-residual (real − predicted) line plots by true age for ACS / NAD / P
-— full cohort + AD-vs-HC 1:1 age-matched subset.
+"""逐真實年齡的預測殘差（real − predicted）折線圖，分 ACS / NAD / P 三組
+—— 完整 cohort 與 AD-vs-HC 1:1 年齡配對子集。
 
-Outputs under <AGE_ANALYSIS_DIR>/<cohort>/lines/{full,1by1matched}/:
-  no_sliding_window/lines_internal.png       — residual by integer age (mean ± std)
-  sliding_window_10/lines_internal_sw10.png  — residual by 10-y sliding window
+輸出於 <AGE_ANALYSIS_DIR>/<cohort>/lines/{full,1by1matched}/：
+  no_sliding_window/lines_internal.png       —— 逐整數年齡的殘差（mean ± std）
+  sliding_window_10/lines_internal_sw10.png  —— 10 年滑動視窗的殘差
 """
 
 import argparse

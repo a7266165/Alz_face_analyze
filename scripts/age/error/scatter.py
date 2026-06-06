@@ -1,8 +1,8 @@
-"""Age-prediction scatter plots for ACS / NAD / P (two panels: HC = NAD+ACS vs Patients)
-— full cohort + AD-vs-HC 1:1 age-matched subset.
+"""年齡預測散點圖，分 ACS / NAD / P 三組（兩面板：HC = NAD+ACS vs Patient）
+—— 完整 cohort 與 AD-vs-HC 1:1 年齡配對子集。
 
-Outputs under <AGE_ANALYSIS_DIR>/<cohort>/scatter/{full,1by1matched}/:
-  predicted_ages_scatter.png  — real vs predicted age
+輸出於 <AGE_ANALYSIS_DIR>/<cohort>/scatter/{full,1by1matched}/：
+  predicted_ages_scatter.png  —— 真實 vs 預測年齡
 """
 
 import argparse

@@ -1,10 +1,10 @@
-"""Age-prediction error statistics for ACS / NAD / P (stratified CSVs + score correlation)
-— full cohort + AD-vs-HC 1:1 age-matched subset.
+"""年齡預測誤差統計，分 ACS / NAD / P 三組（分層 CSV + 分數相關）
+—— 完整 cohort 與 AD-vs-HC 1:1 年齡配對子集。
 
-Outputs under <AGE_ANALYSIS_DIR>/<cohort>/stat/{full,1by1matched}/:
-  age_error_stat_2.csv / age_error_sliding_window.csv  — age strata / 10-y sliding window
-  patient_{cdr,mmse,casi}_age_error.csv                — Patient CDR / MMSE / CASI strata
-  patient_{mmse,casi}_error_corr.csv (+ _vs_error.png) — score–error correlation (+ scatter)
+輸出於 <AGE_ANALYSIS_DIR>/<cohort>/stat/{full,1by1matched}/：
+  age_error_stat_2.csv / age_error_sliding_window.csv  —— 年齡分層 / 10 年滑動視窗
+  patient_{cdr,mmse,casi}_age_error.csv                —— Patient CDR / MMSE / CASI 分層
+  patient_{mmse,casi}_error_corr.csv (+ _vs_error.png) —— 分數–誤差相關（+ 散點）
 """
 
 import argparse

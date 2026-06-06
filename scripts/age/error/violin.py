@@ -1,9 +1,9 @@
-"""Age-prediction error violin plots for ACS / NAD / P
-— full cohort + AD-vs-HC 1:1 age-matched subset.
+"""年齡預測誤差小提琴圖，分 ACS / NAD / P 三組
+—— 完整 cohort 與 AD-vs-HC 1:1 年齡配對子集。
 
-Outputs under <AGE_ANALYSIS_DIR>/<cohort>/violin/{full,1by1matched}/<comparison>/:
-  AD vs HC / NAD / ACS     — slices of ONE ACS-first AD-vs-HC match (see run_hc_comparison)
-  MMSE / CASI high vs low  — score-median match (match_by_score)
+輸出於 <AGE_ANALYSIS_DIR>/<cohort>/violin/{full,1by1matched}/<comparison>/：
+  AD vs HC / NAD / ACS     —— 單一 ACS 優先 AD-vs-HC 配對的切片（見 run_hc_comparison）
+  MMSE / CASI high vs low  —— 分數中位數配對（match_by_score）
 """
 
 import argparse
