@@ -58,9 +58,9 @@ EXTRA_ROWS = ["contempt", "valence", "arousal", "gaze_pitch", "gaze_yaw"]
 _AU_RE = re.compile(r"AU0*(\d+)(_det)?$")
 
 
-# ── tiny stats (mirror scripts/utilities/stats_helpers.py; inlined to avoid that
-#    module's heavy xgboost import for two textbook formulas) ───────────────────
+# ── tiny stats:BH-FDR 就地內聯（單一教科書公式，不值得為它引入共用統計模組）─────────
 def bh_fdr(pvals):
+    """Benjamini–Hochberg FDR:把 p 值陣列轉成單調遞增的 q 值（NaN 原樣保留）。"""
     p = np.asarray(pvals, dtype=float)
     ok = ~np.isnan(p)
     out = np.full(p.shape, np.nan)
@@ -77,21 +77,6 @@ def bh_fdr(pvals):
     res[order] = q
     out[ok] = res
     return out
-
-
-def hedges_g(a, b):
-    """Bias-corrected standardized mean difference (a − b)."""
-    a = np.asarray(a, float); b = np.asarray(b, float)
-    a = a[~np.isnan(a)]; b = b[~np.isnan(b)]
-    na, nb = len(a), len(b)
-    if na < 2 or nb < 2:
-        return np.nan
-    pooled = np.sqrt(((na - 1) * a.var(ddof=1) + (nb - 1) * b.var(ddof=1)) / (na + nb - 2))
-    if pooled == 0:
-        return 0.0
-    d = (a.mean() - b.mean()) / pooled
-    J = 1.0 - (3.0 / (4.0 * (na + nb - 2) - 1.0))
-    return d * J
 
 
 def _stars(q):
@@ -167,7 +152,7 @@ def _kw_p(arrays):
     if np.allclose(np.concatenate(nonempty), np.concatenate(nonempty)[0]):
         return np.nan
     try:
-        return float(stats.kruskal(*[a for a in nonempty if len(a) >= 1]).pvalue)
+        return float(stats.kruskal(*nonempty).pvalue)
     except ValueError:
         return np.nan
 
@@ -199,7 +184,7 @@ def build_figure(fig_name, subtitle, rows, means_by_model, normmap, id_group,
         qmap = {}
 
     nrow, ncol = len(rows), len(models)
-    fig, axes = plt.subplots(nrow, ncol, figsize=(2.0 * ncol + 1.2, 1.05 * nrow + 1.0),
+    fig, axes = plt.subplots(nrow, ncol, figsize=(2.0 * ncol + 1.2, 2.1 * nrow + 1.0),
                              squeeze=False)
     for i, r in enumerate(rows):
         # 該列共用 y 軸範圍
@@ -257,6 +242,78 @@ def build_figure(fig_name, subtitle, rows, means_by_model, normmap, id_group,
     logger.info(f"saved {out_path}")
 
 
+def build_emotion_splits(subtitle_prefix, emotions, means_by_model, normmap,
+                         id_group, keep_ids, out_dir):
+    """把 F1 情緒圖按列拆成每情緒一張(1 列 × 模型),輸出 out_dir/<emotion>.png。
+    q 值沿用 F1 全體(7 情緒 × 模型)的 BH-FDR，與合併圖一致；每張內模型共用 y。"""
+    models = [m for m in MODEL_ORDER
+              if m in means_by_model and any(e in normmap[m] for e in emotions)]
+    emotions = [e for e in emotions if any(e in normmap[m] for m in models)]
+    if not models or not emotions:
+        return
+    # pass 1: 收集每格族群陣列 + KW p，FDR 範圍 = 全部情緒格(等同 F1)
+    cell, pvals = {}, []
+    for e in emotions:
+        for m in models:
+            actual = normmap[m].get(e)
+            if actual is None or actual not in means_by_model[m].columns:
+                continue
+            arrs = _cell_groups(means_by_model[m][actual], id_group, keep_ids)
+            cell[(e, m)] = arrs
+            pvals.append(((e, m), _kw_p(arrs)))
+    qmap = ({k: q for (k, _), q in zip(pvals, bh_fdr([p for _, p in pvals]))}
+            if pvals else {})
+
+    out_dir.mkdir(parents=True, exist_ok=True)
+    ncol = len(models)
+    for e in emotions:
+        allv = np.concatenate([cell[(e, m)][k] for m in models if (e, m) in cell
+                               for k in range(len(GROUPS)) if len(cell[(e, m)][k])]
+                              ) if any((e, m) in cell for m in models) else np.array([])
+        if allv.size:
+            lo, hi = float(np.min(allv)), float(np.max(allv))
+            pad = (hi - lo) * 0.12 or 0.05
+            ylim = (lo - pad, hi + pad)
+        else:
+            ylim = None
+        fig, axes = plt.subplots(1, ncol, figsize=(2.0 * ncol + 1.2, 3.2), squeeze=False)
+        for j, m in enumerate(models):
+            ax = axes[0][j]
+            ax.annotate(m, xy=(0.5, 1.12), xycoords="axes fraction",
+                        ha="center", va="bottom", fontsize=9, fontweight="bold")
+            if (e, m) not in cell:
+                _blank(ax)
+                continue
+            arrs = cell[(e, m)]
+            q = qmap.get((e, m), np.nan)
+            for k, (code, label, color) in enumerate(GROUPS):
+                a = arrs[k]
+                pos = k + 1
+                if len(a) >= 2 and np.ptp(a) > 0:
+                    pc = ax.violinplot([a], positions=[pos], showmedians=True, widths=0.8)
+                    for body in pc["bodies"]:
+                        body.set_facecolor(color); body.set_alpha(0.6)
+                    for key in ("cmedians", "cmins", "cmaxes", "cbars"):
+                        if key in pc:
+                            pc[key].set_color("gray"); pc[key].set_linewidth(0.8)
+                elif len(a) >= 1:
+                    ax.scatter([pos], [np.mean(a)], s=12, color=color)
+            ax.set_xticks([1, 2, 3])
+            ax.set_xticklabels([f"{lab}\n{len(arrs[k])}"
+                                for k, (_, lab, _) in enumerate(GROUPS)], fontsize=6)
+            if ylim:
+                ax.set_ylim(*ylim)
+            ax.tick_params(axis="y", labelsize=6)
+            qtxt = "n/a" if np.isnan(q) else f"q={q:.2g}{_stars(q)}"
+            ax.set_title(qtxt, fontsize=7,
+                         color=("black" if (not np.isnan(q) and q < .05) else "gray"))
+        fig.suptitle(f"{e} — {subtitle_prefix}", fontsize=11, y=1.02)
+        fig.tight_layout(rect=(0, 0, 1, 0.98))
+        fig.savefig(str(out_dir / f"{e}.png"), dpi=130, bbox_inches="tight")
+        plt.close(fig)
+        logger.info(f"saved {out_dir / f'{e}.png'}")
+
+
 def _figures(normmap):
     """依跨模型欄位聯集(normalized)切成三家族的(fig_name, 說明, 列)。"""
     union = set().union(*[set(nm) for nm in normmap.values()]) if normmap else set()
@@ -304,7 +361,7 @@ def build_skeleton(fig_name, subtitle, rows, normmap, out_path):
     if not models or not rows:
         return
     fig, axes = plt.subplots(len(rows), len(models),
-                             figsize=(2.0 * len(models) + 1.2, 1.05 * len(rows) + 1.0),
+                             figsize=(2.0 * len(models) + 1.2, 2.1 * len(rows) + 1.0),
                              squeeze=False)
     for i, r in enumerate(rows):
         for j, m in enumerate(models):
@@ -410,6 +467,16 @@ def main():
                    f"  | {fam_label}; KW q (BH-FDR within figure)")
             build_figure(fig_name, sub, rows, means_by_model, normmap, id_group,
                          keep_ids, out_base / variant / f"{fig_name}.png")
+
+        # F1 情緒圖另外按情緒拆成每張一情緒 → <variant>/emotions/<emotion>.png
+        emo_rows = next((r for fn, _, r in figures if fn == "F1_emotions"), [])
+        if emo_rows:
+            build_emotion_splits(
+                f"emotion (per-subject mean), {variant} | "
+                f"AD={n_by['P']} NAD={n_by['NAD']} ACS={n_by['ACS']} | "
+                f"KW q (BH-FDR within emotions)",
+                emo_rows, means_by_model, normmap, id_group, keep_ids,
+                out_base / variant / "emotions")
 
 
 if __name__ == "__main__":
