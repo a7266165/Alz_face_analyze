@@ -1,23 +1,18 @@
 """
 scripts/age/error/stat.py
-Age prediction error statistics — stratified CSVs and correlation analysis.
+Age-prediction error statistics — stratified CSVs and score-correlation analysis,
+for the full cohort and the AD-vs-HC 1:1 age-matched subset.
 
-Cohort is built with the canonical ``src.common.cohort.cohort_list`` — the same
-gold-standard filtering ``histogram.py`` uses — so the CDR/MMSE/visit filters
-actually applied match the output directory's cohort name. Errors are computed
-directly from the raw MiVOLO predictions.
+Errors come straight from the raw MiVOLO predictions; the shared error frame is
+built by ``src.age.utils.build_cohort_with_age_error``.
 
-Outputs (under <AGE_ANALYSIS_DIR>/<visit_dir>/<cdr_mmse_dir>/stat/{full,1by1matched}/
-— full cohort and the AD-vs-HC 1:1 age-matched subset):
-  age_error_stat_2.csv          — age-stratified stats per group
-  age_error_sliding_window.csv  — 10-year sliding window stats
-  patient_cdr_age_error.csv     — Patient CDR-stratified stats
-  patient_mmse_age_error.csv    — Patient MMSE-stratified stats
-  patient_casi_age_error.csv    — Patient CASI-stratified stats
-  patient_mmse_error_corr.csv   — MMSE-error correlation
-  patient_casi_error_corr.csv   — CASI-error correlation
-  patient_mmse_vs_error.png     — MMSE-error scatter
-  patient_casi_vs_error.png     — CASI-error scatter
+Outputs (under <AGE_ANALYSIS_DIR>/<visit_dir>/<cdr_mmse_dir>/stat/{full,1by1matched}/):
+  age_error_stat_2.csv               — age-stratified stats per group
+  age_error_sliding_window.csv       — 10-year sliding window stats
+  patient_cdr_age_error.csv          — Patient CDR-stratified stats
+  patient_{mmse,casi}_age_error.csv  — Patient MMSE / CASI-stratified stats
+  patient_{mmse,casi}_error_corr.csv — MMSE / CASI–error correlation
+  patient_{mmse,casi}_vs_error.png   — MMSE / CASI–error scatter
 
 Usage:
   conda run -n Alz_face_main_analysis python scripts/age/error/stat.py
@@ -46,8 +41,7 @@ from src.config import (
     P_VISIT_TOKENS, P_SCORE_TOKENS, HC_VISIT_TOKENS, HC_SCORE_TOKENS,
     DEFAULT_COHORT_TOKENS,
 )
-from src.common.cohort import cohort_list
-from src.age.utils import load_age_error
+from src.age.utils import build_cohort_with_age_error
 from src.common.matching import match_by_age
 
 logging.basicConfig(level=logging.INFO,
@@ -240,10 +234,7 @@ def main():
     logger.info(f"cohort = {cohort}")
     logger.info(f"stat-dir    = {stat_dir}")
 
-    full = cohort_list(*cohort).merge(load_age_error(*cohort), on="ID", how="inner")
-    full["group"] = full["Group"]
-    full["real_age"] = full["Age"]
-    full["predicted_age"] = full["real_age"] - full["age_error"]
+    full = build_cohort_with_age_error(*cohort)
     p_ids, hc_ids = match_by_age(*cohort, priority=["ACS"])  # ACS-first: rare ACS controls matched first
     matched = full[full["ID"].isin(set(p_ids) | set(hc_ids))].reset_index(drop=True)
     logger.info(f"full={len(full)} ({full['group'].value_counts().to_dict()}), "

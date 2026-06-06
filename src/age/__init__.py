@@ -1,14 +1,19 @@
 """年齡模組。
 
-``load_predicted_ages`` / ``load_age_error`` 可在無 cv2/torch 的環境（例如 meta
-分析）直接 import；import 本套件會連帶拉進 pandas + cohort，但不涉及 cv2/torch。
+``load_predicted_ages`` / ``build_cohort_with_age_error`` / ``calculate_age_error`` 可在無
+cv2/torch 的環境（例如 meta 分析）直接 import；import 本套件會連帶拉進 pandas + cohort，但不涉及 cv2/torch。
 預測器類別依賴 cv2 等重套件，採延遲載入，只有在真正存取時才會 import ``predictor``。
 """
 
-from .utils import load_age_error, load_predicted_ages
+from .utils import (
+    build_cohort_with_age_error,
+    calculate_age_error,
+    load_predicted_ages,
+)
 
 __all__ = [
-    "load_age_error",
+    "build_cohort_with_age_error",
+    "calculate_age_error",
     "load_predicted_ages",
     "BasePredictor",
     "MiVOLOPredictor",

@@ -1,8 +1,9 @@
 """
 年齡模組共用工具
 
-load_predicted_ages: 載入預測年齡 JSON，回傳 {ID: mean_age}（函數本身僅用標準函式庫）。
-load_age_error:      指定 cohort 的逐受試者年齡誤差 DataFrame[ID, age_error]。
+load_predicted_ages:         載入預測年齡 JSON，回傳 {ID: mean_age}（函數本身僅用標準函式庫）。
+calculate_age_error:         年齡預測誤差 = 真實 − 預測（逐元素，釘正負號慣例）。
+build_cohort_with_age_error: cohort 表外掛年齡預測欄（real_age/predicted_age/age_error/group）的寬表。
 
 依賴（pandas / config / cohort）一律於模組開頭 import；import 本模組會連帶拉進
 pandas + cohort，但不涉及 cv2/torch，meta 等輕環境仍可直接 import。
@@ -42,20 +43,27 @@ def load_predicted_ages(path: Path) -> dict:
     return out
 
 
-def load_age_error(p_visit, p_score, hc_visit, hc_score, *,
-                   predictions_file=None):
-    """指定 cohort 的逐受試者年齡誤差，回 DataFrame[ID, age_error]。
+def calculate_age_error(real_age, predicted_age):
+    """年齡預測誤差 = 真實年齡 − 預測年齡（正值 = 預測偏年輕）。逐元素，吃 Series/array/scalar。"""
+    return real_age - predicted_age
 
-    age_error = real_age − predicted_age。real_age 取自 cohort（cohort_list 的
-    Age，已轉數值），predicted_age 取自 predictions_file（預設 PREDICTED_AGES_FILE）。
-    無預測值的受試者已 dropna。其餘 metadata（group / 分數等）請消費端自行從
-    cohort_list 取，再以 ID join。
+
+def build_cohort_with_age_error(p_visit, p_score, hc_visit, hc_score, *,
+                                predictions_file=None):
+    """指定 cohort 的 cohort 表外掛年齡預測欄，供 error 繪圖/統計腳本共用。
+
+    在 cohort（cohort_list：真實 Age + metadata）上對齊預測值（load_predicted_ages）
+    並經 calculate_age_error 算出誤差；無預測值（或 Age 非數值）的受試者已 dropna。
+    下游各取所需欄位。
+
+    Returns:
+        DataFrame：除 cohort_list 既有欄（ID/Group/Age/MMSE/CASI/Global_CDR …）外，
+        另含 group=Group、real_age、predicted_age、age_error。
     """
-    if predictions_file is None:
-        predictions_file = PREDICTED_AGES_FILE
-    preds = load_predicted_ages(predictions_file)
-    df = cohort_list(p_visit, p_score, hc_visit, hc_score)
-    real_age = pd.to_numeric(df["Age"], errors="coerce")
-    predicted_age = df["ID"].map(preds)
-    out = pd.DataFrame({"ID": df["ID"], "age_error": real_age - predicted_age})
-    return out.dropna(subset=["age_error"]).reset_index(drop=True)
+    preds = load_predicted_ages(predictions_file or PREDICTED_AGES_FILE)
+    df = cohort_list(p_visit, p_score, hc_visit, hc_score).copy()
+    df["group"] = df["Group"]
+    df["real_age"] = pd.to_numeric(df["Age"], errors="coerce")
+    df["predicted_age"] = df["ID"].map(preds)
+    df["age_error"] = calculate_age_error(df["real_age"], df["predicted_age"])
+    return df.dropna(subset=["age_error"]).reset_index(drop=True)

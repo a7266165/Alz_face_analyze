@@ -1,15 +1,12 @@
 """
 scripts/age/error/lines.py
-Prediction-residual (real − predicted) line plots by true age, for the
-internal ACS / NAD / P groups.
+Prediction-residual (real − predicted) line plots by true age, for the internal
+ACS / NAD / P groups — full cohort and the AD-vs-HC 1:1 age-matched subset.
 
-Cohort is built with the canonical ``src.common.cohort.cohort_list`` — the same
-gold-standard filtering ``histogram.py`` uses — so the CDR/MMSE/visit filters
-actually applied match the output directory's cohort name. Residuals are computed
-directly from the raw MiVOLO predictions (no age-calibration involved).
+Residuals come straight from the raw MiVOLO predictions (no age-calibration); the
+shared error frame is built by ``src.age.utils.build_cohort_with_age_error``.
 
-Outputs (under <AGE_ANALYSIS_DIR>/<visit_dir>/<cdr_mmse_dir>/lines/), for both the
-full cohort and the AD-vs-HC 1:1 age-matched subset:
+Outputs (under <AGE_ANALYSIS_DIR>/<visit_dir>/<cdr_mmse_dir>/lines/):
   {full,1by1matched}/no_sliding_window/lines_internal.png       — residual by integer age (mean ± std)
   {full,1by1matched}/sliding_window_10/lines_internal_sw10.png  — residual by 10-y sliding window
 
@@ -28,7 +25,6 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))  # scripts/
 from _paths import PROJECT_ROOT  # noqa: F401
@@ -39,8 +35,7 @@ from src.config import (
     P_VISIT_TOKENS, P_SCORE_TOKENS, HC_VISIT_TOKENS, HC_SCORE_TOKENS,
     DEFAULT_COHORT_TOKENS,
 )
-from src.common.cohort import cohort_list
-from src.age.utils import load_age_error
+from src.age.utils import build_cohort_with_age_error
 from src.common.matching import match_by_age
 
 logging.basicConfig(level=logging.INFO,
@@ -150,10 +145,7 @@ def main():
     logger.info(f"cohort = {cohort}")
     logger.info(f"output-dir  = {output_dir}")
 
-    full = cohort_list(*cohort).merge(load_age_error(*cohort), on="ID", how="inner")
-    full["group"] = full["Group"]
-    full["real_age"] = full["Age"]
-    full["predicted_age"] = full["real_age"] - full["age_error"]
+    full = build_cohort_with_age_error(*cohort)
     full["age_int"] = full["real_age"].astype(int)
     p_ids, hc_ids = match_by_age(*cohort, priority=["ACS"])  # ACS-first: rare ACS controls matched first
     matched = full[full["ID"].isin(set(p_ids) | set(hc_ids))].reset_index(drop=True)

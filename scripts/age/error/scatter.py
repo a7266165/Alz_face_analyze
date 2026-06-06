@@ -1,10 +1,9 @@
 """
 scripts/age/error/scatter.py
-Age prediction scatter plots (internal ACS / NAD / P).
+Age-prediction scatter plots (internal ACS / NAD / P) — full cohort and the
+AD-vs-HC 1:1 age-matched subset, two panels (HC = NAD+ACS vs Patients).
 
-Cohort is built with the canonical ``src.common.cohort.cohort_list`` (same
-gold-standard filtering as histogram / stat / lines); both the full cohort and
-the AD-vs-HC 1:1 age-matched subset are plotted.
+The shared error frame is built by ``src.age.utils.build_cohort_with_age_error``.
 
 Outputs (under <AGE_ANALYSIS_DIR>/<visit_dir>/<cdr_mmse_dir>/scatter/):
   full/predicted_ages_scatter.png         — HC (NAD+ACS) vs P, full cohort
@@ -35,8 +34,7 @@ from src.config import (
     P_VISIT_TOKENS, P_SCORE_TOKENS, HC_VISIT_TOKENS, HC_SCORE_TOKENS,
     DEFAULT_COHORT_TOKENS,
 )
-from src.common.cohort import cohort_list
-from src.age.utils import load_age_error
+from src.age.utils import build_cohort_with_age_error
 from src.common.matching import match_by_age
 
 logging.basicConfig(level=logging.INFO,
@@ -127,10 +125,7 @@ def main():
     logger.info(f"cohort = {cohort}")
     logger.info(f"output-dir  = {output_dir}")
 
-    full = cohort_list(*cohort).merge(load_age_error(*cohort), on="ID", how="inner")
-    full["group"] = full["Group"]
-    full["real_age"] = full["Age"]
-    full["predicted_age"] = full["real_age"] - full["age_error"]
+    full = build_cohort_with_age_error(*cohort)
     p_ids, hc_ids = match_by_age(*cohort, priority=["ACS"])  # ACS-first: rare ACS controls matched first
     matched = full[full["ID"].isin(set(p_ids) | set(hc_ids))].reset_index(drop=True)
     logger.info(f"full={len(full)} ({full['group'].value_counts().to_dict()}), "

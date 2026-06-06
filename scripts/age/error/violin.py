@@ -1,22 +1,14 @@
 """
 scripts/age/error/violin.py
 Age prediction error violin plots — full cohort and 1:1 age-matched comparisons.
+The shared error frame is built by ``src.age.utils.build_cohort_with_age_error``.
 
-Cohort is built with the canonical ``src.common.cohort.cohort_list`` (same
-gold-standard filtering as histogram / stat / lines). Comparisons:
-  AD vs HC / NAD / ACS      — slices of ONE ACS-first match (see note below)
-  MMSE / CASI high vs low   — score-median match  (canonical match_by_score)
-
-The three AD-vs-{HC,NAD,ACS} matched arms are subsets of a *single* ACS-first
-AD-vs-HC match (``priority=["ACS"]``): the rare ACS controls are matched first,
-the remainder against NAD. NAD/ACS comparisons are then just the NAD-paired /
-ACS-paired slices of that one match, so they stay consistent with ad_vs_hc and
-with scatter/lines/stat (HC = NAD ∪ ACS, e.g. 412 = 382 NAD + 30 ACS) rather
-than being an independent re-match (which over-counts NAD, e.g. 404).
+Comparisons:
+  AD vs HC / NAD / ACS      — slices of ONE ACS-first AD-vs-HC match (see run_hc_comparison)
+  MMSE / CASI high vs low   — score-median match (canonical match_by_score)
 
 Each comparison outputs both the full cohort and the 1:1 age-matched subset:
-  violin/full/{comparison}/...
-  violin/1by1matched/{comparison}/...
+  violin/{full,1by1matched}/{comparison}/...
 
 Usage:
   conda run -n Alz_face_main_analysis python scripts/age/error/violin.py
@@ -43,7 +35,7 @@ from src.config import (
     DEFAULT_COHORT_TOKENS,
 )
 from src.common.cohort import cohort_list
-from src.age.utils import load_age_error
+from src.age.utils import build_cohort_with_age_error
 from src.common.matching import (match_by_age, match_by_score,
                                  split_by_group, split_by_score)
 
@@ -182,8 +174,7 @@ def main():
     logger.info(f"cohort = {cohort}")
     logger.info(f"output-dir  = {output_dir}")
 
-    df_all = cohort_list(*cohort).merge(load_age_error(*cohort), on="ID", how="inner")
-    df_all["group"] = df_all["Group"]
+    df_all = build_cohort_with_age_error(*cohort)
     logger.info(f"loaded {len(df_all)} rows "
                 f"({df_all['group'].value_counts().to_dict()})")
 
