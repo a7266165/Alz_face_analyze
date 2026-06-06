@@ -1,219 +1,148 @@
-"""
-process_angles.py
-遍歷有 1200 張相片的資料夾，使用兩種方法計算頭部旋轉角度
-並將訊號圖儲存到 workspace/rotation/PnP 與 workspace/rotation/vector_angle
+"""頭部旋轉角度分析 — producer。
 
-功能：
-- 自動跳過已處理過的資料夾（檢查輸出圖片是否存在）
+遍歷各類別中相片數 == TARGET_COUNT 的資料夾，每個資料夾以向量法與 PnP 法各算一次
+頭部旋轉角度，存訊號圖（ROTATION_FIG_DIR）與角度序列 npy（ROTATION_FEATURES_DIR）。
+圖與 npy 都已存在的資料夾自動跳過。
 """
 
 import sys
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
+from typing import List, Tuple
+
+import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
-from _paths import PROJECT_ROOT
+from _paths import PROJECT_ROOT  # noqa: F401  副作用：把 PROJECT_ROOT/scripts 加進 sys.path
 
-from src.rotation import VectorAngleCalculator, PnPAngleCalculator
-from src.rotation.plotter import AnglePlotter, process_single_folder
-from src.config import RAW_IMAGES_DIR
+from src.common.cohort import base_id_of
+from src.config import RAW_IMAGES_DIR, ROTATION_FEATURES_DIR, ROTATION_FIG_DIR
+from src.rotation import (
+    AnglePlotter,
+    PnPAngleCalculator,
+    SequenceResult,
+    VectorAngleCalculator,
+)
 
-
-# ============================================================
-#  設定
-# ============================================================
-
-# 三個類別的路徑
 CATEGORIES = {
     "ACS": RAW_IMAGES_DIR / "health" / "ACS",
     "NAD": RAW_IMAGES_DIR / "health" / "NAD",
     "Patient": RAW_IMAGES_DIR / "patient" / "good",
 }
 
-# 輸出目錄
-OUTPUT_DIR_PNP = PROJECT_ROOT / "workspace" / "rotation" / "fig" / "PnP"
-OUTPUT_DIR_VECTOR = PROJECT_ROOT / "workspace" / "rotation" / "fig" / "vector_angle"
-FEATURES_DIR_PNP = PROJECT_ROOT / "workspace" / "rotation" / "features" / "PnP"
-FEATURES_DIR_VECTOR = PROJECT_ROOT / "workspace" / "rotation" / "features" / "vector_angle"
+OUTPUT_DIR_PNP = ROTATION_FIG_DIR / "PnP"
+OUTPUT_DIR_VECTOR = ROTATION_FIG_DIR / "vector_angle"
+FEATURES_DIR_PNP = ROTATION_FEATURES_DIR / "PnP"
+FEATURES_DIR_VECTOR = ROTATION_FEATURES_DIR / "vector_angle"
 
-# 目標相片數量
 TARGET_COUNT = 1200
 
 
-# ============================================================
-#  工具函數
-# ============================================================
+# ── coordinator：對單一資料夾跑兩法、存圖 + 角度 npy ──────────────────────────
 
-def count_images(folder: Path) -> int:
-    """計算資料夾中的圖片數量"""
-    if not folder.exists():
-        return 0
-    return len(list(folder.glob("*.jpg")))
+def _save_angles_npy(result: SequenceResult, output_path: Path) -> None:
+    """角度序列存 npy，shape (3, T)，列序 pitch/yaw/roll。"""
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    np.save(output_path, np.array([result.pitch_list, result.yaw_list, result.roll_list]))
 
 
-def get_qualified_folders(category_path: Path, target_count: int) -> list[Path]:
-    """取得符合條件（圖片數量 = target_count）的資料夾"""
+def process_single_folder(folder_path: Path, verbose: bool = True) -> Tuple[SequenceResult, SequenceResult]:
+    """資料夾分別用向量法、PnP 法計算，各存訊號圖與角度 npy，回 (vector, pnp)。"""
+    name = folder_path.name
+
+    if verbose:
+        print("  [Vector] ", end="")
+    vector_calc = VectorAngleCalculator()
+    vector_result = vector_calc.process_folder(folder_path, verbose=verbose)
+    vector_calc.close()
+    AnglePlotter.plot_sequence(vector_result, OUTPUT_DIR_VECTOR / f"{name}.png")
+    _save_angles_npy(vector_result, FEATURES_DIR_VECTOR / f"{name}.npy")
+
+    if verbose:
+        print("  [PnP] ", end="")
+    pnp_calc = PnPAngleCalculator()
+    pnp_result = pnp_calc.process_folder(folder_path, verbose=verbose)
+    pnp_calc.close()
+    AnglePlotter.plot_sequence(pnp_result, OUTPUT_DIR_PNP / f"{name}.png")
+    _save_angles_npy(pnp_result, FEATURES_DIR_PNP / f"{name}.npy")
+
+    return vector_result, pnp_result
+
+
+# ── 資料夾挑選與斷點 ─────────────────────────────────────────────────────────
+
+def get_qualified_folders(category_path: Path) -> List[Path]:
+    """類別下相片數恰為 TARGET_COUNT 的資料夾，依名稱排序。"""
     if not category_path.exists():
         return []
-
-    qualified = []
-    for folder in category_path.iterdir():
-        if folder.is_dir() and count_images(folder) == target_count:
-            qualified.append(folder)
-
-    return sorted(qualified, key=lambda x: x.name)
-
-
-def extract_person_id(folder_name: str) -> str:
-    """從資料夾名稱提取人員 ID (例如: ACS1-1 -> ACS1)"""
-    if '-' in folder_name:
-        return folder_name.rsplit('-', 1)[0]
-    return folder_name
-
-
-def is_fully_processed(
-    folder_name: str,
-    category: str,
-) -> bool:
-    """檢查資料夾是否圖片與 npy 都已處理完成"""
-    return all(
-        (d / category / f"{folder_name}{ext}").exists()
-        for d in (OUTPUT_DIR_PNP, OUTPUT_DIR_VECTOR)
-        for ext in (".png",)
-    ) and all(
-        (d / category / f"{folder_name}.npy").exists()
-        for d in (FEATURES_DIR_PNP, FEATURES_DIR_VECTOR)
+    return sorted(
+        (d for d in category_path.iterdir()
+         if d.is_dir() and len(list(d.glob("*.jpg"))) == TARGET_COUNT),
+        key=lambda d: d.name,
     )
 
 
-# ============================================================
-#  主程式
-# ============================================================
+def is_fully_processed(folder_name: str) -> bool:
+    """兩法的訊號圖（.png）與角度 npy 是否都已存在。"""
+    figs = (d / f"{folder_name}.png" for d in (OUTPUT_DIR_PNP, OUTPUT_DIR_VECTOR))
+    npys = (d / f"{folder_name}.npy" for d in (FEATURES_DIR_PNP, FEATURES_DIR_VECTOR))
+    return all(p.exists() for p in (*figs, *npys))
+
+
+# ── 主程式 ───────────────────────────────────────────────────────────────────
 
 def main():
     print("=" * 70)
-    print("頭部旋轉角度分析")
-    print(f"開始時間: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print(f"目標相片數量: {TARGET_COUNT}")
+    print(f"頭部旋轉角度分析  開始: {datetime.now():%Y-%m-%d %H:%M:%S}  目標張數: {TARGET_COUNT}")
     print("=" * 70)
 
-    # 建立輸出目錄
     for d in (OUTPUT_DIR_PNP, OUTPUT_DIR_VECTOR, FEATURES_DIR_PNP, FEATURES_DIR_VECTOR):
         d.mkdir(parents=True, exist_ok=True)
 
-    # 為每個類別建立子目錄
-    for category in CATEGORIES.keys():
-        for d in (OUTPUT_DIR_PNP, OUTPUT_DIR_VECTOR, FEATURES_DIR_PNP, FEATURES_DIR_VECTOR):
-            (d / category).mkdir(parents=True, exist_ok=True)
+    stats = {cat: {"persons": set(), "sessions": 0, "ok": 0, "fail": 0, "skip": 0}
+             for cat in CATEGORIES}
 
-    # 統計資訊
-    stats = {cat: {"人": set(), "人次": 0, "處理成功": 0, "處理失敗": 0, "已跳過": 0}
-             for cat in CATEGORIES.keys()}
-
-    total_processed = 0
-    total_failed = 0
-    total_skipped = 0
-
-    # 遍歷每個類別
     for category, category_path in CATEGORIES.items():
-        print(f"\n{'─' * 70}")
-        print(f"類別: {category}")
-        print(f"路徑: {category_path}")
-        print(f"{'─' * 70}")
-
+        print(f"\n{'─' * 70}\n類別: {category}  路徑: {category_path}\n{'─' * 70}")
         if not category_path.exists():
-            print(f"  [WARN] 路徑不存在，跳過")
+            print("  [WARN] 路徑不存在，跳過")
             continue
 
-        # 取得符合條件的資料夾
-        qualified_folders = get_qualified_folders(category_path, TARGET_COUNT)
-
-        if not qualified_folders:
-            print(f"  [WARN] 沒有找到 {TARGET_COUNT} 張相片的資料夾")
+        folders = get_qualified_folders(category_path)
+        if not folders:
+            print(f"  [WARN] 沒有 {TARGET_COUNT} 張相片的資料夾")
             continue
 
-        # 先統計已處理數量
-        already_done = sum(
-            1 for f in qualified_folders
-            if is_fully_processed(f.name, category)
-        )
-        print(f"  找到 {len(qualified_folders)} 個符合條件的資料夾 (已處理: {already_done}, 待處理: {len(qualified_folders) - already_done})")
+        done = sum(is_fully_processed(f.name) for f in folders)
+        print(f"  找到 {len(folders)} 個資料夾（已處理 {done}, 待處理 {len(folders) - done}）")
 
-        # 處理每個資料夾
-        for idx, folder in enumerate(qualified_folders, 1):
-            folder_name = folder.name
-            person_id = extract_person_id(folder_name)
+        for idx, folder in enumerate(folders, 1):
+            s = stats[category]
+            s["persons"].add(base_id_of(folder.name))
+            s["sessions"] += 1
 
-            # 檢查是否已處理
-            if is_fully_processed(folder_name, category):
-                stats[category]["已跳過"] += 1
-                stats[category]["人"].add(person_id)
-                stats[category]["人次"] += 1
-                total_skipped += 1
-                print(f"  [{idx}/{len(qualified_folders)}] {folder_name} - SKIP")
+            if is_fully_processed(folder.name):
+                s["skip"] += 1
+                print(f"  [{idx}/{len(folders)}] {folder.name} - SKIP")
                 continue
 
-            print(f"\n  [{idx}/{len(qualified_folders)}] {folder_name}")
-
+            print(f"\n  [{idx}/{len(folders)}] {folder.name}")
             try:
-                # 使用兩種方法處理
-                vector_result, pnp_result = process_single_folder(
-                    folder_path=folder,
-                    output_dir_pnp=OUTPUT_DIR_PNP / category,
-                    output_dir_vector=OUTPUT_DIR_VECTOR / category,
-                    features_dir_pnp=FEATURES_DIR_PNP / category,
-                    features_dir_vector=FEATURES_DIR_VECTOR / category,
-                    verbose=True,
-                )
-
-                # 更新統計
-                stats[category]["人"].add(person_id)
-                stats[category]["人次"] += 1
-                stats[category]["處理成功"] += 1
-                total_processed += 1
-
-                print(f"  [OK] (Vector: {vector_result.length}, PnP: {pnp_result.length} frames)")
-
+                vec, pnp = process_single_folder(folder)
+                s["ok"] += 1
+                print(f"  [OK] (Vector: {vec.length}, PnP: {pnp.length} frames)")
             except Exception as e:
-                stats[category]["處理失敗"] += 1
-                total_failed += 1
+                s["fail"] += 1
                 print(f"  [FAIL] {e}")
 
-    # 輸出統計報告
-    print("\n")
-    print("=" * 70)
-    print("統計報告")
-    print("=" * 70)
-    print(f"{'類別':<12} {'人':<8} {'人次':<8} {'新處理':<8} {'已跳過':<8} {'失敗':<8}")
+    print("\n" + "=" * 70)
+    print(f"{'類別':<10}{'人':<8}{'人次':<8}{'新處理':<8}{'已跳過':<8}{'失敗':<8}")
     print("-" * 70)
-
-    total_persons = 0
-    total_sessions = 0
-
-    for category, data in stats.items():
-        person_count = len(data["人"])
-        session_count = data["人次"]
-        success_count = data["處理成功"]
-        skip_count = data["已跳過"]
-        fail_count = data["處理失敗"]
-
-        print(f"{category:<12} {person_count:<8} {session_count:<8} {success_count:<8} {skip_count:<8} {fail_count:<8}")
-
-        total_persons += person_count
-        total_sessions += session_count
-
-    print("-" * 70)
-    print(f"{'合計':<12} {total_persons:<8} {total_sessions:<8} {total_processed:<8} {total_skipped:<8} {total_failed:<8}")
+    for category, s in stats.items():
+        print(f"{category:<10}{len(s['persons']):<8}{s['sessions']:<8}{s['ok']:<8}{s['skip']:<8}{s['fail']:<8}")
     print("=" * 70)
-
-    # 輸出檔案位置
-    print(f"\n輸出位置:")
-    print(f"  圖片 PnP:      {OUTPUT_DIR_PNP}")
-    print(f"  圖片 Vector:   {OUTPUT_DIR_VECTOR}")
-    print(f"  角度 PnP npy:  {FEATURES_DIR_PNP}")
-    print(f"  角度 Vector npy: {FEATURES_DIR_VECTOR}")
-
-    print(f"\n結束時間: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"輸出: 圖 → {ROTATION_FIG_DIR}  ；角度 npy → {ROTATION_FEATURES_DIR}")
+    print(f"結束: {datetime.now():%Y-%m-%d %H:%M:%S}")
 
 
 if __name__ == "__main__":

@@ -48,6 +48,10 @@ from .config import (
     ASYMMETRY_ANALYSIS_DIR,
     ASYMMETRY_FEATURE_STAT_DIR,
     ASYMMETRY_CLASSIFICATION_DIR,
+    # Rotation
+    ROTATION_DIR,
+    ROTATION_FIG_DIR,
+    ROTATION_FEATURES_DIR,
     # Cross-modality
     OVERVIEW_DIR,
     # Cohort tokens + helpers
@@ -110,6 +114,10 @@ __all__ = [
     "ASYMMETRY_ANALYSIS_DIR",
     "ASYMMETRY_FEATURE_STAT_DIR",
     "ASYMMETRY_CLASSIFICATION_DIR",
+    # Rotation
+    "ROTATION_DIR",
+    "ROTATION_FIG_DIR",
+    "ROTATION_FEATURES_DIR",
     # Cross-modality
     "OVERVIEW_DIR",
     # Cohort tokens + helpers

@@ -137,6 +137,13 @@ ASYMMETRY_FEATURE_STAT_DIR = ASYMMETRY_ANALYSIS_DIR / "feature_stat"
 ASYMMETRY_CLASSIFICATION_DIR = ASYMMETRY_ANALYSIS_DIR / "classification"
 
 # -----------------------------------------------------------------------------
+# Rotation (head pose) — 每法（PnP / vector_angle）各一子目錄，由 producer 串接
+# -----------------------------------------------------------------------------
+ROTATION_DIR = WORKSPACE_DIR / "rotation"
+ROTATION_FIG_DIR = ROTATION_DIR / "fig"
+ROTATION_FEATURES_DIR = ROTATION_DIR / "features"
+
+# -----------------------------------------------------------------------------
 # Overview — 跨 modality cohort metadata + matching artifacts + per-design summaries
 # + cross-modality stat grid（per-cohort × per-hc_source）
 # -----------------------------------------------------------------------------
