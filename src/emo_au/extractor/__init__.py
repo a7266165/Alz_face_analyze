@@ -11,10 +11,9 @@ importlib 懶載入:只有被點名的工具才會 import 其模組與依賴，�
 """
 import importlib
 import logging
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 
 from .base import EmoAUExtractor
-from .au_config import AUExtractionConfig
 
 logger = logging.getLogger(__name__)
 
@@ -61,19 +60,8 @@ def get_extractor(name: str, device: str = "cuda") -> Optional[EmoAUExtractor]:
     return ext
 
 
-def available_extractors(
-    names: Optional[List[str]] = None,
-    device: str = "cuda",
-) -> List[str]:
-    """實際可用的工具名稱（會觸發 import + is_available 探測，不載入權重）。只 probe 傳入的 names。"""
-    return [n for n in (names or EXTRACTORS)
-            if get_extractor(n, device=device) is not None]
-
-
 __all__ = [
     "EmoAUExtractor",
-    "AUExtractionConfig",
     "EXTRACTORS",
     "get_extractor",
-    "available_extractors",
 ]

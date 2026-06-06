@@ -1,11 +1,9 @@
 """統一的 AU / 情緒特徵名稱、欄位對映與量綱轉換規則。"""
 
 import re
-from dataclasses import dataclass, field
-from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List
 
-from src.config import preprocess_dir, EXTERNAL_DIR, EMO_AU_FEATURES_DIR
+from src.config import EXTERNAL_DIR, EMO_AU_FEATURES_DIR
 
 # =============================================================================
 # 統一特徵名稱
@@ -18,8 +16,7 @@ OPENFACE_AUS: List[str] = [
     "AU1", "AU2", "AU4", "AU6", "AU9", "AU12", "AU25", "AU26",
 ]
 
-# 三工具共有的 AU（未來加入 Py-Feat/LibreFace 後再取交集）
-# 目前以 OpenFace 3.0 的 8 AU 為基準
+# harmonized AU 基準集:目前直接採 OpenFace 3.0 的 8 AU（跨工具交集尚未啟用）。
 HARMONIZED_AUS: List[str] = OPENFACE_AUS
 
 # 統一情緒名稱（7 種基本情緒，排除 contempt）
@@ -27,9 +24,6 @@ HARMONIZED_EMOTIONS: List[str] = [
     "anger", "disgust", "fear", "happiness",
     "sadness", "surprise", "neutral",
 ]
-
-# 統一特徵向量（8 AU + 7 emotions = 15 維）
-HARMONIZED_FEATURES: List[str] = HARMONIZED_AUS + HARMONIZED_EMOTIONS
 
 # =============================================================================
 # 統一物理欄序
@@ -58,11 +52,8 @@ def canonical_order(columns: List[str]) -> List[str]:
     return sorted(columns, key=_canonical_key)
 
 
-# 統計量名稱（非時序資料，不含 trend）
-TEMPORAL_STATS: List[str] = ["mean", "std", "range", "entropy"]
-
-# 純情緒工具的「原始名 → harmonized 名」皆為 identity（原始已用 harmonized 名、同序）；
-# 以單一映射取代逐工具複製，各工具仍保留具名別名供 import。
+# pyfeat / libreface 的「原始名 → harmonized 名」皆為 identity（原生已用 harmonized 名、同序）；
+# 用單一映射表達，兩者各保留具名別名供其 extractor import。
 IDENTITY_EMOTION_MAP: Dict[str, str] = {e: e for e in HARMONIZED_EMOTIONS}
 
 # =============================================================================
@@ -82,18 +73,6 @@ OPENFACE_AU_INDEX: Dict[int, str] = {
     7: "AU26",
 }
 
-# 用於 harmonizer 的 column name mapping（raw CSV 欄名 → harmonized 名）
-OPENFACE_AU_MAP: Dict[str, str] = {
-    "AU1": "AU1",
-    "AU2": "AU2",
-    "AU4": "AU4",
-    "AU6": "AU6",
-    "AU9": "AU9",
-    "AU12": "AU12",
-    "AU25": "AU25",
-    "AU26": "AU26",
-}
-
 # 情緒輸出（8 classes，softmax 後取機率）
 OPENFACE_EMOTION_INDEX: Dict[int, str] = {
     0: "neutral",
@@ -106,23 +85,11 @@ OPENFACE_EMOTION_INDEX: Dict[int, str] = {
     7: "contempt",  # 不在 harmonized 7 情緒中，但仍保存到 raw
 }
 
-# 用於 harmonizer 的 emotion column mapping
-OPENFACE_EMOTION_MAP: Dict[str, str] = {
-    "neutral": "neutral",
-    "happiness": "happiness",
-    "sadness": "sadness",
-    "surprise": "surprise",
-    "fear": "fear",
-    "disgust": "disgust",
-    "anger": "anger",
-    # contempt 排除（不在 harmonized 7 情緒中）
-}
-
 # Gaze 輸出：2D（yaw, pitch）
 OPENFACE_GAZE_COLUMNS: List[str] = ["gaze_yaw", "gaze_pitch"]
 
 # =============================================================================
-# Py-Feat 欄位對映（暫時保留，待環境就緒後啟用）
+# Py-Feat 欄位對映
 # =============================================================================
 
 # Py-Feat Detector.detect_image() 輸出 20 AU（probability [0,1]）
@@ -152,24 +119,8 @@ PYFEAT_AU_MAP: Dict[str, str] = {
 PYFEAT_EMOTION_MAP: Dict[str, str] = IDENTITY_EMOTION_MAP
 
 # =============================================================================
-# LibreFace 欄位對映（暫時保留）
+# LibreFace 欄位對映
 # =============================================================================
-
-# LibreFace get_au_intensities() 輸出 12 AU intensity [0, ~5]
-LIBREFACE_AU_MAP: Dict[str, str] = {
-    "AU1": "AU1",
-    "AU2": "AU2",
-    "AU4": "AU4",
-    "AU5": "AU5",
-    "AU6": "AU6",
-    "AU9": "AU9",
-    "AU12": "AU12",
-    "AU15": "AU15",
-    "AU17": "AU17",
-    "AU20": "AU20",
-    "AU25": "AU25",
-    "AU26": "AU26",
-}
 
 LIBREFACE_EMOTION_MAP: Dict[str, str] = IDENTITY_EMOTION_MAP
 
@@ -196,33 +147,6 @@ POSTER_PP_EMOTION_INDEX: Dict[int, str] = {
     6: "neutral",
 }
 
-POSTER_PP_EMOTION_MAP: Dict[str, str] = IDENTITY_EMOTION_MAP
-
-# =============================================================================
-# FER (justinshenk/fer) 欄位對映
-# =============================================================================
-
-# FER 只輸出 7-class emotion probability，無 AU
-FER_EMOTION_MAP: Dict[str, str] = IDENTITY_EMOTION_MAP
-
-# =============================================================================
-# DAN 欄位對映
-# =============================================================================
-
-DAN_EMOTION_MAP: Dict[str, str] = IDENTITY_EMOTION_MAP
-
-# =============================================================================
-# HSEmotion 欄位對映
-# =============================================================================
-
-HSEMOTION_EMOTION_MAP: Dict[str, str] = IDENTITY_EMOTION_MAP
-
-# =============================================================================
-# ViT (trpakov) 欄位對映
-# =============================================================================
-
-VIT_EMOTION_MAP: Dict[str, str] = IDENTITY_EMOTION_MAP
-
 # =============================================================================
 # EmoNet 欄位對映
 # =============================================================================
@@ -241,29 +165,9 @@ EMONET_EMOTION_INDEX: Dict[int, str] = {
 }
 
 # =============================================================================
-# 量綱轉換
-# =============================================================================
-
-AU_SCALE_INFO = {
-    "openface": {
-        "min": 0.0, "max": 1.0,
-        "type": "sigmoid",  # extractor 已用 sigmoid 轉為 [0,1]
-    },
-    "pyfeat": {"min": 0.0, "max": 1.0, "type": "probability"},
-    "libreface": {"min": 0.0, "max": 5.0, "type": "intensity"},  # 待確認
-    "poster_pp": {"min": 0.0, "max": 1.0, "type": "softmax"},
-    "fer": {"min": 0.0, "max": 1.0, "type": "softmax"},
-    "dan": {"min": 0.0, "max": 1.0, "type": "softmax"},
-    "hsemotion": {"min": 0.0, "max": 1.0, "type": "softmax"},
-    "vit": {"min": 0.0, "max": 1.0, "type": "softmax"},
-    "emonet": {"min": 0.0, "max": 1.0, "type": "softmax"},
-}
-
-# =============================================================================
 # 路徑配置
 # =============================================================================
 
-AU_RAW_DIR = EMO_AU_FEATURES_DIR / "raw"
 AU_HARMONIZED_DIR = EMO_AU_FEATURES_DIR / "harmonized"
 AU_AGGREGATED_DIR = EMO_AU_FEATURES_DIR / "aggregated"
 
@@ -276,29 +180,3 @@ DAN_DIR = WEIGHTS_DIR / "DAN"
 DAN_WEIGHTS_DIR = WEIGHTS_DIR / "dan_weights"
 EMONET_DIR = WEIGHTS_DIR / "emonet"
 EMONET_WEIGHTS_DIR = EMONET_DIR / "pretrained"
-
-# =============================================================================
-# 提取配置 Dataclass
-# =============================================================================
-
-
-@dataclass
-class AUExtractionConfig:
-    """AU 特徵提取配置"""
-
-    tools: List[str] = field(
-        default_factory=lambda: ["openface"]
-    )
-    input_dir: Path = preprocess_dir("aligned")
-    output_dir: Path = AU_RAW_DIR
-    exclude_acs: bool = True
-    min_frames: int = 3
-    subject_prefix: Optional[str] = None
-
-    # OpenFace 3.0 設定
-    openface_weights_dir: Optional[Path] = None
-    openface_device: str = "cuda"
-
-    def __post_init__(self):
-        if self.openface_weights_dir is None:
-            self.openface_weights_dir = OPENFACE_WEIGHTS_DIR
