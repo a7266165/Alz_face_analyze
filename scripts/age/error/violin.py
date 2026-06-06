@@ -1,18 +1,9 @@
-"""
-scripts/age/error/violin.py
-Age prediction error violin plots — full cohort and 1:1 age-matched comparisons.
-The shared error frame is built by ``src.age.utils.build_cohort_with_age_error``.
+"""Age-prediction error violin plots for ACS / NAD / P
+— full cohort + AD-vs-HC 1:1 age-matched subset.
 
-Comparisons:
-  AD vs HC / NAD / ACS      — slices of ONE ACS-first AD-vs-HC match (see run_hc_comparison)
-  MMSE / CASI high vs low   — score-median match (canonical match_by_score)
-
-Each comparison outputs both the full cohort and the 1:1 age-matched subset:
-  violin/{full,1by1matched}/{comparison}/...
-
-Usage:
-  conda run -n Alz_face_main_analysis python scripts/age/error/violin.py
-  conda run -n Alz_face_main_analysis python scripts/age/error/violin.py --comparison ad_vs_hc
+Outputs under <AGE_ANALYSIS_DIR>/<cohort>/violin/{full,1by1matched}/<comparison>/:
+  AD vs HC / NAD / ACS     — slices of ONE ACS-first AD-vs-HC match (see run_hc_comparison)
+  MMSE / CASI high vs low  — score-median match (match_by_score)
 """
 
 import argparse
@@ -46,7 +37,7 @@ logger = logging.getLogger(__name__)
 HC_COMPARISONS = ["ad_vs_hc", "ad_vs_nad", "ad_vs_acs"]
 HILO_COMPARISONS = ["mmse_high_vs_low", "casi_high_vs_low"]
 
-# ── violin drawing ───────────────────────────────────────────────────────────
+# ── 小提琴繪圖 ───────────────────────────────────────────────────────────
 
 def _draw_violin(ax, left_vals, right_vals, left_label, right_label,
                  title, left_color="#4C72B0", right_color="#C44E52"):
@@ -61,7 +52,7 @@ def _draw_violin(ax, left_vals, right_vals, left_label, right_label,
     ax.set_ylabel("Age error (real - predicted)")
     ax.set_title(title)
     ax.axhline(0, color="gray", linestyle="--", linewidth=0.8)
-    ax.set_ylim(-35, 35)  # fixed axis for cross-cohort/version comparability
+    ax.set_ylim(-35, 35)  # 固定軸範圍，供跨 cohort/版本比較
 
 
 def save_violin(left_vals, right_vals, left_label, right_label, title, out_path):
@@ -73,7 +64,7 @@ def save_violin(left_vals, right_vals, left_label, right_label, title, out_path)
     plt.close(fig)
     logger.info(f"saved {out_path}")
 
-# ── comparison runners ───────────────────────────────────────────────────────
+# ── 比較執行器 ───────────────────────────────────────────────────────
 
 def run_hc_comparison(df_all, tokens, comparison, output_dir, caliper=1.0):
     """AD vs {HC, NAD, ACS} violin — full cohort + 1:1 age-matched.
@@ -90,7 +81,7 @@ def run_hc_comparison(df_all, tokens, comparison, output_dir, caliper=1.0):
         "ad_vs_acs": ({"ACS"},        "ACS"),
     }[comparison]
 
-    # full (unmatched) — split AD(P) vs this comparison's control group(s)
+    # full（未配對）：把 AD(P) 與此比較的對照組切兩臂
     df_split = split_by_group(df_all, "P", control=list(hc_subgroups))
     ad_err = df_split[df_split["arm"] == "high"]["age_error"].dropna().values
     hc_err = df_split[df_split["arm"] == "low"]["age_error"].dropna().values
@@ -99,7 +90,7 @@ def run_hc_comparison(df_all, tokens, comparison, output_dir, caliper=1.0):
                     f"Age prediction error: {label} vs AD (full)",
                     output_dir / "full" / comparison / "violin.png")
 
-    # 1:1 age-matched — slice the single ACS-first global match by HC subgroup
+    # 1:1 age-matched：依 HC 子群把單一 ACS 優先全域配對切片
     group_of = cohort_list(*tokens).set_index("ID")["Group"]
     p_ids, hc_ids = match_by_age(*tokens, priority=["ACS"], caliper=caliper)
     keep_hc = [h for h in hc_ids if group_of.get(h) in hc_subgroups]
@@ -131,7 +122,7 @@ def run_hilo_comparison(df_all, tokens, metric, output_dir, caliper=1.0):
         df_high = df_split[df_split["arm"] == "high"]
         df_low = df_split[df_split["arm"] == "low"]
 
-        # full (unmatched)
+        # full（未配對）
         if not df_high.empty and not df_low.empty:
             save_violin(
                 df_high["age_error"].values, df_low["age_error"].values,
@@ -151,7 +142,7 @@ def run_hilo_comparison(df_all, tokens, metric, output_dir, caliper=1.0):
                 f"(age-matched 1:1, caliper={caliper}y)",
                 output_dir / "1by1matched" / comparison / f"{grp_label}_violin.png")
 
-# ── main ─────────────────────────────────────────────────────────────────────
+# ── 主流程 ─────────────────────────────────────────────────────────────────────
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
@@ -164,7 +155,7 @@ def main():
                     help="覆寫輸出目錄；留空依 cohort 自動決定")
     ap.add_argument("--comparison", default=None,
                     choices=HC_COMPARISONS + HILO_COMPARISONS,
-                    help="Run only one comparison; default runs all")
+                    help="只跑單一比較；預設全跑")
     ap.add_argument("--caliper", type=float, default=1.0)
     args = ap.parse_args()
 

@@ -1,23 +1,10 @@
-"""
-scripts/age/error/stat.py
-Age-prediction error statistics — stratified CSVs and score-correlation analysis,
-for the full cohort and the AD-vs-HC 1:1 age-matched subset.
+"""Age-prediction error statistics for ACS / NAD / P (stratified CSVs + score correlation)
+— full cohort + AD-vs-HC 1:1 age-matched subset.
 
-Errors come straight from the raw MiVOLO predictions; the shared error frame is
-built by ``src.age.utils.build_cohort_with_age_error``.
-
-Outputs (under <AGE_ANALYSIS_DIR>/<visit_dir>/<cdr_mmse_dir>/stat/{full,1by1matched}/):
-  age_error_stat_2.csv               — age-stratified stats per group
-  age_error_sliding_window.csv       — 10-year sliding window stats
-  patient_cdr_age_error.csv          — Patient CDR-stratified stats
-  patient_{mmse,casi}_age_error.csv  — Patient MMSE / CASI-stratified stats
-  patient_{mmse,casi}_error_corr.csv — MMSE / CASI–error correlation
-  patient_{mmse,casi}_vs_error.png   — MMSE / CASI–error scatter
-
-Usage:
-  conda run -n Alz_face_main_analysis python scripts/age/error/stat.py
-  conda run -n Alz_face_main_analysis python scripts/age/error/stat.py \
-      --p-visit p_all --p-score p_cdrall --hc-visit hc_all --hc-score hc_cdrall_or_mmseall
+Outputs under <AGE_ANALYSIS_DIR>/<cohort>/stat/{full,1by1matched}/:
+  age_error_stat_2.csv / age_error_sliding_window.csv  — age strata / 10-y sliding window
+  patient_{cdr,mmse,casi}_age_error.csv                — Patient CDR / MMSE / CASI strata
+  patient_{mmse,casi}_error_corr.csv (+ _vs_error.png) — score–error correlation (+ scatter)
 """
 
 import argparse
@@ -48,7 +35,7 @@ logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
-# ── data loading ─────────────────────────────────────────────────────────────
+# ── 資料載入 ─────────────────────────────────────────────────────────────
 
 def _prep(df: pd.DataFrame) -> pd.DataFrame:
     """error 表 → stat 用精簡表（age_error 改回 error 供既有 write_* 沿用）。
@@ -59,7 +46,7 @@ def _prep(df: pd.DataFrame) -> pd.DataFrame:
         ["ID", "real_age", "predicted_age", "group", "error",
          "MMSE", "CASI", "Global_CDR"]]
 
-# ── constants ────────────────────────────────────────────────────────────────
+# ── 常數 ────────────────────────────────────────────────────────────────
 
 AGE_BINS = [
     ("<65", lambda a: a < 65),
@@ -80,7 +67,7 @@ CASI_BINS = [
     ("0-44",   lambda s: (s >= 0) & (s < 45)),
 ]
 
-# ── stat writers ─────────────────────────────────────────────────────────────
+# ── 統計輸出 ─────────────────────────────────────────────────────────────
 
 def _age_stratified_rows(df):
     rows = []
@@ -214,7 +201,7 @@ def write_patient_corr(df_matched, score_col, stat_dir):
     plt.close()
     logger.info(f"saved {png}")
 
-# ── main ─────────────────────────────────────────────────────────────────────
+# ── 主流程 ─────────────────────────────────────────────────────────────────────
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
@@ -235,7 +222,7 @@ def main():
     logger.info(f"stat-dir    = {stat_dir}")
 
     full = build_cohort_with_age_error(*cohort)
-    p_ids, hc_ids = match_by_age(*cohort, priority=["ACS"])  # ACS-first: rare ACS controls matched first
+    p_ids, hc_ids = match_by_age(*cohort, priority=["ACS"])  # ACS 優先：稀少的 ACS 對照先配對
     matched = full[full["ID"].isin(set(p_ids) | set(hc_ids))].reset_index(drop=True)
     logger.info(f"full={len(full)} ({full['group'].value_counts().to_dict()}), "
                 f"1by1matched={len(matched)} "

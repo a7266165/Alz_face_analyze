@@ -27,10 +27,10 @@ from _paths import PROJECT_ROOT  # noqa: F401
 from src.config import (
     preprocess_dir,
     AGE_BENCHMARK_DIR,
-    DEMOGRAPHICS_DIR,
 )
 from src.age import PREDICTORS, get_predictor, BENCHMARK_DIR_NAMES
 from src.common.image_io import iter_subject_dirs, load_subject
+from src.common.cohort import load_demographic_ids
 
 logging.basicConfig(
     level=logging.INFO,
@@ -46,14 +46,6 @@ def save_results(results: dict, output_file: Path) -> None:
     with open(tmp, "w", encoding="utf-8") as f:
         json.dump(results, f, indent=2, ensure_ascii=False)
     os.replace(tmp, output_file)
-
-
-def load_demographic_ids() -> set:
-    """從 demographics CSV 讀取「年齡有效」的受試者 ID 集合。
-    """
-    from src.common.cohort import load_demographics
-    df = load_demographics()
-    return set(df["ID"][df["Age"].notna()])
 
 
 def default_output(model_name: str) -> Path:

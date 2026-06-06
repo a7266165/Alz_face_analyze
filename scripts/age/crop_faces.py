@@ -1,14 +1,5 @@
 """
 用 MediaPipe Face Mesh 從對齊影像裁出人臉,供 MiVOLO 年齡預測使用。
-
-對齊影像本來就是 preprocess 階段用 MediaPipe 挑出的「最正臉」,故此處再偵測幾乎
-100% 命中。裁切 = 468 個 landmark 的外接框,以框長邊為基準外擴 margin(預設 35%);
-偵測不到臉時 fallback 用整張對齊圖(臉已置中)。取代舊的 Haar+面積守門(誤抓衣物)。
-
-mediapipe 不在 age env,故本步驟在 asymmetry/rotation env 跑;裁切存檔後由
-scripts/age/predict.py(age env)讀取預測。
-
-輸出格式比照 input/<ID>/<原檔名>,可直接當 predict.py 的 --aligned-dir。
 """
 
 import sys
@@ -25,7 +16,7 @@ from _paths import PROJECT_ROOT  # noqa: F401
 
 from src.config import preprocess_dir, WORKSPACE_REFACTOR_DIR
 from src.common.image_io import iter_subject_dirs, load_subject
-from src.common.cohort import load_demographics
+from src.common.cohort import load_demographic_ids
 
 logging.basicConfig(
     level=logging.INFO,
@@ -57,12 +48,6 @@ def crop_to_landmarks(image: np.ndarray, landmarks: np.ndarray, margin: float) -
     return image[Y1:Y2, X1:X2]
 
 
-def load_valid_ids() -> set:
-    """demographics 中年齡有效的受試者 ID(與 predict.py 一致,只裁這些)。"""
-    df = load_demographics()
-    return set(df["ID"][df["Age"].notna()])
-
-
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -85,7 +70,7 @@ def main():
     logger.info(f"輸出: {args.output_dir}  | margin={args.margin}")
     logger.info("=" * 60)
 
-    valid_ids = load_valid_ids()
+    valid_ids = load_demographic_ids()
     subjects = iter_subject_dirs(aligned_dir, include_prefix=args.subject_prefix)
     logger.info(f"受試者目錄 {len(subjects)} 個,demographics 有效 ID {len(valid_ids)} 個")
 

@@ -24,6 +24,12 @@ def load_demographics(groups=("P", "NAD", "ACS")):
     return demo
 
 
+def load_demographic_ids(groups=("P", "NAD", "ACS")):
+    """載入有記錄年紀的受試者 ID 集合，供 age producer 篩有效樣本。"""
+    demo = load_demographics(groups)
+    return set(demo["ID"][demo["Age"].notna()])
+
+
 # ID 切分工具
 def base_id_of(id_str) -> str:
     """ID(含 -session 尾)→ base_id(Group+Number),如 'ACS1-1' → 'ACS1'。"""

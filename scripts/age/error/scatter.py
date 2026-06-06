@@ -1,18 +1,8 @@
-"""
-scripts/age/error/scatter.py
-Age-prediction scatter plots (internal ACS / NAD / P) — full cohort and the
-AD-vs-HC 1:1 age-matched subset, two panels (HC = NAD+ACS vs Patients).
+"""Age-prediction scatter plots for ACS / NAD / P (two panels: HC = NAD+ACS vs Patients)
+— full cohort + AD-vs-HC 1:1 age-matched subset.
 
-The shared error frame is built by ``src.age.utils.build_cohort_with_age_error``.
-
-Outputs (under <AGE_ANALYSIS_DIR>/<visit_dir>/<cdr_mmse_dir>/scatter/):
-  full/predicted_ages_scatter.png         — HC (NAD+ACS) vs P, full cohort
-  1by1matched/predicted_ages_scatter.png  — HC vs P, age-matched 1:1 subset
-
-Usage:
-  conda run -n Alz_face_main_analysis python scripts/age/error/scatter.py
-  conda run -n Alz_face_main_analysis python scripts/age/error/scatter.py \
-      --p-visit p_all --p-score p_cdrall --hc-visit hc_all --hc-score hc_cdrall_or_mmseall
+Outputs under <AGE_ANALYSIS_DIR>/<cohort>/scatter/{full,1by1matched}/:
+  predicted_ages_scatter.png  — real vs predicted age
 """
 
 import argparse
@@ -42,7 +32,7 @@ logging.basicConfig(level=logging.INFO,
 logger = logging.getLogger(__name__)
 
 
-# ── panel helpers ────────────────────────────────────────────────────────────
+# ── 面板小工具 ────────────────────────────────────────────────────────────
 
 def _draw_panel(ax, df, title, colors, labels):
     for grp, color in colors.items():
@@ -53,7 +43,7 @@ def _draw_panel(ax, df, title, colors, labels):
                    c=color, label=labels.get(grp, grp),
                    alpha=0.6, s=30, edgecolors="white", linewidth=0.3)
 
-    age_min, age_max = 25, 110  # fixed axis for cross-cohort/version comparability
+    age_min, age_max = 25, 110  # 固定軸範圍，供跨 cohort/版本比較
     ax.plot([age_min, age_max], [age_min, age_max],
             "k--", alpha=0.5, linewidth=1, label="y = x")
 
@@ -81,7 +71,7 @@ def _draw_panel(ax, df, title, colors, labels):
     ax.set_aspect("equal")
     ax.grid(True, alpha=0.3)
 
-# ── scatter plots ────────────────────────────────────────────────────────────
+# ── 散點圖 ────────────────────────────────────────────────────────────
 
 def plot_main_scatter(df, scatter_dir, note=""):
     df_hc = df[df["group"].isin(["ACS", "NAD"])]
@@ -99,7 +89,7 @@ def plot_main_scatter(df, scatter_dir, note=""):
     plt.close()
     logger.info(f"saved {out}")
 
-# ── main ─────────────────────────────────────────────────────────────────────
+# ── 主流程 ─────────────────────────────────────────────────────────────────────
 
 _COLS = ["ID", "real_age", "predicted_age", "group", "error"]
 
@@ -126,7 +116,7 @@ def main():
     logger.info(f"output-dir  = {output_dir}")
 
     full = build_cohort_with_age_error(*cohort)
-    p_ids, hc_ids = match_by_age(*cohort, priority=["ACS"])  # ACS-first: rare ACS controls matched first
+    p_ids, hc_ids = match_by_age(*cohort, priority=["ACS"])  # ACS 優先：稀少的 ACS 對照先配對
     matched = full[full["ID"].isin(set(p_ids) | set(hc_ids))].reset_index(drop=True)
     logger.info(f"full={len(full)} ({full['group'].value_counts().to_dict()}), "
                 f"1by1matched={len(matched)} "

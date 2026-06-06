@@ -1,8 +1,8 @@
 """
 年齡預測器
 
-5 個年齡模型 wrapper，共用 BasePredictor 介面（initialize / predict_single；
-逐張 predict 由基底提供）。各 wrapper 在 initialize() 內才延遲 import 重套件
+5 個年齡模型 wrapper，共用 BasePredictor 介面（initialize / predict_single）。
+各 wrapper 在 initialize() 內才延遲 import 重套件
 （torch / transformers / insightface / deepface / torchvision），故 import 本套件
 本身僅需 cv2 / numpy，可在無這些重依賴的環境安全 import。
 """

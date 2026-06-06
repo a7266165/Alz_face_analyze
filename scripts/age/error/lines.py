@@ -1,19 +1,9 @@
-"""
-scripts/age/error/lines.py
-Prediction-residual (real − predicted) line plots by true age, for the internal
-ACS / NAD / P groups — full cohort and the AD-vs-HC 1:1 age-matched subset.
+"""Prediction-residual (real − predicted) line plots by true age for ACS / NAD / P
+— full cohort + AD-vs-HC 1:1 age-matched subset.
 
-Residuals come straight from the raw MiVOLO predictions (no age-calibration); the
-shared error frame is built by ``src.age.utils.build_cohort_with_age_error``.
-
-Outputs (under <AGE_ANALYSIS_DIR>/<visit_dir>/<cdr_mmse_dir>/lines/):
-  {full,1by1matched}/no_sliding_window/lines_internal.png       — residual by integer age (mean ± std)
-  {full,1by1matched}/sliding_window_10/lines_internal_sw10.png  — residual by 10-y sliding window
-
-Usage:
-  conda run -n Alz_face_main_analysis python scripts/age/error/lines.py
-  conda run -n Alz_face_main_analysis python scripts/age/error/lines.py \
-      --p-visit p_all --p-score p_cdrall --hc-visit hc_all --hc-score hc_cdrall_or_mmseall
+Outputs under <AGE_ANALYSIS_DIR>/<cohort>/lines/{full,1by1matched}/:
+  no_sliding_window/lines_internal.png       — residual by integer age (mean ± std)
+  sliding_window_10/lines_internal_sw10.png  — residual by 10-y sliding window
 """
 
 import argparse
@@ -49,7 +39,7 @@ COLORS = {
 }
 GROUPS = ["ACS", "NAD", "P"]
 
-# ── plot functions ───────────────────────────────────────────────────────────
+# ── 繪圖函式 ───────────────────────────────────────────────────────────
 
 def plot_combined(df_all, output_path, groups, title, ylabel, y_col):
     fig, ax = plt.subplots(figsize=(14, 5))
@@ -125,7 +115,7 @@ def plot_sliding_window(df_all, output_path, groups, title, ylabel, y_col,
     plt.close(fig)
     logger.info(f"saved {output_path}")
 
-# ── main ─────────────────────────────────────────────────────────────────────
+# ── 主流程 ─────────────────────────────────────────────────────────────────────
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
@@ -147,7 +137,7 @@ def main():
 
     full = build_cohort_with_age_error(*cohort)
     full["age_int"] = full["real_age"].astype(int)
-    p_ids, hc_ids = match_by_age(*cohort, priority=["ACS"])  # ACS-first: rare ACS controls matched first
+    p_ids, hc_ids = match_by_age(*cohort, priority=["ACS"])  # ACS 優先：稀少的 ACS 對照先配對
     matched = full[full["ID"].isin(set(p_ids) | set(hc_ids))].reset_index(drop=True)
     logger.info(f"full={len(full)} ({full['group'].value_counts().to_dict()}), "
                 f"1by1matched={len(matched)} "
