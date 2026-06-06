@@ -1,7 +1,4 @@
-"""Meta：精簡的跨 modality stacking（embedding-original + asymmetry OOF + 人口學 → TabPFN v3）。
-
-舊的重型 stacking 套件見 src/meta/legacy/。
-"""
+"""Meta：精簡的跨 modality stacking（embedding-original + asymmetry OOF + 人口學 → TabPFN v3）。"""
 from src.meta.tabpfn_meta import (
     ASYM_METHODS,
     ASYM_VARIANTS,

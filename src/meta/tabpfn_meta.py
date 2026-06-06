@@ -45,7 +45,7 @@ def _build_estimator(model, *, reducer="no_drop", lr_C=1.0):
     (logistic/xgb)串成 scaler?/reducer?/clf 單一 Pipeline。回 0-arg thunk 供每折建新 estimator。
     """
     if model not in CLASSIFIERS:
-        est, score_method, needs_cv = build_scorer(model)
+        _, score_method, needs_cv = build_scorer(model)
         return (lambda: build_scorer(model)[0]), score_method, needs_cv
 
     from sklearn.pipeline import Pipeline

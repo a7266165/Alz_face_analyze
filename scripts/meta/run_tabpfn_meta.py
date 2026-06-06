@@ -1,8 +1,7 @@
-"""Meta producer：跑 TabPFN v3 over feature set × asymmetry variant × scorer 的窮舉,落地 leaderboard + OOF。
+"""Meta producer：對 feature set × asymmetry variant × scorer 窮舉跑 TabPFN v3,落地 leaderboard + OOF。
 
-feature set = full(age, MMSE, CASI, original-OOF, asym-OOF) + mmse_casi / mmse_casi_orig /
-mmse_casi_asym 三個對照(見 src.meta.FEATURE_SETS);asymmetry variant × scorer 窮舉。
-輸出寫到 workspace_refactor(與 legacy 的 workspace/meta 分開)。
+feature set = full(age, MMSE, CASI, original-OOF, asym-OOF) + 三個 MMSE/CASI 對照
+(見 src.meta.FEATURE_SETS)。輸出寫到 WORKSPACE_REFACTOR_DIR/meta。
 
 用法:
     python scripts/meta/run_tabpfn_meta.py \\
