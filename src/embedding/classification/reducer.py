@@ -10,9 +10,7 @@ from sklearn.base import BaseEstimator, TransformerMixin
 DIM_REDUCERS = ("no_drop", "pca", "drop_corr")
 
 
-# ----------------------------------------------------------------------------
-# Reducers(降維)
-# ----------------------------------------------------------------------------
+# ── Reducers(降維) ───────────────────────────────────────────────────────
 class DropCorrReducer(BaseEstimator, TransformerMixin):
     """feature_engine的DropCorrelatedFeatures再包裝。"""
 
@@ -68,9 +66,7 @@ class TorchGPUPCA(BaseEstimator, TransformerMixin):
         return ((Xt - self.mean_) @ self.V_).cpu().numpy()
 
 
-# ----------------------------------------------------------------------------
-# Reducer factory
-# ----------------------------------------------------------------------------
+# ── Reducer factory ──────────────────────────────────────────────────────
 def build_reducer(
     reducer_type="no_drop",
     *,

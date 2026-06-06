@@ -1,31 +1,22 @@
-"""
-scripts/embedding/evaluate/aggregate.py
-把散落各 cell 的 metrics.csv 彙整成一張 cohort 級長表 —— 取代 legacy build_sweep_metrics.py。
+"""把散落各 cell 的 metrics.csv 彙整成一張 cohort 級長表 —— 取代 legacy build_sweep_metrics.py。
 
 evaluate 寫的 per-cell metrics.csv **只有評估軸**(direction/matched_unit/matching_priority/
 eval_unit/contrast/domain + 指標),cell 身份(bg/emb/variant/photo/reducer/clf/clf_param)
-編在**路徑**裡。本檔重用 classification/sweep.iter_cells + evaluate/run.cell_oof_paths
+編在**路徑**裡。本檔重用 classification/sweep 的 iter_cells + oof_paths_for
 **直接從 cell dict 取身份**(免去「路徑反解」),逐檔讀 metrics.csv、補上身份欄、接成長表。
 
 軸旗標與 classification/sweep / evaluate/sweep 一致 → 可彙整全集或任一切片。輸出長表既是
 下游繪圖的單一資料源,本身也是可直接看的結果總表(排序好、CSV-friendly)。
 
 註:ROC 等需要原始 y_score 的圖不吃這張表,直接讀 oof_scores.csv(不在此)。
-
-用法:
-    # 彙整預設 cohort 全集
-    python scripts/embedding/evaluate/aggregate.py
-    # 只彙整 arcface / forward 的切片到指定檔
-    python scripts/embedding/evaluate/aggregate.py --embedding arcface --direction forward \\
-        --out c:/tmp/arcface_fwd.csv
 """
 import argparse
 import logging
 import sys
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(PROJECT_ROOT))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))  # scripts/
+from _paths import PROJECT_ROOT  # noqa: F401
 
 import pandas as pd
 

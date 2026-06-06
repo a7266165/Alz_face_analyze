@@ -1,6 +1,4 @@
-"""
-scripts/embedding/evaluate/sweep.py
-Embedding 下游 evaluation 的 **sweep orchestrator** —— 仿 classification/sweep(producer sweep)。
+"""Embedding 下游 evaluation 的 **sweep orchestrator** —— 仿 classification/sweep(producer sweep)。
 
 對 classification/sweep 產出的每一格(復用同一套 ``iter_cells``),呼叫 evaluate/run.eval_cell 算 metrics.csv。
 只把「跑一格」從 run_cell 換成 eval_cell、skip-if-exists 從 oof_scores.csv 換成 metrics.csv;
@@ -10,20 +8,14 @@ Embedding 下游 evaluation 的 **sweep orchestrator** —— 仿 classification
   - skip   :metrics.csv 已存在(可續跑;--overwrite 強制重算)
   - no_oof :producer 還沒產 oof_scores.csv(跳過,不算失敗)
   - ran    :算出 metrics.csv;一格爆 try/except 攔下不拖垮整批(failed)
-
-用法:
-    # 評估預設 cohort 的全集
-    python scripts/embedding/evaluate/sweep.py
-    # 縮小 + 先看計畫不算
-    python scripts/embedding/evaluate/sweep.py --embedding arcface --variant original --dry-run
 """
 import argparse
 import logging
 import sys
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(PROJECT_ROOT))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))  # scripts/
+from _paths import PROJECT_ROOT  # noqa: F401
 
 from src.config import (
     EMBEDDING_CLASSIFICATION_REFACTOR_DIR,

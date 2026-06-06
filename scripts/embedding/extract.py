@@ -1,5 +1,4 @@
-"""
-embedding extractor入口。
+"""embedding extractor入口。
 
 1. 將每張原始人臉相片 embedding 後存至 {model}/{bg_variant}/original/<subj>.npy，形狀 (n_images, dim)
 2. 將每對鏡射人臉相片 embedding 後存至 {model}/{bg_variant}/<ftype>/<subj>.npy，形狀 (n_pairs, dim)
@@ -72,9 +71,7 @@ def setup_cpu_limit(max_cores: Optional[int]):
         pass
 
 
-# =============================================================================
-# Feature sources
-# =============================================================================
+# ── Feature sources ──────────────────────────────────────────────────────
 class FeatureSource(ABC):
     """一種特徵來源：負責「讀一個 subject 的 payload」與「把 payload 經 extractor 算成 {ftype: 落地值}」。"""
 
@@ -172,9 +169,7 @@ class MirrorSource(FeatureSource):
 SOURCES = {"original": OriginalSource, "mirror": MirrorSource}
 
 
-# =============================================================================
-# 共用 runner
-# =============================================================================
+# ── 共用 runner ───────────────────────────────────────────────────────────
 def _processed_subjects(
     output_dir: Path, models: List[str], ftypes: List[str], bg_variant: str
 ) -> Set[str]:

@@ -12,9 +12,7 @@ _DEFAULT_MS = ("no_priority", "priority_acs", "priority_nad")
 _MS_PRIORITY = {"no_priority": None, "priority_acs": ["ACS"], "priority_nad": ["NAD"]}
 
 
-# ----------------------------------------------------------------------------
-# 共用小工具(私有,只服務 OOF)
-# ----------------------------------------------------------------------------
+# ── 共用小工具(私有,只服務 OOF) ────────────────────────────────────────────
 def _subject_of(ids) -> np.ndarray:
     """ID → subject base_id，如 'ACS1-1' → 'ACS1'(GroupKFold 分組用)。"""
     return np.array([base_id_of(i) for i in ids], dtype=object)
@@ -43,9 +41,7 @@ def _pool_to_id(df: pd.DataFrame) -> pd.DataFrame:
         y_true=("y_true", "first"), y_score=("y_score", "mean"), fold=("fold", "first"))
 
 
-# ----------------------------------------------------------------------------
-# 統一的 OOF 引擎(forward = pool only;reverse = pool + external target)
-# ----------------------------------------------------------------------------
+# ── 統一的 OOF 引擎(forward = pool only;reverse = pool + external target) ──
 def _kfold(X_pool, ids_pool, y_pool, build_estimator, score_method, needs_cv,
                X_target=None, ids_target=None, y_target=None, n_splits=10):
     """K fold訓練
@@ -101,9 +97,7 @@ def _kfold(X_pool, ids_pool, y_pool, build_estimator, score_method, needs_cv,
     return _pool_to_id(pd.concat(frames, ignore_index=True))
 
 
-# ----------------------------------------------------------------------------
-# 私有 worker
-# ----------------------------------------------------------------------------
+# ── 私有 worker ───────────────────────────────────────────────────────────
 def _train_forward(X, row_ids, y, build_estimator, score_method, needs_cv, n_splits):
     """回傳單一 fold DataFrame [ID, y_true, y_score, fold]。"""
     return _kfold(X, row_ids, y, build_estimator, score_method, needs_cv, n_splits=n_splits)
@@ -139,9 +133,7 @@ def _train_reverse(X_full, ids_full, y_full, build_estimator, score_method, need
     return out
 
 
-# ----------------------------------------------------------------------------
-# 對外入口
-# ----------------------------------------------------------------------------
+# ── 對外入口 ──────────────────────────────────────────────────────────────
 def train(X, row_ids, y, build_estimator, score_method, needs_cv, direction, *,
           cohort=None, match_strategies=None, n_splits=10):
     """訓練流程入口。
