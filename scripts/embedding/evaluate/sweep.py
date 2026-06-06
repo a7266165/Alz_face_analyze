@@ -31,21 +31,13 @@ from src.config import (
     DEFAULT_COHORT_TOKENS,
 )
 from src.embedding.classification import ALL_METHODS
-from scripts.embedding.evaluate.run import eval_cell, cell_oof_paths
+from scripts.embedding.evaluate.run import eval_cell
 from scripts.embedding.classification.sweep import (
-    iter_cells, _is_known_crash, _label,
+    iter_cells, oof_paths_for, _is_known_crash, _label,
     EMBEDDINGS, VARIANTS, BG_MODES, PHOTO_MODES, DIRECTIONS,
 )
 
 logger = logging.getLogger("evaluate_sweep")
-
-
-def _cell_oof_paths(c, root):
-    """cell dict(iter_cells 產出)→ 這格的 oof_scores.csv 路徑 list。"""
-    return cell_oof_paths(
-        c["cohort"], c["bg"], c["emb"], c["variant"], c["photo"],
-        c["reducer"], c["model"], c["direction"],
-        lr_C=c["lr_C"], xgb_params=c["xgb_params"], root=root)
 
 
 def main():
@@ -94,7 +86,7 @@ def main():
         if _is_known_crash(c):  # producer 硬 segfault → 從沒產 oof
             excluded += 1
             continue
-        oof_paths = _cell_oof_paths(c, root)
+        oof_paths = oof_paths_for(c, root)
         metrics_paths = [p.parent / "metrics.csv" for p in oof_paths]
         if not args.overwrite and all(m.exists() for m in metrics_paths):
             skipped += 1

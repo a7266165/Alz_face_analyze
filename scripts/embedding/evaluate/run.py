@@ -28,44 +28,16 @@ PROJECT_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.config import (
-    embedding_classification_path,
-    EMBEDDING_CLASSIFICATION_REFACTOR_DIR,
     P_VISIT_TOKENS, P_SCORE_TOKENS, HC_VISIT_TOKENS, HC_SCORE_TOKENS,
     DEFAULT_COHORT_TOKENS,
 )
-from src.embedding.classification import ALL_METHODS, CLASSIFIERS, DIM_REDUCERS, reducer_label
+from src.embedding.classification import ALL_METHODS, CLASSIFIERS, DIM_REDUCERS
 from src.common.evaluate import evaluate
-from scripts.embedding.classification.run import (
-    _clf_param_label, MATCH_STRATEGIES, LR_C_GRID, XGB_GRID,
-)
+from scripts.embedding.classification.run import cell_oof_paths, param_grid
 
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
-
-
-def cell_oof_paths(cohort, bg_mode, embedding, variant, photo_mode, reducer,
-                   model, direction, *, pca_components=None,
-                   drop_corr_threshold=None, lr_C=1.0, xgb_params=None, root=None):
-    """這格預期的 oof_scores.csv 路徑(forward 1 個、reverse 每 priority 一個)。
-
-    與 run_cell 用同一組 path helper / dir_seg 規則(forward l2_norm 無 fwd/rev 段、
-    其餘 fwd;reverse 一律 rev,且每 priority 一個子夾),確保 producer 寫哪、consumer 讀哪。
-    """
-    root = root or EMBEDDING_CLASSIFICATION_REFACTOR_DIR
-    is_classify = model in CLASSIFIERS
-    rlabel = (reducer_label(reducer, pca_components=pca_components,
-                            drop_corr_threshold=drop_corr_threshold)
-              if is_classify else "no_drop")
-    clf_param = _clf_param_label(model, lr_C, xgb_params) if is_classify else None
-    dir_seg = ("rev" if direction == "reverse"
-               else (None if model == "l2_norm" else "fwd"))
-    out_dir = embedding_classification_path(
-        *cohort, bg_mode, embedding, variant, photo_mode, rlabel,
-        clf=model, clf_param=clf_param, direction=dir_seg, root=root)
-    if direction == "reverse":
-        return [out_dir / mp / "oof_scores.csv" for mp in MATCH_STRATEGIES]
-    return [out_dir / "oof_scores.csv"]
 
 
 def eval_cell(cohort, bg_mode, embedding, variant, photo_mode, reducer,
@@ -130,25 +102,19 @@ def main():
 
     # grid search:對齊 producer 子層,逐 param point 各評一次
     is_classify = args.model in CLASSIFIERS
-    if args.grid_search:
-        if not is_classify:
-            ap.error(f"--grid-search 只支援 classifier(logistic/xgb),不適用 {args.model}")
-        if args.model == "logistic":
-            grid = [dict(lr_C=c, xgb_params=None) for c in LR_C_GRID]
-        else:  # xgb
-            grid = [dict(lr_C=1.0, xgb_params=p) for p in XGB_GRID]
-    else:
-        grid = [dict(lr_C=args.lr_C, xgb_params=None)]
+    if args.grid_search and not is_classify:
+        ap.error(f"--grid-search 只支援 classifier(logistic/xgb),不適用 {args.model}")
+    grid = param_grid(args.model, args.grid_search, lr_C=args.lr_C)
 
     logger.info(f"cohort={cohort}  cell={args.embedding}/{args.bg_mode}/{args.variant}/"
                 f"{args.photo_mode}/{args.model}/{args.direction}  ({len(grid)} param point(s))")
     total = 0
-    for g in grid:
+    for lr_C, xgb_params in grid:
         total += len(eval_cell(
             cohort, args.bg_mode, args.embedding, args.variant, args.photo_mode,
             args.reducer, args.model, args.direction,
             pca_components=pca, drop_corr_threshold=args.drop_corr_threshold,
-            lr_C=g["lr_C"], xgb_params=g["xgb_params"],
+            lr_C=lr_C, xgb_params=xgb_params,
             output_root=args.output_root, write=args.write, seed=args.seed))
     logger.info(f"done. wrote {total} metrics.csv")
 

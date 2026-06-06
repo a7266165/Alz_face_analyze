@@ -78,6 +78,47 @@ def _clf_param_label(model, lr_C, xgb_params):
     return None
 
 
+def cell_out_dir(cohort, bg_mode, embedding, variant, photo_mode, reducer, model,
+                 direction, *, pca_components=None, drop_corr_threshold=None,
+                 lr_C=1.0, xgb_params=None, root=None):
+    """這格的輸出目錄。run_cell 寫、evaluate 讀共用同一組 rlabel / clf_param / dir_seg
+    規則(forward l2_norm 無 fwd/rev 段、其餘 fwd;reverse 一律 rev),確保寫哪讀哪一致。"""
+    root = root or EMBEDDING_CLASSIFICATION_REFACTOR_DIR
+    is_classify = model in CLASSIFIERS
+    rlabel = (reducer_label(reducer, pca_components=pca_components,
+                            drop_corr_threshold=drop_corr_threshold)
+              if is_classify else "no_drop")
+    clf_param = _clf_param_label(model, lr_C, xgb_params) if is_classify else None
+    dir_seg = ("rev" if direction == "reverse"
+               else (None if model == "l2_norm" else "fwd"))
+    return embedding_classification_path(
+        *cohort, bg_mode, embedding, variant, photo_mode, rlabel,
+        clf=model, clf_param=clf_param, direction=dir_seg, root=root)
+
+
+def cell_oof_paths(cohort, bg_mode, embedding, variant, photo_mode, reducer, model,
+                   direction, *, pca_components=None, drop_corr_threshold=None,
+                   lr_C=1.0, xgb_params=None, root=None):
+    """這格預期寫出的 oof_scores.csv(forward 1 個、reverse 每 match_strategy 一個)。"""
+    out_dir = cell_out_dir(cohort, bg_mode, embedding, variant, photo_mode, reducer,
+                           model, direction, pca_components=pca_components,
+                           drop_corr_threshold=drop_corr_threshold,
+                           lr_C=lr_C, xgb_params=xgb_params, root=root)
+    if direction == "reverse":
+        return [out_dir / ms / "oof_scores.csv" for ms in MATCH_STRATEGIES]
+    return [out_dir / "oof_scores.csv"]
+
+
+def param_grid(model, grid_search, lr_C=1.0):
+    """(model, grid_search) → [(lr_C, xgb_params)] 參數點清單。
+    grid 開:logistic 掃 LR_C_GRID、xgb 掃 XGB_GRID;否則(含所有 scorer)單一點。"""
+    if grid_search and model == "logistic":
+        return [(c, None) for c in LR_C_GRID]
+    if grid_search and model == "xgb":
+        return [(1.0, p) for p in XGB_GRID]
+    return [(lr_C, None)]
+
+
 def build_ad_full_cohort(cohort):
     """完整 P-vs-HC 訓練 cohort(label:P=1,其餘=0)。AD 三 partition 共用此 OOF。
     cohort = (p_visit, p_score, hc_visit, hc_score) 4-token,順序同 cohort_list。"""
@@ -122,10 +163,6 @@ def run_cell(cohort, bg_mode, embedding, variant, photo_mode, reducer,
              lr_C=1.0, xgb_params=None, output_root=None, match_strategies=None):
     match_strategies = match_strategies or MATCH_STRATEGIES
     root = output_root or EMBEDDING_CLASSIFICATION_REFACTOR_DIR
-    is_classify = model in CLASSIFIERS
-    rlabel = reducer_label(reducer, pca_components=pca_components,
-                           drop_corr_threshold=drop_corr_threshold) \
-        if is_classify else "no_drop"
     ep = _eparams(reducer, pca_components, drop_corr_threshold, lr_C, xgb_params)
 
     full = build_ad_full_cohort(cohort)
@@ -141,14 +178,10 @@ def run_cell(cohort, bg_mode, embedding, variant, photo_mode, reducer,
     _, score_method, needs_cv = _build_estimator(model, ep)
     build_estimator = lambda: _build_estimator(model, ep)[0]
 
-    # 路徑:forward l2 無 fwd/rev 段、其餘 fwd;reverse 一律 rev。
-    dir_seg = ("rev" if direction == "reverse"
-               else (None if model == "l2_norm" else "fwd"))
-    # classifier 多一層 hyperparameter 子層(C_<value> / ne_md_lr);scorer 為 None。
-    clf_param = _clf_param_label(model, lr_C, xgb_params) if is_classify else None
-    out_dir = embedding_classification_path(
-        *cohort, bg_mode, embedding, variant, photo_mode, rlabel,
-        clf=model, clf_param=clf_param, direction=dir_seg, root=root)
+    out_dir = cell_out_dir(cohort, bg_mode, embedding, variant, photo_mode, reducer,
+                           model, direction, pca_components=pca_components,
+                           drop_corr_threshold=drop_corr_threshold,
+                           lr_C=lr_C, xgb_params=xgb_params, root=root)
 
     # train → 只產 OOF;report → 只把 OOF 落地成 oof_scores.csv(評估是獨立下游步驟)。
     oof = train(X_full, ids_full, y_full, build_estimator, score_method, needs_cv, direction,
@@ -222,28 +255,22 @@ def main():
     logger.info(f"cohort={cohort}")
 
     # grid search:只掃 classifier 的 hyperparameter;否則單一配置。
-    if args.grid_search:
-        if not is_classify:
-            ap.error(f"--grid-search 只支援 classifier(logistic/xgb),不適用 {args.model}")
-        if args.model == "logistic":
-            grid = [dict(lr_C=c, xgb_params=None) for c in LR_C_GRID]
-        else:  # xgb
-            grid = [dict(lr_C=1.0, xgb_params=p) for p in XGB_GRID]
-    else:
-        grid = [dict(lr_C=args.lr_C, xgb_params=None)]
+    if args.grid_search and not is_classify:
+        ap.error(f"--grid-search 只支援 classifier(logistic/xgb),不適用 {args.model}")
+    grid = param_grid(args.model, args.grid_search, lr_C=args.lr_C)
 
     logger.info(f"cell: {args.embedding}/{args.bg_mode}/{args.variant}/"
                 f"{args.photo_mode}/{args.model}"
                 f"{('/' + args.reducer) if is_classify else ''}/{args.direction}"
                 f"  ({len(grid)} param point(s))")
-    for i, g in enumerate(grid, 1):
+    for i, (lr_C, xgb_params) in enumerate(grid, 1):
         if len(grid) > 1:
             logger.info(f"  [{i}/{len(grid)}] "
-                        f"{_clf_param_label(args.model, g['lr_C'], g['xgb_params'])}")
+                        f"{_clf_param_label(args.model, lr_C, xgb_params)}")
         run_cell(cohort, args.bg_mode, args.embedding, args.variant,
                  args.photo_mode, args.reducer, args.model, args.direction,
                  pca_components=pca, drop_corr_threshold=args.drop_corr_threshold,
-                 lr_C=g["lr_C"], xgb_params=g["xgb_params"],
+                 lr_C=lr_C, xgb_params=xgb_params,
                  output_root=args.output_root)
     logger.info("done.")
 

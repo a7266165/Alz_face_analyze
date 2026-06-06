@@ -36,9 +36,8 @@ from src.config import (
 )
 from src.embedding.classification import ALL_METHODS, CLASSIFIERS
 from scripts.embedding.classification.run import _clf_param_label
-from scripts.embedding.evaluate.run import cell_oof_paths
 from scripts.embedding.classification.sweep import (
-    iter_cells, EMBEDDINGS, VARIANTS, BG_MODES, PHOTO_MODES, DIRECTIONS,
+    iter_cells, oof_paths_for, EMBEDDINGS, VARIANTS, BG_MODES, PHOTO_MODES, DIRECTIONS,
 )
 
 logger = logging.getLogger("aggregate_metrics")
@@ -68,15 +67,12 @@ def _read_annotated(metrics_path, cell):
 
 
 def collect_metrics(args):
-    """走 iter_cells → cell_oof_paths,讀每個存在的 metrics.csv(forward 1、reverse 每
+    """走 iter_cells → oof_paths_for,讀每個存在的 metrics.csv(forward 1、reverse 每
     priority 一個),補身份欄後接成一張長表 DataFrame(無資料則回空表)。"""
     root = args.output_root or EMBEDDING_CLASSIFICATION_REFACTOR_DIR
     frames = []
     for cell in iter_cells(args):
-        for oof_path in cell_oof_paths(
-                cell["cohort"], cell["bg"], cell["emb"], cell["variant"], cell["photo"],
-                cell["reducer"], cell["model"], cell["direction"],
-                lr_C=cell["lr_C"], xgb_params=cell["xgb_params"], root=root):
+        for oof_path in oof_paths_for(cell, root):
             mpath = oof_path.parent / "metrics.csv"
             if mpath.exists():
                 frames.append(_read_annotated(mpath, cell))

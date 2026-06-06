@@ -30,11 +30,10 @@ PROJECT_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from scripts.embedding.classification.run import (
-    run_cell, MATCH_STRATEGIES, LR_C_GRID, XGB_GRID, _clf_param_label,
+    run_cell, cell_oof_paths, param_grid, _clf_param_label,
 )
-from src.embedding.classification import CLASSIFIERS, ALL_METHODS, reducer_label
+from src.embedding.classification import CLASSIFIERS, ALL_METHODS
 from src.config import (
-    embedding_classification_path,
     EMBEDDING_CLASSIFICATION_REFACTOR_DIR,
     P_VISIT_TOKENS, P_SCORE_TOKENS, HC_VISIT_TOKENS, HC_SCORE_TOKENS,
     DEFAULT_COHORT_TOKENS,
@@ -60,32 +59,13 @@ def _is_known_crash(cell):
     return (cell["model"], cell["emb"]) in KNOWN_CRASH
 
 
-def _grid_for(model, grid_search):
-    """回 (lr_C, xgb_params) 清單。grid 關 → 單一預設;classifier 開 grid → 各自網格;
-    scorer 永遠單一(無 hyperparameter)。"""
-    if grid_search and model == "logistic":
-        return [(c, None) for c in LR_C_GRID]
-    if grid_search and model == "xgb":
-        return [(1.0, p) for p in XGB_GRID]
-    return [(1.0, None)]
-
-
-def _expected_paths(cell, root):
-    """這格預期會寫出的 oof_scores.csv(forward 1 個、reverse 每 ms 一個)。
-    用與 run_cell 同一組 path helper 算,純為 skip-if-exists。"""
-    model = cell["model"]
-    is_classify = model in CLASSIFIERS
-    rlabel = reducer_label(cell["reducer"]) if is_classify else "no_drop"
-    clf_param = (_clf_param_label(model, cell["lr_C"], cell["xgb_params"])
-                 if is_classify else None)
-    dir_seg = ("rev" if cell["direction"] == "reverse"
-               else (None if model == "l2_norm" else "fwd"))
-    out_dir = embedding_classification_path(
-        *cell["cohort"], cell["bg"], cell["emb"], cell["variant"], cell["photo"],
-        rlabel, clf=model, clf_param=clf_param, direction=dir_seg, root=root)
-    if cell["direction"] == "reverse":
-        return [out_dir / ms / "oof_scores.csv" for ms in MATCH_STRATEGIES]
-    return [out_dir / "oof_scores.csv"]
+def oof_paths_for(cell, root):
+    """cell dict(iter_cells 產出)→ 這格的 oof_scores.csv 路徑 list(skip-if-exists 用)。
+    委派給 producer 的 cell_oof_paths,確保「檢查的格 == 產的格」。"""
+    return cell_oof_paths(
+        cell["cohort"], cell["bg"], cell["emb"], cell["variant"], cell["photo"],
+        cell["reducer"], cell["model"], cell["direction"],
+        lr_C=cell["lr_C"], xgb_params=cell["xgb_params"], root=root)
 
 
 def iter_cells(args):
@@ -100,7 +80,7 @@ def iter_cells(args):
                                     else ["no_drop"])
                         for reducer in reducers:
                             for direction in args.direction:
-                                for lr_C, xgb_params in _grid_for(model, args.grid_search):
+                                for lr_C, xgb_params in param_grid(model, args.grid_search):
                                     yield dict(
                                         cohort=cohort, bg=bg, emb=emb,
                                         variant=variant, photo=photo,
@@ -160,7 +140,7 @@ def main():
         if _is_known_crash(c):  # 硬 segfault,直接跳過(不進 try/except —— 攔不到)
             excluded += 1
             continue
-        if not args.overwrite and all(p.exists() for p in _expected_paths(c, root)):
+        if not args.overwrite and all(p.exists() for p in oof_paths_for(c, root)):
             skipped += 1
             continue
         if args.dry_run:
