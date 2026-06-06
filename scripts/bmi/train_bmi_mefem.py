@@ -27,8 +27,8 @@ from src.config import (
     preprocess_dir,
     BMI_ANALYSIS_DIR,
     BMI_MODELS_DIR,
-    DEMOGRAPHICS_DIR,
 )
+from src.bmi import build_embedding_dataset, cross_validate, load_bmi_subjects, train_final
 
 ALIGNED_DIR = preprocess_dir("aligned")
 
@@ -117,36 +117,6 @@ def extract_mefem_embeddings(
     return embeddings
 
 
-# ---------------------------------------------------------------------------
-# Dataset building + CV (reuse from trainer.py)
-# ---------------------------------------------------------------------------
-
-def build_dataset_from_embeddings(embeddings, demographics_dir):
-    """Pair MeFEm embeddings with BMI labels."""
-    from src.common.cohort import load_demographics
-    demo = load_demographics()
-    demo = demo[["ID", "base_id", "BMI"]].dropna(subset=["BMI"])
-
-    rows_x, rows_y, rows_g, rows_id = [], [], [], []
-    for _, row in demo.iterrows():
-        sid = row["ID"]
-        if sid not in embeddings:
-            continue
-        rows_x.append(embeddings[sid])
-        rows_y.append(float(row["BMI"]))
-        rows_g.append(row["base_id"])
-        rows_id.append(sid)
-
-    X = np.stack(rows_x, axis=0)
-    y = np.array(rows_y, dtype=np.float64)
-    base_id_to_int = {b: i for i, b in enumerate(sorted(set(rows_g)))}
-    groups = np.array([base_id_to_int[g] for g in rows_g])
-
-    logger.info(f"Dataset: {X.shape[0]} visits, {len(base_id_to_int)} subjects, "
-                f"emb_dim={X.shape[1]}, BMI [{y.min():.1f}, {y.max():.1f}]")
-    return X, y, groups, rows_id
-
-
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--variant", default="base", choices=["small", "base"])
@@ -160,22 +130,18 @@ def main():
     # ── Load MeFEm ──────────────────────────────────────
     model, emb_dim = load_mefem(args.variant, device)
 
-    # ── Load all IDs with BMI ───────────────────────────
-    from src.common.cohort import load_demographics
-    all_ids = load_demographics().dropna(subset=["BMI"])["ID"].tolist()
-    logger.info(f"IDs with BMI: {len(all_ids)}")
+    # ── Load subjects with BMI ──────────────────────────
+    ids, bmi, base_ids = load_bmi_subjects()
+    logger.info(f"IDs with BMI: {len(ids)}")
 
     # ── Extract embeddings ──────────────────────────────
     logger.info("Extracting MeFEm embeddings...")
-    embeddings = extract_mefem_embeddings(model, all_ids, ALIGNED_DIR, device)
+    feats = extract_mefem_embeddings(model, ids, ALIGNED_DIR, device)
     del model
     torch.cuda.empty_cache()
 
     # ── Build dataset ───────────────────────────────────
-    X, y, groups, ids = build_dataset_from_embeddings(embeddings, DEMOGRAPHICS_DIR)
-
-    # ── Run CV for each model ───────────────────────────
-    from src.bmi.trainer import cross_validate, regression_metrics, train_final
+    X, y, groups, ids = build_embedding_dataset(ids, bmi, base_ids, feats)
 
     BMI_ANALYSIS_DIR.mkdir(parents=True, exist_ok=True)
     BMI_MODELS_DIR.mkdir(parents=True, exist_ok=True)

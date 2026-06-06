@@ -26,16 +26,11 @@ from src.config import (
     preprocess_dir,
     BMI_ANALYSIS_DIR,
     BMI_MODELS_DIR,
-    DEMOGRAPHICS_DIR,
 )
 
 ALIGNED_DIR = preprocess_dir("aligned")
-from src.bmi.image_trainer import (
-    build_image_dataset_info,
-    cross_validate_image,
-    train_final_image,
-)
-from src.bmi.trainer import regression_metrics
+from src.bmi import encode_groups, load_bmi_subjects
+from src.bmi.image import cross_validate_image, train_final_image
 
 logging.basicConfig(
     level=logging.INFO,
@@ -65,7 +60,8 @@ def main():
 
     # ── Load dataset info ───────────────────────────────
     logger.info("Loading demographics + BMI...")
-    ids, bmi, groups = build_image_dataset_info(DEMOGRAPHICS_DIR)
+    ids, bmi, base_ids = load_bmi_subjects()
+    groups = encode_groups(base_ids)
     logger.info(f"Dataset: {len(ids)} visits, {len(set(groups))} subjects, "
                 f"BMI [{bmi.min():.1f}, {bmi.max():.1f}]")
 

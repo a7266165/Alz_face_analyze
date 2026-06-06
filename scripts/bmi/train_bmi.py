@@ -23,13 +23,13 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from src.config import (
     BMI_ANALYSIS_DIR,
     BMI_MODELS_DIR,
-    DEMOGRAPHICS_DIR,
     EMBEDDING_FEATURES_DIR,
 )
-from src.bmi.trainer import (
-    build_dataset,
+from src.bmi import (
+    build_embedding_dataset,
     cross_validate,
-    regression_metrics,
+    load_arcface_features,
+    load_bmi_subjects,
     train_final,
 )
 
@@ -53,7 +53,9 @@ def main():
 
     # ── Load dataset ────────────────────────────────────
     logger.info("Loading ArcFace embeddings + BMI demographics...")
-    X, y, groups, ids = build_dataset(EMBEDDING_FEATURES_DIR, DEMOGRAPHICS_DIR)
+    ids, bmi, base_ids = load_bmi_subjects()
+    feats = load_arcface_features(ids, EMBEDDING_FEATURES_DIR)
+    X, y, groups, ids = build_embedding_dataset(ids, bmi, base_ids, feats)
     logger.info(f"Dataset ready: {X.shape[0]} visits, {len(set(groups))} subjects")
 
     # ── Ensure output dirs ──────────────────────────────

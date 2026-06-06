@@ -25,7 +25,7 @@ from src.config import (
     BMI_PREDICTIONS_DIR,
     EMBEDDING_FEATURES_DIR,
 )
-from src.bmi.trainer import load_arcface_features
+from src.bmi import load_arcface_features
 
 logging.basicConfig(
     level=logging.INFO,

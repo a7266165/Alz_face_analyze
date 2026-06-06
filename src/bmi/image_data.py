@@ -1,20 +1,14 @@
-"""
-PyTorch Dataset for loading aligned face images paired with BMI labels.
+"""對齊人臉影像 + BMI 標籤的 PyTorch Dataset。
 
-Each visit (ID) has ~10 aligned face images under
-    workspace/preprocess/aligned/{ID}/*.png
-
-Training mode:  randomly pick 1 of 10 images per __getitem__ call
-                (effectively 10× augmentation across epochs).
-Eval mode:      return all images stacked; caller averages predictions.
+每個 visit（ID）在 aligned/{ID}/ 下有 ~10 張臉。訓練：每次 __getitem__ 隨機抽 1 張
+（跨 epoch 等於 10× 增強）；評估：攤平所有影像，由呼叫端對人平均。
 """
 
 import logging
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import List
 
 import numpy as np
-import pandas as pd
 import torch
 from PIL import Image
 from torch.utils.data import Dataset
@@ -45,15 +39,9 @@ def eval_transforms(input_size: int = 224):
 
 
 class BMIFaceDataset(Dataset):
-    """Single-image-per-visit dataset for training (random pick from 10)."""
+    """訓練用：每個 visit 隨機抽 1 張（無影像的 ID 自動丟棄）。"""
 
-    def __init__(
-        self,
-        ids: List[str],
-        bmi_values: np.ndarray,
-        aligned_dir: Path,
-        transform=None,
-    ):
+    def __init__(self, ids: List[str], bmi_values: np.ndarray, aligned_dir: Path, transform=None):
         self.ids = list(ids)
         self.bmi = bmi_values.astype(np.float32)
         self.aligned_dir = Path(aligned_dir)
@@ -61,11 +49,9 @@ class BMIFaceDataset(Dataset):
 
         self._image_paths = {}
         for sid in self.ids:
-            subdir = self.aligned_dir / sid
-            if subdir.is_dir():
-                pngs = sorted(subdir.glob("*.png"))
-                if pngs:
-                    self._image_paths[sid] = pngs
+            pngs = sorted((self.aligned_dir / sid).glob("*.png"))
+            if pngs:
+                self._image_paths[sid] = pngs
 
         valid_mask = [sid in self._image_paths for sid in self.ids]
         if sum(valid_mask) < len(self.ids):
@@ -78,8 +64,7 @@ class BMIFaceDataset(Dataset):
         return len(self.ids)
 
     def __getitem__(self, idx):
-        sid = self.ids[idx]
-        paths = self._image_paths[sid]
+        paths = self._image_paths[self.ids[idx]]
         img_path = paths[torch.randint(len(paths), (1,)).item()]
         img = Image.open(img_path).convert("RGB")
         if self.transform:
@@ -88,26 +73,15 @@ class BMIFaceDataset(Dataset):
 
 
 class BMIFaceEvalDataset(Dataset):
-    """All-images-per-visit dataset for evaluation (caller averages)."""
+    """評估用：每個 visit 攤平所有影像（呼叫端按 sid 平均預測）。"""
 
-    def __init__(
-        self,
-        ids: List[str],
-        bmi_values: np.ndarray,
-        aligned_dir: Path,
-        transform=None,
-    ):
+    def __init__(self, ids: List[str], bmi_values: np.ndarray, aligned_dir: Path, transform=None):
         self.aligned_dir = Path(aligned_dir)
         self.transform = transform
 
         self._entries = []
         for i, sid in enumerate(ids):
-            subdir = self.aligned_dir / sid
-            if not subdir.is_dir():
-                continue
-            pngs = sorted(subdir.glob("*.png"))
-            if not pngs:
-                continue
+            pngs = sorted((self.aligned_dir / sid).glob("*.png"))
             for p in pngs:
                 self._entries.append((sid, p, bmi_values[i]))
 

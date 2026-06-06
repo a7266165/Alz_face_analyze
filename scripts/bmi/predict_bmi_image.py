@@ -28,8 +28,8 @@ from src.config import (
 )
 
 ALIGNED_DIR = preprocess_dir("aligned")
-from src.bmi.image_dataset import BMIFaceEvalDataset, eval_transforms
-from src.bmi.image_trainer import make_model
+from src.bmi.image_data import BMIFaceEvalDataset, eval_transforms
+from src.bmi.image import make_image_model
 
 logging.basicConfig(
     level=logging.INFO,
@@ -57,7 +57,7 @@ def main():
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
     logger.info(f"Loading {args.arch} model...")
-    model = make_model(args.arch, pretrained=False).to(device)
+    model = make_image_model(args.arch, pretrained=False).to(device)
     model.load_state_dict(torch.load(model_path, map_location=device, weights_only=True))
     model.eval()
 
