@@ -9,8 +9,7 @@ Outputs：
   workspace/age/predictions/<default-cohort>/eacs_age_error.csv
     欄：subject_id, Source, real_age, pred_age, age_error, abs_age_error
 
-此 CSV 可直接被 scripts.utilities.feature_loaders.load_age_error / load_age_error_pairs
-或 run_stat_grid 讀取。
+此 CSV 供下游 EACS age-error 統計讀取（以 subject_id 為鍵）。
 """
 import argparse
 import csv
