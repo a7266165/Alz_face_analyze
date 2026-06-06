@@ -1,16 +1,4 @@
-"""Embedding 下游 evaluation 的 **單一 cell consumer** —— 仿 classification/run(producer)。
-
-producer(run_cell)算出 out_dir、訓練、把 OOF 落地成 oof_scores.csv;本檔(eval_cell)直接
-呼叫 producer 的 cell_oof_paths 取那格的 oof_scores.csv 路徑,丟給
-src.common.evaluate.evaluate 算出同資料夾的 metrics.csv。純讀 OOF + 算指標,不訓練、不碰特徵。
-
-路徑對稱(producer 寫哪、consumer 就讀哪):
-  forward → <out_dir>/oof_scores.csv                  → 同層 metrics.csv
-  reverse → <out_dir>/<priority>/oof_scores.csv (×N)  → 各自同層 metrics.csv
-
-評估的內部軸(matched_units × matching_priorities × eval_units × contrasts)由 evaluate
-自行全掃,這裡只指定「哪一格」(= 與 run_cell 相同的 cell 身份旗標)。
-"""
+"""計算各cell指標"""
 import argparse
 import logging
 import sys

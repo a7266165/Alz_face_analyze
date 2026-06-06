@@ -1,24 +1,4 @@
-"""Embedding 下游 classification producer(重構版)—— **只產 OOF 分數,不做評估**。
-
-流程(每個 cell):
-  build cohort(ID+label)→ load_feature_matrix → _build_estimator(model, reducer)
-  → train(X, ids, y, build_estimator, ..., direction)  → oof
-  → report(oof, out_dir, direction)               → 寫 oof_scores.csv
-      forward:full cohort OOF → oof_scores.csv
-      reverse:每 match_strategy 的 matched OOF + external ensemble → <ms>/oof_scores.csv
-
-producer 只負責「組 cohort + 載特徵 + 組裝 estimator + 算 out_dir + 呼叫 train→report」。
-**配對評估(年齡配對 × partition × 指標)是獨立的下游步驟**(吃 oof_scores.csv),不在這裡;
-故本 producer 對 src/meta 零依賴,只用 common + embedding。輸出寫到
-``workspace_refactor``(EMBEDDING_CLASSIFICATION_REFACTOR_DIR),**絕不與 legacy 混**。
-
-正交軸(互不干涉):
-  - cohort 4-token(``--p-visit/--p-score/--hc-visit/--hc-score``):決定族群,順序同 cohort_list。
-  - ``--variant``:feature type(original / absolute_differences …),只決定載哪個 X。
-  - ``--model``:logistic/xgb → reducer+classifier;l2/centroid/lda → scorer。routing key 在此。
-  - ``--reducer``:只在 model ∈ CLASSIFIERS 時有意義;scorer 帶 reducer 旗標會被 ap.error 擋掉。
-
-reverse 的 matched 訓練池由 ``match_by_age``(common)當場算,無需 matching cache。
+"""執行訓練並得到OOF.csv。
 """
 import argparse
 import logging

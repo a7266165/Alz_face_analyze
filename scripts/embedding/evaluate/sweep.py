@@ -1,13 +1,5 @@
-"""Embedding 下游 evaluation 的 **sweep orchestrator** —— 仿 classification/sweep(producer sweep)。
-
-對 classification/sweep 產出的每一格(復用同一套 ``iter_cells``),呼叫 evaluate/run.eval_cell 算 metrics.csv。
-只把「跑一格」從 run_cell 換成 eval_cell、skip-if-exists 從 oof_scores.csv 換成 metrics.csv;
-合法組合矩陣(iter_cells)與 known-crash 名單直接復用 classification/sweep,確保「評的格 == 產的格」。
-
-每格三種結局:
-  - skip   :metrics.csv 已存在(可續跑;--overwrite 強制重算)
-  - no_oof :producer 還沒產 oof_scores.csv(跳過,不算失敗)
-  - ran    :算出 metrics.csv;一格爆 try/except 攔下不拖垮整批(failed)
+"""
+依序掃過所有cell組合
 """
 import argparse
 import logging

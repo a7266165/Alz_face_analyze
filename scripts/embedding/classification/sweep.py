@@ -1,15 +1,4 @@
-"""Embedding classification 的 **in-process sweep** —— 窮舉(或縮小範圍)跑多組 cell。
-
-設計:不重寫任何 cell 邏輯,直接 ``import classification.run.run_cell`` 在同一個 python
-行程裡迴圈呼叫(in-process)。每格包 try/except(一格爆不拖垮整批)、skip-if-exists
-(已有 oof_scores.csv 就跳過 → 可續跑)。「合法組合矩陣」與 orchestration 是這支的職責;
-classification.run 維持「單一 cell」producer 不動。
-
-軸(每軸可用旗標給一或多值,預設為合法全集):
-  cohort(單一,4 旗標)× bg_mode × embedding × variant × photo_mode × model × reducer
-  × direction;classifier(logistic/xgb)再 × hyperparameter grid(預設開,--no-grid-search 關)。
-  scorer(l2/centroid/lda)自動只配 reducer=no_drop、無 grid。
-"""
+"""依序掃過所有cell組合"""
 import argparse
 import logging
 import sys

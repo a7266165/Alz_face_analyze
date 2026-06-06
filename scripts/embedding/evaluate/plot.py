@@ -1,14 +1,4 @@
-"""Embedding 下游 evaluation 的 **第一層總覽圖(best-first)** —— 吃 aggregate 的 all_metrics.csv。
-
-對 forward·1by1 的每個 (matching_priority, matched_unit, eval_unit) 切片畫一張
-3×4 圖:列 = metric(balacc / AUC / MCC),欄 = embedding(arcface / dlib /
-topofr / vggface)。每格 x 軸 = 3 個 contrast(AD/HC、AD/NAD、AD/ACS),分布 =
-對該 embedding 底下『其餘所有軸』(variant×model×clf_param×bg×photo)取的
-**config 分布**,以 box+strip 或 violin 呈現;★ = 該 (embedding, contrast, metric)
-的冠軍 config(標注值 + model/variant)。x 軸標 config 數與受試者 n。
-
-兩種圖各輸出到子夾 _summary/{box, violin}/;forward·1by1 的 4 個
-(matched_unit × eval_unit) 組合全部畫(各一張)。
+"""繪製 evaluation 總覽圖
 """
 import argparse
 import logging
