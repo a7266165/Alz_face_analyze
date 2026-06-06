@@ -1,20 +1,21 @@
 """
 scripts/embedding/evaluate/plot.py
-Embedding 下游 evaluation 的 **best-first 第一層總覽圖** —— 吃 aggregate 的 all_metrics.csv。
+Embedding 下游 evaluation 的 **第一層總覽圖(best-first)** —— 吃 aggregate 的 all_metrics.csv。
 
 對 forward·1by1 的每個 (matching_priority, matched_unit, eval_unit) 切片畫一張
 3×4 圖:列 = metric(balacc / AUC / MCC),欄 = embedding(arcface / dlib /
-topofr / vggface)。每格 x 軸 = 3 個 contrast(AD/HC、AD/NAD、AD/ACS),一個
-box + 灰色散點 = 對該 embedding 底下『其餘所有軸』(variant×model×clf_param×
-bg×photo)取的分布;★ = 該 (embedding, contrast, metric) 的冠軍 config
-(標注值 + model/variant)。
+topofr / vggface)。每格 x 軸 = 3 個 contrast(AD/HC、AD/NAD、AD/ACS),分布 =
+對該 embedding 底下『其餘所有軸』(variant×model×clf_param×bg×photo)取的
+**config 分布**,以 box+strip 或 violin 呈現;★ = 該 (embedding, contrast, metric)
+的冠軍 config(標注值 + model/variant)。x 軸標 config 數與受試者 n。
 
-forward·1by1 的 4 個 (matched_unit × eval_unit) 組合全部畫(各一張)。
+兩種圖各輸出到子夾 _summary/best_first/{box, violin}/;forward·1by1 的 4 個
+(matched_unit × eval_unit) 組合全部畫(各一張)。
 
 用法:
     conda run -n Alz_face_main_analysis python scripts/embedding/evaluate/plot.py \\
         --p-visit p_first --p-score p_cdrall --hc-visit hc_all --hc-score hc_cdrall_or_mmseall \\
-        --matching-priority priority_acs
+        --matching-priority priority_acs --styles box violin
 """
 import argparse
 import logging
@@ -44,7 +45,10 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 logger = logging.getLogger("evaluate_plot")
 
 METRICS = [("balacc", "balacc"), ("auc", "AUC"), ("mcc", "MCC")]
-CONTRASTS = [("ad_vs_hc", "AD/HC"), ("ad_vs_nad", "AD/NAD"), ("ad_vs_acs", "AD/ACS")]
+# contrast -> (label, violin color);box 風格固定淺藍,violin 用此三色(沿用 emo_au palette)
+CONTRASTS = [("ad_vs_hc", "AD/HC", "#C44E52"),
+             ("ad_vs_nad", "AD/NAD", "#4C72B0"),
+             ("ad_vs_acs", "AD/ACS", "#55A868")]
 CHANCE = {"balacc": 0.5, "auc": 0.5, "mcc": 0.0}
 YLIM = {"balacc": (0.4, 0.8), "auc": (0.4, 1.0), "mcc": (-0.2, 0.8)}
 VARIANT_SHORT = {
@@ -56,8 +60,12 @@ COMBOS = [("subject", "eval_by_subject"), ("subject", "eval_by_visit"),
           ("visit", "eval_by_subject"), ("visit", "eval_by_visit")]
 
 
-def make_figure(df, matched_unit, eval_unit, priority, out_path):
-    """一個切片 → 一張 3(metric)×4(embedding)圖;每格 3 個 contrast 的 box+strip+冠軍★。"""
+def make_figure(df, matched_unit, eval_unit, priority, out_path, style):
+    """一個切片 → 一張 3(metric)×4(embedding)圖;每格 3 個 contrast 的 config 分布 + 冠軍★。
+
+    Args:
+        style: box | violin
+    """
     rng = np.random.RandomState(0)
     embs = [e for e in EMBEDDINGS if (df["emb"] == e).any()]
     nrow, ncol = len(METRICS), len(embs)
@@ -67,23 +75,31 @@ def make_figure(df, matched_unit, eval_unit, priority, out_path):
         for c, emb in enumerate(embs):
             ax = axes[r][c]
             de = df[df["emb"] == emb]
-            arrays = [de[de["contrast"] == con][mcol].dropna().values for con, _ in CONTRASTS]
-            box = ax.boxplot(arrays, positions=range(3), widths=0.55,
-                             showfliers=False, patch_artist=True)
-            for patch in box["boxes"]:
-                patch.set_facecolor("#cfe8ff")
-                patch.set_alpha(0.7)
             ax.axhline(CHANCE[mcol], color="k", ls=":", lw=0.8, zorder=1)
             xticklabels = []
-            for i, (con, clabel) in enumerate(CONTRASTS):
+            for i, (con, clabel, color) in enumerate(CONTRASTS):
                 sub = de[de["contrast"] == con].dropna(subset=[mcol])
-                n_med = int(sub["n"].median()) if len(sub) else 0
-                xticklabels.append(f"{clabel}\nn={n_med}")
-                if not len(sub):
+                n_cfg = len(sub)
+                n_subj = int(sub["n"].median()) if n_cfg else 0
+                xticklabels.append(f"{clabel}\n{n_cfg}cfg\nn={n_subj}")
+                if not n_cfg:
                     continue
                 y = sub[mcol].values
-                ax.scatter(rng.normal(i, 0.06, len(y)), y, s=4,
-                           color="gray", alpha=0.22, zorder=2)
+                if style == "box":
+                    box = ax.boxplot([y], positions=[i], widths=0.55,
+                                     showfliers=False, patch_artist=True)
+                    box["boxes"][0].set_facecolor("#cfe8ff")
+                    box["boxes"][0].set_alpha(0.7)
+                    ax.scatter(rng.normal(i, 0.06, n_cfg), y, s=4,
+                               color="gray", alpha=0.22, zorder=2)
+                elif np.ptp(y) > 0:  # violin
+                    pc = ax.violinplot([y], positions=[i], widths=0.8, showmedians=True)
+                    pc["bodies"][0].set_facecolor(color)
+                    pc["bodies"][0].set_alpha(0.6)
+                    for key in ("cmedians", "cmins", "cmaxes", "cbars"):
+                        if key in pc:
+                            pc[key].set_color("gray")
+                            pc[key].set_linewidth(0.8)
                 champ = sub.loc[sub[mcol].idxmax()]
                 cv = champ[mcol]
                 cfg = f"{champ['model']}/{VARIANT_SHORT.get(champ['variant'], champ['variant'])}"
@@ -92,7 +108,7 @@ def make_figure(df, matched_unit, eval_unit, priority, out_path):
                 ax.annotate(f"{cv:.3f}\n{cfg}", (i, cv), textcoords="offset points",
                             xytext=(7, -4), fontsize=6, color="crimson", fontweight="bold")
             ax.set_xticks(range(3))
-            ax.set_xticklabels(xticklabels if r == nrow - 1 else [], fontsize=8)
+            ax.set_xticklabels(xticklabels if r == nrow - 1 else [], fontsize=7)
             if r == 0:
                 ax.set_title(emb, fontsize=12, fontweight="bold")
             if c == 0:
@@ -118,6 +134,9 @@ def main():
                     choices=["no_priority", "priority_acs", "priority_nad"],
                     default="priority_acs",
                     help="只畫此配對優先序的結果(預設 priority_acs)")
+    ap.add_argument("--styles", nargs="+", choices=["box", "violin"],
+                    default=["box", "violin"],
+                    help="要產生的圖種(預設兩種都產,各輸出到 best_first/<style>/)")
     ap.add_argument("--output-root", type=Path, default=None)
     args = ap.parse_args()
 
@@ -131,16 +150,18 @@ def main():
              & (df["matching_priority"] == args.matching_priority)].copy()
     logger.info(f"all_metrics rows={len(df)}  forward·1by1·{args.matching_priority} rows={len(fwd)}")
 
-    out_dir = root / cohort_path(*cohort) / "_summary" / "best_first"
-    for mu, eu in COMBOS:
-        sub = fwd[(fwd["matched_unit"] == mu) & (fwd["eval_unit"] == eu)]
-        if not len(sub):
-            logger.info(f"[skip] {mu}-match × {eu}: no rows (evaluate skips this combo)")
-            continue
-        out = out_dir / f"best_first_{args.matching_priority}_{mu}match_{eu}.png"
-        make_figure(sub, mu, eu, args.matching_priority, out)
-        logger.info(f"[ok]   {mu}-match × {eu}: {len(sub)} rows -> {out.name}")
-    logger.info(f"done -> {out_dir}")
+    base = root / cohort_path(*cohort) / "_summary" / "best_first"
+    for style in args.styles:
+        out_dir = base / style
+        for mu, eu in COMBOS:
+            sub = fwd[(fwd["matched_unit"] == mu) & (fwd["eval_unit"] == eu)]
+            if not len(sub):
+                logger.info(f"[skip] {style} {mu}-match × {eu}: no rows")
+                continue
+            out = out_dir / f"{args.matching_priority}_{mu}match_{eu}.png"
+            make_figure(sub, mu, eu, args.matching_priority, out, style)
+            logger.info(f"[ok]   {style} {mu}-match × {eu}: {len(sub)} rows -> {out.relative_to(base)}")
+    logger.info(f"done -> {base}")
 
 
 if __name__ == "__main__":
