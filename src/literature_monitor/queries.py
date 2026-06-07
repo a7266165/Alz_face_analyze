@@ -5,7 +5,7 @@ arXiv/PubMed 由 sources.py 轉成各自語法。
 """
 from __future__ import annotations
 
-TOPICS = ("embedding", "asymmetry", "emotion", "age", "bmi")
+TOPICS = ("embedding", "asymmetry", "emotion", "age", "bmi", "facedisease")
 
 TOPIC_QUERIES: dict[str, list[str]] = {
     "embedding": [
@@ -74,24 +74,41 @@ TOPIC_QUERIES: dict[str, list[str]] = {
         '"chronological age" ("face image" OR "facial photograph") ("Alzheimer" OR "dementia")',
         '"face-based age" ("Alzheimer" OR "dementia" OR "cognitive")',
     ],
+    # facedisease 刻意「不」限縮 AD：從人臉影像偵測/關聯各種疾病（與 AD-from-face 同套方法論）。
+    "facedisease": [
+        '"facial image" ("disease" OR "diagnosis" OR "biomarker")',
+        '"facial photograph" ("disease" OR "diagnosis" OR "screening")',
+        '"deep learning" facial ("disease detection" OR "diagnosis")',
+        '"facial phenotype" ("rare disease" OR "syndrome")',
+        '("Face2Gene" OR "DeepGestalt" OR "GestaltMatcher") diagnosis',
+        '"face image" ("diabetes" OR "cardiovascular" OR "endocrine" OR "thyroid")',
+        '"facial features" ("disease risk" OR "health outcome" OR "diagnosis")',
+        '"facial recognition" ("medical" OR "clinical diagnosis")',
+        '"photo" face ("Down syndrome" OR "acromegaly" OR "genetic syndrome")',
+        '"computer vision" facial ("disease" OR "clinical")',
+    ],
 }
 
 
 # ---------------------------------------------------------------------------
-# slot → (topics, sources, query_index)：每天 10 slot
-#   0..3 各主題 arxiv+s2 broad；4..7 各主題 pubmed+openalex；8 全主題 narrow；9 只出 digest
+# slot → (topics, sources, query_index)：每天 14 slot
+#   0..5 各主題 arxiv+s2 broad；6..11 各主題 pubmed+openalex deep；12 全主題 narrow；13 只出 digest
 # ---------------------------------------------------------------------------
 SLOT_PLAN: dict[int, dict] = {
-    0: {"topics": ["embedding"], "sources": ["arxiv", "s2"], "query_idx": 0},
-    1: {"topics": ["asymmetry"], "sources": ["arxiv", "s2"], "query_idx": 0},
-    2: {"topics": ["emotion"],   "sources": ["arxiv", "s2"], "query_idx": 0},
-    3: {"topics": ["age"],       "sources": ["arxiv", "s2"], "query_idx": 0},
-    4: {"topics": ["embedding"], "sources": ["pubmed", "openalex"], "query_idx": 1},
-    5: {"topics": ["asymmetry"], "sources": ["pubmed", "openalex"], "query_idx": 1},
-    6: {"topics": ["emotion"],   "sources": ["pubmed", "openalex"], "query_idx": 1},
-    7: {"topics": ["age"],       "sources": ["pubmed", "openalex"], "query_idx": 1},
-    8: {"topics": list(TOPICS),  "sources": ["arxiv", "s2", "pubmed", "openalex"], "query_idx": 2},
-    9: {"topics": [],            "sources": [],                                     "query_idx": -1, "digest_only": True},
+    0:  {"topics": ["embedding"], "sources": ["arxiv", "s2"], "query_idx": 0},
+    1:  {"topics": ["asymmetry"], "sources": ["arxiv", "s2"], "query_idx": 0},
+    2:  {"topics": ["emotion"],   "sources": ["arxiv", "s2"], "query_idx": 0},
+    3:  {"topics": ["age"],       "sources": ["arxiv", "s2"], "query_idx": 0},
+    4:  {"topics": ["bmi"],       "sources": ["arxiv", "s2"], "query_idx": 0},
+    5:  {"topics": ["facedisease"], "sources": ["arxiv", "s2"], "query_idx": 0},
+    6:  {"topics": ["embedding"], "sources": ["pubmed", "openalex"], "query_idx": 1},
+    7:  {"topics": ["asymmetry"], "sources": ["pubmed", "openalex"], "query_idx": 1},
+    8:  {"topics": ["emotion"],   "sources": ["pubmed", "openalex"], "query_idx": 1},
+    9:  {"topics": ["age"],       "sources": ["pubmed", "openalex"], "query_idx": 1},
+    10: {"topics": ["bmi"],       "sources": ["pubmed", "openalex"], "query_idx": 1},
+    11: {"topics": ["facedisease"], "sources": ["pubmed", "openalex"], "query_idx": 1},
+    12: {"topics": list(TOPICS),  "sources": ["arxiv", "s2", "pubmed", "openalex"], "query_idx": 2},
+    13: {"topics": [],            "sources": [],                                     "query_idx": -1, "digest_only": True},
 }
 
 

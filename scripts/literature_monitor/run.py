@@ -30,7 +30,7 @@ def _setup_logging(log_path: Path, verbose: bool) -> None:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description="Alz Face 文獻監測")
-    ap.add_argument("--slot", type=int, default=None, help="0-9，依 SLOT_PLAN")
+    ap.add_argument("--slot", type=int, default=None, help="0-13，依 SLOT_PLAN")
     ap.add_argument("--topic", choices=list(TOPICS) + ["all"], default=None,
                     help="手動單主題；覆寫 slot 的主題清單")
     ap.add_argument("--max-per-source", type=int, default=25)

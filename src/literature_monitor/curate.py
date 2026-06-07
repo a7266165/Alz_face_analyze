@@ -102,15 +102,10 @@ BLOCK_TITLE_PATTERNS = [
     r"functional connectivity",
     r"diffusion.?weighted",
 
-    # 症候群 / 急性臨床 / 不相關遺傳
-    r"Sturge.Weber", r"\bMTHFR\b", r"thalidomid",
-    r"neuro.Behcet", r"\bHuntington",
-    r"Lafora", r"epilepsy syndrome",
+    # 急性臨床 / 腦傷 / 口顎面 / 牙（非臉影像疾病訊號）
+    r"neuro.Behcet",
     r"war.related", r"traumatic brain injury",
-    r"transthyretin", r"\bamyloidosis\b",
-    r"\bstroke\b.*case", r"acute ischemic stroke",
-    r"genetic.*mutation", r"\bgenotype.phenotype\b",
-    r"Phelan.McDermid", r"mitochondrial dysfunction.*autism",
+    r"mitochondrial dysfunction.*autism",
     r"ALSL.{0,5}seizure",
     r"\bdental\b", r"\bocclusal\b", r"\bteeth\b",
     r"craniofacial osteoma", r"condilar hyperplasia",
@@ -138,16 +133,10 @@ BLOCK_TITLE_PATTERNS = [
     r"wearable sensor", r"physiological signal.*wearable",
     r"smartphone.{0,30}eye.tracking",
 
-    # 糖尿病 / 非 AD 慢病
-    r"type 2 diabetes",
     r"social engagement",
-    r"\bmidlife\b.{0,30}stroke",
 
     # 主題雜項
     r"\bcontrastive learning of continuous",
-    r"compound heterozyg",
-    r"\bischemic stroke\b",
-    r"infectious disease",
     r"\bPathology\b.{0,5}\b(blood|fluid)",
     r"\bcortisol\b",
     r"face pareidolia in chimpanzees",
@@ -163,6 +152,21 @@ BLOCK_TITLE_PATTERNS = [
     r"\bELOVL2\b",
     r"epigenetic clock",
 ]
+
+# 跨疾病 / 遺傳症候群 block：只套用在 AD 主題。facedisease（臉影像↔疾病）要豁免，
+# 否則正好把它想抓的糖尿病/中風/遺傳症候群論文掃掉。
+CROSS_DISEASE_BLOCK = [
+    r"Sturge.Weber", r"\bMTHFR\b", r"thalidomid", r"\bHuntington",
+    r"Lafora", r"epilepsy syndrome", r"transthyretin", r"\bamyloidosis\b",
+    r"genetic.*mutation", r"\bgenotype.phenotype\b", r"compound heterozyg",
+    r"Phelan.McDermid",
+    r"type 2 diabetes",
+    r"\bstroke\b.*case", r"acute ischemic stroke", r"\bischemic stroke\b",
+    r"\bmidlife\b.{0,30}stroke",
+    r"infectious disease",
+]
+# 這些主題談「臉影像↔疾病」，不套用 CROSS_DISEASE_BLOCK。
+CROSS_DISEASE_EXEMPT_TOPICS = {"facedisease"}
 
 # 標題或 abstract 命中任一才留（Stage 2/4）。
 # 移除裸 \bface\b：會誤中 dementia 文獻的 "face challenges" 動詞用法，改用複合詞。
@@ -199,6 +203,7 @@ POSITIVE_PATTERNS = [
 ]
 
 COMPILED_BLOCK = [re.compile(p, re.IGNORECASE) for p in BLOCK_TITLE_PATTERNS]
+COMPILED_CROSS_DISEASE = [re.compile(p, re.IGNORECASE) for p in CROSS_DISEASE_BLOCK]
 COMPILED_POSITIVE = [re.compile(p, re.IGNORECASE) for p in POSITIVE_PATTERNS]
 
 
@@ -233,8 +238,11 @@ def load_papers(waiting_review_dir: Path) -> list[Paper]:
     return out
 
 
-def _block_match(text: str) -> str | None:
-    for p in COMPILED_BLOCK:
+def _block_match(text: str, topic: str = "") -> str | None:
+    patterns = COMPILED_BLOCK
+    if topic not in CROSS_DISEASE_EXEMPT_TOPICS:
+        patterns = COMPILED_BLOCK + COMPILED_CROSS_DISEASE
+    for p in patterns:
         if p.search(text):
             return p.pattern
     return None
@@ -271,7 +279,7 @@ def pipeline(waiting_review_dir: Path, apply: bool) -> dict:
     # Stage 1：標題 block
     deletes_1, survivors = [], []
     for p in papers:
-        (deletes_1 if _block_match(p.title) else survivors).append(p)
+        (deletes_1 if _block_match(p.title, p.topic) else survivors).append(p)
     print(f"Stage 1 (title block) deletes: {len(deletes_1)} (survivors: {len(survivors)})")
 
     # Stage 2：用現有 abstract 做 positive
