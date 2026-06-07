@@ -10,7 +10,7 @@ Two lanes:
         -> extract_text -> accepted references
 
 Output:
-  workspace_refactor/overview/literature_monitor_pipeline.png
+  workspace/overview/literature_monitor_pipeline.png
 """
 import matplotlib.pyplot as plt
 from draw_pipeline_v2_common import *

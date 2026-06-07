@@ -38,7 +38,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
 from _paths import PROJECT_ROOT  # noqa: F401
 
 from src.config import (
-    EMO_AU_FEATURES_REFACTOR_DIR, WORKSPACE_REFACTOR_DIR, cohort_path,
+    EMO_AU_FEATURES_DIR, EMO_AU_ANALYSIS_DIR, cohort_path,
     P_VISIT_TOKENS, P_SCORE_TOKENS, HC_VISIT_TOKENS, HC_SCORE_TOKENS,
     DEFAULT_COHORT_TOKENS,
 )
@@ -395,7 +395,7 @@ def main():
     ap.add_argument("--p-score", choices=list(P_SCORE_TOKENS), default=DEFAULT_COHORT_TOKENS[1])
     ap.add_argument("--hc-visit", choices=list(HC_VISIT_TOKENS), default=DEFAULT_COHORT_TOKENS[2])
     ap.add_argument("--hc-score", choices=list(HC_SCORE_TOKENS), default=DEFAULT_COHORT_TOKENS[3])
-    ap.add_argument("--features-dir", type=Path, default=EMO_AU_FEATURES_REFACTOR_DIR)
+    ap.add_argument("--features-dir", type=Path, default=EMO_AU_FEATURES_DIR)
     ap.add_argument("--output-dir", type=Path, default=None,
                     help="覆寫輸出目錄；留空依 cohort 自動決定")
     ap.add_argument("--variants", nargs="+", default=["full", "1by1matched"],
@@ -409,7 +409,7 @@ def main():
         normmap = {m: {_norm(c): c for c in cols}
                    for m, cols in _roster_from_config().items()}
         out = args.output_dir or (
-            WORKSPACE_REFACTOR_DIR / "emo_au" / "analysis" / "_layout_preview")
+            EMO_AU_ANALYSIS_DIR / "_layout_preview")
         logger.info(f"版面預覽(空白) → {out}")
         for fig_name, fam, rows in _figures(normmap):
             build_skeleton(
@@ -422,8 +422,7 @@ def main():
 
     tokens = (args.p_visit, args.p_score, args.hc_visit, args.hc_score)
     out_base = args.output_dir or (
-        WORKSPACE_REFACTOR_DIR / "emo_au" / "analysis"
-        / cohort_path(*tokens) / "group_compare")
+        EMO_AU_ANALYSIS_DIR / cohort_path(*tokens) / "group_compare")
     logger.info(f"cohort = {tokens}")
     logger.info(f"features-dir = {args.features_dir}")
     logger.info(f"output-dir   = {out_base}")

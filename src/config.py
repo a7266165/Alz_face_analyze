@@ -75,12 +75,10 @@ EMBEDDING_ANALYSIS_DIR = EMBEDDING_DIR / "analysis"
 EMBEDDING_FEATURE_STAT_DIR = EMBEDDING_ANALYSIS_DIR / "feature_stat"
 EMBEDDING_CLASSIFICATION_DIR = EMBEDDING_ANALYSIS_DIR / "classification"
 
-# Refactor sandbox (2026-06): the rebuilt downstream writes its OOF / metrics here
-# so results never mix with the legacy workspace/ outputs. Mirrors the same relative
-# layout under a separate root → trivial A/B diff (same relative path, two roots).
-WORKSPACE_REFACTOR_DIR = PROJECT_ROOT / "workspace_refactor"
-EMBEDDING_CLASSIFICATION_REFACTOR_DIR = (
-    WORKSPACE_REFACTOR_DIR / "embedding" / "analysis" / "classification")
+# 2026-06: the refactor sandbox (workspace_refactor/) was folded back into workspace/
+# after A/B validation. This name is kept as an alias of the canonical workspace
+# classification dir so the embedding downstream scripts' imports stay stable.
+EMBEDDING_CLASSIFICATION_REFACTOR_DIR = EMBEDDING_CLASSIFICATION_DIR
 
 # -----------------------------------------------------------------------------
 # Age
@@ -117,10 +115,6 @@ EMO_AU_DIR = WORKSPACE_DIR / "emo_au"
 EMO_AU_FEATURES_DIR = EMO_AU_DIR / "features"
 EMO_AU_FEATURES_SCHEMA_FILE = EMO_AU_FEATURES_DIR / "_schema.json"
 
-# Refactor sandbox (2026-06): the rebuilt producer scripts/emo_au/extract.py writes
-# its per-subject npy features + _schema.json here, mirroring the workspace/emo_au/
-# features layout under a separate root → trivial A/B diff (same relative path).
-EMO_AU_FEATURES_REFACTOR_DIR = WORKSPACE_REFACTOR_DIR / "emo_au" / "features"
 EMO_AU_ANALYSIS_DIR = EMO_AU_DIR / "analysis"
 EMO_AU_FEATURE_STAT_DIR = EMO_AU_ANALYSIS_DIR / "feature_stat"
 EMO_AU_CLASSIFICATION_DIR = EMO_AU_ANALYSIS_DIR / "classification"

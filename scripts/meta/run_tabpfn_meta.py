@@ -1,7 +1,7 @@
 """Meta producer：對 feature set × asymmetry variant × scorer 窮舉跑 TabPFN v3,落地 leaderboard + OOF。
 
 feature set = full(age, MMSE, CASI, original-OOF, asym-OOF) + 三個 MMSE/CASI 對照
-(見 src.meta.FEATURE_SETS)。輸出寫到 WORKSPACE_REFACTOR_DIR/meta。
+(見 src.meta.FEATURE_SETS)。輸出寫到 META_DIR(workspace/meta)。
 
 用法:
     python scripts/meta/run_tabpfn_meta.py \\
@@ -17,7 +17,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.config import (
-    WORKSPACE_REFACTOR_DIR, cohort_dirs,
+    META_DIR, cohort_dirs,
     P_VISIT_TOKENS, P_SCORE_TOKENS, HC_VISIT_TOKENS, HC_SCORE_TOKENS,
 )
 from src.meta import sweep
@@ -42,7 +42,7 @@ def main():
     ap.add_argument("--reducer", default="no_drop")
     ap.add_argument("--device", default="auto", help="auto | cpu | cuda")
     ap.add_argument("--seed", type=int, default=42)
-    ap.add_argument("--output-root", type=Path, default=WORKSPACE_REFACTOR_DIR / "meta")
+    ap.add_argument("--output-root", type=Path, default=META_DIR)
     args = ap.parse_args()
 
     cohort = (args.p_visit, args.p_score, args.hc_visit, args.hc_score)

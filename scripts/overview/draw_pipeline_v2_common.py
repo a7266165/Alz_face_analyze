@@ -6,13 +6,13 @@ Differences vs the original draw_age_emb_pipeline_common:
   - content-driven sizing: node_w(text) grows width per 5 chars over 10;
     node_h(lines) grows height per line over 2
   - uniform GAP=0.5 / PADDING=0.75, linespacing=1.2
-  - figures are written to workspace_refactor/overview
+  - figures are written to workspace/overview
 """
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyBboxPatch
 from pathlib import Path
 
-OUT = Path(r"c:\Users\4080\Desktop\Alz_face_analyze\workspace_refactor\overview")
+OUT = Path(r"c:\Users\4080\Desktop\Alz_face_analyze\workspace\overview")
 
 # ── constants (prompt.md §2) ──
 FONT = "Microsoft JhengHei"

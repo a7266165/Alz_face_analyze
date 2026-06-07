@@ -14,7 +14,7 @@ import mediapipe as mp
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
 from _paths import PROJECT_ROOT  # noqa: F401
 
-from src.config import preprocess_dir, WORKSPACE_REFACTOR_DIR
+from src.config import preprocess_dir, AGE_PREDICTIONS_DIR
 from src.common.image_io import iter_subject_dirs, load_subject
 from src.common.cohort import load_demographic_ids
 
@@ -24,7 +24,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-DEFAULT_OUTPUT = WORKSPACE_REFACTOR_DIR / "age" / "predictions" / "1_MiVOLO" / "input"
+DEFAULT_OUTPUT = AGE_PREDICTIONS_DIR / "1_MiVOLO" / "input"
 
 
 def _imwrite_unicode(path: Path, img) -> None:

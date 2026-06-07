@@ -34,7 +34,7 @@ from tqdm import tqdm
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
 from _paths import PROJECT_ROOT  # noqa: F401
 
-from src.config import EMO_AU_FEATURES_REFACTOR_DIR, preprocess_dir
+from src.config import EMO_AU_FEATURES_DIR, preprocess_dir
 from src.common.image_io import batch_apply, iter_subject_dirs, load_subject
 from src.emo_au.extractor import EXTRACTORS, get_extractor
 from src.emo_au.extractor.au_config import HARMONIZED_EMOTIONS, canonical_order
@@ -249,8 +249,8 @@ def main():
     ap.add_argument(
         "--output-dir",
         type=Path,
-        default=EMO_AU_FEATURES_REFACTOR_DIR,
-        help="覆寫輸出根（預設 EMO_AU_FEATURES_REFACTOR_DIR）",
+        default=EMO_AU_FEATURES_DIR,
+        help="覆寫輸出根（預設 EMO_AU_FEATURES_DIR）",
     )
     args = ap.parse_args()
 

@@ -14,7 +14,7 @@ Pipeline (top -> bottom):
            -> aggregator -> full/1by1matched -> violin)
 
 Output:
-  workspace_refactor/overview/age_emb_pipeline_v2.png
+  workspace/overview/age_emb_pipeline_v2.png
 
 Usage:
     python scripts/overview/age_emb_pipeline_v2.py
