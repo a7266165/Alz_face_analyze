@@ -169,8 +169,14 @@ def build(mode='center'):
     d2_top = y_d1 + NODE_H / 2 + SP + SP
     y_d2 = d2_top + SP + NODE_H / 2          # age_error
     d3_top = y_d2 + NODE_H / 2 + SP + SP
-    y_d3 = d3_top + SP + NODE_H / 2          # violin / lines / scatter / stat
+    y_d3 = d3_top + SP + NODE_H / 2          # embedding classifier / emo violin
     d3_bot = y_d3 + NODE_H / 2 + SP
+
+    # Age branch grows two extra rows below age_error:
+    #   full / 1 by 1 matched, then the 4 stat plots
+    y_a_fm = y_d2 + NODE_H + 2 * SP          # full / 1 by 1 matched  (Age)
+    y_a_stat = y_a_fm + NODE_H + 2 * SP      # violin / lines / scatter / stat
+    a_bot = y_a_stat + NODE_H / 2 + SP
 
     # ════ Demographic+Cohort placement (depends on mode) ════
     if mode == 'side':
@@ -191,10 +197,11 @@ def build(mode='center'):
     e_eb_y = e_er_y + NODE_H + SP + 0.5        # eval_by_subject / eval_by_visit
     e_cmp_y = e_eb_y + NODE_H + SP + 0.5       # AD-vs-HC / NAD / ACS contrasts
     e_agg_y = e_cmp_y + NODE_H + SP + 0.5      # aggregator
-    e_plt_y = e_agg_y + NODE_H + SP + 0.5      # plotter
-    e_fr_bot = e_plt_y + NODE_H / 2 + SP
+    e_fm_y = e_agg_y + NODE_H + SP + 0.5       # full / 1 by 1 matched
+    e_vio_y = e_fm_y + NODE_H + SP + 0.5       # violin
+    e_fr_bot = e_vio_y + NODE_H / 2 + SP
 
-    fig_h = max(dc_bot, e_fr_bot) + 0.5
+    fig_h = max(dc_bot, e_fr_bot, a_bot) + 0.5
 
     fig, ax = plt.subplots(figsize=((x_right - x_left), fig_h))
     ax.set_xlim(x_left, x_right)
@@ -263,7 +270,7 @@ def build(mode='center'):
     for x in amx:
         line(ax, x, y_mod + NODE_H / 2, X_AGE_C, y_feat - NODE_H / 2)
 
-    # ── Age step 5: mean -> age_error -> violin/lines/scatter/stat (LIT) ──
+    # ── Age step 5: mean -> age_error -> full/1by1matched -> violin/.../stat ──
     node(ax, X_AGE_C, y_d1, age_w, NODE_H, 'Predict Age mean x 1', C_AOUT['nd'])
     line(ax, X_AGE_C, y_feat + NODE_H / 2, X_AGE_C, y_d1 - NODE_H / 2)
 
@@ -272,10 +279,18 @@ def build(mode='center'):
          'age_error = real_age - predicted_age', C_AOUT['nd'])
     line(ax, X_AGE_C, y_d1 + NODE_H / 2, X_AGE_C, y_d2 - NODE_H / 2)
 
+    # full / 1 by 1 matched (1by1matched syncs to the left matched cluster colour)
+    afmx, afm_tot = rowx(X_AGE_C, 2, 2.6, 0.6)
+    for x, lab, nc in zip(afmx, ['full', '1 by 1 matched'],
+                          [C_SA['nd'], C_ES['nd']]):
+        node(ax, x, y_a_fm, 2.6, NODE_H, lab, nc)
+        line(ax, X_AGE_C, y_d2 + NODE_H / 2, x, y_a_fm - NODE_H / 2)
+
     vls_x, vls_tot = rowx(X_AGE_C, 4, 2.6, 0.5)
     for x, lab in zip(vls_x, ['violin', 'lines', 'scatter', 'stat']):
-        node(ax, x, y_d3, 2.6, NODE_H, lab, C_AOUT['nd'])
-        line(ax, X_AGE_C, y_d2 + NODE_H / 2, x, y_d3 - NODE_H / 2)
+        node(ax, x, y_a_stat, 2.6, NODE_H, lab, C_AOUT['nd'])
+        for sx in afmx:
+            line(ax, sx, y_a_fm + NODE_H / 2, x, y_a_stat - NODE_H / 2)
 
     # embedding features split into TWO clusters, each centred on its sub-column
     # (mirrors age_emb_pipeline_mpl): 'original' above X_ORIG, asymmetry above X_ASYM
@@ -370,6 +385,28 @@ def build(mode='center'):
         for mx in omx:
             line(ax, mx, y_mod + NODE_H / 2, fx, y_feat - NODE_H / 2)
 
+    # ── emo step 5: features -> mean/all -> full/1by1matched -> violin ──
+    emo_all_feats = vax + ctx + shx
+    emax, ema_tot = rowx(X_EMO_C, 2, 2.4, 0.65)
+    cluster(ax, X_EMO_C, y_d1, ema_tot + 0.9, NODE_H + 2 * SP, C_PA['bg'])
+    for x, lab in zip(emax, ['mean', 'all']):
+        node(ax, x, y_d1, 2.4, NODE_H, lab, C_PA['nd'])
+    for fx in emo_all_feats:
+        for px in emax:
+            line(ax, fx, y_feat + NODE_H / 2, px, y_d1 - NODE_H / 2)
+
+    eofmx, eofm_tot = rowx(X_EMO_C, 2, 2.6, 0.6)
+    cluster(ax, X_EMO_C, y_d2, eofm_tot + 0.9, NODE_H + 2 * SP, C_SA['bg'])
+    for x, lab, nc in zip(eofmx, ['full', '1 by 1 matched'],
+                          [C_SA['nd'], C_ES['nd']]):
+        node(ax, x, y_d2, 2.6, NODE_H, lab, nc)
+        for px in emax:
+            line(ax, px, y_d1 + NODE_H / 2, x, y_d2 - NODE_H / 2)
+
+    node(ax, X_EMO_C, y_d3, 3.0, NODE_H, 'violin', C_AOUT['nd'])
+    for sx in eofmx:
+        line(ax, sx, y_d2 + NODE_H / 2, X_EMO_C, y_d3 - NODE_H / 2)
+
     # ════════════════════════════════════════════════════════
     # group wrappers — one big cluster per same-colour group (drawn behind:
     # cluster() is zorder 0, so it sits under the already-placed nodes/lines)
@@ -386,10 +423,10 @@ def build(mode='center'):
     half = max(am_tot, age_w) / 2 + PADX
     _grp(X_AGE_C - half, X_AGE_C + half, y_mr_top, y_ft_bot, C_AGE['bg'])
 
-    # age_error: Predict Age mean -> age_error -> violin/lines/scatter/stat
-    half = max(age_w, ae_w, vls_tot) / 2 + PADX
+    # age_error: Predict Age mean -> age_error -> full/1by1 -> violin/.../stat
+    half = max(age_w, ae_w, afm_tot, vls_tot) / 2 + PADX
     _grp(X_AGE_C - half, X_AGE_C + half,
-         y_d1 - NODE_H / 2 - PADY, y_d3 + NODE_H / 2 + PADY, C_AOUT['bg'])
+         y_d1 - NODE_H / 2 - PADY, y_a_stat + NODE_H / 2 + PADY, C_AOUT['bg'])
 
     # embedding: models + original/asymmetry features
     eL = min(X_EMB_C - em_tot / 2, X_ORIG - nw_ef / 2) - PADX
@@ -427,7 +464,7 @@ def build(mode='center'):
     cluster(ax, X_EMB_C, (e_fr_y1 + e_fr_y2) / 2, grp_w,
             (e_fr_y2 - e_fr_y1) + NODE_H + 2 * SP, CF['bg'])
     node(ax, fxl, e_fr_y1, nw_col, NODE_H, 'K fold(K=10)', CF['nd'])      # Fwd
-    node(ax, fxr, e_fr_y1, nw_col, NODE_H, '1 by 1 matched', CF['nd'])    # Rev
+    node(ax, fxr, e_fr_y1, nw_col, NODE_H, '1 by 1 matched', C_ES['nd'])  # Rev (matched)
     node(ax, fxr, e_fr_y2, nw_col, NODE_H, 'K fold(K=10)', CF['nd'])      # Rev
     line(ax, fxr, e_fr_y1 + NODE_H / 2, fxr, e_fr_y2 - NODE_H / 2)
 
@@ -472,16 +509,24 @@ def build(mode='center'):
         for cx2 in cmpx:
             line(ax, ex, e_eb_y + NODE_H / 2, cx2, e_cmp_y - NODE_H / 2)
 
-    # ── contrasts -> aggregator -> plotter (two stacked clusters) ──
+    # ── contrasts -> aggregator -> full/1by1matched -> violin ──
     agg_w = 5.0
     cluster(ax, X_EMB_C, e_agg_y, agg_w + 0.9, NODE_H + 2 * SP, C3['bg'])
     node(ax, X_EMB_C, e_agg_y, agg_w, NODE_H, 'aggregator', C3['nd'])
     for cx2 in cmpx:
         line(ax, cx2, e_cmp_y + NODE_H / 2, X_EMB_C, e_agg_y - NODE_H / 2)
 
-    cluster(ax, X_EMB_C, e_plt_y, agg_w + 0.9, NODE_H + 2 * SP, C2['bg'])
-    node(ax, X_EMB_C, e_plt_y, agg_w, NODE_H, 'plotter', C2['nd'])
-    line(ax, X_EMB_C, e_agg_y + NODE_H / 2, X_EMB_C, e_plt_y - NODE_H / 2)
+    # full / 1 by 1 matched selector (1by1matched syncs to left matched colour)
+    efmx, efm_tot = rowx(X_EMB_C, 2, 2.6, 0.6)
+    cluster(ax, X_EMB_C, e_fm_y, efm_tot + 0.9, NODE_H + 2 * SP, C_SA['bg'])
+    for x, lab, nc in zip(efmx, ['full', '1 by 1 matched'],
+                          [C_SA['nd'], C_ES['nd']]):
+        node(ax, x, e_fm_y, 2.6, NODE_H, lab, nc)
+        line(ax, X_EMB_C, e_agg_y + NODE_H / 2, x, e_fm_y - NODE_H / 2)
+
+    node(ax, X_EMB_C, e_vio_y, agg_w, NODE_H, 'violin', C_AOUT['nd'])
+    for sx in efmx:
+        line(ax, sx, e_fm_y + NODE_H / 2, X_EMB_C, e_vio_y - NODE_H / 2)
 
     # ── Save ── (side is the chosen layout -> the primary file)
     suffix = '' if mode == 'side' else '_center'
