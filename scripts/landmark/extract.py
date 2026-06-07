@@ -4,7 +4,7 @@
   compute  .npy → 分區 pair 差值 + 面積差 → pair_features.csv
   all      兩步都跑
 
-路徑取自 src.config 的 ASYMMETRY_*；幾何運算全來自 src.landmark.regional。
+路徑取自 src.config 的 ASYMMETRY_*；幾何運算全來自 src.landmark.extractor。
 """
 
 import argparse
@@ -20,7 +20,7 @@ from src.config import (
     ASYMMETRY_PAIR_FEATURES_FILE,
     preprocess_dir,
 )
-from src.landmark.regional import compute_regional_features, extract_and_save_landmarks
+from src.landmark.extractor import compute_regional_features, extract_and_save_landmarks
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 

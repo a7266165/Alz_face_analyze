@@ -38,7 +38,7 @@ class LandmarkAsymmetryAnalyzer:
     ) -> np.ndarray:
         """以點 234 的 x、點 10 的 y 為原點，依點 454 的 x 縮放至 target_width。
 
-        與 regional.normalize_landmarks（bbox min/max）為不同基準、不可互換：
+        與 extractor.normalize_landmarks（bbox min/max）為不同基準、不可互換：
         calculate_asymmetry 的點差以半寬（target_width/2）為對稱軸，與此綁定。
         """
         landmarks = landmarks.copy().astype(float)

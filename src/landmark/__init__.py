@@ -1,5 +1,5 @@
 from .analyzer import LandmarkAsymmetryAnalyzer
-from .regional import (
+from .extractor import (
     ALL_PAIRS,
     AREA_CONTOURS,
     compute_pair_features,
