@@ -1,0 +1,31 @@
+{
+  "title": "A Risk Warning Model for Anemia Based on Facial Visible Light Reflectance Spectroscopy: Cross-Sectional Study.",
+  "authors": [
+    "Zhang Y",
+    "Chun Y",
+    "Fu H",
+    "Jiao W",
+    "Bao J",
+    "Jiang T",
+    "Cui L",
+    "Hu X",
+    "Cui J",
+    "Qiu X",
+    "Tu L",
+    "Xu J"
+  ],
+  "year": 2025,
+  "abstract": "BACKGROUND: Anemia is a global public health issue causing symptoms such as fatigue, weakness, and cognitive decline. Furthermore, anemia is associated with various diseases and increases the risk of postoperative complications and mortality. Frequent invasive blood tests for diagnosis also pose additional discomfort and risks to patients. OBJECTIVE: This study aims to assess the facial spectral characteristics of patients with anemia and to develop a predictive model for anemia risk using machine learning approaches. METHODS: Between August 2022 and September 2023, we collected facial image data from 78 anemic patients who met the inclusion criteria from the Hematology Department of Shanghai Hospital of Traditional Chinese Medicine. Between March 2023 and September 2023, we collected data from 78 healthy adult participants from Shanghai Jiading Community Health Center and Shanghai Gaohang Community Health Center. A comprehensive statistical analysis was performed to evaluate differences in spectral characteristics between the anemic patients and healthy controls. Then, we used 10 different machine learning algorithms to create a predictive model for anemia. The least absolute shrinkage and selection operator was used to analyze the predictors. We integrated multiple machine learning classification models to identify the optimal model and developed Shapley additive explanations (SHAP) for personalized risk assessment. RESULTS: The study identified significant differences in facial spectral features between anemic patients and healthy controls. The support vector machine classifier outperformed other classification models, achieving an accuracy of 0.875 (95% CI 0.825-0.925) for distinguishing between the anemia and healthy control groups. In the SHAP interpretation of the model, forehead-570 nm, right cheek-520 nm, right zygomatic-570 nm, jaw-570 nm, and left cheek-610 nm were the features with the highest contributions. CONCLUSIONS: Facial spectral data demonstrated clinical significance in anemia diagnosis, and the early warning model for anemia risk constructed based on spectral information demonstrated a high accuracy rate.",
+  "doi": "10.2196/64204",
+  "arxiv_id": null,
+  "venue": "JMIR medical informatics",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "39952235"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.2196/64204"
+}

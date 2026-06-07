@@ -1,0 +1,27 @@
+{
+  "title": "Deep learning-based facial image analysis in medical research: a systematic review protocol.",
+  "authors": [
+    "Su Z",
+    "Liang B",
+    "Shi F",
+    "Gelfond J",
+    "Šegalo S",
+    "Wang J",
+    "Jia P",
+    "Hao X"
+  ],
+  "year": 2021,
+  "abstract": "INTRODUCTION: Deep learning techniques are gaining momentum in medical research. Evidence shows that deep learning has advantages over humans in image identification and classification, such as facial image analysis in detecting people's medical conditions. While positive findings are available, little is known about the state-of-the-art of deep learning-based facial image analysis in the medical context. For the consideration of patients' welfare and the development of the practice, a timely understanding of the challenges and opportunities faced by research on deep-learning-based facial image analysis is needed. To address this gap, we aim to conduct a systematic review to identify the characteristics and effects of deep learning-based facial image analysis in medical research. Insights gained from this systematic review will provide a much-needed understanding of the characteristics, challenges, as well as opportunities in deep learning-based facial image analysis applied in the contexts of disease detection, diagnosis and prognosis. METHODS: Databases including PubMed, PsycINFO, CINAHL, IEEEXplore and Scopus will be searched for relevant studies published in English in September, 2021. Titles, abstracts and full-text articles will be screened to identify eligible articles. A manual search of the reference lists of the included articles will also be conducted. The Preferred Reporting Items for Systematic Reviews and Meta-Analyses framework was adopted to guide the systematic review process. Two reviewers will independently examine the citations and select studies for inclusion. Discrepancies will be resolved by group discussions till a consensus is reached. Data will be extracted based on the research objective and selection criteria adopted in this study. ETHICS AND DISSEMINATION: As the study is a protocol for a systematic review, ethical approval is not required. The study findings will be disseminated via peer-reviewed publications and conference presentations. PROSPERO REGISTRATION NUMBER: CRD42020196473.",
+  "doi": "10.1136/bmjopen-2020-047549",
+  "arxiv_id": null,
+  "venue": "BMJ open",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "34764164"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.1136/bmjopen-2020-047549"
+}

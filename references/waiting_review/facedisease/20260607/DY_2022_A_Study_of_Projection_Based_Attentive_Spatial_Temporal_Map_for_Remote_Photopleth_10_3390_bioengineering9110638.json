@@ -1,0 +1,23 @@
+{
+  "title": "A Study of Projection-Based Attentive Spatial-Temporal Map for Remote Photoplethysmography Measurement.",
+  "authors": [
+    "Kim DY",
+    "Cho SY",
+    "Lee K",
+    "Sohn CB"
+  ],
+  "year": 2022,
+  "abstract": "The photoplethysmography (PPG) signal contains various information that is related to CVD (cardiovascular disease). The remote PPG (rPPG) is a method that can measure a PPG signal using a face image taken with a camera, without a PPG device. Deep learning-based rPPG methods can be classified into three main categories. First, there is a 3D CNN approach that uses a facial image video as input, which focuses on the spatio-temporal changes in the facial video. The second approach is a method that uses a spatio-temporal map (STMap), and the video image is pre-processed using the point where it is easier to analyze changes in blood flow in time order. The last approach uses a preprocessing model with a dichromatic reflection model. This study proposed the concept of an axis projection network (APNET) that complements the drawbacks, in which the 3D CNN method requires significant memory; the STMap method requires a preprocessing method; and the dyschromatic reflection model (DRM) method does not learn long-term temporal characteristics. We also showed that the proposed APNET effectively reduced the network memory size, and that the low-frequency signal was observed in the inferred PPG signal, suggesting that it can provide meaningful results to the study when developing the rPPG algorithm.",
+  "doi": "10.3390/bioengineering9110638",
+  "arxiv_id": null,
+  "venue": "Bioengineering (Basel, Switzerland)",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "36354549"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.3390/bioengineering9110638"
+}

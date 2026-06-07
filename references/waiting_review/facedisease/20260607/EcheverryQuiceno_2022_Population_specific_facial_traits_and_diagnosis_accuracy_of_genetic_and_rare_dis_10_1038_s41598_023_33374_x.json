@@ -1,0 +1,30 @@
+{
+  "title": "Population-specific facial traits and diagnosis accuracy of genetic and rare diseases in an admixed Colombian population",
+  "authors": [
+    "L. M. Echeverry-Quiceno",
+    "E. Candelo",
+    "Eidith Gómez",
+    "Paula Solís",
+    "Diana Ramírez",
+    "Diana Ortiz",
+    "Alejandro González",
+    "X. Sevillano",
+    "J. C. Cuéllar",
+    "H. Pachajoa",
+    "N. Martínez-Abadías"
+  ],
+  "year": 2022,
+  "abstract": "Up to 40% of rare disorders (RD) present facial dysmorphologies, and visual assessment is commonly used for clinical diagnosis. Quantitative approaches are more objective, but mostly rely on European descent populations, disregarding diverse population ancestry. Here, we assessed the facial phenotypes of Down (DS), Morquio (MS), Noonan (NS) and Neurofibromatosis type 1 (NF1) syndromes in a Latino-American population, recording the coordinates of 18 landmarks in 2D images from 79 controls and 51 patients. We quantified facial differences using Euclidean Distance Matrix Analysis, and assessed the diagnostic accuracy of Face2Gene, an automatic deep-learning algorithm. Individuals diagnosed with DS and MS presented severe phenotypes, with 58.2% and 65.4% of significantly different facial traits. The phenotype was milder in NS (47.7%) and non-significant in NF1 (11.4%). Each syndrome presented a characteristic dysmorphology pattern, supporting the diagnostic potential of facial biomarkers. However, population-specific traits were detected in the Colombian population. Diagnostic accuracy was 100% in DS, moderate in NS (66.7%) but lower in comparison to a European population (100%), and below 10% in MS and NF1. Moreover, admixed individuals showed lower facial gestalt similarities. Our results underscore that incorporating populations with Amerindian, African and European ancestry is crucial to improve diagnostic methods of rare disorders.",
+  "doi": "10.1038/s41598-023-33374-x",
+  "arxiv_id": null,
+  "venue": "medRxiv",
+  "citation_count": 11,
+  "source": "s2",
+  "pdf_url": "https://www.nature.com/articles/s41598-023-33374-x.pdf",
+  "relevance_score": null,
+  "extra": {
+    "s2_paperId": "5a1d9549981125a1d77c84c12406789fe6457323"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.1038/s41598-023-33374-x"
+}

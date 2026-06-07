@@ -1,0 +1,20 @@
+{
+  "title": "AI-Based Early Stroke Risk Detection Using Facial Asymmetry and Speech Analysis",
+  "authors": [
+    "Dr. N. G. Shinde"
+  ],
+  "year": 2026,
+  "abstract": "Stroke is the world’s second leading cause of death and a major cause of adult disability. Early warning signs such as facial drooping and speech impairment are often overlooked, resulting in delayed medical intervention. This paper presents a real-time multi-modal deep learning framework for early stroke risk detection using facial asymmetry and speech analysis. The proposed system utilizes a consumer webcam and microphone without requiring cloud connectivity or specialized medical hardware. Facial video frames are analyzed using a custom Convolutional Neural Network (CNN), while speech samples are processed using a Long Short-Term Memory (LSTM) model with Mel-Frequency Cepstral Coefficient (MFCC) features. The outputs are fused through a weighted probabilistic mechanism to classify stroke risk into Low, Moderate, or High categories. The framework also integrates a React-based dashboard and conversational AI assistant for user-friendly interaction. Experimental results show 93.2% accuracy, 91.8% sensitivity, and 94.3% specificity with an end-to-end latency below 3.5 seconds on consumer-grade hardware, demonstrating the effectiveness of the proposed approach for accessible real-world stroke risk screening.",
+  "doi": "10.22214/ijraset.2026.83023",
+  "arxiv_id": null,
+  "venue": "International Journal for Research in Applied Science and Engineering Technology",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://doi.org/10.22214/ijraset.2026.83023",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W7162416789"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.22214/ijraset.2026.83023"
+}

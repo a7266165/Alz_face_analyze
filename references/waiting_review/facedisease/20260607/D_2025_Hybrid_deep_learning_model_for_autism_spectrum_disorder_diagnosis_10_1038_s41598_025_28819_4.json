@@ -1,0 +1,21 @@
+{
+  "title": "Hybrid deep learning model for autism spectrum disorder diagnosis.",
+  "authors": [
+    "Aarthi D",
+    "Kannimuthu S"
+  ],
+  "year": 2025,
+  "abstract": "Autism spectrum disorder (ASD) is a neurodevelopmental condition pertaining to the communication, social connectivity and conduct of individuals. ASD individuals develop symptoms such as recurrent actions, atypical facial expressions and challenges in social engagement. ASD prediction depends on various measures such as functional Magnetic Resonance Imaging (fMRI) data, game-based assessments, kinematic traits, questionnaires, head activity analysis, motor activities and eye-tracking. Traditional diagnostic approaches are subjective. These approaches are clinician-dependent and time-consuming. This has resulted in various challenges for the early detection of the condition. This work evaluated the performance of five hybrid approaches such as MobileNetV2+BiLSTM, ResNet50+LSTM, EfficientNetB4, InceptionV3 and MobileNetV2+GRU. Each model was meticulously refined to achieve optimal performance on the facial image dataset obtained from the Kaggle repository. The hybrid MobileNetV2+GRU model showed high performance with 95.5% test accuracy, 95.94% precision, and 95.45% F1-score. When the suggested hybrid model was compared with the remaining models, the latter outperformed with a ROC value of 98%. The findings highlight the optimal performance and generalizability of the proposed MobileNetV2+GRU model in ASD diagnosis in children.",
+  "doi": "10.1038/s41598-025-28819-4",
+  "arxiv_id": null,
+  "venue": "Scientific reports",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "41462499"
+  },
+  "pdf_status": "deferred",
+  "primary_id": "doi:10.1038/s41598-025-28819-4"
+}

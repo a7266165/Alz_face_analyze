@@ -1,0 +1,24 @@
+{
+  "title": "Data Splitting Strategies for Down Syndrome Facial Classification: A Comparative Study Using EfficientNet-B0 and MobileNetV2",
+  "authors": [
+    "Dzaki Dhiya Ul-Haq",
+    "Yunidar Yunidar",
+    "Melinda Melinda",
+    "Nurlida Basir",
+    "Rosmawinda Rosmawinda"
+  ],
+  "year": 2026,
+  "abstract": "Early identification of Down Syndrome (DS) is essential for timely intervention; however, conventional diagnostic approaches often require specialized clinical expertise and significant resources. Recent advances in deep learning-based facial image analysis offer a promising alternative, yet the impact of data partitioning strategies on model performance and stability remains insufficiently explored. This study investigates the effects of different data-splitting strategies on DS facial image classification using EfficientNet-B0. A total of 3,030 facial images were collected from Roboflow and curated through preprocessing techniques, including Gaussian noise reduction, image sharpening, and contrast enhancement. Two data partitioning configurations, 70:20:10 and 80:10:10, were evaluated using five-fold cross-validation. Model performance was assessed using accuracy, precision, recall, and F1-score, while statistical significance was examined using the Friedman test. The results show that the 70:20:10 configuration achieved an average accuracy of 87.88% ± 3.03%, while the 80:10:10 configuration achieved a slightly higher accuracy of 89.09% ± 2.53%. The Friedman test indicates statistically significant differences (p &lt; 0.05). However, the improvement is relatively marginal, with a small-to-moderate effect size (Cohen’s d = 0.43) and no significant difference in variance (p &gt; 0.05), indicating limited practical significance. A trade-off between accuracy and evaluation stability was observed. While the 80:10:10 configuration benefits from a larger training set, the 70:20:10 configuration provides more stable and balanced performance, particularly in minimizing false negatives. These findings highlight that higher accuracy does not necessarily imply more reliable or clinically meaningful performance, emphasizing the importance of appropriate data partitioning in medical image classification.",
+  "doi": "10.35882/ijeeemi.v8i3.338",
+  "arxiv_id": null,
+  "venue": "Indonesian Journal of Electronics Electromedical Engineering and Medical Informatics",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "http://ijeeemi.org/index.php/ijeeemi/article/download/338/281",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W7163063577"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.35882/ijeeemi.v8i3.338"
+}

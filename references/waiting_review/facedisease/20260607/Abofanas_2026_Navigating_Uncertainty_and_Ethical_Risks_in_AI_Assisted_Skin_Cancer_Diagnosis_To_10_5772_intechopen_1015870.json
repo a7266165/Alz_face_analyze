@@ -1,0 +1,20 @@
+{
+  "title": "Navigating Uncertainty and Ethical Risks in AI-Assisted Skin Cancer Diagnosis: Toward Responsible Clinical Deployment",
+  "authors": [
+    "Ahmed Lateef Salih Al Karawi and\nMohamed Mustafa Mohamed Abofanas"
+  ],
+  "year": 2026,
+  "abstract": "The incorporation of machine learning into dermatological oncology has opened new possibilities for early skin cancer detection. Convolutional neural networks (CNNs), vision transformers, and hybrid architectures now achieve diagnostic performance that rivals experienced dermatologists on standardized benchmarks. Yet, the path from controlled experimental validation to routine clinical use remains obstructed by three interrelated challenges: the quantification and communication of model uncertainty, the mitigation of demographic bias embedded in training datasets, and the fulfillment of ethical obligations around transparency and accountability. This chapter offers a structured examination of these issues, beginning with a conceptual framework that distinguishes aleatoric from epistemic uncertainty and explains why overconfident model outputs are particularly dangerous in oncological screening. It then analyzes the ethical dimensions of algorithmic bias, particularly the documented performance gap across Fitzpatrick skin type strata, and the unresolved question of legal liability when an AI-assisted diagnosis proves incorrect. The second half of the chapter reviews evidence-based mitigation strategies, including uncertainty-aware deep learning architectures, explainability methods, calibration procedures, and human-in-the-loop validation frameworks. The chapter closes with a discussion of the regulatory landscape and a forward-looking perspective on the research priorities needed to translate responsible AI principles into clinical reality.",
+  "doi": "10.5772/intechopen.1015870",
+  "arxiv_id": null,
+  "venue": "IntechOpen eBooks",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://www.intechopen.com/citation-pdf-url/1240157",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W7162413355"
+  },
+  "pdf_status": "deferred",
+  "primary_id": "doi:10.5772/intechopen.1015870"
+}

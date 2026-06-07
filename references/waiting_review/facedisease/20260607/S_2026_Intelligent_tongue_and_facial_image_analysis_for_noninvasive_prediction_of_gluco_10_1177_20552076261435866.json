@@ -1,0 +1,27 @@
+{
+  "title": "Intelligent tongue and facial image analysis for noninvasive prediction of glucolipid metabolic disorders.",
+  "authors": [
+    "Liu S",
+    "Chen Z",
+    "Gao Y",
+    "Deng J",
+    "Hu R",
+    "Tan X",
+    "Jiang T",
+    "Xu J"
+  ],
+  "year": 2026,
+  "abstract": "BACKGROUND: Glucolipid metabolic disorders is a disorder characterized by derangement of glucose and lipid metabolism, which is involved in multiple factors. Since the emergence of accelerated technological evolution, it has progressively evolved into a significant concern in contemporary medicine. Therefore, early screening and diagnosis are crucial. This study aims to explore the possibility of early noninvasive diagnosis of glucolipid metabolic disorders using facial and tongue image indicators. METHOD: In this study, we constructed a tongue-face segmentation model based on Deeplabv3 + for extracting tongue and facial indicators. The study collected information of 614 participants, including 296 patients with GLMD and 318 healthy controls. After baseline comparison, we respectively conducted intergroup comparison of laboratory biochemical indicators and correlation analysis of facial indicators and tongue image indicators for two groups. We also attempted to build machine learning diagnostic models for glycolipid metabolic diseases based on SVM, Random Forest, KNN, Naive Bayes, XGBoost, and AdaBoost by separately applying facial images and tongue images, and used Shapley to evaluate the contribution of each indicator in the model. RESULT: The results show that there is a statistically significant difference in the facial and lip color indicators and tongue color indicators. The facial, lip and tongue brightness indicators have a higher correlation coefficient with LDL-C, TG, and CHO, among which F-L is most correlated with LDL-C. Then, six classical machine learning models for predicting GLMD were constructed based on facial and tongue image indicators, and XGBoost performed the best with an AUC of 0.946, accuracy of 0.861, among which the color indicators TB-Y, TB-S, and TB-G are the top three indicators in terms of contribution. CONCLUSION: The GLMD diagnostic model combined with tongue-facial indicators can achieve disease classification, and through modern information-based TCM diagnosis technology, the accuracy of noninvasive diagnosis of glucose-lipid metabolism diseases can be further improved.",
+  "doi": "10.1177/20552076261435866",
+  "arxiv_id": null,
+  "venue": "Digital health",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "41883546"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.1177/20552076261435866"
+}

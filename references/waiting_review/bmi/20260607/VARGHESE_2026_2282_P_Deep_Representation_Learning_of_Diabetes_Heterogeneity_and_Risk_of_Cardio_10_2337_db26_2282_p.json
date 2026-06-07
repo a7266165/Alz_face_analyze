@@ -1,0 +1,20 @@
+{
+  "title": "2282-P: Deep Representation Learning of Diabetes Heterogeneity and Risk of Cardiovascular Disease and Dementia",
+  "authors": [
+    "JITHIN SAM VARGHESE"
+  ],
+  "year": 2026,
+  "abstract": "Introduction and Objective: Although diabetes heterogeneity is marked by non-linear, multivariate trajectories of biomarkers, comorbidities, and their interactions, most studies are limited to one timepoint. Our objective is to capture heterogeneity before diabetes diagnosis using deep learning and study the risks of complications (cardiovascular disease [CVD], dementia). Methods: Adults (≥40 years) with newly diagnosed type 2 diabetes between 2012-2023 and without history of CVD were 1:2 matched on age, sex, and BMI to those without diabetes in the Epic Cosmos research platform. Long Short-Term Memory Networks were used to characterize patient representations before the index date (Panel A). Embeddings were clustered using Gaussian Mixture Models, and associations with complications were studied using Cox regressions adjusted for socio-demographic and clinical covariates. Biomarker trajectories were then explored using natural splines. Results: The analytic sample (n = 71,522; 64 years [SD: 11], 49% female, 33 kg/m2 [SD: 6.5]), was classified into three clusters (97.2%, 0.2%, 2.6%). Clusters were similar in rates of CVD. Relative to the dominant cluster, Cluster 3 was associated with higher rates of dementia (HR: 1.59 [95% CI: 1.13-2.19]). Conclusion: Deep representation learning can incorporate longitudinal patient data for risk stratification. Embedding clusters provided limited prognostic information for CVD but may be beneficial for dementia. Disclosure J. Varghese: None.",
+  "doi": "10.2337/db26-2282-p",
+  "arxiv_id": null,
+  "venue": "Diabetes",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W7163683912"
+  },
+  "pdf_status": "deferred",
+  "primary_id": "doi:10.2337/db26-2282-p"
+}

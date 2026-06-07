@@ -1,0 +1,25 @@
+{
+  "title": "2177-P: Type 2 Diabetes Heterogeneity and Incident Dementia Risk Compared with Adults without Diabetes",
+  "authors": [
+    "RUWANTHI N. EKANAYAKE",
+    "ZHONGYU LI",
+    "JIALI GUO",
+    "Daniel Hua",
+    "Theodore Hung",
+    "JITHIN SAM VARGHESE"
+  ],
+  "year": 2026,
+  "abstract": "Introduction and Objective: Type 2 diabetes (T2D), a heterogeneous disease with distinct subtypes, is associated with elevated dementia risk. However, it is unknown if subtypes (Mild Obesity-Related Diabetes [MOD], Severe Insulin-Deficient Diabetes [SIDD], Mild Age-Related Diabetes [MARD]) are differentially associated with incident dementia compared with adults without T2D. Methods: Adults (≥40 years; n = 878,094) with newly diagnosed T2D between 2012-2023 and no history of dementia were 1:1 matched on age, sex, smoking status, and BMI to those without diabetes in the Epic Cosmos database. Newly diagnosed T2D was classified into subtypes using reliable models (AUC: 0.81-0.99). Incident all-cause dementia (vascular, Alzheimer’s, and others) was identified using ICD-10-CM codes. Cox proportional hazards regressions, adjusted for covariates, estimated hazard ratios (HR). Results: The analytic sample was 65.8 years [SD: 11.5] and 53% female. Over follow-up (median: 3.9 years [IQR: 1.7-10.8]), 47,058 were diagnosed with dementia. Relative to adults without diabetes, SIDD (HR: 1.55 [1.47-1.64]) and MARD (HR: 1.10 [1.05-1.14]) had elevated rates of dementia, while Mixed (HR: 1.04 [0.97-1.12]), and MOD (HR: 0.97 [0.88-1.06]) had similar rates (Figure). Conclusion: Relative to adults without diabetes, subtypes showed clinically meaningful differences in dementia risk. These findings underscore the importance of considering diabetes heterogeneity when evaluating dementia risk. Disclosure R.N. Ekanayake: None. Z. Li: None. J. Guo: None. D. Hua: None. T. Hung: None. J. Varghese: None.",
+  "doi": "10.2337/db26-2177-p",
+  "arxiv_id": null,
+  "venue": "Diabetes",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W7163685937"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.2337/db26-2177-p"
+}

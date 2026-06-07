@@ -1,0 +1,24 @@
+{
+  "title": "Explainable multimodal suicidal ideation detection via rotation-based facial behavior modeling and LLM-guided reasoning",
+  "authors": [
+    "Mohaimenul Azam Khan Raiaan",
+    "Saddam Mukta",
+    "Nur Mohammad Fahad",
+    "M. M. Y. Ali",
+    "Najmul Islam"
+  ],
+  "year": 2026,
+  "abstract": "Abstract Suicide has become a serious public health problem globally, and individuals with suicidal ideation (SI) are at substantially higher risk of suicide. Predicting SI is challenging because many individuals do not openly share their thoughts, even though SI serves as an early warning indicator of suicidal risk. Most existing studies primarily rely on textual or self-reported data and overlook facial expression dynamics and Action Unit (AU) patterns, which encode rich nonverbal signals associated with underlying mental states. To address this limitation, we propose a novel image-based SI detection framework that integrates explainable deep learning with structured modeling of facial behavior. The framework introduces a rotation-based (quantum-inspired) convolutional operator to capture higher-order interactions among facial features, a lightweight transformer encoder to model dependencies among AU intensities, and an AU-guided latent conditioning mechanism that adaptively modulates visual embeddings, enabling compact modeling of complex nonlinear facial feature correlations that are difficult to capture with conventional convolutional operations. Additionally, a channel-wise dilated self-attention module captures long-range dependencies across latent feature dimensions, followed by a low-rank bilinear fusion strategy to facilitate effective multimodal interaction between visual and AU-based representations. To enhance model interpretability, an LLM-guided semantic inference module generates human-interpretable explanations grounded in AU activations and visual descriptors. Extensive experimental evaluation demonstrates the effectiveness of the framework, achieving an average accuracy of 93.89% and a weighted F1 score of 94%. The framework contributes to engineering-oriented AI research in mental health modeling and health informatics by introducing an innovative, explainable, rotation based (quantum-inspired) attention deep learning model with LLM-driven reasoning over multimodal data. Highlights practical applications of intelligent systems for monitoring, real-world decision support, and addressing complex data-driven social challenges.",
+  "doi": "10.1007/s10791-026-10209-7",
+  "arxiv_id": null,
+  "venue": "Discover Computing",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://link.springer.com/content/pdf/10.1007/s10791-026-10209-7.pdf",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W7163363607"
+  },
+  "pdf_status": "deferred",
+  "primary_id": "doi:10.1007/s10791-026-10209-7"
+}

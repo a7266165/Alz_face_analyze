@@ -1,0 +1,31 @@
+{
+  "title": "Using 3D facial information to predict malnutrition and consequent complications.",
+  "authors": [
+    "Wang X",
+    "Wang W",
+    "Chen M",
+    "Han M",
+    "Rong Z",
+    "Fu J",
+    "Chong Y",
+    "Yu N",
+    "Long X",
+    "Cheng Z",
+    "Tang Y",
+    "Chen W"
+  ],
+  "year": 2024,
+  "abstract": "BACKGROUND: Phase angle (PhA) correlates with body composition and could predict the nutrition status of patients and disease prognosis. We aimed to explore the feasibility of predicting PhA-diagnosed malnutrition using facial image information based on deep learning (DL). METHODS: From August 2021 to April 2022, inpatients were enrolled from surgery, gastroenterology, and oncology departments in a tertiary hospital. Subjective global assessment was used as the gold standard of malnutrition diagnosis. The highest Youden index value was selected as the PhA cutoff point. We developed a multimodal DL framework to automatically analyze the three-dimensional (3D) facial data and accurately determine patients' PhA categories. The framework was trained and validated using a cross-validation approach and tested on an independent dataset. RESULTS: Four hundred eighty-two patients were included in the final dataset, including 176 with malnourishment. In male patients, the PhA value with the highest Youden index was 5.55°, and the area under the receiver operating characteristic curve (AUC) = 0.68; in female patients, the PhA value with the highest Youden index was 4.88°, and AUC = 0.69. Inpatients with low PhA had higher incidence of infectious complications during the hospital stay (P = 0.003). The DL model trained with 4096 points extracted from 3D facial data had the best performance. The algorithm showed fair performance in predicting PhA, with an AUC of 0.77 and an accuracy of 0.74. CONCLUSION: Predicting the PhA of inpatients from facial images is feasible and can be used for malnutrition assessment and prognostic prediction.",
+  "doi": "10.1002/ncp.11215",
+  "arxiv_id": null,
+  "venue": "Nutrition in clinical practice : official publication of the American Society for Parenteral and Enteral Nutrition",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "39319394"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.1002/ncp.11215"
+}

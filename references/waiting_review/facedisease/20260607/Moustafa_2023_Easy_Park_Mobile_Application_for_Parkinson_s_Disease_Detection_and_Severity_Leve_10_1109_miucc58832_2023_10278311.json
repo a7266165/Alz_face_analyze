@@ -1,0 +1,25 @@
+{
+  "title": "Easy Park: Mobile Application for Parkinson's Disease Detection and Severity Level",
+  "authors": [
+    "K. H. Moustafa",
+    "Haytham Metawie",
+    "Saja Saadoun",
+    "Nathalie Sameh",
+    "Remon Ibrahim",
+    "Amir Abdelsayed"
+  ],
+  "year": 2023,
+  "abstract": "Parkinson's Disease (PD) is a severe neurodegen-erative disorder that affects the central nervous system of humans. The lack of specific clinical tests to accurately diagnose Parkinson's Disease poses a challenge in early detection. PD is characterized by motor symptoms such as tremors, rigidity, and bradykinesia, along with additional motor deficiencies like handwriting problems and speech impairments. Another defining characteristic, often present in the early stages, is hypomimia, a decrease in facial expressiveness. Early detection is crucial to initiate timely therapy and prevent further damage. However, diagnosing PD in its early stages is challenging due to subtle symptoms that can mimic other conditions, and the absence of specific diagnostic tests. Various techniques including machine learning and deep learning approaches utilizing hand-drawn wave and spiral images, facial photographs, and voice recordings as potential biomarkers for PD detection. In our study, we applied convolutional neural networks (CNN) to analyze spiral and wave drawings, achieving an accuracy of 85% for spirals and 80% for waves. Additionally, we utilized a support vector machine (SVM) for facial analysis, obtaining an accuracy of 71%. However, it should be noted that the accuracy of facial analysis was limited due to the small dataset size. Lastly, for voice recordings, we employed XGBoost and achieved an impressive accuracy of 97%. Our results demonstrate promising accuracy for spiral, wave, and voice-based detection, highlighting the potential of machine learning techniques in PD diagnosis. The integration of biomarkers such as imaging and biological markers holds further potential for enhancing diagnostic capabilities in Parkinson's Disease.",
+  "doi": "10.1109/MIUCC58832.2023.10278311",
+  "arxiv_id": null,
+  "venue": "2023 International Mobile, Intelligent, and Ubiquitous Computing Conference (MIUCC)",
+  "citation_count": 4,
+  "source": "s2",
+  "pdf_url": "",
+  "relevance_score": null,
+  "extra": {
+    "s2_paperId": "df253a927fb79eef936c5067d3bbc6614338108c"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.1109/miucc58832.2023.10278311"
+}

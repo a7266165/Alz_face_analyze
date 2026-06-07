@@ -1,0 +1,25 @@
+{
+  "title": "Association of a novel nutritional index, the triglyceride-cholesterol-body weight index (TCBI), with incident mild cognitive impairment: CHARLS 2011–2018",
+  "authors": [
+    "Yiwen Lu",
+    "Dongyang Jiang",
+    "Jinfeng Zhang",
+    "Chunxiang Wang",
+    "Jihong Li",
+    "Ying Liang"
+  ],
+  "year": 2026,
+  "abstract": "Background The triglyceride-cholesterol-body weight index (TCBI) is a recently proposed nutritional index derived from lipid measures and body weight. Although malnutrition has been linked to cognitive decline in middle-aged and older adults, longitudinal population-based evidence on the association between TCBI and incident mild cognitive impairment (MCI) remains limited. This study examined the association between TCBI and incident MCI in middle-aged and older adults, while accounting for death as a competing event. Methods Data were obtained from the China Health and Retirement Longitudinal Study (CHARLS, 2011–2018). After applying inclusion and exclusion criteria, the final analytical sample consisted of 5,510 participants. The TCBI was calculated as follows: TCBI = [TC (mg/dL) × TG (mg/dL) × body weight (kg)] / 1,000. Log10-transformed TCBI was analyzed as a continuous variable, per 1-SD increment, and by quartiles. Cox proportional hazards models were used to estimate the association between TCBI and incident MCI, with sequential adjustment for demographic, lifestyle, and clinical metabolic covariates. Restricted cubic splines were used to assess nonlinearity. Threshold effects were further examined using piecewise Cox models, and model fit was compared with likelihood ratio tests. Sensitivity analyses included the Fine–Gray subdistribution hazard model with all-cause mortality as a competing event, and Cox regression analyses excluding participants with baseline dyslipidemia. Results Over the 7-year follow-up, 1,063 incident cases of MCI (19.29%) and 437 deaths (7.93%) were recorded. In fully adjusted multivariable models, each 1-unit increase in log10-transformed TCBI (Lg TCBI) was associated with a reduced risk of MCI (HR = 0.73, 95% CI: 0.57–0.94, P = 0.014); similarly, each 1-SD increase in Lg TCBI was associated with a lower risk (HR = 0.91, 95% CI: 0.84–0.98, P = 0.014). When Lg TCBI was categorized into quartiles, participants in Q3 (HR = 0.76, 95% CI: 0.63–0.92, P = 0.005) and Q4 (HR = 0.75, 95% CI: 0.61–0.93, P = 0.007) exhibited significantly lower risks of MCI compared to Q1. However, no significant difference was observed between Q2 and Q1 ( P &amp;gt;0.05). These findings were consistent in analyses that accounted for all-cause mortality as a competing event and in analyses excluding participants with baseline dyslipidemia. Restricted cubic spline analysis suggested a non-linear association between TCBI and incident MCI. The piecewise Cox model fit the data better than the linear model (likelihood ratio test P = 0.013). No significant effect modification was observed in subgroup analyses. Conclusion Lower TCBI levels were associated with a higher risk of incident MCI in middle-aged and older adults. As a simple and practical index derived from routine lipid measurements and body weight, TCBI may help identify individuals at increased risk of cognitive decline in primary care and community settings.",
+  "doi": "10.3389/fnut.2026.1834512",
+  "arxiv_id": null,
+  "venue": "Frontiers in Nutrition",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://www.frontiersin.org/journals/nutrition/articles/10.3389/fnut.2026.1834512/pdf",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W7163566148"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.3389/fnut.2026.1834512"
+}

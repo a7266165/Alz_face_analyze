@@ -1,0 +1,25 @@
+{
+  "title": "Computer vision pipeline implementation: Acne lesion segmentation with SwinUnet and multi-class classification with swin transformer",
+  "authors": [
+    "Syarif Romadloni",
+    "Asri Kurnia Ramadhani",
+    "Fafian Ihsan Saputra",
+    "Humam Nasywa Fawazi",
+    "Muhammad 'Ainun Naja",
+    "Budi Sunarko"
+  ],
+  "year": 2026,
+  "abstract": "Acne is a common dermatological problem and often requires accurate lesion identification to support the diagnosis and appropriate treatment. Advances in deep learning and computer vision technologies offer opportunities to develop automated systems capable of detecting and classifying acne lesions more objectively and efficiently. This study aims to develop a two-stage computer vision pipeline for automatic acne lesion detection and classification by integrating the Swin-UNet model for semantic segmentation and the Swin Transformer for multi-class classification. The approach used is a Transformer-based cascaded pipeline architecture, where the segmentation results are used as a guide for Regions of Interest (ROIs) in the classification stage so that the classification process focuses on relevant lesion areas. To address class imbalance and improve model generalization, a combination of Weighted Random Sampling, Mixup data augmentation, and Sharpness-Aware Minimization (SAM) algorithms are applied. The evaluation process is carried out using a dataset strictly separated into training, validation, and testing data. Experimental results showed that the segmentation model achieved a Dice coefficient of 0.9885 and an Intersection over Union (IoU) of 0.9788. Meanwhile, the classification model achieved an accuracy of 96.24% with an F1-score of 0.9629. These findings demonstrate that the proposed system is effective in identifying and classifying acne lesions with precision. Therefore, this approach has the potential to serve as the basis for developing a more accurate and reliable deep learning-based dermatology diagnostic support system.",
+  "doi": "10.37373/tekno.v13i2.2114",
+  "arxiv_id": null,
+  "venue": "TEKNOSAINS Jurnal Sains Teknologi dan Informatika",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://jurnal.sttmcileungsi.ac.id/index.php/tekno/article/download/2114/1018",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W7162249997"
+  },
+  "pdf_status": "deferred",
+  "primary_id": "doi:10.37373/tekno.v13i2.2114"
+}

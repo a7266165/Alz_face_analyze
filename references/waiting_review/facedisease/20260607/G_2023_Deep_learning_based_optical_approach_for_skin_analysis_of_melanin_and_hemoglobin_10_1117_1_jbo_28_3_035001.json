@@ -1,0 +1,23 @@
+{
+  "title": "Deep learning-based optical approach for skin analysis of melanin and hemoglobin distribution.",
+  "authors": [
+    "Jung G",
+    "Kim S",
+    "Lee J",
+    "Yoo S"
+  ],
+  "year": 2023,
+  "abstract": "SIGNIFICANCE: Melanin and hemoglobin have been measured as important diagnostic indicators of facial skin conditions for aesthetic and diagnostic purposes. Commercial clinical equipment provides reliable analysis results, but it has several drawbacks: exclusive to the acquisition system, expensive, and computationally intensive. AIM: We propose an approach to alleviate those drawbacks using a deep learning model trained to solve the forward problem of light-tissue interactions. The model is structurally extensible for various light sources and cameras and maintains the input image resolution for medical applications. APPROACH: A facial image is divided into multiple patches and decomposed into melanin, hemoglobin, shading, and specular maps. The outputs are reconstructed into a facial image by solving the forward problem over skin areas. As learning progresses, the difference between the reconstructed image and input image is reduced, resulting in the melanin and hemoglobin maps becoming closer to their distribution of the input image. RESULTS: The proposed approach was evaluated on 30 subjects using the professional clinical system, VISIA VAESTRO. The correlation coefficients for melanin and hemoglobin were found to be 0.932 and 0.857, respectively. Additionally, this approach was applied to simulated images with varying amounts of melanin and hemoglobin. CONCLUSION: The proposed approach showed high correlation with the clinical system for analyzing melanin and hemoglobin distribution, indicating its potential for accurate diagnosis. Further calibration studies using clinical equipment can enhance its diagnostic ability. The structurally extensible model makes it a promising tool for various image acquisition conditions.",
+  "doi": "10.1117/1.JBO.28.3.035001",
+  "arxiv_id": null,
+  "venue": "Journal of biomedical optics",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "36992693"
+  },
+  "pdf_status": "deferred",
+  "primary_id": "doi:10.1117/1.jbo.28.3.035001"
+}

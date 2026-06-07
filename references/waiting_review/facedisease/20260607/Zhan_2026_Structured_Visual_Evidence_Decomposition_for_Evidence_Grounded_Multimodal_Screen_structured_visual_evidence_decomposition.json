@@ -1,0 +1,24 @@
+{
+  "title": "Structured Visual Evidence Decomposition for Evidence-Grounded Multimodal Screening of Obstructive Sleep Apnea-Hypopnea Syndrome",
+  "authors": [
+    "Chen Zhan",
+    "Yingchen Wei",
+    "Xiaoyu Tan",
+    "Jingjing Huang",
+    "Xihe Qiu"
+  ],
+  "year": 2026,
+  "abstract": "Effective pre-polysomnography screening for obstructive sleep apnea-hypopnea syndrome (OSAHS) requires combining clinical risk factors with visible craniofacial and neck cues. Directly prompting general-purpose multimodal foundation models for medical yes/no decisions can yield unstable, poorly calibrated outputs. We propose EviOSAHS, an evidence-grounded multimodal reasoning framework that separates image-only anatomical evidence acquisition from final clinical adjudication. Each frontal facial image is decomposed into seven fixed anatomical queries covering the neck, chin, mouth, face/neck fat, lower jaw, midface, and nose. Visual responses are converted into structured evidence cards recording target anatomy, visibility, risk direction, evidence strength, confidence, and a concise summary. These cards are combined with a cleaned clinical profile only in the final stage, where a large language model performs balanced binary screening adjudication. We evaluated EviOSAHS on a 642-subject cohort, mapping normal subjects to screening-negative and mild, moderate, or severe OSAHS subjects to screening-positive. EviOSAHS achieved 88.47% accuracy, 94.86% sensitivity, 93.74% F1-score, and a 5.14% false-negative rate, outperforming clinical-only prompting, direct multimodal prompting, and naive two-stage pipelines under a unified protocol. Ablations showed that seven-question visual decomposition and balanced final adjudication were critical to the high-sensitivity operating point. A question-level audit of 4,494 visual outputs showed a 100% structured parse rate and 93.88% high-visibility rate. EviOSAHS provides an auditable, high-sensitivity workflow for binary pre-polysomnography OSAHS screening, but should be viewed as a triage assistant rather than a diagnostic system. Prospective validation, external testing, and calibrated operating-point control are needed before clinical deployment.",
+  "doi": null,
+  "arxiv_id": null,
+  "venue": "ArXiv.org",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://arxiv.org/pdf/2606.00087",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W7163597324"
+  },
+  "pdf_status": "ok",
+  "primary_id": "title:structured visual evidence decomposition for evidence-grounded multimodal screening of obstructive sleep apnea-hypopnea "
+}

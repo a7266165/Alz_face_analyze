@@ -1,0 +1,31 @@
+{
+  "title": "Development and early feasibility testing of machine-learning algorithms to non-invasively assess hemoglobin levels",
+  "authors": [
+    "Simon Hefner",
+    "Philipp Stoffers",
+    "Benedikt Langenberger",
+    "Alix Holstein",
+    "Miha Garafolj",
+    "Christina Klötzer",
+    "Carmen Herling",
+    "Vladan Vučinić",
+    "Reinhard Henschler",
+    "Ariel Dora Stern",
+    "Uwe Platzbecker",
+    "Anne Sophie Platzbecker"
+  ],
+  "year": 2026,
+  "abstract": "The HeMonitor study evaluated the feasibility and accuracy of non-invasive hemoglobin (Hb) assessment using image-based techniques and machine learning in patients with hematologic malignancies. A total of 367 patients with hematologic malignancies and 184 healśśthy donors were enrolled, with fingernail and eyelid photographs collected and analyzed using Light Gradient-Boosting Machine (LightGBM) regression models. The best-performing model achieved a residual standard deviation of ±1.02 mmol/L for Hb prediction. Our framework further explored a two-stage concept combining (i) a non-invasive image-based Hb predictor and (ii) a post hoc, rule-basśed corridor aggregation layer integrating EORTC Global Health and Fatigue categories. This exploratory layer was designed to contextualize Hb estimates with patient-reported symptom burden and well-being. Visual analyses suggested that lower Hb levels were generally associated with impaired quality-of-life measures, consistent with the known clinical burden of anemia. Within the QoL subset, the integrated framework showed encouraging concordance with clinician assessments, particularly in borderline Hb ranges. These findings support the feasibility of combining digital biomarkers with patient-reported outcomes for future patient-centered home monitoring strategies, while prospective validation remains necessary.",
+  "doi": "10.1038/s44385-026-00087-5",
+  "arxiv_id": null,
+  "venue": "npj Biomedical Innovations.",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://www.nature.com/articles/s44385-026-00087-5.pdf",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W7163129678"
+  },
+  "pdf_status": "deferred",
+  "primary_id": "doi:10.1038/s44385-026-00087-5"
+}

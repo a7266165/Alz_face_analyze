@@ -1,0 +1,24 @@
+{
+  "title": "Validation of a Machine Learning-Derived Algorithm for the Measurement of Facial First Impressions",
+  "authors": [
+    "Heike Klepetko",
+    "Georg Dorffner",
+    "Thomas Schulz",
+    "Maris Klepetko",
+    "Arthur Swift"
+  ],
+  "year": 2026,
+  "abstract": "BACKGROUND: Facial first impressions are formed within milliseconds and play a pivotal role in social interactions. These rapid judgments influence how individuals are perceived in terms of personality. Traditional assessments of these first impressions are subjective and prone to interobserver variability. Artificial intelligence (AI) presents a tool for standardizing and objectifying such evaluations, offering reproducibility and scalability for clinical and research settings. Since aesthetic treatments of the face might alter how a person's face is perceived, measurability is of crucial importance. OBJECTIVES: This study validates an AI algorithm trained to predict eight facial impression traits by comparing its predictions with crowd-sourced human evaluations. METHODS: A test set of a total of 1795 standardized facial images was rated by 30 independent raters per image using Amazon Mechanical Turks, evaluating eight traits: attractive, trustworthy, healthy, happy, rested, dominant, threatening, and sexy. Additionally, raters were asked how likely it is that the presented face underwent aesthetic treatment (naturalness). These ratings and AI predictions were statistically compared using Pearson´s correlation coefficient (r) and intraclass correlation coefficient (ICC). RESULTS: Pearson´s correlation coefficient showed a strong positive linear relationship for all traits, including naturalness (r > 0.7). According to Cicchetti standards, the intraclass correlation coefficient (ICC) showed excellent results for the traits attractive, trustworthy, rested, happy, healthy, sexy, and naturalness. For the traits dominant and threatening, it was fair, yet still led to a highly significant correlation. CONCLUSION: The validated algorithm demonstrates reliability for all traits, including naturalness, offering a valuable tool for aesthetic professionals seeking objectivity in first-impression-based facial assessment and treatment planning. NO LEVEL ASSIGNED: This journal requires that authors assign a level of evidence to each submission to which Evidence-Based Medicine rankings are applicable. This excludes Review Articles, Book Reviews, and manuscripts that concern Basic Science, Animal Studies, Cadaver Studies, and Experimental Studies. For a full description of these Evidence-Based Medicine ratings, please refer to the Table of Contents or the online Instructions to Authors www.springer.com/00266 .",
+  "doi": "10.1007/s00266-026-05835-x",
+  "arxiv_id": null,
+  "venue": "Aesthetic Plastic Surgery",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://link.springer.com/content/pdf/10.1007/s00266-026-05835-x.pdf",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W7162445653"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.1007/s00266-026-05835-x"
+}

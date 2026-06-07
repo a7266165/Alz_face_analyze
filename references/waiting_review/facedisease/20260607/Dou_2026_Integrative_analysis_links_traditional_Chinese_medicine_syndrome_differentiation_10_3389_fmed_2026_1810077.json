@@ -1,0 +1,28 @@
+{
+  "title": "Integrative analysis links traditional Chinese medicine syndrome differentiation to multi-dimensional skin phenotypes and predicts therapeutic response in photographs",
+  "authors": [
+    "Zhili Dou",
+    "Pingmei Shi",
+    "Juan Tan",
+    "Rong Jing",
+    "Caixia Hui",
+    "Yaoxia Zhang",
+    "Ruixi Li",
+    "Yuehao Sun",
+    "Yunlei Liu"
+  ],
+  "year": 2026,
+  "abstract": "Background Traditional Chinese medicine (TCM) syndrome differentiation guides personalized treatment; however, its biological basis remains objectively uncharacterized in dermatology, hindering integration with modern precision medicine. Its biological basis remains elusive, particularly in dermatology, hindering its integration with modern precision medicine. Objective This study aimed to investigate whether major TCM Image Syndrome are associated with distinct, quantifiable multi-dimensional skin imaging phenotypes and to develop a machine learning model integrating these features to predict treatment response. Methods A prospective observational study was conducted on 60 patients with moderate to severe facial photodamage. Participants were classified into one of four TCM syndromes —liver–kidney Yin deficiency, liver Qi stagnation, spleen deficiency with dampness, and Qi stagnation and blood stasis —through consensus diagnosis by two senior TCM physicians. Baseline multi-modal facial imaging was performed using the Visia® CA system or equivalent, quantifying features across four dimensions: pigmentation/damage (UV spots and brown spots), vascularity (red areas), texture (pores and skin smoothness), and porphyrin fluorescence. Patients then underwent a standardized 12-week intervention protocol. Treatment response was dichotomized as “effective” (The area and severity index of hyperpigmentation spots (MASI reduction index) ≥ 30%) or “ineffective” (MASI reduction index &amp;lt; 30%) based on standardized criteria. Statistical analyses included multivariate analysis of variance (MANOVA) for group comparisons, principal component analysis (PCA) for the exploration of phenotype structure, and machine learning (XGBoost and random forest) for predictive modeling. These models were evaluated using the receiver operating characteristic area under the curve (ROC-AUC) and were interpreted via SHapley Additive exPlanations (SHAP) values. Results Significant overall differences in skin imaging profiles were found among the four TCM syndromes (MANOVA, p &amp;lt; 0.001). Specific patterns emerged: the spleen deficiency with dampness group exhibited the highest median UV spot counts, while the liver–kidney Yin deficiency group showed the most pronounced brown spot intensity. PCA revealed that the first two principal components (cumulative variance: 58.9%) effectively separated the syndromes in a low-dimensional space. The integrative prediction model, combining TCM syndrome labels and all quantified imaging features, achieved exceptional performance (AUC: 0.99; 95% CI: 0.98–1.00). SHAP analysis identified UV spot metrics and the spleen deficiency with dampness syndrome label as the top predictive features. Conclusion This study provides empirical evidence that TCM syndromes correspond to specific, objective multi-dimensional skin phenotype patterns. Furthermore, an integrative model combining TCM diagnosis and quantitative imaging biomarkers can predict therapeutic outcomes with high accuracy. These findings help bridge TCM theory and modern biophysical assessment, paving the way for a data-driven, personalized approach in dermatology.",
+  "doi": "10.3389/fmed.2026.1810077",
+  "arxiv_id": null,
+  "venue": "Frontiers in Medicine",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2026.1810077/pdf",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W7162810926"
+  },
+  "pdf_status": "deferred",
+  "primary_id": "doi:10.3389/fmed.2026.1810077"
+}

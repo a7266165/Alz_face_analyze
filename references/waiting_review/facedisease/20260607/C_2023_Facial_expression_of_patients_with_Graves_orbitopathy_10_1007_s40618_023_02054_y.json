@@ -1,0 +1,27 @@
+{
+  "title": "Facial expression of patients with Graves' orbitopathy.",
+  "authors": [
+    "Lei C",
+    "Qu M",
+    "Sun H",
+    "Huang J",
+    "Huang J",
+    "Song X",
+    "Zhai G",
+    "Zhou H"
+  ],
+  "year": 2023,
+  "abstract": "PURPOSE: Patients with Graves' orbitopathy (GO) have characteristic facial expressions that are different from those of healthy individuals due to the combination of somatic and psychiatric symptoms. However, the facial expressions of GO patients have not yet been described and analyzed systematically. Thus, the present study aimed to present the facial expressions of GO patients and explore their applications in clinical practice. METHODS: Facial image and clinical data of 943 GO patients were included, and 126 patients answered quality of life (GO-QOL) questionnaires. Each patient was labeled for one facial expression. Then, a portrait was drawn for every facial expression. Logistic and linear regression was performed to analyze the correlation between facial expression and clinical indicators, including QOL, disease activity and severity. The VGG-19 network model was utilized to discriminate facial expressions automatically. RESULTS: Two groups, i.e., the non-negative emotion (neutral, happy) and the negative emotion (disgust, angry, fear, sadness, surprise), and seven expressions of GO patients were systematically analyzed. Facial expression was statistically associated with GO activity (P = 0.002), severity (P < 0.001), QOL visual functioning subscale scores (P = 0.001), and QOL appearance subscale score (P = 0.012). The deep learning model achieved satisfactory results (accuracy 0.851, sensitivity 0.899, precision 0.899, specificity 0.720, F1 score 0.899, and AUC 0.847). CONCLUSIONS: As a novel clinical sign, facial expression holds the potential to be incorporated into GO assessment system in the future. The discrimination model may assist clinicians in real-life patient care.",
+  "doi": "10.1007/s40618-023-02054-y",
+  "arxiv_id": null,
+  "venue": "Journal of endocrinological investigation",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "37005981"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.1007/s40618-023-02054-y"
+}

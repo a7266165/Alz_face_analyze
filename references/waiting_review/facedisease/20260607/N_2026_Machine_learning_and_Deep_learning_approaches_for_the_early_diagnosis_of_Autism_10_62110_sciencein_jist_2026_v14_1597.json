@@ -1,0 +1,21 @@
+{
+  "title": "Machine learning and Deep learning approaches for the early diagnosis of Autism spectrum disorder: A review",
+  "authors": [
+    "Anupama N",
+    "Chandrashekar M Patil"
+  ],
+  "year": 2026,
+  "abstract": "Autism spectrum disorder (ASD) is a lifelong neurodevelopmental disorder. ASD patients have communication problems. The screening of ASD is both time-consuming and requires a specialist to conduct an analysis. This involves restriction in the diagnoses, which are delayed, and the age at which it is normally detected is 5 years. In recent years, accurate and early screening has been performed using machine learning (ML) and deep learning (DL). These approaches have potential to study patterns that are related to ASD as far as use of neuroimaging, physiological, and Behavioural data sets is concerned. This literature review focuses on the ML and DL approaches applied in different works, such as the support vector machines (SVM), random forests (RF), logistic regression (LR), Decision Tree (DT), convolutional neural networks (CNN), and graph neural networks (GNN). It also examines the new role of hybrid and multimodal integration strategies. Various studies have shown a high accuracy of more than 90%, especially with deep neural networks. Small and unbalanced data, gender bias, and insufficient external validation are some of the challenges identified in this review. Altogether, ML and DL techniques provide higher accuracy and speed of ASD diagnosis. Standardized datasets, cross-site validation, and interpretable models should be prioritized in future studies in order to come up with effective and generalizable diagnostic tools.",
+  "doi": "10.62110/sciencein.jist.2026.v14.1597",
+  "arxiv_id": null,
+  "venue": "Journal of Integrated Science and Technology",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://pubs.thesciencein.org/journal/index.php/jist/article/download/a1597/1021",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W7162647952"
+  },
+  "pdf_status": "deferred",
+  "primary_id": "doi:10.62110/sciencein.jist.2026.v14.1597"
+}

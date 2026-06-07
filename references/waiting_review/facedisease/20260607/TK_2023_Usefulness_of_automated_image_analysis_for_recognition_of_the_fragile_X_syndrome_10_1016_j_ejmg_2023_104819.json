@@ -1,0 +1,29 @@
+{
+  "title": "Usefulness of automated image analysis for recognition of the fragile X syndrome gestalt in Congolese subjects.",
+  "authors": [
+    "Lubala TK",
+    "Kayembe-Kitenge T",
+    "Mubungu G",
+    "Lumaka A",
+    "Kanteng G",
+    "Savage S",
+    "Luboya O",
+    "Hagerman R",
+    "Devriendt K",
+    "Lukusa-Tshilobo P"
+  ],
+  "year": 2023,
+  "abstract": "BACKGROUND: Computer-aided software such as the facial image diagnostic aid (FIDA) and Face2Gene has been developed to perform pattern recognition of facial features with promising clinical results. The aim of this pilot study was to test Face2Gene's recognition performance on Bantu Congolese subjects with Fragile X syndrome (FXS) as compared to Congolese subjects with intellectual disability but without FXS (non-FXS). METHOD: Frontal facial photograph from 156 participants (14 patients with FXS and 142 controls) predominantly young-adults to adults, median age 18.9 age range 4-39yo, were uploaded. Automated face analysis was conducted by using the technology used in proprietary software tools called Face2Gene CLINIC and Face2Gene RESEARCH (version 17.6.2). To estimate the statistical power of the Face2Gene technology in distinguishing affected individuals from controls, a cross validation scheme was used. RESULTS: The similarity seen in the upper facial region (of males and females) is greater than the similarity seen in other parts of the face. Binary comparison of subjects with FXS versus non-FXS and subjects with FXS versus subjects with Down syndrome reveal an area under the curve values of 0.955 (p = 0.002) and 0.986 (p = 0.003). CONCLUSION: The Face2Gene algorithm is separating well between FXS and Non-FXS subjects.",
+  "doi": "10.1016/j.ejmg.2023.104819",
+  "arxiv_id": null,
+  "venue": "European journal of medical genetics",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "37532084"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.1016/j.ejmg.2023.104819"
+}

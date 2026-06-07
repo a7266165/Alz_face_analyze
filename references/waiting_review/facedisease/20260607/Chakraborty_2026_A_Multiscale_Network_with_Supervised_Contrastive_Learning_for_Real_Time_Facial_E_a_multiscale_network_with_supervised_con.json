@@ -1,0 +1,25 @@
+{
+  "title": "A Multiscale Network with Supervised Contrastive Learning for Real-Time Facial Emotion Recognition",
+  "authors": [
+    "Rejoy Chakraborty",
+    "Archisman Adhikary",
+    "Chayan Halder",
+    "Payel Rakshit",
+    "Sanchita Ghosh",
+    "Kaushik Roy"
+  ],
+  "year": 2026,
+  "abstract": "Real-time emotion recognition from facial expressions is a challenging task, particularly in video-based scenarios where multiple emotional states may occur over time. The difficulty increases further due to the fact that each emotional state is associated with facial expressions that vary significantly across individuals. The change of facial expressions portraying emotional state is not discrete, but rather continuous, which is very challenging to represent through computational aids. A system with the ability to detect variations in facial expressions can have a significant impact on determining the emotional state of an individual. Such a system can be very beneficial for psychologists during counseling by providing additional insights into the emotional state of a subject. In this paper, a deep learning-based system is presented to detect emotional changes in real-time video of a person by modeling the change in facial expressions. The current study is conducted on a standard dataset for training of the deep learning system and the system has provided very satisfactory outcomes in this respect.",
+  "doi": null,
+  "arxiv_id": null,
+  "venue": "arXiv (Cornell University)",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://arxiv.org/pdf/2606.01069",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W7163595027"
+  },
+  "pdf_status": "deferred",
+  "primary_id": "title:a multiscale network with supervised contrastive learning for real-time facial emotion recognition"
+}

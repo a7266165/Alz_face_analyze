@@ -1,0 +1,26 @@
+{
+  "title": "Automated Facial Emotion Recognition System Detects Altered Emotional Processing During Craving Induction in Individuals with Substance Use Disorder",
+  "authors": [
+    "Joaquı́n Garcı́a‐Estrada",
+    "Diana Fernández",
+    "Iris del Socorro Pérez-Alcaraz",
+    "Carlos Joel Mondragón-Gomar",
+    "Irene G. Aguilar-García",
+    "Sonia Luquı́n",
+    "David Fernández-Quezada"
+  ],
+  "year": 2026,
+  "abstract": "Background: Substance Use Disorder (SUD) is characterized by recurrent craving episodes frequently associated with emotional dysregulation and altered reward processing. This study aimed to evaluate whether emotional states associated with craving episodes can be detected through automated facial emotion recognition during controlled emotional induction. Methods: Forty-one participants completed a 14-day ecological momentary assessment (EMA) monitoring anxiety and craving levels, followed by an emotional induction task using standardized stimuli from the EmoMadrid database and addiction-related images. Facial expressions were recorded and analyzed in real time using a computational facial emotion recognition model trained on the FER-2013 dataset. Results: Participants with SUD exhibited significantly reduced positive emotional valence and emotional activation in response to positive stimuli compared with healthy controls (HC), with large effect sizes observed for emotional valence (Hedges’ g = 1.76) and emotional activation (Hedges’ g = 1.33). Item-level analyses revealed that most between-group differences occurred in stimuli depicting social interactions. Individuals with SUD also showed higher frequencies of fear-related facial expressions and lower frequencies of disgust-related expressions compared with HC, with moderate effect sizes observed for both emotional dimensions (Hedges’ g = 0.72; p = 0.02). Conclusions: These results suggest that people with SUD have changes in how they process emotions, showing less response to positive things and unique facial expressions related to craving. However, given the relatively modest and clinically heterogeneous sample, the findings should be interpreted cautiously and require replication in larger and more homogeneous populations.",
+  "doi": "10.3390/healthcare14101422",
+  "arxiv_id": null,
+  "venue": "Healthcare",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W7161950622"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.3390/healthcare14101422"
+}

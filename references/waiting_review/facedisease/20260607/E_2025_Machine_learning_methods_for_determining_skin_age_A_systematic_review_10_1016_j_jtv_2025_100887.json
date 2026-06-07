@@ -1,0 +1,29 @@
+{
+  "title": "Machine learning methods for determining skin age: A systematic review.",
+  "authors": [
+    "McMullen E",
+    "Aflaki R",
+    "Khatri PJ",
+    "Metko D",
+    "Storm K",
+    "Butt AB",
+    "Maazi M",
+    "Gupta R",
+    "Grewal R",
+    "Champagne T"
+  ],
+  "year": 2025,
+  "abstract": "AIM: This systematic review explores how machine learning is used in determining skin aging, aiming to evaluate accuracy, limitations, and gaps in the current literature. MATERIALS AND METHODS: OVID Embase, OVID Medline, IEEE Xplore, and ACM Digitial Library were searched from inception to March 16, 2024. RESULTS: A total of 1467 non-duplicate articles were screened, and 27 were ultimately included in the systematic review. The machine learning models exhibited a range of accuracies from a mean absolute error of 2.30-8.16 years. The most common approach was full facial image analysis, followed by non-image-based studies utilizing biomarkers such as the methylome and the proteome. The incorporation of dynamic facial expressions in the analysis was shown to improve the accuracy of age estimation, with a mean absolute error of 3.74. Confocal microscopy demonstrated potential for accurate skin aging estimation, with some studies achieving up to 85 % accuracy. Many studies were found with high PROBAST risk of bias scores, most commonly due to small sample sizes. CONCLUSION: Future studies should aim for greater diversity in ethnicity and variables within datasets to improve generalizability.",
+  "doi": "10.1016/j.jtv.2025.100887",
+  "arxiv_id": null,
+  "venue": "Journal of tissue viability",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "40174294"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.1016/j.jtv.2025.100887"
+}

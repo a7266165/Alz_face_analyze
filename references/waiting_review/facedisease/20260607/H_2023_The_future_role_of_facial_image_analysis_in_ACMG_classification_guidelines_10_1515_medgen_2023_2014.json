@@ -1,0 +1,22 @@
+{
+  "title": "The future role of facial image analysis in ACMG classification guidelines.",
+  "authors": [
+    "Lesmann H",
+    "Klinkhammer H",
+    "M Krawitz PDMDPP"
+  ],
+  "year": 2023,
+  "abstract": "The use of next-generation sequencing (NGS) has dramatically improved the diagnosis of rare diseases. However, the analysis of genomic data has become complex with the increasing detection of variants by exome and genome sequencing. The American College of Medical Genetics and Genomics (ACMG) and the Association for Molecular Pathology (AMP) developed a 5-tier classification scheme in 2015 for variant interpretation, that has since been widely adopted. Despite efforts to minimise discrepancies in the application of these criteria, inconsistencies still occur. Further specifications for individual genes were developed by Variant Curation Expert Panels (VCEPs) of the Clinical Genome Resource (ClinGen) consortium, that also take into consideration gene or disease specific features. For instance, in disorders with a highly characerstic facial gestalt a \"phenotypic match\" (PP4) has higher pathogenic evidence than e.g. in a non-syndromic form of intellectual disability. With computational approaches for quantifying the similarity of dysmorphic features results of such analysis can now be used in a refined Bayesian framework for the ACMG/AMP criteria.",
+  "doi": "10.1515/medgen-2023-2014",
+  "arxiv_id": null,
+  "venue": "Medizinische Genetik : Mitteilungsblatt des Berufsverbandes Medizinische Genetik e.V",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "38840866"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.1515/medgen-2023-2014"
+}

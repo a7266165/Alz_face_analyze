@@ -1,0 +1,26 @@
+{
+  "title": "Prediction of malnutrition in kids by integrating ResNet-50-based deep learning technique using facial images.",
+  "authors": [
+    "Aanjankumar S",
+    "Sathyamoorthy M",
+    "Dhanaraj RK",
+    "Surjit Kumar SR",
+    "Poonkuntran S",
+    "Khadidos AO",
+    "Selvarajan S"
+  ],
+  "year": 2025,
+  "abstract": "In recent times, severe acute malnutrition (SAM) in India is considered a serious issue as per UNICEF 2022 records. In that record, 35.5% of children under age 5 are stunted, 19.3% are wasted, and 32% are underweight. Malnutrition, defined as these three conditions, affects 5.7 million children globally. This research utilizes an artificial intelligence-based image segmentation technique to predict malnutrition in children. The primary goal of this research is to use a deep learning model to eliminate the need for multiple manual diagnostic tests and simplify the prediction of malnutrition in kids. The traditional model uses text-based data and takes more time with continuous monitoring of kids by analysing body mass index (BMI) over different periods. Children in rural areas often miss medical expert appointments, and a lack of knowledge among parents can lead to severe malnutrition. The aim of the proposed system is to eliminate the need for manual blood tests and regular visits to medical experts. This study uses the ResNet-50 deep learning model's built-in shortcut connection to solve the image-based vanishing gradient problem. This makes training more efficient for image segmentation tasks in predicting malnutrition. The model is 98.49% accurate in predicting the kids who are malnourished among the kids who are healthy. It is evident from the results that the proposed system serves better than other deep learning models, such as XG Boost (75.29% accuracy), VGG 16 (94% accuracy), Xception (95.41% accuracy), and MobileNet (92.42% accuracy). Hence, the proposed technique is effective in detecting malnutrition and diagnose it earlier, without using predictive analysis function or advice from the medical experts.",
+  "doi": "10.1038/s41598-025-91825-z",
+  "arxiv_id": null,
+  "venue": "Scientific reports",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "40050339"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.1038/s41598-025-91825-z"
+}

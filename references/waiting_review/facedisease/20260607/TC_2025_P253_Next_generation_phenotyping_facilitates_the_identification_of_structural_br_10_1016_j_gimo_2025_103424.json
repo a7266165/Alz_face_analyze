@@ -1,0 +1,30 @@
+{
+  "title": "P253 Next-generation phenotyping facilitates the identification of structural brain malformations in rare disorders through computational brain MRI analysis.",
+  "authors": [
+    "Hsieh TC",
+    "Jaddu S",
+    "Weiland H",
+    "Hagen MT",
+    "Li JM",
+    "Chang CC",
+    "Hsieh SY",
+    "Chou HH",
+    "Lyon G",
+    "Dobyns W",
+    "Chen WL"
+  ],
+  "year": 2025,
+  "abstract": "INTRODUCTION: Many rare disorders, particularly neurodevelopmental conditions, manifest structural brain malformations. Just as dysmorphologists rely on facial gestalt recognition to identify syndromes, radiologists and neurologists face similar challenges in identifying the \"brain gestalt\" of rare disorders-especially when encountering rare conditions or those they have not previously seen. Next-generation phenotyping (NGP) has been proven capable of supporting clinicians in recognizing facial dysmorphic patterns associated with the underlying syndrome through training on thousands of patient photographs. Beyond facial image analysis, NGP can also be applied to brain MRI data to identify structural malformations, such as Dandy-Walker malformation and lissencephaly, by learning patterns from large datasets of brain MRI images. In this work, we propose a deep learning-based NGP approach to detect brain malformations and their associated disorders, providing clinicians with diagnostic support and enabling integration into variant prioritization pipelines. METHODS: We curated a dataset of 413 brain MRI images from publications and clinicians, covering 56 different disorders, and stored it in the GestaltMatcher Database (GMDB). To learn the brain structures from MRI, we applied transfer learning using ResNet-50, pre-trained on the fastMRI dataset from NYU School of Medicine, comprising 6,970 MRIs for age prediction. This model was then used to encode each MRI into a high-dimensional feature vector, creating the \"Clinical Brain Phenotype Space (CBPS).\" In CBPS, each MRI is represented as a point, where proximity indicates phenotypic similarity between brains. To refine our focus on pediatric brains, we encoded 883 MRIs from a public dataset and 396 from the Preschool MRI dataset. We used feature-space distances to measure the probability of associated disorders. RESULTS: We evaluated our approach on two conditions: Dandy-Walker malformation and Ogden syndrome. In CBPS, we successfully distinguished both conditions from healthy controls by leave-one-out cross-validation. When visualized using t-SNE, patients with Dandy-Walker malformation formed a distinct cluster. At the same time, patients with Ogden syndrome also demonstrated clear separation from controls, validating the potential of CBPS for phenotypic clustering and disease prediction. CONCLUSION: This study demonstrates the application of NGP to structural brain malformations in rare disorders. While our initial analysis focused on two specific conditions, the results highlight the feasibility of extending this approach to a broader spectrum of genetic disorders. With ongoing data curation and patient recruitment through the GMDB consortium, we envision scaling this work to encompass hundreds of disorders, thereby advancing the diagnosis and understanding of rare conditions on a global scale.",
+  "doi": "10.1016/j.gimo.2025.103424",
+  "arxiv_id": null,
+  "venue": "Genetics in medicine open",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "40191138"
+  },
+  "pdf_status": "deferred",
+  "primary_id": "doi:10.1016/j.gimo.2025.103424"
+}

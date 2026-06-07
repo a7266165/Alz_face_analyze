@@ -1,0 +1,20 @@
+{
+  "title": "Učinkovito zaznavanje anomalij v slikovnih podatkih",
+  "authors": [
+    "MARIJA IVANOVSKA PRESKAR"
+  ],
+  "year": 2026,
+  "abstract": "Anomaly detection in image data is a fundamental problem in computer vision, grounded in signal analysis principles within the electrotechnical engineering domain. Its applications span industrial inspection, biometric security, and digital forensics. A central challenge is the scarcity and diversity of anomalous samples, which limits fully supervised learning approaches. These challenges are especially pronounced in detecting face image manipulations, such as morphing attacks, which threaten identity verification systems as real attack data remain difficult to collect and share. This dissertation addresses these limitations by advancing one-class anomaly detection frameworks that learn primarily from non-anomalous data, with a focus on robust and generalizable detection of face morphing attacks. In this context, the dissertation presents five original scientific contributions. Within our first scientific contribution we introduce a one-class anomaly detector, Y-GAN, which models the non-anomalous data manifold by disentangling informative data attributes from irrelevant residual information. Building on this foundation, our second scientific contribution adapts one-class learning to biometric security through diffusion-based data modeling. Specifically, we introduce a probabilistic framework for morphing attack detection, termed MAD-DDPM, which more faithfully captures the distribution of bona fide face images. To further enhance robustness and cross-dataset generalization, our third scientific contribution introduces SelfMAD, a self-supervised pipeline that generates synthetic morph-like artifacts directly from bona fide images. This proxy-task approach eliminates dependence on real manipulated data while preserving strong detection performance across unseen attack types. Our fourth scientific contribution then extends toward multimodal learning with SelfMAD++, which integrates vision–language foundation models with localized visual analysis to achieve interpretable and semantically grounded morphing attack detection. Finally, within our fifth scientific contribution we investigate zero-shot morphing attack detection capabilities in multimodal large language models (MLLMs), providing empirical insights into their inherent sensitivity to manipulation artifacts. Collectively, this dissertation bridges one-class, self-supervised, and multimodal paradigms, contributing to the development of robust, interpretable, and ethically grounded anomaly detection systems for image-based forensics and biometric security.",
+  "doi": null,
+  "arxiv_id": null,
+  "venue": "Repository of the University of Ljubljana (University of Ljubljana)",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://repozitorij.uni-lj.si/Dokument.php?id=234792&dn=",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W7163724138"
+  },
+  "pdf_status": "deferred",
+  "primary_id": "title:učinkovito zaznavanje anomalij v slikovnih podatkih"
+}

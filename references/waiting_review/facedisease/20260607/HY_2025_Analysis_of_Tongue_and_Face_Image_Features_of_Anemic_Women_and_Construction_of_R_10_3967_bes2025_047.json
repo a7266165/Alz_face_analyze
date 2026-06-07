@@ -1,0 +1,29 @@
+{
+  "title": "Analysis of Tongue and Face Image Features of Anemic Women and Construction of Risk-Screening Model.",
+  "authors": [
+    "Fu HY",
+    "Chun Y",
+    "Zhang YH",
+    "Wang Y",
+    "Shi YL",
+    "Jiang T",
+    "Hu XJ",
+    "Tu LP",
+    "Li YZ",
+    "Xu JT"
+  ],
+  "year": 2025,
+  "abstract": "OBJECTIVE: To identify the key features of facial and tongue images associated with anemia in female populations, establish anemia risk-screening models, and evaluate their performance. METHODS: A total of 533 female participants (anemic and healthy) were recruited from Shuguang Hospital. Facial and tongue images were collected using the TFDA-1 tongue and face diagnosis instrument. Color and texture features from various parts of facial and tongue images were extracted using Face Diagnosis Analysis System (FDAS) and Tongue Diagnosis Analysis System version 2.0 (TDAS v2.0). Least Absolute Shrinkage and Selection Operator (LASSO) regression was used for feature selection. Ten machine learning models and one deep learning model (ResNet50V2 + Conv1D) were developed and evaluated. RESULTS: Anemic women showed lower a-values, higher L- and b-values across all age groups. Texture features analysis showed that women aged 30-39 with anemia had higher angular second moment (ASM)and lower entropy (ENT) values in facial images, while those aged 40-49 had lower contrast (CON), ENT, and MEAN values in tongue images but higher ASM. Anemic women exhibited age-related trends similar to healthy women, with decreasing L-values and increasing a-, b-, and ASM-values. LASSO identified 19 key features from 62. Among classifiers, the Artificial Neural Network (ANN) model achieved the best performance [area under the curve (AUC): 0.849, accuracy: 0.781]. The ResNet50V2 model achieved comparable results [AUC: 0.846, accuracy: 0.818]. CONCLUSION: Differences in facial and tongue images suggest that color and texture features can serve as potential TCM phenotype and auxiliary diagnostic indicators for female anemia.",
+  "doi": "10.3967/bes2025.047",
+  "arxiv_id": null,
+  "venue": "Biomedical and environmental sciences : BES",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "40928272"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.3967/bes2025.047"
+}

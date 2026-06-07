@@ -1,0 +1,31 @@
+{
+  "title": "Prediagnosis recognition of acute ischemic stroke by artificial intelligence from facial images.",
+  "authors": [
+    "Wang Y",
+    "Ye Y",
+    "Shi S",
+    "Mao K",
+    "Zheng H",
+    "Chen X",
+    "Yan H",
+    "Lu Y",
+    "Zhou Y",
+    "Ye W",
+    "Ye J",
+    "Han JJ"
+  ],
+  "year": 2024,
+  "abstract": "Stroke is a major threat to life and health in modern society, especially in the aging population. Stroke may cause sudden death or severe sequela-like hemiplegia. Although computed tomography (CT) and magnetic resonance imaging (MRI) are standard diagnosis methods, and artificial intelligence models have been built based on these images, shortage in medical resources and the time and cost of CT/MRI imaging hamper fast detection, thus increasing the severity of stroke. Here, we developed a convolutional neural network model by integrating four networks, Xception, ResNet50, VGG19, and EfficientNetb1, to recognize stroke based on 2D facial images with a cross-validation area under curve (AUC) of 0.91 within the training set of 185 acute ischemic stroke patients and 551 age- and sex-matched controls, and AUC of 0.82 in an independent data set regardless of age and sex. The model computed stroke probability was quantitatively associated with facial features, various clinical parameters of blood clotting indicators and leukocyte counts, and, more importantly, stroke incidence in the near future. Our real-time facial image artificial intelligence model can be used to rapidly screen and prediagnose stroke before CT scanning, thus meeting the urgent need in emergency clinics, potentially translatable to routine monitoring.",
+  "doi": "10.1111/acel.14196",
+  "arxiv_id": null,
+  "venue": "Aging cell",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "38845183"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.1111/acel.14196"
+}

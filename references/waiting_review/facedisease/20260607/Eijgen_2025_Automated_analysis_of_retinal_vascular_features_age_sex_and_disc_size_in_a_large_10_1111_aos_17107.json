@@ -1,0 +1,26 @@
+{
+  "title": "Automated analysis of retinal vascular features, age, sex and disc size in a large cohort of primary open angle glaucoma patients",
+  "authors": [
+    "Jan Van Eijgen",
+    "Jonathan Fhima",
+    "Anat Reiner‐Benaim",
+    "Lennert Beeckmans",
+    "Or Abramovich",
+    "Ingeborg Stalmans",
+    "Joachim A. Behar"
+  ],
+  "year": 2025,
+  "abstract": "Aims/Purpose: Deriving vascular features of retinal images is a proposed noninvasive method to assess vascular health. Although several studies have linked cardiovascular risk to retinal image features, they often rely on limited datasets or have used deep learning approaches with limited explainability. This research introduces an end‐to‐end method for analyzing the retinal vasculature in large retinal image datasets, applied for primary open angle glaucoma (POAG).Methods: 115,237 retinal images of the UZ Leuven Glaucoma Clinic were extracted. 4858 unique images remain of POAG patients (n = 3010) and controls (n = 1848) after image quality assessment, optic disk detection, region of interest definition, automated segmentation of arterioles and venules (LUNet algorithm), and parametrization of the vascular biomarkers (PVBM toolbox). Analysis of covariance and linear mixed models were used to adjust for age, sex and disc size.Results: Both arteriolar and venular diameter, area, length, tortuosity, branching angle, endpoints, intersection points and both mono‐ as multifractal dimension levels are independently lower in POAG patients and older patients (all p < 0.001), after adjustment for sex, disc size and multiple testing. The multivariate linear mixed models additionally show that the vascular features are significantly influenced by sex and disc size, which necessitates correct adjustment.Conclusions: This is the first time a fully automated end‐to‐end pipeline is published for the analysis of retinal vascular geometry in a large cohort (n = 4858). Given the independent similarities in retinal vascular geometry changes between older age and POAG prevalence the theory of pronounced vascular ageing in POAG patients is proposed. This novel approach enables quantitative analysis of eye vasculature and supports the study of its correlation with specific diseases, facilitating reproducible analysis of large datasets and providing explainability to deep learning approaches.",
+  "doi": "10.1111/aos.17107",
+  "arxiv_id": null,
+  "venue": "Acta ophthalmologica",
+  "citation_count": 0,
+  "source": "s2",
+  "pdf_url": "",
+  "relevance_score": null,
+  "extra": {
+    "s2_paperId": "2e5dd9d829d25d25c8bb25f86c4bb3fc1075d73d"
+  },
+  "pdf_status": "deferred",
+  "primary_id": "doi:10.1111/aos.17107"
+}

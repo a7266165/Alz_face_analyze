@@ -1,0 +1,18 @@
+{
+  "title": "Template Collapse and Information-Theoretic Limits in Camera rPPG Pulse Morphology Restoration",
+  "authors": [
+    "Achraf Ben Ahmed"
+  ],
+  "year": 2026,
+  "abstract": "Objective: Consumer face camera remote photoplethysmography (rPPG) enables passive cardiovascular monitoring, but whether single-cycle waveform morphology encoding arterial stiffness biomarkers is recoverable from this measurement has not been characterised.\n  Methods: We evaluated 16 architectures spanning six families on 153 subjects across three datasets, introducing cross-subject Pearson r to distinguish subject-specific recovery from template collapse.\n  Results: No architecture recovered subject-specific morphology (cross-subject r range 0.773--0.9999; ground-truth ceiling 0.601). Supervised Contrastive (SupCon) converged to log N = 4.844, constituting the strongest available empirical evidence that no discriminative morphological structure is extractable from single-cycle rPPG by the encoder families tested. The VAE decoder restores population-level harmonic content absent from the rPPG input (H2/H1: 0.310 output vs. 0.275 input), generalising zero-shot to UBFC (r = +0.708); a directional hallucination gap (p = 0.150) suggests partial signal reading. Anti-collapse objectives fail when input carries no discriminative structure.\n  Significance: Consumer cameras cannot encode individual arterial morphology; cross-subject r is a necessary collapse diagnostic for waveform reconstruction benchmarks.",
+  "doi": null,
+  "arxiv_id": "2606.03802",
+  "venue": "arXiv",
+  "citation_count": null,
+  "source": "arxiv",
+  "pdf_url": "https://arxiv.org/pdf/2606.03802v1",
+  "relevance_score": null,
+  "extra": {},
+  "pdf_status": "ok",
+  "primary_id": "arxiv:2606.03802"
+}

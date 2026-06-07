@@ -1,0 +1,26 @@
+{
+  "title": "An explainable dual-modal diagnostic model for coronary artery disease: a feature-gated approach using tongue and facial image features.",
+  "authors": [
+    "Zhao M",
+    "Wang M",
+    "Fan L",
+    "Liu M",
+    "Wei D",
+    "Dong D",
+    "Zhang X"
+  ],
+  "year": 2025,
+  "abstract": "BACKGROUND AND OBJECTIVE: Coronary artery disease (CAD) is a major threat to human health, and early non-invasive identification is crucial for its prevention and management. However, current diagnostic methods still face limitations in terms of non-invasiveness, cost, and accessibility. Tongue and facial features have been recognized as closely associated with CAD. To address these challenges, this study proposes a dual-modal diagnostic model incorporating a feature-wise gating mechanism to enable intelligent, non-invasive CAD detection based on tongue and facial images. METHODS: A total of 936 participants were enrolled in this study, and standardized tongue and facial images were collected from each subject. Image segmentation was performed using MedSAM, followed by deep semantic feature extraction using the MDFA-Swin network. Traditional color and texture features were also incorporated. A feature-guided gating mechanism was developed to enable personalized multimodal fusion of tongue and facial features. The diagnostic performance of the proposed model was evaluated on an independent external test set. In addition, SHAP (SHapley Additive Explanations) analysis were conducted to enhance model interpretability. RESULTS: The proposed CAD diagnostic model based on fused multidimensional tongue and facial features (TF_FGC) demonstrated excellent performance in internal validation (AUC = 0.945, Accuracy = 0.872) and maintained good generalizability on the external test set (AUC = 0.896, Accuracy = 0.825). The SHAP analysis identified T_contrast, T_RGB_R, T_homogeneity, F_homogeneity, F_RGB_B, F_RGB_G, F_RGB_R, and F_contrast as the most influential features driving model predictions. CONCLUSION: The proposed dual-branch fusion model demonstrates high diagnostic accuracy, strong interpretability, and good generalizability. By integrating traditional color and texture features with deep semantic representations, this approach offers a promising solution for non-invasive and intelligent screening of CAD, providing a novel perspective and practical support for clinical decision-making.",
+  "doi": "10.3389/frai.2025.1662577",
+  "arxiv_id": null,
+  "venue": "Frontiers in artificial intelligence",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "41333340"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.3389/frai.2025.1662577"
+}

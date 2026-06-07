@@ -1,0 +1,32 @@
+{
+  "title": "Thermal facial image analyses reveal quantitative hallmarks of aging and metabolic diseases.",
+  "authors": [
+    "Yu Z",
+    "Zhou Y",
+    "Mao K",
+    "Pang B",
+    "Wang K",
+    "Jin T",
+    "Zheng H",
+    "Zhai H",
+    "Wang Y",
+    "Xu X",
+    "Liu H",
+    "Wang Y",
+    "Han JJ"
+  ],
+  "year": 2024,
+  "abstract": "Although human core body temperature is known to decrease with age, the age dependency of facial temperature and its potential to indicate aging rate or aging-related diseases remains uncertain. Here, we collected thermal facial images of 2,811 Han Chinese individuals 20-90 years old, developed the ThermoFace method to automatically process and analyze images, and then generated thermal age and disease prediction models. The ThermoFace deep learning model for thermal facial age has a mean absolute deviation of about 5 years in cross-validation and 5.18 years in an independent cohort. The difference between predicted and chronological age is highly associated with metabolic parameters, sleep time, and gene expression pathways like DNA repair, lipolysis, and ATPase in the blood transcriptome, and it is modifiable by exercise. Consistently, ThermoFace disease predictors forecast metabolic diseases like fatty liver with high accuracy (AUC > 0.80), with predicted disease probability correlated with metabolic parameters.",
+  "doi": "10.1016/j.cmet.2024.05.012",
+  "arxiv_id": null,
+  "venue": "Cell metabolism",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "38959862"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.1016/j.cmet.2024.05.012"
+}

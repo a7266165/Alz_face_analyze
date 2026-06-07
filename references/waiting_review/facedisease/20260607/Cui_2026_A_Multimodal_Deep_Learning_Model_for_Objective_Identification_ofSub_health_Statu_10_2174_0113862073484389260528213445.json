@@ -1,0 +1,28 @@
+{
+  "title": "A Multimodal Deep Learning Model for Objective Identification ofSub-health Status in Traditional Chinese Medicine",
+  "authors": [
+    "Diankun Cui",
+    "Yue Meng",
+    "J L Liu",
+    "L Li",
+    "郑燕飞",
+    "Ruoxi Yu",
+    "Yifan Xia",
+    "Shujuan Hou",
+    "Qi Wang"
+  ],
+  "year": 2026,
+  "abstract": "Introduction: Sub-health is an intermediate state between health and disease. Early diagnosis in clinical practice is difficult, which delays timely intervention. Traditional Chinese Medicine (TCM) constitution theory divides sub-health into eight categories; however, existing diagnostic tools mainly focus on psychological assessment and lack objective phenotypic indicators. Multimodal technology provides a new direction for the objective diagnosis of sub-health by integrating objective human phenotypic images with expert experience. Methods: Tongue images, facial images, and infrared thermal images were collected from 1389 participants. In the pre-experiment, Model-1 consisted of a ResNet-18 network, an extended binary classification strategy, and a cross-attention fusion mechanism. Model-2 was developed based on Model-1 by integrating expert experience via Qwen2.5 using structural prompting. Accuracy, recall, precision, specificity, and AUC were used to evaluate model performance. Results: The overall performance of Model-1 was good, with most core indicators of body constitution exceeding 0.7. However, PDC (accuracy 0.722, AUC 0.682) and QDC (accuracy 0.732, AUC 0.705) showed relatively poor performance, characterized by high recall but low specificity. The core indicators of Model-2 improved further. Notably, PDC (accuracy 0.772, AUC 0.732) and QDC (accuracy 0.778, AUC 0.756) were significantly improved, and the imbalance between recall and specificity was also alleviated. Discussion: Multimodal fusion is critical for improving classification performance in TCM constitution recognition. The reasonable integration of clinical expert experience effectively optimizes feature fusion efficacy, highlighting the indispensable value of empirical expertise. Rooted in the empirical characteristics of TCM, embedding expert knowledge into the data-driven framework further enhances the robustness and credibility of the screening model. Conclusion: This study established an expert experience-enhanced multimodal model for subhealth and TCM constitution identification. The model achieves objective quantification and accurate classification of sub-health states, providing a valuable technical reference for population health management and early sub-health risk screening.",
+  "doi": "10.2174/0113862073484389260528213445",
+  "arxiv_id": null,
+  "venue": "Combinatorial Chemistry & High Throughput Screening",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W7163040574"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.2174/0113862073484389260528213445"
+}

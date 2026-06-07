@@ -1,0 +1,21 @@
+{
+  "title": "[Application of Artificial Intelligence in Recognition and Evaluation of Facial Paralysis].",
+  "authors": [
+    "Wang B",
+    "Wu X"
+  ],
+  "year": 2022,
+  "abstract": "This paper reviews some recent studies on the recognition and evaluation of facial paralysis based on artificial intelligence. The research methods can be divided into two categories: facial paralysis evaluation based on artificial selection of patients' facial image eigenvalues and facial paralysis evaluation based on neural network and patients' facial images. The analysis shows that the method of manual selection of eigenvalues is suitable for small sample size, but the classification effect of adjacent ratings of facial paralysis needs to be further optimized. The neural network method can distinguish the neighboring grades of facial paralysis relatively well, but it has a higher requirement for sample size. Both of the two methods have good prospects. The features that are more closely related to the evaluation scale are selected manually, and the common development direction may be to extract the time-domain features, so as to achieve the purpose of improving the evaluation accuracy of facial paralysis.",
+  "doi": "10.3969/j.issn.1671-7104.2022.01.012",
+  "arxiv_id": null,
+  "venue": "Zhongguo yi liao qi xie za zhi = Chinese journal of medical instrumentation",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "35150109"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.3969/j.issn.1671-7104.2022.01.012"
+}

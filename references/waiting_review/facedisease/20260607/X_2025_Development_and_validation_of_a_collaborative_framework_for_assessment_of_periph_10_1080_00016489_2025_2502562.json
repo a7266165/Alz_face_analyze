@@ -1,0 +1,27 @@
+{
+  "title": "Development and validation of a collaborative framework for assessment of peripheral facial paralysis using facial image regions of interest.",
+  "authors": [
+    "Guo X",
+    "Chen J",
+    "Lin P",
+    "Lu Q",
+    "Kou T",
+    "Li K",
+    "Yang S",
+    "Shen W"
+  ],
+  "year": 2025,
+  "abstract": "BACKGROUND: While accurate evaluation of PFP is crucial for determining optimal treatment strategies, current clinical assessments rely heavily on subjective evaluations, leading to considerable variability between inter- and intra-observer ratings. OBJECTIVE: This study aimed to develop and validate a collaborative framework for evaluating PFP based on regions of interest in facial images. METHODS: We developed and tested two approaches: (1) a collaborative framework integrating image interpretation techniques (representation learning via CNN) with predefined handcrafted features based on regions of interest in facial images, and (2) a convolutional neural network (CNN) model trained exclusively on full-face patient images. The diagnostic accuracy of both systems was evaluated using a test set and compared with otologists' assessments. RESULTS: The collaborative framework achieved a mean Area Under the Curve (AUC) of 0.92 for PFP prediction in the test set, surpassing the 0.76 AUC achieved by the CNN trained on full-face images. The framework's performance matched that of experienced otologists (accuracy: 80.0% vs. 77.2%; sensitivity: 85.3% vs. 77.7%). Moreover, system assistance improved primary clinicians' mean accuracy by 17.7 percentage points. CONCLUSIONS: These findings demonstrate that our collaborative framework-based automated diagnosis system can effectively assist clinicians in PFP diagnosis.",
+  "doi": "10.1080/00016489.2025.2502562",
+  "arxiv_id": null,
+  "venue": "Acta oto-laryngologica",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "40338664"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.1080/00016489.2025.2502562"
+}

@@ -1,0 +1,25 @@
+{
+  "title": "Application and accuracy analysis of different facial regions based on deep learning in the diagnosis of hypertension.",
+  "authors": [
+    "Wang J",
+    "Zhao M",
+    "Zhou H",
+    "Liu M",
+    "Zhao M",
+    "Zhang X"
+  ],
+  "year": 2026,
+  "abstract": "Despite the widespread availability of sphygmomanometers, hypertension remains underdiagnosed and poorly controlled globally-largely due to its asymptomatic onset, low screening adherence, and measurement biases such as white-coat hypertension. Current methods fail to enable scalable, passive, and early detection in real-world settings. To develop a non-invasive, camera-based screening approach using deep learning that overcomes these barriers by enabling early, accessible, and interpretable hypertension detection through facial image analysis. We analyzed facial images from 375 hypertensive patients and 131 normotensive controls. An improved U-Net model was employed to segment the face into six anatomically defined regions. Subsequently, ResNet-based classifiers were trained to predict hypertension using either the whole face or individual facial regions as input. The segmentation achieved a high mIoU of 98.43%. The whole-face model achieved 83% accuracy. Notably, models using only the zygomatic and cheek regions achieved 82% accuracy each-performing on par with the full-face model. This suggests these regions contain concentrated physiological signals associated with hypertension, potentially linked to microvascular or perfusion changes. This study demonstrates that deep learning analysis based on facial images can serve as a scalable, passive, non-invasive initial screening tool, operable in everyday environments using only standard cameras. Notably, the zygomatic and buccal regions exhibit specificity in identifying hypertension.",
+  "doi": "10.1038/s41598-025-30936-z",
+  "arxiv_id": null,
+  "venue": "Scientific reports",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "41484198"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.1038/s41598-025-30936-z"
+}

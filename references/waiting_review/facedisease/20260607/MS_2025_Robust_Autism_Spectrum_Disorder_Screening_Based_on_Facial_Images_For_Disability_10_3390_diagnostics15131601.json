@@ -1,0 +1,25 @@
+{
+  "title": "Robust Autism Spectrum Disorder Screening Based on Facial Images (For Disability Diagnosis): A Domain-Adaptive Deep Ensemble Approach.",
+  "authors": [
+    "Alam MS",
+    "Rashid MM",
+    "Jazlan A",
+    "Alahi MEE",
+    "Kchaou M",
+    "Alharthi KAB"
+  ],
+  "year": 2025,
+  "abstract": "Background/Objectives: Artificial intelligence (AI) is revolutionising healthcare for people with disabilities, including those with autism spectrum disorder (ASD), in the era of advanced technology. This work explicitly addresses the challenges posed by inconsistent data from various sources by developing and evaluating a robust deep ensemble learning system for the accurate and reliable classification of autism spectrum disorder (ASD) based on facial images. Methods: We created a system that learns from two publicly accessible datasets of ASD images (Kaggle and YTUIA), each with unique demographics and image characteristics. Utilising a weighted ensemble strategy (FPPR), our innovative ASD-UANet ensemble combines the Xception and ResNet50V2 models to maximise model contributions. This methodology underwent extensive testing on a range of groups stratified by age and gender, including a critical assessment of an unseen, real-time dataset (UIFID) to determine how well it generalised to new domains. Results: The performance of the ASD-UANet ensemble was consistently better. It significantly outperformed individual transfer learning models (e.g., Xception alone on T1+T2 yielded an accuracy of 83%), achieving an impressive 96.0% accuracy and an AUC of 0.990 on the combined-domain dataset (T1+T2). Notably, the ASD-UANet ensemble demonstrated strong generalisation on the unseen real-time dataset (T3), achieving 90.6% accuracy and an AUC of 0.930. This demonstrates how well it generalises to new data distributions. Conclusions: Our findings demonstrate significant potential for widespread, equitable, and clinically beneficial ASD screening using this promising, reasonably priced, and non-invasive method. This study establishes the foundation for more precise diagnoses and greater inclusion for people with autism spectrum disorder (ASD) by integrating methods for diverse data and combining deep learning models.",
+  "doi": "10.3390/diagnostics15131601",
+  "arxiv_id": null,
+  "venue": "Diagnostics (Basel, Switzerland)",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "40647600"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.3390/diagnostics15131601"
+}

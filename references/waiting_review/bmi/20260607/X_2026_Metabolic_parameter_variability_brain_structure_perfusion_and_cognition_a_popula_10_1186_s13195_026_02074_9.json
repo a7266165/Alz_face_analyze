@@ -1,0 +1,39 @@
+{
+  "title": "Metabolic parameter variability, brain structure, perfusion, and cognition: a population-based study.",
+  "authors": [
+    "Li X",
+    "Li X",
+    "Bai M",
+    "Yang L",
+    "Chen J",
+    "Fan J",
+    "Shi H",
+    "Li R",
+    "Liang X",
+    "Zhang S",
+    "Zhao P",
+    "Li J",
+    "Lv H",
+    "Chen S",
+    "Yang Z",
+    "Yu Z",
+    "Wu Y",
+    "Hui Y",
+    "Wu S",
+    "Wang Z"
+  ],
+  "year": 2026,
+  "abstract": "BACKGROUND: Metabolic instability can affect cognitive function, but the mechanisms are largely unknown. To address this, we investigated the association between metabolic parameter variability, brain volume, cerebral blood flow (CBF), and cognitive performance, and evaluated whether CBF and brain volume mediate this relationship. METHODS: Participants were prospectively included from the Kailuan study. Between 2006 and 2020, the variability in metabolic parameters such as systolic blood pressure, fasting blood glucose, low-density lipoprotein cholesterol, and body mass index was evaluated using the coefficient of variation (CV). Starting in 2020, brain MRI and the Montreal Cognitive Assessment (MoCA) were performed continuously as part of the seventh follow-up visit and subsequent assessments. Generalized linear regression models were used to analyze the associations between metabolic variability, CBF, brain volume, and cognitive performance. Mediation analysis was performed to evaluate the mediation effects of CBF or brain volume. RESULTS: A total of 1894 participants (mean age, 55.4 ± 10.9 years; 51.8% male) were included. High variability scores of metabolic parameters were associated with lower CBF in total brain (β [95% confidence interval]: -2.02 [-3.73, -0.30]), total white matter (WM) (-3.04 [-4.72, -1.37]), temporal lobe (-1.82 [-3.60, -0.03]), and hippocampus (-1.91 [-3.65, -0.17]), as well as decreased volume in both total gray matter (GM) (-5.64 [-11.24, -0.04]) and temporal lobe (-1.70 [-3.16, -0.25]). High variability in metabolic parameters was associated with reduced MoCA scores (-0.98 [-1.75, -0.20]). After multiple comparison correction, the association with total WM CBF remained significant. Decreased brain volume and CBF were associated with reduced MoCA scores (P < 0.05). Mediation analysis revealed that the association between variability in metabolic parameters and MoCA scores was mediated by total WM CBF, total GM volume, and temporal lobe volume, accounting for 7.518%, 5.619%, and 6.864% of the effect, respectively. CONCLUSION: Reduced total WM CBF, GM volume, and temporal lobe volume mediated the association between elevated metabolic variability and cognitive decline, with total WM CBF showing the most robust mediating effect.",
+  "doi": "10.1186/s13195-026-02074-9",
+  "arxiv_id": null,
+  "venue": "Alzheimer's research & therapy",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "42157314"
+  },
+  "pdf_status": "deferred",
+  "primary_id": "doi:10.1186/s13195-026-02074-9"
+}

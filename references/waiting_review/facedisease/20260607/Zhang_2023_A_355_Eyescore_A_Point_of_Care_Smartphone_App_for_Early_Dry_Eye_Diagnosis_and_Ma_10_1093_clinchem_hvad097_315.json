@@ -1,0 +1,21 @@
+{
+  "title": "A-355 Eyescore, A Point of Care Smartphone App for Early Dry Eye Diagnosis and Management",
+  "authors": [
+    "S. Zhang",
+    "J. Echegoyen"
+  ],
+  "year": 2023,
+  "abstract": "Current diagnosis of dry eye disease (DED) has significant challenges with limited accuracy and poor correlation of clinical symptoms. The goal of this study is to develop a smartphone App, namely “EyeScore”, to provide a point of care (POC) and digital solution for early diagnosis of DED. The authors tested the hypothesis of measuring eye blink rate and partial blink count as early clinical biomarkers for the calculation of so called “eye healthiness score”, which allows a convenient, rapid eye exam at home with low resource settings. EyeScore uses an iPhone as an imaging and sensing device for in-App recordings of eyelid movements. The use of facial landmark recognition and eye aspect ratio (EAR) enabled comprehensive digital analysis of video frames for determination of the eye opening/closed states. The smartphone videos from 10 DED patients and 10 healthy controls were tested to optimize EAR derived thresholds for accurate measurements of blink rates and partial blink counts. The authors formulated a clinically relevant algorithm for the calculation of “eye healthiness score”. This 10-point scale score can be easily measured anytime with a non-invasive manner and remotely shared with the patient's eye doctor. As a result, both patients and doctors can monitor the eye conditions over time. Our results showed that EyeScore confirmed the diagnosis of all 10 DED patients. Importantly, Eyescore also identified three individuals with “pre-DED” conditions from 10 healthy controls, demonstrating its potential clinical values for early diagnosis and management of DED.\n \n \n An Apple MacBook Pro installed with iOS software (iOS 16.1.2) and Xcode 14.0 was used for coding and debugging. Visionkit SDK from Apple Developer was adopted to extract coordinate data from six eye facial landmarks. EAR values were calculated based on the previously published formula, with a dynamic EAR developed as a threshold for the measurement of blink rate and half blink count. For eye healthiness score, a 10-point formula was formulated (0–3, normal; 4–5, Pre-DED; 6–10, DED) with several contributing factors including blink rate, half blink count, eye discomfort and demographic characteristics.\n \n \n \n A total of 20 iPhone videos from DED patients and healthy controls were analyzed and evaluated with EyeScore App. All DED patients obtained scores above 7, confirming their DED diagnosis. On the other hand, three controls obtained scores of 4 or 5, suggesting they were in the Pre-DED state with no noticeable clinical DED symptoms. All other controls obtain scores blow 3 with normal eye conditions. All tests were performed with the consents from the test participants.\n \n \n \n Smart phone-based platform offers great potentials for point of care diagnostic methods. A POC enabled EyeScore App has been successfully developed for early diagnosis of DED. In the future, the authors plan to test EyeScore with a large-scale sample set of DED patients and controls to further validate the accuracy and predictability of eye healthiness score for its broader clinical applications.",
+  "doi": "10.1093/clinchem/hvad097.315",
+  "arxiv_id": null,
+  "venue": "Clinical Chemistry",
+  "citation_count": 0,
+  "source": "s2",
+  "pdf_url": "https://academic.oup.com/clinchem/article-pdf/69/Supplement_1/hvad097.315/51776604/hvad097.315.pdf",
+  "relevance_score": null,
+  "extra": {
+    "s2_paperId": "c9ece00d48f9b85544ec038cd9de80d5a35ceed6"
+  },
+  "pdf_status": "deferred",
+  "primary_id": "doi:10.1093/clinchem/hvad097.315"
+}

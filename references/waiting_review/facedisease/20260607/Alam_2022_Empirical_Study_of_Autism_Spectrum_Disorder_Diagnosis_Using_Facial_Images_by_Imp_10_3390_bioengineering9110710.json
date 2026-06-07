@@ -1,0 +1,25 @@
+{
+  "title": "Empirical Study of Autism Spectrum Disorder Diagnosis Using Facial Images by Improved Transfer Learning Approach",
+  "authors": [
+    "Md. Shafiul Alam",
+    "Muhammad Mahbubur Rashid",
+    "Rupal Roy",
+    "Ahmed Rimaz Faizabadi",
+    "Kishor Datta Gupta",
+    "M. Ahsan"
+  ],
+  "year": 2022,
+  "abstract": "Autism spectrum disorder (ASD) is a neurological illness characterized by deficits in cognition, physical activities, and social skills. There is no specific medication to treat this illness; only early intervention can improve brain functionality. Since there is no medical test to identify ASD, a diagnosis might be challenging. In order to determine a diagnosis, doctors consider the child’s behavior and developmental history. The human face can be used as a biomarker as it is one of the potential reflections of the brain and thus can be used as a simple and handy tool for early diagnosis. This study uses several deep convolutional neural network (CNN)-based transfer learning approaches to detect autistic children using the facial image. An empirical study is conducted to select the best optimizer and set of hyperparameters to achieve better prediction accuracy using the CNN model. After training and validating with the optimized setting, the modified Xception model demonstrates the best performance by achieving an accuracy of 95% on the test set, whereas the VGG19, ResNet50V2, MobileNetV2, and EfficientNetB0 achieved 86.5%, 94%, 92%, and 85.8%, accuracy, respectively. Our preliminary computational results demonstrate that our transfer learning approaches outperformed existing methods. Our modified model can be employed to assist doctors and practitioners in validating their initial screening to detect children with ASD disease.",
+  "doi": "10.3390/bioengineering9110710",
+  "arxiv_id": null,
+  "venue": "Bioengineering",
+  "citation_count": 76,
+  "source": "s2",
+  "pdf_url": "https://www.mdpi.com/2306-5354/9/11/710/pdf?version=1669114116",
+  "relevance_score": null,
+  "extra": {
+    "s2_paperId": "29a498e2bf0fe7c58eebb19acd56c06a3899ebbf"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.3390/bioengineering9110710"
+}

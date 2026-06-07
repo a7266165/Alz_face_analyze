@@ -1,0 +1,27 @@
+{
+  "title": "HD-DinoMoE: A Class-Aware Hierarchical Dual Mixture-of-Experts Network for Scleral Anomaly Segmentation in Complex Acquisition Scenarios",
+  "authors": [
+    "Yinxiang Yu",
+    "Maoxiang Chu",
+    "Qi Niu",
+    "Guanghu Liu",
+    "Wei Xu",
+    "Haotian Wang",
+    "Zhi Chen",
+    "Yutian Zhu",
+    "Yuelong Fan",
+    "Guanghao Liao"
+  ],
+  "year": 2026,
+  "abstract": "Traditional Chinese Medicine (TCM) ocular inspection provides empirical cues for assessing scleral surface anomalies, but its clinical use remains subjective and difficult to quantify. To support intelligent and quantifiable ocular inspection, this study presents the TCM-inspired Artificial Intelligence Ocular Auxiliary Diagnosis System (TAO) and focuses on pixel-level scleral surface anomaly segmentation. For clinical and user-acquired images affected by multi-source distributional discrepancies, diverse anomaly morphologies, and scleral specular reflection (SSR), we propose HD-DinoMoE, a class-aware hierarchical dual mixture-of-experts network. HD-DinoMoE combines class-aware dual-stream DINOv3 feature fusion with class-specific multi-expert decoding to segment Vessels, Yellow and Black Spots, and Blood Spots. A three-stage backbone-frozen routing strategy stabilizes dual-backbone adaptation; Progressive Confidence Penalty (PCP) Loss reduces high-confidence false positives and segmentation leakage in SSR regions; and Class-Aware Adaptive Sample Weighting (CA-ASW) balances sample- and class-level training contributions. We further construct the Multi-label Scleral Anomaly Segmentation Dataset (ML-SASD), a new benchmark with Clinical, Wild, and Mix settings and pixel-wise annotations for three anomaly categories. On ML-SASD-Mix, HD-DinoMoE achieves a mean Dice of 72.11% and a mean Intersection-over-Union of 58.44%, while maintaining favorable boundary localization and specular-region false-positive control. It also shows competitive generalization on the Vessels subset of the public SBVPI dataset. These results indicate that HD-DinoMoE provides a feasible segmentation solution for TAO under complex acquisition scenarios. The code and data access information are available at https://github.com/FX-CMX/HD-DinoMoE.",
+  "doi": null,
+  "arxiv_id": "2606.04888",
+  "venue": "arXiv",
+  "citation_count": null,
+  "source": "arxiv",
+  "pdf_url": "https://arxiv.org/pdf/2606.04888v1",
+  "relevance_score": null,
+  "extra": {},
+  "pdf_status": "deferred",
+  "primary_id": "arxiv:2606.04888"
+}

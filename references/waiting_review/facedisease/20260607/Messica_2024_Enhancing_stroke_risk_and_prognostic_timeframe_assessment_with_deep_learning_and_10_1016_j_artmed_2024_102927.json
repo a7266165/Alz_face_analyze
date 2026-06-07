@@ -1,0 +1,26 @@
+{
+  "title": "Enhancing stroke risk and prognostic timeframe assessment with deep learning and a broad range of retinal biomarkers",
+  "authors": [
+    "Shvat Messica",
+    "Dan Presil",
+    "Yaacov Hoch",
+    "Tsvi H. Lev",
+    "Aviel Hadad",
+    "Or Katz",
+    "David R. Owens"
+  ],
+  "year": 2024,
+  "abstract": "Stroke stands as a major global health issue, causing high death and disability rates and significant social and economic burdens. The effectiveness of existing stroke risk assessment methods is questionable due to their use of inconsistent and varying biomarkers, which may lead to unpredictable risk evaluations. This study introduces an automatic deep learning-based system for predicting stroke risk (both ischemic and hemorrhagic) and estimating the time frame of its occurrence, utilizing a comprehensive set of known retinal biomarkers from fundus images. Our system, tested on the UK Biobank and DRSSW datasets, achieved AUROC scores of 0.83 (95% CI: 0.79-0.85) and 0.93 (95% CI: 0.9-0.95), respectively. These results not only highlight our system's advantage over established benchmarks but also underscore the predictive power of retinal biomarkers in assessing stroke risk and the unique effectiveness of each biomarker. Additionally, the correlation between retinal biomarkers and cardiovascular diseases broadens the potential application of our system, making it a versatile tool for predicting a wide range of cardiovascular conditions.",
+  "doi": "10.1016/j.artmed.2024.102927",
+  "arxiv_id": null,
+  "venue": "Artif. Intell. Medicine",
+  "citation_count": 8,
+  "source": "s2",
+  "pdf_url": "",
+  "relevance_score": null,
+  "extra": {
+    "s2_paperId": "92bfc49a0dfd55348c01ea0ef839e05f642d8f89"
+  },
+  "pdf_status": "deferred",
+  "primary_id": "doi:10.1016/j.artmed.2024.102927"
+}

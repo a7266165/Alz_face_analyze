@@ -1,0 +1,25 @@
+{
+  "title": "Remote clinical decision support tool for Parkinson's disease assessment using a novel approach that combines AI and clinical knowledge.",
+  "authors": [
+    "Rom H",
+    "Peleg O",
+    "Rom Y",
+    "Mirelman A",
+    "Blumrosen G",
+    "Maidan I"
+  ],
+  "year": 2025,
+  "abstract": "BACKGROUND: Early diagnosis of Parkinson's disease (PD) can assist in designing efficient treatments. Reduced facial expressions are considered a hallmark of PD, making advanced artificial intelligence (AI) image processing a potential non-invasive clinical decision support tool for PD detection. This study aims to determine the sensitivity of image-to-text AI, which matches facial frames recorded in home settings with descriptions of PD facial expressions, in identifying patients with PD. METHODS: Facial image of 67 PD patients and 52 healthy-controls (HCs) were collected via standard video recording. Using clinical knowledge, we compiled descriptive sentences detailing facial characteristics associated with PD. The facial images were analyzed with OpenAI's CLIP model to generate probability scores, indicating the likelihood of each image matching the PD-related descriptions. These scores were used in an XGBoost model to identify PD patients based on the total, motor, and facial-expression item of the MDS-UPDRS, a common scale for assessing disease severity. RESULTS: The image-to-text AI technology showed the best results in identifying PD patients based on the facial expression item (AUC = 0.78 ± 0.05), especially for those with 'mild' facial symptoms (AUC = 0.87 ± 0.04). The motor MDS-UPDRS score followed (AUC = 0.69 ± 0.05), while the total MDS-UPDRS score showed the lowest performance in identifying PD patients (AUC = 0.59 ± 0.05). PD matching probabilities between facial images and sentences revealed significant correlations across all MDS-UPDRS components (r > 0.23, p < 0.0001). CONCLUSIONS: Our results demonstrate the feasibility of using advanced AI in a clinical decision support tool for PD diagnosis, suggesting a novel approach for home-based screening to identify PD patients. This method represents a significant innovation, transforming clinical knowledge into practical algorithms that can serve as effective screening tools. CLINICAL TRIAL NUMBER: MOH_2023-04-16_012535.",
+  "doi": "10.1186/s12911-025-03104-6",
+  "arxiv_id": null,
+  "venue": "BMC medical informatics and decision making",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "40775312"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.1186/s12911-025-03104-6"
+}

@@ -1,0 +1,25 @@
+{
+  "title": "Automated identification of autism spectrum disorder from facial images using explainable deep learning models.",
+  "authors": [
+    "Atlam ES",
+    "Aljuhani KO",
+    "Gad I",
+    "Abdelrahim EM",
+    "Atwa AEM",
+    "Ahmed A"
+  ],
+  "year": 2025,
+  "abstract": "The early and accurate detection of autism spectrum disorder (ASD) is crucial for timely interventions that can significantly improve the quality of life for individuals on the spectrum. Despite the importance of early diagnosis, current ASD diagnostic methods face several challenges, including being time-consuming, subjective, and requiring specialized expertise, which limits their accessibility and scalability. Addressing these limitations, automated ASD detection through facial image analysis offers a non-invasive, efficient, and scalable alternative. However, existing machine learning and deep learning techniques frequently face challenges such as limited generalizability, inadequate interpretability, and insufficient performance on diverse datasets. This study introduces an effective deep learning framework for automated ASD detection that leverages pre-trained convolutional neural networks (CNNs), including VGG16, VGG19, InceptionV3, VGGFace, and MobileNet. The proposed framework integrates advanced preprocessing techniques, data augmentation, and Explainable AI (XAI) methods, such as Local Interpretable Model-agnostic Explanations (LIME), to enhance both accuracy and interpretability. The experimental results demonstrate the effectiveness of the proposed framework, with the VGG19 model achieving an accuracy of 98.2%, outperforming many state-of-the-art methods. This work represents a significant step forward in automated ASD diagnostics, offering a reliable, efficient, and interpretable solution that can aid clinicians in making timely and accurate diagnoses.",
+  "doi": "10.1038/s41598-025-11847-5",
+  "arxiv_id": null,
+  "venue": "Scientific reports",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "40695996"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.1038/s41598-025-11847-5"
+}

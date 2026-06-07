@@ -1,0 +1,24 @@
+{
+  "title": "Thermal imaging based pre-diagnostics tool for Graves’ disease",
+  "authors": [
+    "Vaishali Sharma",
+    "V. K. Dhingra",
+    "S. Shakya",
+    "Ashok Kumar",
+    "M. Goswami"
+  ],
+  "year": 2023,
+  "abstract": "Infrared thermography Images of the facial region are taken from sixty persons. Scintigraphy and standard thyroid blood test are used to categorize these persons into thirty-three females and thirteen males suffering from Graves’ disease. This study is approved by the All-India Institute of Medical Science Rishikesh Ethics Committee with reference number AIIMS/IEC/19/997. Eleven Females and three males are found to be in healthy conditions and used as control. A convolutional neural networks (CNN) model is developed to automatically segment and extract the histogram-associated information within the thyroid and cheek region from the collected images. The sub-surface temperature of the thyroid gland and control is extracted using these set of images. We have acquired moderately correlated imaging biomarker with respect to age and gender from this sparse data. An Artificial Intelligence-based app is developed and deployed in a clinical environment to enrich the prognosis model in real time. An affordable Thermal plug-and-play addon device is developed to connect with any smartphone for faster diagnosis at the patient end to carry out this test now. This smartphone and AI-based app combination is successfully deployed as a point-of-care device. It is expected that this IR based preliminary test will automatically categorize healthy cases from patients. This step may save the clinicians to unnecessarily recommending the radioactive contamination-prone Scintigraphy and/or expensive and relatively slower thyroid blood tests. Such preliminary tests may (a) save costs to the patients and (b) relieve the burden on pathology labs. These two points are impactful for the healthcare industry, particularly in densely populated countries having low per capita income.",
+  "doi": "10.1088/1361-6501/ad123a",
+  "arxiv_id": null,
+  "venue": "Measurement science and technology",
+  "citation_count": 2,
+  "source": "s2",
+  "pdf_url": "",
+  "relevance_score": null,
+  "extra": {
+    "s2_paperId": "cc360eb5df5ae53232f42d3f6d7f177258ec6a51"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.1088/1361-6501/ad123a"
+}

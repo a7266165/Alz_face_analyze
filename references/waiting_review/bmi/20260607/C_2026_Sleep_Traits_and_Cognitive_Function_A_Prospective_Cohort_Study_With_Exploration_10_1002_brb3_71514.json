@@ -1,0 +1,29 @@
+{
+  "title": "Sleep Traits and Cognitive Function: A Prospective Cohort Study With Exploration of Inflammatory Biomarkers.",
+  "authors": [
+    "Peng C",
+    "Yang F",
+    "Li F",
+    "Zhu R",
+    "Li L",
+    "Zhang Z",
+    "You J",
+    "Wang R",
+    "Qin Y",
+    "Xu S"
+  ],
+  "year": 2026,
+  "abstract": "INTRODUCTION: Although sleep disturbance is closely linked to cognitive impairment, the specific sleep-related characteristics driving this deficit remain undetermined, with the mechanistic contribution of biomarkers also poorly characterized. Accumulating evidence suggests that inflammation may contribute to cognitive decline, yet its mediating role in the sleep-cognition relationship has not been fully clarified. METHODS: Based on the UK Biobank, four linear regression models (for reasoning, reaction time, visual memory, and numeric memory) and one logistic regression model (for prospective memory) were employed to analyze the relation between sleep features and cognitive impairment. Apart from that, the bootstrap mediation model and Mendelian randomization were utilized to investigate the causal association. RESULTS: Short sleep duration (β = -0.394, p = 0.020) and long sleep duration (β = -0.359, p = 0.014) correlated with poorer numeric memory performance, while moderate sleep quality (β = -0.071, p = 0.042) and work shift were linked to impaired reasoning, reaction time, visual memory, and prospective memory. Subgroup analyses stratified by age, sex, and BMI further supported these associations. In addition, C-reactive protein (CRP) partially mediated the snoring-reasoning ability association (PM: β = -0.071, p = 0.049), with MR analysis confirming a causal pathway, whereas snoring elevated CRP levels to impair reasoning, accounting for 32.1% of the observed relationship. CONCLUSION: In this cohort study, abnormal sleep traits correlated with domain-specific cognitive impairments, with CRP partially mediating the snoring-reasoning association.",
+  "doi": "10.1002/brb3.71514",
+  "arxiv_id": null,
+  "venue": "Brain and behavior",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "42213732"
+  },
+  "pdf_status": "deferred",
+  "primary_id": "doi:10.1002/brb3.71514"
+}

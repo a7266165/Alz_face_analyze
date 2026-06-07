@@ -1,0 +1,25 @@
+{
+  "title": "Artificial Intelligence in Autism Spectrum Disorder Diagnosis: A Scoping Review of Face, Voice, and Text Analysis Methods.",
+  "authors": [
+    "Mohammadi F",
+    "Shahrokhi H",
+    "Asadzadeh A",
+    "Pirmoradi S",
+    "Moghtader A",
+    "Rezaei-Hachesu P"
+  ],
+  "year": 2025,
+  "abstract": "BACKGROUND: Autism is a complex neurodevelopmental condition affecting social interaction and behavior. Traditional diagnostic methods, relying on observational techniques and interviews conducted by trained professionals, remain the gold standard for ASD diagnosis. However, these methods can be time-consuming and may be influenced by subjective factors. Recent advancements in artificial intelligence (AI) offer promising approaches to augment existing methods, potentially enhancing efficiency and providing additional objective data through facial, vocal, and textual analysis. OBJECTIVE: The objective of this study was to conduct a comprehensive review of artificial intelligence applications in autism spectrum disorder (ASD) diagnosis, specifically focusing on facial, vocal, and textual analysis methods. METHODS: A comprehensive search was conducted in PubMed, Web of Science, Scopus, and Google Scholar. The findings were reported in accordance with the PRISMA checklist. Data were collated and summarized, and results were reported qualitatively, adopting a narrative synthesis approach. RESULTS: In facial image analysis, deep learning algorithms demonstrated high accuracy in identifying autism-related facial features, algorithms such as Xception achieved 98% accuracy, while hybrid approaches like the combination of Random Forest (RF) and VGG16-MobileNet showed accuracy at 99%. Voice analysis studies utilized both traditional machine learning methods and advanced deep learning techniques, achieving accuracies between 70% and 98% in detecting atypical speech patterns and prosodic abnormalities associated with autism. Text-based analyses showed potential in identifying linguistic markers of autism through natural language processing techniques. Overall, Deep learning approaches were mainly employed in facial image analysis for autism diagnosis. In contrast, voice and text recognition studies utilized machine learning algorithms. CONCLUSIONS: This review demonstrates artificial intelligence's significant role in diagnosing autism spectrum disorder (ASD). These AI-driven approaches can complement traditional diagnostic methods, potentially leading to earlier interventions and improved outcomes for individuals with ASD.",
+  "doi": "10.1002/hsr2.71476",
+  "arxiv_id": null,
+  "venue": "Health science reports",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "41255386"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.1002/hsr2.71476"
+}

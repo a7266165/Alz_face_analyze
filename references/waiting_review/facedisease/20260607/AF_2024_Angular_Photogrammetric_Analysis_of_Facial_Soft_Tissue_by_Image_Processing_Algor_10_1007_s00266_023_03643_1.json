@@ -1,0 +1,23 @@
+{
+  "title": "Angular Photogrammetric Analysis of Facial Soft Tissue by Image Processing Algorithms.",
+  "authors": [
+    "Jafargholkhanloo AF",
+    "Shamsi M",
+    "Rahavi-Ezabadi S",
+    "Amali A"
+  ],
+  "year": 2024,
+  "abstract": "BACKGROUND: The main aim of this study was to present an automatic method based on image processing algorithms for facial anatomical landmark localization and angular photogrammetric analysis applicable for rhinoplasty surgery. We studied and measured color profile photographs of 100 patients before and after rhinoplasty surgery. METHODS: In facial anthropometry analysis, anatomical landmarks are often defined by specialists, manually. This process is time-consuming and requires training and skill. The Cascade Regression Method (CRM) was utilized for facial landmark detection to overcome the mentioned problem. In this study, 11 anatomical landmarks were used to measure 9 facial angular metrics. Finally, a t-test (with the significance level set at a p-value of 0.05) was applied to analyze before surgery versus after surgery comparisons. RESULTS: Experimental results dedicated that there is a significance difference (p < 0.001) in nasofrontal, nasolabial, mentolabial, nasomental, facial convexity including nose, facial convexity excluding nose, projection of the upper lip to chin, and H angles before and after surgery. Also, results showed that there is not a significance difference in nose tip angle. CONCLUSION: We believe that the presented system can aim to reduce the personal errors made by manual measurement and to facilitate facial anthropometry analysis before and after surgery with high accuracy. Also, the normative data for Iranian women can be used as a guide for the diagnosis and planning of oral and maxillofacial, ENT, and plastic surgeries. LEVEL OF EVIDENCE II: This journal requires that authors assign a level of evidence to each article. For a full description of these Evidence-Based Medicine ratings, please refer to the Table of Contents or the online Instructions to Authors www.springer.com/00266 .",
+  "doi": "10.1007/s00266-023-03643-1",
+  "arxiv_id": null,
+  "venue": "Aesthetic plastic surgery",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "37684414"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.1007/s00266-023-03643-1"
+}

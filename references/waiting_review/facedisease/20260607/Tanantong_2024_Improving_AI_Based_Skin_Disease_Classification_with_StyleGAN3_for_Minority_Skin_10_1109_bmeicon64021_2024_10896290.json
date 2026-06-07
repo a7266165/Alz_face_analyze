@@ -1,0 +1,22 @@
+{
+  "title": "Improving AI-Based Skin Disease Classification with StyleGAN3 for Minority Skin Tone Generation",
+  "authors": [
+    "Tanatorn Tanantong",
+    "Pangon La-or-on",
+    "Krittakom Srijiranon"
+  ],
+  "year": 2024,
+  "abstract": "Skin diseases are prevalent in Thailand due to the hot temperatures, humid climate, and increasing diversity of skin tones, which complicates diagnosis. Artificial intelligence (AI) has improved skin disease detection through deep learning models, aiding faster diagnoses and reducing the workload on dermatologists. However, AI models often struggle with underrepresentation of darker skin tones in training datasets, affecting performance. To address this imbalance, data augmentation techniques like generative models are recommended. This research enhances skin disease classification using StyleGAN3 for data augmentation to balance minority skin tone classes. The Fitzpatrick17k dataset focusing on Acne, Psoriasis, and Vitiligo is used. The Fitzpatrick Skin Type Scale is reduced from six to three levels due to image availability. VGG16 is applied to classify skin tone classes. Two additional datasets, the original and traditionally augmented datasets, are used for comparison against the StyleGAN3-augmented dataset. Results show that the StyleGAN3-augmented dataset achieves the best performance with F1-scores of 0.7193, 0.7446, and 0.7543 and accuracy scores of 0.7200, 0.7368, and 0.7419 for Acne, Psoriasis, and Vitiligo respectively. The obtained results demonstrate that utilizing the StyleGAN3-augmented dataset for skin disease classification in minority skin tone classes yields the highest performance, with F1-scores increasing by 19.25%, 19.77%, and 25.94 % for Acne, Psoriasis, and Vitiligo, respectively. These findings highlight the effectiveness of StyleGAN3 in improving model performance for underrepresented skin tones in skin disease classification.",
+  "doi": "10.1109/BMEiCON64021.2024.10896290",
+  "arxiv_id": null,
+  "venue": "Biomedical Engineering International Conference",
+  "citation_count": 4,
+  "source": "s2",
+  "pdf_url": "",
+  "relevance_score": null,
+  "extra": {
+    "s2_paperId": "0d298a6dfb93ed0f359c52095fb7571934ddd2b5"
+  },
+  "pdf_status": "deferred",
+  "primary_id": "doi:10.1109/bmeicon64021.2024.10896290"
+}

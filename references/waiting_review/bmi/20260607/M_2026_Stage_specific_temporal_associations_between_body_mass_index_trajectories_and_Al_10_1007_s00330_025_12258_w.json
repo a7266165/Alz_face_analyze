@@ -1,0 +1,26 @@
+{
+  "title": "Stage-specific temporal associations between body mass index trajectories and Alzheimer's disease pathologies.",
+  "authors": [
+    "Dang M",
+    "Chen K",
+    "Wang D",
+    "Sang F",
+    "Zhang Z",
+    "Chen Y",
+    "Alzheimer’s Disease Neuroimaging Initiative"
+  ],
+  "year": 2026,
+  "abstract": "OBJECTIVES: Preclinical declines in body mass index (BMI) are linked to accelerated Alzheimer's disease (AD) neurodegeneration and mortality, yet the temporal relationship between premorbid BMI trajectories and AD neuropathology remains unclear. This study aims to characterize stage-specific BMI dynamics preceding mild cognitive impairment (MCI)/AD diagnosis and evaluate their bidirectional associations with core AD pathologies. MATERIALS AND METHODS: This longitudinal cohort study analyzed 1570 participants (mean age 73.2 ± 6.9 years; 53% male) from the Alzheimer's Disease Neuroimaging Initiative, applied linear mixed-effect models to construct BMI trajectories, and used partial correlation analysis and cross-lagged panel model to assess bidirectional associations between BMI changes and pathological progression, including β-amyloid (Aβ), tau, and neurodegeneration. RESULTS: Frontotemporal Aβ deposition preceded and predicted preclinical BMI decline (β = -5.74, p = 0.003), which subsequently correlated with accelerated neurodegeneration during MCI transition, including hypometabolism (r = 0.42, p < 0.001) and gray matter atrophy (r = 0.24, p = 0.01). Post-MCI diagnosis, BMI trajectories stabilized, yet lower BMI was associated with elevated cerebrospinal fluid tau levels, regardless of AD conversion. Importantly, lower premorbid BMI at MCI diagnosis was linked to faster temporo-occipital tau accumulation (r = -0.53, p = 0.01) and temporal hypometabolism (r = 0.23, p = 0.002) during MCI-to-AD progression. CONCLUSIONS: This study suggests a temporal relationship between BMI trajectories and AD pathology: early Aβ deposition predicts preclinical BMI decline, which exacerbates tauopathy and neurodegeneration. These findings reveal a self-reinforcing cycle wherein BMI decline reflects incipient pathology and amplifies disease progression through stage-specific mechanisms. KEY POINTS: Question What is the association between changes in body mass index (BMI) and the pathological progression of Alzheimer's disease? Findings Early frontotemporal β-amyloid deposition predicts preclinical BMI decline, which in turn is associated with accelerated tau accumulation and neurodegeneration during symptomatic progression. Clinical relevance Monitoring BMI trajectories provides a low-cost approach to identifying individuals at high risk for Alzheimer's disease and tracking its pathological progression, highlighting the potential value of metabolic interventions during preclinical stages.",
+  "doi": "10.1007/s00330-025-12258-w",
+  "arxiv_id": null,
+  "venue": "European radiology",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "41603947"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.1007/s00330-025-12258-w"
+}

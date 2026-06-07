@@ -1,0 +1,33 @@
+{
+  "title": "Artificial intelligence strategies for emotion recognition in cancer pain research",
+  "authors": [
+    "Marco Cascella",
+    "Adele Zarrella",
+    "Valeria Conti",
+    "Amelia Filippelli",
+    "María Pía Bruno",
+    "Dalila Esposito",
+    "Rosario De Feo",
+    "Valentina Cerrone",
+    "Cosimo Guerra",
+    "Flavio Di Lisio",
+    "Francesco Sabbatino",
+    "Ornella Piazza",
+    "Stefano Cirillo",
+    "Giuseppe Polese"
+  ],
+  "year": 2026,
+  "abstract": "Although emotions play a fundamental role in modulating pain perception, their objective assessment in clinical contexts remains challenging. Recent advances in artificial intelligence (AI) have opened new opportunities to measure emotional states through facial expression analysis, physiological signal modeling, natural language processing (NLP), and multimodal data integration. In affective computing, the field that focuses on technologies designed to recognize, interpret, process, and simulate human emotions, facial expression-based emotion recognition has progressed from traditional machine learning methods to advanced deep learning approaches, including convolutional neural networks (CNNs), attention-based hybrid models, and transformer architectures. Similarly, recurrent neural networks and self-supervised learning methods have been implemented for developing models from physiological signals such as electrocardiography, photoplethysmography, galvanic skin response, and related biosignals. Additionally, NLP systems can extract affective information from naturalistic text, using both lexicon-based and transformer-based models. Finally, multimodal fusion and alignment techniques allow the integration of heterogeneous data streams, providing richer and more ecologically valid emotion representations. Collectively, these strategies offer powerful tools for advancing automatic pain assessment (APA) in cancer care, with the potential to support personalized, emotion-aware therapeutic approaches. However, from an AI perspective, several open challenges remain, including multimodal representation learning under weak supervision, robustness to missing or degraded modalities, limited explainability of affective inference models, lack of standardized benchmarking protocols, and the presence of bias and domain shift in emotion datasets. Given the inherently subjective, context-dependent, and culturally mediated features of the emotional experience, further research is needed to address these technical limitations, integrating technological advances with the intrinsic complexity of emotion interpretation.",
+  "doi": "10.37349/emed.2026.1001404",
+  "arxiv_id": null,
+  "venue": "Exploration of Medicine",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://www.explorationpub.com//uploads/Article/A1001404/1001404.pdf",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W7161732711"
+  },
+  "pdf_status": "deferred",
+  "primary_id": "doi:10.37349/emed.2026.1001404"
+}

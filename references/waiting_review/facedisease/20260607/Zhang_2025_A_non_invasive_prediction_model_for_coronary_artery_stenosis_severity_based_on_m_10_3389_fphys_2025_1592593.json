@@ -1,0 +1,25 @@
+{
+  "title": "A non-invasive prediction model for coronary artery stenosis severity based on multimodal data",
+  "authors": [
+    "Jiyu Zhang",
+    "Jia-tuo Xu",
+    "Liping Tu",
+    "Tao Jiang",
+    "Yu Wang",
+    "Jijie Xu"
+  ],
+  "year": 2025,
+  "abstract": "Introduction Coronary artery disease (CAD) diagnosis currently relies on invasive coronary angiography for stenosis severity assessment, carrying inherent procedural risks. This study develops a transformer-based multimodal prediction model to provide a clinically reliable non-invasive alternative. By integrating heterogeneous biomarkers including facial morphometrics, cardiovascular waveforms and biochemical indicators, we aim to establish an interpretable framework for precision risk stratification. Methods The study utilized a transformer-based architecture integrated with residual modules and adaptive weighting mechanisms. Multimodal data, including facial features, lip and tongue images, pulse and pressure wave amplitudes, and laboratory indicators, were collected from 488 CAD patients. These data were processed and analyzed to predict the severity of coronary artery stenosis. The model’s performance was evaluated using both internal and external validation datasets. Results The proposed model demonstrated high predictive accuracy, achieving over 90% accuracy in assessing coronary artery stenosis risk on the training dataset. External validation on real-world data further confirmed the model’s robustness, with an accuracy of 85% on the validation set. The integration of multimodal data and advanced architectural components significantly enhanced the model’s performance. Conclusion This study developed a non-invasive, transformer-based multimodal prediction model for assessing coronary artery stenosis severity. By combining diverse data sources and advanced machine learning techniques, the model offers a clinically viable alternative to invasive diagnostic methods. The results highlight the potential of multimodal data integration in improving CAD diagnosis and patient care.",
+  "doi": "10.3389/fphys.2025.1592593",
+  "arxiv_id": null,
+  "venue": "Frontiers in Physiology",
+  "citation_count": 2,
+  "source": "s2",
+  "pdf_url": "",
+  "relevance_score": null,
+  "extra": {
+    "s2_paperId": "67e0020055d2eec8ffb2c257cd2da3afcc20c7f3"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.3389/fphys.2025.1592593"
+}

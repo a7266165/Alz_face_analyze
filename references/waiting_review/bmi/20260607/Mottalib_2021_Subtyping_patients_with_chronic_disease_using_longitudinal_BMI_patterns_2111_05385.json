@@ -1,0 +1,21 @@
+{
+  "title": "Subtyping patients with chronic disease using longitudinal BMI patterns",
+  "authors": [
+    "Md Mozaharul Mottalib",
+    "Jessica C Jones-Smith",
+    "Bethany Sheridan",
+    "Rahmatollah Beheshti"
+  ],
+  "year": 2021,
+  "abstract": "Obesity is a major health problem, increasing the risk of various major chronic diseases, such as diabetes, cancer, and stroke. While the role of obesity identified by cross-sectional BMI recordings has been heavily studied, the role of BMI trajectories is much less explored. In this study, we use a machine-learning approach to subtype individuals' risk of developing 18 major chronic diseases by using their BMI trajectories extracted from a large and geographically diverse EHR dataset capturing the health status of around two million individuals for a period of six years. We define nine new interpretable and evidence-based variables based on the BMI trajectories to cluster the patients into subgroups using the k-means clustering method. We thoroughly review each cluster's characteristics in terms of demographic, socioeconomic, and physiological measurement variables to specify the distinct properties of the patients in the clusters. In our experiments, the direct relationship of obesity with diabetes, hypertension, Alzheimer's, and dementia has been re-established and distinct clusters with specific characteristics for several of the chronic diseases have been found to be conforming or complementary to the existing body of knowledge.",
+  "doi": "10.1109/JBHI.2023.3237753",
+  "arxiv_id": "2111.05385",
+  "venue": "arXiv",
+  "citation_count": null,
+  "source": "arxiv",
+  "pdf_url": "https://arxiv.org/pdf/2111.05385v2",
+  "relevance_score": null,
+  "extra": {},
+  "pdf_status": "deferred",
+  "primary_id": "arxiv:2111.05385"
+}

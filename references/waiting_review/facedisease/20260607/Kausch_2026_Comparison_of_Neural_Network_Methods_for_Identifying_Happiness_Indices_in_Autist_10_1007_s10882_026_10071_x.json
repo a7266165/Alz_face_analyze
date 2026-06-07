@@ -1,0 +1,26 @@
+{
+  "title": "Comparison of Neural Network Methods for Identifying Happiness Indices in Autistic Children",
+  "authors": [
+    "Tobias Kausch",
+    "Leslie Neely",
+    "Adel Alaeddini",
+    "Katie Holloway",
+    "Melissa G. Ruiz",
+    "Amarie Carnett",
+    "Russell Lang"
+  ],
+  "year": 2026,
+  "abstract": "Monitoring behaviors associated with happiness (e.g., smiling, laughing) and unhappiness (e.g., crying, frowning) supports evaluation of an intervention’s social validity and sustainability. This is especially important for children with communication challenges, such as those with autism spectrum disorder (ASD). However, behavioral indicators of emotional states are often subtle, idiosyncratic, and subjective, which complicates data collection and analysis. Technological innovations in machine learning, particularly neural network models, may improve efficiency and accuracy when measuring indices of happiness and unhappiness. This pilot study evaluated the feasibility of using convolutional neural networks (CNNs) and a combined CNN with a dense neural network (CNN + DNN) to detect emotional expressions in young children with ASD. Labeled video recordings from clinical settings were used as ground truth data to train and test the models in a naturalistic context. The CNN + DNN model achieved over 93% on accuracy, precision, recall, and F1 score. Potential implications for applied practice and directions for future research are discussed.",
+  "doi": "10.1007/s10882-026-10071-x",
+  "arxiv_id": null,
+  "venue": "Journal of Developmental and Physical Disabilities",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://link.springer.com/content/pdf/10.1007/s10882-026-10071-x.pdf",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W7162810820"
+  },
+  "pdf_status": "deferred",
+  "primary_id": "doi:10.1007/s10882-026-10071-x"
+}

@@ -1,0 +1,29 @@
+{
+  "title": "Social and Cardiovascular Risk Factors as Predictors of the Progression from Mild Cognitive Impairment to Dementia in a Large EHR Database.",
+  "authors": [
+    "Miramontes S",
+    "Ferguson EL",
+    "Zimmerman S",
+    "Phelps E",
+    "Oskotsky B",
+    "Oskotsky TT",
+    "Capra JA",
+    "Tsoy E",
+    "Sirota M",
+    "Glymour MM"
+  ],
+  "year": 2026,
+  "abstract": "BACKGROUND AND OBJECTIVES: Progression from mild cognitive impairment (MCI) to Alzheimer's Disease and Related Dementias (AD/ADRD) varies widely across individuals, yet the mechanisms underlying this heterogeneity remain unclear. Identifying clinical and social determinants influencing this transition could enable earlier intervention. While cardiovascular and social risk factors are established contributors to dementia incidence, their role in progression from MCI to dementia may differ. Few studies using real world clinical data have evaluated these potential determinants of MCI progression. METHODS: Using electronic health records (EHR) from patients with incident MCI at UCSF Health (2010-2024), we evaluated cardiovascular (blood pressure [BP], body mass index [BMI], and type II diabetes) and social (marital status, language preference, race/ethnicity, and neighborhood disadvantage) risk factors for rate of progression from MCI to AD/ADRD. Covariate-adjusted Cox proportional hazards models estimated hazard ratios for incident AD/ADRD, with evaluation of interactions by sex. RESULTS: Among 6,529 patients, higher systolic BP was associated with AD/ADRD incidence (HR per 10 mmHg: 1.09, 95% CI: 1.05-1.14). BMI was inversely associated with incidence in both males (HR: 0.94; 95% CI: 0.92-0.97) and females (HR:0.98; 95% CI: 0.96-0.99). Compared to married individuals, widowed patients had a higher hazard of progression (HR: 1.15; 95% CI: 1.00-1.32). Spanish-speaking (HR: 1.38; 95% CI: 1.04-1.81), Chinese-speaking (HR: 1.19; 95% CI: 1.00-1.42), and \"Other non-English\" speaking patients (HR:1.24; 95% CI: 1.03-1.51) had a higher hazard of progression compared to English speakers. Latinx (HR:1.22; 95% CI: 1.01-1.48) and Asian patients (HR:1.14, 95% CI: 1.00-1.30; p=0.04) also had higher hazards of progression compared to White patients. Neighborhood disadvantage was not significantly associated with disease progression. DISCUSSION: Cardiovascular and social factors independently influence dementia progression, with some sex-specific patterns. Integrating clinical and social indicators highlights the potential of EHR data to identify high-risk patients earlier in the care continuum and support equitable dementia prevention.",
+  "doi": "10.64898/2026.03.02.26347451",
+  "arxiv_id": null,
+  "venue": "medRxiv : the preprint server for health sciences",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "41822695"
+  },
+  "pdf_status": "deferred",
+  "primary_id": "doi:10.64898/2026.03.02.26347451"
+}

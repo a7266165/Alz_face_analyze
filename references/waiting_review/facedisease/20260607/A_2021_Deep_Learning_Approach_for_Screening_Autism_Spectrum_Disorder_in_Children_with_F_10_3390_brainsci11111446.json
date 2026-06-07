@@ -1,0 +1,21 @@
+{
+  "title": "Deep Learning Approach for Screening Autism Spectrum Disorder in Children with Facial Images and Analysis of Ethnoracial Factors in Model Development and Application.",
+  "authors": [
+    "Lu A",
+    "Perkowski M"
+  ],
+  "year": 2021,
+  "abstract": "Autism spectrum disorder (ASD) is a developmental disability that can cause significant social, communication, and behavioral challenges. Early intervention for children with ASD can help to improve their intellectual ability and reduces autistic symptoms. Multiple clinical researches have suggested that facial phenotypic differences exist between ASD children and typically developing (TD) children. In this research, we propose a practical ASD screening solution using facial images through applying VGG16 transfer learning-based deep learning to a unique ASD dataset of clinically diagnosed children that we collected. Our model produced a 95% classification accuracy and 0.95 F1-score. The only other reported study using facial images to detect ASD was based on the Kaggle ASD Facial Image Dataset, which is an internet search-produced, low-quality, and low-fidelity dataset. Our results support the clinical findings of facial feature differences between children with ASD and TD children. The high F1-score achieved indicates that it is viable to use deep learning models to screen children with ASD. We concluded that the racial and ethnic-related factors in deep-learning based ASD screening with facial images are critical to solution viability and accuracy.",
+  "doi": "10.3390/brainsci11111446",
+  "arxiv_id": null,
+  "venue": "Brain sciences",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "34827443"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.3390/brainsci11111446"
+}

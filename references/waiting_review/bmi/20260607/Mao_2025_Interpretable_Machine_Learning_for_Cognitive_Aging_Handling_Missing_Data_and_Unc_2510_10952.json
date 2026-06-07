@@ -1,0 +1,24 @@
+{
+  "title": "Interpretable Machine Learning for Cognitive Aging: Handling Missing Data and Uncovering Social Determinant",
+  "authors": [
+    "Xi Mao",
+    "Zhendong Wang",
+    "Jingyu Li",
+    "Lingchao Mao",
+    "Utibe Essien",
+    "Hairong Wang",
+    "Xuelei Sherry Ni"
+  ],
+  "year": 2025,
+  "abstract": "Early detection of Alzheimer's disease (AD) is crucial because its neurodegenerative effects are irreversible, and neuropathologic and social-behavioral risk factors accumulate years before diagnosis. Identifying higher-risk individuals earlier enables prevention, timely care, and equitable resource allocation. We predict cognitive performance from social determinants of health (SDOH) using the NIH NIA-supported PREPARE Challenge Phase 2 dataset derived from the nationally representative Mex-Cog cohort of the 2003 and 2012 Mexican Health and Aging Study (MHAS).\n  Data: The target is a validated composite cognitive score across seven domains-orientation, memory, attention, language, constructional praxis, and executive function-derived from the 2016 and 2021 MHAS waves. Predictors span demographic, socioeconomic, health, lifestyle, psychosocial, and healthcare access factors.\n  Methodology: Missingness was addressed with a singular value decomposition (SVD)-based imputation pipeline treating continuous and categorical variables separately. This approach leverages latent feature correlations to recover missing values while balancing reliability and scalability. After evaluating multiple methods, XGBoost was chosen for its superior predictive performance.\n  Results and Discussion: The framework outperformed existing methods and the data challenge leaderboard, demonstrating high accuracy, robustness, and interpretability. SHAP-based post hoc analysis identified top contributing SDOH factors and age-specific feature patterns. Notably, flooring material emerged as a strong predictor, reflecting socioeconomic and environmental disparities. Other influential factors, age, SES, lifestyle, social interaction, sleep, stress, and BMI, underscore the multifactorial nature of cognitive aging and the value of interpretable, data-driven SDOH modeling.",
+  "doi": null,
+  "arxiv_id": "2510.10952",
+  "venue": "arXiv",
+  "citation_count": null,
+  "source": "arxiv",
+  "pdf_url": "https://arxiv.org/pdf/2510.10952v1",
+  "relevance_score": null,
+  "extra": {},
+  "pdf_status": "deferred",
+  "primary_id": "arxiv:2510.10952"
+}

@@ -1,0 +1,25 @@
+{
+  "title": "Real-world performance of Face2Gene and GestaltMatcher for facial image analysis in a large Indian ethnic cohort.",
+  "authors": [
+    "Gupta S",
+    "Bawa P",
+    "Kumari A",
+    "Panigrahi I",
+    "Srivastava P",
+    "Kaur A"
+  ],
+  "year": 2025,
+  "abstract": "BACKGROUND: Face2Gene and GestaltMatcher are two artificial intelligence-based tools for facial image analysis and syndrome suggestion. MATERIAL AND METHODS: Frontal photographs of patients (one photograph per patient) with molecularly confirmed diagnosis were uploaded on Face2Gene and GestaltMatcher. The position at which the correct syndrome was listed, and the gestalt scores were noted. The top-3,10 and 30 accuracy was calculated. RESULTS: A total of 159 patient photographs of 72 different syndromes were analysed. The top-3 accuracy of Face2Gene vs GestaltMatcher was 77 % and 58 % and top-10 accuracy 85 % and 71 % respectively. GestaltMatcher could correctly identify in the top-10 category, 2 out of 7 (28.5 %) monogenic syndromes for which Face2Gene did not have a composite model. Both the tools performed significantly better for rare syndromes as compared to ultrarare syndromes. We also demonstrate through two of our cases the tools' potential to support variant interpretation in clinical practice. CONCLUSION: The combined use of Face2Gene and GestaltMatcher has a considerable potential to support the diagnostic decision process in routine clinical settings.",
+  "doi": "10.1016/j.ejmg.2025.105063",
+  "arxiv_id": null,
+  "venue": "European journal of medical genetics",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "41318057"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.1016/j.ejmg.2025.105063"
+}

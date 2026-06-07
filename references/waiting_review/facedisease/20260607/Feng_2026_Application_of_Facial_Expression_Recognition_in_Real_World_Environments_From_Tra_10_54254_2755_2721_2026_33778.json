@@ -1,0 +1,20 @@
+{
+  "title": "Application of Facial Expression Recognition in Real-World Environments: From Traditional Convolutional Networks to Vision Transformers",
+  "authors": [
+    "Zhenling Feng"
+  ],
+  "year": 2026,
+  "abstract": "Facial expression recognition (FER), as the core technology in the cross field of emotional computing and computer vision, has important theoretical significance and practical application value in the real environment. It not only promotes the theoretical deepening of emotional computing, human-computer interaction and other related disciplines, but also provides emotional perception support for multi domain scenes, and helps to realize a more intelligent and humanistic interaction mode. Firstly, this paper briefly describes the research significance and application value of facial expression recognition in real environment; Then, the evolution of FER technology is sorted out, and the technical iteration from traditional convolutional neural network (CNN) to vision transformer (VIT) is analyzed. The unique advantages of the attention mechanism supported by ViT in capturing global features and modeling long-distance dependence are clarified, as well as its specific mechanism in dealing with complex challenges such as light change, face occlusion, pose shift and so on in the real environment; Then, it systematically summarizes the core challenges faced by FER research in the current real environment, and sorts out the frontier research directions and development trends such as multimodal fusion; Finally, the key problems that have not been solved in this field are pointed out, and the future technology development trend is prospected.",
+  "doi": "10.54254/2755-2721/2026.33778",
+  "arxiv_id": null,
+  "venue": "Applied and Computational Engineering",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://ace.ewapub.com/article/view/33778.pdf",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W7162314911"
+  },
+  "pdf_status": "deferred",
+  "primary_id": "doi:10.54254/2755-2721/2026.33778"
+}

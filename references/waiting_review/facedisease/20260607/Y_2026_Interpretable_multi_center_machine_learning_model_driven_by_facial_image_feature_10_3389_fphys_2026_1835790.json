@@ -1,0 +1,28 @@
+{
+  "title": "Interpretable multi-center machine learning model driven by facial image features for non-invasive early risk assessment of lung cancer.",
+  "authors": [
+    "Shi Y",
+    "Chun Y",
+    "Zhang S",
+    "Xu X",
+    "Chen W",
+    "Jiao L",
+    "Wang L",
+    "Tu L",
+    "Xu J"
+  ],
+  "year": 2026,
+  "abstract": "BACKGROUND: Early identification of lung cancer is critical for improving patient survival and prognosis. Conventional pathological biopsy is invasive, and computed tomography (CT) involves ionizing radiation risks. Facial imaging, as a non-invasive and accessible biological signal, is a promising novel approach for lung cancer auxiliary diagnosis. OBJECTIVE: To develop and validate a non-invasive lung cancer auxiliary diagnosis model based on facial image features, and explore the value of facial imaging in lung cancer early screening. METHODS: Multi-center patients with benign pulmonary nodules and lung cancer were enrolled in this study. Facial images were collected via the TFDA-1 Digital Tongue and Face Diagnosis Instrument, with 124 features extracted. Logistic regression was used for feature selection and simple correlation analysis of facial image features, based on which four machine learning models (XGBoost, LightGBM, SVM, GBDT) were constructed. Model training and optimization were performed using 10-fold cross-validation combined with grid search for hyperparameter tuning. Model performance was comprehensively evaluated using Accuracy, Precision, Sensitivity, Specificity, F1-Score, area under the curve (AUC), average precision (AP), and Brier Score; pairwise comparisons of AUCs among models were conducted using the DeLong test. Clinical utility was assessed using calibration curves and decision curves; model interpretability was analyzed via the SHapley Additive exPlanations (SHAP) method; and generalization capability was validated using an independent external validation cohort. RESULTS: The XGBoost model achieved the best overall performance, with an AUC of 0.900 and accuracy of 0.807 in the internal test set, and an AUC of 0.906 and accuracy of 0.813 in the external validation set, demonstrating favorable generalization stability. DeLong test showed that XGBoost achieved the highest AUC in the internal test set without significant differences among models (all P ≥ 0.05). In external validation, its AUC was significantly higher than GBDT, LightGBM (P < 0.001) and SVM (P < 0.05). CONCLUSION: We successfully constructed a non-invasive auxiliary screening model for lung cancer using facial image features. Facial imaging shows significant value in early lung cancer screening, providing a novel, accessible strategy to improve the popularization and availability of lung cancer early screening in clinical practice.",
+  "doi": "10.3389/fphys.2026.1835790",
+  "arxiv_id": null,
+  "venue": "Frontiers in physiology",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "42222284"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.3389/fphys.2026.1835790"
+}

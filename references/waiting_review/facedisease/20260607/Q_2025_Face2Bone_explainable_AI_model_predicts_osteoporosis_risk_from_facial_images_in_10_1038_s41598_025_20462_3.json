@@ -1,0 +1,26 @@
+{
+  "title": "Face2Bone explainable AI model predicts osteoporosis risk from facial images in proof of concept study.",
+  "authors": [
+    "Liang Q",
+    "Zhao J",
+    "Yang F",
+    "Chen X",
+    "Song Y",
+    "Shi Z",
+    "Pang Q"
+  ],
+  "year": 2025,
+  "abstract": "OBJECTIVES: BMI and age are associated with the risk of osteoporosis (OP). The dynamic facial aging process involves changes in skin, muscle, fat, and facial bone structures, with facial skeletal aging affecting facial contours through volumetric reduction and morphological alterations. This study aims to develop and validate an explainable AI predictive model for opportunistic osteoporosis screening based on facial images. BACKGROUND: Effective identification of populations at risk for low bone mass and osteoporosis is crucial for implementing individualized screening strategies and subsequent orthopedic care. Although artificial intelligence technology demonstrates broad prospects and excellent performance in disease prediction using imaging data, its application in osteoporosis risk prediction utilizing facial data remains insufficiently explored and developed. We propose an explainable artificial intelligence (XAI) deep learning model named Face2Bone for osteoporosis risk prediction and opportunistic screening of at-risk populations based on 2D facial images. In this study, we conducted proof-of-concept validation by establishing predictive models and integrating XAI methods to identify and comparatively analyze facial phenotypic factors associated with osteoporosis. METHODS: An observational study of 1167 patients undergoing DXA (in March-August 2024) was conducted at Ningbo No.2 Hospital. Standardization for facial images and the collection of clinical data were performed. A preprocessing pipeline was created to remove the background noise from the facial images. A hybrid deep learning model was constructed with a pre-trained FaceNet, a custom Frequency Sparse Attention (FSA) module, a Transformer and CNN backbones, and a Kolmogorov-Arnold Networks (KAN) as the classifier. The models' interpretability was analyzed using SHAP and CRAFT interpretation methods. RESULTS: The Face2Bone model demonstrated superior performance in the validation set, achieving accuracy, precision, recall, and F1-score of 92.85%, 92.94%, 92.85%, and 92.83%, respectively, with an AUC of 98.56%, outperforming mainstream models including VGG, ViT, and ResNet. The model maintained excellent classification performance and calibration across both male and female subgroups (ECE = 0.027, Brier score = 0.050, all subgroup Hosmer-Lemeshow test [Formula: see text]-values > 0.05). Explainability analysis using SHAP and CRAFT revealed, for the first time, significant facial image characteristics across three bone mass states (normal, osteopenia, osteoporosis), confirming morphological consistency between model classifications and facial skeletal aging patterns. CONCLUSION: We created and validated the first explainable deep learning model for osteoporosis risk classification using facial images. Facial characteristics associated with bone loss represent changes to the skeleton that are expected with normal aging. This non-invasive technology allows for opportunistic screening and early intervention.",
+  "doi": "10.1038/s41598-025-20462-3",
+  "arxiv_id": null,
+  "venue": "Scientific reports",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "41266389"
+  },
+  "pdf_status": "ok",
+  "primary_id": "doi:10.1038/s41598-025-20462-3"
+}

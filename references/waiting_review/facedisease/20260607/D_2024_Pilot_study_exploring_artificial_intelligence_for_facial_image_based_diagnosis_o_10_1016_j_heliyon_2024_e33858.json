@@ -1,0 +1,24 @@
+{
+  "title": "Pilot study exploring artificial intelligence for facial-image-based diagnosis of Marfan syndrome.",
+  "authors": [
+    "Saksenberg D",
+    "Mukherjee S",
+    "Zafar MA",
+    "Ziganshin B",
+    "Elefteriades JA"
+  ],
+  "year": 2024,
+  "abstract": "BACKGROUND: Marfan Syndrome (MFS), a genetic disorder impacting connective tissue, manifests in a wide array of phenotypes which can affect numerous bodily systems, especially the thoracic aorta. The syndrome often presents distinct facial features that potentially allow for diagnostic clinical recognition. Herein, we explore the potential of Artificial Intelligence (AI) in diagnosing Marfan syndrome from ordinary facial images, as assessed by overall accuracy, F1 score, and area under the ROC curve. METHODS: This study explores the utilization of Convolutional Neural Networks (CNN) for MFS identification through facial images, offering a novel, non-invasive, automated, and computerized diagnostic approach. The research examines the accuracy of Neural Networks in the diagnosis of Marfan Disease from ordinary on-line facial images. The model was trained on 80 % of 672 facial images (182 Marfan and 490 control). The other 20 % of images were used as the test set. RESULTS: Overall accuracy was 98.5 % (0 % false positive, 2 % false negative). F1 score was 97 % for Marfan facies and 99 % for non-Marfan facies. Area under the ROC curve was 100 %. CONCLUSION: An Artificial Intelligence (AI) program was able to distinguish Marfan from non-Marfan facial images (from ordinary on-line photographs) with an extremely high degree of accuracy. Clinical usefulness of this program is anticipated. However, due to the limited and preliminary nature of this work, this should be viewed as only a pilot study.",
+  "doi": "10.1016/j.heliyon.2024.e33858",
+  "arxiv_id": null,
+  "venue": "Heliyon",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "39055814"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.1016/j.heliyon.2024.e33858"
+}

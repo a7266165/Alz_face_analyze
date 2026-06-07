@@ -1,0 +1,31 @@
+{
+  "title": "Artificial intelligence applications in cleft lip and palate care: a narrative review of diagnostic, therapeutic, and predictive outcomes",
+  "authors": [
+    "Nazila Farnoush",
+    "Amirhossein Rahmani",
+    "Elnaz Foroughi",
+    "Naeimeh Kheirandish",
+    "Mohammad Golshan-Tafti",
+    "Reza Bahrami",
+    "Amirhossein Shahbazi",
+    "Samira Soleymani",
+    "Amirmasoud Shiri",
+    "Ali Masoudi",
+    "Kazem Aghili",
+    "Hossein Neámatzadeh"
+  ],
+  "year": 2026,
+  "abstract": "Abstract Background Cleft lip and palate (CLP) represents the most prevalent congenital craniofacial anomaly, affecting approximately 1 in 700 live births worldwide. Artificial intelligence (AI) technologies, encompassing deep learning (DL), machine learning (ML), and advanced computational analytics, have emerged as potentially transformative tools across the spectrum of cleft care. This narrative review evaluates the current evidence on AI applications in CLP management, spanning diagnostic precision, surgical planning, outcome assessment, and healthcare delivery optimization. Methods A comprehensive narrative review was conducted across PubMed, Scopus, Web of Science, IEEE Xplore, Google Scholar, and UpToDate databases through April 2026. No protocol was registered for this review, as it was not designed as a systematic review or protocol-based study. This review employed a selective synthesis approach, systematically identifying relevant studies investigating AI applications in CLP diagnosis, prediction, surgical planning, speech assessment, aesthetic evaluation, presurgical infant orthopaedics, and economic impact. Studies were analyzed with emphasis on quantitative performance metrics including accuracy, sensitivity, specificity, area under the receiver operating characteristic curve (AUC), and F1 scores. Quality assessment was performed using PROBAST + AI criteria where applicable for prediction model studies. As a narrative review, PRISMA guidelines and formal risk-of-bias assessment across all included studies were not applied. Results Contemporary AI systems demonstrate promising performance across multiple clinical domains. Deep learning models for diagnostic imaging achieve AUC values of 0.93—0.95 in specific studies, with some models showing performance comparable to or exceeding radiologist performance in controlled settings. Prenatal prediction models utilizing multilayer perceptrons have reported accuracies up to 92.6% with AUC of 0.98 in specific validation cohorts. AI-based prenatal ultrasound utilizing YOLOv5 achieved AUC of 0.971 for standard coronal nasal-lip sections in a single-center study. Machine learning-based genetic risk assessment has shown accuracies of 94—99% in specific population studies. Three-dimensional volumetric assessment using U-Net architectures has achieved up to 96% segmentation accuracy in research settings. Automated speech analysis systems demonstrate concordance rates of 0.797—0.975 with expert clinicians in validation studies. Vision Transformer-based classification models have achieved up to 86.6% accuracy for CLP subtype identification in limited datasets. Economic analyses suggest cost-effectiveness ratios as favorable as $62.8 per averted disability-adjusted life year (DALY) in specific program contexts. Conclusions AI technologies show substantial promise for enhancing clinical utility across the continuum of CLP care, with preliminary evidence demonstrating improvements in diagnostic accuracy, treatment planning, and outcome assessment. However, significant challenges remain regarding clinical validation, regulatory approval, integration with existing healthcare systems, and equitable access. The convergence of interpretable AI algorithms, advanced imaging modalities, and precision medicine approaches may contribute to democratizing high-quality cleft care while maintaining the multidisciplinary, patient-centered framework essential for optimal outcomes. Future research should prioritize multi-institutional validation, diverse population representation, and prospective clinical trials to establish real-world effectiveness.",
+  "doi": "10.1186/s43054-026-00554-z",
+  "arxiv_id": null,
+  "venue": "Egyptian Pediatric Association Gazette",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://link.springer.com/content/pdf/10.1186/s43054-026-00554-z.pdf",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W7162489865"
+  },
+  "pdf_status": "deferred",
+  "primary_id": "doi:10.1186/s43054-026-00554-z"
+}

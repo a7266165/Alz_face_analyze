@@ -1,0 +1,24 @@
+{
+  "title": "Innovative Strategies for Early Autism Diagnosis: Active Learning and Domain Adaptation Optimization.",
+  "authors": [
+    "Alam MS",
+    "Elsheikh EAA",
+    "Suliman FM",
+    "Rashid MM",
+    "Faizabadi AR"
+  ],
+  "year": 2024,
+  "abstract": "The early diagnosis of autism spectrum disorder (ASD) encounters challenges stemming from domain variations in facial image datasets. This study investigates the potential of active learning, particularly uncertainty-based sampling, for domain adaptation in early ASD diagnosis. Our focus is on improving model performance across diverse data sources. Utilizing the Kaggle ASD and YTUIA datasets, we meticulously analyze domain variations and assess transfer learning and active learning methodologies. Two state-of-the-art convolutional neural networks, Xception and ResNet50V2, pretrained on distinct datasets, demonstrate noteworthy accuracies of 95% on Kaggle ASD and 96% on YTUIA, respectively. However, combining datasets results in a modest decline in average accuracy, underscoring the necessity for effective domain adaptation techniques. We employ uncertainty-based active learning to address this, which significantly mitigates the accuracy drop. Xception and ResNet50V2 achieve 80% and 79% accuracy when pretrained on Kaggle ASD and applying active learning on YTUIA, respectively. Our findings highlight the efficacy of uncertainty-based active learning for domain adaptation, showcasing its potential to enhance accuracy and reduce annotation needs in early ASD diagnosis. This study contributes to the growing body of literature on ASD diagnosis methodologies. Future research should delve deeper into refining active learning strategies, ultimately paving the way for more robust and efficient ASD detection tools across diverse datasets.",
+  "doi": "10.3390/diagnostics14060629",
+  "arxiv_id": null,
+  "venue": "Diagnostics (Basel, Switzerland)",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "38535049"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.3390/diagnostics14060629"
+}

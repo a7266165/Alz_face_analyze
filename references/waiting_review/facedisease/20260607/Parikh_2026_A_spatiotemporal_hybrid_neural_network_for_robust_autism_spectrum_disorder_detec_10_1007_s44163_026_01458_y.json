@@ -1,0 +1,23 @@
+{
+  "title": "A spatiotemporal hybrid neural network for robust autism spectrum disorder detection via eye tracking feature fusion",
+  "authors": [
+    "Jolly Parikh",
+    "Shivani Goyal",
+    "Yugnanda Malhotra",
+    "Wai Yie Leong"
+  ],
+  "year": 2026,
+  "abstract": "Autism Spectrum Disorder (ASD) refers to a neurodevelopmental disorder that results in difficulties in social interaction, communication, and several other behaviors. Clinical observations suffer from being time-consuming and inconsistent across different observers, thereby limiting their effectiveness in early screening. Therefore, there is an increasing demand for more objective and comprehensive solutions. This study proposes a deep learning-based approach that leverages eye-tracking data to diagnose ASD by distinguishing characteristic gaze patterns between individuals with ASD and those with neurotypical development. From the raw eye-tracking data, key gaze features were extracted, including pupil oscillations, the duration of fixations, and saccadic eye movements. Algorithms such as Logistic Regression, Random Forest, and XGBoost were used along with the deep learning techniques like Feedforward Neural Network (FNN), Long Short-Term Memory (LSTM), and CNN-LSTM. These models were trained to capture the spatial and temporal aspects of the gaze data. CNN-LSTM yielded the highest average classification accuracy of 87.41% with an F1 score of 0.86; precision of 0.87; recall of 0.86; specificity of 91.14%; sensitivity of 87.50%; AUC of 0.9530 and the best validation loss of 0.2831 which indicates the model’s good generalization ability while maintaining balance between the two classes. Article highlights the integration between ML/DL and eye-tracking data for the screening of ASD. The researchers propose a diagnostic tool for ASD, for future development of automated, objective, and accessible assessment methods.",
+  "doi": "10.1007/s44163-026-01458-y",
+  "arxiv_id": null,
+  "venue": "Discover Artificial Intelligence",
+  "citation_count": 0,
+  "source": "openalex",
+  "pdf_url": "https://link.springer.com/content/pdf/10.1007/s44163-026-01458-y.pdf",
+  "relevance_score": null,
+  "extra": {
+    "openalex_id": "https://openalex.org/W7162944356"
+  },
+  "pdf_status": "deferred",
+  "primary_id": "doi:10.1007/s44163-026-01458-y"
+}

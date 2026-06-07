@@ -1,0 +1,28 @@
+{
+  "title": "Artificial intelligence facial recognition system for diagnosis of endocrine and metabolic syndromes based on a facial image database.",
+  "authors": [
+    "Wu D",
+    "Qiang J",
+    "Hong W",
+    "Du H",
+    "Yang H",
+    "Zhu H",
+    "Pan H",
+    "Shen Z",
+    "Chen S"
+  ],
+  "year": 2024,
+  "abstract": "AIM: To build a facial image database and to explore the diagnostic efficacy and influencing factors of the artificial intelligence-based facial recognition (AI-FR) system for multiple endocrine and metabolic syndromes. METHODS: Individuals with multiple endocrine and metabolic syndromes and healthy controls were included from public literature and databases. In this facial image database, facial images and clinical data were collected for each participant and dFRI (disease facial recognition intensity) was calculated to quantify facial complexity of each syndrome. AI-FR diagnosis models were trained for each disease using three algorithms: support vector machine (SVM), principal component analysis k-nearest neighbor (PCA-KNN), and adaptive boosting (AdaBoost). Diagnostic performance was evaluated. Optimal efficacy was achieved as the best index among the three models. Effect factors of AI-FR diagnosis were explored with regression analysis. RESULTS: 462 cases of 10 endocrine and metabolic syndromes and 2310 controls were included into the facial image database. The AI-FR diagnostic models showed diagnostic accuracies of 0.827-0.920 with SVM, 0.766-0.890 with PCA-KNN, and 0.818-0.935 with AdaBoost. Higher dFRI was associated with higher optimal area under the curve (AUC) (P = 0.035). No significant correlation was observed between the sample size of the training set and diagnostic performance. CONCLUSIONS: A multi-ethnic, multi-regional, and multi-disease facial database for 10 endocrine and metabolic syndromes was built. AI-FR models displayed ideal diagnostic performance. dFRI proved associated with the diagnostic performance, suggesting inherent facial features might contribute to the performance of AI-FR models.",
+  "doi": "10.1016/j.dsx.2024.103003",
+  "arxiv_id": null,
+  "venue": "Diabetes & metabolic syndrome",
+  "citation_count": null,
+  "source": "pubmed",
+  "pdf_url": null,
+  "relevance_score": null,
+  "extra": {
+    "pmid": "38615568"
+  },
+  "pdf_status": "no_oa",
+  "primary_id": "doi:10.1016/j.dsx.2024.103003"
+}
