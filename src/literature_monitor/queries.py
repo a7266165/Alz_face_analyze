@@ -1,12 +1,7 @@
-"""Topic-level keyword queries for the literature monitor.
+"""各主題的關鍵字查詢與 slot 排程。
 
-Each topic has multiple query strings — slot scheduling rotates through them
-so that a single day's 10 runs cover broad + narrow angles.
-
-Conventions:
-- Boolean syntax follows Semantic Scholar / OpenAlex style (AND / OR / quoted phrases).
-  arXiv and PubMed clients translate to their native syntax in sources.py.
-- Keep each list 6-10 entries. Order: broad -> narrow.
+每主題多條 query（broad→narrow），slot 輪流取用；Boolean 用 S2/OpenAlex 風格，
+arXiv/PubMed 由 sources.py 轉成各自語法。
 """
 from __future__ import annotations
 
@@ -83,14 +78,9 @@ TOPIC_QUERIES: dict[str, list[str]] = {
 
 
 # ---------------------------------------------------------------------------
-# Slot -> (topic, sources, query_index) mapping
+# slot → (topics, sources, query_index)：每天 10 slot
+#   0..3 各主題 arxiv+s2 broad；4..7 各主題 pubmed+openalex；8 全主題 narrow；9 只出 digest
 # ---------------------------------------------------------------------------
-# 10 slots / day. Each slot picks one topic + a subset of sources + a query.
-# Rotation strategy:
-#   slot 0..3  -> each topic, arxiv + s2,    broad query (idx 0)
-#   slot 4..7  -> each topic, pubmed + openalex, broad query (idx 1)
-#   slot 8     -> all topics x narrow query (idx 2)
-#   slot 9     -> digest only (no fetch)
 SLOT_PLAN: dict[int, dict] = {
     0: {"topics": ["embedding"], "sources": ["arxiv", "s2"], "query_idx": 0},
     1: {"topics": ["asymmetry"], "sources": ["arxiv", "s2"], "query_idx": 0},

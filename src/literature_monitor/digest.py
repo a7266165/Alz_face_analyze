@@ -1,8 +1,4 @@
-"""Markdown digest writers for the literature monitor.
-
-- `append_slot_digest(...)` after each slot run records what was newly added.
-- `write_daily_summary(...)` (slot 9) aggregates the day's results.
-"""
+"""Markdown digest：append_slot_digest（每 slot 記新增）、write_daily_summary（slot 9 彙總當日）。"""
 from __future__ import annotations
 
 import json
@@ -10,7 +6,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Iterable
 
-from scripts.literature_monitor.sources import PaperRecord
+from .sources import PaperRecord
 
 
 def _today() -> str:
@@ -58,10 +54,7 @@ def write_daily_summary(
     digest_dir: Path,
     waiting_review_dir: Path,
 ) -> Path:
-    """Aggregate today's per-topic counts and top-5 most-cited papers.
-
-    Reads JSON metadata sidecars in `waiting_review_dir/<topic>/<TODAY>/*.json`.
-    """
+    """彙總當日各主題數量與被引前 5；讀 waiting_review/<topic>/<今日>/*.json。"""
     today = _today()
     out = digest_dir / f"{today}_summary.md"
     by_topic: dict[str, list[dict]] = {}

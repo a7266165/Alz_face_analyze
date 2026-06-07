@@ -1,12 +1,7 @@
-"""Dedup state for the literature monitor.
+"""去重狀態 + sidecar JSON 讀寫。
 
-`_state.json` records all paper IDs that have been seen by any prior run, so
-subsequent runs do not re-download them. Existing `references/<topic>/*.pdf`
-files are also cross-checked via a sidecar index `references/_indexed.json`.
-
-Also tracks pagination cursors per (source, topic, query) so successive sweeps
-walk through the back-catalog from newest to oldest (or by relevance rank)
-instead of always re-fetching the same top-N.
+_state.json 記所有看過的 paper id（避免重抓），並用 _indexed.json 對既有
+references/<topic>/*.pdf 做粗比對；另記 (source, topic, query) 的分頁 cursor。
 """
 from __future__ import annotations
 
@@ -16,7 +11,6 @@ import logging
 import re
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Iterable
 
 logger = logging.getLogger(__name__)
 
@@ -127,14 +121,10 @@ def _norm_title(t: str) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Builder for references/_indexed.json (one-shot, scans existing references PDFs)
+# references/_indexed.json 建置 + sidecar JSON 讀寫
 # ---------------------------------------------------------------------------
 def build_reference_index(references_dir: Path) -> dict:
-    """Scan references/<topic>/*.pdf and produce an index of titles.
-
-    Title is best-effort extracted from filename (stem). This is used for
-    coarse dedup against existing references.
-    """
+    """掃 references/<topic>/*.pdf，從檔名粗抽 title 建索引（供粗比對去重）。"""
     titles: list[str] = []
     paths: list[str] = []
     for sub in references_dir.iterdir():
@@ -160,3 +150,17 @@ def write_reference_index(references_dir: Path) -> Path:
     out = references_dir / INDEXED_FILE
     out.write_text(json.dumps(idx, indent=2, ensure_ascii=False), encoding="utf-8")
     return out
+
+
+def iter_sidecars(waiting_review_dir: Path):
+    """走訪 waiting_review/<topic>/<date>/*.json，yield (path, meta)；壞檔略過。"""
+    for path in waiting_review_dir.glob("*/*/*.json"):
+        try:
+            yield path, json.loads(path.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+
+
+def write_meta(path: Path, meta: dict) -> None:
+    """寫回 JSON sidecar。"""
+    path.write_text(json.dumps(meta, indent=2, ensure_ascii=False), encoding="utf-8")

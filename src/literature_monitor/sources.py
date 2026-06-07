@@ -1,14 +1,6 @@
-"""API clients for paper metadata sources.
+"""論文來源 API client：各來源都回統一的 PaperRecord，下游不分來源。
 
-All clients return a list of `PaperRecord` objects with a unified schema, so
-downstream code (download / state / digest) does not care which source it
-came from.
-
-Supported sources:
-- arxiv     : arXiv (uses `arxiv` python package)
-- s2        : Semantic Scholar Graph API
-- pubmed    : NCBI E-utilities (esearch + esummary)
-- openalex  : OpenAlex
+來源：arxiv / s2（Semantic Scholar）/ pubmed / openalex。
 """
 from __future__ import annotations
 
@@ -58,13 +50,7 @@ def _get(
     max_attempts: int = 4,
     max_wait: int = 30,
 ) -> requests.Response:
-    """GET with exponential backoff on 429 / 5xx / network errors.
-
-    Default: 2s -> 4s -> 8s waits, max 4 attempts (~15s total budget).
-    Pass max_attempts=6, max_wait=60 for endpoints that share rate-limit
-    pools (e.g. unauthenticated Semantic Scholar) to ride out transient
-    saturation.
-    """
+    """GET，對 429/5xx/網路錯誤指數退避重試；共用 rate-limit 的端點（如未認證 S2）可調大 max_attempts/max_wait。"""
 
     @retry(
         retry=retry_if_exception(_is_retryable),
@@ -110,14 +96,7 @@ class PaperRecord:
         return f"title:{norm[:120]}"
 
     def all_ids(self) -> list[str]:
-        """All known IDs for this record, used for cross-source dedup aliases.
-
-        When the same paper appears from multiple sources with different
-        identifier coverage (e.g. arXiv returns arxiv_id only, S2 returns
-        arxiv_id+doi, OpenAlex returns doi only), registering ALL ids as
-        aliases lets later sources hit the dedup hash regardless of which
-        id field they happen to populate.
-        """
+        """此 record 的所有已知 ID，供跨來源 dedup 別名（不同來源填的 id 欄不同，全登記才能互相命中）。"""
         ids: list[str] = []
         if self.arxiv_id:
             ids.append(f"arxiv:{self.arxiv_id}")
@@ -131,6 +110,24 @@ class PaperRecord:
         if norm:
             ids.append(f"title:{norm[:120]}")
         return ids
+
+    @classmethod
+    def from_dict(cls, meta: dict) -> "PaperRecord":
+        """從 JSON sidecar 還原 record（供 dedup / 下載輔助用）。"""
+        return cls(
+            title=meta.get("title", ""),
+            authors=meta.get("authors") or [],
+            year=meta.get("year"),
+            abstract=meta.get("abstract", ""),
+            doi=meta.get("doi"),
+            arxiv_id=meta.get("arxiv_id"),
+            venue=meta.get("venue"),
+            citation_count=meta.get("citation_count"),
+            source=meta.get("source", ""),
+            pdf_url=meta.get("pdf_url"),
+            relevance_score=meta.get("relevance_score"),
+            extra=meta.get("extra") or {},
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -483,3 +480,75 @@ def search(source: str, query: str, max_results: int = 25, year_from: int = 2018
     if fn is None:
         raise ValueError(f"unknown source: {source}")
     return fn(query, max_results=max_results, year_from=year_from, offset=offset)
+
+
+# ---------------------------------------------------------------------------
+# 單篇 abstract 補抓（供 curate.fill_missing_abstracts 用）
+# ---------------------------------------------------------------------------
+def fetch_openalex_abstract(openalex_id: str) -> str:
+    """openalex_id 形如 'https://openalex.org/W123'。"""
+    if not openalex_id:
+        return ""
+    work_id = openalex_id.rsplit("/", 1)[-1]
+    try:
+        time.sleep(0.2)
+        r = _get(
+            f"https://api.openalex.org/works/{work_id}",
+            params={"mailto": "a1234567891934@gmail.com"},
+            headers={"User-Agent": DEFAULT_USER_AGENT},
+        )
+        return _decode_inverted_index(r.json().get("abstract_inverted_index"))
+    except Exception as e:
+        logger.warning("openalex fetch %s failed: %s", work_id, e)
+        return ""
+
+
+def fetch_arxiv_abstract(arxiv_id: str) -> str:
+    if not arxiv_id:
+        return ""
+    import xml.etree.ElementTree as ET
+    try:
+        time.sleep(3)  # arxiv courtesy
+        r = _get(
+            "https://export.arxiv.org/api/query",
+            params={"id_list": arxiv_id},
+            headers={"User-Agent": DEFAULT_USER_AGENT},
+        )
+        root = ET.fromstring(r.text)
+        ns = {"a": "http://www.w3.org/2005/Atom"}
+        for entry in root.findall("a:entry", ns):
+            summary = entry.find("a:summary", ns)
+            if summary is not None and summary.text:
+                return summary.text.strip()
+    except Exception as e:
+        logger.warning("arxiv fetch %s failed: %s", arxiv_id, e)
+    return ""
+
+
+def fetch_s2_abstract(doi: str | None, arxiv_id: str | None, s2_id: str | None) -> str:
+    """依序試 S2 paperId → DOI → arXiv；有 S2_API_KEY 則帶上。"""
+    headers = {"User-Agent": DEFAULT_USER_AGENT}
+    api_key = os.environ.get("S2_API_KEY")
+    if api_key:
+        headers["x-api-key"] = api_key
+    candidates = []
+    if s2_id:
+        candidates.append(s2_id)
+    if doi:
+        candidates.append(f"DOI:{doi}")
+    if arxiv_id:
+        candidates.append(f"arXiv:{arxiv_id}")
+    for cand in candidates:
+        try:
+            time.sleep(1.1)
+            r = _get(
+                f"https://api.semanticscholar.org/graph/v1/paper/{cand}",
+                params={"fields": "abstract"},
+                headers=headers,
+            )
+            abst = (r.json() or {}).get("abstract") or ""
+            if abst:
+                return abst.strip()
+        except Exception as e:
+            logger.debug("s2 fetch %s failed: %s", cand, e)
+    return ""
