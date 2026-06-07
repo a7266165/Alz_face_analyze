@@ -28,6 +28,7 @@ from .scorer import (
 )
 from .train import train
 from .report import report
+from .paths import clf_param_label, oof_dir, oof_paths
 
 ALL_METHODS = CLASSIFIERS + ASYMMETRY_METHODS
 
@@ -43,4 +44,7 @@ __all__ = [
     "build_scorer",
     "train",
     "report",
+    "clf_param_label",
+    "oof_dir",
+    "oof_paths",
 ]

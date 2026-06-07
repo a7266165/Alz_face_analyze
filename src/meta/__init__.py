@@ -1,12 +1,12 @@
 """Meta：精簡的跨 modality stacking（embedding-original + asymmetry OOF + 人口學 → TabPFN v3）。"""
-from src.meta.tabpfn_meta import (
+from src.meta.classifier import make_tabpfn_v3
+from src.meta.train import (
     ASYM_METHODS,
     ASYM_VARIANTS,
     FEATURE_SETS,
     add_asym,
     base_oof,
     build_base_table,
-    make_tabpfn_v3,
     slice_xy,
     subject_demographics,
     sweep,

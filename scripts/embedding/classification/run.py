@@ -11,7 +11,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))  # script
 from _paths import PROJECT_ROOT  # noqa: F401
 
 from src.config import (
-    embedding_classification_path,
     EMBEDDING_CLASSIFICATION_REFACTOR_DIR,
     P_VISIT_TOKENS, P_SCORE_TOKENS, HC_VISIT_TOKENS, HC_SCORE_TOKENS,
     DEFAULT_COHORT_TOKENS,
@@ -19,8 +18,9 @@ from src.config import (
 from src.common.cohort import cohort_list
 from src.common.features import load_feature_matrix
 from src.embedding.classification import (
-    ALL_METHODS, CLASSIFIERS, DIM_REDUCERS, DEFAULT_XGB_PARAMS,
-    build_reducer, build_classifier, build_scorer, reducer_label, train, report,
+    ALL_METHODS, CLASSIFIERS, DIM_REDUCERS,
+    build_reducer, build_classifier, build_scorer, train, report,
+    clf_param_label, oof_dir, oof_paths,
 )
 
 logging.basicConfig(level=logging.INFO,
@@ -40,46 +40,28 @@ XGB_GRID = [
 ]
 
 
-def _clf_param_label(model, lr_C, xgb_params):
-    """classifier 的 hyperparameter 路徑子層標籤(scorer 無 → None)。
-    logistic → C_<value>;xgb → ne_<n>_md_<d>_lr_<lr>(對齊 legacy 命名)。"""
-    if model == "logistic":
-        return f"C_{lr_C}"
-    if model == "xgb":
-        p = xgb_params or DEFAULT_XGB_PARAMS
-        return f"ne_{p['n_estimators']}_md_{p['max_depth']}_lr_{p['learning_rate']}"
-    return None
+# 路徑定位已上提到 src.embedding.classification(寫端/讀端單一真相);此處保留舊名委派。
+_clf_param_label = clf_param_label
 
 
 def cell_out_dir(cohort, bg_mode, embedding, variant, photo_mode, reducer, model,
                  direction, *, pca_components=None, drop_corr_threshold=None,
                  lr_C=1.0, xgb_params=None, root=None):
-    """這格的輸出目錄。run_cell 寫、evaluate 讀共用同一組 rlabel / clf_param / dir_seg
-    規則(forward l2_norm 無 fwd/rev 段、其餘 fwd;reverse 一律 rev),確保寫哪讀哪一致。"""
-    root = root or EMBEDDING_CLASSIFICATION_REFACTOR_DIR
-    is_classify = model in CLASSIFIERS
-    rlabel = (reducer_label(reducer, pca_components=pca_components,
-                            drop_corr_threshold=drop_corr_threshold)
-              if is_classify else "no_drop")
-    clf_param = _clf_param_label(model, lr_C, xgb_params) if is_classify else None
-    dir_seg = ("rev" if direction == "reverse"
-               else (None if model == "l2_norm" else "fwd"))
-    return embedding_classification_path(
-        *cohort, bg_mode, embedding, variant, photo_mode, rlabel,
-        clf=model, clf_param=clf_param, direction=dir_seg, root=root)
+    """委派 oof_dir,維持舊呼叫面;root 預設 EMBEDDING_CLASSIFICATION_REFACTOR_DIR。"""
+    return oof_dir(cohort, bg_mode, embedding, variant, photo_mode, reducer, model,
+                   direction, pca_components=pca_components,
+                   drop_corr_threshold=drop_corr_threshold, lr_C=lr_C,
+                   xgb_params=xgb_params, root=root or EMBEDDING_CLASSIFICATION_REFACTOR_DIR)
 
 
 def cell_oof_paths(cohort, bg_mode, embedding, variant, photo_mode, reducer, model,
                    direction, *, pca_components=None, drop_corr_threshold=None,
                    lr_C=1.0, xgb_params=None, root=None):
-    """這格預期寫出的 oof_scores.csv(forward 1 個、reverse 每 match_strategy 一個)。"""
-    out_dir = cell_out_dir(cohort, bg_mode, embedding, variant, photo_mode, reducer,
-                           model, direction, pca_components=pca_components,
-                           drop_corr_threshold=drop_corr_threshold,
-                           lr_C=lr_C, xgb_params=xgb_params, root=root)
-    if direction == "reverse":
-        return [out_dir / ms / "oof_scores.csv" for ms in MATCH_STRATEGIES]
-    return [out_dir / "oof_scores.csv"]
+    """委派 oof_paths,維持舊呼叫面;root 預設 EMBEDDING_CLASSIFICATION_REFACTOR_DIR。"""
+    return oof_paths(cohort, bg_mode, embedding, variant, photo_mode, reducer, model,
+                     direction, pca_components=pca_components,
+                     drop_corr_threshold=drop_corr_threshold, lr_C=lr_C,
+                     xgb_params=xgb_params, root=root or EMBEDDING_CLASSIFICATION_REFACTOR_DIR)
 
 
 def param_grid(model, grid_search, lr_C=1.0):

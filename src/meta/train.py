@@ -1,32 +1,16 @@
-"""精簡 meta：把人口學 + base-OOF score 餵 TabPFN v3,窮舉 feature set × asymmetry variant × scorer。
-
-feature set 見 FEATURE_SETS:full(age, MMSE, CASI, original-OOF, asym-OOF)外加三個只用
-MMSE/CASI 的對照(±original-OOF、±asym-OOF)。兩個 base OOF 以共用模組
-(src.embedding.classification) forward 重新產生(GroupKFold by base_id),所有 feature set
-一律沿用 original-OOF 的 fold 做 fold-aligned 評估。
-"""
-from pathlib import Path
-
+"""Meta 訓練流程:讀 base OOF → subject 表組裝 → TabPFN v3 fold-aligned OOF → sweep。"""
 import numpy as np
 import pandas as pd
 
 from src.common.cohort import base_id_of, cohort_list
 from src.common.evaluate import compute_clf_metrics
-from src.common.features import load_feature_matrix
-from src.embedding.classification import (
-    CLASSIFIERS, build_classifier, build_reducer, build_scorer, train,
-)
-
-__all__ = [
-    "ASYM_VARIANTS", "ASYM_METHODS", "FEATURE_SETS",
-    "base_oof", "to_subject", "subject_demographics",
-    "build_base_table", "add_asym", "slice_xy",
-    "make_tabpfn_v3", "tabpfn_oof", "sweep",
-]
+from src.embedding.classification import CLASSIFIERS, oof_paths
+from src.meta.classifier import make_tabpfn_v3
 
 ASYM_VARIANTS = ("differences", "absolute_differences",
                  "relative_differences", "absolute_relative_differences")
 ASYM_METHODS = ("l2_norm", "centroid_dist", "lda_projection")
+# full = age/MMSE/CASI/original-OOF/asym-OOF;其餘三個為只用 MMSE/CASI 的對照(±original-OOF、±asym-OOF)。
 FEATURE_SETS = {
     "full":           ["age", "mmse", "casi", "oof_original", "oof_asym"],
     "mmse_casi":      ["mmse", "casi"],
@@ -34,40 +18,13 @@ FEATURE_SETS = {
     "mmse_casi_asym": ["mmse", "casi", "oof_asym"],
 }
 
-_V3_CKPT = (Path.home() / "AppData" / "Roaming" / "tabpfn"
-            / "tabpfn-v3-classifier-v3_default.ckpt")
-
-
-def _build_estimator(model, *, reducer="no_drop", lr_C=1.0):
-    """model → (build_estimator_thunk, score_method, needs_cv);比照 producer 的 router。
-
-    scorer(l2_norm/centroid_dist/lda_projection)直接回 build_scorer;classifier
-    (logistic/xgb)串成 scaler?/reducer?/clf 單一 Pipeline。回 0-arg thunk 供每折建新 estimator。
-    """
-    if model not in CLASSIFIERS:
-        _, score_method, needs_cv = build_scorer(model)
-        return (lambda: build_scorer(model)[0]), score_method, needs_cv
-
-    from sklearn.pipeline import Pipeline
-    from sklearn.preprocessing import StandardScaler
-
-    def _make():
-        rd = build_reducer(reducer)
-        clf, needs_scaler = build_classifier(model, lr_C=lr_C)
-        steps = []
-        if needs_scaler:
-            steps.append(("scaler", StandardScaler()))
-        if rd != "passthrough":
-            steps.append(("reducer", rd))
-        steps.append(("classifier", clf))
-        return Pipeline(steps)
-
-    return _make, "predict_proba", True
-
 
 def base_oof(cohort, emb, variant, bg_mode, photo_mode, model, *,
-             reducer="no_drop", lr_C=1.0):
-    """單一 base 模型的 forward OOF,回 session 層級 DataFrame[ID, y_true, y_score, fold]。
+             reducer="no_drop", lr_C=1.0, root=None):
+    """讀 workspace 落地的 forward OOF,回 session 層級 DataFrame[ID, y_true, y_score, fold]。
+
+    base 模型不在此重訓——OOF 由 embedding 分類流程(scripts/embedding/classification)
+    產出並落地,此處只按 embedding 用的同一組參數定位、讀檔;對應檔不存在即報錯。
 
     Args:
         cohort: (p_visit, p_score, hc_visit, hc_score) 4-token。
@@ -76,14 +33,18 @@ def base_oof(cohort, emb, variant, bg_mode, photo_mode, model, *,
         bg_mode: background | no_background
         photo_mode: mean | all
         model: logistic/xgb(classifier)| l2_norm/centroid_dist/lda_projection(scorer)。
+        reducer / lr_C: 定位 classifier 落地格用(scorer 忽略);須與 embedding 產出時一致。
+        root: embedding OOF 根目錄,預設 EMBEDDING_CLASSIFICATION_DIR。
     """
-    full = cohort_list(*cohort)
-    label_map = dict(zip(full["ID"], (full["Group"] == "P").astype(int)))
-    X, ids = load_feature_matrix(full["ID"].tolist(), emb, variant, bg_mode, photo_mode)
-    y = np.array([label_map[i] for i in ids], dtype=int)
-    build_estimator, score_method, needs_cv = _build_estimator(
-        model, reducer=reducer, lr_C=lr_C)
-    return train(X, ids, y, build_estimator, score_method, needs_cv, "forward")
+    path = oof_paths(cohort, bg_mode, emb, variant, photo_mode, reducer, model,
+                     "forward", lr_C=lr_C, root=root)[0]
+    if not path.exists():
+        param = f" lr_C={lr_C}" if model in CLASSIFIERS else ""
+        raise FileNotFoundError(
+            f"找不到 base OOF:{path}\n"
+            f"  請先跑 embedding forward 分類產生此格(emb={emb} variant={variant} "
+            f"model={model} reducer={reducer}{param})。")
+    return pd.read_csv(path)
 
 
 def to_subject(oof):
@@ -135,16 +96,6 @@ def slice_xy(table, feature_cols):
     return X, y, fold
 
 
-def make_tabpfn_v3(seed=42, device="auto"):
-    """建立指向 v3 ckpt 的 TabPFNClassifier(找不到 ckpt 則退回套件預設權重)。"""
-    from tabpfn import TabPFNClassifier
-    if _V3_CKPT.exists():
-        return TabPFNClassifier(model_path=str(_V3_CKPT), device=device,
-                                random_state=seed, ignore_pretraining_limits=True)
-    return TabPFNClassifier(device=device, random_state=seed,
-                            ignore_pretraining_limits=True)
-
-
 def tabpfn_oof(X, y, fold, *, seed=42, device="auto"):
     """fold-aligned OOF：對每個 fold k 在 fold≠k 上 fit、預測 k，回正類機率陣列。
 
@@ -159,29 +110,50 @@ def tabpfn_oof(X, y, fold, *, seed=42, device="auto"):
     return oof
 
 
+def _require_base_oof(cohort, emb, bg_mode, photo_mode, reducer, base_clf, base_lr_C,
+                      variants, methods, need_asym, root):
+    """預檢:把所有需要的 base OOF 路徑掃一遍,缺的一次列齊再 raise(避免跑到一半才爆)。"""
+    needed = [("original", base_clf, base_lr_C)]
+    if need_asym:
+        needed += [(v, m, 1.0) for v in variants for m in methods]
+    missing = [str(oof_paths(cohort, bg_mode, emb, v, photo_mode, reducer, m,
+                             "forward", lr_C=c, root=root)[0])
+               for v, m, c in needed
+               if not oof_paths(cohort, bg_mode, emb, v, photo_mode, reducer, m,
+                                "forward", lr_C=c, root=root)[0].exists()]
+    if missing:
+        raise FileNotFoundError(
+            "缺少以下 base OOF(請先跑 embedding forward 分類):\n  " + "\n  ".join(missing))
+
+
 def sweep(cohort, *, emb="arcface", bg_mode="background", photo_mode="mean",
-          reducer="no_drop", variants=ASYM_VARIANTS, methods=ASYM_METHODS,
-          feature_sets=FEATURE_SETS, seed=42, device="auto"):
+          reducer="no_drop", base_clf="logistic", base_lr_C=1.0,
+          variants=ASYM_VARIANTS, methods=ASYM_METHODS,
+          feature_sets=FEATURE_SETS, seed=42, device="auto", root=None):
     """窮舉 feature set × asymmetry variant × scorer,各訓練 TabPFN v3。
 
     不含 oof_asym 的 feature set 與 variant/scorer 無關,各只跑一次(variant/method 留空);
-    含 oof_asym 者對每個 (variant, scorer) 各跑一次。embedding-original OOF 只算一次、跨組合
-    共用,所有 feature set 共用 original-OOF 的 fold。指標走 src.common.evaluate.compute_clf_metrics。
+    含 oof_asym 者對每個 (variant, scorer) 各跑一次。base OOF 一律讀 workspace 既有落地檔
+    (original 用 base_clf/base_lr_C 定位、asym 用各 scorer),所有 feature set 共用 original-OOF
+    的 fold。開跑前先預檢所有需要的落地檔,缺檔即報錯。指標走 src.common.evaluate.compute_clf_metrics。
     回 (leaderboard_df, {(feature_set, variant, method): oof_df}),variant/method 對 asym-無關
     組合為空字串。
     """
-    demo = subject_demographics(cohort)
-    base = build_base_table(demo, to_subject(base_oof(
-        cohort, emb, "original", bg_mode, photo_mode, "logistic", reducer=reducer, lr_C=1.0)))
-
     indep = {k: v for k, v in feature_sets.items() if "oof_asym" not in v}
     asym = {k: v for k, v in feature_sets.items() if "oof_asym" in v}
+    _require_base_oof(cohort, emb, bg_mode, photo_mode, reducer, base_clf, base_lr_C,
+                      variants, methods, need_asym=bool(asym), root=root)
+
+    demo = subject_demographics(cohort)
+    base = build_base_table(demo, to_subject(base_oof(
+        cohort, emb, "original", bg_mode, photo_mode, base_clf,
+        reducer=reducer, lr_C=base_lr_C, root=root)))
 
     jobs = [(fs, cols, base, "", "") for fs, cols in indep.items()]
     for variant in variants:
         for method in methods:
             t = add_asym(base, to_subject(
-                base_oof(cohort, emb, variant, bg_mode, photo_mode, method)))
+                base_oof(cohort, emb, variant, bg_mode, photo_mode, method, root=root)))
             jobs += [(fs, cols, t, variant, method) for fs, cols in asym.items()]
 
     rows, oof_dump = [], {}
