@@ -2,6 +2,8 @@
 
 ANCOVA 用全體 subject（不配對），回答「同齡下 AD/HC 是否仍有差」：
   score = β0 + β1·age + β2·group(arm1=1)，β2＝年齡校正後的組別效應（兩平行迴歸線的垂直間距）。
+另以交互模型 score = β0 + β1·age + β2·group + β3·(age×group) 取 β3＝兩組「年齡斜率」差
+（slope-homogeneity 檢定，H0:β3=0 即兩線平行）；與平行模型分開擬合，不影響上面的 β0/β1/β2。
 
 共用底層（scorer 分數、比較集合、樣式常數）直接 import 自 asymmetry_stat；本檔只放 ANCOVA。
 
@@ -11,7 +13,8 @@ ANCOVA 用全體 subject（不配對），回答「同齡下 AD/HC 是否仍有�
   grid    4 模型 × 8 method 的 ANCOVA 散點總圖（AD-vs-HC，雙尾 adj β/p）。
           輸出 <feature_stat>/<cohort>/<bg>/ancova_grid.png。
   arcface ArcFace 32 格（列＝2 slice[full/matched]×4 族群比較、欄＝4 norm；單尾 group p，
-          標 β0/β1/β2）。輸出 <feature_stat>/<cohort>/<bg>/arcface/ancova/ancova_grid_arcface.png。
+          標 β0/β1/β2/β3）。另切出 full / matched 兩張 4×2（只 L1·diff、L2·diff）。輸出
+          <feature_stat>/<cohort>/<bg>/arcface/ancova/{ancova_grid_arcface,_full,_matched}.png。
 
 Usage:
     python scripts/embedding/asymmetry_ancova.py --mode table   [--model arcface]
@@ -63,6 +66,7 @@ ARCFACE_COLS = [
     ("L1 · rel_diff", "relative_differences", "l1_norm"),
     ("L2 · rel_diff", "relative_differences", "l2_norm"),
 ]
+ARCFACE_DIFF_COLS = ARCFACE_COLS[:2]   # 切分圖只用 L1·diff、L2·diff
 
 # ── ANCOVA 擬合 ────────────────────────────────────────────────────────────
 
@@ -103,21 +107,51 @@ def _coef(b):
     return f"{b:+.4f}" if abs(b) >= 1e-3 else f"{b:+.2e}"
 
 
-def _one_sided_p(b2, gp):
-    """β2 的單尾 p（H1: β2 > 0，即 case > control）。由雙尾 gp 與 β2 正負號精確換算。
+def _one_sided_p(b, p2):
+    """係數的單尾 p（H1: 係數 > 0）。由雙尾 p2 與係數正負號精確換算（β2、β3 通用）。
 
-    上尾檢定：t = β2/se，p_up = P(T>t)。因 gp = 2·P(T>|t|)，故 β2≥0 時 p_up = gp/2、
-    β2<0 時 p_up = 1 − gp/2。
+    上尾檢定：t = b/se，p_up = P(T>t)。因 p2 = 2·P(T>|t|)，故 b≥0 時 p_up = p2/2、
+    b<0 時 p_up = 1 − p2/2。
     """
-    return gp / 2 if b2 >= 0 else 1 - gp / 2
+    return p2 / 2 if b >= 0 else 1 - p2 / 2
+
+
+def _slope_diff_fit(scores, age, s1, s2):
+    """OLS score ~ 1 + age + group + age×group（交互模型）於全體 subject，回交互項。
+
+    β3＝age×group 係數＝arm1 與 arm2 的「年齡斜率」差（arm1_slope − arm2_slope）；
+    檢定 H0:β3=0（兩組對年齡斜率相同／兩線平行）。與平行斜率 _ancova_fit 分開擬合，
+    不影響其 β0/β1/β2 數值。
+
+    Returns:
+        (b3, b3_p2)；b3_p2 為雙尾 t-test p。資料不足（任一組 <2 或自由度 ≤0）回 None。
+    """
+    a1 = [b for b in s1 if b in scores and b in age]
+    a2 = [b for b in s2 if b in scores and b in age]
+    if len(a1) < 2 or len(a2) < 2:
+        return None
+    y = np.array([scores[b] for b in a1 + a2])
+    g = np.array([1.0] * len(a1) + [0.0] * len(a2))
+    ag = np.array([age[b] for b in a1 + a2])
+    X = np.column_stack([np.ones_like(y), ag, g, ag * g])
+    dof = len(y) - X.shape[1]
+    if dof <= 0:
+        return None
+    beta, *_ = np.linalg.lstsq(X, y, rcond=None)
+    resid = y - X @ beta
+    se = np.sqrt(np.diag((resid @ resid) / dof * np.linalg.inv(X.T @ X)))
+    b3 = beta[3]
+    b3_p2 = 2 * sp_stats.t.sf(np.abs(b3 / se[3]), dof)
+    return b3, b3_p2
 
 # ── 表 + 散點（每模型）──────────────────────────────────────────────────────
 
 def build_ancova_blocks(methods_scores, age, comparisons, one_sided=False):
-    """每 method × comparison 一列。回 [(label, rows)]；row=(comp, n, unadj字串, group字串, age字串, fit)。
+    """每 method × comparison 一列。回 [(label, rows)]；
+    row=(comp, n, unadj字串, group字串, age字串, fit, slope-diff字串)。
 
-    one_sided=True 時，未校正 Δ 與年齡校正 group β 改單尾（H1: arm1>arm2、β2>0；由雙尾 p 與
-    符號換算）；age β 仍維持雙尾（年齡為共變量、無方向假設）。
+    one_sided=True 時，未校正 Δ、年齡校正 group β、slope-diff β3 一律改單尾（H1: arm1>arm2、
+    β2>0、β3>0；由雙尾 p 與符號換算）；age β 仍維持雙尾（年齡為共變量、無方向假設）。
     """
     blocks = []
     for label, scores in methods_scores:
@@ -125,21 +159,30 @@ def build_ancova_blocks(methods_scores, age, comparisons, one_sided=False):
         for n1, s1, n2, s2 in comparisons:
             fit = _ancova_fit(scores, age, s1, s2)
             if fit is None:
-                rows.append((f"{n1} vs {n2}", "NA", "NA", "NA", "NA", None))
+                rows.append((f"{n1} vs {n2}", "NA", "NA", "NA", "NA", None, "NA"))
                 continue
             n, unadj, unadj_p, _b0, b1, b2, gp, ap = fit
             if one_sided:
                 unadj_p = unadj_p / 2 if unadj >= 0 else 1 - unadj_p / 2
                 gp = gp / 2 if b2 >= 0 else 1 - gp / 2
+            sd = _slope_diff_fit(scores, age, s1, s2)
+            if sd is None:
+                b3_s = "NA"
+            else:
+                b3, b3_p = sd
+                if one_sided:
+                    b3_p = _one_sided_p(b3, b3_p)
+                b3_s = f"{_coef(b3)} ({_pstr(b3_p)})"
             rows.append((f"{n1} vs {n2}", n,
                          f"{_coef(unadj)} ({_pstr(unadj_p)})",
                          f"{_coef(b2)} ({_pstr(gp)})",
-                         f"{_coef(b1)} ({_pstr(ap)})", fit))
+                         f"{_coef(b1)} ({_pstr(ap)})", fit, b3_s))
         blocks.append((label, rows))
     return blocks
 
 
-_COL_W_ANCOVA = {"A": 24.7, "B": 18.0, "C": 12.0, "D": 8.0, "E": 26.0, "F": 26.0, "G": 24.0}
+_COL_W_ANCOVA = {"A": 24.7, "B": 18.0, "C": 12.0, "D": 8.0,
+                 "E": 26.0, "F": 26.0, "G": 24.0, "H": 26.0}
 
 
 def write_ancova_xlsx(model, bg_mode, blocks, out_path, col_w=None):
@@ -151,25 +194,27 @@ def write_ancova_xlsx(model, bg_mode, blocks, out_path, col_w=None):
     ws = wb.active
     ws.title = f"ancova_{'bg' if bg_mode == 'background' else 'nobg'}"
     ws.append(["Embedding Model", "Asymmetry Method", "Comparison", "n",
-               "unadjusted Δ (p)", "age-adj group β (p)", "age β (p)"])
+               "unadjusted Δ (p)", "age-adj group β (p)", "age β (p)",
+               "slope-diff β3 (p)"])
     first = 2
     r = first
     method_spans = []
     for label, rows in blocks:
         bs = r
-        for comp, n, unadj_s, grp_s, age_s, _ in rows:
+        for comp, n, unadj_s, grp_s, age_s, _, b3_s in rows:
             ws.cell(r, 3, comp)
             ws.cell(r, 4, n)
             ws.cell(r, 5, unadj_s)
             ws.cell(r, 6, grp_s)
             ws.cell(r, 7, age_s)
+            ws.cell(r, 8, b3_s)
             r += 1
         ws.cell(bs, 2, label)
         method_spans.append((bs, r - 1))
     ws.cell(first, 1, MODEL_DISPLAY.get(model, model))
     last = r - 1
 
-    for row in ws.iter_rows(min_row=1, max_row=last, max_col=7):
+    for row in ws.iter_rows(min_row=1, max_row=last, max_col=8):
         for c in row:
             c.alignment = _CENTER
             c.border = _BORDER
@@ -205,9 +250,11 @@ def write_ancova_scatter(scores, age, ad, hc, fit, title, out_path):
     xr = np.array([min(ages), max(ages)])
     ax.plot(xr, b0 + b1 * xr, color="#4C72B0", lw=2)             # HC 迴歸線
     ax.plot(xr, b0 + b2 + b1 * xr, color="#C44E52", lw=2)        # AD 迴歸線（與 HC 平行）
+    sd = _slope_diff_fit(scores, age, ad, hc)
+    b3txt = "" if sd is None else f"; slope-diff β3={sd[0]:+.4g}, p={_pstr(sd[1])}"
     ax.set_xlabel("Age")
     ax.set_ylabel("Asymmetry score (per subject)")
-    ax.set_title(f"{title}\nage-adj group β={b2:+.4g}, p={_pstr(gp)}")
+    ax.set_title(f"{title}\nage-adj group β={b2:+.4g}, p={_pstr(gp)}{b3txt}")
     ax.legend()
     fig.tight_layout()
     out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -261,7 +308,10 @@ def build_model_grid(cohort, bg_mode, out_path):
                 xr = np.array([min(ages), max(ages)])
                 ax.plot(xr, b0 + b1 * xr, color="#4C72B0", lw=1.8)           # HC
                 ax.plot(xr, b0 + b2 + b1 * xr, color="#C44E52", lw=1.8)      # AD（平行）
-                ax.text(0.04, 0.96, f"adj β={b2:+.3g}\np={_pstr(gp)}",
+                sd = _slope_diff_fit(sc, age, ad, hc)
+                b3line = "" if sd is None else f"\nβ₃={sd[0]:+.3g} (p={_pstr(sd[1])})"
+                ax.text(0.04, 0.96,
+                        f"adj β₂={b2:+.3g} (p={_pstr(gp)}){b3line}",
                         transform=ax.transAxes, va="top", ha="left", fontsize=8,
                         bbox=dict(boxstyle="round", fc="white", ec="0.7", alpha=0.85))
             if i == 0:
@@ -274,7 +324,8 @@ def build_model_grid(cohort, bg_mode, out_path):
         logger.info(f"row done: {mkey}")
 
     axes[0][-1].legend(loc="lower right", fontsize=9, framealpha=0.9)
-    fig.suptitle("ANCOVA — asymmetry score vs age (AD vs HC), parallel-slope fit",
+    fig.suptitle("ANCOVA — asymmetry score vs age (AD vs HC), parallel-slope fit "
+                 "(β₂ = age-adj gap; β₃ = age×group slope diff, 2-sided p)",
                  fontsize=15, fontweight="bold")
     fig.tight_layout(rect=(0, 0, 1, 0.97))
     out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -285,7 +336,8 @@ def build_model_grid(cohort, bg_mode, out_path):
 # ── ArcFace 32 格 ───────────────────────────────────────────────────────────
 
 def _cell(ax, scores, age, case, ctrl, fit):
-    """單格：score-vs-age 散點（case 紅 / control 藍）＋兩條平行 ANCOVA 線，左上標 β0/β1/β2 與單尾 p。"""
+    """單格：score-vs-age 散點（case 紅 / control 藍）＋兩條平行 ANCOVA 線，
+    左上標 β0/β1/β2 與 β3（age×group 斜率差），p 皆單尾（H1: β2>0、β3>0）。"""
     case_pts = [(age[b], scores[b]) for b in case if b in scores and b in age]
     ctrl_pts = [(age[b], scores[b]) for b in ctrl if b in scores and b in age]
     for pts, color in [(ctrl_pts, _CTRL), (case_pts, _CASE)]:
@@ -301,10 +353,13 @@ def _cell(ax, scores, age, case, ctrl, fit):
     xr = np.array([min(ages), max(ages)])
     ax.plot(xr, b0 + b1 * xr, color=_CTRL, lw=1.6)            # control（group=0）
     ax.plot(xr, b0 + b2 + b1 * xr, color=_CASE, lw=1.6)       # case（group=1，+β2）
-    txt = (f"$\\beta_0$={b0:+.3g}\n"
-           f"$\\beta_1$={b1:+.3g} (age)\n"
-           f"$\\beta_2$={b2:+.3g} (group)\n"
-           f"p={_pstr(_one_sided_p(b2, gp))} (1-sided, $\\beta_2$>0)")
+    sd = _slope_diff_fit(scores, age, case, ctrl)
+    b3_line = ("$\\beta_3$: NA" if sd is None
+               else f"$\\beta_3$={sd[0]:+.3g} (age×grp), p={_pstr(_one_sided_p(*sd))}")
+    txt = (f"$\\beta_0$={b0:+.3g}, $\\beta_1$={b1:+.3g} (age)\n"
+           f"$\\beta_2$={b2:+.3g} (group), p={_pstr(_one_sided_p(b2, gp))}\n"
+           f"{b3_line}\n"
+           f"(1-sided: $\\beta_2$>0, $\\beta_3$>0)")
     ax.text(0.04, 0.96, txt, transform=ax.transAxes, va="top", ha="left",
             fontsize=7, bbox=dict(boxstyle="round", fc="white", ec="0.7", alpha=0.85))
 
@@ -344,13 +399,63 @@ def build_arcface_grid(cohort, bg_mode, level, caliper, out_path):
                       markersize=8, label="2nd group (control, group=0)")]
     axes[0][-1].legend(handles=handles, loc="lower right", fontsize=8, framealpha=0.9)
     fig.suptitle(f"{MODEL_DISPLAY[_ARCFACE]} — ANCOVA: asymmetry score vs age, parallel-slope fit "
-                 r"($\beta_2$ = age-adjusted case−control gap; 1-sided p tests $\beta_2$>0, i.e. case>control)",
+                 r"($\beta_2$ = age-adjusted case−control gap; $\beta_3$ = age×group slope difference; "
+                 r"1-sided p test $\beta_2$>0 and $\beta_3$>0, i.e. case > control)",
                  fontsize=13, fontweight="bold")
     fig.tight_layout(rect=(0, 0, 1, 0.975))
     out_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(str(out_path), dpi=180, bbox_inches="tight", facecolor="white")
     plt.close(fig)
     logger.info(f"saved {out_path}")
+
+# ── ArcFace 切分：單 slice × {L1,L2}·diff（4×2）───────────────────────────────
+
+def _arcface_slice_fig(slice_label, comps, col_scores, age, out_path):
+    """單一 slice（full / matched）的 4 族群比較 × {L1,L2}·diff ANCOVA 圖（4 列 × 2 欄）。"""
+    cols = ARCFACE_DIFF_COLS
+    nrows, ncols = len(comps), len(cols)
+    fig, axes = plt.subplots(nrows, ncols, figsize=(3.7 * ncols, 2.8 * nrows),
+                             sharex=True, squeeze=False)
+    for row, (n1, s1, n2, s2) in enumerate(comps):
+        for col, (clabel, _v, _m) in enumerate(cols):
+            ax = axes[row][col]
+            _cell(ax, col_scores[col], age, s1, s2,
+                  _ancova_fit(col_scores[col], age, s1, s2))
+            if row == 0:
+                ax.set_title(clabel, fontsize=12, fontweight="bold", pad=8)
+            if col == 0:
+                ax.set_ylabel(f"{n1} vs {n2}\n\nscore", fontsize=10, fontweight="bold")
+            if row == nrows - 1:
+                ax.set_xlabel("Age", fontsize=10)
+        logger.info(f"row done: {slice_label} | {n1} vs {n2}")
+
+    handles = [Line2D([0], [0], marker="o", color="w", markerfacecolor=_CASE,
+                      markersize=8, label="1st group (case, group=1)"),
+               Line2D([0], [0], marker="o", color="w", markerfacecolor=_CTRL,
+                      markersize=8, label="2nd group (control, group=0)")]
+    axes[0][-1].legend(handles=handles, loc="lower right", fontsize=8, framealpha=0.9)
+    fig.suptitle(f"{MODEL_DISPLAY[_ARCFACE]} — ANCOVA ({slice_label}, diff only): "
+                 r"asymmetry score vs age, parallel-slope fit "
+                 r"($\beta_2$ = age-adj gap, $\beta_3$ = age×group slope diff; "
+                 r"1-sided p: $\beta_2$>0, $\beta_3$>0)",
+                 fontsize=12, fontweight="bold")
+    fig.tight_layout(rect=(0, 0, 1, 0.96))
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(str(out_path), dpi=180, bbox_inches="tight", facecolor="white")
+    plt.close(fig)
+    logger.info(f"saved {out_path}")
+
+
+def build_arcface_diff_splits(cohort, bg_mode, level, caliper, out_dir):
+    """由 32 格圖切出 full / matched 兩張 4×2（只 L1·diff、L2·diff）。"""
+    df = cohort_list(*cohort)
+    age = per_subject_age(df)
+    matched_comps, _ = matched_comparisons(df, cohort, level, caliper)
+    col_scores = [scorer_scores(df, _ARCFACE, v, bg_mode, m) for _, v, m in ARCFACE_DIFF_COLS]
+    _arcface_slice_fig("full", full_comparisons(df), col_scores, age,
+                       out_dir / "ancova_grid_arcface_full.png")
+    _arcface_slice_fig("matched", matched_comps, col_scores, age,
+                       out_dir / "ancova_grid_arcface_matched.png")
 
 # ── 主流程 ──────────────────────────────────────────────────────────────────
 
@@ -382,8 +487,11 @@ def main():
     elif args.mode == "grid":
         build_model_grid(cohort, args.bg_mode, base / "ancova_grid.png")
     else:  # arcface
+        ancova_dir = base / _ARCFACE / "ancova"
         build_arcface_grid(cohort, args.bg_mode, args.match_level, args.caliper,
-                           base / _ARCFACE / "ancova" / "ancova_grid_arcface.png")
+                           ancova_dir / "ancova_grid_arcface.png")
+        build_arcface_diff_splits(cohort, args.bg_mode, args.match_level, args.caliper,
+                                  ancova_dir)
 
 
 if __name__ == "__main__":
