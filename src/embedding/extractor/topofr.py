@@ -34,13 +34,15 @@ class TopoFRExtractor(EmbeddingExtractor):
     def _topofr_dir(self):
         return EXTERNAL_DIR / "embedding" / "TopoFR"
 
+    # 顯式 pin 權重（不再用 glob 取第一個）：glob 順序由檔案系統決定、脆弱，換機器/增刪檔
+    # 都可能選到別的檢查點；且 backbone 與檔名不符時 load_state_dict(strict=False) 會靜默
+    # 丟棄不符層、產生錯誤特徵。要換變體改這裡即可。
+    _MODEL_FILE = "Glint360K_R100_TopoFR_9760.pt"
+
     def _find_model_file(self):
-        """external/embedding/TopoFR/model/ 下第一個 *TopoFR*.pt/.pth;無則 None。"""
-        model_dir = self._topofr_dir() / "model"
-        files = list(model_dir.glob("*TopoFR*.pt")) + list(
-            model_dir.glob("*TopoFR*.pth")
-        )
-        return files[0] if files else None
+        """external/embedding/TopoFR/model/ 下顯式指定的權重檔（_MODEL_FILE）；無則 None。"""
+        path = self._topofr_dir() / "model" / self._MODEL_FILE
+        return path if path.exists() else None
 
     def is_available(self) -> bool:
         try:
