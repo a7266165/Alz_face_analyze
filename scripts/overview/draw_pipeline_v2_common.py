@@ -53,6 +53,16 @@ P = {
     17: dict(bg='#EDF0E8', nd='#C0D0A8'),   # 鼠尾草
     18: dict(bg='#F5F0E0', nd='#D8C890'),   # 駝
     19: dict(bg='#E0E0E0', nd='#C0C0C0'),   # 灰 (調暗用)
+    # extension set — same pastel two-tone style, fills hues the original 19
+    # under-cover (the base set is blue/green/tan-heavy), for diagrams that need
+    # more mutually-distinct groups.
+    20: dict(bg='#F6E2EF', nd='#D58AC4'),   # 梅紅 (magenta/plum)
+    21: dict(bg='#DEF1E4', nd='#7FC698'),   # 翠綠 (emerald — truer green than 萊姆/鼠尾草)
+    22: dict(bg='#FBE3E8', nd='#E08494'),   # 玫瑰 (raspberry/rose — deeper than 珊瑚)
+    23: dict(bg='#E6E6FA', nd='#8C8FD8'),   # 靛藍 (indigo — deeper than 薰衣草/鋼藍)
+    24: dict(bg='#E0EFFB', nd='#7FB8E8'),   # 天藍 (azure — brighter than 藍)
+    25: dict(bg='#EFEED6', nd='#C2BE6E'),   # 橄欖 (olive — muted yellow-green)
+    26: dict(bg='#F8E6DE', nd='#DD9C7A'),   # 磚紅 (brick/terracotta — warmer than 蜜桃)
 }
 
 # ── named aliases onto the palette (same hex as the original diagram) ──

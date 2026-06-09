@@ -39,6 +39,20 @@ Usage:
 import matplotlib.pyplot as plt
 from draw_pipeline_v2_common import *
 
+# ── v2-only recolour: shadow a few shared aliases in THIS module so that
+#    neighbouring blocks no longer share/approximate a hue. The shared toolkit
+#    and the other scripts (refactor / asymmetry_pipeline) are unaffected.
+#    Anchor kept by request: the matched block and every "1 by 1 matched" stay
+#    C_ES (peach), matching the standalone matched sub-cluster on the left. ──
+C_AGE = P[20]     # Age branch   : amber -> magenta (extension set; ≠ Demographic purple)
+C_AOUT = P[17]    # outputs/desc : grey-blue -> sage (was ~ steel "full" it wraps)
+CF = P[5]         # K fold       : green  -> yellow  (was ~ lime classifier above it)
+C_EMA = P[21]     # mean/all (emotion) : lavender -> emerald (≠ coral above, steel below)
+C_EVAL = P[22]    # eval_by_subject + contrasts : peach -> raspberry (≠ violet scorers, ≠ 1by1matched)
+C_POOL = P[23]    # mean 10 pic score  : blue -> indigo (frees blue; ≠ yellow K-fold / raspberry eval)
+C4 = P[24]        # classifier (no_drop + LR, both branches) : lime -> azure
+#                   (was a 3rd green ≈ sage outputs / emerald emo-mean)
+
 
 _DC_PAD = 0.7
 # height of the whole shared block (Demographic + Cohort + matched sub-tree),
@@ -300,26 +314,45 @@ def build(mode='center'):
         for sx in afmx:
             line(ax, sx, y_a_fm + NODE_H / 2, x, y_a_stat - NODE_H / 2)
 
-    # embedding features: ArcFace fans symmetrically to 'original' (left) and the
-    # 2 asymmetry features (right). 'original' has the classifier/eval downstream
-    # (left spine); the asymmetry features now fan to L1/L2 scorers + a Logistic
-    # Regression classifier (integrated from asymmetry_pipeline.py).
-    node(ax, X_ORIG, y_feat, node_w('original'), NODE_H, 'original', C2['nd'])
-    line(ax, X_EMB_C, y_mod + NODE_H / 2, X_ORIG, y_feat - NODE_H / 2)
-    # asymmetry features as in asymmetry_pipeline: 2 formula boxes (fixed width —
-    # node_w can't size LaTeX), each carrying the per-photo "vector x 10"
+    # embedding features: ArcFace -> face / mirrored_face embedding vectors. The
+    # 'original' box was dropped (it is exactly the face embedding vector); the
+    # face embedding vector now feeds BOTH the classifier/eval spine ('all', left)
+    # and the asymmetry sub-branch (right). The asymmetry side mirrors
+    # asymmetry_pipeline: vectors -> asymmetry features -> L1/L2 scorers +
+    # a Logistic Regression classifier. The asymmetry sub-branch is one band
+    # deeper than the others, so its rows shift down from y_feat.
+
+    # embedding vectors (y_feat): ArcFace -> face / mirrored_face embedding
+    # vectors, centred under ArcFace so the fan is symmetric (they then feed the
+    # classifier spine on the left and the asymmetry sub-branch on the right)
+    VECS = ['face embedding\nvector x 10', 'mirrored_face embedding\nvector x 10']
+    vec_w = 3.6
+    vec_tot = 2 * vec_w + GAP
+    vecx, _ = rowx(X_EMB_C, 2, vec_w, GAP)
+    for vx, lab in zip(vecx, VECS):
+        node(ax, vx, y_feat, vec_w, NODE_H, lab, C2['nd'])
+        line(ax, X_EMB_C, y_mod + NODE_H / 2, vx, y_feat - NODE_H / 2)
+
+    # asym features (y_af): vectors -> 2 formula boxes (fixed width — node_w can't
+    # size LaTeX), each carrying the per-photo "vector x 10"
+    y_af = y_d1
     ASYM_FEATS = ['$L_i - R_i$\nvector x 10',
                   '$(L_i - R_i)/\\sqrt{L_i^2 + R_i^2}$\nvector x 10']
     asym_w = 4.5
     asym_tot = 2 * asym_w + GAP
     asymx, _ = rowx(X_ASYM, 2, asym_w, GAP)
+    cluster(ax, X_ASYM, y_af, asym_tot + PADDING, NODE_H + 2 * SP, C2['bg'])
     for fx, lab in zip(asymx, ASYM_FEATS):
-        node(ax, fx, y_feat, asym_w, NODE_H, lab, C2['nd'])
-        line(ax, X_EMB_C, y_mod + NODE_H / 2, fx, y_feat - NODE_H / 2)
+        node(ax, fx, y_af, asym_w, NODE_H, lab, C2['nd'])
+        for vx in vecx:
+            line(ax, vx, y_feat + NODE_H / 2, fx, y_af - NODE_H / 2)
 
     # ── asymmetry downstream (from asymmetry_pipeline): the 2 features fan to ──
     #   right: L1/L2 scorers -> average 10 score -> full/1by1matched/ANCOVA
     #   left:  Logistic Regression -> full/1by1matched
+    y_asc = y_d2          # scorers / Logistic Regression
+    y_aav = y_d3          # average 10 score / left full-1by1
+    y_aan = y_d3 + BAND   # analyses (full / 1 by 1 matched / ANCOVA)
     A_SC = ['L1 Norm\n$\\Sigma_i |f_i|$', 'L2 Norm\n$\\sqrt{\\Sigma_i f_i^2}$']
     a_sc_w = 3.0
     a_sc_grp = 2 * a_sc_w + GAP
@@ -337,41 +370,44 @@ def build(mode='center'):
     X_ASYM_L = a_x0 + a_left_vis / 2
     X_ASYM_R = a_x0 + a_left_vis + a_col_gap + a_right_vis / 2
 
-    # split row (y_d1): scorers (right, violet) + Logistic Regression (left, C4)
+    # split row (y_asc): scorers (right, violet) + Logistic Regression (left, lime)
     a_scx, _ = rowx(X_ASYM_R, 2, a_sc_w, GAP)
-    cluster(ax, X_ASYM_R, y_d1, a_sc_grp + PADDING, NODE_H + 2 * SP, C_ASY['bg'])
+    cluster(ax, X_ASYM_R, y_asc, a_sc_grp + PADDING, NODE_H + 2 * SP, C_ASY['bg'])
     for x, lab in zip(a_scx, A_SC):
-        node(ax, x, y_d1, a_sc_w, NODE_H, lab, C_ASY['nd'])
+        node(ax, x, y_asc, a_sc_w, NODE_H, lab, C_ASY['nd'])
     a_trn_w = node_w(A_TRN)
-    cluster(ax, X_ASYM_L, y_d1, a_trn_w + PADDING, NODE_H + 2 * SP, C4['bg'])
-    node(ax, X_ASYM_L, y_d1, a_trn_w, NODE_H, A_TRN, C4['nd'])
+    cluster(ax, X_ASYM_L, y_asc, a_trn_w + PADDING, NODE_H + 2 * SP, C4['bg'])
+    node(ax, X_ASYM_L, y_asc, a_trn_w, NODE_H, A_TRN, C4['nd'])
     for fx in asymx:                      # 2 features feed both sub-columns
-        line(ax, fx, y_feat + NODE_H / 2, X_ASYM_L, y_d1 - NODE_H / 2)
+        line(ax, fx, y_af + NODE_H / 2, X_ASYM_L, y_asc - NODE_H / 2)
         for sx in a_scx:
-            line(ax, fx, y_feat + NODE_H / 2, sx, y_d1 - NODE_H / 2)
+            line(ax, fx, y_af + NODE_H / 2, sx, y_asc - NODE_H / 2)
 
-    # right sub-column: scorers -> average 10 score (y_d2) -> analyses (y_d3)
-    cluster(ax, X_ASYM_R, y_d2, node_w(a_avg) + PADDING, NODE_H + 2 * SP, C1['bg'])
-    node(ax, X_ASYM_R, y_d2, node_w(a_avg), NODE_H, a_avg, C1['nd'])
+    # right sub-column: scorers -> average 10 score -> analyses
+    # (amber, not blue: sits beside the steel left full/1by1 at this band)
+    cluster(ax, X_ASYM_R, y_aav, node_w(a_avg) + PADDING, NODE_H + 2 * SP, P[10]['bg'])
+    node(ax, X_ASYM_R, y_aav, node_w(a_avg), NODE_H, a_avg, P[10]['nd'])
     for sx in a_scx:
-        line(ax, sx, y_d1 + NODE_H / 2, X_ASYM_R, y_d2 - NODE_H / 2)
-    a_ancx, _, _ = prow(ax, X_ASYM_R, y_d3, A_RIGHT,
+        line(ax, sx, y_asc + NODE_H / 2, X_ASYM_R, y_aav - NODE_H / 2)
+    a_ancx, _, _ = prow(ax, X_ASYM_R, y_aan, A_RIGHT,
                         [C_SA['nd'], C_ES['nd'], C_AOUT['nd']])
-    cluster(ax, X_ASYM_R, y_d3, a_anc_tot + PADDING, NODE_H + 2 * SP, C_AOUT['bg'])
+    cluster(ax, X_ASYM_R, y_aan, a_anc_tot + PADDING, NODE_H + 2 * SP, C_AOUT['bg'])
     for tx in a_ancx:
-        line(ax, X_ASYM_R, y_d2 + NODE_H / 2, tx, y_d3 - NODE_H / 2)
+        line(ax, X_ASYM_R, y_aav + NODE_H / 2, tx, y_aan - NODE_H / 2)
 
-    # left sub-column: Logistic Regression -> full/1by1matched (y_d2)
-    a_lfx, _, _ = prow(ax, X_ASYM_L, y_d2, A_LEFT, [C_SA['nd'], C_ES['nd']])
-    cluster(ax, X_ASYM_L, y_d2, a_left_tot + PADDING, NODE_H + 2 * SP, C_SA['bg'])
+    # left sub-column: Logistic Regression -> full/1by1matched
+    a_lfx, _, _ = prow(ax, X_ASYM_L, y_aav, A_LEFT, [C_SA['nd'], C_ES['nd']])
+    cluster(ax, X_ASYM_L, y_aav, a_left_tot + PADDING, NODE_H + 2 * SP, C_SA['bg'])
     for tx in a_lfx:
-        line(ax, X_ASYM_L, y_d1 + NODE_H / 2, tx, y_d2 - NODE_H / 2)
+        line(ax, X_ASYM_L, y_asc + NODE_H / 2, tx, y_aav - NODE_H / 2)
 
-    # ── embedding step 5 (left spine X_ORIG): original -> all -> no_drop -> LR ──
+    # ── embedding step 5 (left spine X_ORIG): face embedding vector -> all ->
+    #    no_drop -> LR (the face embedding vector — formerly 'original' — feeds
+    #    this classifier spine) ──
     all_w = node_w('all')
     cluster(ax, X_ORIG, y_d1, all_w + PADDING, NODE_H + 2 * SP, C_PA['bg'])
     node(ax, X_ORIG, y_d1, all_w, NODE_H, 'all', C_PA['nd'])
-    line(ax, X_ORIG, y_feat + NODE_H / 2, X_ORIG, y_d1 - NODE_H / 2)
+    line(ax, vecx[0], y_feat + NODE_H / 2, X_ORIG, y_d1 - NODE_H / 2)
 
     node(ax, X_ORIG, y_d2, node_w('no_drop'), NODE_H, 'no_drop', C4['nd'])
     line(ax, X_ORIG, y_d1 + NODE_H / 2, X_ORIG, y_d2 - NODE_H / 2)
@@ -409,8 +445,8 @@ def build(mode='center'):
 
     # ── emo step 5: features -> mean/all -> full/1by1matched -> violin ──
     emo_all_feats = vax + ctx + shx
-    emax, _, ema_tot = prow(ax, X_EMO_C, y_d1, ['mean', 'all'], C_PA['nd'])
-    cluster(ax, X_EMO_C, y_d1, ema_tot + PADDING, NODE_H + 2 * SP, C_PA['bg'])
+    emax, _, ema_tot = prow(ax, X_EMO_C, y_d1, ['mean', 'all'], C_EMA['nd'])
+    cluster(ax, X_EMO_C, y_d1, ema_tot + PADDING, NODE_H + 2 * SP, C_EMA['bg'])
     for fx in emo_all_feats:
         for px in emax:
             line(ax, fx, y_feat + NODE_H / 2, px, y_d1 - NODE_H / 2)
@@ -446,9 +482,10 @@ def build(mode='center'):
     _grp(X_AGE_C - half, X_AGE_C + half,
          y_d1 - NODE_H / 2 - PADY, y_a_stat + NODE_H / 2 + PADY, C_AOUT['bg'])
 
-    # embedding: ArcFace (centre) + original (left) + asymmetry features (right)
-    eL = min(X_ORIG - node_w('original') / 2, X_EMB_C - arc_w / 2) - PADX
-    eR = X_ASYM + asym_tot / 2 + PADX
+    # embedding: ArcFace (centre) + embedding vectors (centred below it); the
+    # asymmetry features sit one band lower in their own C2 sub-cluster
+    eL = X_EMB_C - vec_tot / 2 - PADX
+    eR = X_EMB_C + vec_tot / 2 + PADX
     _grp(eL, eR, y_mr_top, y_ft_bot, C2['bg'])
 
     # emotion: models + features
@@ -479,8 +516,8 @@ def build(mode='center'):
     # per-subject score aggregation: mean of the 10 pics' scores
     sc_label = 'mean 10 pic score'
     nw_sc = node_w(sc_label)
-    cluster(ax, X_ORIG, e_sc_y, nw_sc + PADDING, NODE_H + 2 * SP, C1['bg'])
-    node(ax, X_ORIG, e_sc_y, nw_sc, NODE_H, sc_label, C1['nd'])
+    cluster(ax, X_ORIG, e_sc_y, nw_sc + PADDING, NODE_H + 2 * SP, C_POOL['bg'])
+    node(ax, X_ORIG, e_sc_y, nw_sc, NODE_H, sc_label, C_POOL['nd'])
     line(ax, X_ORIG, e_k_y + NODE_H / 2, X_ORIG, e_sc_y - NODE_H / 2)   # K fold -> mean score
 
     # eval_by_subject (eval_by_visit removed) + the 3 contrasts share ONE C_ES cluster
@@ -491,11 +528,11 @@ def build(mode='center'):
     cmpx, cmp_tot = rowx(X_ORIG, 3, cmp_w, GAP)
     eb_cy = (e_eb_y + e_cmp_y) / 2
     eb_h = (e_cmp_y - e_eb_y) + NODE_H + 2 * SP
-    cluster(ax, X_ORIG, eb_cy, max(es_w, cmp_tot) + PADDING, eb_h, C_ES['bg'])
-    node(ax, X_ORIG, e_eb_y, es_w, NODE_H, EB, C_ES['nd'])
+    cluster(ax, X_ORIG, eb_cy, max(es_w, cmp_tot) + PADDING, eb_h, C_EVAL['bg'])
+    node(ax, X_ORIG, e_eb_y, es_w, NODE_H, EB, C_EVAL['nd'])
     line(ax, X_ORIG, e_sc_y + NODE_H / 2, X_ORIG, e_eb_y - NODE_H / 2)   # mean score -> eval_by_subject
     for x, lab in zip(cmpx, CMP):
-        node(ax, x, e_cmp_y, cmp_w, NODE_H, lab, C_ES['nd'])
+        node(ax, x, e_cmp_y, cmp_w, NODE_H, lab, C_EVAL['nd'])
     for cx2 in cmpx:
         line(ax, X_ORIG, e_eb_y + NODE_H / 2, cx2, e_cmp_y - NODE_H / 2)
 
