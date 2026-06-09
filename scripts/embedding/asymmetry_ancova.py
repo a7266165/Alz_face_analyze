@@ -1,28 +1,16 @@
-"""鏡射不對稱的 ANCOVA（年齡共變量）分析 —— 表、散點、跨模型／ArcFace 總圖。
+"""鏡射不對稱的 ANCOVA（年齡共變量）分析：表、散點、跨模型／ArcFace 總圖。
 
-ANCOVA 用全體 subject（不配對），回答「同齡下 AD/HC 是否仍有差」：
-  score = β0 + β1·age + β2·group(arm1=1)，β2＝年齡校正後的組別效應（兩平行迴歸線的垂直間距）。
-另以交互模型 score = β0 + β1·age + β2·group + β3·(age×group) 取 β3＝兩組「年齡斜率」差
-（slope-homogeneity 檢定，H0:β3=0 即兩線平行）；與平行模型分開擬合，不影響上面的 β0/β1/β2。
+平行斜率 score = β0 + β1·age + β2·group，β2＝年齡校正後組別差；另以交互模型取 β3＝兩組年齡
+斜率差（H0:β3=0，與平行模型分開擬合、不動 β0/β1/β2）。底層 import 自 asymmetry_stat。
 
-共用底層（scorer 分數、比較集合、樣式常數）直接 import 自 asymmetry_stat；本檔只放 ANCOVA。
-
-四種輸出（--mode）：
-  table   每 method × 4 比較的 ANCOVA 表（asymmetry_score_stat_ancova.xlsx）+ ancova/<method>.png
-          AD-vs-HC 散點（雙尾 group β/p）。輸出到 <feature_stat>/<cohort>/<bg>/<model>/。
-  age-slope 每組各建 score~β0+β1·age：表（列＝8 method、欄＝AD/NAD/ACS/HC 的 β1 單尾 p）+
-          4 組×{L1,L2}·diff 散點圖。輸出 <feature_stat>/<cohort>/<bg>/<model>/asymmetry_age_slope.{xlsx,png}。
-  grid    4 模型 × 8 method 的 ANCOVA 散點總圖（AD-vs-HC，雙尾 adj β/p）。
-          輸出 <feature_stat>/<cohort>/<bg>/ancova_grid.png。
-  arcface ArcFace 32 格（列＝2 slice[full/matched]×4 族群比較、欄＝4 norm；單尾 group p，
-          標 β0/β1/β2/β3）。另切出 full / matched 兩張 4×2（只 L1·diff、L2·diff）。輸出
-          <feature_stat>/<cohort>/<bg>/arcface/ancova/{ancova_grid_arcface,_full,_matched}.png。
+--mode 輸出（皆在 <feature_stat>/<cohort>/<bg>/…）：
+  table     <model>/asymmetry_score_stat_ancova.xlsx + ancova/<method>.png（AD-vs-HC 散點）
+  age-slope <model>/asymmetry_age_slope.{xlsx,png}（各組 score~age，β1 單尾）
+  grid      ancova_grid.png（4 模型 × 8 method，AD-vs-HC）
+  arcface   arcface/ancova/ancova_grid_arcface{,_full,_matched}.png（32 格 + full/matched 切分）
 
 Usage:
-    python scripts/embedding/asymmetry_ancova.py --mode table     [--model arcface]
-    python scripts/embedding/asymmetry_ancova.py --mode age-slope [--model arcface]
-    python scripts/embedding/asymmetry_ancova.py --mode grid
-    python scripts/embedding/asymmetry_ancova.py --mode arcface
+    python scripts/embedding/asymmetry_ancova.py --mode {table|age-slope|grid|arcface} [--model arcface]
 """
 
 import argparse
@@ -111,23 +99,15 @@ def _coef(b):
 
 
 def _one_sided_p(b, p2):
-    """係數的單尾 p（H1: 係數 > 0）。由雙尾 p2 與係數正負號精確換算（β2、β3 通用）。
-
-    上尾檢定：t = b/se，p_up = P(T>t)。因 p2 = 2·P(T>|t|)，故 b≥0 時 p_up = p2/2、
-    b<0 時 p_up = 1 − p2/2。
-    """
+    """雙尾 p2 → 單尾 p（H1: 係數 > 0）：b≥0 取 p2/2，否則 1 − p2/2。β2、β3 通用。"""
     return p2 / 2 if b >= 0 else 1 - p2 / 2
 
 
 def _slope_diff_fit(scores, age, s1, s2):
-    """OLS score ~ 1 + age + group + age×group（交互模型）於全體 subject，回交互項。
+    """交互模型 score ~ 1 + age + group + age×group，回 (b3, b3_p2)。
 
-    β3＝age×group 係數＝arm1 與 arm2 的「年齡斜率」差（arm1_slope − arm2_slope）；
-    檢定 H0:β3=0（兩組對年齡斜率相同／兩線平行）。與平行斜率 _ancova_fit 分開擬合，
-    不影響其 β0/β1/β2 數值。
-
-    Returns:
-        (b3, b3_p2)；b3_p2 為雙尾 t-test p。資料不足（任一組 <2 或自由度 ≤0）回 None。
+    b3＝age×group 係數＝兩組年齡斜率差，b3_p2 雙尾。與 _ancova_fit 分開擬合、不影響其
+    β0/β1/β2。資料不足（任一組 <2 或自由度 ≤0）回 None。
     """
     a1 = [b for b in s1 if b in scores and b in age]
     a2 = [b for b in s2 if b in scores and b in age]
@@ -149,12 +129,7 @@ def _slope_diff_fit(scores, age, s1, s2):
 
 
 def _slope_fit(scores, age, members):
-    """單組簡單迴歸 score ~ 1 + age（H0: β1=0）。
-
-    Returns:
-        (n, b0, b1, b1_p2)；b1_p2 為雙尾 t-test p（單尾由呼叫端用 _one_sided_p 換算）。
-        資料不足（<3 或自由度 ≤0）回 None。
-    """
+    """單組簡單迴歸 score ~ 1 + age，回 (n, b0, b1, b1_p2)（b1_p2 雙尾）。資料不足（<3）回 None。"""
     ids = [b for b in members if b in scores and b in age]
     if len(ids) < 3:
         return None
@@ -187,11 +162,9 @@ def _age_slope_groups(age):
 # ── 表 + 散點（每模型）──────────────────────────────────────────────────────
 
 def build_ancova_blocks(methods_scores, age, comparisons, one_sided=False):
-    """每 method × comparison 一列。回 [(label, rows)]；
-    row=(comp, n, unadj字串, group字串, age字串, fit, slope-diff字串)。
+    """每 method × comparison 一列，回 [(label, rows)]；row=(comp, n, unadjΔ, group, age, fit, β3)。
 
-    one_sided=True 時，未校正 Δ 與年齡校正 group β 改單尾（H1: arm1>arm2、β2>0；由雙尾 p 與
-    符號換算）；age β 與 slope-diff β3 維持雙尾（age 為共變量、β3 只測斜率「不同」無方向假設）。
+    one_sided=True 時未校正 Δ 與 group β2 改單尾（H1: arm1>arm2）；age β1、slope-diff β3 恆雙尾。
     """
     blocks = []
     for label, scores in methods_scores:
@@ -220,10 +193,7 @@ _COL_W_ANCOVA = {"A": 24.7, "B": 18.0, "C": 12.0, "D": 8.0,
 
 
 def write_ancova_xlsx(model, bg_mode, blocks, out_path, col_w=None):
-    """ANCOVA 表：每 method × comparison 一列。合併 Model(A)/Method(B)。
-
-    col_w：欄寬 dict（預設 _COL_W_ANCOVA）；傳入可覆寫（B 欄放數學式時加寬）。
-    """
+    """寫 ANCOVA 表：每 method × comparison 一列，合併 Model/Method 欄。col_w 可覆寫欄寬。"""
     wb = Workbook()
     ws = wb.active
     ws.title = f"ancova_{'bg' if bg_mode == 'background' else 'nobg'}"
@@ -370,8 +340,7 @@ def build_model_grid(cohort, bg_mode, out_path):
 # ── ArcFace 32 格 ───────────────────────────────────────────────────────────
 
 def _cell(ax, scores, age, case, ctrl, fit):
-    """單格：score-vs-age 散點（case 紅 / control 藍）＋兩條平行 ANCOVA 線，
-    左上標 β0/β1/β2 與 β3（age×group 斜率差）。β2 單尾（H1: β2>0）、β3 雙尾（H1: β3≠0）。"""
+    """單格 score-vs-age 散點 + 兩條平行 ANCOVA 線，左上標 β0/β1/β2（單尾）與 β3（雙尾）。"""
     case_pts = [(age[b], scores[b]) for b in case if b in scores and b in age]
     ctrl_pts = [(age[b], scores[b]) for b in ctrl if b in scores and b in age]
     for pts, color in [(ctrl_pts, _CTRL), (case_pts, _CASE)]:

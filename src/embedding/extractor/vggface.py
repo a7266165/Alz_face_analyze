@@ -57,9 +57,8 @@ class VGGFaceExtractor(EmbeddingExtractor):
     def _limit_tf_threads() -> None:
         """依 EMB_CPU_CORES 限制 TF 的 CPU 執行緒。
 
-        TF 不讀 OMP_NUM_THREADS / TF_NUM_*THREADS（實測 get_intra/inter 仍為 0=用滿核心），
-        必須在任何 op 執行前呼叫 threading API 才生效；故在 deepface(→TF) 匯入前先設定。
-        環境變數由 scripts/embedding/extract.py 的 setup_cpu_limit 設定。
+        TF 不讀 OMP/TF_NUM_*THREADS，須在任何 op 前呼叫 threading API 才生效，故在 import
+        deepface(→TF) 前設定；EMB_CPU_CORES 由 extract.py 的 setup_cpu_limit 匯出。
         """
         cores = int(os.environ.get("EMB_CPU_CORES", "0") or 0)
         if cores <= 0:

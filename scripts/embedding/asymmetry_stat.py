@@ -1,24 +1,12 @@
-"""鏡射不對稱的族群描述統計（四種 scorer）+ 小提琴圖。
+"""鏡射不對稱的族群描述統計（四種 scorer）+ 小提琴圖；兼作 asymmetry 分析的共用底層
+（scorer 分數、比較集合、樣式常數，供 asymmetry_ancova.py import）。
 
-本檔同時是 asymmetry 分析的「共用底層」：scorer 分數、比較集合、樣式常數都定義在此，
-ANCOVA 相關（表 / 散點 / 跨模型總圖）拆到 asymmetry_ancova.py，從這裡 import 共用函式。
+每 subject 一分，四種 scorer 皆走 build_scorer、共用已落地 .npy：l1_norm / l2_norm（差異向量
+L1/L2，無 CV）、centroid_dist / lda_projection（監督，fit AD-vs-HC，GroupKFold OOF 防 visit 洩漏）。
+per-pair 評分 → 聚到 visit → 跨 visit 平均成每 subject 一分；監督分數越高＝越像 AD。
 
-每 subject 一個分數，四種 scorer（皆零重新提取、共用已落地 .npy；全走
-src.embedding.classification.build_scorer）：
-  Σ|l − r|        —— 差異向量 L1 norm（l1_norm；純 norm、無 CV）
-  √Σ(l − r)²      —— 差異向量 L2 norm（l2_norm；純 norm、無 CV）
-  centroid_dist   —— 離 AD/HC 質心的 cosine 距離差（監督，fit AD-vs-HC，GroupKFold OOF）
-  lda_projection  —— LDA 判別軸投影（監督，fit AD-vs-HC，GroupKFold OOF）
-一律 per-pair（photo_mode="all"）：每個 pair 各自評分 → _pool_to_id 聚到 visit → 跨 visit 平均
-成每 subject 一分；GroupKFold 依 subject 分組防 visit 洩漏。監督式分數越高＝越像 AD，配對前後
-共用同一份 forward OOF、差別只在納入哪些 subject。
-
-主表（xlsx）每個 method × 4 組比較 AD-vs-{HC,NAD,ACS} 與 NAD-vs-ACS，含 mean±SD、
-Welch t-test p、以及「score 直接當預測」的 ROC AUC（arm1 為正類）。輸出兩個檔：
-  asymmetry_score_stat.xlsx              —— full（未配對；NAD-vs-ACS = 全體直接比）
-  asymmetry_score_stat_1by1matched.xlsx  —— 1:1 配對（AD-vs-HC 一條全域配對切片；
-                                            NAD-vs-ACS 另做一條 NAD-vs-ACS 年齡配對）
-另出 violin/{full,1by1matched}/<method>.png（三族群分布）。
+輸出 asymmetry_score_stat{,_1by1matched}.xlsx（每 method × 4 組比較，mean±SD、Welch p、ROC AUC）
++ violin/{full,1by1matched}/<method>.png。
 """
 
 import argparse
@@ -55,10 +43,9 @@ logger = logging.getLogger(__name__)
 
 # 對齊既有 embedding 分類常用的 cohort（與 repo DEFAULT_COHORT_TOKENS 不同：HC 取 all、P 取 cdrall）
 DEFAULT_TOKENS = ("p_first", "p_cdrall", "hc_all", "hc_cdrall_or_mmseall")
-# (顯示名, 載入 variant, scorer 名, violin 檔名)。順序＝表中由上到下的 method 區塊。
-# 乾淨版：2 種 asymmetry vector（diff / rel_diff，皆帶號）× 4 種 scorer = 8 區塊。
-# abs 不另列為 variant：norm 對 sign 不敏感（l1/l2 吃帶號＝吃 |·|）；centroid/lda 用帶號 diff
-# （|diff| 全非負會使兩質心近共線、centroid 退化成 chance，帶號才分得開）。四者皆走 build_scorer。
+# (顯示名, 載入 variant, scorer 名, violin 檔名)；順序＝表中 method 區塊由上到下。
+# 2 種帶號 asymmetry vector（diff / rel_diff）× 4 scorer = 8 區塊。不另列 abs：norm 對 sign 不敏感、
+# centroid/lda 需帶號才分得開（|diff| 全非負會使兩質心近共線、退化成 chance）。
 METHODS = [
     ("L1 · diff", "differences", "l1_norm", "l1_diff"),
     ("L2 · diff", "differences", "l2_norm", "l2_diff"),
@@ -76,14 +63,10 @@ MODEL_DISPLAY = {"arcface": "ArcFace", "topofr": "TopoFR", "dlib": "dlib", "vggf
 # ── 分數 ────────────────────────────────────────────────────────────────
 
 def scorer_scores(cohort_df, model, variant, bg_mode, method) -> dict:
-    """某 scorer 的每 subject 分數：forward GroupKFold OOF（依 subject 分組防洩漏），跨 visit 平均。
+    """某 scorer 的每 subject 分數：per-pair 套 build_scorer → forward GroupKFold OOF → 跨 visit 平均。
 
-    對 per-pair 向量(photo_mode="all")套 build_scorer(method)：l1_norm/l2_norm 直接取 norm(無 CV)，
-    centroid_dist/lda_projection fit AD(P=1)-vs-HC(else=0) 取 OOF decision_function(越高越像 AD)。
-    _pool_to_id 先把每列(pair)分數聚到 visit、再於此跨 visit 平均成每 subject 一個分數。
-
-    Returns:
-        dict base_id -> score。缺 .npy 者由 load_feature_matrix 略過；全缺的 subject 不入列。
+    l1/l2_norm 直接取 norm（無 CV）；centroid_dist/lda_projection fit AD(P=1)-vs-HC 取 OOF
+    decision_function（越高越像 AD）。Returns dict base_id -> score；缺 .npy 者略過。
     """
     label_map = {i: int(g == "P") for i, g in zip(cohort_df["ID"], cohort_df["Group"])}
     X, row_ids = load_feature_matrix(
@@ -152,11 +135,8 @@ def _auc(a1, a2):
 
 
 def build_blocks(methods_scores, comparisons, one_sided=False):
-    """methods_scores: [(label, scores_dict)]。回 [(label, rows)]，rows 每 2 列一組比較。
-
-    one_sided=True 時 p 改為單尾、方向 H1: arm1 > arm2（arm1＝比較的前者/case）：
-    由雙尾 Welch p 與兩臂均值方向換算（mean1≥mean2 取 p/2，否則 1−p/2；對 t 分布精確）。
-    """
+    """每 method 一區塊（每組比較 2 列）。one_sided=True 時 p 改單尾、H1: arm1 > arm2
+    （由雙尾 Welch p 與均值方向換算：mean1≥mean2 取 p/2，否則 1−p/2）。"""
     blocks = []
     for label, scores in methods_scores:
         rows = []
@@ -185,10 +165,7 @@ _ROW_H_HEADER, _ROW_H_DATA = 24, 18  # 標題列 / 數值列 列高
 
 
 def write_xlsx(model, bg_mode, blocks, out_path, col_w=None):
-    """blocks: [(label, rows)]，rows 每 2 列一組比較。合併 Model/Method/p/AUC；n 僅兩臂相等時合併。
-
-    col_w：欄寬 dict（預設 _COL_W）；傳入可覆寫（例如 B 欄放數學式時加寬）。
-    """
+    """寫主表：每組比較 2 列，合併 Model/Method/p/AUC，n 僅兩臂相等時合併。col_w 可覆寫欄寬。"""
     wb = Workbook()
     ws = wb.active
     ws.title = f"score_p_value_{'bg' if bg_mode == 'background' else 'nobg'}"
