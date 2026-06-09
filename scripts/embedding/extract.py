@@ -56,6 +56,9 @@ def setup_cpu_limit(max_cores: Optional[int]):
         "NUMEXPR_NUM_THREADS",
     ):
         os.environ[var] = str(max_cores)
+    # TF 不吃 OMP_NUM_THREADS / TF_NUM_*THREADS（實測 get_intra/inter 仍為 0=用滿全部核心），
+    # 必須由 TF-based extractor 於 init 時呼叫 tf.config.threading.set_*；用此環境變數把上限傳過去。
+    os.environ["EMB_CPU_CORES"] = str(max_cores)
     try:
         cv2.setNumThreads(max_cores)
     except Exception:

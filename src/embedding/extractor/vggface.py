@@ -2,6 +2,7 @@
 VGGFace 特徵提取器（DeepFace VGG-Face，輸出 4096 維）。
 """
 
+import os
 from typing import Optional
 import numpy as np
 import logging
@@ -40,6 +41,7 @@ class VGGFaceExtractor(EmbeddingExtractor):
         """載入 DeepFace VGG-Face 模型，並以空圖預熱一次。"""
         if self._deepface is not None:
             return
+        self._limit_tf_threads()
         from deepface import DeepFace
 
         # 預熱模型
@@ -50,6 +52,25 @@ class VGGFaceExtractor(EmbeddingExtractor):
             enforce_detection=False,
         )
         self._deepface = DeepFace
+
+    @staticmethod
+    def _limit_tf_threads() -> None:
+        """依 EMB_CPU_CORES 限制 TF 的 CPU 執行緒。
+
+        TF 不讀 OMP_NUM_THREADS / TF_NUM_*THREADS（實測 get_intra/inter 仍為 0=用滿核心），
+        必須在任何 op 執行前呼叫 threading API 才生效；故在 deepface(→TF) 匯入前先設定。
+        環境變數由 scripts/embedding/extract.py 的 setup_cpu_limit 設定。
+        """
+        cores = int(os.environ.get("EMB_CPU_CORES", "0") or 0)
+        if cores <= 0:
+            return
+        import tensorflow as tf
+        try:
+            tf.config.threading.set_intra_op_parallelism_threads(cores)
+            tf.config.threading.set_inter_op_parallelism_threads(cores)
+            logger.info(f"TF CPU 執行緒上限: intra/inter = {cores}")
+        except RuntimeError as e:
+            logger.warning(f"無法設定 TF 執行緒上限（TF runtime 已初始化）: {e}")
 
     def extract(self, image: np.ndarray) -> Optional[np.ndarray]:
         """
