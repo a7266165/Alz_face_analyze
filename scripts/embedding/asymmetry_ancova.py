@@ -150,8 +150,8 @@ def build_ancova_blocks(methods_scores, age, comparisons, one_sided=False):
     """每 method × comparison 一列。回 [(label, rows)]；
     row=(comp, n, unadj字串, group字串, age字串, fit, slope-diff字串)。
 
-    one_sided=True 時，未校正 Δ、年齡校正 group β、slope-diff β3 一律改單尾（H1: arm1>arm2、
-    β2>0、β3>0；由雙尾 p 與符號換算）；age β 仍維持雙尾（年齡為共變量、無方向假設）。
+    one_sided=True 時，未校正 Δ 與年齡校正 group β 改單尾（H1: arm1>arm2、β2>0；由雙尾 p 與
+    符號換算）；age β 與 slope-diff β3 維持雙尾（age 為共變量、β3 只測斜率「不同」無方向假設）。
     """
     blocks = []
     for label, scores in methods_scores:
@@ -165,14 +165,8 @@ def build_ancova_blocks(methods_scores, age, comparisons, one_sided=False):
             if one_sided:
                 unadj_p = unadj_p / 2 if unadj >= 0 else 1 - unadj_p / 2
                 gp = gp / 2 if b2 >= 0 else 1 - gp / 2
-            sd = _slope_diff_fit(scores, age, s1, s2)
-            if sd is None:
-                b3_s = "NA"
-            else:
-                b3, b3_p = sd
-                if one_sided:
-                    b3_p = _one_sided_p(b3, b3_p)
-                b3_s = f"{_coef(b3)} ({_pstr(b3_p)})"
+            sd = _slope_diff_fit(scores, age, s1, s2)   # β3 恆雙尾
+            b3_s = "NA" if sd is None else f"{_coef(sd[0])} ({_pstr(sd[1])})"
             rows.append((f"{n1} vs {n2}", n,
                          f"{_coef(unadj)} ({_pstr(unadj_p)})",
                          f"{_coef(b2)} ({_pstr(gp)})",
@@ -337,7 +331,7 @@ def build_model_grid(cohort, bg_mode, out_path):
 
 def _cell(ax, scores, age, case, ctrl, fit):
     """單格：score-vs-age 散點（case 紅 / control 藍）＋兩條平行 ANCOVA 線，
-    左上標 β0/β1/β2 與 β3（age×group 斜率差），p 皆單尾（H1: β2>0、β3>0）。"""
+    左上標 β0/β1/β2 與 β3（age×group 斜率差）。β2 單尾（H1: β2>0）、β3 雙尾（H1: β3≠0）。"""
     case_pts = [(age[b], scores[b]) for b in case if b in scores and b in age]
     ctrl_pts = [(age[b], scores[b]) for b in ctrl if b in scores and b in age]
     for pts, color in [(ctrl_pts, _CTRL), (case_pts, _CASE)]:
@@ -355,11 +349,11 @@ def _cell(ax, scores, age, case, ctrl, fit):
     ax.plot(xr, b0 + b2 + b1 * xr, color=_CASE, lw=1.6)       # case（group=1，+β2）
     sd = _slope_diff_fit(scores, age, case, ctrl)
     b3_line = ("$\\beta_3$: NA" if sd is None
-               else f"$\\beta_3$={sd[0]:+.3g} (age×grp), p={_pstr(_one_sided_p(*sd))}")
+               else f"$\\beta_3$={sd[0]:+.3g} (age×grp), p={_pstr(sd[1])}")
     txt = (f"$\\beta_0$={b0:+.3g}, $\\beta_1$={b1:+.3g} (age)\n"
            f"$\\beta_2$={b2:+.3g} (group), p={_pstr(_one_sided_p(b2, gp))}\n"
            f"{b3_line}\n"
-           f"(1-sided: $\\beta_2$>0, $\\beta_3$>0)")
+           r"($\beta_2$: 1-sided >0; $\beta_3$: 2-sided)")
     ax.text(0.04, 0.96, txt, transform=ax.transAxes, va="top", ha="left",
             fontsize=7, bbox=dict(boxstyle="round", fc="white", ec="0.7", alpha=0.85))
 
@@ -399,8 +393,8 @@ def build_arcface_grid(cohort, bg_mode, level, caliper, out_path):
                       markersize=8, label="2nd group (control, group=0)")]
     axes[0][-1].legend(handles=handles, loc="lower right", fontsize=8, framealpha=0.9)
     fig.suptitle(f"{MODEL_DISPLAY[_ARCFACE]} — ANCOVA: asymmetry score vs age, parallel-slope fit "
-                 r"($\beta_2$ = age-adjusted case−control gap; $\beta_3$ = age×group slope difference; "
-                 r"1-sided p test $\beta_2$>0 and $\beta_3$>0, i.e. case > control)",
+                 r"($\beta_2$ = age-adjusted case−control gap, 1-sided p ($\beta_2$>0, case>control); "
+                 r"$\beta_3$ = age×group slope difference, 2-sided p ($\beta_3\neq$0))",
                  fontsize=13, fontweight="bold")
     fig.tight_layout(rect=(0, 0, 1, 0.975))
     out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -436,8 +430,8 @@ def _arcface_slice_fig(slice_label, comps, col_scores, age, out_path):
     axes[0][-1].legend(handles=handles, loc="lower right", fontsize=8, framealpha=0.9)
     fig.suptitle(f"{MODEL_DISPLAY[_ARCFACE]} — ANCOVA ({slice_label}, diff only): "
                  r"asymmetry score vs age, parallel-slope fit "
-                 r"($\beta_2$ = age-adj gap, $\beta_3$ = age×group slope diff; "
-                 r"1-sided p: $\beta_2$>0, $\beta_3$>0)",
+                 r"($\beta_2$ = age-adj gap [1-sided p>0]; $\beta_3$ = age×group slope diff "
+                 r"[2-sided p$\neq$0])",
                  fontsize=12, fontweight="bold")
     fig.tight_layout(rect=(0, 0, 1, 0.96))
     out_path.parent.mkdir(parents=True, exist_ok=True)
