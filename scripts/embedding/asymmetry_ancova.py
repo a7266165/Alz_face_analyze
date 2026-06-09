@@ -7,9 +7,11 @@ ANCOVA 用全體 subject（不配對），回答「同齡下 AD/HC 是否仍有�
 
 共用底層（scorer 分數、比較集合、樣式常數）直接 import 自 asymmetry_stat；本檔只放 ANCOVA。
 
-三種輸出（--mode）：
+四種輸出（--mode）：
   table   每 method × 4 比較的 ANCOVA 表（asymmetry_score_stat_ancova.xlsx）+ ancova/<method>.png
           AD-vs-HC 散點（雙尾 group β/p）。輸出到 <feature_stat>/<cohort>/<bg>/<model>/。
+  age-slope 每組各建 score~β0+β1·age：表（列＝8 method、欄＝AD/NAD/ACS/HC 的 β1 單尾 p）+
+          4 組×{L1,L2}·diff 散點圖。輸出 <feature_stat>/<cohort>/<bg>/<model>/asymmetry_age_slope.{xlsx,png}。
   grid    4 模型 × 8 method 的 ANCOVA 散點總圖（AD-vs-HC，雙尾 adj β/p）。
           輸出 <feature_stat>/<cohort>/<bg>/ancova_grid.png。
   arcface ArcFace 32 格（列＝2 slice[full/matched]×4 族群比較、欄＝4 norm；單尾 group p，
@@ -17,7 +19,8 @@ ANCOVA 用全體 subject（不配對），回答「同齡下 AD/HC 是否仍有�
           <feature_stat>/<cohort>/<bg>/arcface/ancova/{ancova_grid_arcface,_full,_matched}.png。
 
 Usage:
-    python scripts/embedding/asymmetry_ancova.py --mode table   [--model arcface]
+    python scripts/embedding/asymmetry_ancova.py --mode table     [--model arcface]
+    python scripts/embedding/asymmetry_ancova.py --mode age-slope [--model arcface]
     python scripts/embedding/asymmetry_ancova.py --mode grid
     python scripts/embedding/asymmetry_ancova.py --mode arcface
 """
@@ -143,6 +146,43 @@ def _slope_diff_fit(scores, age, s1, s2):
     b3 = beta[3]
     b3_p2 = 2 * sp_stats.t.sf(np.abs(b3 / se[3]), dof)
     return b3, b3_p2
+
+
+def _slope_fit(scores, age, members):
+    """單組簡單迴歸 score ~ 1 + age（H0: β1=0）。
+
+    Returns:
+        (n, b0, b1, b1_p2)；b1_p2 為雙尾 t-test p（單尾由呼叫端用 _one_sided_p 換算）。
+        資料不足（<3 或自由度 ≤0）回 None。
+    """
+    ids = [b for b in members if b in scores and b in age]
+    if len(ids) < 3:
+        return None
+    y = np.array([scores[b] for b in ids])
+    ag = np.array([age[b] for b in ids])
+    X = np.column_stack([np.ones_like(y), ag])
+    dof = len(y) - 2
+    if dof <= 0:
+        return None
+    beta, *_ = np.linalg.lstsq(X, y, rcond=None)
+    resid = y - X @ beta
+    se = np.sqrt(np.diag((resid @ resid) / dof * np.linalg.inv(X.T @ X)))
+    b1_p2 = 2 * sp_stats.t.sf(np.abs(beta[1] / se[1]), dof)
+    return len(y), beta[0], beta[1], b1_p2
+
+
+_GROUP_COLOR = {"AD": "#C44E52", "NAD": "#55A868", "ACS": "#4C72B0", "HC": "#333333"}
+
+
+def _age_slope_groups(age):
+    """per-group age-slope 的 4 組（互斥的 AD/NAD/ACS + 合併對照 HC=NAD∪ACS）。"""
+    g = {b: group_of(b) for b in age}
+    return [
+        ("AD",  {b for b, gg in g.items() if gg == "P"}),
+        ("NAD", {b for b, gg in g.items() if gg == "NAD"}),
+        ("ACS", {b for b, gg in g.items() if gg == "ACS"}),
+        ("HC",  {b for b, gg in g.items() if gg in ("NAD", "ACS")}),
+    ]
 
 # ── 表 + 散點（每模型）──────────────────────────────────────────────────────
 
@@ -451,13 +491,112 @@ def build_arcface_diff_splits(cohort, bg_mode, level, caliper, out_dir):
     _arcface_slice_fig("matched", matched_comps, col_scores, age,
                        out_dir / "ancova_grid_arcface_matched.png")
 
+# ── per-group 年齡斜率（每組各建一條 score~age）───────────────────────────────
+
+def build_age_slope_table(cohort, model, bg_mode, out_path):
+    """每組各自迴歸 score~β0+β1·age 的表：列＝8 method，欄＝AD/NAD/ACS/HC 的 β1（單尾 p，H1: β1>0）。"""
+    df = cohort_list(*cohort)
+    age = per_subject_age(df)
+    groups = _age_slope_groups(age)
+    methods_scores = [(label, scorer_scores(df, model, variant, bg_mode, method))
+                      for label, variant, method, _ in METHODS]
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = f"age_slope_{'bg' if bg_mode == 'background' else 'nobg'}"
+    ws.append(["Embedding Model", "Asymmetry Method"]
+              + [f"{g} β1 (p) [n={len(s)}]" for g, s in groups])
+    first = 2
+    r = first
+    for label, scores in methods_scores:
+        ws.cell(r, 2, label)
+        for j, (_g, gset) in enumerate(groups):
+            sf = _slope_fit(scores, age, gset)
+            if sf is None:
+                cell = "NA"
+            else:
+                _n, _b0, b1, b1_p2 = sf
+                cell = f"{_coef(b1)} ({_pstr(_one_sided_p(b1, b1_p2))})"
+            ws.cell(r, 3 + j, cell)
+        r += 1
+    ws.cell(first, 1, MODEL_DISPLAY.get(model, model))
+    last = r - 1
+    ncol = 2 + len(groups)
+
+    for row in ws.iter_rows(min_row=1, max_row=last, max_col=ncol):
+        for c in row:
+            c.alignment = _CENTER
+            c.border = _BORDER
+            c.font = (_F_HEADER if c.row == 1
+                      else _F_BIG if c.column_letter in ("A", "B") else _F_DATA)
+    ws.merge_cells(start_row=first, start_column=1, end_row=last, end_column=1)
+    ws.column_dimensions["A"].width = 24.7
+    ws.column_dimensions["B"].width = 18.0
+    for j in range(len(groups)):
+        ws.column_dimensions[chr(ord("C") + j)].width = 22.0
+    ws.row_dimensions[1].height = _ROW_H_HEADER
+    for rr in range(first, last + 1):
+        ws.row_dimensions[rr].height = _ROW_H_DATA
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    wb.save(out_path)
+    logger.info(f"saved {out_path}")
+
+
+def build_age_slope_fig(cohort, model, bg_mode, out_path):
+    """列＝4 組（AD/NAD/ACS/HC）、欄＝L1·diff、L2·diff；每格單組 score~age 散點+迴歸線，標 β1 單尾 p。"""
+    df = cohort_list(*cohort)
+    age = per_subject_age(df)
+    groups = _age_slope_groups(age)
+    col_scores = [scorer_scores(df, model, v, bg_mode, m) for _, v, m in ARCFACE_DIFF_COLS]
+
+    nrows, ncols = len(groups), len(ARCFACE_DIFF_COLS)
+    fig, axes = plt.subplots(nrows, ncols, figsize=(4.2 * ncols, 2.8 * nrows),
+                             sharex=True, squeeze=False)
+    for row, (gname, gset) in enumerate(groups):
+        color = _GROUP_COLOR[gname]
+        for col, (clabel, _v, _m) in enumerate(ARCFACE_DIFF_COLS):
+            ax = axes[row][col]
+            sc = col_scores[col]
+            pts = [(age[b], sc[b]) for b in gset if b in sc and b in age]
+            if pts:
+                xs, ys = zip(*pts)
+                ax.scatter(xs, ys, s=6, alpha=0.30, color=color)
+            sf = _slope_fit(sc, age, gset)
+            if sf and pts:
+                _n, b0, b1, b1_p2 = sf
+                xr = np.array([min(xs), max(xs)])
+                ax.plot(xr, b0 + b1 * xr, color=color, lw=1.9)
+                ax.text(0.04, 0.96,
+                        f"$\\beta_1$={b1:+.3g} (age)\n"
+                        f"p={_pstr(_one_sided_p(b1, b1_p2))} (1-sided, $\\beta_1$>0)\n"
+                        f"n={_n}",
+                        transform=ax.transAxes, va="top", ha="left", fontsize=7,
+                        bbox=dict(boxstyle="round", fc="white", ec="0.7", alpha=0.85))
+            if row == 0:
+                ax.set_title(clabel, fontsize=12, fontweight="bold", pad=8)
+            if col == 0:
+                ax.set_ylabel(f"{gname}\n\nasymmetry score", fontsize=11, fontweight="bold")
+            if row == nrows - 1:
+                ax.set_xlabel("Age", fontsize=10)
+        logger.info(f"row done: {gname}")
+
+    fig.suptitle(f"{MODEL_DISPLAY.get(model, model)} — per-group age slope: score ~ β0 + β1·age "
+                 r"(1-sided p tests $\beta_1$>0, i.e. asymmetry rises with age)",
+                 fontsize=13, fontweight="bold")
+    fig.tight_layout(rect=(0, 0, 1, 0.97))
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(str(out_path), dpi=180, bbox_inches="tight", facecolor="white")
+    plt.close(fig)
+    logger.info(f"saved {out_path}")
+
 # ── 主流程 ──────────────────────────────────────────────────────────────────
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--mode", choices=["table", "grid", "arcface"], default="table",
-                    help="table=單模型表+散點；grid=4×8 跨模型總圖；arcface=ArcFace 32 格")
+    ap.add_argument("--mode", choices=["table", "grid", "arcface", "age-slope"], default="table",
+                    help="table=單模型表+散點；grid=4×8 跨模型總圖；arcface=ArcFace 32 格；"
+                         "age-slope=每組各建 score~age 迴歸（AD/NAD/ACS/HC 的 β1 單尾檢定）")
     ap.add_argument("--p-visit", choices=list(P_VISIT_TOKENS), default=DEFAULT_TOKENS[0])
     ap.add_argument("--p-score", choices=list(P_SCORE_TOKENS), default=DEFAULT_TOKENS[1])
     ap.add_argument("--hc-visit", choices=list(HC_VISIT_TOKENS), default=DEFAULT_TOKENS[2])
@@ -478,6 +617,13 @@ def main():
     if args.mode == "table":
         out_base = args.output_dir or (base / args.model)
         run_table(cohort, args.model, args.bg_mode, out_base)
+    elif args.mode == "age-slope":
+        out_base = args.output_dir or (base / args.model)
+        out_base.mkdir(parents=True, exist_ok=True)
+        build_age_slope_table(cohort, args.model, args.bg_mode,
+                              out_base / "asymmetry_age_slope.xlsx")
+        build_age_slope_fig(cohort, args.model, args.bg_mode,
+                            out_base / "asymmetry_age_slope.png")
     elif args.mode == "grid":
         build_model_grid(cohort, args.bg_mode, base / "ancova_grid.png")
     else:  # arcface
