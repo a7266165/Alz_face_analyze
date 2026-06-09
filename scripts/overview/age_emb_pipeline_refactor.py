@@ -1,24 +1,26 @@
-"""scripts/overview/age_emb_pipeline_mpl_refactor.py
-Refactor (matplotlib): three parallel top-down branches (Age / embedding /
-emotion) sharing one Preprocessing head.
+"""scripts/overview/age_emb_pipeline_refactor.py
+Refactor (matplotlib): same 3-branch pipeline as age_emb_pipeline_mpl_refactor,
+re-drawn on the stricter drawer toolkit (draw_pipeline_v2_common: indexed palette,
+content-driven node sizing, linespacing 1.2, uniform GAP/PADDING).
 
 Pipeline (top -> bottom):
   step 1  Preprocessing cluster (shared head: Detect..face/mirror)
   step 2  per-branch models   (Age x5 / embedding x4 / emotion x9)
   step 3  per-branch features (Predict Age x10 / 5 emb feats / 10 emo feats)
   step 4  demographic + cohort (left shared spine)
-  step 5  per-branch outputs + embedding eval chain
-          (Fwd/Rev train/CV -> eval-result -> eval_by -> contrasts
-           -> aggregator -> plotter)
+  step 5  per-branch outputs + eval chains
+          (Age/emo: -> full/1by1matched -> violin;
+           embedding: Fwd/Rev train/CV -> eval-result -> eval_by -> contrasts
+           -> aggregator -> full/1by1matched -> violin)
 
 Output:
-  workspace/overview/age_emb_pipeline_mpl_refactor.png
+  workspace/overview/age_emb_pipeline_refactor.png
 
 Usage:
-    python scripts/overview/age_emb_pipeline_mpl_refactor.py
+    python scripts/overview/age_emb_pipeline_refactor.py
 """
 import matplotlib.pyplot as plt
-from draw_age_emb_pipeline_common import *
+from draw_pipeline_v2_common import *
 
 
 _DC_PAD = 0.7
@@ -55,13 +57,12 @@ def _demo_cohort(ax, cx, s4_top):
 
     DEMO_ABOVE = ['Group', 'Number', 'Photo_Session', 'Sex']
     DEMO_BELOW = ['Age', 'BMI', 'MMSE', 'CASI', 'Global_CDR']
-    nw_dc = 2.4; gap_dc = 0.3
-    dax, da_tot = rowx(cx, len(DEMO_ABOVE), nw_dc, gap_dc)
-    dbx, db_tot = rowx(cx, len(DEMO_BELOW), nw_dc, gap_dc)
-    demo_w = max(da_tot, db_tot) + 0.9
-    psx, ps_tot = rowx(cx, 4, 2.6, 0.3)
-    hsx, hs_tot = rowx(cx, 2, 3.6, 0.3)
-    cohort_w = max(ps_tot, hs_tot, 4.2) + 0.9
+    PS = ['P: CDR all', 'P: CDR >=0.5', 'P: CDR >=1', 'P: CDR >=2']
+    HS = ['HC: CDR all\nor MMSE all', 'HC: CDR =0\nor MMSE >=26']
+    _rw = lambda labs: sum(node_w(l) for l in labs) + (len(labs) - 1) * GAP
+    demo_w = max(_rw(DEMO_ABOVE), _rw(DEMO_BELOW), node_w('Demographic')) + PADDING
+    cohort_w = max(_rw(PS), _rw(HS), _rw(['P: first', 'P: all']),
+                   node_w('Cohort (P + NAD + ACS)')) + PADDING
     big_w = max(demo_w, cohort_w) + 1.6
 
     # outer wrapper (cool lavender frame — harmonises the purple Demographic
@@ -70,60 +71,52 @@ def _demo_cohort(ax, cx, s4_top):
 
     # Demographic sub-cluster (top)
     cluster(ax, cx, (dg_top + dg_bot) / 2, demo_w, dg_bot - dg_top, C3['bg'])
-    node(ax, cx, dy_block, 3.0, NODE_H, 'Demographic', C3['nd'])
-    for x, lab in zip(dax, DEMO_ABOVE):
-        node(ax, x, dy_above, nw_dc, NODE_H, lab, C3['nd'])
+    node(ax, cx, dy_block, node_w('Demographic'), NODE_H, 'Demographic', C3['nd'])
+    dax, _, _ = prow(ax, cx, dy_above, DEMO_ABOVE, C3['nd'])
+    for x in dax:
         line(ax, cx, dy_block - NODE_H / 2, x, dy_above + NODE_H / 2)
-    for x, lab in zip(dbx, DEMO_BELOW):
-        node(ax, x, dy_below, nw_dc, NODE_H, lab, C3['nd'])
+    dbx, _, _ = prow(ax, cx, dy_below, DEMO_BELOW, C3['nd'])
+    for x in dbx:
         line(ax, cx, dy_block + NODE_H / 2, x, dy_below - NODE_H / 2)
 
     # Cohort sub-cluster (bottom)
     cluster(ax, cx, (co_top + co_bot) / 2, cohort_w, co_bot - co_top, C1['bg'])
-    pvx, _ = rowx(cx, 2, 2.0, 0.4)
-    for x, lab in zip(pvx, ['P: first', 'P: all']):
-        node(ax, x, cy_pv, 2.0, NODE_H, lab, C1['nd'])
-    for x, lab in zip(pvx, ['HC: first', 'HC: all']):
-        node(ax, x, cy_hv, 2.0, NODE_H, lab, C1['nd'])
+    pvx, _, _ = prow(ax, cx, cy_pv, ['P: first', 'P: all'], C1['nd'])
+    hvx, _, _ = prow(ax, cx, cy_hv, ['HC: first', 'HC: all'], C1['nd'])
     for px in pvx:
-        for hx in pvx:
+        for hx in hvx:
             line(ax, px, cy_pv + NODE_H / 2, hx, cy_hv - NODE_H / 2)
-    for x, lab in zip(psx, ['P: CDR all', 'P: CDR >=0.5',
-                            'P: CDR >=1', 'P: CDR >=2']):
-        node(ax, x, cy_ps, 2.6, NODE_H, lab, C1['nd'])
-    for hx in pvx:
+    psx, _, _ = prow(ax, cx, cy_ps, PS, C1['nd'])
+    for hx in hvx:
         for sx in psx:
             line(ax, hx, cy_hv + NODE_H / 2, sx, cy_ps - NODE_H / 2)
-    for x, lab in zip(hsx, ['HC: CDR all\nor MMSE all',
-                            'HC: CDR =0\nor MMSE >=26']):
-        node(ax, x, cy_hs, 3.6, NODE_H, lab, C1['nd'])
+    hsx, _, _ = prow(ax, cx, cy_hs, HS, C1['nd'])
     for sx in psx:
         for hx2 in hsx:
             line(ax, sx, cy_ps + NODE_H / 2, hx2, cy_hs - NODE_H / 2)
-    node(ax, cx, cy_fc, 4.2, NODE_H, 'Cohort (P + NAD + ACS)', C1['nd'])
+    node(ax, cx, cy_fc, node_w('Cohort (P + NAD + ACS)'), NODE_H,
+         'Cohort (P + NAD + ACS)', C1['nd'])
     for hx2 in hsx:
         line(ax, hx2, cy_hs + NODE_H / 2, cx, cy_fc - NODE_H / 2)
 
     # matched sub-cluster: 1by1matched/caliper, then 1by1matched's config
     # (subject/visit match -> priority) and a final matched-cohort output
-    mtx, mt_tot = rowx(cx, 2, 2.6, 0.6)
-    prx, pr_tot = rowx(cx, 3, 2.4, 0.65)
-    mt_w = max(mt_tot, pr_tot) + 0.9
+    MT = ['1 by 1 matched', 'caliper_group']
+    SV = ['subject_match', 'visit_match']
+    PR = ['no_priority', 'priority_acs', 'priority_nad']
+    mt_w = max(_rw(MT), _rw(SV), _rw(PR), node_w('matched cohort')) + PADDING
     mt_box_top = my - NODE_H / 2 - SP
     mt_box_bot = my4 + NODE_H / 2 + SP
     cluster(ax, cx, (mt_box_top + mt_box_bot) / 2, mt_w,
             mt_box_bot - mt_box_top, C_ES['bg'])
-    for x, lab in zip(mtx, ['1 by 1 matched', 'caliper_group']):
-        node(ax, x, my, 2.6, NODE_H, lab, C_ES['nd'])
-    for x, lab in zip(mtx, ['subject_match', 'visit_match']):
-        node(ax, x, my2, 2.6, NODE_H, lab, C_ES['nd'])
-    for x, lab in zip(prx, ['no_priority', 'priority_acs', 'priority_nad']):
-        node(ax, x, my3, 2.4, NODE_H, lab, C_ES['nd'])
-    node(ax, cx, my4, 3.6, NODE_H, 'matched cohort', C_ES['nd'])
+    mtx, _, _ = prow(ax, cx, my, MT, C_ES['nd'])
+    svx, _, _ = prow(ax, cx, my2, SV, C_ES['nd'])
+    prx, _, _ = prow(ax, cx, my3, PR, C_ES['nd'])
+    node(ax, cx, my4, node_w('matched cohort'), NODE_H, 'matched cohort', C_ES['nd'])
     # 1by1matched -> subject/visit match -> priority -> matched cohort
-    for sx in mtx:
+    for sx in svx:
         line(ax, mtx[0], my + NODE_H / 2, sx, my2 - NODE_H / 2)
-    for sx in mtx:
+    for sx in svx:
         for px in prx:
             line(ax, sx, my2 + NODE_H / 2, px, my3 - NODE_H / 2)
     for px in prx:
@@ -213,24 +206,22 @@ def build(mode='center'):
     # ════════════════════════════════════════════════════════
     # step 1 — Preprocessing (shared head)
     # ════════════════════════════════════════════════════════
-    x_face = PRE_CX - 2.2
-    x_mirr = PRE_CX + 2.2
-    nw_mir = 2.4
-    pre_w = 2 * (PRE_CX - (x_face - nw_mir / 2)) + 1.0
+    _rw = lambda labs: sum(node_w(l) for l in labs) + (len(labs) - 1) * GAP
+    MIR = ['face x 10', 'mirrored_face\nx 20']
+    BG = ['no_background', 'background']
+    pre_w = max(_rw(MIR), _rw(BG), node_w('Detect')) + PADDING
     cluster(ax, PRE_CX, (pre_top + pre_bot) / 2, pre_w,
             pre_bot - pre_top, C_PRE['bg'])
-    node(ax, PRE_CX, y_pre1, NW_PRE, NODE_H, 'Detect', C_PRE['nd'])
-    node(ax, PRE_CX, y_pre2, NW_PRE, NODE_H, 'Select', C_PRE['nd'])
+    node(ax, PRE_CX, y_pre1, node_w('Detect'), NODE_H, 'Detect', C_PRE['nd'])
+    node(ax, PRE_CX, y_pre2, node_w('Select'), NODE_H, 'Select', C_PRE['nd'])
     line(ax, PRE_CX, y_pre1 + NODE_H / 2, PRE_CX, y_pre2 - NODE_H / 2)
-    bgx, _ = rowx(PRE_CX, 2, 2.4, 0.65)
-    for x, lab in zip(bgx, ['no_background', 'background']):
-        node(ax, x, y_pre3, 2.4, NODE_H, lab, C_PRE['nd'])
+    bgx, _, _ = prow(ax, PRE_CX, y_pre3, BG, C_PRE['nd'])
+    for x in bgx:
         line(ax, PRE_CX, y_pre2 + NODE_H / 2, x, y_pre3 - NODE_H / 2)
-    node(ax, PRE_CX, y_pre4, NW_PRE, NODE_H, 'Align', C_PRE['nd'])
+    node(ax, PRE_CX, y_pre4, node_w('Align'), NODE_H, 'Align', C_PRE['nd'])
     for x in bgx:
         line(ax, x, y_pre3 + NODE_H / 2, PRE_CX, y_pre4 - NODE_H / 2)
-    node(ax, x_face, y_pre5, nw_mir, NODE_H, 'face x 10', C_PRE['nd'])
-    node(ax, x_mirr, y_pre5, nw_mir, NODE_H, 'mirrored_face\nx 20', C_PRE['nd'])
+    (x_face, x_mirr), _, _ = prow(ax, PRE_CX, y_pre5, MIR, C_PRE['nd'])
     line(ax, PRE_CX, y_pre4 + NODE_H / 2, x_face, y_pre5 - NODE_H / 2)
     line(ax, PRE_CX, y_pre4 + NODE_H / 2, x_mirr, y_pre5 - NODE_H / 2)
 
@@ -238,35 +229,31 @@ def build(mode='center'):
     # step 2 — per-branch models
     # ════════════════════════════════════════════════════════
     # Age models
-    amx, am_tot = rowx(X_AGE_C, len(AGE_MODELS), NW_AM, GAP_AM)
-    for x, lab in zip(amx, AGE_MODELS):
-        node(ax, x, y_mod, NW_AM, NODE_H, lab, C_AGE['nd'])
+    amx, _, am_tot = prow(ax, X_AGE_C, y_mod, AGE_MODELS, C_AGE['nd'])
+    for x in amx:
         line(ax, x_face, y_pre5 + NODE_H / 2, x, y_mod - NODE_H / 2)
 
     # embedding models  (LIT)
     EMB_MODELS = ['dlib', 'TopoFR', 'ArcFace', 'VGGFace']
-    nw_em = 2.2; gap_em = 0.5
-    emx, em_tot = rowx(X_EMB_C, len(EMB_MODELS), nw_em, gap_em)
-    for x, lab in zip(emx, EMB_MODELS):
-        node(ax, x, y_mod, nw_em, NODE_H, lab, C2['nd'])
+    emx, _, em_tot = prow(ax, X_EMB_C, y_mod, EMB_MODELS, C2['nd'])
+    for x in emx:
         for src in [x_face, x_mirr]:
             line(ax, src, y_pre5 + NODE_H / 2, x, y_mod - NODE_H / 2)
 
     # emotion models  (LIT)
     EMO_MODELS = ['EmoNet', 'Open\nFace', 'FER', 'HS\nEmotion', 'Libre\nFace',
                   'DAN', 'POSTER\n++', 'Py-Feat', 'ViT']
-    nw_om = 2.2; gap_om = 0.3
-    omx, om_tot = rowx(X_EMO_C, len(EMO_MODELS), nw_om, gap_om)
-    for x, lab in zip(omx, EMO_MODELS):
-        node(ax, x, y_mod, nw_om, NODE_H, lab, C_EMO['nd'])
+    omx, _, om_tot = prow(ax, X_EMO_C, y_mod, EMO_MODELS, C_EMO['nd'])
+    for x in omx:
         line(ax, x_face, y_pre5 + NODE_H / 2, x, y_mod - NODE_H / 2)
 
     # ════════════════════════════════════════════════════════
     # step 3 — per-branch features
     # ════════════════════════════════════════════════════════
     # Age: Predict Age x 10
-    age_w = 4.5
-    node(ax, X_AGE_C, y_feat, age_w, NODE_H, 'Predict Age x 10', C_AGE['nd'])
+    age_w = node_w('Predict Age mean x 1')
+    node(ax, X_AGE_C, y_feat, node_w('Predict Age x 10'), NODE_H,
+         'Predict Age x 10', C_AGE['nd'])
     for x in amx:
         line(ax, x, y_mod + NODE_H / 2, X_AGE_C, y_feat - NODE_H / 2)
 
@@ -274,82 +261,70 @@ def build(mode='center'):
     node(ax, X_AGE_C, y_d1, age_w, NODE_H, 'Predict Age mean x 1', C_AOUT['nd'])
     line(ax, X_AGE_C, y_feat + NODE_H / 2, X_AGE_C, y_d1 - NODE_H / 2)
 
-    ae_w = 5.5
+    ae_w = node_w('age_error = real_age - predicted_age')
     node(ax, X_AGE_C, y_d2, ae_w, NODE_H,
          'age_error = real_age - predicted_age', C_AOUT['nd'])
     line(ax, X_AGE_C, y_d1 + NODE_H / 2, X_AGE_C, y_d2 - NODE_H / 2)
 
     # full / 1 by 1 matched (1by1matched syncs to the left matched cluster colour)
-    afmx, afm_tot = rowx(X_AGE_C, 2, 2.6, 0.6)
-    for x, lab, nc in zip(afmx, ['full', '1 by 1 matched'],
-                          [C_SA['nd'], C_ES['nd']]):
-        node(ax, x, y_a_fm, 2.6, NODE_H, lab, nc)
+    afmx, _, afm_tot = prow(ax, X_AGE_C, y_a_fm, ['full', '1 by 1 matched'],
+                            [C_SA['nd'], C_ES['nd']])
+    for x in afmx:
         line(ax, X_AGE_C, y_d2 + NODE_H / 2, x, y_a_fm - NODE_H / 2)
 
-    vls_x, vls_tot = rowx(X_AGE_C, 4, 2.6, 0.5)
-    for x, lab in zip(vls_x, ['violin', 'lines', 'scatter', 'stat']):
-        node(ax, x, y_a_stat, 2.6, NODE_H, lab, C_AOUT['nd'])
+    vls_x, _, vls_tot = prow(ax, X_AGE_C, y_a_stat,
+                             ['violin', 'lines', 'scatter', 'stat'], C_AOUT['nd'])
+    for x in vls_x:
         for sx in afmx:
             line(ax, sx, y_a_fm + NODE_H / 2, x, y_a_stat - NODE_H / 2)
 
-    # embedding features split into TWO clusters, each centred on its sub-column
-    # (mirrors age_emb_pipeline_mpl): 'original' above X_ORIG, asymmetry above X_ASYM
-    nw_ef = 1.9; gap_ef = 0.3
+    # embedding features: 'original' above X_ORIG, asymmetry above X_ASYM
     ASYM_FEATS = ['diff', '|diff|', 'rel_diff', '|rel_diff|']
     x_orig = X_ORIG
-    asymx, asym_tot = rowx(X_ASYM, len(ASYM_FEATS), nw_ef, gap_ef)
-
-    node(ax, x_orig, y_feat, nw_ef, NODE_H, 'original', C2['nd'])
-    for x, lab in zip(asymx, ASYM_FEATS):
-        node(ax, x, y_feat, nw_ef, NODE_H, lab, C2['nd'])
+    node(ax, x_orig, y_feat, node_w('original'), NODE_H, 'original', C2['nd'])
+    asymx, _, asym_tot = prow(ax, X_ASYM, y_feat, ASYM_FEATS, C2['nd'])
     for fx in [x_orig] + asymx:
         for ex in emx:
             line(ax, ex, y_mod + NODE_H / 2, fx, y_feat - NODE_H / 2)
 
     # ── embedding step 5 (shares Age's y_d1/y_d2/y_d3 bands) ──
-    #   shared:    original + asymmetry -> mean/all (avg feature vectors?)
+    #   shared:    original + asymmetry -> mean/all
     #   original:  mean/all -> no_drop/PCA/DropCorr (dim-reduce) -> LR/XGB
-    #   asymmetry: mean/all -> L2/CD/LDA (three scoring methods)
-    # Each path is centred on its sub-column (X_ORIG / X_ASYM), aligned with the
-    # feature cluster above it. Cluster details kept (cf. age_emb_pipeline_mpl).
-
-    # mean/all is LIT (C_PA); the original path (dim-reduce + classifier) is LIT
-    # and shares ONE colour family (C4); only the asymmetry scoring stays dimmed.
+    #   asymmetry: mean/all -> Centroid Dist / LDA Proj / L2 Norm (scoring)
     # shared mean/all aggregation (both feature clusters feed it)
-    eax, ea_tot = rowx(X_EMB_C, 2, 2.4, 0.65)
-    cluster(ax, X_EMB_C, y_d1, ea_tot + 0.9, NODE_H + 2 * SP, C_PA['bg'])
-    for x, lab in zip(eax, ['mean', 'all']):
-        node(ax, x, y_d1, 2.4, NODE_H, lab, C_PA['nd'])
+    eax, _, ea_tot = prow(ax, X_EMB_C, y_d1, ['mean', 'all'], C_PA['nd'])
+    cluster(ax, X_EMB_C, y_d1, ea_tot + PADDING, NODE_H + 2 * SP, C_PA['bg'])
     for fx in [x_orig] + asymx:
         for px in eax:
             line(ax, fx, y_feat + NODE_H / 2, px, y_d1 - NODE_H / 2)
 
     # original path: dimensionality reduction (aligned under 'original')
-    pdx, pd_tot = rowx(X_ORIG, 3, 2.0, 0.5)
-    for x, lab in zip(pdx, ['no_drop', 'PCA', 'DropCorr']):
-        node(ax, x, y_d2, 2.0, NODE_H, lab, C4['nd'])
+    pdx, _, pd_tot = prow(ax, X_ORIG, y_d2, ['no_drop', 'PCA', 'DropCorr'], C4['nd'])
+    for x in pdx:
         for px in eax:
             line(ax, px, y_d1 + NODE_H / 2, x, y_d2 - NODE_H / 2)
 
-    # asymmetry path: three scoring methods (aligned under the asymmetry feats), LIT
-    scx, sc_tot = rowx(X_ASYM, 3, 2.9, 0.4)
-    cluster(ax, X_ASYM, y_d2, sc_tot + 0.8, NODE_H + 2 * SP, C_ASY['bg'])
+    # asymmetry path: three scoring methods (LaTeX labels -> explicit width)
     sc_labels = ['Centroid Dist\n$\\Delta\\cos(x,\\mu)$',
                  'LDA Proj\nFisher 1D',
                  'L2 Norm\n$\\sqrt{\\Sigma_i f_i^2}$']
     sc_colors = [C_ASY['nd'], C_ASY['nd'], C6['nd']]   # L2 Norm singled out, rightmost
+    sc_w = 2.9
+    scx, sc_tot = rowx(X_ASYM, 3, sc_w, GAP)
+    cluster(ax, X_ASYM, y_d2, sc_tot + PADDING, NODE_H + 2 * SP, C_ASY['bg'])
     for x, lab, nc in zip(scx, sc_labels, sc_colors):
-        node(ax, x, y_d2, 2.9, NODE_H, lab, nc)
+        node(ax, x, y_d2, sc_w, NODE_H, lab, nc)
         for px in eax:
             line(ax, px, y_d1 + NODE_H / 2, x, y_d2 - NODE_H / 2)
 
-    # original path: classifier (aligned under the dim-reduce row)
-    clfx, clf_tot = rowx(X_ORIG, 2, 4.2, 0.5)
-    for x, lab in zip(clfx, [
-            'Logistic Regression\n$C \\in \\{10^{-3}\\,.\\,.\\,10^{2}\\}$',
-            'XGBoost\nn_tree x max_depth x lr\n'
-            '{200,500,1k}x{3,6,9}x{.05,.1,.2}']):
-        node(ax, x, y_d3, 4.2, NODE_H, lab, C4['nd'])
+    # original path: classifier (LaTeX labels -> explicit width; XGBoost is 3-line)
+    clf_labels = ['Logistic Regression\n$C \\in \\{10^{-3}\\,.\\,.\\,10^{2}\\}$',
+                  'XGBoost\nn_tree x max_depth x lr\n'
+                  '{200,500,1k}x{3,6,9}x{.05,.1,.2}']
+    clf_w = 4.2
+    clfx, clf_tot = rowx(X_ORIG, 2, clf_w, GAP)
+    for x, lab in zip(clfx, clf_labels):
+        node(ax, x, y_d3, clf_w, hgt(lab), lab, C4['nd'])
         for dx in pdx:
             line(ax, dx, y_d2 + NODE_H / 2, x, y_d3 - NODE_H / 2)
 
@@ -358,23 +333,16 @@ def build(mode='center'):
     EMO_CT = ['contempt']
     EMO_SH = ['anger', 'disgust', 'fear', 'happiness',
               'sadness', 'surprise', 'neutral']
-    nw_of = 1.7; gap_of = 0.2; sub_gap = 0.8
-    _, va_tot = rowx(0, len(EMO_VA), nw_of, gap_of)
-    _, ct_tot = rowx(0, len(EMO_CT), nw_of, gap_of)
-    _, sh_tot = rowx(0, len(EMO_SH), nw_of, gap_of)
+    sub_gap = 0.8
+    va_tot = _rw(EMO_VA); ct_tot = _rw(EMO_CT); sh_tot = _rw(EMO_SH)
     total_of = va_tot + sub_gap + ct_tot + sub_gap + sh_tot
     of_left = X_EMO_C - total_of / 2
     va_c = of_left + va_tot / 2
     ct_c = of_left + va_tot + sub_gap + ct_tot / 2
     sh_c = of_left + va_tot + sub_gap + ct_tot + sub_gap + sh_tot / 2
-    vax, _ = rowx(va_c, len(EMO_VA), nw_of, gap_of)
-    ctx, _ = rowx(ct_c, len(EMO_CT), nw_of, gap_of)
-    shx, _ = rowx(sh_c, len(EMO_SH), nw_of, gap_of)
-    for c, tot, xs, labs in [(va_c, va_tot, vax, EMO_VA),
-                             (ct_c, ct_tot, ctx, EMO_CT),
-                             (sh_c, sh_tot, shx, EMO_SH)]:
-        for x, lab in zip(xs, labs):
-            node(ax, x, y_feat, nw_of, NODE_H, lab, C_EMO['nd'])
+    vax, _, _ = prow(ax, va_c, y_feat, EMO_VA, C_EMO['nd'])
+    ctx, _, _ = prow(ax, ct_c, y_feat, EMO_CT, C_EMO['nd'])
+    shx, _, _ = prow(ax, sh_c, y_feat, EMO_SH, C_EMO['nd'])
     # EmoNet -> V/A ; EmoNet+OpenFace -> contempt ; all 9 -> 7 shared  (LIT)
     for fx in vax:
         line(ax, omx[0], y_mod + NODE_H / 2, fx, y_feat - NODE_H / 2)
@@ -387,23 +355,20 @@ def build(mode='center'):
 
     # ── emo step 5: features -> mean/all -> full/1by1matched -> violin ──
     emo_all_feats = vax + ctx + shx
-    emax, ema_tot = rowx(X_EMO_C, 2, 2.4, 0.65)
-    cluster(ax, X_EMO_C, y_d1, ema_tot + 0.9, NODE_H + 2 * SP, C_PA['bg'])
-    for x, lab in zip(emax, ['mean', 'all']):
-        node(ax, x, y_d1, 2.4, NODE_H, lab, C_PA['nd'])
+    emax, _, ema_tot = prow(ax, X_EMO_C, y_d1, ['mean', 'all'], C_PA['nd'])
+    cluster(ax, X_EMO_C, y_d1, ema_tot + PADDING, NODE_H + 2 * SP, C_PA['bg'])
     for fx in emo_all_feats:
         for px in emax:
             line(ax, fx, y_feat + NODE_H / 2, px, y_d1 - NODE_H / 2)
 
-    eofmx, eofm_tot = rowx(X_EMO_C, 2, 2.6, 0.6)
-    cluster(ax, X_EMO_C, y_d2, eofm_tot + 0.9, NODE_H + 2 * SP, C_SA['bg'])
-    for x, lab, nc in zip(eofmx, ['full', '1 by 1 matched'],
-                          [C_SA['nd'], C_ES['nd']]):
-        node(ax, x, y_d2, 2.6, NODE_H, lab, nc)
+    eofmx, _, eofm_tot = prow(ax, X_EMO_C, y_d2, ['full', '1 by 1 matched'],
+                              [C_SA['nd'], C_ES['nd']])
+    cluster(ax, X_EMO_C, y_d2, eofm_tot + PADDING, NODE_H + 2 * SP, C_SA['bg'])
+    for x in eofmx:
         for px in emax:
             line(ax, px, y_d1 + NODE_H / 2, x, y_d2 - NODE_H / 2)
 
-    node(ax, X_EMO_C, y_d3, 3.0, NODE_H, 'violin', C_AOUT['nd'])
+    node(ax, X_EMO_C, y_d3, node_w('violin'), NODE_H, 'violin', C_AOUT['nd'])
     for sx in eofmx:
         line(ax, sx, y_d2 + NODE_H / 2, X_EMO_C, y_d3 - NODE_H / 2)
 
@@ -429,7 +394,7 @@ def build(mode='center'):
          y_d1 - NODE_H / 2 - PADY, y_a_stat + NODE_H / 2 + PADY, C_AOUT['bg'])
 
     # embedding: models + original/asymmetry features
-    eL = min(X_EMB_C - em_tot / 2, X_ORIG - nw_ef / 2) - PADX
+    eL = min(X_EMB_C - em_tot / 2, X_ORIG - node_w('original') / 2) - PADX
     eR = max(X_EMB_C + em_tot / 2, X_ASYM + asym_tot / 2) + PADX
     _grp(eL, eR, y_mr_top, y_ft_bot, C2['bg'])
 
@@ -438,12 +403,10 @@ def build(mode='center'):
     _grp(X_EMO_C - half, X_EMO_C + half, y_mr_top, y_ft_bot, C_EMO['bg'])
 
     # embedding original path: dim-reduce + classifier wrapped together (lit, C4)
+    clf_h = hgt(clf_labels[1])          # XGBoost is 3-line -> taller
     half = max(pd_tot, clf_tot) / 2 + PADX
     _grp(X_ORIG - half, X_ORIG + half,
-         y_d2 - NODE_H / 2 - PADY, y_d3 + NODE_H / 2 + PADY, C4['bg'])
-    # ...and one inner sub-cluster per row (drawn after the wrapper so they show)
-    cluster(ax, X_ORIG, y_d2, pd_tot + 0.6, NODE_H + 0.6, C4['bg'])
-    cluster(ax, X_ORIG, y_d3, clf_tot + 0.6, NODE_H + 0.6, C4['bg'])
+         y_d2 - NODE_H / 2 - PADY, y_d3 + clf_h / 2 + PADY, C4['bg'])
 
     # ════════════════════════════════════════════════════════
     # step 4 — Demographic + Cohort  (shared by all branches; standalone for now)
@@ -454,10 +417,11 @@ def build(mode='center'):
     # embedding eval: train/CV cluster (Fwd K fold + Rev 1by1matched+K fold)
     #   -> eval-result cluster (all+1by1 / 1by1+other) -> central eval_by
     # ════════════════════════════════════════════════════════
-    nw_col = 3.3; gap_col = 0.7; cw = nw_col + 0.8
-    fxl = X_EMB_C - (cw + gap_col) / 2
-    fxr = X_EMB_C + (cw + gap_col) / 2
-    grp_w = (fxr - fxl) + nw_col + 0.9          # spans both columns
+    EVAL_LABELS = ['K fold(K=10)', '1 by 1 matched', 'all + 1 by 1', '1 by 1 + other']
+    nw_col = max(node_w(l) for l in EVAL_LABELS)
+    fxl = X_EMB_C - (nw_col + GAP) / 2
+    fxr = X_EMB_C + (nw_col + GAP) / 2
+    grp_w = 2 * nw_col + GAP + PADDING          # spans both columns
 
     # train/CV cluster (one colour, cf. classification/train.py resampling):
     #   Fwd = K fold; Rev = 1 by 1 matched -> K fold
@@ -476,14 +440,17 @@ def build(mode='center'):
     line(ax, fxr, e_fr_y2 + NODE_H / 2, fxr, e_er_y - NODE_H / 2)   # Rev  -> 1by1+other
 
     # central eval_by (LIT) + the 3 contrasts below share ONE C_ES cluster
-    nw_ev = 2.4; gap_ev = 0.65
-    esx, es_tot = rowx(X_EMB_C, 2, nw_ev, gap_ev)
-    cmpx, cmp_tot = rowx(X_EMB_C, 3, 3.0, 0.5)
+    EB = ['eval_by_subject', 'eval_by_visit']
+    CMP = ['AD vs HC', 'AD vs NAD', 'AD vs ACS']
+    es_w = max(node_w(l) for l in EB)
+    cmp_w = max(node_w(l) for l in CMP)
+    esx, es_tot = rowx(X_EMB_C, 2, es_w, GAP)
+    cmpx, cmp_tot = rowx(X_EMB_C, 3, cmp_w, GAP)
     eb_cy = (e_eb_y + e_cmp_y) / 2
     eb_h = (e_cmp_y - e_eb_y) + NODE_H + 2 * SP
-    cluster(ax, X_EMB_C, eb_cy, max(es_tot, cmp_tot) + 0.9, eb_h, C_ES['bg'])
-    for x, lab in zip(esx, ['eval_by_subject', 'eval_by_visit']):
-        node(ax, x, e_eb_y, nw_ev, NODE_H, lab, C_ES['nd'])
+    cluster(ax, X_EMB_C, eb_cy, max(es_tot, cmp_tot) + PADDING, eb_h, C_ES['bg'])
+    for x, lab in zip(esx, EB):
+        node(ax, x, e_eb_y, es_w, NODE_H, lab, C_ES['nd'])
     for srcx in [fxl, fxr]:
         for ex in esx:
             line(ax, srcx, e_er_y + NODE_H / 2, ex, e_eb_y - NODE_H / 2)
@@ -503,34 +470,33 @@ def build(mode='center'):
         line(ax, scx[2], y_d2 + NODE_H / 2, ex, e_eb_y - NODE_H / 2, zorder=-1)
 
     # ── eval_by -> three diagnostic contrasts (inside the shared C_ES cluster) ──
-    for x, lab in zip(cmpx, ['AD vs HC', 'AD vs NAD', 'AD vs ACS']):
-        node(ax, x, e_cmp_y, 3.0, NODE_H, lab, C_ES['nd'])
+    for x, lab in zip(cmpx, CMP):
+        node(ax, x, e_cmp_y, cmp_w, NODE_H, lab, C_ES['nd'])
     for ex in esx:
         for cx2 in cmpx:
             line(ax, ex, e_eb_y + NODE_H / 2, cx2, e_cmp_y - NODE_H / 2)
 
     # ── contrasts -> aggregator -> full/1by1matched -> violin ──
-    agg_w = 5.0
-    cluster(ax, X_EMB_C, e_agg_y, agg_w + 0.9, NODE_H + 2 * SP, C3['bg'])
+    agg_w = node_w('aggregator')
+    cluster(ax, X_EMB_C, e_agg_y, agg_w + PADDING, NODE_H + 2 * SP, C3['bg'])
     node(ax, X_EMB_C, e_agg_y, agg_w, NODE_H, 'aggregator', C3['nd'])
     for cx2 in cmpx:
         line(ax, cx2, e_cmp_y + NODE_H / 2, X_EMB_C, e_agg_y - NODE_H / 2)
 
     # full / 1 by 1 matched selector (1by1matched syncs to left matched colour)
-    efmx, efm_tot = rowx(X_EMB_C, 2, 2.6, 0.6)
-    cluster(ax, X_EMB_C, e_fm_y, efm_tot + 0.9, NODE_H + 2 * SP, C_SA['bg'])
-    for x, lab, nc in zip(efmx, ['full', '1 by 1 matched'],
-                          [C_SA['nd'], C_ES['nd']]):
-        node(ax, x, e_fm_y, 2.6, NODE_H, lab, nc)
+    efmx, _, efm_tot = prow(ax, X_EMB_C, e_fm_y, ['full', '1 by 1 matched'],
+                            [C_SA['nd'], C_ES['nd']])
+    cluster(ax, X_EMB_C, e_fm_y, efm_tot + PADDING, NODE_H + 2 * SP, C_SA['bg'])
+    for x in efmx:
         line(ax, X_EMB_C, e_agg_y + NODE_H / 2, x, e_fm_y - NODE_H / 2)
 
-    node(ax, X_EMB_C, e_vio_y, agg_w, NODE_H, 'violin', C_AOUT['nd'])
+    node(ax, X_EMB_C, e_vio_y, node_w('violin'), NODE_H, 'violin', C_AOUT['nd'])
     for sx in efmx:
         line(ax, sx, e_fm_y + NODE_H / 2, X_EMB_C, e_vio_y - NODE_H / 2)
 
     # ── Save ── (side is the chosen layout -> the primary file)
     suffix = '' if mode == 'side' else '_center'
-    out = OUT / f"age_emb_pipeline_mpl_refactor{suffix}.png"
+    out = OUT / f"age_emb_pipeline_refactor{suffix}.png"
     fig.savefig(out, dpi=150, bbox_inches='tight',
                 pad_inches=0.15, facecolor='white')
     plt.close(fig)
