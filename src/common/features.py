@@ -8,6 +8,13 @@ from src.config import EMBEDDING_FEATURES_DIR
 
 VALID_PHOTO_MODES = ("mean", "all")
 
+_ASYMMETRY_VARIANTS = (
+    "differences",
+    "absolute_differences",
+    "relative_differences",
+    "absolute_relative_differences",
+)
+
 
 def load_feature_matrix(
     ids: Sequence[str],
@@ -21,8 +28,9 @@ def load_feature_matrix(
     Args:
         ids: 載入清單。
         model: arcface | dlib | topofr | vggface | ...
-        variant: original | differences | absolute_differences |
-                 relative_differences | absolute_relative_differences
+        variant: original | face_left | face_right | differences |
+                 absolute_differences | relative_differences |
+                 absolute_relative_differences
         bg_mode: background | no_background
         photo_mode: mean | all
 
@@ -41,15 +49,43 @@ def load_feature_matrix(
             f"photo_mode must be one of {VALID_PHOTO_MODES}, got {photo_mode!r}"
         )
 
-    feat_dir = EMBEDDING_FEATURES_DIR / model / bg_mode / variant
+    root = EMBEDDING_FEATURES_DIR / model / bg_mode
+    derive = variant in _ASYMMETRY_VARIANTS
+    if derive:
+        # 延遲匯入，避免輕量 common 層在載入時就拉進 embedding 套件的重相依。
+        from src.embedding.asymmetry import calculate_differences
+        left_dir = root / "face_left"
+        right_dir = root / "face_right"
+        legacy_dir = root / variant
+    else:
+        feat_dir = root / variant
+
     vecs: List[np.ndarray] = []
     row_ids: List[str] = []
 
     for sid in ids:
-        npy = feat_dir / f"{sid}.npy"
-        if not npy.exists():
-            continue
-        a = np.load(npy)
+        if derive:
+            lf = left_dir / f"{sid}.npy"
+            rf = right_dir / f"{sid}.npy"
+            a = None
+            if lf.exists() and rf.exists():
+                try:
+                    a = calculate_differences(
+                        np.load(lf), np.load(rf), methods=[variant]
+                    )[f"embedding_{variant}"]
+                except (ValueError, OSError, EOFError):
+                    a = None  # 檔案可能正被提取程序寫入(半寫)，退回 legacy
+            if a is None:  # 缺檔或讀取失敗 → 過渡相容讀舊的預存 variant
+                legacy = legacy_dir / f"{sid}.npy"
+                if not legacy.exists():
+                    continue
+                a = np.load(legacy)
+        else:
+            npy = feat_dir / f"{sid}.npy"
+            if not npy.exists():
+                continue
+            a = np.load(npy)
+
         if a.ndim == 1:
             # 已是單一向量,無 per-photo 維度
             vecs.append(a.astype(np.float64))
@@ -63,7 +99,7 @@ def load_feature_matrix(
                     vecs.append(a[k].astype(np.float64))
                     row_ids.append(sid)
         else:
-            raise ValueError(f"{npy}: 預期 1D/2D 陣列,得到 shape {a.shape}")
+            raise ValueError(f"{sid}: 預期 1D/2D 陣列,得到 shape {a.shape}")
 
     if not vecs:
         return np.empty((0, 0), dtype=np.float64), np.empty((0,), dtype=object)

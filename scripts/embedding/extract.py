@@ -1,7 +1,8 @@
 """embedding extractor入口。
 
 1. 將每張原始人臉相片 embedding 後存至 {model}/{bg_variant}/original/<subj>.npy，形狀 (n_images, dim)
-2. 將每對鏡射人臉相片 embedding 後存至 {model}/{bg_variant}/<ftype>/<subj>.npy，形狀 (n_pairs, dim)
+2. 將每對鏡射人臉相片 embedding 後存至 {model}/{bg_variant}/{face_left,face_right}/<subj>.npy，形狀 (n_pairs, dim)
+   （只存裸的原臉/翻轉臉 embedding；diff/|diff|/rel/|rel| 改由 load_feature_matrix 即時推導）
 """
 
 import os
@@ -27,7 +28,7 @@ from src.common.image_io import (
     iter_subject_dirs,
     load_subject,
 )
-from src.embedding import get_extractor, calculate_differences
+from src.embedding import get_extractor
 
 logging.basicConfig(
     level=logging.INFO,
@@ -37,11 +38,9 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_MODELS = ["arcface", "dlib", "topofr"]
 
-# mirror ftype 名（== calculate_differences 的 method 名，故 ftype 即 method）
-MIRROR_FTYPES = [
-    "differences", "absolute_differences",
-    "relative_differences", "absolute_relative_differences",
-]
+# 鏡射分支只存兩個裸 embedding：face_left=原臉、face_right=水平翻轉臉（flip 模式下 right=flip(left)）。
+# diff/|diff|/rel/|rel| 不再預存，一律由 src/common/features.py 的 load_feature_matrix 即時推導。
+MIRROR_FTYPES = ["face_left", "face_right"]
 
 
 def setup_cpu_limit(max_cores: Optional[int]):
@@ -112,7 +111,7 @@ class OriginalSource(FeatureSource):
 
 
 class MirrorSource(FeatureSource):
-    """mirrors 左右影像 → 配對算不對稱特徵（5 種），存裸 (n_pairs, dim) 陣列。"""
+    """mirrors 左右影像 → 存裸 (n_pairs, dim) 的原臉(face_left)/翻轉臉(face_right) embedding；不對稱差異改在 load 時推導。"""
 
     name = "mirror"
     ftypes = MIRROR_FTYPES
@@ -157,12 +156,9 @@ class MirrorSource(FeatureSource):
             return {}
         left_array = np.array([p[0] for p in valid_pairs])
         right_array = np.array([p[1] for p in valid_pairs])
-        # calculate_differences 一次算齊所有 method，回傳 {"embedding_<method>": arr}；
-        # ftype 即 method，依名取出對應 arr 存裸陣列（與 original 格式一致）。
-        results = calculate_differences(
-            left_array, right_array, methods=MIRROR_FTYPES
-        )
-        return {ft: results[f"embedding_{ft}"] for ft in MIRROR_FTYPES}
+        # 只存裸的原臉 / 翻轉臉 embedding（與 original 同格式 (n_pairs, dim)）；
+        # diff/|diff|/rel/|rel| 一律在 load_feature_matrix 即時推導，特徵層與 scorer 層解耦。
+        return {"face_left": left_array, "face_right": right_array}
 
 
 SOURCES = {"original": OriginalSource, "mirror": MirrorSource}
