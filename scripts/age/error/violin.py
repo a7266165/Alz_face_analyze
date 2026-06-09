@@ -66,7 +66,8 @@ def save_violin(left_vals, right_vals, left_label, right_label, title, out_path)
 
 # ── 比較執行器 ───────────────────────────────────────────────────────
 
-def run_hc_comparison(df_all, tokens, comparison, output_dir, caliper=1.0):
+def run_hc_comparison(df_all, tokens, comparison, output_dir, caliper=1.0,
+                      level="subject", matched_subdir="1by1matched", emit_full=True):
     """AD vs {HC, NAD, ACS} violin — full cohort + 1:1 age-matched.
 
     The matched arm is a *slice* of ONE ACS-first global AD-vs-HC match
@@ -74,6 +75,9 @@ def run_hc_comparison(df_all, tokens, comparison, output_dir, caliper=1.0):
     NAD / ACS comparisons are then the NAD-paired / ACS-paired slices of that
     single match — so they stay consistent with ad_vs_hc and scatter/lines/stat
     (HC = NAD ∪ ACS) instead of being an independent re-match.
+
+    level 決定配對粒度（subject/visit）；matched_subdir 為 matched 輸出子資料夾；
+    emit_full=False 時略過與配對無關的 full 圖（visit 重跑時不重畫 full）。
     """
     hc_subgroups, label = {
         "ad_vs_hc":  ({"NAD", "ACS"}, "HC"),
@@ -82,17 +86,18 @@ def run_hc_comparison(df_all, tokens, comparison, output_dir, caliper=1.0):
     }[comparison]
 
     # full（未配對）：把 AD(P) 與此比較的對照組切兩臂
-    df_split = split_by_group(df_all, "P", control=list(hc_subgroups))
-    ad_err = df_split[df_split["arm"] == "high"]["age_error"].dropna().values
-    hc_err = df_split[df_split["arm"] == "low"]["age_error"].dropna().values
-    if len(hc_err) > 0 and len(ad_err) > 0:
-        save_violin(hc_err, ad_err, label, "AD",
-                    f"Age prediction error: {label} vs AD (full)",
-                    output_dir / "full" / comparison / "violin.png")
+    if emit_full:
+        df_split = split_by_group(df_all, "P", control=list(hc_subgroups))
+        ad_err = df_split[df_split["arm"] == "high"]["age_error"].dropna().values
+        hc_err = df_split[df_split["arm"] == "low"]["age_error"].dropna().values
+        if len(hc_err) > 0 and len(ad_err) > 0:
+            save_violin(hc_err, ad_err, label, "AD",
+                        f"Age prediction error: {label} vs AD (full)",
+                        output_dir / "full" / comparison / "violin.png")
 
     # 1:1 age-matched：依 HC 子群把單一 ACS 優先全域配對切片
     group_of = cohort_list(*tokens).set_index("ID")["Group"]
-    p_ids, hc_ids = match_by_age(*tokens, priority=["ACS"], caliper=caliper)
+    p_ids, hc_ids = match_by_age(*tokens, priority=["ACS"], caliper=caliper, level=level)
     keep_hc = [h for h in hc_ids if group_of.get(h) in hc_subgroups]
     keep_p = [p for p, h in zip(p_ids, hc_ids) if group_of.get(h) in hc_subgroups]
     msub = df_all[df_all["ID"].isin(set(keep_p) | set(keep_hc))]
@@ -102,14 +107,17 @@ def run_hc_comparison(df_all, tokens, comparison, output_dir, caliper=1.0):
         save_violin(m_hc, m_ad, label, "AD",
                     f"Age prediction error: {label} vs AD\n"
                     f"(age-matched 1:1, caliper={caliper}y)",
-                    output_dir / "1by1matched" / comparison / "violin.png")
+                    output_dir / matched_subdir / comparison / "violin.png")
 
 
-def run_hilo_comparison(df_all, tokens, metric, output_dir, caliper=1.0):
+def run_hilo_comparison(df_all, tokens, metric, output_dir, caliper=1.0,
+                        level="subject", matched_subdir="1by1matched", emit_full=True):
     """MMSE/CASI high vs low within AD (and NAD) — full + 1:1 age-matched.
 
     1:1 matched 子集委派給 canonical match_by_score（在該組內以中位數切 high/low
     再做年齡配對）；high/low 兩臂直接由回傳的兩個 ID list 決定。
+
+    level / matched_subdir / emit_full 語意同 run_hc_comparison。
     """
     comparison = f"{metric.lower()}_high_vs_low"
 
@@ -123,7 +131,7 @@ def run_hilo_comparison(df_all, tokens, metric, output_dir, caliper=1.0):
         df_low = df_split[df_split["arm"] == "low"]
 
         # full（未配對）
-        if not df_high.empty and not df_low.empty:
+        if emit_full and not df_high.empty and not df_low.empty:
             save_violin(
                 df_high["age_error"].values, df_low["age_error"].values,
                 f"High {metric}", f"Low {metric}",
@@ -132,7 +140,7 @@ def run_hilo_comparison(df_all, tokens, metric, output_dir, caliper=1.0):
 
         # 1:1 age-matched（canonical match_by_score；high/low 由回傳兩 list 直接決定）
         high_ids, low_ids = match_by_score(
-            *tokens, grp, metric, "median", caliper=caliper)
+            *tokens, grp, metric, "median", caliper=caliper, level=level)
         hi = df_all[df_all["ID"].isin(high_ids)]["age_error"].dropna().values
         lo = df_all[df_all["ID"].isin(low_ids)]["age_error"].dropna().values
         if len(hi) > 0 and len(lo) > 0:
@@ -140,7 +148,7 @@ def run_hilo_comparison(df_all, tokens, metric, output_dir, caliper=1.0):
                 hi, lo, f"High {metric}", f"Low {metric}",
                 f"Age error by {metric} ({grp_label.upper()})\n"
                 f"(age-matched 1:1, caliper={caliper}y)",
-                output_dir / "1by1matched" / comparison / f"{grp_label}_violin.png")
+                output_dir / matched_subdir / comparison / f"{grp_label}_violin.png")
 
 # ── 主流程 ─────────────────────────────────────────────────────────────────────
 
@@ -157,27 +165,35 @@ def main():
                     choices=HC_COMPARISONS + HILO_COMPARISONS,
                     help="只跑單一比較；預設全跑")
     ap.add_argument("--caliper", type=float, default=1.0)
+    ap.add_argument("--match-level", choices=["subject", "visit"], default="subject",
+                    help="配對粒度；visit 時 matched 輸出至 1by1matched_visit/（不重產 full）")
     args = ap.parse_args()
 
     cohort = (args.p_visit, args.p_score, args.hc_visit, args.hc_score)
     output_dir = args.output_dir or (
         AGE_ANALYSIS_DIR / cohort_path(*cohort) / "violin")
+    level = args.match_level
+    matched_subdir = "1by1matched" if level == "subject" else "1by1matched_visit"
+    emit_full = (level == "subject")
     logger.info(f"cohort = {cohort}")
     logger.info(f"output-dir  = {output_dir}")
+    logger.info(f"match-level = {level}")
 
     df_all = build_cohort_with_age_error(*cohort)
     logger.info(f"loaded {len(df_all)} rows "
                 f"({df_all['group'].value_counts().to_dict()})")
 
+    kw = dict(caliper=args.caliper, level=level,
+              matched_subdir=matched_subdir, emit_full=emit_full)
     targets = [args.comparison] if args.comparison else HC_COMPARISONS + HILO_COMPARISONS
     for cmp in targets:
         logger.info(f"--- {cmp} ---")
         if cmp in HC_COMPARISONS:
-            run_hc_comparison(df_all, cohort, cmp, output_dir, caliper=args.caliper)
+            run_hc_comparison(df_all, cohort, cmp, output_dir, **kw)
         elif cmp == "mmse_high_vs_low":
-            run_hilo_comparison(df_all, cohort, "MMSE", output_dir, caliper=args.caliper)
+            run_hilo_comparison(df_all, cohort, "MMSE", output_dir, **kw)
         elif cmp == "casi_high_vs_low":
-            run_hilo_comparison(df_all, cohort, "CASI", output_dir, caliper=args.caliper)
+            run_hilo_comparison(df_all, cohort, "CASI", output_dir, **kw)
 
 
 if __name__ == "__main__":

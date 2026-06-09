@@ -212,23 +212,30 @@ def main():
     ap.add_argument("--hc-score", choices=list(HC_SCORE_TOKENS), default=DEFAULT_COHORT_TOKENS[3])
     ap.add_argument("--stat-dir", type=Path, default=None,
                     help="覆寫輸出目錄；留空依 cohort 自動決定")
+    ap.add_argument("--match-level", choices=["subject", "visit"], default="subject",
+                    help="AD-vs-HC 配對粒度；visit 時 matched 輸出至 1by1matched_visit/（不重產 full）")
     args = ap.parse_args()
 
     cohort = (args.p_visit, args.p_score, args.hc_visit, args.hc_score)
     stat_dir = args.stat_dir or (
         AGE_ANALYSIS_DIR / cohort_path(*cohort) / "stat")
+    level = args.match_level
+    matched_name = "1by1matched" if level == "subject" else "1by1matched_visit"
 
     logger.info(f"cohort = {cohort}")
     logger.info(f"stat-dir    = {stat_dir}")
+    logger.info(f"match-level = {level}")
 
     full = build_cohort_with_age_error(*cohort)
-    p_ids, hc_ids = match_by_age(*cohort, priority=["ACS"])  # ACS 優先：稀少的 ACS 對照先配對
+    p_ids, hc_ids = match_by_age(*cohort, priority=["ACS"], level=level)  # ACS 優先：稀少的 ACS 對照先配對
     matched = full[full["ID"].isin(set(p_ids) | set(hc_ids))].reset_index(drop=True)
     logger.info(f"full={len(full)} ({full['group'].value_counts().to_dict()}), "
-                f"1by1matched={len(matched)} "
+                f"{matched_name}={len(matched)} "
                 f"({matched['group'].value_counts().to_dict()})")
 
-    for sub_name, sub_df in [("full", full), ("1by1matched", matched)]:
+    sub_list = ([("full", full), (matched_name, matched)] if level == "subject"
+                else [(matched_name, matched)])
+    for sub_name, sub_df in sub_list:
         df = _prep(sub_df)
         sd = stat_dir / sub_name
         sd.mkdir(parents=True, exist_ok=True)
