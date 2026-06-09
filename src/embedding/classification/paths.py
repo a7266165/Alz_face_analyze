@@ -3,6 +3,7 @@ from src.config import EMBEDDING_CLASSIFICATION_DIR, embedding_classification_pa
 
 from .classifier import CLASSIFIERS, DEFAULT_XGB_PARAMS
 from .reducer import reducer_label
+from .scorer import NORM_SCORERS
 
 MATCH_STRATEGIES = ("no_priority", "priority_acs", "priority_nad")
 
@@ -22,7 +23,7 @@ def oof_dir(cohort, bg_mode, embedding, variant, photo_mode, reducer, model,
             direction, *, pca_components=None, drop_corr_threshold=None,
             lr_C=1.0, xgb_params=None, root=None):
     """這格 OOF 的輸出目錄。寫端、讀端共用同一組 rlabel / clf_param / dir_seg 規則
-    (forward l2_norm 無 fwd/rev 段、其餘 fwd;reverse 一律 rev),確保寫哪讀哪一致。"""
+    (forward 純 norm scorer(l1/l2_norm) 無 fwd/rev 段、其餘 fwd;reverse 一律 rev),確保寫哪讀哪一致。"""
     root = root or EMBEDDING_CLASSIFICATION_DIR
     is_classify = model in CLASSIFIERS
     rlabel = (reducer_label(reducer, pca_components=pca_components,
@@ -30,7 +31,7 @@ def oof_dir(cohort, bg_mode, embedding, variant, photo_mode, reducer, model,
               if is_classify else "no_drop")
     clf_param = clf_param_label(model, lr_C, xgb_params) if is_classify else None
     dir_seg = ("rev" if direction == "reverse"
-               else (None if model == "l2_norm" else "fwd"))
+               else (None if model in NORM_SCORERS else "fwd"))
     return embedding_classification_path(
         *cohort, bg_mode, embedding, variant, photo_mode, rlabel,
         clf=model, clf_param=clf_param, direction=dir_seg, root=root)

@@ -50,7 +50,7 @@ def _kfold(X_pool, ids_pool, y_pool, build_estimator, score_method, needs_cv,
         X_pool, ids_pool, y_pool: 特徵 / ID / label。
         build_estimator: estimator。
         score_method: 見 _score。
-        needs_cv: False 時走捷徑直接算 norm(l2_norm),不進折迴圈。
+        needs_cv: False 時 score_method 為 norm 函數,直接套用(l1_norm/l2_norm),不進折迴圈。
         X_target, ids_target, y_target: 外部資料集(reverse 用),與 pool 不相交。
         n_splits: 訓練折數,預設 10。
 
@@ -66,10 +66,11 @@ def _kfold(X_pool, ids_pool, y_pool, build_estimator, score_method, needs_cv,
                              "y_true": np.asarray(yy).astype(int),
                              "y_score": scores, "fold": fold})
 
-    if not needs_cv:                       # l2_norm:純 norm,無 fold
-        frames = [_frame(ids_pool, y_pool, np.linalg.norm(X_pool, axis=1), -1)]
+    if not needs_cv:                       # 純 norm scorer(l1_norm/l2_norm):score_method 即 norm 函數,無 fold
+        norm_fn = score_method
+        frames = [_frame(ids_pool, y_pool, norm_fn(X_pool), -1)]
         if has_target:
-            frames.append(_frame(ids_target, y_target, np.linalg.norm(X_target, axis=1), -1))
+            frames.append(_frame(ids_target, y_target, norm_fn(X_target), -1))
         return _pool_to_id(pd.concat(frames, ignore_index=True))
 
     g = _subject_of(ids_pool)

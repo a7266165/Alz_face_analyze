@@ -23,6 +23,7 @@ from .classifier import (
 )
 from .scorer import (
     ASYMMETRY_METHODS,
+    NORM_SCORERS,
     CentroidEstimator,
     build_scorer,
 )
@@ -36,6 +37,7 @@ __all__ = [
     "ALL_METHODS",
     "CLASSIFIERS",
     "ASYMMETRY_METHODS",
+    "NORM_SCORERS",
     "DIM_REDUCERS",
     "DEFAULT_XGB_PARAMS",
     "build_reducer",

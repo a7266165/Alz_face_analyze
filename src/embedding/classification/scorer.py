@@ -1,10 +1,15 @@
-"""把 asymmetry 特徵映成不對稱程度的評分器(l2_norm | centroid_dist | lda_projection)。"""
+"""把 asymmetry 特徵映成不對稱程度的評分器(l1_norm | l2_norm | centroid_dist | lda_projection)。"""
 from typing import Optional, Tuple
 
 import numpy as np
 from sklearn.base import BaseEstimator, ClassifierMixin
 
-ASYMMETRY_METHODS = ("l2_norm", "centroid_dist", "lda_projection")
+# 無監督純 norm 評分器:對每列特徵向量取範數(needs_cv=False、無 fit、不進 CV)。
+NORM_SCORERS = {
+    "l1_norm": lambda X: np.linalg.norm(np.asarray(X, dtype=np.float64), ord=1, axis=1),
+    "l2_norm": lambda X: np.linalg.norm(np.asarray(X, dtype=np.float64), ord=2, axis=1),
+}
+ASYMMETRY_METHODS = ("l1_norm", "l2_norm", "centroid_dist", "lda_projection")
 
 
 class CentroidEstimator(ClassifierMixin, BaseEstimator):
@@ -63,18 +68,20 @@ class CentroidEstimator(ClassifierMixin, BaseEstimator):
         return (self.decision_function(X) >= 0).astype(int)
 
 
-def build_scorer(method: str) -> Tuple[Optional[object], Optional[str], bool]:
+def build_scorer(method: str) -> Tuple[Optional[object], object, bool]:
     """依 method 建立不對稱評分器。
 
     Args:
-        method: l2_norm | centroid_dist | lda_projection
+        method: l1_norm | l2_norm | centroid_dist | lda_projection
 
     Returns:
-        (estimator, score_method, needs_cv)。l2_norm 無 estimator、不需 CV
-        (引擎直接算 norm);centroid_dist / lda_projection 會 fit、需進 CV。
+        (estimator, score_method, needs_cv)。
+        norm 類(l1_norm/l2_norm):estimator=None、score_method=該 norm 函數(吃 X 回每列分數)、
+        needs_cv=False(train 直接套 norm、不進 CV);
+        centroid_dist / lda_projection:會 fit、需進 CV,score_method="decision_function"。
     """
-    if method == "l2_norm":
-        return None, None, False
+    if method in NORM_SCORERS:
+        return None, NORM_SCORERS[method], False
     if method == "centroid_dist":
         return CentroidEstimator(), "decision_function", True
     if method == "lda_projection":
