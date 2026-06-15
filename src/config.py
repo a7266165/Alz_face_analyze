@@ -264,37 +264,31 @@ def meta_analysis_path(
     hc_score: str,
     bg_mode: str,
     emb_model: str,
-    asymmetry_variant: str,
     photo_mode: str = "mean",
     reducer: str = "no_drop",
+    *,
+    feature_set: Optional[str] = None,
+    variant: Optional[str] = None,
     base_classifier: Optional[str] = None,
     base_classifier_param: Optional[str] = None,
-    direction: Optional[str] = None,
-    eval_method: Optional[str] = None,
-    match_level: Optional[str] = None,
-    eval_unit: Optional[str] = None,
-    match_strategy: Optional[str] = None,
-    partition: Optional[str] = None,
-    normalize_tag: Optional[str] = None,
     meta_classifier: Optional[str] = None,
 ) -> Path:
-    """
-    Compose meta analysis output path.
+    """Compose a meta-analysis cell path (single unified session-level pipeline).
 
-    Layout (aligns with embedding up to partition, then meta-specific):
-      meta/analysis/<visit>/<cdr_mmse>/<bg_mode>/<emb>/<asym_variant>/<photo>/<reducer>/
-        <base_clf>/<base_param>/<direction>/<eval_method>/<match_level>/<eval_unit>/
-        <match_strategy>/<partition>/<normalize_tag>/<meta_clf>/
+    Layout (shares embedding's cohort/bg/emb/photo/reducer prefix, then meta-specific
+    axes; **skip-None**——省略不適用的中段,故認知 combo 與影像 combo 共用同一規則):
+      meta/analysis/<visit>/<cdr_mmse>/<bg_mode>/<emb>/<photo>/<reducer>/
+        <feature_set>/[<variant>/<base_clf>/<base_clf_param>/]<meta_clf>/
+
+    路徑只編入會改變數值的軸:含影像 OOF 的 combo 帶 variant(asym variant)+ base_clf
+    + base_clf_param(共用的 logistic C);純認知 combo 三者皆 None → 只剩 feature_set/meta_clf。
     """
-    visit_dir, cdr_mmse_dir = cohort_dirs(p_visit, p_score, hc_visit, hc_score)
-    p = (META_ANALYSIS_DIR / visit_dir / cdr_mmse_dir
-         / bg_mode / emb_model / asymmetry_variant / photo_mode / reducer)
-    for seg in (base_classifier, base_classifier_param, direction,
-                eval_method, match_level, eval_unit, match_strategy,
-                partition, normalize_tag, meta_classifier):
-        if seg is None:
-            break
-        p = p / seg
+    p = (META_ANALYSIS_DIR / cohort_path(p_visit, p_score, hc_visit, hc_score)
+         / bg_mode / emb_model / photo_mode / reducer)
+    for seg in (feature_set, variant, base_classifier,
+                base_classifier_param, meta_classifier):
+        if seg is not None:
+            p = p / seg
     return p
 
 

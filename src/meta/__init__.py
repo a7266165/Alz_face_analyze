@@ -1,22 +1,23 @@
-"""Meta：精簡的跨 modality stacking（embedding-original + asymmetry OOF + 人口學 → TabPFN v3）。"""
-from src.meta.classifier import make_tabpfn_v3
+"""Meta：單一 session 層級的跨 modality stacking(embedding/asymmetry LR 分數 + 年齡 + BMI +
+認知分數 → meta stacker),統一 feature combo 見 META_FEATURE_SETS、stacker 見 META_CLASSIFIERS。"""
+from src.meta.classifier import META_CLASSIFIERS, make_meta_clf, make_tabpfn_v3
 from src.meta.train import (
-    ASYM_METHODS,
+    ALL_FEATURE_COLS,
     ASYM_VARIANTS,
-    FEATURE_SETS,
-    add_asym,
+    META_FEATURE_SETS,
+    OOF_FEATURE_COLS,
     base_oof,
-    build_base_table,
-    slice_xy,
-    subject_demographics,
-    sweep,
-    tabpfn_oof,
-    to_subject,
+    feature_set_needs_oof,
+    meta_oof,
+    oof_from_table,
+    session_feature_table,
+    session_oof,
 )
 
 __all__ = [
-    "ASYM_VARIANTS", "ASYM_METHODS", "FEATURE_SETS",
-    "base_oof", "to_subject", "subject_demographics",
-    "build_base_table", "add_asym", "slice_xy",
-    "make_tabpfn_v3", "tabpfn_oof", "sweep",
+    "ASYM_VARIANTS", "META_FEATURE_SETS", "META_CLASSIFIERS",
+    "ALL_FEATURE_COLS", "OOF_FEATURE_COLS",
+    "feature_set_needs_oof", "base_oof",
+    "session_feature_table", "oof_from_table", "session_oof",
+    "make_meta_clf", "make_tabpfn_v3", "meta_oof",
 ]

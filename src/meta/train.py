@@ -1,22 +1,42 @@
-"""Meta 訓練流程:讀 base OOF → subject 表組裝 → TabPFN v3 fold-aligned OOF → sweep。"""
+"""Meta 訓練流程(單一 session 層級):讀 base OOF + 人口學 → 組 session 特徵表 →
+TabPFN v3 fold-aligned OOF。
+
+統一一套 feature combo(META_FEATURE_SETS),全部以 visit(session)為訓練樣本、評估交給
+src.common.evaluate 做 eval_by_subject(GroupKFold-by-base_id,無 leakage)。asymmetry 一律用
+logistic(asymmetry_LR_score),不再用 scorer;asym variant 由參數決定。
+"""
 import numpy as np
 import pandas as pd
 
-from src.common.cohort import base_id_of, cohort_list
-from src.common.evaluate import compute_clf_metrics
+from src.age import build_cohort_with_age_error
+from src.common.cohort import load_demographics
 from src.embedding.classification import CLASSIFIERS, oof_paths
-from src.meta.classifier import make_tabpfn_v3
+from src.meta.classifier import make_meta_clf
 
 ASYM_VARIANTS = ("differences", "absolute_differences",
                  "relative_differences", "absolute_relative_differences")
-ASYM_METHODS = ("l2_norm", "centroid_dist", "lda_projection")
-# full = age/MMSE/CASI/original-OOF/asym-OOF;其餘三個為只用 MMSE/CASI 的對照(±original-OOF、±asym-OOF)。
-FEATURE_SETS = {
-    "full":           ["age", "mmse", "casi", "oof_original", "oof_asym"],
-    "mmse_casi":      ["mmse", "casi"],
-    "mmse_casi_orig": ["mmse", "casi", "oof_original"],
-    "mmse_casi_asym": ["mmse", "casi", "oof_asym"],
+
+# session 層級可用的全部欄(canonical 欄名);下列 8 個 combo 為其子集。各 combo 共用同一張 session
+# 表(同母體 = 有 embedding 的 sessions ∩ 有年齡預測者),故可直接互比。
+ALL_FEATURE_COLS = ["real_age", "age_error", "embedding_LR_score",
+                    "asymmetry_LR_score", "bmi", "mmse", "casi"]
+# 帶這兩欄之一的 combo 才依賴 embedding OOF(→ 有 variant / C 軸);其餘為純認知 combo(只跑一次)。
+OOF_FEATURE_COLS = ("embedding_LR_score", "asymmetry_LR_score")
+META_FEATURE_SETS = {
+    "mmse":                 ["mmse"],
+    "casi":                 ["casi"],
+    "mmse_casi":            ["mmse", "casi"],
+    "core4":                ["real_age", "age_error", "embedding_LR_score", "asymmetry_LR_score"],
+    "core4_bmi":            ["real_age", "age_error", "embedding_LR_score", "asymmetry_LR_score", "bmi"],
+    "core4_bmi_mmse":       ["real_age", "age_error", "embedding_LR_score", "asymmetry_LR_score", "bmi", "mmse"],
+    "core4_bmi_casi":       ["real_age", "age_error", "embedding_LR_score", "asymmetry_LR_score", "bmi", "casi"],
+    "core4_bmi_mmse_casi":  ["real_age", "age_error", "embedding_LR_score", "asymmetry_LR_score", "bmi", "mmse", "casi"],
 }
+
+
+def feature_set_needs_oof(feature_cols):
+    """這組特徵是否吃 embedding OOF(→ 需 variant / C 軸;否則純認知,variant/C 無關)。"""
+    return any(c in OOF_FEATURE_COLS for c in feature_cols)
 
 
 def base_oof(cohort, emb, variant, bg_mode, photo_mode, model, *,
@@ -47,61 +67,13 @@ def base_oof(cohort, emb, variant, bg_mode, photo_mode, model, *,
     return pd.read_csv(path)
 
 
-def to_subject(oof):
-    """session 層級 OOF → subject 層級[base_id, y_true, y_score, fold]。
-
-    y_score 取受試者各 visit 平均、fold 取 max(同 subject 各 visit 必同折);
-    比照 src.common.evaluate._prep_oof 的 eval_by_subject。
-    """
-    d = oof.copy()
-    d["base_id"] = d["ID"].map(base_id_of)
-    return d.groupby("base_id", as_index=False).agg(
-        y_true=("y_true", "first"), y_score=("y_score", "mean"), fold=("fold", "max"))
-
-
-def subject_demographics(cohort):
-    """cohort → subject 層級[base_id, age, mmse, casi, label]，每 base_id 取首訪。"""
-    demo = cohort_list(*cohort).copy()
-    demo["base_id"] = demo["ID"].map(base_id_of)
-    demo = demo.sort_values("ID").groupby("base_id", as_index=False).first()
-    demo["label"] = (demo["Group"] == "P").astype(int)
-    return demo[["base_id", "Age", "MMSE", "CASI", "label"]].rename(
-        columns={"Age": "age", "MMSE": "mmse", "CASI": "casi"})
-
-
-def build_base_table(demo, sub_original):
-    """demo + original-OOF 以 base_id inner-join → subject 表(age, mmse, casi, oof_original, label, fold)。
-
-    fold/y_true 取自 original-OOF:fold 為所有 feature set 共用的 meta 切分;assert label == y_true。
-    """
-    t = demo.merge(
-        sub_original[["base_id", "y_score", "fold", "y_true"]]
-        .rename(columns={"y_score": "oof_original"}), on="base_id", how="inner")
-    assert (t["label"].to_numpy() == t["y_true"].to_numpy()).all(), "label 與 OOF y_true 不一致"
-    return t
-
-
-def add_asym(base_table, sub_asym):
-    """base 表再 inner-join 某 (variant, scorer) 的 asymmetry-OOF → 多一欄 oof_asym。"""
-    return base_table.merge(
-        sub_asym[["base_id", "y_score"]].rename(columns={"y_score": "oof_asym"}),
-        on="base_id", how="inner")
-
-
-def slice_xy(table, feature_cols):
-    """從 subject 表取 (X, y, fold):X 欄位由 feature_cols 指定、y=label、fold 為 meta 切分。"""
-    X = table[feature_cols].to_numpy(dtype=float)
-    y = table["label"].to_numpy(dtype=int)
-    fold = table["fold"].to_numpy(dtype=int)
-    return X, y, fold
-
-
-def tabpfn_oof(X, y, fold, *, seed=42, device="auto"):
+def meta_oof(X, y, fold, *, meta_clf="tabpfn_v3", seed=42, device="auto"):
     """fold-aligned OOF：對每個 fold k 在 fold≠k 上 fit、預測 k，回正類機率陣列。
 
-    同一個 classifier 跨折重 fit(TabPFN 的 fit 只換 in-context 訓練集),避免每折重載 ckpt。
+    meta_clf ∈ META_CLASSIFIERS(tabpfn_v3 / xgb);同一 estimator 跨折重 fit
+    (TabPFN 只換 in-context 訓練集、XGB 每折重訓),兩者皆走 predict_proba[:, 1]。
     """
-    clf = make_tabpfn_v3(seed=seed, device=device)
+    clf = make_meta_clf(meta_clf, seed=seed, device=device)
     oof = np.full(len(y), np.nan)
     for k in np.unique(fold):
         te = fold == k
@@ -110,62 +82,78 @@ def tabpfn_oof(X, y, fold, *, seed=42, device="auto"):
     return oof
 
 
-def _require_base_oof(cohort, emb, bg_mode, photo_mode, reducer, base_clf, base_lr_C,
-                      variants, methods, need_asym, root):
-    """預檢:把所有需要的 base OOF 路徑掃一遍,缺的一次列齊再 raise(避免跑到一半才爆)。"""
-    needed = [("original", base_clf, base_lr_C)]
-    if need_asym:
-        needed += [(v, m, 1.0) for v in variants for m in methods]
-    missing = [str(oof_paths(cohort, bg_mode, emb, v, photo_mode, reducer, m,
-                             "forward", lr_C=c, root=root)[0])
-               for v, m, c in needed
-               if not oof_paths(cohort, bg_mode, emb, v, photo_mode, reducer, m,
-                                "forward", lr_C=c, root=root)[0].exists()]
-    if missing:
-        raise FileNotFoundError(
-            "缺少以下 base OOF(請先跑 embedding forward 分類):\n  " + "\n  ".join(missing))
+def session_feature_table(cohort, *, variant="relative_differences", emb="arcface",
+                          bg_mode="background", photo_mode="mean", reducer="no_drop",
+                          base_clf="logistic", lr_C=1.0, root=None):
+    """組 per-session 全欄特徵表
+    [ID, y_true, fold, embedding_LR_score, asymmetry_LR_score, real_age, age_error, bmi, mmse, casi]。
 
+    visit 層級(不收斂到 subject):
+      - embedding_LR_score / asymmetry_LR_score:original / <variant> 兩條 forward OOF 直接讀落地
+        (base_oof,不重訓;asym 一律 logistic);
+      - real_age / age_error / mmse / casi:取自 src.age.build_cohort_with_age_error(內含 cohort_list 的
+        Age/MMSE/CASI + 年齡誤差);
+      - bmi:取自 demographics(量測值)。
+    全部 by ID join;母體 = 兩條 OOF ∩ 有年齡預測者(inner),bmi 以 left join 併入故不縮母體。
+    fold/y_true 取 original-OOF 的(GroupKFold-by-base_id → 同 subject 各 visit 同折,無 leakage)。
 
-def sweep(cohort, *, emb="arcface", bg_mode="background", photo_mode="mean",
-          reducer="no_drop", base_clf="logistic", base_lr_C=1.0,
-          variants=ASYM_VARIANTS, methods=ASYM_METHODS,
-          feature_sets=FEATURE_SETS, seed=42, device="auto", root=None):
-    """窮舉 feature set × asymmetry variant × scorer,各訓練 TabPFN v3。
-
-    不含 oof_asym 的 feature set 與 variant/scorer 無關,各只跑一次(variant/method 留空);
-    含 oof_asym 者對每個 (variant, scorer) 各跑一次。base OOF 一律讀 workspace 既有落地檔
-    (original 用 base_clf/base_lr_C 定位、asym 用各 scorer),所有 feature set 共用 original-OOF
-    的 fold。開跑前先預檢所有需要的落地檔,缺檔即報錯。指標走 src.common.evaluate.compute_clf_metrics。
-    回 (leaderboard_df, {(feature_set, variant, method): oof_df}),variant/method 對 asym-無關
-    組合為空字串。
+    Args:
+        cohort: (p_visit, p_score, hc_visit, hc_score) 4-token。
+        variant: asymmetry feature 的 variant(差異圖類型,見 ASYM_VARIANTS)。
+        emb / bg_mode / photo_mode / reducer: 定位落地 OOF 用(須與 embedding 產出一致)。
+        base_clf: original 與 asymmetry 共用的 base 模型(預設 logistic)。
+        lr_C: base_clf 為 logistic 時定位 C_<value> 落地格;original/asym 共用同一個 C。
+        root: embedding OOF 根目錄,預設 EMBEDDING_CLASSIFICATION_DIR。
     """
-    indep = {k: v for k, v in feature_sets.items() if "oof_asym" not in v}
-    asym = {k: v for k, v in feature_sets.items() if "oof_asym" in v}
-    _require_base_oof(cohort, emb, bg_mode, photo_mode, reducer, base_clf, base_lr_C,
-                      variants, methods, need_asym=bool(asym), root=root)
+    orig = base_oof(cohort, emb, "original", bg_mode, photo_mode, base_clf,
+                    reducer=reducer, lr_C=lr_C, root=root)
+    asym = base_oof(cohort, emb, variant, bg_mode, photo_mode, base_clf,
+                    reducer=reducer, lr_C=lr_C, root=root)
+    age = (build_cohort_with_age_error(*cohort)[["ID", "MMSE", "CASI", "real_age", "age_error"]]
+           .rename(columns={"MMSE": "mmse", "CASI": "casi"}))
+    bmi = load_demographics()[["ID", "BMI"]].drop_duplicates("ID").copy()
+    bmi["bmi"] = pd.to_numeric(bmi["BMI"], errors="coerce")
 
-    demo = subject_demographics(cohort)
-    base = build_base_table(demo, to_subject(base_oof(
-        cohort, emb, "original", bg_mode, photo_mode, base_clf,
-        reducer=reducer, lr_C=base_lr_C, root=root)))
+    t = (orig[["ID", "y_true", "fold", "y_score"]]
+         .rename(columns={"y_score": "embedding_LR_score"})
+         .merge(asym[["ID", "y_true", "y_score"]]
+                .rename(columns={"y_score": "asymmetry_LR_score", "y_true": "y_true_a"}),
+                on="ID", how="inner")
+         .merge(age, on="ID", how="inner")
+         .merge(bmi[["ID", "bmi"]], on="ID", how="left"))
+    assert (t["y_true"].to_numpy() == t["y_true_a"].to_numpy()).all(), \
+        "original 與 asymmetry OOF 的 y_true 不一致"
+    return t[["ID", "y_true", "fold"] + ALL_FEATURE_COLS]
 
-    jobs = [(fs, cols, base, "", "") for fs, cols in indep.items()]
-    for variant in variants:
-        for method in methods:
-            t = add_asym(base, to_subject(
-                base_oof(cohort, emb, variant, bg_mode, photo_mode, method, root=root)))
-            jobs += [(fs, cols, t, variant, method) for fs, cols in asym.items()]
 
-    rows, oof_dump = [], {}
-    for fs, cols, table, variant, method in jobs:
-        X, y, fold = slice_xy(table, cols)
-        meta = tabpfn_oof(X, y, fold, seed=seed, device=device)
-        metrics = compute_clf_metrics(y, meta, n_bootstrap=100, seed=seed)
-        rows.append({"feature_set": fs, "variant": variant, "method": method, **metrics})
-        oof_dump[(fs, variant, method)] = pd.DataFrame(
-            {"base_id": table["base_id"].to_numpy(), "y_true": y,
-             "y_score": meta, "fold": fold})
+def oof_from_table(table, feature_cols, *, meta_clf="tabpfn_v3", seed=42, device="auto"):
+    """從 session 特徵表取指定欄 → meta stacker fold-aligned OOF,回標準 OOF[ID, y_true, y_score, fold]。
 
-    leaderboard = pd.DataFrame(rows).sort_values(
-        "auc", ascending=False, ignore_index=True)
-    return leaderboard, oof_dump
+    meta_clf ∈ META_CLASSIFIERS;fold 取 original-OOF 的 GroupKFold-by-base_id(逐折 fold≠k 訓練、
+    預測 k,無 leakage);subject 評估交給 src.common.evaluate.evaluate。多個 feature set / meta_clf 可
+    共用同一張 table 直接互比。
+    """
+    fold = table["fold"].to_numpy(dtype=int)
+    if (fold < 0).all():
+        raise ValueError(
+            "original-OOF fold 全為 -1:base_clf 須為有 CV 折的 classifier(如 logistic),不能用短路 scorer")
+    X = table[list(feature_cols)].to_numpy(dtype=float)
+    y = table["y_true"].to_numpy(dtype=int)
+    meta = meta_oof(X, y, fold, meta_clf=meta_clf, seed=seed, device=device)
+    return pd.DataFrame({"ID": table["ID"].to_numpy(), "y_true": y,
+                         "y_score": meta, "fold": fold})
+
+
+def session_oof(cohort, *, feature_cols, variant="relative_differences", emb="arcface",
+                bg_mode="background", photo_mode="mean", reducer="no_drop",
+                base_clf="logistic", lr_C=1.0, meta_clf="tabpfn_v3",
+                root=None, seed=42, device="auto"):
+    """便捷一呼:組 session 特徵表(session_feature_table)→ 取 feature_cols → oof_from_table。
+
+    需對同 cohort 跑多組 feature set / meta_clf 時,建議改在外層 session_feature_table 取一次表、
+    各自 oof_from_table,避免重複讀 OOF。
+    """
+    t = session_feature_table(cohort, variant=variant, emb=emb, bg_mode=bg_mode,
+                              photo_mode=photo_mode, reducer=reducer,
+                              base_clf=base_clf, lr_C=lr_C, root=root)
+    return oof_from_table(t, feature_cols, meta_clf=meta_clf, seed=seed, device=device)
