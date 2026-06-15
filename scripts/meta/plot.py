@@ -265,13 +265,11 @@ def _cell(df, contrast, domain, matched_unit, matching_priority):
 
 
 def _draw(ax, c, title):
-    """畫一格 2×2 confusion matrix(列=True[HC,AD]、欄=Pred[HC,AD]),標 count + 列百分比。"""
+    """畫一格 2×2 confusion matrix(列=True[HC,AD]、欄=Pred[HC,AD]),只標 count。"""
     M = np.array([[c["tn"], c["fp"]], [c["fn"], c["tp"]]])
     ax.imshow(M, cmap="Blues", vmin=0, vmax=M.max())
     for (i, j), v in np.ndenumerate(M):
-        rs = M[i].sum()
-        pct = (v / rs * 100) if rs else 0.0
-        ax.text(j, i, f"{v}\n{pct:.0f}%", ha="center", va="center", fontsize=10,
+        ax.text(j, i, f"{v}", ha="center", va="center", fontsize=10,
                 color="white" if v > M.max() * 0.5 else "black")
     ax.set_xticks([0, 1]); ax.set_xticklabels(["HC", "AD"])
     ax.set_yticks([0, 1]); ax.set_yticklabels(["HC", "AD"])
