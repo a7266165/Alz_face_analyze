@@ -146,17 +146,19 @@ def _slope_fit(scores, age, members):
     return len(y), beta[0], beta[1], b1_p2
 
 
-_GROUP_COLOR = {"AD": "#C44E52", "NAD": "#55A868", "ACS": "#4C72B0", "HC": "#333333"}
+_GROUP_COLOR = {"AD": "#C44E52", "NAD": "#55A868", "ACS": "#4C72B0",
+                "HC": "#333333", "ALL": "#8172B3"}
 
 
 def _age_slope_groups(age):
-    """per-group age-slope 的 4 組（互斥的 AD/NAD/ACS + 合併對照 HC=NAD∪ACS）。"""
+    """per-group age-slope 的 5 組（互斥 AD/NAD/ACS + 合併對照 HC=NAD∪ACS + 全體 ALL=P∪NAD∪ACS）。"""
     g = {b: group_of(b) for b in age}
     return [
         ("AD",  {b for b, gg in g.items() if gg == "P"}),
         ("NAD", {b for b, gg in g.items() if gg == "NAD"}),
         ("ACS", {b for b, gg in g.items() if gg == "ACS"}),
         ("HC",  {b for b, gg in g.items() if gg in ("NAD", "ACS")}),
+        ("ALL", set(g)),
     ]
 
 # ── 表 + 散點（每模型）──────────────────────────────────────────────────────
