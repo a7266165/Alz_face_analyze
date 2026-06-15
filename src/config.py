@@ -211,6 +211,7 @@ def embedding_classification_path(
     eval_unit: Optional[str] = None,
     match_strategy: Optional[str] = None,
     partition: Optional[str] = None,
+    seed: Optional[int] = 0,
     root: Optional[Path] = None,
 ) -> Path:
     """
@@ -218,7 +219,7 @@ def embedding_classification_path(
 
     Layout (follows 10-variable pipeline order):
       classification/<visit>/<cdr_mmse>/<bg_mode>/<emb>/<variant>/<photo>/<reducer>/
-        <clf>/<clf_param>/<direction>/<eval_method>/<match_level>/<eval_unit>/<match_strategy>/<partition>/
+        <clf>/seed_<seed>/<clf_param>/<direction>/<eval_method>/<match_level>/<eval_unit>/<match_strategy>/<partition>/
 
     Args:
         p_visit, p_score, hc_visit, hc_score: cohort 4-token(見上方 cohort token 區塊)
@@ -242,6 +243,8 @@ def embedding_classification_path(
     segs = []
     if clf is not None:
         segs.append(clf)
+        if seed is not None:                       # seed_<N> 緊接 classifier(repeated-CV 的折分維度)
+            segs.append(f"seed_{seed}")
         if clf_param is not None:
             segs.append(clf_param)
         segs += [direction, eval_method, match_level, eval_unit,
@@ -272,6 +275,7 @@ def meta_analysis_path(
     base_classifier: Optional[str] = None,
     base_classifier_param: Optional[str] = None,
     meta_classifier: Optional[str] = None,
+    seed: Optional[int] = 0,
 ) -> Path:
     """Compose a meta-analysis cell path (single unified session-level pipeline).
 
@@ -285,7 +289,8 @@ def meta_analysis_path(
     """
     p = (META_ANALYSIS_DIR / cohort_path(p_visit, p_score, hc_visit, hc_score)
          / bg_mode / emb_model / photo_mode / reducer)
-    for seg in (feature_set, variant, base_classifier,
+    seed_seg = f"seed_{seed}" if seed is not None else None  # 影像在 base_clf 後、認知在 feature_set 後(skip-None)
+    for seg in (feature_set, variant, base_classifier, seed_seg,
                 base_classifier_param, meta_classifier):
         if seg is not None:
             p = p / seg

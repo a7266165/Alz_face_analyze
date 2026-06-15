@@ -28,6 +28,8 @@ META_FEATURE_SETS = {
     "mmse_casi":            ["mmse", "casi"],
     "core4":                ["real_age", "age_error", "embedding_LR_score", "asymmetry_LR_score"],
     "core4_bmi":            ["real_age", "age_error", "embedding_LR_score", "asymmetry_LR_score", "bmi"],
+    "core4_mmse":           ["real_age", "age_error", "embedding_LR_score", "asymmetry_LR_score", "mmse"],
+    "core4_casi":           ["real_age", "age_error", "embedding_LR_score", "asymmetry_LR_score", "casi"],
     "core4_bmi_mmse":       ["real_age", "age_error", "embedding_LR_score", "asymmetry_LR_score", "bmi", "mmse"],
     "core4_bmi_casi":       ["real_age", "age_error", "embedding_LR_score", "asymmetry_LR_score", "bmi", "casi"],
     "core4_bmi_mmse_casi":  ["real_age", "age_error", "embedding_LR_score", "asymmetry_LR_score", "bmi", "mmse", "casi"],
@@ -40,7 +42,7 @@ def feature_set_needs_oof(feature_cols):
 
 
 def base_oof(cohort, emb, variant, bg_mode, photo_mode, model, *,
-             reducer="no_drop", lr_C=1.0, root=None):
+             reducer="no_drop", lr_C=1.0, seed=0, root=None):
     """讀 workspace 落地的 forward OOF,回 session 層級 DataFrame[ID, y_true, y_score, fold]。
 
     base 模型不在此重訓——OOF 由 embedding 分類流程(scripts/embedding/classification)
@@ -54,10 +56,11 @@ def base_oof(cohort, emb, variant, bg_mode, photo_mode, model, *,
         photo_mode: mean | all
         model: logistic/xgb(classifier)| l2_norm/centroid_dist/lda_projection(scorer)。
         reducer / lr_C: 定位 classifier 落地格用(scorer 忽略);須與 embedding 產出時一致。
+        seed: repeated-CV 折分 seed(路徑 seed_<N>);須與 embedding 產出時一致(預設 0)。
         root: embedding OOF 根目錄,預設 EMBEDDING_CLASSIFICATION_DIR。
     """
     path = oof_paths(cohort, bg_mode, emb, variant, photo_mode, reducer, model,
-                     "forward", lr_C=lr_C, root=root)[0]
+                     "forward", lr_C=lr_C, seed=seed, root=root)[0]
     if not path.exists():
         param = f" lr_C={lr_C}" if model in CLASSIFIERS else ""
         raise FileNotFoundError(
@@ -84,7 +87,7 @@ def meta_oof(X, y, fold, *, meta_clf="tabpfn_v3", seed=42, device="auto"):
 
 def session_feature_table(cohort, *, variant="relative_differences", emb="arcface",
                           bg_mode="background", photo_mode="mean", reducer="no_drop",
-                          base_clf="logistic", lr_C=1.0, root=None):
+                          base_clf="logistic", lr_C=1.0, seed=0, root=None):
     """組 per-session 全欄特徵表
     [ID, y_true, fold, embedding_LR_score, asymmetry_LR_score, real_age, age_error, bmi, mmse, casi]。
 
@@ -106,9 +109,9 @@ def session_feature_table(cohort, *, variant="relative_differences", emb="arcfac
         root: embedding OOF 根目錄,預設 EMBEDDING_CLASSIFICATION_DIR。
     """
     orig = base_oof(cohort, emb, "original", bg_mode, photo_mode, base_clf,
-                    reducer=reducer, lr_C=lr_C, root=root)
+                    reducer=reducer, lr_C=lr_C, seed=seed, root=root)
     asym = base_oof(cohort, emb, variant, bg_mode, photo_mode, base_clf,
-                    reducer=reducer, lr_C=lr_C, root=root)
+                    reducer=reducer, lr_C=lr_C, seed=seed, root=root)
     age = (build_cohort_with_age_error(*cohort)[["ID", "MMSE", "CASI", "real_age", "age_error"]]
            .rename(columns={"MMSE": "mmse", "CASI": "casi"}))
     bmi = load_demographics()[["ID", "BMI"]].drop_duplicates("ID").copy()

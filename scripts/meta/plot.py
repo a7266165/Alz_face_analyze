@@ -2,6 +2,8 @@
 
 --kind c_curve  : 不同 base-logistic C 下的指標折線,3 metric × 3 contrast。
 --kind confusion: 單一 C 的 confusion matrix。
+--kind bar      : 固定 9 個 combo 的比較柱狀圖(3 metric × 3 contrast,每格 9 根 bar);影像 combo 取
+                  固定 C(--c,預設 0.001)+ --variant;all / 1by1 各一張。輸出 _summary/barplot/…。
 
 --feature-set <name> : 單一 combo。
     c_curve   每格 all vs 1by1 兩線;confusion 2(domain)× 3(contrast)。
@@ -58,6 +60,21 @@ _PRIORITY_SHORT = {"no_priority": "none", "priority_acs": "ACS", "priority_nad":
 # domain 選擇:(key, 圖中標籤, matched_unit, matching_priority)。matched_unit/priority 由 args 帶入。
 _DOMAINS = ["all", "1by1"]
 
+# --kind bar:固定比較的 9 個 combo(順序 = x 軸;含影像者吃 variant + 單一 C,認知者無)。
+BAR_COMBOS = [
+    ("core4", "core4"),
+    ("core4_bmi", "core4+BMI"),
+    ("mmse", "MMSE"),
+    ("core4_mmse", "core4+MMSE"),
+    ("core4_bmi_mmse", "core4+BMI+MMSE"),
+    ("mmse_casi", "MMSE+CASI"),
+    ("casi", "CASI"),
+    ("core4_casi", "core4+CASI"),
+    ("core4_bmi_casi", "core4+BMI+CASI"),
+]
+CHANCE = {"balacc": 0.5, "auc": 0.5, "mcc": 0.0}
+YLIM = {"balacc": (0.4, 1.0), "auc": (0.4, 1.0), "mcc": (-0.1, 0.8)}
+
 
 def _parse_c(label):
     """clf_param 'C_0.001' → 0.001;非字串(認知 combo 的 NaN)→ nan。"""
@@ -84,10 +101,10 @@ def _summary_dir(base, kind, meta_clf, variant):
     return d
 
 
-def _load_am(args):
-    """讀 cohort 層 all_metrics.csv,回 (base_dir, DataFrame)。"""
+def _load_am(args, *, reps=False):
+    """讀 cohort 層 all_metrics.csv(reps=True 改讀 all_metrics_reps.csv),回 (base_dir, DataFrame)。"""
     base = META_ANALYSIS_DIR / cohort_path(args.p_visit, args.p_score, args.hc_visit, args.hc_score)
-    am_path = base / "all_metrics.csv"
+    am_path = base / ("all_metrics_reps.csv" if reps else "all_metrics.csv")
     if not am_path.exists():
         raise FileNotFoundError(
             f"找不到 {am_path}\n  請先跑 scripts/meta/run.py + scripts/meta/aggregate.py。")
@@ -353,11 +370,91 @@ def _run_confusion_all(args, base, sub, variant):
 
 
 # ---------------------------------------------------------------------------
+# bar(9-combo 比較)
+# ---------------------------------------------------------------------------
+
+def _bar_value(r, m, reps):
+    """從某 (combo, contrast, domain) 那列取 (value, lower_err, upper_err)。
+    reps=False → (metric, 0, 0);reps=True → (mean, mean−ci_low, ci_high−mean)。無資料 → (nan,0,0)。"""
+    if not len(r):
+        return float("nan"), 0.0, 0.0
+    row = r.iloc[0]
+    if not reps:
+        return float(row[m]), 0.0, 0.0
+    mean = float(row[f"{m}_mean"])
+    return mean, mean - float(row[f"{m}_ci_low"]), float(row[f"{m}_ci_high"]) - mean
+
+
+def _run_bar(args, base, am, variant, *, reps=False):
+    """9 combo 比較柱狀圖:每 domain 一張,3 metric(列)× 3 contrast(欄),每格 9 根 bar。
+
+    影像 combo 取固定 C(--c,預設 0.001)+ 指定 variant;認知 combo 無 C/variant(灰色 bar)。
+    reps=True:bar=跨 seed mean、誤差棒=95% CI(讀 all_metrics_reps.csv)。
+    """
+    c_val = 0.001 if args.c == "all" else float(args.c)
+    per_combo = {}
+    for fs, _ in BAR_COMBOS:
+        d = am[(am["feature_set"] == fs) & (am["emb"] == args.emb) & (am["bg"] == args.bg_mode)
+               & (am["photo"] == args.photo_mode) & (am["reducer"] == args.reducer)
+               & (am["meta_clf"] == args.meta_clf)]
+        if _IMG[fs]:
+            d = d[(d["variant"] == variant)
+                  & d["clf_param"].map(lambda x: isinstance(x, str) and abs(_parse_c(x) - c_val) < 1e-12)]
+        per_combo[fs] = d
+    labels = [lab for _, lab in BAR_COMBOS]
+    colors = ["#4C72B0" if _IMG[fs] else "#7f7f7f" for fs, _ in BAR_COMBOS]
+    x = list(range(len(BAR_COMBOS)))
+    n_rep = int(am["n_rep"].max()) if reps and "n_rep" in am.columns else 1
+
+    out_dir = _summary_dir(base, "barplot", args.meta_clf, variant) / f"C_{c_val:g}"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    for domain in _DOMAINS:
+        fig, axes = plt.subplots(len(METRICS), len(CONTRASTS), figsize=(16, 13),
+                                 sharex=True, sharey="row")
+        for i, m in enumerate(METRICS):
+            for j, contrast in enumerate(CONTRASTS):
+                ax = axes[i][j]
+                vals, los, his = [], [], []
+                for fs, _ in BAR_COMBOS:
+                    dom = _pick_domain(per_combo[fs], domain, args)
+                    v, lo, hi = _bar_value(dom[dom["contrast"] == contrast], m, reps)
+                    vals.append(v); los.append(lo); his.append(hi)
+                yerr = np.array([los, his]) if reps else None
+                ax.bar(x, vals, yerr=yerr, color=colors, width=0.8,
+                       error_kw=dict(elinewidth=0.8, capsize=2) if reps else {})
+                ax.axhline(CHANCE[m], color="k", ls=":", lw=0.8)
+                for xi, v, hi in zip(x, vals, his):
+                    if v == v:
+                        ax.text(xi, v + (hi if reps else 0), f"{v:.2f}", ha="center",
+                                va="bottom", fontsize=6, rotation=90)
+                ax.set_ylim(*YLIM[m])
+                ax.grid(axis="y", alpha=0.3)
+                ax.set_xticks(x)
+                ax.set_xticklabels(labels if i == len(METRICS) - 1 else [],
+                                   rotation=80, ha="right", fontsize=7)
+                if i == 0:
+                    ax.set_title(contrast, fontsize=12)
+                if j == 0:
+                    ax.set_ylabel(METRIC_LABEL[m], fontsize=12)
+        mtag = ("all (full cohort)" if domain == "all"
+                else f"1by1 ({_UNIT_SHORT[args.matched_unit]}, {_PRIORITY_SHORT[args.matching_priority]})")
+        stat = f"mean ± 95% CI over {n_rep} reps" if reps else "thr=0.5"
+        fig.suptitle(f"meta 9-combo compare (imaging={variant}, {args.meta_clf}) @ {mtag}, "
+                     f"imaging C_{c_val:g}, {stat}", fontsize=13)
+        fig.tight_layout(rect=[0, 0, 1, 0.98])
+        dpart = "all" if domain == "all" else f"{args.matched_unit}_1by1"
+        suffix = "_reps" if reps else ""
+        fig.savefig(out_dir / f"9combos_{dpart}{suffix}.png", dpi=150, bbox_inches="tight")
+        plt.close(fig)
+        logger.info(f"wrote {out_dir / ('9combos_' + dpart + suffix)}.png")
+
+
+# ---------------------------------------------------------------------------
 
 def main():
     ap = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--kind", choices=["c_curve", "confusion"], default="c_curve")
+    ap.add_argument("--kind", choices=["c_curve", "confusion", "bar"], default="c_curve")
     ap.add_argument("--p-visit", choices=list(P_VISIT_TOKENS), default="p_first")
     ap.add_argument("--p-score", choices=list(P_SCORE_TOKENS), default="p_cdrall")
     ap.add_argument("--hc-visit", choices=list(HC_VISIT_TOKENS), default="hc_all")
@@ -380,14 +477,21 @@ def main():
                     default="priority_acs")
     ap.add_argument("--c", default="all",
                     help="[confusion] 畫哪些 C:all=每個 C 一張(各落在 C_<c>/ 資料夾);或指定單一數值如 0.001")
+    ap.add_argument("--reps", action="store_true",
+                    help="[bar] 讀 all_metrics_reps.csv,bar=mean、誤差棒=跨 seed 95%% CI(repeated-CV)")
     args = ap.parse_args()
 
-    base, am = _load_am(args)
-    combined = args.feature_set == "all"
-    if args.variant == "all" and not combined:
-        ap.error("--variant all 只用於 --feature-set all;單一 combo 請指定單一 variant。")
+    base, am = _load_am(args, reps=args.reps and args.kind == "bar")
     variants = list(ASYM_VARIANTS) if args.variant == "all" else [args.variant]
 
+    if args.kind == "bar":
+        for v in variants:
+            _run_bar(args, base, am, v, reps=args.reps)
+        return
+
+    combined = args.feature_set == "all"
+    if args.variant == "all" and not combined:
+        ap.error("--variant all 只用於 --feature-set all 或 --kind bar;單一 combo 請指定單一 variant。")
     if not combined:
         (_run_c_curve if args.kind == "c_curve" else _run_confusion)(args, base, am)
         return

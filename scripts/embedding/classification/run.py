@@ -46,22 +46,24 @@ _clf_param_label = clf_param_label
 
 def cell_out_dir(cohort, bg_mode, embedding, variant, photo_mode, reducer, model,
                  direction, *, pca_components=None, drop_corr_threshold=None,
-                 lr_C=1.0, xgb_params=None, root=None):
+                 lr_C=1.0, xgb_params=None, seed=0, root=None):
     """委派 oof_dir,維持舊呼叫面;root 預設 EMBEDDING_CLASSIFICATION_REFACTOR_DIR。"""
     return oof_dir(cohort, bg_mode, embedding, variant, photo_mode, reducer, model,
                    direction, pca_components=pca_components,
                    drop_corr_threshold=drop_corr_threshold, lr_C=lr_C,
-                   xgb_params=xgb_params, root=root or EMBEDDING_CLASSIFICATION_REFACTOR_DIR)
+                   xgb_params=xgb_params, seed=seed,
+                   root=root or EMBEDDING_CLASSIFICATION_REFACTOR_DIR)
 
 
 def cell_oof_paths(cohort, bg_mode, embedding, variant, photo_mode, reducer, model,
                    direction, *, pca_components=None, drop_corr_threshold=None,
-                   lr_C=1.0, xgb_params=None, root=None):
+                   lr_C=1.0, xgb_params=None, seed=0, root=None):
     """委派 oof_paths,維持舊呼叫面;root 預設 EMBEDDING_CLASSIFICATION_REFACTOR_DIR。"""
     return oof_paths(cohort, bg_mode, embedding, variant, photo_mode, reducer, model,
                      direction, pca_components=pca_components,
                      drop_corr_threshold=drop_corr_threshold, lr_C=lr_C,
-                     xgb_params=xgb_params, root=root or EMBEDDING_CLASSIFICATION_REFACTOR_DIR)
+                     xgb_params=xgb_params, seed=seed,
+                     root=root or EMBEDDING_CLASSIFICATION_REFACTOR_DIR)
 
 
 def param_grid(model, grid_search, lr_C=1.0):
@@ -115,7 +117,7 @@ def _build_estimator(model, ep):
 
 def run_cell(cohort, bg_mode, embedding, variant, photo_mode, reducer,
              model, direction, *, pca_components=None, drop_corr_threshold=None,
-             lr_C=1.0, xgb_params=None, output_root=None, match_strategies=None):
+             lr_C=1.0, xgb_params=None, fold_seed=0, output_root=None, match_strategies=None):
     match_strategies = match_strategies or MATCH_STRATEGIES
     root = output_root or EMBEDDING_CLASSIFICATION_REFACTOR_DIR
     ep = _eparams(reducer, pca_components, drop_corr_threshold, lr_C, xgb_params)
@@ -136,11 +138,11 @@ def run_cell(cohort, bg_mode, embedding, variant, photo_mode, reducer,
     out_dir = cell_out_dir(cohort, bg_mode, embedding, variant, photo_mode, reducer,
                            model, direction, pca_components=pca_components,
                            drop_corr_threshold=drop_corr_threshold,
-                           lr_C=lr_C, xgb_params=xgb_params, root=root)
+                           lr_C=lr_C, xgb_params=xgb_params, seed=fold_seed, root=root)
 
     # train → 只產 OOF;report → 只把 OOF 落地成 oof_scores.csv(評估是獨立下游步驟)。
     oof = train(X_full, ids_full, y_full, build_estimator, score_method, needs_cv, direction,
-                cohort=cohort, match_strategies=match_strategies)
+                cohort=cohort, match_strategies=match_strategies, fold_seed=fold_seed)
     paths = report(oof, out_dir, direction)
     logger.info(f"  [{direction}] wrote {len(paths)} oof_scores.csv")
     return paths
@@ -182,6 +184,9 @@ def main():
     ap.add_argument("--grid-search", action="store_true",
                     help="掃 hyperparameter grid:logistic→C∈{1e-3..1e2};"
                          "xgb→{200,500,1k}×{3,6,9}×{.05,.1,.2}。只支援 classifier")
+    ap.add_argument("--fold-seed", type=int, default=0,
+                    help="GroupKFold 折分 seed(路徑 seed_<N>):0=確定性折/現有結果;"
+                         "≥1=repeated-CV 不同折分(shuffle=True, random_state=N)")
 
     # 跑法設定(partition / threshold 等是「評估」旋鈕,屬獨立下游步驟,不在此 producer)
     ap.add_argument("--direction", choices=["forward", "reverse"], default="forward")
@@ -225,7 +230,7 @@ def main():
         run_cell(cohort, args.bg_mode, args.embedding, args.variant,
                  args.photo_mode, args.reducer, args.model, args.direction,
                  pca_components=pca, drop_corr_threshold=args.drop_corr_threshold,
-                 lr_C=lr_C, xgb_params=xgb_params,
+                 lr_C=lr_C, xgb_params=xgb_params, fold_seed=args.fold_seed,
                  output_root=args.output_root)
     logger.info("done.")
 

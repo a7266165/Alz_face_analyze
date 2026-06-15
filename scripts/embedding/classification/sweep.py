@@ -43,34 +43,37 @@ def oof_paths_for(cell, root):
     return cell_oof_paths(
         cell["cohort"], cell["bg"], cell["emb"], cell["variant"], cell["photo"],
         cell["reducer"], cell["model"], cell["direction"],
-        lr_C=cell["lr_C"], xgb_params=cell["xgb_params"], root=root)
+        lr_C=cell["lr_C"], xgb_params=cell["xgb_params"], seed=cell["fold_seed"], root=root)
 
 
 def iter_cells(args):
-    """產生所有合法 cell dict。scorer 只配 reducer=no_drop;classifier 才展開 grid。"""
+    """產生所有合法 cell dict。scorer 只配 reducer=no_drop;classifier 才展開 grid。
+    fold_seed 為最外層軸(repeated-CV:seed_<N> 路徑層 + GroupKFold 折分)。"""
     cohort = (args.p_visit, args.p_score, args.hc_visit, args.hc_score)
-    for bg in args.bg_mode:
-        for emb in args.embedding:
-            for variant in args.variant:
-                for photo in args.photo_mode:
-                    for model in args.model:
-                        reducers = (args.reducer if model in CLASSIFIERS
-                                    else ["no_drop"])
-                        for reducer in reducers:
-                            for direction in args.direction:
-                                for lr_C, xgb_params in param_grid(model, args.grid_search):
-                                    yield dict(
-                                        cohort=cohort, bg=bg, emb=emb,
-                                        variant=variant, photo=photo,
-                                        reducer=reducer, model=model,
-                                        direction=direction,
-                                        lr_C=lr_C, xgb_params=xgb_params)
+    for fold_seed in args.fold_seed:
+        for bg in args.bg_mode:
+            for emb in args.embedding:
+                for variant in args.variant:
+                    for photo in args.photo_mode:
+                        for model in args.model:
+                            reducers = (args.reducer if model in CLASSIFIERS
+                                        else ["no_drop"])
+                            for reducer in reducers:
+                                for direction in args.direction:
+                                    for lr_C, xgb_params in param_grid(model, args.grid_search):
+                                        yield dict(
+                                            cohort=cohort, bg=bg, emb=emb,
+                                            variant=variant, photo=photo,
+                                            reducer=reducer, model=model,
+                                            direction=direction,
+                                            lr_C=lr_C, xgb_params=xgb_params,
+                                            fold_seed=fold_seed)
 
 
 def _label(c):
     g = (_clf_param_label(c["model"], c["lr_C"], c["xgb_params"])
          if c["model"] in CLASSIFIERS else "-")
-    return (f"{c['bg']}/{c['emb']}/{c['variant']}/{c['photo']}/"
+    return (f"seed_{c['fold_seed']}/{c['bg']}/{c['emb']}/{c['variant']}/{c['photo']}/"
             f"{c['model']}/{c['reducer']}/{g}/{c['direction']}")
 
 
@@ -91,6 +94,9 @@ def main():
     ap.add_argument("--reducer", nargs="+", default=["no_drop"],
                     help="目前 sweep 只支援 no_drop(pca/drop_corr 需 param 清單,未做)")
     ap.add_argument("--direction", nargs="+", choices=DIRECTIONS, default=DIRECTIONS)
+    ap.add_argument("--fold-seed", type=int, nargs="+", default=[0],
+                    help="GroupKFold 折分 seed(路徑 seed_<N>),最外層軸:0=確定性折/現有結果;"
+                         "≥1=repeated-CV 不同折分。例:--fold-seed 1 2 3 ... 29")
     ap.add_argument("--no-grid-search", dest="grid_search", action="store_false",
                     help="關掉 hyperparameter grid(classifier 改用單一預設)")
     ap.add_argument("--overwrite", action="store_true", help="已存在也重跑")
@@ -128,7 +134,8 @@ def main():
         try:
             res = run_cell(c["cohort"], c["bg"], c["emb"], c["variant"], c["photo"],
                            c["reducer"], c["model"], c["direction"],
-                           lr_C=c["lr_C"], xgb_params=c["xgb_params"], output_root=root)
+                           lr_C=c["lr_C"], xgb_params=c["xgb_params"],
+                           fold_seed=c["fold_seed"], output_root=root)
             if res is None:
                 no_feat += 1
                 logger.warning(f"[{i}/{len(cells)}] no features  {desc}")

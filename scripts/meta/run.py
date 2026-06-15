@@ -40,25 +40,25 @@ DEFAULT_C_VALUES = [0.001, 0.01, 0.1, 1.0, 10.0, 100.0]
 
 
 def _precheck_oof(cohort, *, emb, bg_mode, photo_mode, reducer, base_clf,
-                  variants, lr_Cs, root):
+                  variants, lr_Cs, seed, root):
     """掃描所有需要的 landed embedding OOF(original × C + 各 asym variant × C),缺的一次列齊報錯。"""
     needed = [("original", c) for c in lr_Cs] + [(v, c) for v in variants for c in lr_Cs]
     missing = [str(p) for v, c in needed
                for p in [oof_paths(cohort, bg_mode, emb, v, photo_mode, reducer,
-                                   base_clf, "forward", lr_C=c, root=root)[0]]
+                                   base_clf, "forward", lr_C=c, seed=seed, root=root)[0]]
                if not p.exists()]
     if missing:
         raise FileNotFoundError(
             "缺少以下 base OOF(請先跑 embedding forward 分類產生):\n  " + "\n  ".join(missing))
 
 
-def _ident(cohort, args, *, feature_set, variant, base_clf, clf_param, meta_clf):
+def _ident(cohort, args, *, feature_set, variant, base_clf, clf_param, meta_clf, seed):
     """cell 身份欄(編在路徑裡、metrics.csv 本身沒有的部分)→ 擺長表最前面利於彙整。"""
     return dict(
         p_visit=cohort[0], p_score=cohort[1], hc_visit=cohort[2], hc_score=cohort[3],
         bg=args.bg_mode, emb=args.emb, photo=args.photo_mode, reducer=args.reducer,
         feature_set=feature_set, variant=variant,
-        base_clf=base_clf, clf_param=clf_param, meta_clf=meta_clf)
+        base_clf=base_clf, clf_param=clf_param, meta_clf=meta_clf, seed=seed)
 
 
 def _write_cell(oof, cohort, out_dir, ident):
@@ -113,7 +113,10 @@ def main():
     ap.add_argument("--embedding-root", type=Path, default=None,
                     help="embedding OOF 根目錄(預設 EMBEDDING_CLASSIFICATION_DIR)")
     ap.add_argument("--device", default="auto", help="auto | cpu | cuda")
-    ap.add_argument("--seed", type=int, default=42)
+    ap.add_argument("--seed", type=int, default=42, help="meta 估計器 seed(與折分 --fold-seed 無關)")
+    ap.add_argument("--fold-seed", type=int, nargs="+", default=[0],
+                    help="repeated-CV 折分 seed(路徑 seed_<N>):逐個讀對應 seed 的 base OOF、"
+                         "寫對應 seed 的 meta cell;0=現有確定性折。例:--fold-seed 0 1 2 ... 29")
     args = ap.parse_args()
 
     cohort = (args.p_visit, args.p_score, args.hc_visit, args.hc_score)
@@ -123,16 +126,25 @@ def main():
     imaging = {k: v for k, v in sets.items() if feature_set_needs_oof(v)}
     logger.info(f"cohort={cohort}  emb={args.emb}/{args.bg_mode}/{args.photo_mode}  "
                 f"cognitive={list(cognitive)}  imaging={list(imaging)}  "
-                f"variants={args.asym_variant}  C={args.base_lr_C}  meta_clf={args.meta_clf}")
+                f"variants={args.asym_variant}  C={args.base_lr_C}  meta_clf={args.meta_clf}  "
+                f"fold_seed={args.fold_seed}")
 
+    for fold_seed in args.fold_seed:
+        _run_seed(args, cohort, cognitive, imaging, fold_seed)
+
+
+def _run_seed(args, cohort, cognitive, imaging, fold_seed):
+    """單一 fold_seed 的全套產出(讀該 seed 的 base OOF、寫該 seed 的 meta cell)。"""
+    logger.info(f"=== fold_seed={fold_seed} ===")
     if imaging:
         _precheck_oof(cohort, emb=args.emb, bg_mode=args.bg_mode,
                       photo_mode=args.photo_mode, reducer=args.reducer,
                       base_clf=args.base_clf, variants=args.asym_variant,
-                      lr_Cs=args.base_lr_C, root=args.embedding_root)
+                      lr_Cs=args.base_lr_C, seed=fold_seed, root=args.embedding_root)
 
     common = dict(emb=args.emb, bg_mode=args.bg_mode, photo_mode=args.photo_mode,
-                  reducer=args.reducer, base_clf=args.base_clf, root=args.embedding_root)
+                  reducer=args.reducer, base_clf=args.base_clf, seed=fold_seed,
+                  root=args.embedding_root)
 
     # 認知 combo:無 OOF/variant/C,只跑一次(用任一 variant/C 讀表取 fold + 認知欄,皆 invariant)
     if cognitive:
@@ -142,10 +154,11 @@ def main():
             for mc in args.meta_clf:
                 oof = oof_from_table(t0, cols, meta_clf=mc, seed=args.seed, device=args.device)
                 out_dir = meta_analysis_path(*cohort, args.bg_mode, args.emb, args.photo_mode,
-                                             args.reducer, feature_set=fs, meta_classifier=mc)
+                                             args.reducer, feature_set=fs, meta_classifier=mc,
+                                             seed=fold_seed)
                 ident = _ident(cohort, args, feature_set=fs, variant=None,
-                               base_clf=None, clf_param=None, meta_clf=mc)
-                _log_hl(f"{fs}/{mc}", oof, _write_cell(oof, cohort, out_dir, ident))
+                               base_clf=None, clf_param=None, meta_clf=mc, seed=fold_seed)
+                _log_hl(f"seed_{fold_seed}/{fs}/{mc}", oof, _write_cell(oof, cohort, out_dir, ident))
 
     # 影像 combo:逐 (C, variant) 組一次表,slice 各 combo × 各 meta_clf;同表直接互比
     for c in args.base_lr_C:
@@ -160,10 +173,11 @@ def main():
                     out_dir = meta_analysis_path(
                         *cohort, args.bg_mode, args.emb, args.photo_mode, args.reducer,
                         feature_set=fs, variant=variant, base_classifier=args.base_clf,
-                        base_classifier_param=clf_param, meta_classifier=mc)
+                        base_classifier_param=clf_param, meta_classifier=mc, seed=fold_seed)
                     ident = _ident(cohort, args, feature_set=fs, variant=variant,
-                                   base_clf=args.base_clf, clf_param=clf_param, meta_clf=mc)
-                    _log_hl(f"{fs}/{variant}/{clf_param}/{mc}", oof,
+                                   base_clf=args.base_clf, clf_param=clf_param, meta_clf=mc,
+                                   seed=fold_seed)
+                    _log_hl(f"seed_{fold_seed}/{fs}/{variant}/{clf_param}/{mc}", oof,
                             _write_cell(oof, cohort, out_dir, ident))
 
 

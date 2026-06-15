@@ -21,9 +21,11 @@ def clf_param_label(model, lr_C=1.0, xgb_params=None):
 
 def oof_dir(cohort, bg_mode, embedding, variant, photo_mode, reducer, model,
             direction, *, pca_components=None, drop_corr_threshold=None,
-            lr_C=1.0, xgb_params=None, root=None):
+            lr_C=1.0, xgb_params=None, seed=0, root=None):
     """這格 OOF 的輸出目錄。寫端、讀端共用同一組 rlabel / clf_param / dir_seg 規則
-    (forward 純 norm scorer(l1/l2_norm) 無 fwd/rev 段、其餘 fwd;reverse 一律 rev),確保寫哪讀哪一致。"""
+    (forward 純 norm scorer(l1/l2_norm) 無 fwd/rev 段、其餘 fwd;reverse 一律 rev),確保寫哪讀哪一致。
+
+    seed:repeated-CV 的折分維度(seed_<N> 緊接 classifier);預設 0(= 確定性折,現有結果)。"""
     root = root or EMBEDDING_CLASSIFICATION_DIR
     is_classify = model in CLASSIFIERS
     rlabel = (reducer_label(reducer, pca_components=pca_components,
@@ -34,17 +36,17 @@ def oof_dir(cohort, bg_mode, embedding, variant, photo_mode, reducer, model,
                else (None if model in NORM_SCORERS else "fwd"))
     return embedding_classification_path(
         *cohort, bg_mode, embedding, variant, photo_mode, rlabel,
-        clf=model, clf_param=clf_param, direction=dir_seg, root=root)
+        clf=model, clf_param=clf_param, direction=dir_seg, seed=seed, root=root)
 
 
 def oof_paths(cohort, bg_mode, embedding, variant, photo_mode, reducer, model,
               direction, *, pca_components=None, drop_corr_threshold=None,
-              lr_C=1.0, xgb_params=None, match_strategies=MATCH_STRATEGIES, root=None):
+              lr_C=1.0, xgb_params=None, seed=0, match_strategies=MATCH_STRATEGIES, root=None):
     """這格預期寫出/讀入的 oof_scores.csv(forward 1 個;reverse 每 match_strategy 一個)。"""
     out_dir = oof_dir(cohort, bg_mode, embedding, variant, photo_mode, reducer, model,
                       direction, pca_components=pca_components,
                       drop_corr_threshold=drop_corr_threshold,
-                      lr_C=lr_C, xgb_params=xgb_params, root=root)
+                      lr_C=lr_C, xgb_params=xgb_params, seed=seed, root=root)
     if direction == "reverse":
         return [out_dir / ms / "oof_scores.csv" for ms in match_strategies]
     return [out_dir / "oof_scores.csv"]
