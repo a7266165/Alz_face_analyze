@@ -27,6 +27,7 @@ META_FEATURE_SETS = {
     "casi":                 ["casi"],
     "mmse_casi":            ["mmse", "casi"],
     "core4":                ["real_age", "age_error", "embedding_LR_score", "asymmetry_LR_score"],
+    "core3":                ["embedding_LR_score", "asymmetry_LR_score", "age_error"],  # core4 去 real_age(年齡 confound)
     "core4_bmi":            ["real_age", "age_error", "embedding_LR_score", "asymmetry_LR_score", "bmi"],
     "core4_mmse":           ["real_age", "age_error", "embedding_LR_score", "asymmetry_LR_score", "mmse"],
     "core4_casi":           ["real_age", "age_error", "embedding_LR_score", "asymmetry_LR_score", "casi"],
