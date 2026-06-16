@@ -22,16 +22,17 @@ logger = logging.getLogger(__name__)
 
 def eval_cell(cohort, bg_mode, embedding, variant, photo_mode, reducer,
               model, direction, *, pca_components=None, drop_corr_threshold=None,
-              lr_C=1.0, xgb_params=None, output_root=None, write=True, seed=42):
+              lr_C=1.0, xgb_params=None, fold_seed=0, output_root=None, write=True, seed=42):
     """評估單一 cell:對每個存在的 oof_scores.csv 算出同層 metrics.csv。
 
     回寫出的 metrics.csv 路徑 list;找不到 oof 的略過(producer 還沒產這格)。
     評估軸由 evaluate 全掃,reverse 的 matching_priority 由各 oof 的父目錄推得。
+    fold_seed 定位 producer 的 seed_<N> 路徑層;seed 為 evaluate 內 bootstrap 的亂數種子。
     """
     paths = cell_oof_paths(
         cohort, bg_mode, embedding, variant, photo_mode, reducer, model, direction,
         pca_components=pca_components, drop_corr_threshold=drop_corr_threshold,
-        lr_C=lr_C, xgb_params=xgb_params, root=output_root)
+        lr_C=lr_C, xgb_params=xgb_params, seed=fold_seed, root=output_root)
     written = []
     for p in paths:
         if not p.exists():
@@ -72,7 +73,9 @@ def main():
                     help="只算不落檔(預設會寫同層 metrics.csv)")
     ap.add_argument("--output-root", type=Path, default=None,
                     help="覆寫輸出根(預設 EMBEDDING_CLASSIFICATION_REFACTOR_DIR)")
-    ap.add_argument("--seed", type=int, default=42)
+    ap.add_argument("--fold-seed", type=int, default=0,
+                    help="定位 producer 的 seed_<N> 折分層(對齊 classification);預設 0")
+    ap.add_argument("--seed", type=int, default=42, help="evaluate 內 bootstrap 亂數種子")
     args = ap.parse_args()
 
     pca = args.pca_components
@@ -94,7 +97,7 @@ def main():
             cohort, args.bg_mode, args.embedding, args.variant, args.photo_mode,
             args.reducer, args.model, args.direction,
             pca_components=pca, drop_corr_threshold=args.drop_corr_threshold,
-            lr_C=lr_C, xgb_params=xgb_params,
+            lr_C=lr_C, xgb_params=xgb_params, fold_seed=args.fold_seed,
             output_root=args.output_root, write=args.write, seed=args.seed))
     logger.info(f"done. wrote {total} metrics.csv")
 

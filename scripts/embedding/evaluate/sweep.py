@@ -41,6 +41,9 @@ def main():
     ap.add_argument("--reducer", nargs="+", default=["no_drop"],
                     help="目前 sweep 只支援 no_drop(對齊 classification_sweep)")
     ap.add_argument("--direction", nargs="+", choices=DIRECTIONS, default=DIRECTIONS)
+    ap.add_argument("--fold-seed", type=int, nargs="+", default=[0],
+                    help="GroupKFold 折分 seed(路徑 seed_<N>),對齊 classification_sweep;"
+                         "預設 [0]=現有確定性結果")
     ap.add_argument("--no-grid-search", dest="grid_search", action="store_false",
                     help="關掉 hyperparameter grid(對齊 producer 的同名旗標)")
     ap.add_argument("--overwrite", action="store_true", help="metrics.csv 已存在也重算")
@@ -86,7 +89,7 @@ def main():
             written = eval_cell(
                 c["cohort"], c["bg"], c["emb"], c["variant"], c["photo"],
                 c["reducer"], c["model"], c["direction"],
-                lr_C=c["lr_C"], xgb_params=c["xgb_params"],
+                lr_C=c["lr_C"], xgb_params=c["xgb_params"], fold_seed=c["fold_seed"],
                 output_root=root, write=args.write, seed=args.seed)
             if written:
                 ran += 1

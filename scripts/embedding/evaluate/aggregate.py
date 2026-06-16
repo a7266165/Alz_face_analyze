@@ -24,7 +24,7 @@ from scripts.embedding.classification.sweep import (
 logger = logging.getLogger("aggregate_metrics")
 
 # cell 身份欄(metrics.csv 沒有、編在路徑裡的部分)→ 擺在長表最前面
-_IDENT_COLS = ["p_visit", "p_score", "hc_visit", "hc_score",
+_IDENT_COLS = ["p_visit", "p_score", "hc_visit", "hc_score", "fold_seed",
                "bg", "emb", "variant", "photo", "reducer", "model", "clf_param"]
 # 排序鍵(存在才用):身份 → 評估軸
 _SORT_KEYS = _IDENT_COLS + ["direction", "contrast", "eval_unit",
@@ -39,6 +39,7 @@ def _read_annotated(metrics_path, cell):
     ident = dict(
         p_visit=cell["cohort"][0], p_score=cell["cohort"][1],
         hc_visit=cell["cohort"][2], hc_score=cell["cohort"][3],
+        fold_seed=cell["fold_seed"],
         bg=cell["bg"], emb=cell["emb"], variant=cell["variant"],
         photo=cell["photo"], reducer=cell["reducer"], model=cell["model"],
         clf_param=clf_param)
@@ -78,6 +79,8 @@ def main():
     ap.add_argument("--model", nargs="+", choices=list(ALL_METHODS), default=list(ALL_METHODS))
     ap.add_argument("--reducer", nargs="+", default=["no_drop"])
     ap.add_argument("--direction", nargs="+", choices=DIRECTIONS, default=DIRECTIONS)
+    ap.add_argument("--fold-seed", type=int, nargs="+", default=[0],
+                    help="GroupKFold 折分 seed(路徑 seed_<N>),對齊 classification_sweep;預設 [0]")
     ap.add_argument("--no-grid-search", dest="grid_search", action="store_false")
     ap.add_argument("--output-root", type=Path, default=None)
     ap.add_argument("--out", type=Path, default=None,
