@@ -1,4 +1,8 @@
-"""繪製 evaluation 總覽圖
+"""繪製 evaluation 圖。
+
+--kind summary    建 _summary/<eval_unit>/ 結構：box、violin（讀 all_metrics.csv，跨 embedding）
+                  + confusion_matrix、combo_metrics（讀 arcface seed_0 per-cell）。
+--kind lr_metrics ArcFace LogReg on asymmetry 的 metrics-vs-C 圖。
 """
 import argparse
 import logging
@@ -189,6 +193,137 @@ def build_lr_fig(df, variant_disp, out_path):
     logger.info(f"saved {out_path}")
 
 
+# ── _summary 結構：confusion_matrix（per variant×C）+ combo_metrics（LR/XGB per variant）─────
+# 讀 arcface 的 per-cell seed_0 forward metrics.csv（與 box/violin 讀 all_metrics.csv 不同來源）。
+SUMMARY_EMB = "arcface"
+SUMMARY_VARIANTS = ["differences", "relative_differences", "absolute_differences",
+                    "absolute_relative_differences", "original"]
+SUMMARY_CGRID = [0.001, 0.01, 0.1, 1.0, 10.0, 100.0]
+SUMMARY_METRICS = [("balacc", "Balanced ACC"), ("auc", "AUC"), ("mcc", "MCC")]
+CM_CONTRASTS = [("ad_vs_hc", "AD", "HC"), ("ad_vs_nad", "AD", "NAD"), ("ad_vs_acs", "AD", "ACS")]
+SUMMARY_LINE_COLOR = {"ad_vs_hc": "#4C72B0", "ad_vs_nad": "#55A868", "ad_vs_acs": "#C44E52"}
+
+
+def _sum_cell(base, variant, model, seg):
+    """seed_0 forward 的 metrics.csv 路徑；seg = C_<c>（logistic）或 xgb config 名。"""
+    return base / variant / "all" / "no_drop" / model / "seed_0" / seg / "fwd" / "metrics.csv"
+
+
+def _sum_read(path, eval_unit):
+    if not path.exists():
+        return None
+    df = pd.read_csv(path)
+    return df[df["eval_unit"] == eval_unit]
+
+
+def _sum_pick(df, filt, contrast):
+    sub = df[df["contrast"] == contrast]
+    for k, v in filt.items():
+        sub = sub[sub[k] == v]
+    return sub.iloc[0] if len(sub) else None
+
+
+def _sum_slices(priority):
+    return [("full", {"domain": "all"}),
+            ("1by1 matched", {"domain": "1by1", "matched_unit": "visit",
+                              "matching_priority": priority})]
+
+
+def _xgb_segs(base, variant):
+    """xgb seed_0 的 config 子目錄名，依 (ne, md, lr) 排序。回 [(short_label, seg_name)]。"""
+    d = base / variant / "all" / "no_drop" / "xgb" / "seed_0"
+    if not d.exists():
+        return []
+    segs = sorted((p.name for p in d.iterdir() if p.is_dir()),
+                  key=lambda n: (int(n.split("_")[1]), int(n.split("_")[3]), float(n.split("_")[5])))
+    return [("/".join(s.split("_")[i] for i in (1, 3, 5)), s) for s in segs]
+
+
+def build_cm_fig(base, variant, c, eval_unit, priority, out_path):
+    """2 列(full / 1by1-matched) × 3 欄(AD vs HC/NAD/ACS) 的 logistic 混淆矩陣（該 C、eval_unit）。"""
+    df = _sum_read(_sum_cell(base, variant, "logistic", f"C_{c}"), eval_unit)
+    if df is None:
+        return
+    slices = _sum_slices(priority)
+    fig, axes = plt.subplots(len(slices), len(CM_CONTRASTS), figsize=(11, 7.2))
+    for ri, (slabel, sfilt) in enumerate(slices):
+        for ci, (ckey, pos, neg) in enumerate(CM_CONTRASTS):
+            ax = axes[ri][ci]
+            r = _sum_pick(df, sfilt, ckey)
+            if r is None:
+                ax.text(0.5, 0.5, "NA", ha="center", va="center"); ax.axis("off"); continue
+            cm = np.array([[int(r.tp), int(r.fn)], [int(r.fp), int(r.tn)]], float)
+            rp = cm / cm.sum(axis=1, keepdims=True)
+            ax.imshow(rp, cmap="Blues", vmin=0, vmax=1)
+            for i in range(2):
+                for j in range(2):
+                    ax.text(j, i, f"{int(cm[i, j])}\n({rp[i, j]*100:.0f}%)", ha="center",
+                            va="center", fontsize=11, color="white" if rp[i, j] > 0.55 else "black")
+            ax.set_xticks([0, 1]); ax.set_xticklabels([f"pred {pos}", f"pred {neg}"], fontsize=8)
+            ax.set_yticks([0, 1]); ax.set_yticklabels([f"act {pos}", f"act {neg}"], fontsize=8)
+            ax.set_title(f"{pos} vs {neg} - {slabel}\nn={int(r.n)}  balacc={r.balacc:.3f}  "
+                         f"AUC={r.auc:.3f}  MCC={r.mcc:.3f}", fontsize=9)
+    fig.suptitle(f"ArcFace - LogReg (C={c}, seed_0, {eval_unit}) - {variant} confusion matrices\n"
+                 f"rows: full / 1by1 matched(visit-{priority})   cols: AD vs HC / NAD / ACS",
+                 fontsize=12, fontweight="bold")
+    fig.tight_layout(rect=(0, 0, 1, 0.93))
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(str(out_path), dpi=150, bbox_inches="tight", facecolor="white"); plt.close(fig)
+
+
+def build_combo_fig(variant, model, series, xlabel, eval_unit, priority, out_path):
+    """3 列(balacc/AUC/MCC) × 2 欄(full/matched)，3 對比線 vs 超參數。series=[(xlabel, metrics_df)]。"""
+    slices = _sum_slices(priority)
+    xs = list(range(len(series)))
+    fig, axes = plt.subplots(len(SUMMARY_METRICS), len(slices), figsize=(13, 11),
+                             sharex=True, sharey="row")
+    for ri, (mkey, mlabel) in enumerate(SUMMARY_METRICS):
+        for cidx, (slabel, sfilt) in enumerate(slices):
+            ax = axes[ri][cidx]
+            for ckey, pos, neg in CM_CONTRASTS:
+                ys = []
+                for _x, df in series:
+                    r = _sum_pick(df, sfilt, ckey) if df is not None else None
+                    ys.append(np.nan if r is None else float(r[mkey]))
+                ax.plot(xs, ys, marker="o", ms=4, lw=1.6,
+                        color=SUMMARY_LINE_COLOR[ckey], label=f"{pos} vs {neg}")
+            ax.axhline(0.5 if mkey in ("balacc", "auc") else 0.0, ls="--", lw=1, color="0.6")
+            ax.grid(True, ls=":", lw=0.5, alpha=0.5)
+            if ri == 0:
+                ax.set_title(slabel, fontsize=12, fontweight="bold")
+            if cidx == 0:
+                ax.set_ylabel(mlabel, fontsize=12, fontweight="bold")
+            if ri == len(SUMMARY_METRICS) - 1:
+                ax.set_xticks(xs); ax.set_xticklabels([s[0] for s in series], rotation=90, fontsize=6)
+                ax.set_xlabel(xlabel, fontsize=10)
+    axes[0][1].legend(loc="best", fontsize=9, framealpha=0.9)
+    fig.suptitle(f"ArcFace - {model} - {variant} (seed_0, {eval_unit}) metrics vs {xlabel}\n"
+                 f"cols: full / 1by1 matched(visit-{priority})", fontsize=13, fontweight="bold")
+    fig.tight_layout(rect=(0, 0, 1, 0.95))
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(str(out_path), dpi=160, bbox_inches="tight", facecolor="white"); plt.close(fig)
+
+
+def build_summary_grids(cohort, bg_mode, priority, sum_base):
+    """為 eval_by_subject / eval_by_visit 各產 confusion_matrix + combo_metrics（arcface、seed_0）。"""
+    base = EMBEDDING_CLASSIFICATION_DIR / cohort_path(*cohort) / bg_mode / SUMMARY_EMB
+    for eu in ("eval_by_subject", "eval_by_visit"):
+        for variant in SUMMARY_VARIANTS:
+            for c in SUMMARY_CGRID:
+                build_cm_fig(base, variant, c, eu, priority,
+                             sum_base / eu / "confusion_matrix" / f"C_{c}" / f"{variant}.png")
+            lr_series = [(str(c), _sum_read(_sum_cell(base, variant, "logistic", f"C_{c}"), eu))
+                         for c in SUMMARY_CGRID]
+            build_combo_fig(variant, "LogReg", lr_series, "C", eu, priority,
+                            sum_base / eu / "combo_metrics" / "LR" / f"{variant}.png")
+            xsegs = _xgb_segs(base, variant)
+            if xsegs:
+                xseries = [(lbl, _sum_read(_sum_cell(base, variant, "xgb", seg), eu)) for lbl, seg in xsegs]
+                build_combo_fig(variant, "XGBoost", xseries, "XGB grid (ne/md/lr)", eu, priority,
+                                sum_base / eu / "combo_metrics" / "XGB" / f"{variant}.png")
+        logger.info(f"[summary grids] {eu}: confusion_matrix + combo_metrics done")
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -199,10 +334,10 @@ def main():
     ap.add_argument("--hc-visit", choices=list(HC_VISIT_TOKENS), default=None)
     ap.add_argument("--hc-score", choices=list(HC_SCORE_TOKENS), default=None)
     ap.add_argument("--kind", choices=["summary", "lr_metrics"], default="summary",
-                    help="summary=各 cell 指標總覽(讀 all_metrics.csv)；"
+                    help="summary=建 _summary/<eval_unit>/{box,violin,confusion_matrix,combo_metrics}；"
                          "lr_metrics=ArcFace LogReg on asymmetry 的 metrics-vs-C 圖")
     ap.add_argument("--bg-mode", choices=["background", "no_background"], default="background",
-                    help="僅 --kind lr_metrics 用")
+                    help="confusion_matrix/combo_metrics（summary）與 lr_metrics 用的 bg")
     ap.add_argument("--matching-priority",
                     choices=["no_priority", "priority_acs", "priority_nad"],
                     default="priority_acs",
@@ -238,16 +373,18 @@ def main():
     logger.info(f"all_metrics rows={len(df)}  forward·1by1·{args.matching_priority} rows={len(fwd)}")
 
     base = root / cohort_path(*cohort) / "_summary"
+    # box/violin：eval_unit 改為資料夾層（_summary/<eu>/<style>/），與 confusion_matrix/combo_metrics 一致
     for style in args.styles:
-        out_dir = base / style
         for mu, eu in COMBOS:
             sub = fwd[(fwd["matched_unit"] == mu) & (fwd["eval_unit"] == eu)]
             if not len(sub):
                 logger.info(f"[skip] {style} {mu}-match × {eu}: no rows")
                 continue
-            out = out_dir / f"{args.matching_priority}_{mu}match_{eu}.png"
+            out = base / eu / style / f"{args.matching_priority}_{mu}match.png"
             make_figure(sub, out, style)
             logger.info(f"[ok]   {style} {mu}-match × {eu}: {len(sub)} rows -> {out.relative_to(base)}")
+    # confusion_matrix + combo_metrics（arcface、seed_0；兩個 eval_unit）
+    build_summary_grids(cohort, args.bg_mode, args.matching_priority, base)
     logger.info(f"done -> {base}")
 
 
