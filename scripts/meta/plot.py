@@ -103,7 +103,8 @@ def _summary_dir(base, kind, meta_clf, variant):
 
 def _load_am(args, *, reps=False):
     """讀 cohort 層 all_metrics.csv(reps=True 改讀 all_metrics_reps.csv),回 (base_dir, DataFrame)。"""
-    base = META_ANALYSIS_DIR / cohort_path(args.p_visit, args.p_score, args.hc_visit, args.hc_score)
+    base = (META_ANALYSIS_DIR / cohort_path(args.p_visit, args.p_score, args.hc_visit, args.hc_score)
+            / args.case_mode)
     am_path = base / ("all_metrics_reps.csv" if reps else "all_metrics.csv")
     if not am_path.exists():
         raise FileNotFoundError(
@@ -466,7 +467,9 @@ def main():
                     default="relative_differences",
                     help="影像 combo 用哪個 asymmetry variant;all=4 種各出一套(僅 --feature-set all)")
     ap.add_argument("--meta-clf", choices=list(META_CLASSIFIERS), default="tabpfn_v3",
-                    help="畫哪個 meta stacker 的結果(tabpfn_v3 / xgb)")
+                    help="畫哪個 meta stacker 的結果(tabpfn_v3 / xgb / lr)")
+    ap.add_argument("--case-mode", choices=["no_nan", "keep_nan"], default="no_nan",
+                    help="meta 母體子樹:no_nan(complete-case)/ keep_nan(full cohort)")
     ap.add_argument("--emb", default="arcface")
     ap.add_argument("--bg-mode", default="background")
     ap.add_argument("--photo-mode", default="all")

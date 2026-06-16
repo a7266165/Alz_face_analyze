@@ -87,7 +87,7 @@ def meta_oof(X, y, fold, *, meta_clf="tabpfn_v3", seed=42, device="auto"):
 
 def session_feature_table(cohort, *, variant="relative_differences", emb="arcface",
                           bg_mode="background", photo_mode="mean", reducer="no_drop",
-                          base_clf="logistic", lr_C=1.0, seed=0, root=None):
+                          base_clf="logistic", lr_C=1.0, seed=0, complete_case=True, root=None):
     """組 per-session 全欄特徵表
     [ID, y_true, fold, embedding_LR_score, asymmetry_LR_score, real_age, age_error, bmi, mmse, casi]。
 
@@ -106,6 +106,8 @@ def session_feature_table(cohort, *, variant="relative_differences", emb="arcfac
         emb / bg_mode / photo_mode / reducer: 定位落地 OOF 用(須與 embedding 產出一致)。
         base_clf: original 與 asymmetry 共用的 base 模型(預設 logistic)。
         lr_C: base_clf 為 logistic 時定位 C_<value> 落地格;original/asym 共用同一個 C。
+        complete_case: True(預設)→ 丟掉 mmse/casi 缺值的 session(complete-case,所有 combo 同母體公平比較,
+            且全表零 NaN);False → 保留(full cohort,缺值交給能吃 NaN 的 stacker)。base/embedding 不受此影響。
         root: embedding OOF 根目錄,預設 EMBEDDING_CLASSIFICATION_DIR。
     """
     orig = base_oof(cohort, emb, "original", bg_mode, photo_mode, base_clf,
@@ -126,6 +128,8 @@ def session_feature_table(cohort, *, variant="relative_differences", emb="arcfac
          .merge(bmi[["ID", "bmi"]], on="ID", how="left"))
     assert (t["y_true"].to_numpy() == t["y_true_a"].to_numpy()).all(), \
         "original 與 asymmetry OOF 的 y_true 不一致"
+    if complete_case:                       # 丟認知缺值 session → 全表零 NaN、9 combo 同母體比較
+        t = t[t["mmse"].notna() & t["casi"].notna()].reset_index(drop=True)
     return t[["ID", "y_true", "fold"] + ALL_FEATURE_COLS]
 
 
@@ -150,7 +154,7 @@ def oof_from_table(table, feature_cols, *, meta_clf="tabpfn_v3", seed=42, device
 def session_oof(cohort, *, feature_cols, variant="relative_differences", emb="arcface",
                 bg_mode="background", photo_mode="mean", reducer="no_drop",
                 base_clf="logistic", lr_C=1.0, meta_clf="tabpfn_v3",
-                root=None, seed=42, device="auto"):
+                complete_case=True, root=None, seed=42, device="auto"):
     """便捷一呼:組 session 特徵表(session_feature_table)→ 取 feature_cols → oof_from_table。
 
     需對同 cohort 跑多組 feature set / meta_clf 時,建議改在外層 session_feature_table 取一次表、
@@ -158,5 +162,5 @@ def session_oof(cohort, *, feature_cols, variant="relative_differences", emb="ar
     """
     t = session_feature_table(cohort, variant=variant, emb=emb, bg_mode=bg_mode,
                               photo_mode=photo_mode, reducer=reducer,
-                              base_clf=base_clf, lr_C=lr_C, root=root)
+                              base_clf=base_clf, lr_C=lr_C, complete_case=complete_case, root=root)
     return oof_from_table(t, feature_cols, meta_clf=meta_clf, seed=seed, device=device)

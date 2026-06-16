@@ -117,6 +117,8 @@ def main():
     ap.add_argument("--fold-seed", type=int, nargs="+", default=[0],
                     help="repeated-CV 折分 seed(路徑 seed_<N>):逐個讀對應 seed 的 base OOF、"
                          "寫對應 seed 的 meta cell;0=現有確定性折。例:--fold-seed 0 1 2 ... 29")
+    ap.add_argument("--full-cohort", dest="complete_case", action="store_false",
+                    help="保留 mmse/casi 缺值的 session(預設 complete-case 丟掉這些,讓 9 combo 同母體比較)")
     args = ap.parse_args()
 
     cohort = (args.p_visit, args.p_score, args.hc_visit, args.hc_score)
@@ -127,7 +129,7 @@ def main():
     logger.info(f"cohort={cohort}  emb={args.emb}/{args.bg_mode}/{args.photo_mode}  "
                 f"cognitive={list(cognitive)}  imaging={list(imaging)}  "
                 f"variants={args.asym_variant}  C={args.base_lr_C}  meta_clf={args.meta_clf}  "
-                f"fold_seed={args.fold_seed}")
+                f"fold_seed={args.fold_seed}  complete_case={args.complete_case}")
 
     for fold_seed in args.fold_seed:
         _run_seed(args, cohort, cognitive, imaging, fold_seed)
@@ -136,6 +138,7 @@ def main():
 def _run_seed(args, cohort, cognitive, imaging, fold_seed):
     """單一 fold_seed 的全套產出(讀該 seed 的 base OOF、寫該 seed 的 meta cell)。"""
     logger.info(f"=== fold_seed={fold_seed} ===")
+    case_mode = "no_nan" if args.complete_case else "keep_nan"  # meta 母體子樹(丟/保留認知缺值)
     if imaging:
         _precheck_oof(cohort, emb=args.emb, bg_mode=args.bg_mode,
                       photo_mode=args.photo_mode, reducer=args.reducer,
@@ -144,7 +147,7 @@ def _run_seed(args, cohort, cognitive, imaging, fold_seed):
 
     common = dict(emb=args.emb, bg_mode=args.bg_mode, photo_mode=args.photo_mode,
                   reducer=args.reducer, base_clf=args.base_clf, seed=fold_seed,
-                  root=args.embedding_root)
+                  complete_case=args.complete_case, root=args.embedding_root)
 
     # 認知 combo:無 OOF/variant/C,只跑一次(用任一 variant/C 讀表取 fold + 認知欄,皆 invariant)
     if cognitive:
@@ -154,8 +157,8 @@ def _run_seed(args, cohort, cognitive, imaging, fold_seed):
             for mc in args.meta_clf:
                 oof = oof_from_table(t0, cols, meta_clf=mc, seed=args.seed, device=args.device)
                 out_dir = meta_analysis_path(*cohort, args.bg_mode, args.emb, args.photo_mode,
-                                             args.reducer, feature_set=fs, meta_classifier=mc,
-                                             seed=fold_seed)
+                                             args.reducer, case_mode=case_mode, feature_set=fs,
+                                             meta_classifier=mc, seed=fold_seed)
                 ident = _ident(cohort, args, feature_set=fs, variant=None,
                                base_clf=None, clf_param=None, meta_clf=mc, seed=fold_seed)
                 _log_hl(f"seed_{fold_seed}/{fs}/{mc}", oof, _write_cell(oof, cohort, out_dir, ident))
@@ -172,8 +175,9 @@ def _run_seed(args, cohort, cognitive, imaging, fold_seed):
                     oof = oof_from_table(t, cols, meta_clf=mc, seed=args.seed, device=args.device)
                     out_dir = meta_analysis_path(
                         *cohort, args.bg_mode, args.emb, args.photo_mode, args.reducer,
-                        feature_set=fs, variant=variant, base_classifier=args.base_clf,
-                        base_classifier_param=clf_param, meta_classifier=mc, seed=fold_seed)
+                        case_mode=case_mode, feature_set=fs, variant=variant,
+                        base_classifier=args.base_clf, base_classifier_param=clf_param,
+                        meta_classifier=mc, seed=fold_seed)
                     ident = _ident(cohort, args, feature_set=fs, variant=variant,
                                    base_clf=args.base_clf, clf_param=clf_param, meta_clf=mc,
                                    seed=fold_seed)

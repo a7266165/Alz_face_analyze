@@ -270,6 +270,7 @@ def meta_analysis_path(
     photo_mode: str = "mean",
     reducer: str = "no_drop",
     *,
+    case_mode: Optional[str] = None,
     feature_set: Optional[str] = None,
     variant: Optional[str] = None,
     base_classifier: Optional[str] = None,
@@ -281,14 +282,18 @@ def meta_analysis_path(
 
     Layout (shares embedding's cohort/bg/emb/photo/reducer prefix, then meta-specific
     axes; **skip-None**——省略不適用的中段,故認知 combo 與影像 combo 共用同一規則):
-      meta/analysis/<visit>/<cdr_mmse>/<bg_mode>/<emb>/<photo>/<reducer>/
+      meta/analysis/<visit>/<cdr_mmse>/[<case_mode>/]<bg_mode>/<emb>/<photo>/<reducer>/
         <feature_set>/[<variant>/<base_clf>/<base_clf_param>/]<meta_clf>/
 
+    case_mode = meta 母體(no_nan=丟認知缺值/complete-case;keep_nan=保留/full cohort);
+    緊接 cohort 之後,讓兩種母體各自完全自足(各有 cells / all_metrics / _summary)。
     路徑只編入會改變數值的軸:含影像 OOF 的 combo 帶 variant(asym variant)+ base_clf
     + base_clf_param(共用的 logistic C);純認知 combo 三者皆 None → 只剩 feature_set/meta_clf。
     """
-    p = (META_ANALYSIS_DIR / cohort_path(p_visit, p_score, hc_visit, hc_score)
-         / bg_mode / emb_model / photo_mode / reducer)
+    p = META_ANALYSIS_DIR / cohort_path(p_visit, p_score, hc_visit, hc_score)
+    if case_mode is not None:                 # no_nan / keep_nan;區隔 meta 母體,各自一棵子樹
+        p = p / case_mode
+    p = p / bg_mode / emb_model / photo_mode / reducer
     seed_seg = f"seed_{seed}" if seed is not None else None  # 影像在 base_clf 後、認知在 feature_set 後(skip-None)
     for seg in (feature_set, variant, base_classifier, seed_seg,
                 base_classifier_param, meta_classifier):

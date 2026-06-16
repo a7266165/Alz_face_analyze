@@ -77,12 +77,14 @@ def main():
     ap.add_argument("--hc-visit", choices=list(HC_VISIT_TOKENS), default="hc_all")
     ap.add_argument("--hc-score", choices=list(HC_SCORE_TOKENS),
                     default="hc_cdrall_or_mmseall")
+    ap.add_argument("--case-mode", choices=["no_nan", "keep_nan"], default="no_nan",
+                    help="meta 母體子樹:no_nan(complete-case)/ keep_nan(full cohort)")
     ap.add_argument("--out", type=Path, default=None,
-                    help="輸出 csv(預設 <cohort>/all_metrics.csv)")
+                    help="輸出 csv(預設 <cohort>/<case_mode>/all_metrics.csv)")
     args = ap.parse_args()
 
     cohort = (args.p_visit, args.p_score, args.hc_visit, args.hc_score)
-    base = META_ANALYSIS_DIR / cohort_path(*cohort)
+    base = META_ANALYSIS_DIR / cohort_path(*cohort) / args.case_mode
     paths = sorted(p for p in base.rglob("metrics.csv") if p.parent.name in META_CLASSIFIERS)
     if not paths:
         logger.warning(f"在 {base} 下找不到任何 <meta_clf>/metrics.csv;請先跑 scripts/meta/run.py。")
