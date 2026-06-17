@@ -29,11 +29,12 @@ from src.config import (
 from src.embedding.classification import ALL_METHODS, clf_param_label, oof_paths
 from src.meta import (
     ASYM_VARIANTS, META_CLASSIFIERS, META_FEATURE_SETS, feature_set_needs_oof,
-    oof_from_table, session_feature_table,
+    fold_aligned_shap, oof_from_table, session_feature_table,
 )
 
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s [%(levelname)s] %(message)s")
+logging.getLogger("shap").setLevel(logging.WARNING)  # 壓掉 KernelExplainer 的 per-instance log
 logger = logging.getLogger(__name__)
 
 DEFAULT_C_VALUES = [0.001, 0.01, 0.1, 1.0, 10.0, 100.0]
@@ -73,6 +74,22 @@ def _write_cell(oof, cohort, out_dir, ident):
     cols = list(ident) + [c for c in metrics.columns if c not in ident]
     metrics[cols].to_csv(out_dir / "metrics.csv", index=False, encoding="utf-8")
     return metrics
+
+
+def _write_shap(args, table, cols, meta_clf, out_dir, tag):
+    """--shap 開啟時:對該 cell 算逐個案 SHAP,寫 shap_per_case.csv + shap_importance.csv(與 oof/metrics 並排)。
+
+    沿用同一張 table / 折分(逐折無洩漏);計算重(KernelExplainer × stacker),預設關閉。
+    """
+    if not args.shap:
+        return
+    per_case, importance = fold_aligned_shap(
+        table, cols, meta_clf=meta_clf, seed=args.seed, device=args.device,
+        background=args.shap_background)
+    per_case.to_csv(out_dir / "shap_per_case.csv", index=False, encoding="utf-8")
+    importance.to_csv(out_dir / "shap_importance.csv", index=False, encoding="utf-8")
+    top = "; ".join(f"{r.feature}={r.importance_pct:.0%}" for r in importance.itertuples())
+    logger.info(f"[{tag}] shap: per_case({len(per_case)}) + importance | {top}")
 
 
 def _log_hl(tag, oof, metrics):
@@ -119,7 +136,15 @@ def main():
                          "寫對應 seed 的 meta cell;0=現有確定性折。例:--fold-seed 0 1 2 ... 29")
     ap.add_argument("--full-cohort", dest="complete_case", action="store_false",
                     help="保留 mmse/casi 缺值的 session(預設 complete-case 丟掉這些,讓 9 combo 同母體比較)")
+    ap.add_argument("--shap", action="store_true",
+                    help="同時對每個落地 cell 算逐個案 SHAP(shap_per_case.csv + shap_importance.csv);"
+                         "計算重(KernelExplainer × stacker),通常只配特定 feature-set/meta-clf 用")
+    ap.add_argument("--shap-background", type=int, default=25,
+                    help="[--shap] 每折 KernelExplainer 背景樣本數(kmeans centroid 數)")
     args = ap.parse_args()
+    if args.shap and args.feature_set == "all":
+        logger.warning("--shap 搭配 --feature-set all:會對整個 grid 的每個 cell 算 SHAP(極慢);"
+                       "通常應指定單一 feature-set/meta-clf。")
 
     cohort = (args.p_visit, args.p_score, args.hc_visit, args.hc_score)
     sets = (META_FEATURE_SETS if args.feature_set == "all"
@@ -161,7 +186,9 @@ def _run_seed(args, cohort, cognitive, imaging, fold_seed):
                                              meta_classifier=mc, seed=fold_seed)
                 ident = _ident(cohort, args, feature_set=fs, variant=None,
                                base_clf=None, clf_param=None, meta_clf=mc, seed=fold_seed)
-                _log_hl(f"seed_{fold_seed}/{fs}/{mc}", oof, _write_cell(oof, cohort, out_dir, ident))
+                tag = f"seed_{fold_seed}/{fs}/{mc}"
+                _log_hl(tag, oof, _write_cell(oof, cohort, out_dir, ident))
+                _write_shap(args, t0, cols, mc, out_dir, tag)
 
     # 影像 combo:逐 (C, variant) 組一次表,slice 各 combo × 各 meta_clf;同表直接互比
     for c in args.base_lr_C:
@@ -181,8 +208,9 @@ def _run_seed(args, cohort, cognitive, imaging, fold_seed):
                     ident = _ident(cohort, args, feature_set=fs, variant=variant,
                                    base_clf=args.base_clf, clf_param=clf_param, meta_clf=mc,
                                    seed=fold_seed)
-                    _log_hl(f"seed_{fold_seed}/{fs}/{variant}/{clf_param}/{mc}", oof,
-                            _write_cell(oof, cohort, out_dir, ident))
+                    tag = f"seed_{fold_seed}/{fs}/{variant}/{clf_param}/{mc}"
+                    _log_hl(tag, oof, _write_cell(oof, cohort, out_dir, ident))
+                    _write_shap(args, t, cols, mc, out_dir, tag)
 
 
 if __name__ == "__main__":
