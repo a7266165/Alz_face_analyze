@@ -6,6 +6,9 @@
                   固定 C(--c,預設 0.001)+ --variant;all / 1by1 各一張。輸出 _summary/barplot/…。
 --kind shap_beeswarm : 單一影像 cell 的逐個案 SHAP beeswarm(讀該 cell 的 shap_per_case.csv,由
                   run.py --shap 落地);需單一 --feature-set/--variant/--meta-clf,圖存回該 cell。
+--kind shap_importance : SHAP 全域重要性長條。每個 stacker 一張(height=mean|SHAP|)放回各自 cell
+                  (shap_importance.png),另出一張跨 stacker 比較(佔比分組長條)到 _summary/shap_importance/。
+                  讀各 cell 的 shap_importance.csv;需單一 --feature-set/--variant。
 
 --feature-set <name> : 單一 combo。
     c_curve   每格 all vs 1by1 兩線;confusion 2(domain)× 3(contrast)。
@@ -26,6 +29,8 @@
     python scripts/meta/plot.py --kind confusion --feature-set all --variant all --c 0.001             # 只畫某個 C
     python scripts/meta/plot.py --kind shap_beeswarm --feature-set core3 --variant differences \\
         --meta-clf tabpfn_v3 --case-mode keep_nan --c 0.001                                            # 單一 cell beeswarm
+    python scripts/meta/plot.py --kind shap_importance --feature-set core3 --variant differences \\
+        --case-mode keep_nan --c 0.001                                                                 # 跨 stacker importance
 """
 import argparse
 import logging
@@ -462,6 +467,96 @@ def _run_bar(args, base, am, variant, *, reps=False):
 # shap_beeswarm(單一 imaging cell 的逐個案 SHAP)
 # ---------------------------------------------------------------------------
 
+def _shap_importance_cell_bar(imp, feats, out_png, *, title):
+    """單一 stacker 的 SHAP 全域重要性長條(height=mean|SHAP|、標籤含值與佔比),存進該 cell。"""
+    vals = [float(imp.loc[f, "mean_abs_shap"]) if f in imp.index else np.nan for f in feats]
+    pcts = [float(imp.loc[f, "importance_pct"]) if f in imp.index else np.nan for f in feats]
+    pitch = 0.7                                  # 特徵間距(< 1 → 三柱靠近)
+    x = np.arange(len(feats)) * pitch
+    fig, ax = plt.subplots(figsize=(max(5.0, 1.6 * len(feats)), 4.6))
+    ax.bar(x, vals, width=0.4, color="#4C72B0")
+    for xi, v, p in zip(x, vals, pcts):
+        if v == v:
+            ax.text(xi, v, f"{v:.3f}\n({p:.0%})", ha="center", va="bottom", fontsize=8)
+    ax.set_xticks(x)
+    ax.set_xticklabels(feats, rotation=0, ha="center", fontsize=8)
+    ax.set_xlim(x[0] - 0.45, x[-1] + 0.45)
+    ax.set_ylabel("mean |SHAP|  (global importance)")
+    ax.set_ylim(0, max(v for v in vals if v == v) * 1.25)
+    ax.grid(axis="y", alpha=0.3)
+    ax.set_title(title, fontsize=10)
+    fig.tight_layout()
+    fig.savefig(out_png, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+
+
+def _run_shap_importance(args):
+    """SHAP 全域重要性圖:每個 stacker 一張長條進各自 cell(shap_importance.png),
+    另出一張跨 stacker 比較(分組長條)到 _summary/shap_importance/<variant>/。
+
+    讀各 stacker cell 的 shap_importance.csv(run.py --shap 落地);需單一 --feature-set/--variant。
+    """
+    if args.feature_set == "all" or not feature_set_needs_oof(META_FEATURE_SETS[args.feature_set]):
+        raise SystemExit("--kind shap_importance 需指定單一影像 combo(如 --feature-set core3)。")
+    if args.variant == "all":
+        raise SystemExit("--kind shap_importance 需指定單一 --variant(如 --variant differences)。")
+    cohort = (args.p_visit, args.p_score, args.hc_visit, args.hc_score)
+    c_val = 0.001 if args.c == "all" else float(args.c)
+    clf_param = clf_param_label("logistic", c_val)
+    feats = META_FEATURE_SETS[args.feature_set]
+    cohort_str = "/".join(cohort_path(*cohort).parts)
+    found = []
+    for mc in META_CLASSIFIERS:
+        leaf = meta_analysis_path(
+            *cohort, args.bg_mode, args.emb, args.photo_mode, args.reducer,
+            case_mode=args.case_mode, feature_set=args.feature_set, variant=args.variant,
+            base_classifier="logistic", base_classifier_param=clf_param,
+            meta_classifier=mc, seed=args.fold_seed)
+        f = leaf / "shap_importance.csv"
+        if f.exists():
+            imp = pd.read_csv(f).set_index("feature")
+            found.append((mc, imp))
+            cell_png = leaf / "shap_importance.png"     # 每個 stacker 一張,放回自己的 cell
+            _shap_importance_cell_bar(
+                imp, feats, cell_png,
+                title=f"{cohort_str} — SHAP importance ({args.feature_set}/{mc}, "
+                      f"{args.variant}, C={c_val:g}, {args.case_mode})")
+            logger.info(f"wrote {cell_png}")
+    if not found:
+        raise SystemExit(
+            f"找不到任何 shap_importance.csv({args.feature_set}/{args.variant}/C_{c_val:g}/"
+            f"{args.case_mode});請先跑 scripts/meta/run.py --shap。")
+
+    if len(found) < 2:
+        return                                          # 只有一個 stacker → 無需跨模型比較圖
+    x = np.arange(len(feats))
+    width = 0.8 / len(found)
+    fig, ax = plt.subplots(figsize=(max(7, 2.0 * len(feats)), 5))
+    for i, (mc, imp) in enumerate(found):
+        pcts = [float(imp.loc[f, "importance_pct"]) if f in imp.index else np.nan for f in feats]
+        xpos = x + (i - (len(found) - 1) / 2) * width
+        ax.bar(xpos, pcts, width, label=mc)
+        for xi, p in zip(xpos, pcts):
+            if p == p:
+                ax.text(xi, p, f"{p:.0%}", ha="center", va="bottom", fontsize=7)
+    ax.set_xticks(x)
+    ax.set_xticklabels(feats, rotation=12, ha="right", fontsize=9)
+    ax.set_ylabel("SHAP importance share (mean|SHAP| normalized)")
+    ax.set_ylim(0, 1)
+    ax.grid(axis="y", alpha=0.3)
+    ax.legend(title="stacker", fontsize=9)
+    ax.set_title(f"{cohort_str} — SHAP importance share "
+                 f"({args.feature_set}, {args.variant}, C={c_val:g}, {args.case_mode})", fontsize=10)
+    out_dir = (META_ANALYSIS_DIR / cohort_path(*cohort) / args.case_mode
+               / "_summary" / "shap_importance" / args.variant)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    out_png = out_dir / f"{args.feature_set}_C_{c_val:g}.png"
+    fig.tight_layout()
+    fig.savefig(out_png, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    logger.info(f"wrote {out_png} (compare: {[mc for mc, _ in found]})")
+
+
 def _run_shap_beeswarm(args):
     """讀單一影像 cell 的 shap_per_case.csv → 畫 SHAP beeswarm,存回該 cell(shap_beeswarm.png)。
 
@@ -497,7 +592,8 @@ def _run_shap_beeswarm(args):
 def main():
     ap = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--kind", choices=["c_curve", "confusion", "bar", "shap_beeswarm"],
+    ap.add_argument("--kind",
+                    choices=["c_curve", "confusion", "bar", "shap_beeswarm", "shap_importance"],
                     default="c_curve")
     ap.add_argument("--p-visit", choices=list(P_VISIT_TOKENS), default="p_first")
     ap.add_argument("--p-score", choices=list(P_SCORE_TOKENS), default="p_cdrall")
@@ -531,6 +627,9 @@ def main():
 
     if args.kind == "shap_beeswarm":           # 讀單一 cell 的 shap_per_case.csv,不走 all_metrics
         _run_shap_beeswarm(args)
+        return
+    if args.kind == "shap_importance":         # 跨 stacker 比較 importance,讀各 cell 的 shap_importance.csv
+        _run_shap_importance(args)
         return
 
     base, am = _load_am(args, reps=args.reps and args.kind == "bar")
