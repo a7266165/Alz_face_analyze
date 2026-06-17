@@ -4,6 +4,8 @@
 --kind confusion: 單一 C 的 confusion matrix。
 --kind bar      : 固定 9 個 combo 的比較柱狀圖(3 metric × 3 contrast,每格 9 根 bar);影像 combo 取
                   固定 C(--c,預設 0.001)+ --variant;all / 1by1 各一張。輸出 _summary/barplot/…。
+--kind shap_beeswarm : 單一影像 cell 的逐個案 SHAP beeswarm(讀該 cell 的 shap_per_case.csv,由
+                  run.py --shap 落地);需單一 --feature-set/--variant/--meta-clf,圖存回該 cell。
 
 --feature-set <name> : 單一 combo。
     c_curve   每格 all vs 1by1 兩線;confusion 2(domain)× 3(contrast)。
@@ -22,6 +24,8 @@
     python scripts/meta/plot.py --kind c_curve   --feature-set all --variant all --matched-unit visit
     python scripts/meta/plot.py --kind confusion --feature-set all --variant all --matched-unit visit  # 每個 C 一張
     python scripts/meta/plot.py --kind confusion --feature-set all --variant all --c 0.001             # 只畫某個 C
+    python scripts/meta/plot.py --kind shap_beeswarm --feature-set core3 --variant differences \\
+        --meta-clf tabpfn_v3 --case-mode keep_nan --c 0.001                                            # 單一 cell beeswarm
 """
 import argparse
 import logging
@@ -38,10 +42,14 @@ import numpy as np
 import pandas as pd
 
 from src.config import (
-    META_ANALYSIS_DIR, cohort_path,
+    META_ANALYSIS_DIR, cohort_path, meta_analysis_path,
     P_VISIT_TOKENS, P_SCORE_TOKENS, HC_VISIT_TOKENS, HC_SCORE_TOKENS,
 )
-from src.meta import ASYM_VARIANTS, META_CLASSIFIERS, META_FEATURE_SETS, feature_set_needs_oof
+from src.embedding.classification import clf_param_label
+from src.meta import (
+    ASYM_VARIANTS, META_CLASSIFIERS, META_FEATURE_SETS,
+    beeswarm_from_per_case, feature_set_needs_oof,
+)
 
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s [%(levelname)s] %(message)s")
@@ -451,11 +459,46 @@ def _run_bar(args, base, am, variant, *, reps=False):
 
 
 # ---------------------------------------------------------------------------
+# shap_beeswarm(單一 imaging cell 的逐個案 SHAP)
+# ---------------------------------------------------------------------------
+
+def _run_shap_beeswarm(args):
+    """讀單一影像 cell 的 shap_per_case.csv → 畫 SHAP beeswarm,存回該 cell(shap_beeswarm.png)。
+
+    與 bar/c_curve/confusion 不同:不讀 cohort 層 all_metrics.csv,而是用 meta_analysis_path
+    定位 leaf cell(由 run.py --shap 落地的 shap_per_case.csv)。需單一 feature-set/variant/meta-clf。
+    """
+    if args.feature_set == "all" or not feature_set_needs_oof(META_FEATURE_SETS[args.feature_set]):
+        raise SystemExit("--kind shap_beeswarm 需指定單一影像 combo(如 --feature-set core3)。")
+    if args.variant == "all":
+        raise SystemExit("--kind shap_beeswarm 需指定單一 --variant(如 --variant differences)。")
+    cohort = (args.p_visit, args.p_score, args.hc_visit, args.hc_score)
+    c_val = 0.001 if args.c == "all" else float(args.c)
+    leaf = meta_analysis_path(
+        *cohort, args.bg_mode, args.emb, args.photo_mode, args.reducer,
+        case_mode=args.case_mode, feature_set=args.feature_set, variant=args.variant,
+        base_classifier="logistic", base_classifier_param=clf_param_label("logistic", c_val),
+        meta_classifier=args.meta_clf, seed=args.fold_seed)
+    csv = leaf / "shap_per_case.csv"
+    if not csv.exists():
+        raise SystemExit(
+            f"找不到 {csv}\n  請先跑 scripts/meta/run.py --shap(對應 cohort/feature-set/meta-clf)。")
+    per_case = pd.read_csv(csv)
+    out_png = leaf / "shap_beeswarm.png"
+    title = (f"{'/'.join(cohort_path(*cohort).parts)} — SHAP beeswarm "
+             f"({args.feature_set} / {args.meta_clf}, {args.variant}, C={c_val:g}, "
+             f"{args.case_mode}, n={len(per_case)})")
+    beeswarm_from_per_case(per_case, META_FEATURE_SETS[args.feature_set], out_png, title=title)
+    logger.info(f"wrote {out_png} ({len(per_case)} sessions)")
+
+
+# ---------------------------------------------------------------------------
 
 def main():
     ap = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--kind", choices=["c_curve", "confusion", "bar"], default="c_curve")
+    ap.add_argument("--kind", choices=["c_curve", "confusion", "bar", "shap_beeswarm"],
+                    default="c_curve")
     ap.add_argument("--p-visit", choices=list(P_VISIT_TOKENS), default="p_first")
     ap.add_argument("--p-score", choices=list(P_SCORE_TOKENS), default="p_cdrall")
     ap.add_argument("--hc-visit", choices=list(HC_VISIT_TOKENS), default="hc_all")
@@ -482,7 +525,13 @@ def main():
                     help="[confusion] 畫哪些 C:all=每個 C 一張(各落在 C_<c>/ 資料夾);或指定單一數值如 0.001")
     ap.add_argument("--reps", action="store_true",
                     help="[bar] 讀 all_metrics_reps.csv,bar=mean、誤差棒=跨 seed 95%% CI(repeated-CV)")
+    ap.add_argument("--fold-seed", type=int, default=0,
+                    help="[shap_beeswarm] 定位 leaf cell 的 seed_<N>(須與落地 shap cell 一致)")
     args = ap.parse_args()
+
+    if args.kind == "shap_beeswarm":           # 讀單一 cell 的 shap_per_case.csv,不走 all_metrics
+        _run_shap_beeswarm(args)
+        return
 
     base, am = _load_am(args, reps=args.reps and args.kind == "bar")
     variants = list(ASYM_VARIANTS) if args.variant == "all" else [args.variant]
