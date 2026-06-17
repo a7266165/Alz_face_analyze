@@ -12,7 +12,7 @@
 
 每 bar 的 OOF 交 src.common.evaluate(GroupKFold-by-base_id 無 leakage),取 3 metric(balacc/auc/mcc)
 × 3 contrast(ad_vs_hc / ad_vs_nad / ad_vs_acs)→ 3×3 折線圖,每格疊 all 與 1by1 兩條線(x=6 個特徵/
-模型),一眼看每個模型配對前後的落差。母體 = full 2070(這些欄皆無 NaN;complete_case=False)。
+模型),一眼看每個模型配對前後的落差。母體 = full cohort(core3 諸欄皆無 NaN;complete_case=False)。
 輸出採 embedding _summary 風格分層,每 eval_unit 一張(內含 all + 1by1 兩線):
   workspace/overview/lineplot/<visit>/<cdr_mmse>/<eval_unit>/all_vs_1by1.png。
 
@@ -177,8 +177,9 @@ def main():
     out_dir.mkdir(parents=True, exist_ok=True)
     out_png = out_dir / "all_vs_1by1.png"
     _plot(metrics_by_bar, args, out_png,
-          title=f"single-feature (univariate logistic) vs core3 (LR/XGB/TabPFN) discrimination "
-                f"({args.eval_unit}) — all vs 1by1 ({args.matched_unit}, {args.matching_priority}) — "
+          title=f"{'/'.join(cohort_path(*cohort).parts)} — single-feature (univariate logistic) vs "
+                f"core3 (LR/XGB/TabPFN) discrimination ({args.eval_unit}) — "
+                f"all vs 1by1 ({args.matched_unit}, {args.matching_priority}) — "
                 f"{args.emb}/{args.bg_mode}/{args.photo_mode}, asym={args.variant}, C={args.lr_C:g}")
     logger.info(f"wrote {out_png}")
 
