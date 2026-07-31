@@ -17,8 +17,8 @@ from src.common.cohort import base_id_of, group_of
 from src.common.matching import match_by_age
 
 __all__ = [
-    "bootstrap_auc_ci", "compute_clf_metrics", "paired_wilcoxon",
-    "evaluate",
+    "bootstrap_auc_ci", "compute_clf_metrics", "calibration_metrics",
+    "paired_wilcoxon", "evaluate",
     "AD_CONTRASTS", "MATCHING_PRIORITIES", "MATCHED_UNITS", "EVAL_UNITS",
     "CONTRAST_KEEP_GROUPS",
 ]
@@ -46,12 +46,58 @@ def bootstrap_auc_ci(y_true, y_score, *, n=100, seed=42):
     return float(np.percentile(aucs, 2.5)), float(np.percentile(aucs, 97.5))
 
 
+def calibration_metrics(y_true, y_score, *, n_bins=10):
+    """校準指標。y_score 不在 [0,1] 時(decision_function / norm scorer)全回 nan。
+
+    brier          Brier score(越小越好)
+    calib_slope    以 logit(p) 為單一預測子做 logistic 迴歸的斜率;1 = 完美校準
+    calib_intercept 同一迴歸的截距;0 = 無系統性高低估
+    ece            expected calibration error,等寬 n_bins 分箱的 |acc − conf| 加權平均
+    """
+    nan = {"brier": float("nan"), "calib_slope": float("nan"),
+           "calib_intercept": float("nan"), "ece": float("nan")}
+    y_true = np.asarray(y_true).astype(int)
+    p = np.asarray(y_score, dtype=float)
+    if len(np.unique(y_true)) < 2 or p.min() < 0.0 or p.max() > 1.0:
+        return nan
+
+    out = dict(nan)
+    out["brier"] = float(np.mean((p - y_true) ** 2))
+
+    eps = 1e-12
+    pc = np.clip(p, eps, 1 - eps)
+    try:                                    # 分數全同值時 logit 無變異,迴歸無解
+        import warnings
+        from sklearn.linear_model import LogisticRegression
+        z = np.log(pc / (1 - pc)).reshape(-1, 1)
+        if np.ptp(z) > 0:                   # C=inf = 無正則化(sklearn 1.8 起 penalty= 已棄用)
+            lr = LogisticRegression(C=np.inf, solver="lbfgs", max_iter=1000)
+            with warnings.catch_warnings():  # sklearn 內部把 C=inf 轉 penalty=None 會再警告一次
+                warnings.filterwarnings("ignore", message=".*penalty=None.*")
+                lr.fit(z, y_true)
+            out["calib_slope"] = float(lr.coef_[0][0])
+            out["calib_intercept"] = float(lr.intercept_[0])
+    except Exception:                       # 不讓校準指標拖垮整包指標
+        pass
+
+    edges = np.linspace(0.0, 1.0, n_bins + 1)
+    idx = np.clip(np.digitize(p, edges[1:-1], right=False), 0, n_bins - 1)
+    ece = 0.0
+    for b in range(n_bins):
+        m = idx == b
+        if m.any():
+            ece += m.mean() * abs(y_true[m].mean() - p[m].mean())
+    out["ece"] = float(ece)
+    return out
+
+
 def compute_clf_metrics(y_true, y_score, *, threshold=0.5, n_bootstrap=100,
                         seed=42, y_pred=None):
     """單一 cohort 的分類指標包。AUC / CI 永遠用連續 y_score;y_pred 給定時 threshold
     失效(沿用預先算好的 label)。回攤平 dict(CSV-friendly):
       n / n_pos / n_neg / auc / auc_ci_low / auc_ci_high /
-      balacc / mcc / f1 / sens / spec / tn / fp / fn / tp。
+      balacc / mcc / f1 / sens / spec / ppv / npv / tn / fp / fn / tp /
+      brier / calib_slope / calib_intercept / ece。
     """
     y_true = np.asarray(y_true).astype(int)
     y_score = np.asarray(y_score, dtype=float)
@@ -69,6 +115,8 @@ def compute_clf_metrics(y_true, y_score, *, threshold=0.5, n_bootstrap=100,
 
     sens = tp / (tp + fn) if (tp + fn) > 0 else float("nan")
     spec = tn / (tn + fp) if (tn + fp) > 0 else float("nan")
+    ppv = tp / (tp + fp) if (tp + fp) > 0 else float("nan")
+    npv = tn / (tn + fn) if (tn + fn) > 0 else float("nan")
     auc = float(roc_auc_score(y_true, y_score)) if multi else float("nan")
     ci_low, ci_high = (bootstrap_auc_ci(y_true, y_score, n=n_bootstrap, seed=seed)
                        if multi else (float("nan"), float("nan")))
@@ -84,7 +132,10 @@ def compute_clf_metrics(y_true, y_score, *, threshold=0.5, n_bootstrap=100,
         "f1": float(f1_score(y_true, y_pred, zero_division=0)),
         "sens": float(sens) if not np.isnan(sens) else None,
         "spec": float(spec) if not np.isnan(spec) else None,
+        "ppv": float(ppv) if not np.isnan(ppv) else None,
+        "npv": float(npv) if not np.isnan(npv) else None,
         "tn": int(tn), "fp": int(fp), "fn": int(fn), "tp": int(tp),
+        **calibration_metrics(y_true, y_score),
     }
 
 
