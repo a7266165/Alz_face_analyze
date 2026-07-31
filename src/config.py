@@ -379,6 +379,9 @@ def embedding_classification_path(
 META_DIR = subsystem_dir("meta")
 META_ANALYSIS_DIR = META_DIR / "analysis"
 
+# 部署匯出（fold 模型 + 重現稽核）
+DEPLOY_DIR = subsystem_dir("deploy")
+
 
 def meta_analysis_path(
     p_visit: str,
