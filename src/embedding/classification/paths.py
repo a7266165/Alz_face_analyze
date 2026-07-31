@@ -61,3 +61,22 @@ def oof_paths(cohort, bg_mode, embedding, variant, photo_mode, reducer, model,
     if direction == "reverse":
         return [out_dir / ms / "oof_scores.csv" for ms in match_strategies]
     return [out_dir / "oof_scores.csv"]
+
+
+def inner_path(cohort, bg_mode, embedding, variant, photo_mode, reducer, model,
+               direction, *, pca_components=None, drop_corr_threshold=None,
+               lr_C=1.0, xgb_params=None, seed=0, normalize=NO_NORMALIZE,
+               fold_kind="group", root=None):
+    """這格的 inner_scores.csv(內折 OOF,stacking 的 meta 訓練列)。
+
+    與 oof_scores.csv 同層。只有 forward 有:reverse 的訓練池是年齡配對後的子集,
+    語意不同(見 train.train 的 NotImplementedError)。
+    """
+    if direction != "forward":
+        raise ValueError(f"inner_scores.csv 只有 forward 有,收到 direction={direction!r}")
+    out_dir = oof_dir(cohort, bg_mode, embedding, variant, photo_mode, reducer, model,
+                      direction, pca_components=pca_components,
+                      drop_corr_threshold=drop_corr_threshold,
+                      lr_C=lr_C, xgb_params=xgb_params, seed=seed,
+                      normalize=normalize, fold_kind=fold_kind, root=root)
+    return out_dir / "inner_scores.csv"

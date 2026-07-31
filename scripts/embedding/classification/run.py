@@ -121,7 +121,8 @@ def _build_estimator(model, ep):
 def run_cell(cohort, bg_mode, embedding, variant, photo_mode, reducer,
              model, direction, *, pca_components=None, drop_corr_threshold=None,
              lr_C=1.0, xgb_params=None, fold_seed=0, fold_kind="group",
-             normalize=NO_NORMALIZE, output_root=None, match_strategies=None):
+             normalize=NO_NORMALIZE, inner_folds=0, output_root=None,
+             match_strategies=None):
     match_strategies = match_strategies or MATCH_STRATEGIES
     root = output_root or EMBEDDING_CLASSIFICATION_REFACTOR_DIR
     ep = _eparams(reducer, pca_components, drop_corr_threshold, lr_C, xgb_params)
@@ -147,11 +148,13 @@ def run_cell(cohort, bg_mode, embedding, variant, photo_mode, reducer,
                            fold_kind=fold_kind, normalize=normalize, root=root)
 
     # train → 只產 OOF;report → 只把 OOF 落地成 oof_scores.csv(評估是獨立下游步驟)。
-    oof = train(X_full, ids_full, y_full, build_estimator, score_method, needs_cv, direction,
+    # inner_folds>0 時 train 多回一張內折表,一起落地成 inner_scores.csv。
+    out = train(X_full, ids_full, y_full, build_estimator, score_method, needs_cv, direction,
                 cohort=cohort, match_strategies=match_strategies, fold_seed=fold_seed,
-                fold_kind=fold_kind)
-    paths = report(oof, out_dir, direction)
-    logger.info(f"  [{direction}] wrote {len(paths)} oof_scores.csv")
+                fold_kind=fold_kind, n_inner=inner_folds)
+    oof, inner = out if inner_folds else (out, None)
+    paths = report(oof, out_dir, direction, inner=inner)
+    logger.info(f"  [{direction}] wrote {len(paths)} file(s)")
     return paths
 
 
@@ -201,6 +204,11 @@ def main():
                     help="折分方式:group=GroupKFold(預設/現有結果);"
                          "stratified_group=受試者分組再依 class 分層(PDF Step 1.2),"
                          "路徑多一層 folds_stratified_group,不覆蓋既有結果")
+    ap.add_argument("--inner-folds", type=int, default=0, metavar="N",
+                    help="每個外折的訓練集再切 N 折,額外落地 inner_scores.csv"
+                         "(stacking 的 meta 訓練列)。0=不做(預設)。"
+                         "開啟後 fit 次數變 N+1 倍、該格多約 10 倍磁碟,"
+                         "故只對 meta 真正要讀的 cell 開;僅 forward 支援")
 
     # 跑法設定(partition / threshold 等是「評估」旋鈕,屬獨立下游步驟,不在此 producer)
     ap.add_argument("--direction", choices=["forward", "reverse"], default="forward")
@@ -245,7 +253,7 @@ def main():
                  args.photo_mode, args.reducer, args.model, args.direction,
                  pca_components=pca, drop_corr_threshold=args.drop_corr_threshold,
                  lr_C=lr_C, xgb_params=xgb_params, fold_seed=args.fold_seed,
-                 fold_kind=args.fold_kind,
+                 fold_kind=args.fold_kind, inner_folds=args.inner_folds,
                  normalize=args.normalize, output_root=args.output_root)
     logger.info("done.")
 
