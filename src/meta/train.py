@@ -41,6 +41,11 @@ META_FEATURE_SETS = {
     "bases":                ["embedding_LR_score", "asymmetry_LR_score"],
 }
 
+# meta_clf=mean 只對這三組有意義:它不 fit,直接把特徵當分數用,所以特徵必須本身
+# 就是「AD 的機率」。套到 mmse/casi 會得到 1-AUC(認知分數方向相反),套到含 real_age
+# 的 combo 會得到落在 [0,1] 外的分數(閾值型指標全毀)。
+BASELINE_FEATURE_SETS = ("embedding_only", "asymmetry_only", "bases")
+
 
 def feature_set_needs_oof(feature_cols):
     """這組特徵是否吃 embedding OOF(→ 需 variant / C 軸;否則純認知,variant/C 無關)。"""

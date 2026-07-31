@@ -5,6 +5,7 @@ from src.meta.shap import beeswarm_from_per_case, fold_aligned_shap
 from src.meta.train import (
     ALL_FEATURE_COLS,
     ASYM_VARIANTS,
+    BASELINE_FEATURE_SETS,
     META_FEATURE_SETS,
     OOF_FEATURE_COLS,
     base_inner,
@@ -19,7 +20,7 @@ from src.meta.train import (
 )
 
 __all__ = [
-    "ASYM_VARIANTS", "META_FEATURE_SETS", "META_CLASSIFIERS",
+    "ASYM_VARIANTS", "META_FEATURE_SETS", "META_CLASSIFIERS", "BASELINE_FEATURE_SETS",
     "ALL_FEATURE_COLS", "OOF_FEATURE_COLS",
     "feature_set_needs_oof", "base_oof", "base_inner",
     "session_feature_table", "inner_feature_table", "oof_from_table", "session_oof",

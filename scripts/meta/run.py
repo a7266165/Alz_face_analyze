@@ -30,7 +30,8 @@ from src.embedding.classification import (
     ALL_METHODS, clf_param_label, inner_path, oof_paths,
 )
 from src.meta import (
-    ASYM_VARIANTS, META_CLASSIFIERS, META_FEATURE_SETS, feature_set_needs_oof,
+    ASYM_VARIANTS, BASELINE_FEATURE_SETS, META_CLASSIFIERS, META_FEATURE_SETS,
+    feature_set_needs_oof,
     fold_aligned_shap, inner_feature_table, oof_from_table, session_feature_table,
 )
 
@@ -101,6 +102,14 @@ def _write_shap(args, table, cols, meta_clf, out_dir, tag):
     importance.to_csv(out_dir / "shap_importance.csv", index=False, encoding="utf-8")
     top = "; ".join(f"{r.feature}={r.importance_pct:.0%}" for r in importance.itertuples())
     logger.info(f"[{tag}] shap: per_case({len(per_case)}) + importance | {top}")
+
+
+def _skip_pair(feature_set, meta_clf):
+    """meta_clf=mean 只對 BASELINE_FEATURE_SETS 有意義(見 src/meta/train.py 的說明):
+    它不 fit,直接把特徵當 AD 機率用。套到 mmse/casi 會得到 1-AUC,套到含 real_age 的
+    combo 分數會落在 [0,1] 外。反過來 baseline feature set 配真的 stacker 是合理的
+    (單特徵 LR 是單調轉換,AUC 幾乎一樣),不擋。"""
+    return meta_clf == "mean" and feature_set not in BASELINE_FEATURE_SETS
 
 
 def _log_hl(tag, oof, metrics):
@@ -196,6 +205,8 @@ def _run_seed(args, cohort, cognitive, imaging, fold_seed):
         i0 = inner_feature_table(cohort, variant=ref_variant, lr_C=ref_C, **common)
         for fs, cols in cognitive.items():
             for mc in args.meta_clf:
+                if _skip_pair(fs, mc):
+                    continue
                 oof = oof_from_table(t0, cols, inner=i0, meta_clf=mc, seed=args.seed,
                                      device=args.device)
                 out_dir = meta_analysis_path(*cohort, args.bg_mode, args.emb, args.photo_mode,
@@ -217,6 +228,8 @@ def _run_seed(args, cohort, cognitive, imaging, fold_seed):
             inner = inner_feature_table(cohort, variant=variant, lr_C=c, **common)
             for fs, cols in imaging.items():
                 for mc in args.meta_clf:
+                    if _skip_pair(fs, mc):
+                        continue
                     oof = oof_from_table(t, cols, inner=inner, meta_clf=mc,
                                          seed=args.seed, device=args.device)
                     out_dir = meta_analysis_path(
