@@ -86,6 +86,23 @@ def meta_oof(X, y, fold, *, meta_clf="tabpfn_v3", seed=42, device="auto"):
     return oof
 
 
+def covariate_table(cohort):
+    """ID 層共變數表 [ID, real_age, age_error, bmi, mmse, casi]。
+
+    這些欄都不是在本資料上訓練出來的模型輸出：real_age / mmse / casi 是量測值，
+    age_error 來自凍結的 MiVOLO 預訓練權重（scripts/age/predict.py 只做推論，
+    全 src/age 沒有任何 fit），bmi 是量測值。故無 fold 依賴，兩層 CV 都可直接 join。
+
+    age/mmse/casi 取自 build_cohort_with_age_error（內含 cohort_list 的 Age/MMSE/CASI
+    + 年齡誤差）；bmi 取自 demographics，以 left join 併入故不縮母體。
+    """
+    age = (build_cohort_with_age_error(*cohort)[["ID", "MMSE", "CASI", "real_age", "age_error"]]
+           .rename(columns={"MMSE": "mmse", "CASI": "casi"}))
+    bmi = load_demographics()[["ID", "BMI"]].drop_duplicates("ID").copy()
+    bmi["bmi"] = pd.to_numeric(bmi["BMI"], errors="coerce")
+    return age.merge(bmi[["ID", "bmi"]], on="ID", how="left")
+
+
 def session_feature_table(cohort, *, variant="relative_differences", emb="arcface",
                           bg_mode="background", photo_mode="mean", reducer="no_drop",
                           base_clf="logistic", lr_C=1.0, seed=0, complete_case=True, root=None):
@@ -115,18 +132,15 @@ def session_feature_table(cohort, *, variant="relative_differences", emb="arcfac
                     reducer=reducer, lr_C=lr_C, seed=seed, root=root)
     asym = base_oof(cohort, emb, variant, bg_mode, photo_mode, base_clf,
                     reducer=reducer, lr_C=lr_C, seed=seed, root=root)
-    age = (build_cohort_with_age_error(*cohort)[["ID", "MMSE", "CASI", "real_age", "age_error"]]
-           .rename(columns={"MMSE": "mmse", "CASI": "casi"}))
-    bmi = load_demographics()[["ID", "BMI"]].drop_duplicates("ID").copy()
-    bmi["bmi"] = pd.to_numeric(bmi["BMI"], errors="coerce")
+    cov = covariate_table(cohort)
 
     t = (orig[["ID", "y_true", "fold", "y_score"]]
          .rename(columns={"y_score": "embedding_LR_score"})
          .merge(asym[["ID", "y_true", "y_score"]]
                 .rename(columns={"y_score": "asymmetry_LR_score", "y_true": "y_true_a"}),
                 on="ID", how="inner")
-         .merge(age, on="ID", how="inner")
-         .merge(bmi[["ID", "bmi"]], on="ID", how="left"))
+         .merge(cov[["ID", "mmse", "casi", "real_age", "age_error"]], on="ID", how="inner")
+         .merge(cov[["ID", "bmi"]], on="ID", how="left"))
     assert (t["y_true"].to_numpy() == t["y_true_a"].to_numpy()).all(), \
         "original 與 asymmetry OOF 的 y_true 不一致"
     if complete_case:                       # 丟認知缺值 session → 全表零 NaN、9 combo 同母體比較
