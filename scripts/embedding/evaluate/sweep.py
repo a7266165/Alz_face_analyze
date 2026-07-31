@@ -12,13 +12,13 @@ from _paths import PROJECT_ROOT  # noqa: F401
 from src.config import (
     EMBEDDING_CLASSIFICATION_REFACTOR_DIR,
     P_VISIT_TOKENS, P_SCORE_TOKENS, HC_VISIT_TOKENS, HC_SCORE_TOKENS,
-    DEFAULT_COHORT_TOKENS,
+    DEFAULT_COHORT_TOKENS, NO_NORMALIZE, NORMALIZE_MODES,
 )
 from src.embedding.classification import ALL_METHODS
 from scripts.embedding.evaluate.run import eval_cell
 from scripts.embedding.classification.sweep import (
     iter_cells, oof_paths_for, _is_known_crash, _label,
-    EMBEDDINGS, VARIANTS, BG_MODES, PHOTO_MODES, DIRECTIONS,
+    EMBEDDINGS, VARIANTS, BG_MODES, PHOTO_MODES, DIRECTIONS, NORMALIZES,
 )
 
 logger = logging.getLogger("evaluate_sweep")
@@ -37,6 +37,9 @@ def main():
     ap.add_argument("--embedding", nargs="+", default=EMBEDDINGS)
     ap.add_argument("--variant", nargs="+", default=VARIANTS)
     ap.add_argument("--photo-mode", nargs="+", choices=PHOTO_MODES, default=PHOTO_MODES)
+    ap.add_argument("--normalize", nargs="+", choices=list(NORMALIZE_MODES),
+                    default=NORMALIZES,
+                    help=f"要評估哪些 normalize 樹；預設只有 {NO_NORMALIZE}")
     ap.add_argument("--model", nargs="+", choices=list(ALL_METHODS), default=list(ALL_METHODS))
     ap.add_argument("--reducer", nargs="+", default=["no_drop"],
                     help="目前 sweep 只支援 no_drop(對齊 classification_sweep)")
@@ -90,7 +93,8 @@ def main():
                 c["cohort"], c["bg"], c["emb"], c["variant"], c["photo"],
                 c["reducer"], c["model"], c["direction"],
                 lr_C=c["lr_C"], xgb_params=c["xgb_params"], fold_seed=c["fold_seed"],
-                output_root=root, write=args.write, seed=args.seed)
+                normalize=c["normalize"], output_root=root, write=args.write,
+                seed=args.seed)
             if written:
                 ran += 1
                 logger.info(f"[{i}/{len(cells)}] done ({len(written)})  {desc}")

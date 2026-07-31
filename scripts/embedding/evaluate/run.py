@@ -9,7 +9,7 @@ from _paths import PROJECT_ROOT  # noqa: F401
 
 from src.config import (
     P_VISIT_TOKENS, P_SCORE_TOKENS, HC_VISIT_TOKENS, HC_SCORE_TOKENS,
-    DEFAULT_COHORT_TOKENS,
+    DEFAULT_COHORT_TOKENS, NO_NORMALIZE, NORMALIZE_MODES,
 )
 from src.embedding.classification import ALL_METHODS, CLASSIFIERS, DIM_REDUCERS
 from src.common.evaluate import evaluate
@@ -22,7 +22,8 @@ logger = logging.getLogger(__name__)
 
 def eval_cell(cohort, bg_mode, embedding, variant, photo_mode, reducer,
               model, direction, *, pca_components=None, drop_corr_threshold=None,
-              lr_C=1.0, xgb_params=None, fold_seed=0, output_root=None, write=True, seed=42):
+              lr_C=1.0, xgb_params=None, fold_seed=0, normalize=NO_NORMALIZE,
+              output_root=None, write=True, seed=42):
     """評估單一 cell:對每個存在的 oof_scores.csv 算出同層 metrics.csv。
 
     回寫出的 metrics.csv 路徑 list;找不到 oof 的略過(producer 還沒產這格)。
@@ -32,7 +33,8 @@ def eval_cell(cohort, bg_mode, embedding, variant, photo_mode, reducer,
     paths = cell_oof_paths(
         cohort, bg_mode, embedding, variant, photo_mode, reducer, model, direction,
         pca_components=pca_components, drop_corr_threshold=drop_corr_threshold,
-        lr_C=lr_C, xgb_params=xgb_params, seed=fold_seed, root=output_root)
+        lr_C=lr_C, xgb_params=xgb_params, seed=fold_seed, normalize=normalize,
+        root=output_root)
     written = []
     for p in paths:
         if not p.exists():

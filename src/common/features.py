@@ -4,7 +4,7 @@ from typing import List, Sequence, Tuple
 
 import numpy as np
 
-from src.config import EMBEDDING_FEATURES_DIR
+from src.config import EMBEDDING_FEATURES_DIR, NO_NORMALIZE, NORMALIZE_MODES
 
 VALID_PHOTO_MODES = ("mean", "all")
 
@@ -22,6 +22,7 @@ def load_feature_matrix(
     variant: str,
     bg_mode: str,
     photo_mode: str = "mean",
+    normalize: str = NO_NORMALIZE,
 ) -> Tuple[np.ndarray, np.ndarray]:
     """讀取指定ID群的npy檔。
 
@@ -33,6 +34,9 @@ def load_feature_matrix(
                  absolute_relative_differences
         bg_mode: background | no_background
         photo_mode: mean | all
+        normalize: no_normalize | l1_normalize | l2_normalize。非 no_normalize 時，
+                   每個 embedding 先各自除以自身範數再算 variant(PDF §4)。此時不可退回
+                   讀預存的 variant 檔——那些是未正規化算出來的。
 
     Returns:
         (X, row_ids)
@@ -48,16 +52,24 @@ def load_feature_matrix(
         raise ValueError(
             f"photo_mode must be one of {VALID_PHOTO_MODES}, got {photo_mode!r}"
         )
+    if normalize not in NORMALIZE_MODES:
+        raise ValueError(
+            f"normalize must be one of {NORMALIZE_MODES}, got {normalize!r}"
+        )
 
     root = EMBEDDING_FEATURES_DIR / model / bg_mode
     derive = variant in _ASYMMETRY_VARIANTS
+    # 正規化須在「算不對稱」之前發生，故只能走 derive 路徑;預存的 variant 檔是未正規化
+    # 的成品，正規化時不可拿來當 fallback（會靜默混入錯誤特徵）。
+    normalizing = normalize != NO_NORMALIZE
     if derive:
         # 延遲匯入，避免輕量 common 層在載入時就拉進 embedding 套件的重相依。
         from src.embedding.asymmetry import calculate_differences
         left_dir = root / "face_left"
         right_dir = root / "face_right"
-        legacy_dir = root / variant
+        legacy_dir = None if normalizing else root / variant
     else:
+        from src.embedding.asymmetry import normalize_embeddings
         feat_dir = root / variant
 
     vecs: List[np.ndarray] = []
@@ -71,11 +83,14 @@ def load_feature_matrix(
             if lf.exists() and rf.exists():
                 try:
                     a = calculate_differences(
-                        np.load(lf), np.load(rf), methods=[variant]
+                        np.load(lf), np.load(rf), methods=[variant],
+                        normalize=normalize,
                     )[f"embedding_{variant}"]
                 except (ValueError, OSError, EOFError):
                     a = None  # 檔案可能正被提取程序寫入(半寫)，退回 legacy
             if a is None:  # 缺檔或讀取失敗 → 過渡相容讀舊的預存 variant
+                if legacy_dir is None:  # 正規化時無合法 fallback，寧可漏掉這筆
+                    continue
                 legacy = legacy_dir / f"{sid}.npy"
                 if not legacy.exists():
                     continue
@@ -85,6 +100,8 @@ def load_feature_matrix(
             if not npy.exists():
                 continue
             a = np.load(npy)
+            if normalizing:  # original / face_left / face_right 也要能正規化(PDF §2 一致性)
+                a = normalize_embeddings(a, normalize)
 
         if a.ndim == 1:
             # 已是單一向量,無 per-photo 維度

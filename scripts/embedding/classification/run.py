@@ -13,10 +13,11 @@ from _paths import PROJECT_ROOT  # noqa: F401
 from src.config import (
     EMBEDDING_CLASSIFICATION_REFACTOR_DIR,
     P_VISIT_TOKENS, P_SCORE_TOKENS, HC_VISIT_TOKENS, HC_SCORE_TOKENS,
-    DEFAULT_COHORT_TOKENS,
+    DEFAULT_COHORT_TOKENS, NO_NORMALIZE, NORMALIZE_MODES,
 )
 from src.common.cohort import cohort_list
 from src.common.features import load_feature_matrix
+from src.common.folds import FOLD_KINDS
 from src.embedding.classification import (
     ALL_METHODS, CLASSIFIERS, DIM_REDUCERS,
     build_reducer, build_classifier, build_scorer, train, report,
@@ -46,23 +47,25 @@ _clf_param_label = clf_param_label
 
 def cell_out_dir(cohort, bg_mode, embedding, variant, photo_mode, reducer, model,
                  direction, *, pca_components=None, drop_corr_threshold=None,
-                 lr_C=1.0, xgb_params=None, seed=0, root=None):
+                 lr_C=1.0, xgb_params=None, seed=0, fold_kind="group",
+                 normalize=NO_NORMALIZE, root=None):
     """委派 oof_dir,維持舊呼叫面;root 預設 EMBEDDING_CLASSIFICATION_REFACTOR_DIR。"""
     return oof_dir(cohort, bg_mode, embedding, variant, photo_mode, reducer, model,
                    direction, pca_components=pca_components,
                    drop_corr_threshold=drop_corr_threshold, lr_C=lr_C,
-                   xgb_params=xgb_params, seed=seed,
+                   xgb_params=xgb_params, seed=seed, fold_kind=fold_kind,
+                   normalize=normalize,
                    root=root or EMBEDDING_CLASSIFICATION_REFACTOR_DIR)
 
 
 def cell_oof_paths(cohort, bg_mode, embedding, variant, photo_mode, reducer, model,
                    direction, *, pca_components=None, drop_corr_threshold=None,
-                   lr_C=1.0, xgb_params=None, seed=0, root=None):
+                   lr_C=1.0, xgb_params=None, seed=0, normalize=NO_NORMALIZE, root=None):
     """委派 oof_paths,維持舊呼叫面;root 預設 EMBEDDING_CLASSIFICATION_REFACTOR_DIR。"""
     return oof_paths(cohort, bg_mode, embedding, variant, photo_mode, reducer, model,
                      direction, pca_components=pca_components,
                      drop_corr_threshold=drop_corr_threshold, lr_C=lr_C,
-                     xgb_params=xgb_params, seed=seed,
+                     xgb_params=xgb_params, seed=seed, normalize=normalize,
                      root=root or EMBEDDING_CLASSIFICATION_REFACTOR_DIR)
 
 
@@ -117,7 +120,8 @@ def _build_estimator(model, ep):
 
 def run_cell(cohort, bg_mode, embedding, variant, photo_mode, reducer,
              model, direction, *, pca_components=None, drop_corr_threshold=None,
-             lr_C=1.0, xgb_params=None, fold_seed=0, output_root=None, match_strategies=None):
+             lr_C=1.0, xgb_params=None, fold_seed=0, fold_kind="group",
+             normalize=NO_NORMALIZE, output_root=None, match_strategies=None):
     match_strategies = match_strategies or MATCH_STRATEGIES
     root = output_root or EMBEDDING_CLASSIFICATION_REFACTOR_DIR
     ep = _eparams(reducer, pca_components, drop_corr_threshold, lr_C, xgb_params)
@@ -125,9 +129,10 @@ def run_cell(cohort, bg_mode, embedding, variant, photo_mode, reducer,
     full = build_ad_full_cohort(cohort)
     label_map = dict(zip(full["ID"], full["label"]))
     X_full, ids_full = load_feature_matrix(
-        full["ID"].tolist(), embedding, variant, bg_mode, photo_mode)
+        full["ID"].tolist(), embedding, variant, bg_mode, photo_mode,
+        normalize=normalize)
     if len(X_full) == 0:
-        logger.warning(f"  [skip] no features: {embedding}/{bg_mode}/{variant}")
+        logger.warning(f"  [skip] no features: {embedding}/{bg_mode}/{normalize}/{variant}")
         return None
     y_full = np.array([label_map[i] for i in ids_full], dtype=int)
 
@@ -138,11 +143,13 @@ def run_cell(cohort, bg_mode, embedding, variant, photo_mode, reducer,
     out_dir = cell_out_dir(cohort, bg_mode, embedding, variant, photo_mode, reducer,
                            model, direction, pca_components=pca_components,
                            drop_corr_threshold=drop_corr_threshold,
-                           lr_C=lr_C, xgb_params=xgb_params, seed=fold_seed, root=root)
+                           lr_C=lr_C, xgb_params=xgb_params, seed=fold_seed,
+                           fold_kind=fold_kind, normalize=normalize, root=root)
 
     # train → 只產 OOF;report → 只把 OOF 落地成 oof_scores.csv(評估是獨立下游步驟)。
     oof = train(X_full, ids_full, y_full, build_estimator, score_method, needs_cv, direction,
-                cohort=cohort, match_strategies=match_strategies, fold_seed=fold_seed)
+                cohort=cohort, match_strategies=match_strategies, fold_seed=fold_seed,
+                fold_kind=fold_kind)
     paths = report(oof, out_dir, direction)
     logger.info(f"  [{direction}] wrote {len(paths)} oof_scores.csv")
     return paths
@@ -170,6 +177,9 @@ def main():
                     help="feature type:original / absolute_differences / …。"
                          "只決定載哪個特徵,與 --model 正交")
     ap.add_argument("--photo-mode", choices=["mean", "all"], default="mean")
+    ap.add_argument("--normalize", choices=list(NORMALIZE_MODES), default=NO_NORMALIZE,
+                    help="embedding 先各自除以自身範數再算 variant(PDF §4)；"
+                         "no_normalize = 用原始 embedding(現有結果)")
 
     # 模型選擇(decide which 建構路徑;與 --variant 正交)
     ap.add_argument("--model", required=True, choices=list(ALL_METHODS),
@@ -187,6 +197,10 @@ def main():
     ap.add_argument("--fold-seed", type=int, default=0,
                     help="GroupKFold 折分 seed(路徑 seed_<N>):0=確定性折/現有結果;"
                          "≥1=repeated-CV 不同折分(shuffle=True, random_state=N)")
+    ap.add_argument("--fold-kind", choices=list(FOLD_KINDS), default="group",
+                    help="折分方式:group=GroupKFold(預設/現有結果);"
+                         "stratified_group=受試者分組再依 class 分層(PDF Step 1.2),"
+                         "路徑多一層 folds_stratified_group,不覆蓋既有結果")
 
     # 跑法設定(partition / threshold 等是「評估」旋鈕,屬獨立下游步驟,不在此 producer)
     ap.add_argument("--direction", choices=["forward", "reverse"], default="forward")
@@ -219,7 +233,7 @@ def main():
         ap.error(f"--grid-search 只支援 classifier(logistic/xgb),不適用 {args.model}")
     grid = param_grid(args.model, args.grid_search, lr_C=args.lr_C)
 
-    logger.info(f"cell: {args.embedding}/{args.bg_mode}/{args.variant}/"
+    logger.info(f"cell: {args.embedding}/{args.bg_mode}/{args.normalize}/{args.variant}/"
                 f"{args.photo_mode}/{args.model}"
                 f"{('/' + args.reducer) if is_classify else ''}/{args.direction}"
                 f"  ({len(grid)} param point(s))")
@@ -231,7 +245,8 @@ def main():
                  args.photo_mode, args.reducer, args.model, args.direction,
                  pca_components=pca, drop_corr_threshold=args.drop_corr_threshold,
                  lr_C=lr_C, xgb_params=xgb_params, fold_seed=args.fold_seed,
-                 output_root=args.output_root)
+                 fold_kind=args.fold_kind,
+                 normalize=args.normalize, output_root=args.output_root)
     logger.info("done.")
 
 

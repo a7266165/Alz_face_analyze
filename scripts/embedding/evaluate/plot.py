@@ -24,7 +24,7 @@ from _paths import PROJECT_ROOT  # noqa: F401
 from src.config import (
     EMBEDDING_CLASSIFICATION_DIR, EMBEDDING_CLASSIFICATION_REFACTOR_DIR, cohort_path,
     P_VISIT_TOKENS, P_SCORE_TOKENS, HC_VISIT_TOKENS, HC_SCORE_TOKENS,
-    DEFAULT_COHORT_TOKENS,
+    DEFAULT_COHORT_TOKENS, NO_NORMALIZE, NORMALIZE_MODES,
 )
 from src.embedding.classification import oof_dir
 from scripts.embedding.classification.sweep import EMBEDDINGS
@@ -131,12 +131,12 @@ LR_SLICES = [("full (unmatched)", {"domain": "all"}),
               {"domain": "1by1", "matched_unit": "visit", "matching_priority": "priority_acs"})]
 
 
-def lr_load_metrics(cohort, bg_mode, variant, root):
+def lr_load_metrics(cohort, bg_mode, variant, root, normalize=NO_NORMALIZE):
     """讀 6 個 C 值 cell 的 metrics.csv，併成帶 C 欄的 DataFrame（缺檔略過）。"""
     frames = []
     for c in LR_C_GRID:
         d = oof_dir(cohort, bg_mode, LR_EMB, variant, LR_PHOTO, LR_REDUCER, LR_MODEL,
-                    LR_DIRECTION, lr_C=c, root=root)
+                    LR_DIRECTION, lr_C=c, normalize=normalize, root=root)
         f = d / "metrics.csv"
         if not f.exists():
             logger.warning(f"missing metrics.csv: {f}")
@@ -338,6 +338,8 @@ def main():
                          "lr_metrics=ArcFace LogReg on asymmetry 的 metrics-vs-C 圖")
     ap.add_argument("--bg-mode", choices=["background", "no_background"], default="background",
                     help="confusion_matrix/combo_metrics（summary）與 lr_metrics 用的 bg")
+    ap.add_argument("--normalize", choices=list(NORMALIZE_MODES), default=NO_NORMALIZE,
+                    help="lr_metrics 讀哪一棵 normalize 樹（見 PDF §4）")
     ap.add_argument("--matching-priority",
                     choices=["no_priority", "priority_acs", "priority_nad"],
                     default="priority_acs",
@@ -353,10 +355,14 @@ def main():
     cohort = (args.p_visit or _coh_def[0], args.p_score or _coh_def[1],
               args.hc_visit or _coh_def[2], args.hc_score or _coh_def[3])
     if args.kind == "lr_metrics":
-        out_base = EMBEDDING_CLASSIFICATION_DIR / cohort_path(*cohort) / args.bg_mode / LR_EMB
+        # normalize 是 emb 與 variant 之間的一層(見 embedding_classification_path)，
+        # 圖是跨 variant 的比較，故落在該 normalize 樹的根。
+        out_base = (EMBEDDING_CLASSIFICATION_DIR / cohort_path(*cohort)
+                    / args.bg_mode / LR_EMB / args.normalize)
         for variant, safe, disp in LR_VARIANTS:
             df = lr_load_metrics(cohort, args.bg_mode, variant,
-                                 EMBEDDING_CLASSIFICATION_REFACTOR_DIR)
+                                 EMBEDDING_CLASSIFICATION_REFACTOR_DIR,
+                                 normalize=args.normalize)
             if df is None:
                 logger.warning(f"no metrics for variant={variant}, skip")
                 continue

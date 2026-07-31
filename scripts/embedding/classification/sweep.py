@@ -14,7 +14,7 @@ from src.embedding.classification import CLASSIFIERS, ALL_METHODS
 from src.config import (
     EMBEDDING_CLASSIFICATION_REFACTOR_DIR,
     P_VISIT_TOKENS, P_SCORE_TOKENS, HC_VISIT_TOKENS, HC_SCORE_TOKENS,
-    DEFAULT_COHORT_TOKENS,
+    DEFAULT_COHORT_TOKENS, NO_NORMALIZE, NORMALIZE_MODES,
 )
 
 logger = logging.getLogger("classification_sweep")
@@ -26,6 +26,8 @@ VARIANTS = ["original", "differences", "absolute_differences",
 BG_MODES = ["background", "no_background"]
 PHOTO_MODES = ["mean", "all"]
 DIRECTIONS = ["forward", "reverse"]
+# normalize 預設只跑 no_normalize(= 現有結果);要 PDF §4 的版本須顯式 --normalize
+NORMALIZES = [NO_NORMALIZE]
 
 # 已知會硬 segfault 的 (model, emb) —— sweep 直接跳過(try/except 攔不到 segfault)。
 # lda_projection × vggface:vggface 4096 維、rank 僅 ~1989(嚴重 rank-deficient + 40 全零欄),
@@ -43,38 +45,43 @@ def oof_paths_for(cell, root):
     return cell_oof_paths(
         cell["cohort"], cell["bg"], cell["emb"], cell["variant"], cell["photo"],
         cell["reducer"], cell["model"], cell["direction"],
-        lr_C=cell["lr_C"], xgb_params=cell["xgb_params"], seed=cell["fold_seed"], root=root)
+        lr_C=cell["lr_C"], xgb_params=cell["xgb_params"], seed=cell["fold_seed"],
+        normalize=cell["normalize"], root=root)
 
 
 def iter_cells(args):
     """產生所有合法 cell dict。scorer 只配 reducer=no_drop;classifier 才展開 grid。
     fold_seed 為最外層軸(repeated-CV:seed_<N> 路徑層 + GroupKFold 折分)。"""
     cohort = (args.p_visit, args.p_score, args.hc_visit, args.hc_score)
+    normalizes = getattr(args, "normalize", None) or NORMALIZES
     for fold_seed in args.fold_seed:
         for bg in args.bg_mode:
             for emb in args.embedding:
-                for variant in args.variant:
-                    for photo in args.photo_mode:
-                        for model in args.model:
-                            reducers = (args.reducer if model in CLASSIFIERS
-                                        else ["no_drop"])
-                            for reducer in reducers:
-                                for direction in args.direction:
-                                    for lr_C, xgb_params in param_grid(model, args.grid_search):
-                                        yield dict(
-                                            cohort=cohort, bg=bg, emb=emb,
-                                            variant=variant, photo=photo,
-                                            reducer=reducer, model=model,
-                                            direction=direction,
-                                            lr_C=lr_C, xgb_params=xgb_params,
-                                            fold_seed=fold_seed)
+                for normalize in normalizes:
+                    for variant in args.variant:
+                        for photo in args.photo_mode:
+                            for model in args.model:
+                                reducers = (args.reducer if model in CLASSIFIERS
+                                            else ["no_drop"])
+                                for reducer in reducers:
+                                    for direction in args.direction:
+                                        for lr_C, xgb_params in param_grid(
+                                                model, args.grid_search):
+                                            yield dict(
+                                                cohort=cohort, bg=bg, emb=emb,
+                                                normalize=normalize,
+                                                variant=variant, photo=photo,
+                                                reducer=reducer, model=model,
+                                                direction=direction,
+                                                lr_C=lr_C, xgb_params=xgb_params,
+                                                fold_seed=fold_seed)
 
 
 def _label(c):
     g = (_clf_param_label(c["model"], c["lr_C"], c["xgb_params"])
          if c["model"] in CLASSIFIERS else "-")
-    return (f"seed_{c['fold_seed']}/{c['bg']}/{c['emb']}/{c['variant']}/{c['photo']}/"
-            f"{c['model']}/{c['reducer']}/{g}/{c['direction']}")
+    return (f"seed_{c['fold_seed']}/{c['bg']}/{c['emb']}/{c['normalize']}/{c['variant']}/"
+            f"{c['photo']}/{c['model']}/{c['reducer']}/{g}/{c['direction']}")
 
 
 def main():
@@ -90,6 +97,10 @@ def main():
     ap.add_argument("--embedding", nargs="+", default=EMBEDDINGS)
     ap.add_argument("--variant", nargs="+", default=VARIANTS)
     ap.add_argument("--photo-mode", nargs="+", choices=PHOTO_MODES, default=PHOTO_MODES)
+    ap.add_argument("--normalize", nargs="+", choices=list(NORMALIZE_MODES),
+                    default=NORMALIZES,
+                    help="embedding 先各自除以自身範數再算 variant(PDF §4)；"
+                         f"預設只跑 {NO_NORMALIZE}(= 現有結果)")
     ap.add_argument("--model", nargs="+", choices=list(ALL_METHODS), default=list(ALL_METHODS))
     ap.add_argument("--reducer", nargs="+", default=["no_drop"],
                     help="目前 sweep 只支援 no_drop(pca/drop_corr 需 param 清單,未做)")
@@ -135,7 +146,8 @@ def main():
             res = run_cell(c["cohort"], c["bg"], c["emb"], c["variant"], c["photo"],
                            c["reducer"], c["model"], c["direction"],
                            lr_C=c["lr_C"], xgb_params=c["xgb_params"],
-                           fold_seed=c["fold_seed"], output_root=root)
+                           fold_seed=c["fold_seed"], normalize=c["normalize"],
+                           output_root=root)
             if res is None:
                 no_feat += 1
                 logger.warning(f"[{i}/{len(cells)}] no features  {desc}")

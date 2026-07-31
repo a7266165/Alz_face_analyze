@@ -294,6 +294,14 @@ def cohort_path(p_visit, p_score, hc_visit, hc_score) -> Path:
     return Path(visit_dir) / cdr_mmse_dir
 
 
+# Embedding 正規化軸:載入 embedding 後、算 variant 前，先把每個 z 除以自己的範數。
+# PDF §4 要求「ArcFace 若未 L2 正規化則須先正規化」(實測 ‖z‖₂ ≈ 23.7，即未正規化)。
+# 路徑落在 emb 與 variant 之間，因 pipeline 順序為「載入 → 正規化 → 算不對稱」。
+NO_NORMALIZE = "no_normalize"
+NORMALIZE_MODES = (NO_NORMALIZE, "l1_normalize", "l2_normalize")
+NORMALIZE_ORD = {"l1_normalize": 1, "l2_normalize": 2}   # np.linalg.norm 的 ord
+
+
 def embedding_classification_path(
     p_visit: str,
     p_score: str,
@@ -304,6 +312,7 @@ def embedding_classification_path(
     variant: str,
     photo_mode: str = "mean",
     reducer: str = "no_drop",
+    normalize: str = "no_normalize",
     clf: Optional[str] = None,
     clf_param: Optional[str] = None,
     direction: Optional[str] = None,
@@ -313,19 +322,25 @@ def embedding_classification_path(
     match_strategy: Optional[str] = None,
     partition: Optional[str] = None,
     seed: Optional[int] = 0,
+    fold_kind: str = "group",
     root: Optional[Path] = None,
 ) -> Path:
     """
     Compose embedding classification output path.
 
     Layout (follows 10-variable pipeline order):
-      classification/<visit>/<cdr_mmse>/<bg_mode>/<emb>/<variant>/<photo>/<reducer>/
+      classification/<visit>/<cdr_mmse>/<bg_mode>/<emb>/<normalize>/<variant>/<photo>/<reducer>/
         <clf>/seed_<seed>/<clf_param>/<direction>/<eval_method>/<match_level>/<eval_unit>/<match_strategy>/<partition>/
+
+    normalize 在 emb 與 variant 之間,因為 pipeline 的順序是「載入 embedding → 正規化 →
+    算不對稱向量」;正規化改變的是特徵本身,故屬 variant 之前的決策(見 §PDF 4)。
 
     Args:
         p_visit, p_score, hc_visit, hc_score: cohort 4-token(見上方 cohort token 區塊)
         bg_mode: background | no_background
         emb: arcface | topofr | dlib | vggface
+        normalize: no_normalize | l1_normalize | l2_normalize
+                   (embedding 先各自除以 ‖z‖₁ / ‖z‖₂ 再算 variant;no_normalize = 用原始 z)
         variant: original | differences | absolute_differences |
                  relative_differences | absolute_relative_differences
         photo_mode: mean | all
@@ -337,7 +352,7 @@ def embedding_classification_path(
     visit_dir, cdr_mmse_dir = cohort_dirs(p_visit, p_score, hc_visit, hc_score)
     base = root if root is not None else EMBEDDING_CLASSIFICATION_DIR
     p = (base / visit_dir / cdr_mmse_dir
-         / bg_mode / emb / variant / photo_mode / reducer)
+         / bg_mode / emb / normalize / variant / photo_mode / reducer)
     # clf 之後接一個可選的 hyperparameter 子層(grid search 用,如 logistic/C_1.0、
     # xgb/ne_300_md_6_lr_0.1),再接 direction 起的評估鏈。clf_param 只在 clf 存在時
     # 插入;scorer / 非 grid 時為 None → 退回 clf/direction。
@@ -346,6 +361,10 @@ def embedding_classification_path(
         segs.append(clf)
         if seed is not None:                       # seed_<N> 緊接 classifier(repeated-CV 的折分維度)
             segs.append(f"seed_{seed}")
+        # 折分方式(見 src/common/folds.py)。預設 group = GroupKFold,不插段,既有樹不動;
+        # 只有非預設(如 stratified_group)才多一層 folds_<kind>,避免兩種折分互相覆蓋。
+        if fold_kind and fold_kind != "group":
+            segs.append(f"folds_{fold_kind}")
         if clf_param is not None:
             segs.append(clf_param)
         segs += [direction, eval_method, match_level, eval_unit,
