@@ -34,36 +34,57 @@ logger = logging.getLogger(__name__)
 
 # ── 面板小工具 ────────────────────────────────────────────────────────────
 
-def _draw_panel(ax, df, title, colors, labels):
+def _draw_panel(ax, df, title, colors, labels,
+                x_col="real_age", y_col="predicted_age",
+                x_label="Real Age", y_label="Predicted Age (MiVOLO)",
+                reverse_line=False):
+    """散點 + y=x + OLS 迴歸線。橘線一律 y_col 對 x_col 回歸（換軸時自動重定義）。
+
+    reverse_line=True 時再疊一條紫虛線＝反方向 OLS（x_col 對 y_col），代數轉到本座標
+    畫成 y=…。換軸面板用它顯示「舊迴歸關係座標轉換後」那條線（＝ pred 對 real）。
+    r（對稱）、MAE=|real−predicted|（對稱）不受換軸影響；只有座標與迴歸線改變。
+    """
     for grp, color in colors.items():
         sub = df[df["group"] == grp]
         if sub.empty:
             continue
-        ax.scatter(sub["real_age"], sub["predicted_age"],
+        ax.scatter(sub[x_col], sub[y_col],
                    c=color, label=labels.get(grp, grp),
                    alpha=0.6, s=30, edgecolors="white", linewidth=0.3)
 
     age_min, age_max = 25, 110  # 固定軸範圍，供跨 cohort/版本比較
+    xs = np.array([age_min, age_max])
     ax.plot([age_min, age_max], [age_min, age_max],
             "k--", alpha=0.5, linewidth=1, label="y = x")
 
-    x = df["real_age"].to_numpy(float)
-    y = df["predicted_age"].to_numpy(float)
+    x = df[x_col].to_numpy(float)
+    y = df[y_col].to_numpy(float)
     mask = np.isfinite(x) & np.isfinite(y)
     x, y = x[mask], y[mask]
     ss_xx = float(np.sum((x - x.mean()) ** 2))
     if ss_xx > 0:
         a = float(np.sum((x - x.mean()) * (y - y.mean()))) / ss_xx
         b = float(y.mean() - a * x.mean())
-        xs = np.array([age_min, age_max])
         ax.plot(xs, a * xs + b, color="#FF9800", linewidth=2, alpha=0.8,
                 label=f"y = {a:.2f}x + {b:.2f}")
 
+    # 反方向 OLS（x 對 y，最小化水平殘差），轉到本座標畫成 y=(1/a')x - b'/a'
+    if reverse_line:
+        ss_yy = float(np.sum((y - y.mean()) ** 2))
+        if ss_yy > 0:
+            a_r = float(np.sum((x - x.mean()) * (y - y.mean()))) / ss_yy
+            b_r = float(x.mean() - a_r * y.mean())
+            if abs(a_r) > 1e-9:
+                inv_a, inv_b = 1.0 / a_r, -b_r / a_r
+                ax.plot(xs, inv_a * xs + inv_b, color="#7B1FA2", linewidth=2,
+                        alpha=0.9, linestyle=(0, (6, 4)),
+                        label=f"y = {inv_a:.2f}x {inv_b:+.2f}  (old fit, axes swapped)")
+
     n = len(df)
-    r = df["real_age"].corr(df["predicted_age"])
+    r = df[x_col].corr(df[y_col])
     mae = df["error"].abs().mean()
-    ax.set_xlabel("Real Age", fontsize=12)
-    ax.set_ylabel("Predicted Age (MiVOLO)", fontsize=12)
+    ax.set_xlabel(x_label, fontsize=12)
+    ax.set_ylabel(y_label, fontsize=12)
     ax.set_title(f"{title}\n(n={n}, r={r:.3f}, MAE={mae:.1f})", fontsize=13)
     ax.legend(fontsize=10, loc="upper left")
     ax.set_xlim(age_min, age_max)
@@ -88,6 +109,60 @@ def plot_main_scatter(df, scatter_dir, note=""):
     plt.savefig(str(out), dpi=150, bbox_inches="tight")
     plt.close()
     logger.info(f"saved {out}")
+
+# ── 分組面板散點（兩種座標方向各出一份） ─────────────────────────────────
+
+GROUP_COLORS = {"P": "#F44336", "NAD": "#2196F3", "ACS": "#4CAF50"}
+GROUP_LABELS = {"P": "Patient", "NAD": "SCD", "ACS": "ACS"}   # NAD 顯示為 SCD
+GROUP_TITLES = {"P": "Patients (P)", "NAD": "SCD", "ACS": "ACS"}
+# 兩種座標方向：realx=傳統(X 真實)；predx=換軸(X 預測)。迴歸線一律 y 對 x 回歸。
+_ORIENT = {
+    "realx": dict(x_col="real_age", y_col="predicted_age",
+                  x_label="Real Age", y_label="Predicted Age (MiVOLO)"),
+    "predx": dict(x_col="predicted_age", y_col="real_age",
+                  x_label="Predicted Age (MiVOLO)", y_label="Real Age"),
+}
+
+
+def _group_panel(ax, df, grp, orient, note=""):
+    _draw_panel(ax, df[df["group"] == grp], f"{GROUP_TITLES[grp]}{note}",
+                {grp: GROUP_COLORS[grp]}, {grp: GROUP_LABELS[grp]},
+                reverse_line=(orient == "predx"), **_ORIENT[orient])
+
+
+def _all_panel(ax, df, orient, note=""):
+    _draw_panel(ax, df, f"All (P + SCD + ACS){note}",
+                GROUP_COLORS, GROUP_LABELS,
+                reverse_line=(orient == "predx"), **_ORIENT[orient])
+
+
+def _save(fig, out_path):
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(str(out_path), dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    logger.info(f"saved {out_path}")
+
+
+def plot_grid4(df, scatter_dir, orient, note=""):
+    """2×2：左上 All、右上 P、左下 SCD、右下 ACS。orient∈{realx,predx}。"""
+    fig, axes = plt.subplots(2, 2, figsize=(16, 16))
+    _all_panel(axes[0, 0], df, orient, note)
+    _group_panel(axes[0, 1], df, "P", orient, note)
+    _group_panel(axes[1, 0], df, "NAD", orient, note)
+    _group_panel(axes[1, 1], df, "ACS", orient, note)
+    fig.tight_layout()
+    _save(fig, scatter_dir / f"grid4_scatter_{orient}.png")
+
+
+def plot_pairs(df, scatter_dir, orient, note=""):
+    """三對六格：P vs SCD、P vs ACS、SCD vs ACS（每列一對）。orient∈{realx,predx}。"""
+    pairs = [("P", "NAD"), ("P", "ACS"), ("NAD", "ACS")]
+    fig, axes = plt.subplots(3, 2, figsize=(16, 24))
+    for row, (left, right) in enumerate(pairs):
+        _group_panel(axes[row, 0], df, left, orient, note)
+        _group_panel(axes[row, 1], df, right, orient, note)
+    fig.tight_layout()
+    _save(fig, scatter_dir / f"pairs_scatter_{orient}.png")
 
 # ── 主流程 ─────────────────────────────────────────────────────────────────────
 
@@ -127,10 +202,15 @@ def main():
                 f"{matched_name}={len(matched)} "
                 f"({matched['group'].value_counts().to_dict()})")
 
+    panels = []
     if level == "subject":
-        plot_main_scatter(_prep(full), output_dir / "full")
-    plot_main_scatter(_prep(matched), output_dir / matched_name,
-                      note="\n(age-matched 1:1)")
+        panels.append(("full", _prep(full), ""))
+    panels.append((matched_name, _prep(matched), "\n(age-matched 1:1)"))
+    for name, d, note in panels:
+        plot_main_scatter(d, output_dir / name, note=note)
+        for orient in ("realx", "predx"):  # realx=傳統, predx=換軸，各出一份
+            plot_grid4(d, output_dir / name, orient, note=note)
+            plot_pairs(d, output_dir / name, orient, note=note)
 
 
 if __name__ == "__main__":
