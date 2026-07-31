@@ -22,6 +22,8 @@ from .config import (
     # Preprocess
     PREPROCESSING_DIR,
     preprocess_dir,
+    preprocess_selector_dir,
+    preprocess_selected_dir,
     # Age
     AGE_DIR,
     AGE_PREDICTIONS_DIR,
@@ -88,6 +90,8 @@ __all__ = [
     # Preprocess
     "PREPROCESSING_DIR",
     "preprocess_dir",
+    "preprocess_selector_dir",
+    "preprocess_selected_dir",
     # Age
     "AGE_DIR",
     "AGE_PREDICTIONS_DIR",

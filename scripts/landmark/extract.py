@@ -24,7 +24,7 @@ from src.landmark.extractor import compute_regional_features, extract_and_save_l
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
-ALIGNED_DIR = preprocess_dir("aligned")  # workspace/preprocess/no_background/aligned
+ALIGNED_DIR = preprocess_dir("aligned")  # preprocess/no_background/selector_<sel>/aligned
 
 
 def main():

@@ -4,6 +4,7 @@
 路徑常數、專案級設定、處理參數
 """
 
+import os
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional, Tuple
@@ -26,14 +27,28 @@ DEMOGRAPHICS_DIR = DATA_DIR / "demographics"
 #       Age, BMI, NPT_Date, NPT_Session, Diff_Days, MMSE, CASI, Global_CDR
 HOSPITAL_A_CSV = DEMOGRAPHICS_DIR / "hospital_A.csv"
 
-# 原始影像目錄（外部資料，從 data/path.txt 讀取）
+# 原始影像目錄（外部資料，從 data/path.txt 延遲讀取）。
+# 不在 import 時強制 path.txt 存在 —— 純推論 (age/embedding/meta，例如 alz_infer
+# 服務) 不碰原始影像,故無需 path.txt 也能 import src.config / src.age。
+# 真正取用 RAW_IMAGES_DIR（或 `from src.config import RAW_IMAGES_DIR`）時,
+# 才透過下方 __getattr__ 讀檔並在缺檔時報錯。
 _RAW_PATH_FILE = DATA_DIR / "path.txt"
-if not _RAW_PATH_FILE.exists():
-    raise FileNotFoundError(
-        f"找不到原始影像路徑設定檔: {_RAW_PATH_FILE}\n"
-        f"請建立此檔案並寫入原始影像目錄路徑"
-    )
-RAW_IMAGES_DIR = Path(_RAW_PATH_FILE.read_text(encoding="utf-8").strip())
+
+
+def _raw_images_dir() -> Path:
+    if not _RAW_PATH_FILE.exists():
+        raise FileNotFoundError(
+            f"找不到原始影像路徑設定檔: {_RAW_PATH_FILE}\n"
+            f"請建立此檔案並寫入原始影像目錄路徑"
+        )
+    return Path(_RAW_PATH_FILE.read_text(encoding="utf-8").strip())
+
+
+def __getattr__(name: str):
+    # PEP 562:延遲提供 RAW_IMAGES_DIR,讓不需要原始影像的 import 不被 path.txt 卡住。
+    if name == "RAW_IMAGES_DIR":
+        return _raw_images_dir()
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 # 外部依賴目錄
 EXTERNAL_DIR = PROJECT_ROOT / "external"
@@ -45,17 +60,77 @@ EXTERNAL_FILTERED_DIR = EXTERNAL_PUBLIC_FACE_DIR / "filtered"
 WORKSPACE_DIR = PROJECT_ROOT / "workspace"
 
 # -----------------------------------------------------------------------------
+# 選幀準則（selection）
+#
+# 每個準則各自擁有一整棵完整的下游樹：
+#     workspace/<subsystem>/<selection>/…
+#     workspace/preprocess/…（唯一例外，見下方 Preprocess 段）
+#
+# 準則的差異只在「10 張怎麼挑」，landmark / 去背 / 轉正 / 鏡射三棵樹都一樣用
+# MediaPipe，所以名稱指的是選幀方法而非函式庫。
+#
+#   mediapipe        現有結果：MediaPipe 中線頂角和（VAS）升冪取前 10
+#   openface_p10r5   OpenFace 2.2 頭部姿態，|pitch|<=10, |roll|<=5（PDF 原始規格）
+#   openface_p15r10  同上但 |pitch|<=15, |roll|<=10（產出率較高、組間差距較小）
+#
+# 由環境變數 ALZ_SELECTION 在 process 啟動時決定。**不要**做 runtime setter：
+# 全 repo 46 個 `from src.config import X` 都是 module 頂層裸名綁定，import 當下
+# 就凍結，runtime 改動只會在少數幾處生效，產生混合 selection 的輸出而不報錯。
+# 要同時比較多個準則請一個準則開一個 subprocess。
+# -----------------------------------------------------------------------------
+DEFAULT_SELECTION = "mediapipe"
+SELECTION = os.environ.get("ALZ_SELECTION", DEFAULT_SELECTION)
+
+
+def subsystem_dir(name: str, selection: Optional[str] = None) -> Path:
+    """workspace 子系統根 = WORKSPACE_DIR / <name> / <selection>。
+
+    selection 留空用當前 process 的 SELECTION；傳值則用於跨準則比較
+    （唯一支援的跨樹存取方式）。
+    """
+    return WORKSPACE_DIR / name / (selection or SELECTION)
+
+
+# -----------------------------------------------------------------------------
 # Preprocess
 # -----------------------------------------------------------------------------
+# preprocess 是唯一「selection 不在子系統根」的子系統。版面照管線的分岔點排：
+#
+#     讀原圖 → FaceMesh → 選 10 張 ──┬─→ apply_mask → 轉正 → no_background/…/aligned
+#                           ↑        └─→ （不遮罩） → 轉正 → background/…/aligned
+#                        selected
+#
+#     workspace/preprocess/selected/selector_<selection>/          分岔前，兩變體共用
+#     workspace/preprocess/{no_background|background}/selector_<selection>/{aligned,mirrors}/
+#
+# bg/no_bg 是影像處理的分支，selector 才是實驗變因，所以 selector 掛在變體之下，
+# 同變體的各準則並排可直接比對。其餘子系統一律 subsystem_dir()（selection 在最外層）。
 PREPROCESSING_DIR = WORKSPACE_DIR / "preprocess"
 _PREPROCESS_STAGES = ("selected", "aligned", "mirrors")
+_VARIANT_STAGES = ("aligned", "mirrors")
 
 
-def preprocess_dir(stage: str, background: bool = False) -> Path:
-    """預處理輸出目錄 = PREPROCESSING_DIR / {no_background|background} / {stage}。
+def preprocess_selector_dir(background: bool = False,
+                            selection: Optional[str] = None) -> Path:
+    """某個去背變體下、某個選幀準則的根目錄（aligned / mirrors 的上一層）。"""
+    variant = "background" if background else "no_background"
+    return PREPROCESSING_DIR / variant / f"selector_{selection or SELECTION}"
+
+
+def preprocess_selected_dir(selection: Optional[str] = None) -> Path:
+    """選出來的原始幀（未遮罩、未轉正）。在去背分岔之前，故不掛在任一變體之下。"""
+    return PREPROCESSING_DIR / "selected" / f"selector_{selection or SELECTION}"
+
+
+def preprocess_dir(stage: str, background: bool = False,
+                   selection: Optional[str] = None) -> Path:
+    """預處理輸出目錄。
 
     stage      ∈ {selected, aligned, mirrors}
     background  False（預設）→ no_background（去背版）；True → background（保留背景版）
+                stage="selected" 時**忽略**此參數：選幀在去背分岔之前，兩個變體
+                拿到的是同一批影像，只有一份。
+    selection   留空用當前 process 的 SELECTION；傳值則用於跨準則比較
 
     取代舊的扁平常數（ALIGNED_DIR / ALIGNED_BACKGROUND_DIR / MIRRORS_DIR …），
     bg/no_bg 由參數決定，不再每個葉子各開一個常數。
@@ -63,13 +138,14 @@ def preprocess_dir(stage: str, background: bool = False) -> Path:
     if stage not in _PREPROCESS_STAGES:
         raise ValueError(
             f"stage must be one of {_PREPROCESS_STAGES}, got {stage!r}")
-    variant = "background" if background else "no_background"
-    return PREPROCESSING_DIR / variant / stage
+    if stage == "selected":
+        return preprocess_selected_dir(selection)
+    return preprocess_selector_dir(background, selection) / stage
 
 # -----------------------------------------------------------------------------
 # Embedding
 # -----------------------------------------------------------------------------
-EMBEDDING_DIR = WORKSPACE_DIR / "embedding"
+EMBEDDING_DIR = subsystem_dir("embedding")
 EMBEDDING_FEATURES_DIR = EMBEDDING_DIR / "features"
 EMBEDDING_ANALYSIS_DIR = EMBEDDING_DIR / "analysis"
 EMBEDDING_FEATURE_STAT_DIR = EMBEDDING_ANALYSIS_DIR / "feature_stat"
@@ -83,7 +159,7 @@ EMBEDDING_CLASSIFICATION_REFACTOR_DIR = EMBEDDING_CLASSIFICATION_DIR
 # -----------------------------------------------------------------------------
 # Age
 # -----------------------------------------------------------------------------
-AGE_DIR = WORKSPACE_DIR / "age"
+AGE_DIR = subsystem_dir("age")
 AGE_PREDICTIONS_DIR = AGE_DIR / "predictions"
 AGE_BENCHMARK_DIR = AGE_PREDICTIONS_DIR
 AGE_ANALYSIS_DIR = AGE_DIR / "analysis"
@@ -103,7 +179,7 @@ AGE_VIOLIN_DIR = _AGE_DEFAULT_ANALYSIS / "violin"
 # -----------------------------------------------------------------------------
 # BMI
 # -----------------------------------------------------------------------------
-BMI_DIR = WORKSPACE_DIR / "bmi"
+BMI_DIR = subsystem_dir("bmi")
 BMI_MODELS_DIR = BMI_DIR / "models"
 BMI_PREDICTIONS_DIR = BMI_DIR / "predictions"
 BMI_ANALYSIS_DIR = BMI_DIR / "analysis"
@@ -111,7 +187,7 @@ BMI_ANALYSIS_DIR = BMI_DIR / "analysis"
 # -----------------------------------------------------------------------------
 # Emo_au
 # -----------------------------------------------------------------------------
-EMO_AU_DIR = WORKSPACE_DIR / "emo_au"
+EMO_AU_DIR = subsystem_dir("emo_au")
 EMO_AU_FEATURES_DIR = EMO_AU_DIR / "features"
 EMO_AU_FEATURES_SCHEMA_FILE = EMO_AU_FEATURES_DIR / "_schema.json"
 
@@ -122,7 +198,7 @@ EMO_AU_CLASSIFICATION_DIR = EMO_AU_ANALYSIS_DIR / "classification"
 # -----------------------------------------------------------------------------
 # Asymmetry (landmark)
 # -----------------------------------------------------------------------------
-ASYMMETRY_DIR = WORKSPACE_DIR / "asymmetry"
+ASYMMETRY_DIR = subsystem_dir("asymmetry")
 ASYMMETRY_FEATURES_DIR = ASYMMETRY_DIR / "features"
 ASYMMETRY_LANDMARKS_DIR = ASYMMETRY_FEATURES_DIR / "landmarks"
 ASYMMETRY_PAIR_FEATURES_FILE = ASYMMETRY_FEATURES_DIR / "pair_features.csv"
@@ -136,6 +212,31 @@ ASYMMETRY_CLASSIFICATION_DIR = ASYMMETRY_ANALYSIS_DIR / "classification"
 ROTATION_DIR = WORKSPACE_DIR / "rotation"
 ROTATION_FIG_DIR = ROTATION_DIR / "fig"
 ROTATION_FEATURES_DIR = ROTATION_DIR / "features"
+
+# -----------------------------------------------------------------------------
+# Pose (OpenFace 2.2 逐幀頭部姿態) — 選幀的「輸入」，所有 selection 共用，
+# 因此不掛 selection 軸。一次算好，換閘門只要重挑不必重算。
+# -----------------------------------------------------------------------------
+POSE_DIR = WORKSPACE_DIR / "pose"
+OPENFACE_POSE_DIR = POSE_DIR / "openface"
+
+# FeatureExtraction.exe 所在目錄（解壓 OpenFace_2.2.0_win_x64.zip 後的根）
+OPENFACE2_DIR = EXTERNAL_DIR / "pose" / "OpenFace_2.2.0_win_x64"
+OPENFACE2_BIN = OPENFACE2_DIR / "FeatureExtraction.exe"
+
+# D435i 彩色串流內參。
+#
+# 來源：拍攝端明確設定 enable_stream(color, 1280, 720, bgr8, 30)；D435i 彩色
+# HFOV 69.4 度、方形像素 → fx = fy = 640 / tan(34.7°) = 924。以 VFOV 反推
+# 2·atan(360/924) = 42.6 度，對上 datasheet 的 42.5 度。
+#
+# 存檔前經過 cv2.transpose（轉置，行列式 -1，是鏡射不是旋轉），影像變成
+# 720x1280 直式，主點跟著交換 → cx=360, cy=640。fx=fy 所以焦距不受影響。
+#
+# 注意：OpenFace 的四個內參是成對分支的，只傳 -fx 不傳 -fy 會讓 fy 變成 -1。
+# 四個要嘛全傳、要嘛全不傳。另外 OpenFace 對 solvePnP 傳入空的畸變矩陣且
+# 沒有對應旗標，D435i 的畸變係數無法納入。
+D435I_COLOR_INTRINSICS = {"fx": 924.0, "fy": 924.0, "cx": 360.0, "cy": 640.0}
 
 # -----------------------------------------------------------------------------
 # Overview — 跨 modality cohort metadata + matching artifacts + per-design summaries
@@ -256,7 +357,7 @@ def embedding_classification_path(
     return p
 
 
-META_DIR = WORKSPACE_DIR / "meta"
+META_DIR = subsystem_dir("meta")
 META_ANALYSIS_DIR = META_DIR / "analysis"
 
 
@@ -320,7 +421,7 @@ def get_raw_images_subdir(group: str) -> Path:
         "P": "patient",
     }
     subdir = group_mapping.get(group, group)
-    return RAW_IMAGES_DIR / subdir
+    return _raw_images_dir() / subdir
 
 
 # =============================================================================
