@@ -26,10 +26,12 @@ from src.config import (
     meta_analysis_path,
     P_VISIT_TOKENS, P_SCORE_TOKENS, HC_VISIT_TOKENS, HC_SCORE_TOKENS,
 )
-from src.embedding.classification import ALL_METHODS, clf_param_label, oof_paths
+from src.embedding.classification import (
+    ALL_METHODS, clf_param_label, inner_path, oof_paths,
+)
 from src.meta import (
     ASYM_VARIANTS, META_CLASSIFIERS, META_FEATURE_SETS, feature_set_needs_oof,
-    fold_aligned_shap, oof_from_table, session_feature_table,
+    fold_aligned_shap, inner_feature_table, oof_from_table, session_feature_table,
 )
 
 logging.basicConfig(level=logging.INFO,
@@ -42,15 +44,24 @@ DEFAULT_C_VALUES = [0.001, 0.01, 0.1, 1.0, 10.0, 100.0]
 
 def _precheck_oof(cohort, *, emb, bg_mode, photo_mode, reducer, base_clf,
                   variants, lr_Cs, seed, root):
-    """掃描所有需要的 landed embedding OOF(original × C + 各 asym variant × C),缺的一次列齊報錯。"""
+    """掃描所有需要的 landed embedding 分數,缺的一次列齊報錯。
+
+    每格要兩個檔:oof_scores.csv(外折測試分數 → meta 的測試列)與 inner_scores.csv
+    (內折分數 → meta 的訓練列)。後者要 embedding 端加 --inner-folds 5 才會產生。
+    """
     needed = [("original", c) for c in lr_Cs] + [(v, c) for v in variants for c in lr_Cs]
-    missing = [str(p) for v, c in needed
-               for p in [oof_paths(cohort, bg_mode, emb, v, photo_mode, reducer,
-                                   base_clf, "forward", lr_C=c, seed=seed, root=root)[0]]
-               if not p.exists()]
+    missing = []
+    for v, c in needed:
+        o = oof_paths(cohort, bg_mode, emb, v, photo_mode, reducer, base_clf,
+                      "forward", lr_C=c, seed=seed, root=root)[0]
+        i = inner_path(cohort, bg_mode, emb, v, photo_mode, reducer, base_clf,
+                       "forward", lr_C=c, seed=seed, root=root)
+        missing += [str(p) for p in (o, i) if not p.exists()]
     if missing:
         raise FileNotFoundError(
-            "缺少以下 base OOF(請先跑 embedding forward 分類產生):\n  " + "\n  ".join(missing))
+            "缺少以下 base 分數檔:\n  " + "\n  ".join(missing) +
+            "\n請跑 scripts/embedding/classification/run.py 產生"
+            "(內折表需加 --inner-folds 5)。")
 
 
 def _ident(cohort, args, *, feature_set, variant, base_clf, clf_param, meta_clf, seed):
@@ -175,12 +186,18 @@ def _run_seed(args, cohort, cognitive, imaging, fold_seed):
                   complete_case=args.complete_case, root=args.embedding_root)
 
     # 認知 combo:無 OOF/variant/C,只跑一次(用任一 variant/C 讀表取 fold + 認知欄,皆 invariant)
+    #
+    # 這些 combo 的特徵不含 base 分數,所以「用內折表當訓練列」與舊做法(用 fold≠k 的
+    # 外折列)其實是同一組人、同一組特徵值,結果應完全相同——正因如此它們是乾淨的
+    # 負對照:新舊有差就是折分或彙整造成的雜訊,不是方法本身。
     if cognitive:
         ref_variant, ref_C = args.asym_variant[0], args.base_lr_C[0]
         t0 = session_feature_table(cohort, variant=ref_variant, lr_C=ref_C, **common)
+        i0 = inner_feature_table(cohort, variant=ref_variant, lr_C=ref_C, **common)
         for fs, cols in cognitive.items():
             for mc in args.meta_clf:
-                oof = oof_from_table(t0, cols, meta_clf=mc, seed=args.seed, device=args.device)
+                oof = oof_from_table(t0, cols, inner=i0, meta_clf=mc, seed=args.seed,
+                                     device=args.device)
                 out_dir = meta_analysis_path(*cohort, args.bg_mode, args.emb, args.photo_mode,
                                              args.reducer, case_mode=case_mode, feature_set=fs,
                                              meta_classifier=mc, seed=fold_seed)
@@ -197,9 +214,11 @@ def _run_seed(args, cohort, cognitive, imaging, fold_seed):
         clf_param = clf_param_label(args.base_clf, c)
         for variant in args.asym_variant:
             t = session_feature_table(cohort, variant=variant, lr_C=c, **common)
+            inner = inner_feature_table(cohort, variant=variant, lr_C=c, **common)
             for fs, cols in imaging.items():
                 for mc in args.meta_clf:
-                    oof = oof_from_table(t, cols, meta_clf=mc, seed=args.seed, device=args.device)
+                    oof = oof_from_table(t, cols, inner=inner, meta_clf=mc,
+                                         seed=args.seed, device=args.device)
                     out_dir = meta_analysis_path(
                         *cohort, args.bg_mode, args.emb, args.photo_mode, args.reducer,
                         case_mode=case_mode, feature_set=fs, variant=variant,

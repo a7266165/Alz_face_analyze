@@ -10,7 +10,7 @@ import pandas as pd
 
 from src.age import build_cohort_with_age_error
 from src.common.cohort import load_demographics
-from src.embedding.classification import CLASSIFIERS, oof_paths
+from src.embedding.classification import CLASSIFIERS, inner_path, oof_paths
 from src.meta.classifier import make_meta_clf
 
 ASYM_VARIANTS = ("differences", "absolute_differences",
@@ -34,6 +34,11 @@ META_FEATURE_SETS = {
     "core4_bmi_mmse":       ["real_age", "age_error", "embedding_LR_score", "asymmetry_LR_score", "bmi", "mmse"],
     "core4_bmi_casi":       ["real_age", "age_error", "embedding_LR_score", "asymmetry_LR_score", "bmi", "casi"],
     "core4_bmi_mmse_casi":  ["real_age", "age_error", "embedding_LR_score", "asymmetry_LR_score", "bmi", "mmse", "casi"],
+    # PDF Step 12 對照組:配 meta_clf=mean(不訓練,逐列平均)就是「單一 base 分數」
+    # 與「兩個 base 分數的簡單平均」。meta layer 的加值 = core3/core4 減掉這三格。
+    "embedding_only":       ["embedding_LR_score"],
+    "asymmetry_only":       ["asymmetry_LR_score"],
+    "bases":                ["embedding_LR_score", "asymmetry_LR_score"],
 }
 
 
@@ -71,11 +76,34 @@ def base_oof(cohort, emb, variant, bg_mode, photo_mode, model, *,
     return pd.read_csv(path)
 
 
+def base_inner(cohort, emb, variant, bg_mode, photo_mode, model, *,
+               reducer="no_drop", lr_C=1.0, seed=0, root=None):
+    """讀落地的內折 OOF → DataFrame[ID, y_true, y_score, outer_fold, inner_fold]。
+
+    這是 stacking 的 meta 訓練列:對外折 k,這些分數來自「只在 outer-train 的
+    4/5 上 fit」的模型,故第 k 折的人完全沒被看過。與 base_oof 讀的
+    oof_scores.csv(= 用完整 outer-train 重訓後預測 outer-test)成對使用。
+    """
+    path = inner_path(cohort, bg_mode, emb, variant, photo_mode, reducer, model,
+                      "forward", lr_C=lr_C, seed=seed, root=root)
+    if not path.exists():
+        raise FileNotFoundError(
+            f"找不到內折 OOF:{path}\n"
+            f"  請用 --inner-folds 5 重跑該格 embedding forward 分類"
+            f"(emb={emb} variant={variant} model={model} reducer={reducer} lr_C={lr_C} "
+            f"seed={seed})。")
+    return pd.read_csv(path)
+
+
 def meta_oof(X, y, fold, *, meta_clf="tabpfn_v3", seed=42, device="auto"):
     """fold-aligned OOF：對每個 fold k 在 fold≠k 上 fit、預測 k，回正類機率陣列。
 
     meta_clf ∈ META_CLASSIFIERS(tabpfn_v3 / xgb);同一 estimator 跨折重 fit
     (TabPFN 只換 in-context 訓練集、XGB 每折重訓),兩者皆走 predict_proba[:, 1]。
+
+    註:這條路徑的訓練列(fold≠k)其 base 分數來自「排除自己那一折」的 base 模型,
+    那些模型都看過第 k 折,故 meta 是在看過 outer test 的特徵上被 fit 的。
+    要避免這件事請改用 meta_oof_nested(吃內折表)。
     """
     clf = make_meta_clf(meta_clf, seed=seed, device=device)
     oof = np.full(len(y), np.nan)
@@ -83,6 +111,37 @@ def meta_oof(X, y, fold, *, meta_clf="tabpfn_v3", seed=42, device="auto"):
         te = fold == k
         clf.fit(X[~te], y[~te])
         oof[te] = clf.predict_proba(X[te])[:, 1]
+    return oof
+
+
+def meta_oof_nested(train_table, test_table, feature_cols, *, meta_clf="tabpfn_v3",
+                    seed=42, device="auto"):
+    """nested 版的 fold-aligned OOF:每個外折 k 各自 fit 一個 meta(共 k 個)。
+
+    對外折 k:
+      訓練列 = 內折表裡 outer_fold == k 的列(第 k 折的人不在其中,且這些分數是由
+               沒看過第 k 折的 base 模型產生的);
+      測試列 = 外折表裡 fold == k 的列(分數來自用完整 outer-train 重訓的 base 模型)。
+
+    回正類機率陣列,長度與 test_table 相同。
+    """
+    cols = list(feature_cols)
+    clf = make_meta_clf(meta_clf, seed=seed, device=device)
+    fold = test_table["fold"].to_numpy(dtype=int)
+    ids = test_table["ID"].to_numpy()
+    Xte = test_table[cols].to_numpy(dtype=float)
+    oof = np.full(len(test_table), np.nan)
+    for k in np.unique(fold):
+        tr = train_table[train_table["outer_fold"] == k]
+        if tr.empty:
+            raise ValueError(f"內折表缺少 outer_fold={k} 的列(內折表與外折表不成對?)")
+        te = fold == k
+        leak = set(tr["ID"]) & set(ids[te])
+        if leak:                          # 保險絲:內折表本來就不該含該折的人
+            raise ValueError(f"outer_fold={k} 的 meta 訓練列含有測試折的 ID "
+                             f"({len(leak)} 個,如 {sorted(leak)[:3]})")
+        clf.fit(tr[cols].to_numpy(dtype=float), tr["y_true"].to_numpy(dtype=int))
+        oof[te] = clf.predict_proba(Xte[te])[:, 1]
     return oof
 
 
@@ -132,36 +191,79 @@ def session_feature_table(cohort, *, variant="relative_differences", emb="arcfac
                     reducer=reducer, lr_C=lr_C, seed=seed, root=root)
     asym = base_oof(cohort, emb, variant, bg_mode, photo_mode, base_clf,
                     reducer=reducer, lr_C=lr_C, seed=seed, root=root)
-    cov = covariate_table(cohort)
+    return _merge_bases(orig, asym, covariate_table(cohort), ("fold",),
+                        complete_case=complete_case)
 
-    t = (orig[["ID", "y_true", "fold", "y_score"]]
+
+def _merge_bases(orig, asym, cov, fold_cols, *, complete_case):
+    """兩條 base 分數 + 共變數 → 特徵表。fold_cols 是要保留的折欄。
+
+    外折表 fold_cols=("fold",)、內折表 fold_cols=("outer_fold",)。折欄一起當 join key:
+    內折表裡一個 ID 有 9 列(每個它屬於訓練集的外折一列),只用 ID join 會產生
+    9x9 的笛卡兒積。
+    """
+    keys = ["ID", *fold_cols]
+    t = (orig[[*keys, "y_true", "y_score"]]
          .rename(columns={"y_score": "embedding_LR_score"})
-         .merge(asym[["ID", "y_true", "y_score"]]
+         .merge(asym[[*keys, "y_true", "y_score"]]
                 .rename(columns={"y_score": "asymmetry_LR_score", "y_true": "y_true_a"}),
-                on="ID", how="inner")
+                on=keys, how="inner")
          .merge(cov[["ID", "mmse", "casi", "real_age", "age_error"]], on="ID", how="inner")
          .merge(cov[["ID", "bmi"]], on="ID", how="left"))
     assert (t["y_true"].to_numpy() == t["y_true_a"].to_numpy()).all(), \
         "original 與 asymmetry OOF 的 y_true 不一致"
-    if complete_case:                       # 丟認知缺值 session → 全表零 NaN、9 combo 同母體比較
+    if complete_case:                       # 丟認知缺值 session → 全表零 NaN、各 combo 同母體比較
         t = t[t["mmse"].notna() & t["casi"].notna()].reset_index(drop=True)
-    return t[["ID", "y_true", "fold"] + ALL_FEATURE_COLS]
+    return t[["ID", "y_true", *fold_cols] + ALL_FEATURE_COLS]
 
 
-def oof_from_table(table, feature_cols, *, meta_clf="tabpfn_v3", seed=42, device="auto"):
-    """從 session 特徵表取指定欄 → meta stacker fold-aligned OOF,回標準 OOF[ID, y_true, y_score, fold]。
+def inner_feature_table(cohort, *, variant="relative_differences", emb="arcface",
+                        bg_mode="background", photo_mode="mean", reducer="no_drop",
+                        base_clf="logistic", lr_C=1.0, seed=0, complete_case=True,
+                        root=None):
+    """meta 的**訓練**列:[ID, y_true, outer_fold, <ALL_FEATURE_COLS>]。
 
-    meta_clf ∈ META_CLASSIFIERS;fold 取 original-OOF 的 GroupKFold-by-base_id(逐折 fold≠k 訓練、
-    預測 k,無 leakage);subject 評估交給 src.common.evaluate.evaluate。多個 feature set / meta_clf 可
-    共用同一張 table 直接互比。
+    與 session_feature_table 完全對稱,差別只在 base 分數讀的是 inner_scores.csv
+    而非 oof_scores.csv,且折欄是 outer_fold(這個 ID 屬於訓練集的折)而非 fold
+    (這個 ID 被留出的折)。每個 ID 有 k-1 列。
+
+    共變數(real_age / age_error / bmi / mmse / casi)與外折表用同一張 covariate_table
+    ——它們不是在本資料上訓練出來的,沒有 fold 依賴。
+    """
+    orig = base_inner(cohort, emb, "original", bg_mode, photo_mode, base_clf,
+                      reducer=reducer, lr_C=lr_C, seed=seed, root=root)
+    asym = base_inner(cohort, emb, variant, bg_mode, photo_mode, base_clf,
+                      reducer=reducer, lr_C=lr_C, seed=seed, root=root)
+    return _merge_bases(orig, asym, covariate_table(cohort), ("outer_fold",),
+                        complete_case=complete_case)
+
+
+def oof_from_table(table, feature_cols, *, inner=None, meta_clf="tabpfn_v3", seed=42,
+                   device="auto"):
+    """從 session 特徵表取指定欄 → meta stacker fold-aligned OOF[ID, y_true, y_score, fold]。
+
+    inner 給定(inner_feature_table 的產物)→ 走 nested:每個外折各自 fit 一個 meta,
+    訓練列是該折訓練集的內折分數。這是正確的做法,scripts/meta/run.py 走這條。
+
+    inner=None → 舊路徑:直接用同一張表的 fold≠k 當訓練列。這些列的 base 分數來自
+    看過第 k 折的 base 模型,meta 會吃到 outer test 的資訊。保留只為了讓不做 CV 評估的
+    呼叫端(如部署匯出)沿用,不應用來產生要報告的數字。
+
+    fold 取 original-OOF 的 GroupKFold-by-base_id(同 subject 各 visit 同折);
+    subject 層級評估交給 src.common.evaluate.evaluate。多個 feature set / meta_clf
+    可共用同一張 table 直接互比。
     """
     fold = table["fold"].to_numpy(dtype=int)
     if (fold < 0).all():
         raise ValueError(
             "original-OOF fold 全為 -1:base_clf 須為有 CV 折的 classifier(如 logistic),不能用短路 scorer")
-    X = table[list(feature_cols)].to_numpy(dtype=float)
     y = table["y_true"].to_numpy(dtype=int)
-    meta = meta_oof(X, y, fold, meta_clf=meta_clf, seed=seed, device=device)
+    if inner is None:
+        X = table[list(feature_cols)].to_numpy(dtype=float)
+        meta = meta_oof(X, y, fold, meta_clf=meta_clf, seed=seed, device=device)
+    else:
+        meta = meta_oof_nested(inner, table, feature_cols, meta_clf=meta_clf,
+                               seed=seed, device=device)
     return pd.DataFrame({"ID": table["ID"].to_numpy(), "y_true": y,
                          "y_score": meta, "fold": fold})
 
