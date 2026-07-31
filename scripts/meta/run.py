@@ -88,7 +88,7 @@ def _write_cell(oof, cohort, out_dir, ident):
     return metrics
 
 
-def _write_shap(args, table, cols, meta_clf, out_dir, tag):
+def _write_shap(args, table, cols, meta_clf, out_dir, tag, inner=None):
     """--shap 開啟時:對該 cell 算逐個案 SHAP,寫 shap_per_case.csv + shap_importance.csv(與 oof/metrics 並排)。
 
     沿用同一張 table / 折分(逐折無洩漏);計算重(KernelExplainer × stacker),預設關閉。
@@ -96,7 +96,7 @@ def _write_shap(args, table, cols, meta_clf, out_dir, tag):
     if not args.shap:
         return
     per_case, importance = fold_aligned_shap(
-        table, cols, meta_clf=meta_clf, seed=args.seed, device=args.device,
+        table, cols, inner=inner, meta_clf=meta_clf, seed=args.seed, device=args.device,
         background=args.shap_background)
     per_case.to_csv(out_dir / "shap_per_case.csv", index=False, encoding="utf-8")
     importance.to_csv(out_dir / "shap_importance.csv", index=False, encoding="utf-8")
@@ -216,7 +216,7 @@ def _run_seed(args, cohort, cognitive, imaging, fold_seed):
                                base_clf=None, clf_param=None, meta_clf=mc, seed=fold_seed)
                 tag = f"seed_{fold_seed}/{fs}/{mc}"
                 _log_hl(tag, oof, _write_cell(oof, cohort, out_dir, ident))
-                _write_shap(args, t0, cols, mc, out_dir, tag)
+                _write_shap(args, t0, cols, mc, out_dir, tag, inner=i0)
 
     # 影像 combo:逐 (C, variant) 組一次表,slice 各 combo × 各 meta_clf;同表直接互比
     for c in args.base_lr_C:
@@ -242,7 +242,7 @@ def _run_seed(args, cohort, cognitive, imaging, fold_seed):
                                    seed=fold_seed)
                     tag = f"seed_{fold_seed}/{fs}/{variant}/{clf_param}/{mc}"
                     _log_hl(tag, oof, _write_cell(oof, cohort, out_dir, ident))
-                    _write_shap(args, t, cols, mc, out_dir, tag)
+                    _write_shap(args, t, cols, mc, out_dir, tag, inner=inner)
 
 
 if __name__ == "__main__":

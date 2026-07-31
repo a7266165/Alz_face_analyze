@@ -18,13 +18,16 @@ from src.meta.classifier import make_meta_clf
 logger = logging.getLogger(__name__)
 
 
-def fold_aligned_shap(table, feature_cols, *, meta_clf="tabpfn_v3", seed=42,
+def fold_aligned_shap(table, feature_cols, *, inner=None, meta_clf="tabpfn_v3", seed=42,
                       device="auto", background=25, nsamples="auto"):
     """逐折 fit stacker + KernelExplainer 解釋 held-out fold → 每個 session 的 SHAP。
 
     Args:
         table: session 特徵表(含 ID / y_true / fold + feature_cols),見 session_feature_table。
         feature_cols: 要解釋的欄(core3 = embedding_LR_score / asymmetry_LR_score / age_error)。
+        inner: 內折表(inner_feature_table 的產物)。給定時每折改用「內折表裡
+            outer_fold==k 的列」當訓練集,與 meta_oof_nested 用同一組模型——否則
+            解釋的會是另一個模型,與同一格落地的 oof_scores.csv 對不起來。
         meta_clf: stacker(tabpfn_v3 / xgb / lr);與落地 cell 同一個。
         seed / device: 同 meta_oof(估計器 seed、TabPFN 裝置)。
         background: 每折背景樣本數(kmeans 摘要的 centroid 數;< 訓練折樣本數時取訓練折樣本數)。
@@ -51,21 +54,27 @@ def fold_aligned_shap(table, feature_cols, *, meta_clf="tabpfn_v3", seed=42,
     p_pred = np.full(n, np.nan)
 
     for k in np.unique(fold):
-        tr, te = fold != k, fold == k
+        te = fold == k
+        if inner is None:
+            Xtr, ytr = X[fold != k], y[fold != k]
+        else:
+            sub = inner[inner["outer_fold"] == k]
+            Xtr = sub[feats].to_numpy(dtype=float)
+            ytr = sub["y_true"].to_numpy(dtype=int)
         clf = make_meta_clf(meta_clf, seed=seed, device=device)
-        clf.fit(X[tr], y[tr])
+        clf.fit(Xtr, ytr)
 
         def f(Xq, _clf=clf):                       # 機率尺度、正類=AD;_clf 綁本折估計器
             return _clf.predict_proba(Xq)[:, 1]
 
-        bg = shap.kmeans(X[tr], int(min(background, tr.sum())))
+        bg = shap.kmeans(Xtr, int(min(background, len(Xtr))))
         explainer = shap.KernelExplainer(f, bg)
         sv = explainer.shap_values(X[te], nsamples=nsamples, silent=True)
         shap_vals[te] = np.asarray(sv)
         base_vals[te] = float(explainer.expected_value)
         p_pred[te] = f(X[te])
         logger.info(f"  fold {k}: explained {int(te.sum())} sessions "
-                    f"(train={int(tr.sum())}, base={float(explainer.expected_value):.3f})")
+                    f"(train={len(Xtr)}, base={float(explainer.expected_value):.3f})")
 
     per_case = pd.DataFrame({"ID": ids, "y_true": y, "fold": fold,
                              "p_pred": p_pred, "base_value": base_vals})
