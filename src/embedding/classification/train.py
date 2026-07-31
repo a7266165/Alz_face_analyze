@@ -3,9 +3,9 @@
 """
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import GroupKFold
 
 from src.common.cohort import base_id_of
+from src.common.folds import make_splitter
 from src.common.matching import match_by_age
 
 _DEFAULT_MS = ("no_priority", "priority_acs", "priority_nad")
@@ -43,7 +43,8 @@ def _pool_to_id(df: pd.DataFrame) -> pd.DataFrame:
 
 # ── 統一的 OOF 引擎(forward = pool only;reverse = pool + external target) ──
 def _kfold(X_pool, ids_pool, y_pool, build_estimator, score_method, needs_cv,
-               X_target=None, ids_target=None, y_target=None, n_splits=10, fold_seed=0):
+               X_target=None, ids_target=None, y_target=None, n_splits=10, fold_seed=0,
+               fold_kind="group"):
     """K fold訓練
 
     Args:
@@ -55,6 +56,8 @@ def _kfold(X_pool, ids_pool, y_pool, build_estimator, score_method, needs_cv,
         n_splits: 訓練折數,預設 10。
         fold_seed: GroupKFold 折分 seed。0(預設)→ 確定性折(shuffle=False,現有結果);
             ≥1 → shuffle=True, random_state=fold_seed(repeated-CV 的不同折分)。
+        fold_kind: group(預設,GroupKFold=現有結果)| stratified_group
+            (StratifiedGroupKFold,受試者分組再依 class 分層;PDF Step 1.2)。
 
     Returns:
         DataFrame [ID, y_true, y_score, fold]。
@@ -79,8 +82,7 @@ def _kfold(X_pool, ids_pool, y_pool, build_estimator, score_method, needs_cv,
     k = min(n_splits, len(np.unique(g)))
     if k < 2:
         raise RuntimeError(f"too few subjects ({len(np.unique(g))}) for CV")
-    gkf = (GroupKFold(n_splits=k, shuffle=True, random_state=fold_seed)
-           if fold_seed else GroupKFold(n_splits=k))
+    gkf = make_splitter(fold_kind, n_splits=k, seed=fold_seed)
 
     oof = np.full(len(y_pool), np.nan)
     folds = np.full(len(y_pool), -1, dtype=int)
@@ -102,14 +104,15 @@ def _kfold(X_pool, ids_pool, y_pool, build_estimator, score_method, needs_cv,
 
 
 # ── 私有 worker ───────────────────────────────────────────────────────────
-def _train_forward(X, row_ids, y, build_estimator, score_method, needs_cv, n_splits, fold_seed=0):
+def _train_forward(X, row_ids, y, build_estimator, score_method, needs_cv, n_splits,
+                   fold_seed=0, fold_kind="group"):
     """回傳單一 fold DataFrame [ID, y_true, y_score, fold]。"""
     return _kfold(X, row_ids, y, build_estimator, score_method, needs_cv,
-                  n_splits=n_splits, fold_seed=fold_seed)
+                  n_splits=n_splits, fold_seed=fold_seed, fold_kind=fold_kind)
 
 
 def _train_reverse(X_full, ids_full, y_full, build_estimator, score_method, needs_cv,
-                   cohort, match_strategies, n_splits, fold_seed=0):
+                   cohort, match_strategies, n_splits, fold_seed=0, fold_kind="group"):
     """以matched cohort 作訓練池、unmatched 當 external target。
     Args:
         X_full, ids_full, y_full: full cohort 的特徵 / ID / label。
@@ -135,13 +138,14 @@ def _train_reverse(X_full, ids_full, y_full, build_estimator, score_method, need
         out[ms] = _kfold(X_full[pool], ids_full[pool], y_full[pool], build_estimator,
                              score_method, needs_cv,
                              X_full[target], ids_full[target], y_full[target],
-                             n_splits=n_splits, fold_seed=fold_seed)
+                             n_splits=n_splits, fold_seed=fold_seed, fold_kind=fold_kind)
     return out
 
 
 # ── 對外入口 ──────────────────────────────────────────────────────────────
 def train(X, row_ids, y, build_estimator, score_method, needs_cv, direction, *,
-          cohort=None, match_strategies=None, n_splits=10, fold_seed=0):
+          cohort=None, match_strategies=None, n_splits=10, fold_seed=0,
+          fold_kind="group"):
     """訓練流程入口。
 
     Args:
@@ -153,15 +157,16 @@ def train(X, row_ids, y, build_estimator, score_method, needs_cv, direction, *,
         match_strategies: 僅 reverse 用,no_priority | priority_acs | priority_nad
         n_splits: 折數上限,實際折數 = min(n_splits, 受試者數),預設 10。
         fold_seed: GroupKFold 折分 seed(0=確定性折/現有結果;≥1=repeated-CV 不同折分)。
+        fold_kind: group(預設=現有結果)| stratified_group(見 src/common/folds.py)。
 
     Returns:
         forward → DataFrame[ID, y_true, y_score, fold];reverse → dict[match_strategy → DataFrame]。
     """
     if direction == "forward":
         return _train_forward(X, row_ids, y, build_estimator, score_method, needs_cv,
-                              n_splits, fold_seed=fold_seed)
+                              n_splits, fold_seed=fold_seed, fold_kind=fold_kind)
     if direction == "reverse":
         return _train_reverse(X, row_ids, y, build_estimator, score_method, needs_cv,
                               cohort, match_strategies or list(_DEFAULT_MS), n_splits,
-                              fold_seed=fold_seed)
+                              fold_seed=fold_seed, fold_kind=fold_kind)
     raise ValueError(f"unknown direction: {direction!r} (expected 'forward' | 'reverse')")
