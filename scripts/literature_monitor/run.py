@@ -13,6 +13,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
 from _paths import PROJECT_ROOT  # noqa: E402
+from src.config import LIT_QUEUE_DIR, REFERENCES_DIR  # noqa: E402
 
 from src.literature_monitor.queries import TOPICS  # noqa: E402
 from src.literature_monitor.runner import rebuild_aliases, run_slot  # noqa: E402
@@ -47,13 +48,13 @@ def main() -> int:
     args = ap.parse_args()
 
     _setup_logging(
-        PROJECT_ROOT / "references" / "waiting_review" / "_logs" / f"{datetime.now():%Y%m%d}.log",
+        LIT_QUEUE_DIR / "_logs" / f"{datetime.now():%Y%m%d}.log",
         args.verbose,
     )
 
     if args.rebuild_index:
-        out = write_reference_index(PROJECT_ROOT / "references")
-        print(f"wrote {out.relative_to(PROJECT_ROOT)}")
+        out = write_reference_index(REFERENCES_DIR)
+        print(f"wrote {out}")
         return 0
     if args.rebuild_aliases:
         print(f"added {rebuild_aliases(PROJECT_ROOT)} aliases to _state.json")

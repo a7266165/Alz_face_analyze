@@ -31,6 +31,7 @@ import matplotlib.pyplot as plt
 
 from src.common.evaluate import evaluate
 from src.config import (
+    WORKSPACE_DIR,
     cohort_path,
     P_VISIT_TOKENS, P_SCORE_TOKENS, HC_VISIT_TOKENS, HC_SCORE_TOKENS,
 )
@@ -167,7 +168,7 @@ def main():
                             f"1by1={hc1['auc']:.3f}  n(all)={int(hc['n'])}")
 
     # embedding _summary 風格分層:lineplot/<cohort>/<eval_unit>/all_vs_1by1.png(4 線一張)
-    out_dir = (PROJECT_ROOT / "workspace" / "overview" / "lineplot"
+    out_dir = (WORKSPACE_DIR / "overview" / "lineplot"
                / cohort_path(*cohort) / args.eval_unit)
     out_dir.mkdir(parents=True, exist_ok=True)
     out_png = out_dir / "all_vs_1by1.png"

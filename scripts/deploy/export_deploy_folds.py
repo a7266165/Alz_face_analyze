@@ -35,6 +35,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
 from src.common.cohort import cohort_list, base_id_of
+from src.config import WORKSPACE_DIR
 from src.common.features import load_feature_matrix
 from src.embedding.classification import build_classifier, oof_paths
 from src.config import EMBEDDING_CLASSIFICATION_REFACTOR_DIR
@@ -57,7 +58,7 @@ N_SPLITS = 10
 # variant → API 端要取代的那條 base LR 名稱(僅供輸出命名/對照)
 VARIANTS = {"original": "lr_embedding", "differences": "lr_asymmetry"}
 
-OUT = REPO_ROOT / "workspace" / "deploy"
+OUT = WORKSPACE_DIR / "deploy"
 TOL = 1e-9              # test-fold 分數與落地 OOF 的容許誤差
 
 

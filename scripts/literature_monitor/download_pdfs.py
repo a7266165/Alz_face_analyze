@@ -12,6 +12,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
 from _paths import PROJECT_ROOT  # noqa: E402
+from src.config import LIT_QUEUE_DIR  # noqa: E402
 
 from src.literature_monitor.download import download_missing, missing_pdf_targets  # noqa: E402
 from src.literature_monitor.queries import TOPICS  # noqa: E402
@@ -26,7 +27,7 @@ def main() -> int:
     args = ap.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 
-    wr = PROJECT_ROOT / "references" / "waiting_review"
+    wr = LIT_QUEUE_DIR
     topics = None if args.topic == "all" else [args.topic]
     targets = missing_pdf_targets(wr, topics=topics, retry_no_oa=args.retry_no_oa)
     if args.limit:
@@ -35,7 +36,7 @@ def main() -> int:
     print(f"Candidates needing PDF: {len(targets)}")
     if not args.apply:
         for j, m in targets[:10]:
-            print(f"  {j.relative_to(PROJECT_ROOT)} :: {m.get('title', '')[:80]}")
+            print(f"  {j.relative_to(LIT_QUEUE_DIR)} :: {m.get('title', '')[:80]}")
         print("\n(dry-run; pass --apply to actually fetch)")
         return 0
 

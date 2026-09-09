@@ -14,6 +14,7 @@ from .download import save_record
 from .queries import SLOT_PLAN, TOPICS, query_for
 from .sources import PaperRecord
 from .state import StateStore, iter_sidecars
+from src.config import LIT_QUEUE_DIR, REFERENCES_DIR
 
 
 def _today() -> str:
@@ -42,8 +43,8 @@ def run_slot(
         srcs = override_sources if override_sources is not None else plan["sources"]
         query_idx = override_query_idx if override_query_idx is not None else plan["query_idx"]
 
-    waiting_review = repo_root / "references" / "waiting_review"
-    state = StateStore(waiting_review, repo_root / "references")
+    waiting_review = LIT_QUEUE_DIR
+    state = StateStore(waiting_review, REFERENCES_DIR)
 
     new_per_topic: dict[str, list[tuple[PaperRecord, Path | None]]] = {t: [] for t in TOPICS}
     skipped_total = 0
@@ -83,29 +84,29 @@ def run_slot(
                 pdf_path, json_path = save_record(rec, day_dir, download_pdf=download_pdf)
                 state.mark_seen(
                     pid, topic,
-                    pdf_path=str(pdf_path.relative_to(repo_root)) if pdf_path else None,
+                    pdf_path=str(pdf_path.relative_to(waiting_review)) if pdf_path else None,
                     pdf_status="ok" if pdf_path else "no_oa",
                     all_ids=aliases,
                 )
                 new_per_topic[topic].append((rec, pdf_path))
-                written_paths.append(str(json_path.relative_to(repo_root)))
+                written_paths.append(str(json_path))
                 if pdf_path:
-                    written_paths.append(str(pdf_path.relative_to(repo_root)))
+                    written_paths.append(str(pdf_path))
         state.update_last_run(topic)
 
     if not dry_run:
         state.save()
-        written_paths.append(str(state.state_path.relative_to(repo_root)))
+        written_paths.append(str(state.state_path))
         digest_path = digest.append_slot_digest(
             waiting_review / "_digests", slot,
             [item for items in new_per_topic.values() for item in items],
-            skipped_total, repo_root=repo_root,
+            skipped_total, repo_root=waiting_review,  # 連結相對於佇列根（已搬離 repo）
         )
-        written_paths.append(str(digest_path.relative_to(repo_root)))
+        written_paths.append(str(digest_path))
 
     if plan.get("digest_only") and not dry_run:
         summary = digest.write_daily_summary(waiting_review / "_digests", waiting_review)
-        written_paths.append(str(summary.relative_to(repo_root)))
+        written_paths.append(str(summary))
 
     counts = {t: len(v) for t, v in new_per_topic.items()}
     print(f"[slot {slot}] " + " ".join(f"{t}={counts[t]}" for t in TOPICS)
@@ -113,7 +114,11 @@ def run_slot(
 
     pushed_sha = None
     if push and not dry_run and written_paths:
-        pushed_sha = auto_push(repo_root, written_paths, _build_commit_msg(slot, new_per_topic))
+        # 佇列已搬離 repo（D:\Alz 佈局）：只有佇列目錄自己是 git repo 時才推送
+        if (waiting_review / ".git").exists():
+            pushed_sha = auto_push(waiting_review, written_paths, _build_commit_msg(slot, new_per_topic))
+        else:
+            logging.info("auto_push skipped: %s is not a git repo", waiting_review)
         print(f"pushed: {pushed_sha[:8]}" if pushed_sha else "push: nothing to commit or failed")
 
     return {"counts": counts, "skipped": skipped_total,
@@ -136,8 +141,8 @@ def _build_commit_msg(slot: int, new_per_topic: dict) -> str:
 
 def rebuild_aliases(repo_root: Path) -> int:
     """從既有 sidecar 回填 _state.json 的別名（用 PaperRecord.all_ids）。回新增筆數。"""
-    wr = repo_root / "references" / "waiting_review"
-    state = StateStore(wr, repo_root / "references")
+    wr = LIT_QUEUE_DIR
+    state = StateStore(wr, REFERENCES_DIR)
     aliases = state.state_dict["aliases"]
     added = 0
     for _, meta in iter_sidecars(wr):

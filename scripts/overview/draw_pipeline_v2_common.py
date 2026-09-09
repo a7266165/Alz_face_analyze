@@ -12,7 +12,8 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import FancyBboxPatch
 from pathlib import Path
 
-OUT = Path(r"c:\Users\4080\Desktop\Alz_face_analyze\workspace\overview")
+# D:\Alz 佈局：repo = <子主題>\code\<repo>，workspace 住子主題層 → parents[4] = 子主題根
+OUT = Path(__file__).resolve().parents[4] / "workspace" / "overview"
 
 # ── constants (prompt.md §2) ──
 FONT = "Microsoft JhengHei"

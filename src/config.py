@@ -19,9 +19,44 @@ from src.common.mediapipe_utils import MIDLINE_POINTS
 # 專案根目錄
 PROJECT_ROOT = Path(__file__).parent.parent
 
-# 專案內資料目錄
-DATA_DIR = PROJECT_ROOT / "data"
-DEMOGRAPHICS_DIR = DATA_DIR / "demographics"
+# -----------------------------------------------------------------------------
+# 外部根目錄由 repo 根的 paths.txt 宣告（KEY=路徑，一行一鍵；gitignore，範本見 paths.example.txt）。
+# 缺鍵時依 D:\Alz 佈局相對推導：parents[1] = 子主題根（face\）、parents[2] = 主題根（D:\Alz）。
+# 推導出的路徑不存在即報錯，避免在桌面副本等錯誤位置靜默讀寫。
+# -----------------------------------------------------------------------------
+_PATHS_FILE = PROJECT_ROOT / "paths.txt"
+_SUBTHEME_ROOT = PROJECT_ROOT.parents[1]
+_ALZ_ROOT = PROJECT_ROOT.parents[2]
+
+
+def _read_paths() -> dict:
+    out = {}
+    if _PATHS_FILE.exists():
+        for line in _PATHS_FILE.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            k, v = line.split("=", 1)
+            out[k.strip()] = v.strip()
+    return out
+
+
+_PATHS = _read_paths()
+
+
+def _path(key: str, default: Path, must_exist: bool = True) -> Path:
+    p = Path(_PATHS[key]) if key in _PATHS else default
+    if must_exist and key not in _PATHS and not p.exists():
+        raise FileNotFoundError(
+            f"paths.txt 未宣告 {key}，且推導路徑不存在: {p}\n請在 {_PATHS_FILE} 加一行 {key}=<路徑>"
+        )
+    return p
+
+
+# 受試者主表（去識別）住 D:\Alz\common\demographics，所有 repo 共用
+DEMOGRAPHICS_DIR = _path("DEMOGRAPHICS", _ALZ_ROOT / "common" / "demographics")
+# 舊名相容：DATA_DIR 曾指 repo 內 data\（已解散）。保留名稱給 src/__init__ 的匯出，勿再使用。
+DATA_DIR = DEMOGRAPHICS_DIR.parent
 # 單一乾淨人口學表（P/NAD/ACS 合併；已產出之資料檔）。
 # 欄位：Group, ID(受試者數字), Photo_Session, Photo_Date, Birth_Date, Sex,
 #       Age, BMI, NPT_Date, NPT_Session, Diff_Days, MMSE, CASI, Global_CDR
@@ -34,21 +69,20 @@ HOSPITAL_A_CSV = DEMOGRAPHICS_DIR / "hospital_A.csv"
 # 凍在 2026-07 前 → 現行程式即可重現既有結果，且未來 CSV 再增資料也不影響。設 None 解除凍結。
 PHOTO_DATE_MAX = "2026-07-01"
 
-# 原始影像目錄（外部資料，從 data/path.txt 延遲讀取）。
-# 不在 import 時強制 path.txt 存在 —— 純推論 (age/embedding/meta，例如 alz_infer
-# 服務) 不碰原始影像,故無需 path.txt 也能 import src.config / src.age。
+# 原始影像目錄（母帶，paths.txt 的 RAW 鍵，延遲讀取）。
+# 不在 import 時強制 RAW 存在 —— 純推論 (age/embedding/meta，例如 alz_infer
+# 服務) 不碰原始影像,故無需 RAW 也能 import src.config / src.age。
 # 真正取用 RAW_IMAGES_DIR（或 `from src.config import RAW_IMAGES_DIR`）時,
-# 才透過下方 __getattr__ 讀檔並在缺檔時報錯。
-_RAW_PATH_FILE = DATA_DIR / "path.txt"
+# 才透過下方 __getattr__ 取值並在缺鍵時報錯。
 
 
 def _raw_images_dir() -> Path:
-    if not _RAW_PATH_FILE.exists():
+    if "RAW" not in _PATHS:
         raise FileNotFoundError(
-            f"找不到原始影像路徑設定檔: {_RAW_PATH_FILE}\n"
-            f"請建立此檔案並寫入原始影像目錄路徑"
+            f"paths.txt 未宣告 RAW（原始影像目錄）: {_PATHS_FILE}\n"
+            f"請加一行 RAW=<原始影像目錄路徑>"
         )
-    return Path(_RAW_PATH_FILE.read_text(encoding="utf-8").strip())
+    return Path(_PATHS["RAW"])
 
 
 def __getattr__(name: str):
@@ -63,10 +97,15 @@ EXTERNAL_PUBLIC_FACE_DIR = EXTERNAL_DIR / "public_face_datasets"
 EXTERNAL_DATASETS_DIR = EXTERNAL_PUBLIC_FACE_DIR / "datasets"
 EXTERNAL_FILTERED_DIR = EXTERNAL_PUBLIC_FACE_DIR / "filtered"
 
-# 工作區根
-WORKSPACE_DIR = PROJECT_ROOT / "workspace"
-if not WORKSPACE_DIR.exists() and (PROJECT_ROOT.parents[1] / "workspace").exists():
-    WORKSPACE_DIR = PROJECT_ROOT.parents[1] / "workspace"  # D:\Alz 佈局：workspace 住在子主題層
+# 工作區根（子主題層 face\workspace）
+WORKSPACE_DIR = _path("WORKSPACE", _SUBTHEME_ROOT / "workspace")
+
+# 文獻：人細篩通過的文獻住 face\paper\refs\<題目>\；AI 下載與初篩的佇列住 face\workspace\literature\
+REFERENCES_DIR = _path("REFS", _SUBTHEME_ROOT / "paper" / "refs")
+LIT_QUEUE_DIR = _path("LIT_QUEUE", WORKSPACE_DIR / "literature")
+
+# 收案 App 的主表（identity，含個資；只有 scripts/export_hospital_a.py 讀）
+INTAKE_MASTER_CSV = _path("INTAKE_MASTER", _ALZ_ROOT / "收案" / "data" / "k" / "outcome_k.csv", must_exist=False)
 
 # -----------------------------------------------------------------------------
 # 選幀準則（selection）
@@ -260,8 +299,8 @@ OVERVIEW_DIR = WORKSPACE_DIR / "overview"
 # 高度重疊但各自成表,因此 workspace 依 dataset id 分樹,每份資料各有自己的
 # dataset / cv / model / figures。dataset id 見 src/q6ds/dataset.py:DATASETS。
 # -----------------------------------------------------------------------------
-Q6DS_RAW_DIR = DATA_DIR / "q6ds"
-Q6DS_DIR = WORKSPACE_DIR / "q6ds"
+Q6DS_RAW_DIR = _path("Q6DS_RAW", _ALZ_ROOT / "q6ds" / "data")
+Q6DS_DIR = _path("Q6DS_WORKSPACE", _ALZ_ROOT / "q6ds" / "workspace")
 Q6DS_LOG_DIR = Q6DS_DIR / "logs"
 Q6DS_SUMMARY_FILE = Q6DS_DIR / "all_metrics.csv"   # 三份資料 × 五個 arm 的總表
 

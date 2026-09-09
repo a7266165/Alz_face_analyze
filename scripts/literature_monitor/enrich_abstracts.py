@@ -12,6 +12,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
 from _paths import PROJECT_ROOT  # noqa: E402
+from src.config import LIT_QUEUE_DIR  # noqa: E402
 
 from src.literature_monitor.curate import fill_missing_abstracts  # noqa: E402
 from src.literature_monitor.state import iter_sidecars  # noqa: E402
@@ -24,7 +25,7 @@ def main() -> int:
     args = ap.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 
-    wr = PROJECT_ROOT / "references" / "waiting_review"
+    wr = LIT_QUEUE_DIR
     targets = [(p, m) for p, m in iter_sidecars(wr) if not (m.get("abstract") or "").strip()]
     if args.max_papers:
         targets = targets[:args.max_papers]

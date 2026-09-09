@@ -21,11 +21,14 @@ from datetime import date
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_MASTER = ROOT.parent / "AlzheimerResearch" / "_data" / "outcome_k.csv"
-HOSPITAL_A = ROOT / "data" / "demographics" / "hospital_A.csv"
+sys.path.insert(0, str(ROOT))
+from src.config import INTAKE_MASTER_CSV, HOSPITAL_A_CSV  # noqa: E402
+
+DEFAULT_MASTER = INTAKE_MASTER_CSV
+HOSPITAL_A = HOSPITAL_A_CSV
 
 OUT_COLS = [
-    "Group", "Number", "Photo_Session", "Photo_Date", "Birth_Date", "Sex", "Age",
+    "Group", "Number", "Photo_Session", "Photo_Date", "Sex", "Age",
     "BMI", "NPT_Date", "NPT_Session", "Diff_Days", "MMSE", "CASI", "Global_CDR",
     "Session_Version",
 ]
@@ -77,7 +80,6 @@ def export_rows(master_rows, carry=None):
                 "Number": number,
                 "Photo_Session": session,
                 "Photo_Date": fmt_date(photo, pad=False),
-                "Birth_Date": fmt_date(parse_date(r.get("Birth_Date")), pad=True),
                 "Sex": (r.get("Sex") or "").strip().upper(),
                 "Age": (r.get("Age") or "").strip(),
                 "BMI": (r.get("BMI") or "").strip(),
@@ -123,7 +125,7 @@ def check(new_rows, old_rows):
             if col not in old[k]:
                 continue
             a, b = new[k].get(col, ""), old[k].get(col, "")
-            if col in ("Photo_Date", "Birth_Date", "NPT_Date"):
+            if col in ("Photo_Date", "NPT_Date"):
                 same = parse_date(a) == parse_date(b)
             else:
                 same = _num_equal(a, b)

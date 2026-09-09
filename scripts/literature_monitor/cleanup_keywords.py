@@ -12,6 +12,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
 from _paths import PROJECT_ROOT  # noqa: E402
+from src.config import LIT_QUEUE_DIR  # noqa: E402
 
 from src.literature_monitor.curate import pipeline  # noqa: E402
 
@@ -22,7 +23,7 @@ def main() -> int:
     args = ap.parse_args()
     logging.basicConfig(level=logging.WARNING, format="%(levelname)s %(message)s")
 
-    pipeline(PROJECT_ROOT / "references" / "waiting_review", apply=args.apply)
+    pipeline(LIT_QUEUE_DIR, apply=args.apply)
     return 0
 
 

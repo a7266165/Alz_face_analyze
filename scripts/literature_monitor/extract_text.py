@@ -12,6 +12,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
 from _paths import PROJECT_ROOT  # noqa: E402
+from src.config import LIT_QUEUE_DIR, REFERENCES_DIR  # noqa: E402
 
 from src.literature_monitor.download import LOW_TEXT_THRESHOLD, extract_pdf_text  # noqa: E402
 from src.literature_monitor.queries import TOPICS  # noqa: E402
@@ -28,7 +29,7 @@ def main() -> int:
     args = ap.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 
-    base = PROJECT_ROOT / ("references/waiting_review" if args.waiting_review else "references")
+    base = LIT_QUEUE_DIR if args.waiting_review else REFERENCES_DIR
     topics = list(TOPICS) if args.topic == "all" else [args.topic]
     pattern = "*/*.pdf" if args.waiting_review else "*.pdf"
     targets = [pdf for t in topics for pdf in (base / t).glob(pattern)]
@@ -39,7 +40,7 @@ def main() -> int:
     print(f"Found {len(targets)} PDFs.")
     if not args.apply:
         for p in targets[:10]:
-            print(f"  {p.relative_to(PROJECT_ROOT)}")
+            print(f"  {p.relative_to(base)}")
         print("\n(dry-run; pass --apply to actually extract)")
         return 0
 

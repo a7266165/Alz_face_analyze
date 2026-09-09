@@ -1,0 +1,10 @@
+# 外部根目錄宣告（KEY=路徑，一行一鍵）。複製為 paths.txt 後依本機修改；paths.txt 不入 git。
+# 缺鍵時依 D:\Alz 佈局相對推導（repo 的上兩層 = 子主題根，上三層 = D:\Alz）。
+RAW=D:\Alz\face\data\datung\raw
+WORKSPACE=D:\Alz\face\workspace
+DEMOGRAPHICS=D:\Alz\common\demographics
+Q6DS_RAW=D:\Alz\q6ds\data
+Q6DS_WORKSPACE=D:\Alz\q6ds\workspace
+REFS=D:\Alz\face\paper\refs
+LIT_QUEUE=D:\Alz\face\workspace\literature
+INTAKE_MASTER=D:\Alz\收案\data\k\outcome_k.csv

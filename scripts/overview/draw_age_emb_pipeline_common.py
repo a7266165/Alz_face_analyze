@@ -12,7 +12,8 @@ __all__ = [
     'node', 'cluster', 'line', 'rowx',
 ]
 
-OUT = Path(r"c:\Users\4080\Desktop\Alz_face_analyze\workspace\overview")
+# D:\Alz 佈局：repo = <子主題>\code\<repo>，workspace 住子主題層 → parents[4] = 子主題根
+OUT = Path(__file__).resolve().parents[4] / "workspace" / "overview"
 
 FONT = 'Microsoft JhengHei'
 FS = 14

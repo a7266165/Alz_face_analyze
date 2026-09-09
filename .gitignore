@@ -22,25 +22,11 @@ external/public_face_datasets/*
 !external/public_face_datasets/DOWNLOAD_STATUS.md
 !external/public_face_datasets/asian_elderly_datasets.csv
 
-/data/*
-!/data/demographics/
-/data/demographics/*
-!/data/demographics/_details.txt
-!/data/demographics/EACS.csv
-
-!/data/images/ 
-/data/images/*                        
-!/data/images/raw/                    
-/data/images/raw/*                    
-!/data/images/raw/data_tree.txt
-!/data/images/raw/path.txt
-
-test_results/*
-
+# D:\Alz 佈局（2026-09）：data/、references/、paper/、workspace/ 皆已外移，路徑由 paths.txt 宣告
+/paths.txt
+/data/
+/references/
 /paper/
 /tmp/
 
-# literature_monitor logs (run-time noise; PDFs/state/digests still tracked)
-references/waiting_review/_logs/
-# rejected papers — _state.json already records dedup info, archive is just a safety net
-references/waiting_review/_archive_rejected/
+test_results/*
