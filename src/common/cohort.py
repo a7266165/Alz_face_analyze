@@ -4,7 +4,7 @@
 """
 import pandas as pd
 
-from src.config import HOSPITAL_A_CSV, validate_cohort_tokens
+from src.config import HOSPITAL_A_CSV, PHOTO_DATE_MAX, validate_cohort_tokens
 
 _OUTPUT_COLS = ["ID", "Group", "Number", "Photo_Session", "Age", "MMSE",
                 "CASI", "Global_CDR"]
@@ -12,9 +12,16 @@ _P_CDR_THR = {"p_cdr05": 0.5, "p_cdr1": 1.0, "p_cdr2": 2.0}  # Global_CDR >= 門
 
 
 def load_demographics(groups=("P", "NAD", "ACS")):
-    """讀取 hospital_A.csv，篩出指定 *groups*。"""
+    """讀取 hospital_A.csv，篩出指定 *groups*，並凍結分析世代（Photo_Date < PHOTO_DATE_MAX）。
+
+    Photo_Date 上限見 config.PHOTO_DATE_MAX：把配對/選樣世代凍在該日之前，使結果不受
+    hospital_A.csv 事後新增資料影響（無日期 NaT 一律保留）。PHOTO_DATE_MAX=None 則不凍結。
+    """
     demo = pd.read_csv(HOSPITAL_A_CSV)
     demo = demo[demo["Group"].isin(groups)].copy()
+    if PHOTO_DATE_MAX is not None:
+        d = pd.to_datetime(demo["Photo_Date"], errors="coerce")
+        demo = demo[~(d >= pd.Timestamp(PHOTO_DATE_MAX))].copy()   # 丟 >= 上限；NaT 保留
     for c in ("Age", "Global_CDR", "MMSE", "CASI"):
         if c in demo.columns:
             demo[c] = pd.to_numeric(demo[c], errors="coerce")

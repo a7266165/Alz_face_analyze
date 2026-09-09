@@ -1,3 +1,7 @@
+# Python 3.11 / Windows x64
+# torch/torchvision cu118 wheels 不在 PyPI，靠下面這行 extra index 取得
+--extra-index-url https://download.pytorch.org/whl/cu118
+
 albucore==0.0.24
 albumentations==2.0.8
 annotated-types==0.7.0
@@ -29,7 +33,7 @@ numpy==2.4.3
 onnx==1.21.0
 onnxruntime-gpu==1.25.1
 opencv-python-headless==4.13.0.92
-packaging @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_packaging_1777103621/work
+packaging==26.2
 pandas==3.0.2
 pillow==12.1.1
 prettytable==3.17.0

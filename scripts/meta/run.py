@@ -22,6 +22,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
 from _paths import PROJECT_ROOT  # noqa: F401
 
 from src.common.evaluate import evaluate
+from src.common.folds import FOLD_KINDS
 from src.config import (
     meta_analysis_path,
     P_VISIT_TOKENS, P_SCORE_TOKENS, HC_VISIT_TOKENS, HC_SCORE_TOKENS,
@@ -44,7 +45,7 @@ DEFAULT_C_VALUES = [0.001, 0.01, 0.1, 1.0, 10.0, 100.0]
 
 
 def _precheck_oof(cohort, *, emb, bg_mode, photo_mode, reducer, base_clf,
-                  variants, lr_Cs, seed, root):
+                  variants, lr_Cs, seed, fold_kind, root):
     """掃描所有需要的 landed embedding 分數,缺的一次列齊報錯。
 
     每格要兩個檔:oof_scores.csv(外折測試分數 → meta 的測試列)與 inner_scores.csv
@@ -54,9 +55,9 @@ def _precheck_oof(cohort, *, emb, bg_mode, photo_mode, reducer, base_clf,
     missing = []
     for v, c in needed:
         o = oof_paths(cohort, bg_mode, emb, v, photo_mode, reducer, base_clf,
-                      "forward", lr_C=c, seed=seed, root=root)[0]
+                      "forward", lr_C=c, seed=seed, fold_kind=fold_kind, root=root)[0]
         i = inner_path(cohort, bg_mode, emb, v, photo_mode, reducer, base_clf,
-                       "forward", lr_C=c, seed=seed, root=root)
+                       "forward", lr_C=c, seed=seed, fold_kind=fold_kind, root=root)
         missing += [str(p) for p in (o, i) if not p.exists()]
     if missing:
         raise FileNotFoundError(
@@ -71,7 +72,8 @@ def _ident(cohort, args, *, feature_set, variant, base_clf, clf_param, meta_clf,
         p_visit=cohort[0], p_score=cohort[1], hc_visit=cohort[2], hc_score=cohort[3],
         bg=args.bg_mode, emb=args.emb, photo=args.photo_mode, reducer=args.reducer,
         feature_set=feature_set, variant=variant,
-        base_clf=base_clf, clf_param=clf_param, meta_clf=meta_clf, seed=seed)
+        base_clf=base_clf, clf_param=clf_param, meta_clf=meta_clf, seed=seed,
+        fold_kind=args.fold_kind)
 
 
 def _write_cell(oof, cohort, out_dir, ident):
@@ -151,6 +153,10 @@ def main():
                     help="embedding OOF 根目錄(預設 EMBEDDING_CLASSIFICATION_DIR)")
     ap.add_argument("--device", default="auto", help="auto | cpu | cuda")
     ap.add_argument("--seed", type=int, default=42, help="meta 估計器 seed(與折分 --fold-seed 無關)")
+    ap.add_argument("--fold-kind", choices=list(FOLD_KINDS), default="group",
+                    help="折分方式,須與 embedding 端產出時一致:group=GroupKFold(現有結果);"
+                         "stratified_group=受試者分組再依 class 分層(PDF Step 1.2)。"
+                         "非 group 時讀寫都多一層 folds_<kind>,兩種折分不互相覆蓋")
     ap.add_argument("--fold-seed", type=int, nargs="+", default=[0],
                     help="repeated-CV 折分 seed(路徑 seed_<N>):逐個讀對應 seed 的 base OOF、"
                          "寫對應 seed 的 meta cell;0=現有確定性折。例:--fold-seed 0 1 2 ... 29")
@@ -174,7 +180,8 @@ def main():
     logger.info(f"cohort={cohort}  emb={args.emb}/{args.bg_mode}/{args.photo_mode}  "
                 f"cognitive={list(cognitive)}  imaging={list(imaging)}  "
                 f"variants={args.asym_variant}  C={args.base_lr_C}  meta_clf={args.meta_clf}  "
-                f"fold_seed={args.fold_seed}  complete_case={args.complete_case}")
+                f"fold_kind={args.fold_kind}  fold_seed={args.fold_seed}  "
+                f"complete_case={args.complete_case}")
 
     for fold_seed in args.fold_seed:
         _run_seed(args, cohort, cognitive, imaging, fold_seed)
@@ -188,11 +195,13 @@ def _run_seed(args, cohort, cognitive, imaging, fold_seed):
         _precheck_oof(cohort, emb=args.emb, bg_mode=args.bg_mode,
                       photo_mode=args.photo_mode, reducer=args.reducer,
                       base_clf=args.base_clf, variants=args.asym_variant,
-                      lr_Cs=args.base_lr_C, seed=fold_seed, root=args.embedding_root)
+                      lr_Cs=args.base_lr_C, seed=fold_seed,
+                      fold_kind=args.fold_kind, root=args.embedding_root)
 
     common = dict(emb=args.emb, bg_mode=args.bg_mode, photo_mode=args.photo_mode,
                   reducer=args.reducer, base_clf=args.base_clf, seed=fold_seed,
-                  complete_case=args.complete_case, root=args.embedding_root)
+                  fold_kind=args.fold_kind, complete_case=args.complete_case,
+                  root=args.embedding_root)
 
     # 認知 combo:無 OOF/variant/C,只跑一次(用任一 variant/C 讀表取 fold + 認知欄,皆 invariant)
     #
@@ -211,7 +220,8 @@ def _run_seed(args, cohort, cognitive, imaging, fold_seed):
                                      device=args.device)
                 out_dir = meta_analysis_path(*cohort, args.bg_mode, args.emb, args.photo_mode,
                                              args.reducer, case_mode=case_mode, feature_set=fs,
-                                             meta_classifier=mc, seed=fold_seed)
+                                             meta_classifier=mc, seed=fold_seed,
+                                             fold_kind=args.fold_kind)
                 ident = _ident(cohort, args, feature_set=fs, variant=None,
                                base_clf=None, clf_param=None, meta_clf=mc, seed=fold_seed)
                 tag = f"seed_{fold_seed}/{fs}/{mc}"
@@ -236,7 +246,7 @@ def _run_seed(args, cohort, cognitive, imaging, fold_seed):
                         *cohort, args.bg_mode, args.emb, args.photo_mode, args.reducer,
                         case_mode=case_mode, feature_set=fs, variant=variant,
                         base_classifier=args.base_clf, base_classifier_param=clf_param,
-                        meta_classifier=mc, seed=fold_seed)
+                        meta_classifier=mc, seed=fold_seed, fold_kind=args.fold_kind)
                     ident = _ident(cohort, args, feature_set=fs, variant=variant,
                                    base_clf=args.base_clf, clf_param=clf_param, meta_clf=mc,
                                    seed=fold_seed)

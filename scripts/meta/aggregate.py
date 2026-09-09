@@ -26,6 +26,7 @@ import numpy as np
 import pandas as pd
 
 from src.common.evaluate import evaluate
+from src.common.folds import FOLD_KINDS
 from src.config import (
     META_ANALYSIS_DIR, cohort_path,
     P_VISIT_TOKENS, P_SCORE_TOKENS, HC_VISIT_TOKENS, HC_SCORE_TOKENS,
@@ -47,9 +48,11 @@ _SORT_KEYS = ["feature_set", "variant", "base_clf", "clf_param", "meta_clf",
 # cross-seed 統計:cell 身份 + 評估軸(groupby 鍵)/ 要算 mean·std·CI 的指標
 _IDENT_KEYS = ["p_visit", "p_score", "hc_visit", "hc_score", "bg", "emb", "photo",
                "reducer", "feature_set", "variant", "base_clf", "clf_param", "meta_clf",
+               "fold_kind",
                "direction", "contrast", "eval_unit", "matched_unit", "matching_priority", "domain"]
 _REP_METRICS = ["auc", "balacc", "mcc", "sens", "spec", "f1", "n"]
 _SEED_RE = re.compile(r"seed_(\d+)")
+_FOLDS_RE = re.compile(r"folds_(\w+)")
 
 
 def _seed_of(path):
@@ -58,10 +61,22 @@ def _seed_of(path):
     return int(m.group(1)) if m else 0
 
 
-def _cells(base, filename):
-    """base 底下所有 run.py 落地的 <meta_clf>/<filename>(排除 score_avg 自己的輸出)。"""
+def _fold_kind_of(path):
+    """由 cell 路徑解析 folds_<kind> 段 → str(無此段即 group,對應既有結果樹)。"""
+    m = next((_FOLDS_RE.fullmatch(part) for part in path.parts if _FOLDS_RE.fullmatch(part)), None)
+    return m.group(1) if m else "group"
+
+
+def _cells(base, filename, fold_kind="group"):
+    """base 底下該 fold_kind 的 <meta_clf>/<filename>(排除 score_avg 自己的輸出)。
+
+    兩種折分共用同一棵 cohort 子樹(stratified 多一層 folds_<kind>),彙整時必須分開,
+    不然 group 與 stratified 的格子會被混進同一張 all_metrics,cross-seed 統計也會
+    把兩者當成同一格的不同 seed 平均掉。
+    """
     return sorted(p for p in base.rglob(filename)
-                  if p.parent.name in META_CLASSIFIERS and SCORE_AVG_DIR not in p.parts)
+                  if p.parent.name in META_CLASSIFIERS and SCORE_AVG_DIR not in p.parts
+                  and _fold_kind_of(p) == fold_kind)
 
 
 def _identity_key(cell_dir, base):
@@ -69,14 +84,14 @@ def _identity_key(cell_dir, base):
     return tuple(p for p in cell_dir.relative_to(base).parts if not _SEED_RE.fullmatch(p))
 
 
-def _score_average(base, cohort):
+def _score_average(base, cohort, fold_kind="group"):
     """PDF Step 10-11:先對每個人平均各 seed 的分數,再算一次指標。
 
     與 _reps_summary(先各 seed 算指標再平均)不等價 —— AUC 對分數是非線性的,
     兩者的差就是「換彙整方式」的效果,把它與「換方法」的效果分開。
     """
     groups = defaultdict(list)
-    for p in _cells(base, "oof_scores.csv"):
+    for p in _cells(base, "oof_scores.csv", fold_kind):
         groups[_identity_key(p.parent, base)].append(p)
 
     frames = []
@@ -101,6 +116,7 @@ def _score_average(base, cohort):
             if c in ident.index and c not in met.columns:
                 met[c] = ident[c]
         met["seed"] = "score_avg"
+        met["fold_kind"] = fold_kind          # 舊 cell 的 metrics.csv 沒有這欄,由路徑補
         met["n_seeds_used"] = len(paths)
         cols = [c for c in _IDENT_KEYS if c in met.columns]
         met[cols + [c for c in met.columns if c not in cols]].to_csv(
@@ -139,36 +155,43 @@ def main():
                     default="hc_cdrall_or_mmseall")
     ap.add_argument("--case-mode", choices=["no_nan", "keep_nan"], default="no_nan",
                     help="meta 母體子樹:no_nan(complete-case)/ keep_nan(full cohort)")
+    ap.add_argument("--fold-kind", choices=list(FOLD_KINDS), default="group",
+                    help="彙整哪一種折分的 cell(兩種共用同一棵子樹,必須分開彙整);"
+                         "非 group 的輸出落在 <case_mode>/folds_<kind>/")
     ap.add_argument("--out", type=Path, default=None,
-                    help="輸出 csv(預設 <cohort>/<case_mode>/all_metrics.csv)")
+                    help="輸出 csv(預設 <cohort>/<case_mode>/[folds_<kind>/]all_metrics.csv)")
     args = ap.parse_args()
 
     cohort = (args.p_visit, args.p_score, args.hc_visit, args.hc_score)
     base = META_ANALYSIS_DIR / cohort_path(*cohort) / args.case_mode
-    paths = _cells(base, "metrics.csv")
+    paths = _cells(base, "metrics.csv", args.fold_kind)
     if not paths:
-        logger.warning(f"在 {base} 下找不到任何 <meta_clf>/metrics.csv;請先跑 scripts/meta/run.py。")
+        logger.warning(f"在 {base} 下找不到 fold_kind={args.fold_kind} 的 <meta_clf>/metrics.csv;"
+                       f"請先跑 scripts/meta/run.py。")
         return
+    # 輸出根:group 維持原位(既有下游讀這裡),其他折分各自一層,不互相覆蓋
+    out_base = base if args.fold_kind == "group" else base / f"folds_{args.fold_kind}"
 
     frames = []
     for p in paths:
         d = pd.read_csv(p)
         d["seed"] = _seed_of(p)          # 路徑為準(舊 metrics 無 seed 欄亦可)
+        d["fold_kind"] = args.fold_kind  # 舊 cell 無此欄,由路徑補
         frames.append(d)
     df = pd.concat(frames, ignore_index=True)
     sort_keys = [c for c in _SORT_KEYS if c in df.columns]
     df = df.sort_values(sort_keys, na_position="last").reset_index(drop=True)
 
-    base.mkdir(parents=True, exist_ok=True)
+    out_base.mkdir(parents=True, exist_ok=True)
     # all_metrics.csv = seed_0 單一 run 基準(下游 c_curve/confusion/bar 不開 --reps 讀此檔)
-    out = args.out or (base / "all_metrics.csv")
+    out = args.out or (out_base / "all_metrics.csv")
     df0 = df[df["seed"] == 0].reset_index(drop=True)
     df0.to_csv(out, index=False, encoding="utf-8")
     logger.info(f"collected {len(paths)} metrics.csv -> seed_0 {len(df0)} rows x {df0.shape[1]} cols -> {out}")
 
     # all_metrics_reps.csv = 跨 seed mean/std/CI(repeated-CV;bar --reps 讀此檔)
     reps = _reps_summary(df)
-    reps_out = base / "all_metrics_reps.csv"
+    reps_out = out_base / "all_metrics_reps.csv"
     reps = reps.sort_values([c for c in _SORT_KEYS if c in reps.columns],
                             na_position="last").reset_index(drop=True)
     reps.to_csv(reps_out, index=False, encoding="utf-8")
@@ -176,9 +199,9 @@ def main():
     logger.info(f"cross-seed ({n_seed} seeds): {len(reps)} cells -> {reps_out}")
 
     # all_metrics_score_avg.csv = 主要結果(先平均分數,再算一次指標)
-    sa = _score_average(base, cohort)
+    sa = _score_average(base, cohort, args.fold_kind)
     if len(sa):
-        sa_out = base / "all_metrics_score_avg.csv"
+        sa_out = out_base / "all_metrics_score_avg.csv"
         sa = sa.sort_values([c for c in _SORT_KEYS if c in sa.columns],
                             na_position="last").reset_index(drop=True)
         sa.to_csv(sa_out, index=False, encoding="utf-8")

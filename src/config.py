@@ -27,6 +27,13 @@ DEMOGRAPHICS_DIR = DATA_DIR / "demographics"
 #       Age, BMI, NPT_Date, NPT_Session, Diff_Days, MMSE, CASI, Global_CDR
 HOSPITAL_A_CSV = DEMOGRAPHICS_DIR / "hospital_A.csv"
 
+# 分析世代凍結：只納入 Photo_Date < PHOTO_DATE_MAX 的 session。
+# hospital_A.csv 於 2026-08-14 更新（P521 sexfix / dedup / 補 21 筆 Photo_Date>=2026-07 的新收案）；
+# 那 21 筆雖無臉部特徵（不在 embedding/meta 的 2070 母體），卻會餵進 match_by_age 的最佳年齡配對、
+# 擾動 1:1 配對結果，使 1:1 指標與先前落地（paper/PPT，皆 pre-July）對不上。設此上限把配對世代
+# 凍在 2026-07 前 → 現行程式即可重現既有結果，且未來 CSV 再增資料也不影響。設 None 解除凍結。
+PHOTO_DATE_MAX = "2026-07-01"
+
 # 原始影像目錄（外部資料，從 data/path.txt 延遲讀取）。
 # 不在 import 時強制 path.txt 存在 —— 純推論 (age/embedding/meta，例如 alz_infer
 # 服務) 不碰原始影像,故無需 path.txt 也能 import src.config / src.age。
@@ -58,6 +65,8 @@ EXTERNAL_FILTERED_DIR = EXTERNAL_PUBLIC_FACE_DIR / "filtered"
 
 # 工作區根
 WORKSPACE_DIR = PROJECT_ROOT / "workspace"
+if not WORKSPACE_DIR.exists() and (PROJECT_ROOT.parents[1] / "workspace").exists():
+    WORKSPACE_DIR = PROJECT_ROOT.parents[1] / "workspace"  # D:\Alz 佈局：workspace 住在子主題層
 
 # -----------------------------------------------------------------------------
 # 選幀準則（selection）
@@ -245,6 +254,34 @@ D435I_COLOR_INTRINSICS = {"fx": 924.0, "fy": 924.0, "cx": 360.0, "cy": 640.0}
 OVERVIEW_DIR = WORKSPACE_DIR / "overview"
 
 # -----------------------------------------------------------------------------
+# 6Q-DS(六題失智症篩檢量表)—— 純問卷 modality,不碰影像,故不掛 selection 軸。
+#
+# 原始 xlsx 三份(dementia / very mild dementia / 20220818 加了 CASI+MMSE),彼此
+# 高度重疊但各自成表,因此 workspace 依 dataset id 分樹,每份資料各有自己的
+# dataset / cv / model / figures。dataset id 見 src/q6ds/dataset.py:DATASETS。
+# -----------------------------------------------------------------------------
+Q6DS_RAW_DIR = DATA_DIR / "q6ds"
+Q6DS_DIR = WORKSPACE_DIR / "q6ds"
+Q6DS_LOG_DIR = Q6DS_DIR / "logs"
+Q6DS_SUMMARY_FILE = Q6DS_DIR / "all_metrics.csv"   # 三份資料 × 五個 arm 的總表
+
+
+def q6ds_dataset_dir(dataset_id: str) -> Path:
+    """workspace/q6ds/<dataset_id>/ —— 單一份 xlsx 的全部產出根。"""
+    return Q6DS_DIR / dataset_id
+
+
+def q6ds_path(dataset_id: str, kind: str, arm: Optional[str] = None) -> Path:
+    """workspace/q6ds/<dataset_id>/<kind>/[<arm>/]
+
+    kind ∈ {dataset, cv, model, figures};arm ∈ src/q6ds/model.py:ARMS
+    (dataset 是所有 arm 共用的建模表,不吃 arm)。
+    """
+    p = q6ds_dataset_dir(dataset_id) / kind
+    return p if arm is None else p / arm
+
+
+# -----------------------------------------------------------------------------
 # Cohort tokens (4-axis — same signature as src.common.cohort.cohort_list)
 #
 #   p_visit  ∈ {p_first, p_all}
@@ -400,6 +437,7 @@ def meta_analysis_path(
     base_classifier_param: Optional[str] = None,
     meta_classifier: Optional[str] = None,
     seed: Optional[int] = 0,
+    fold_kind: str = "group",
 ) -> Path:
     """Compose a meta-analysis cell path (single unified session-level pipeline).
 
@@ -418,7 +456,10 @@ def meta_analysis_path(
         p = p / case_mode
     p = p / bg_mode / emb_model / photo_mode / reducer
     seed_seg = f"seed_{seed}" if seed is not None else None  # 影像在 base_clf 後、認知在 feature_set 後(skip-None)
-    for seg in (feature_set, variant, base_classifier, seed_seg,
+    # 折分方式與 embedding 端同一套慣例(src/common/folds.py):group 不插段(既有樹不動),
+    # 非預設才多一層 folds_<kind>,位置也一樣緊接 seed_ 之後,兩種折分不互相覆蓋。
+    fold_seg = f"folds_{fold_kind}" if fold_kind and fold_kind != "group" else None
+    for seg in (feature_set, variant, base_classifier, seed_seg, fold_seg,
                 base_classifier_param, meta_classifier):
         if seg is not None:
             p = p / seg

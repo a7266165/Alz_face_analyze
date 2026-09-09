@@ -15,7 +15,8 @@ Alz_face_analyze/
 │   ├── asymmetry/                    # 468-landmark asymmetry
 │   ├── embedding/                    # ArcFace / TopoFR / dlib / VGGFace
 │   ├── emo_au/                       # FER + AU (10 tools)
-│   └── rotation/                     # head pose / vector angle
+│   ├── rotation/                     # head pose / vector angle
+│   └── q6ds/                         # 6Q-DS 問卷 modality (dataset / model / nested CV / plots / cli)
 │
 ├── scripts/                          # Entry-point scripts (mirror src/ + workspace/)
 │   ├── README.md                     # modality 索引
@@ -40,12 +41,13 @@ Alz_face_analyze/
 │   ├── emo_au/                       # features (per tool) + analysis
 │   ├── longitudinal/                 # patient_deltas + vector_deltas
 │   ├── rotation/                     # PnP / vector angle
-│   └── overview/                     # 跨模態 cohort summaries + stat grids
+│   ├── overview/                     # 跨模態 cohort summaries + stat grids
+│   └── q6ds/                         # <dataset_id>/{dataset,cv,model,figures} + all_metrics.csv
 │
 ├── envs/                             # Conda env spec snapshots + setup README
-├── data/                             # demographics CSVs (P / NAD / ACS / EACS)
+├── data/                             # demographics CSVs (P / NAD / ACS / EACS) + q6ds/ 問卷 xlsx
 ├── external/                         # 公開亞裔人臉資料集 (raw + filtered/EACS_*)
-├── references/                       # literature_monitor 文獻 PDFs / 摘要
+├── references/                       # literature_monitor 文獻 PDFs / 摘要 + q6ds/ 量表原始文件
 ├── docs/                             # 額外設計文件
 └── paper/                            # 論文草稿
 ```

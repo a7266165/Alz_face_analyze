@@ -18,8 +18,12 @@ ASYM_VARIANTS = ("differences", "absolute_differences",
 
 # session 層級可用的全部欄(canonical 欄名);下列 8 個 combo 為其子集。各 combo 共用同一張 session
 # 表(同母體 = 有 embedding 的 sessions ∩ 有年齡預測者),故可直接互比。
-ALL_FEATURE_COLS = ["real_age", "age_error", "embedding_LR_score",
+# _merge_bases 直接產出的欄(base 分數 + 原始共變數)。
+_BASE_MERGE_COLS = ["real_age", "age_error", "embedding_LR_score",
                     "asymmetry_LR_score", "bmi", "mmse", "casi"]
+# canonical 全欄:再加把 age_error 當「第三個 base learner」的無洩漏 OOF 分數
+# (age_error_LR_score,由 session_/inner_feature_table 併表後補上,見 _age_error_lr_*)。
+ALL_FEATURE_COLS = _BASE_MERGE_COLS + ["age_error_LR_score"]
 # 帶這兩欄之一的 combo 才依賴 embedding OOF(→ 有 variant / C 軸);其餘為純認知 combo(只跑一次)。
 OOF_FEATURE_COLS = ("embedding_LR_score", "asymmetry_LR_score")
 META_FEATURE_SETS = {
@@ -28,6 +32,7 @@ META_FEATURE_SETS = {
     "mmse_casi":            ["mmse", "casi"],
     "core4":                ["real_age", "age_error", "embedding_LR_score", "asymmetry_LR_score"],
     "core3":                ["embedding_LR_score", "asymmetry_LR_score", "age_error"],  # core4 去 real_age(年齡 confound)
+    "core3_ageLRscore":     ["embedding_LR_score", "asymmetry_LR_score", "age_error_LR_score"],  # core3 的 age_error 換成單變量 LR 的無洩漏 OOF 分數
     "core4_bmi":            ["real_age", "age_error", "embedding_LR_score", "asymmetry_LR_score", "bmi"],
     "core4_mmse":           ["real_age", "age_error", "embedding_LR_score", "asymmetry_LR_score", "mmse"],
     "core4_casi":           ["real_age", "age_error", "embedding_LR_score", "asymmetry_LR_score", "casi"],
@@ -53,7 +58,7 @@ def feature_set_needs_oof(feature_cols):
 
 
 def base_oof(cohort, emb, variant, bg_mode, photo_mode, model, *,
-             reducer="no_drop", lr_C=1.0, seed=0, root=None):
+             reducer="no_drop", lr_C=1.0, seed=0, fold_kind="group", root=None):
     """讀 workspace 落地的 forward OOF,回 session 層級 DataFrame[ID, y_true, y_score, fold]。
 
     base 模型不在此重訓——OOF 由 embedding 分類流程(scripts/embedding/classification)
@@ -68,10 +73,12 @@ def base_oof(cohort, emb, variant, bg_mode, photo_mode, model, *,
         model: logistic/xgb(classifier)| l2_norm/centroid_dist/lda_projection(scorer)。
         reducer / lr_C: 定位 classifier 落地格用(scorer 忽略);須與 embedding 產出時一致。
         seed: repeated-CV 折分 seed(路徑 seed_<N>);須與 embedding 產出時一致(預設 0)。
+        fold_kind: 折分方式(group / stratified_group);須與 embedding 產出時一致。
         root: embedding OOF 根目錄,預設 EMBEDDING_CLASSIFICATION_DIR。
     """
     path = oof_paths(cohort, bg_mode, emb, variant, photo_mode, reducer, model,
-                     "forward", lr_C=lr_C, seed=seed, root=root)[0]
+                     "forward", lr_C=lr_C, seed=seed, fold_kind=fold_kind,
+                     root=root)[0]
     if not path.exists():
         param = f" lr_C={lr_C}" if model in CLASSIFIERS else ""
         raise FileNotFoundError(
@@ -82,7 +89,7 @@ def base_oof(cohort, emb, variant, bg_mode, photo_mode, model, *,
 
 
 def base_inner(cohort, emb, variant, bg_mode, photo_mode, model, *,
-               reducer="no_drop", lr_C=1.0, seed=0, root=None):
+               reducer="no_drop", lr_C=1.0, seed=0, fold_kind="group", root=None):
     """讀落地的內折 OOF → DataFrame[ID, y_true, y_score, outer_fold, inner_fold]。
 
     這是 stacking 的 meta 訓練列:對外折 k,這些分數來自「只在 outer-train 的
@@ -90,7 +97,8 @@ def base_inner(cohort, emb, variant, bg_mode, photo_mode, model, *,
     oof_scores.csv(= 用完整 outer-train 重訓後預測 outer-test)成對使用。
     """
     path = inner_path(cohort, bg_mode, emb, variant, photo_mode, reducer, model,
-                      "forward", lr_C=lr_C, seed=seed, root=root)
+                      "forward", lr_C=lr_C, seed=seed, fold_kind=fold_kind,
+                      root=root)
     if not path.exists():
         raise FileNotFoundError(
             f"找不到內折 OOF:{path}\n"
@@ -169,7 +177,8 @@ def covariate_table(cohort):
 
 def session_feature_table(cohort, *, variant="relative_differences", emb="arcface",
                           bg_mode="background", photo_mode="mean", reducer="no_drop",
-                          base_clf="logistic", lr_C=1.0, seed=0, complete_case=True, root=None):
+                          base_clf="logistic", lr_C=1.0, seed=0, fold_kind="group",
+                          complete_case=True, root=None):
     """組 per-session 全欄特徵表
     [ID, y_true, fold, embedding_LR_score, asymmetry_LR_score, real_age, age_error, bmi, mmse, casi]。
 
@@ -193,11 +202,15 @@ def session_feature_table(cohort, *, variant="relative_differences", emb="arcfac
         root: embedding OOF 根目錄,預設 EMBEDDING_CLASSIFICATION_DIR。
     """
     orig = base_oof(cohort, emb, "original", bg_mode, photo_mode, base_clf,
-                    reducer=reducer, lr_C=lr_C, seed=seed, root=root)
+                    reducer=reducer, lr_C=lr_C, seed=seed, fold_kind=fold_kind, root=root)
     asym = base_oof(cohort, emb, variant, bg_mode, photo_mode, base_clf,
-                    reducer=reducer, lr_C=lr_C, seed=seed, root=root)
-    return _merge_bases(orig, asym, covariate_table(cohort), ("fold",),
-                        complete_case=complete_case)
+                    reducer=reducer, lr_C=lr_C, seed=seed, fold_kind=fold_kind, root=root)
+    cov = covariate_table(cohort)
+    t = _merge_bases(orig, asym, cov, ("fold",), complete_case=complete_case)
+    # age_error 當第三個 base learner:同外折的無洩漏單變量 LR OOF 分數
+    t = t.merge(_age_error_lr_outer(orig, cov.set_index("ID")["age_error"]),
+                on=["ID", "fold"], how="left")
+    return t
 
 
 def _merge_bases(orig, asym, cov, fold_cols, *, complete_case):
@@ -219,13 +232,56 @@ def _merge_bases(orig, asym, cov, fold_cols, *, complete_case):
         "original 與 asymmetry OOF 的 y_true 不一致"
     if complete_case:                       # 丟認知缺值 session → 全表零 NaN、各 combo 同母體比較
         t = t[t["mmse"].notna() & t["casi"].notna()].reset_index(drop=True)
-    return t[["ID", "y_true", *fold_cols] + ALL_FEATURE_COLS]
+    return t[["ID", "y_true", *fold_cols] + _BASE_MERGE_COLS]
+
+
+def _lr_oof_1d(X, y, fold):
+    """單變量特徵逐折無洩漏 LR OOF:fold≠k 上 fit make_meta_clf('lr')、預測 fold==k,回正類機率。"""
+    oof = np.full(len(y), np.nan)
+    for k in np.unique(fold):
+        te = fold == k
+        clf = make_meta_clf("lr")
+        clf.fit(X[~te], y[~te])
+        oof[te] = clf.predict_proba(X[te])[:, 1]
+    return oof
+
+
+def _age_error_lr_outer(base_df, age_map):
+    """外折版 age_error_LR_score:base_df[ID,y_true,fold] → [ID,fold,age_error_LR_score]。
+
+    把 age_error 當第三個 base learner,在 embedding/asymmetry base 用的**同一組外折**上做
+    單變量 LR OOF,故可 by [ID,fold] 併回 session 表且與另兩條 base 分數同折、無 leakage。
+    """
+    d = base_df[["ID", "y_true", "fold"]].copy()
+    X = d["ID"].map(age_map).to_numpy(dtype=float).reshape(-1, 1)
+    y = d["y_true"].to_numpy(dtype=int)
+    d["age_error_LR_score"] = _lr_oof_1d(X, y, d["fold"].to_numpy(dtype=int))
+    return d[["ID", "fold", "age_error_LR_score"]]
+
+
+def _age_error_lr_inner(base_inner_df, age_map):
+    """內折版 age_error_LR_score:base_inner_df[ID,y_true,outer_fold,inner_fold] →
+    [ID,outer_fold,age_error_LR_score]。
+
+    每個 outer_fold 內依 inner_fold 做單變量 LR OOF(fit inner≠j、predict inner==j),與
+    embedding inner_scores 同結構,故 by [ID,outer_fold] 併回 inner 表,當 meta 的訓練列。
+    """
+    d = base_inner_df[["ID", "y_true", "outer_fold", "inner_fold"]].copy()
+    d["age_error"] = d["ID"].map(age_map).astype(float)
+    parts = []
+    for _, g in d.groupby("outer_fold"):
+        X = g[["age_error"]].to_numpy(dtype=float)
+        y = g["y_true"].to_numpy(dtype=int)
+        g = g.copy()
+        g["age_error_LR_score"] = _lr_oof_1d(X, y, g["inner_fold"].to_numpy(dtype=int))
+        parts.append(g[["ID", "outer_fold", "age_error_LR_score"]])
+    return pd.concat(parts, ignore_index=True)
 
 
 def inner_feature_table(cohort, *, variant="relative_differences", emb="arcface",
                         bg_mode="background", photo_mode="mean", reducer="no_drop",
-                        base_clf="logistic", lr_C=1.0, seed=0, complete_case=True,
-                        root=None):
+                        base_clf="logistic", lr_C=1.0, seed=0, fold_kind="group",
+                        complete_case=True, root=None):
     """meta 的**訓練**列:[ID, y_true, outer_fold, <ALL_FEATURE_COLS>]。
 
     與 session_feature_table 完全對稱,差別只在 base 分數讀的是 inner_scores.csv
@@ -236,11 +292,15 @@ def inner_feature_table(cohort, *, variant="relative_differences", emb="arcface"
     ——它們不是在本資料上訓練出來的,沒有 fold 依賴。
     """
     orig = base_inner(cohort, emb, "original", bg_mode, photo_mode, base_clf,
-                      reducer=reducer, lr_C=lr_C, seed=seed, root=root)
+                      reducer=reducer, lr_C=lr_C, seed=seed, fold_kind=fold_kind, root=root)
     asym = base_inner(cohort, emb, variant, bg_mode, photo_mode, base_clf,
-                      reducer=reducer, lr_C=lr_C, seed=seed, root=root)
-    return _merge_bases(orig, asym, covariate_table(cohort), ("outer_fold",),
-                        complete_case=complete_case)
+                      reducer=reducer, lr_C=lr_C, seed=seed, fold_kind=fold_kind, root=root)
+    cov = covariate_table(cohort)
+    t = _merge_bases(orig, asym, cov, ("outer_fold",), complete_case=complete_case)
+    # age_error 當第三個 base learner:內折(outer_fold×inner_fold)的無洩漏單變量 LR OOF 分數
+    t = t.merge(_age_error_lr_inner(orig, cov.set_index("ID")["age_error"]),
+                on=["ID", "outer_fold"], how="left")
+    return t
 
 
 def oof_from_table(table, feature_cols, *, inner=None, meta_clf="tabpfn_v3", seed=42,
