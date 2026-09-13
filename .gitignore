@@ -16,11 +16,6 @@ external/embedding/dlib/*
 !/external/embedding/dlib/download_dlib.py
 !external/emotion/
 external/emotion/*
-!external/public_face_datasets/
-external/public_face_datasets/*
-!external/public_face_datasets/README.md
-!external/public_face_datasets/DOWNLOAD_STATUS.md
-!external/public_face_datasets/asian_elderly_datasets.csv
 
 # D:\Alz 佈局（2026-09）：data/、references/、paper/、workspace/ 皆已外移，路徑由 paths.txt 宣告
 /paths.txt

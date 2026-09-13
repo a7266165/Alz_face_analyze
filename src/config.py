@@ -93,9 +93,6 @@ def __getattr__(name: str):
 
 # 外部依賴目錄
 EXTERNAL_DIR = PROJECT_ROOT / "external"
-EXTERNAL_PUBLIC_FACE_DIR = EXTERNAL_DIR / "public_face_datasets"
-EXTERNAL_DATASETS_DIR = EXTERNAL_PUBLIC_FACE_DIR / "datasets"
-EXTERNAL_FILTERED_DIR = EXTERNAL_PUBLIC_FACE_DIR / "filtered"
 
 # 工作區根（子主題層 face\workspace）
 WORKSPACE_DIR = _path("WORKSPACE", _SUBTHEME_ROOT / "workspace")
@@ -515,8 +512,6 @@ def get_raw_images_subdir(group: str) -> Path:
     Returns:
         完整路徑
     """
-    if group == "EACS":
-        return EXTERNAL_FILTERED_DIR
     group_mapping = {
         "ACS": "health/ACS",
         "NAD": "health/NAD",
