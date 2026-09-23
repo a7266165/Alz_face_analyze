@@ -16,7 +16,7 @@ from datetime import datetime, timezone
 
 import pandas as pd
 
-from src.config import Q6DS_DIR, Q6DS_LOG_DIR, Q6DS_SUMMARY_FILE, q6ds_path
+from src.config import Q6DS_DIR, Q6DS_SUMMARY_FILE, q6ds_path
 
 from .dataset import DATASETS, load_dataset, reconcile_sources, write_dataset
 from .model import ARMS, arm_spec
@@ -30,22 +30,17 @@ from .train import (
 
 
 class _Log:
-    """同時寫 stdout 與 workspace/q6ds/logs/run_<UTC>.log。"""
+    """只印 stdout（2026-09-23 起不寫 log 檔；要留紀錄就把 stdout 導向檔案）。"""
 
     def __init__(self):
-        Q6DS_LOG_DIR.mkdir(parents=True, exist_ok=True)
-        stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-        self.path = Q6DS_LOG_DIR / f"run_{stamp}.log"
-        self.fh = self.path.open("w", encoding="utf-8")
+        self.path = None
 
     def __call__(self, msg: str):
         line = f"{datetime.now(timezone.utc).strftime('%H:%M:%S')} {msg}"
         print(line, flush=True)
-        self.fh.write(line + "\n")
-        self.fh.flush()
 
     def close(self):
-        self.fh.close()
+        pass
 
 
 def cmd_build(args, say):
@@ -154,7 +149,7 @@ def main(argv=None):
             cmd_train(args, say)
         if args.command in ("figures", "all"):
             cmd_figures(args, say)
-        say(f"[done] log → {say.path}")
+        say("[done]")
     finally:
         say.close()
     return 0

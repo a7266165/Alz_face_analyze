@@ -47,9 +47,7 @@ Alz_face_analyze/
 │   └── q6ds/                         # <dataset_id>/{dataset,cv,model,figures} + all_metrics.csv
 │
 ├── envs/                             # Conda env spec snapshots + setup README
-├── data/                             # demographics CSVs (P / NAD / ACS / EACS) + q6ds/ 問卷 xlsx
-├── external/                         # 公開亞裔人臉資料集 (raw + filtered/EACS_*)
-├── references/                       # literature_monitor 文獻 PDFs / 摘要 + q6ds/ 量表原始文件
-├── docs/                             # 額外設計文件
-└── paper/                            # 論文草稿
+└── external/                         # 外部模型／權重（gitignore）
 ```
+
+data/、references/、paper/ 已於 2026-09 移出 repo：demographics → `D:\Alz\common\demographics`、q6ds 問卷 → `D:\Alz\q6ds\data`、文獻 → `D:\Alz\face\paper\refs`、稿件 → `D:\Alz\face\paper`、產物 → `D:\Alz\face\workspace`；路徑由 `paths.txt` 宣告（見 `paths.example.txt`）。

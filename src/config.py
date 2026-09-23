@@ -298,7 +298,6 @@ OVERVIEW_DIR = WORKSPACE_DIR / "overview"
 # -----------------------------------------------------------------------------
 Q6DS_RAW_DIR = _path("Q6DS_RAW", _ALZ_ROOT / "q6ds" / "data")
 Q6DS_DIR = _path("Q6DS_WORKSPACE", _ALZ_ROOT / "q6ds" / "workspace")
-Q6DS_LOG_DIR = Q6DS_DIR / "logs"
 Q6DS_SUMMARY_FILE = Q6DS_DIR / "all_metrics.csv"   # 三份資料 × 五個 arm 的總表
 
 
