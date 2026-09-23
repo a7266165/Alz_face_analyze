@@ -38,6 +38,7 @@ from matplotlib.patches import Circle
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
 from _paths import PROJECT_ROOT  # noqa: F401  (亦把專案根/scripts 塞進 sys.path)
+from src.config import WORKSPACE_DIR  # noqa: E402
 
 from src.common.cohort import base_id_of, load_demographics
 from src.common.matching import match_by_age
@@ -47,7 +48,7 @@ from src.common.matching import match_by_age
 GROUP_LABEL = {"NAD": "SCD", "ACS": "ACS"}
 P_TITLE_LABEL = "失智症患者"
 
-DEFAULT_OUTPUT = PROJECT_ROOT / "paper" / "figures" / "資料集.png"
+DEFAULT_OUTPUT = WORKSPACE_DIR / "paper" / "資料集.png"
 
 # ── 配色 ─────────────────────────────────────────────────────────────────────
 ORANGE, ORANGE_FILL, ORANGE_TEXT = "#DE6B2F", "#F6E7DE", "#8A431C"

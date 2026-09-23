@@ -23,6 +23,7 @@ except Exception:
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
 from _paths import PROJECT_ROOT  # noqa: F401
+from src.config import WORKSPACE_DIR  # noqa: E402
 
 from src.common.cohort import load_demographics
 
@@ -35,7 +36,7 @@ VISITS = {"P": 1061, "NAD": 791, "ACS": 218}
 GROUPS = [("P", ["P"]), ("NAD（SCD）", ["NAD"]), ("ACS", ["ACS"]),
           ("HC（NAD+ACS）", ["NAD", "ACS"])]
 
-DEFAULT_OUTPUT = PROJECT_ROOT / "paper" / "draft" / "v4" / "cognitive_strata.xlsx"
+DEFAULT_OUTPUT = WORKSPACE_DIR / "paper" / "cognitive_strata.xlsx"
 
 
 def _subject_level():

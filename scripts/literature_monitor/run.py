@@ -20,12 +20,12 @@ from src.literature_monitor.runner import rebuild_aliases, run_slot  # noqa: E40
 from src.literature_monitor.state import write_reference_index  # noqa: E402
 
 
-def _setup_logging(log_path: Path, verbose: bool) -> None:
-    log_path.parent.mkdir(parents=True, exist_ok=True)
+def _setup_logging(verbose: bool) -> None:
+    # 不寫 log 檔（2026-09-23 起，同 EEG e2edf 先例）；要留紀錄就把 stdout 導向檔案。
     logging.basicConfig(
         level=logging.DEBUG if verbose else logging.INFO,
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
-        handlers=[logging.FileHandler(log_path, encoding="utf-8"), logging.StreamHandler()],
+        handlers=[logging.StreamHandler()],
     )
 
 
@@ -47,10 +47,7 @@ def main() -> int:
     ap.add_argument("-v", "--verbose", action="store_true")
     args = ap.parse_args()
 
-    _setup_logging(
-        LIT_QUEUE_DIR / "_logs" / f"{datetime.now():%Y%m%d}.log",
-        args.verbose,
-    )
+    _setup_logging(args.verbose)
 
     if args.rebuild_index:
         out = write_reference_index(REFERENCES_DIR)

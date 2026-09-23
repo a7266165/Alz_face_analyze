@@ -16,8 +16,9 @@ from openpyxl.utils import get_column_letter
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # scripts/
 from _paths import PROJECT_ROOT  # noqa: F401
+from src.config import WORKSPACE_DIR  # noqa: E402
 
-DEFAULT_OUTPUT = PROJECT_ROOT / "paper" / "draft" / "v5" / "overview_tables.xlsx"
+DEFAULT_OUTPUT = WORKSPACE_DIR / "paper" / "overview_tables.xlsx"
 
 _side = Side(style="thin", color="BFBFBF")
 BORDER = Border(left=_side, right=_side, top=_side, bottom=_side)
