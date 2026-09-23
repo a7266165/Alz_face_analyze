@@ -1,6 +1,6 @@
 """從收案主表 outcome_k.csv 匯出分析用 data/demographics/hospital_A.csv。
 
-主表(D:Alz收案datakoutcome_k.csv，收案 App AlzheimerEnrollApp 寫入)是唯一真相;hospital_A.csv 是它的 14 欄子集
+主表(D:\Alz\收案\data\k\outcome_k.csv，收案 App AlzheimerEnrollApp 寫入)是唯一真相;hospital_A.csv 是它的 14 欄子集
 (不帶姓名等個資),加兩欄:
   Diff_Days  :|Photo_Date - NPT_Date| 天數(任一缺日期 → 空),由主表算
   NPT_Session:醫院端的 NPT 施測序號(含沒拍照的次數),主表沒有、算不出來;
