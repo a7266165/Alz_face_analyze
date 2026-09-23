@@ -1,5 +1,7 @@
 # Alz_face_analyze
 
+本機夾名 `D:\Alzace\codenalyze`（2026-09-23 改，零改碼：外部路徑全在 paths.txt／依佈局推導）；GitHub 遠端仍為 `a7266165/Alz_face_analyze`。
+
 阿茲海默症臉部多模態分析系統 — 從原始臉部影像抽取 age / emotion / AU / asymmetry / rotation / embedding 特徵，配合 cohort matching + 統計檢定 + classifier sweep 評估與 AD 相關性。
 
 ## 專案結構
